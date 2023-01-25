@@ -1,9 +1,18 @@
+import '@testing-library/jest-dom';
 import React from 'react';
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
+import { screen } from '@testing-library/react';
 
+import messages from '../messages';
+import { usersList } from '../../../network/tests/mockData/userList';
 import { store } from '../../../store';
-import { createComponentWithIntl } from '../../../utils/testWithIntl';
-import { JoinRequests } from '../members';
+import {
+  createComponentWithIntl,
+  renderWithRouter,
+  ReduxIntlProviders,
+} from '../../../utils/testWithIntl';
+import { JoinRequests, Members } from '../members';
 import { UserAvatar } from '../../user/avatar';
 import { Button } from '../../button';
 
@@ -95,5 +104,47 @@ describe('test JoinRequest list without requests', () => {
     expect(testInstance.findByProps({ className: 'tc mt3' }).children[0].props.id).toBe(
       'management.teams.join_requests.empty',
     );
+  });
+});
+
+describe('Members Component', () => {
+  it('should display no members when no members are present', () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <Members members={[]} />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText(messages.noMembers.defaultMessage)).toBeInTheDocument();
+  });
+
+  it('should display actionable buttons when edit button is clicked', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <Members members={[]} />
+      </ReduxIntlProviders>,
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: messages.edit.defaultMessage }));
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: messages.edit.defaultMessage }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: messages.cancel.defaultMessage }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: messages.done.defaultMessage })).toBeInTheDocument();
+  });
+
+  it('should not display cross icon with only one member present', async () => {
+    const mockRemoveMembers = jest.fn();
+    const { container } = renderWithRouter(
+      <ReduxIntlProviders>
+        <Members members={[usersList.users[0]]} removeMembers={mockRemoveMembers} />
+      </ReduxIntlProviders>,
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: messages.edit.defaultMessage }));
+    // Matching with that one SVG being displayed from the react-select
+    expect(container.querySelectorAll('svg').length).toBe(1);
   });
 });

@@ -13,7 +13,7 @@ describe('TopProjects card', () => {
       </ReduxIntlProviders>,
     );
 
-    expect(screen.getByText('Top 5 projects contributed').className).toBe('f4 mv0 fw6 pt3');
+    expect(screen.getByText('Top 5 projects contributed').className).toBe('f125 mv0 fw6 pt3');
     expect(screen.getByText('No projects mapped until now.')).toBeInTheDocument();
   });
   it('renders the chart if projects data is present', () => {
@@ -43,7 +43,7 @@ describe('TopProjects card', () => {
       </ReduxIntlProviders>,
     );
 
-    expect(screen.getByText('Top 5 projects contributed').className).toBe('f4 mv0 fw6 pt3');
+    expect(screen.getByText('Top 5 projects contributed').className).toBe('f125 mv0 fw6 pt3');
     expect(screen.getByText('7')).toBeInTheDocument();
     const progressBars = container.querySelectorAll('div.bg-red.br-pill.absolute');
     expect(progressBars[0].style.height).toBe('0.5em');

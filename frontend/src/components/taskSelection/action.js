@@ -34,6 +34,7 @@ import { ResourcesTab } from './resourcesTab';
 import { ActionTabsNav } from './actionTabsNav';
 import { LockedTaskModalContent } from './lockedTasks';
 import { SessionAboutToExpire, SessionExpired } from './extendSession';
+import { MappingTypes } from '../mappingTypes';
 const Editor = React.lazy(() => import('../editor'));
 const RapiDEditor = React.lazy(() => import('../rapidEditor'));
 
@@ -91,8 +92,9 @@ export function TaskMapAction({
     project.projectId && tasksIds && tasksIds.length === 1,
   );
 
-  const contributors =
-    taskHistory?.taskHistory && getTaskContributors(taskHistory.taskHistory, userDetails.username);
+  const contributors = taskHistory?.taskHistory
+    ? getTaskContributors(taskHistory.taskHistory, userDetails.username)
+    : [];
 
   const readTaskComments = useReadTaskComments(taskHistory);
   const disableBadImagery = useDisableBadImagery(taskHistory);
@@ -148,9 +150,7 @@ export function TaskMapAction({
           ? [userDetails.defaultEditor]
           : project.mappingEditors;
       } else {
-        editorToUse = project.validationLockTimeExpiredDialogEditors.includes(
-          userDetails.defaultEditor,
-        )
+        editorToUse = project.validationEditors.includes(userDetails.defaultEditor)
           ? [userDetails.defaultEditor]
           : project.validationEditors;
       }
@@ -307,7 +307,8 @@ export function TaskMapAction({
                     <DueDateBox dueDate={timer} isTaskStatusPage intervalMili={60000} />
                   </div>
                 </div>
-                <div className="cf">
+                <MappingTypes types={project.mappingTypes} />
+                <div className="cf mt3">
                   <ActionTabsNav
                     activeSection={activeSection}
                     setActiveSection={setActiveSection}
@@ -332,11 +333,7 @@ export function TaskMapAction({
                           }
                           contributors={contributors}
                           historyTabSwitch={historyTabSwitch}
-                          taskInstructions={
-                            activeTasks && activeTasks.length === 1
-                              ? activeTasks[0].perTaskInstructions
-                              : null
-                          }
+                          taskInstructions={activeTasks && activeTasks[0].perTaskInstructions}
                           disabled={disabled}
                           taskComment={taskComment}
                           setTaskComment={setTaskComment}
@@ -348,11 +345,7 @@ export function TaskMapAction({
                         <CompletionTabForValidation
                           project={project}
                           tasksIds={tasksIds}
-                          taskInstructions={
-                            activeTasks && activeTasks.length === 1
-                              ? activeTasks[0].perTaskInstructions
-                              : null
-                          }
+                          taskInstructions={activeTasks && activeTasks[0].perTaskInstructions}
                           disabled={disabled}
                           contributors={contributors}
                           validationComments={validationComments}

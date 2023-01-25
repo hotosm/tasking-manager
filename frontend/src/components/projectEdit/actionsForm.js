@@ -13,6 +13,7 @@ import { DeleteModal } from '../deleteModal';
 import { styleClasses, StateContext } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useOnDrop } from '../../hooks/UseUploadImage';
+import { useFetch } from '../../hooks/UseFetch';
 import { useAsync } from '../../hooks/UseAsync';
 import FileRejections from '../comments/fileRejections';
 import DropzoneUploadStatus from '../comments/uploadStatus';
@@ -46,6 +47,10 @@ const ActionStatus = ({ status, action }) => {
     case 'RESET_ALL':
       successMessage = 'resetAllSuccess';
       errorMessage = 'resetAllError';
+      break;
+    case 'REVERT_VALIDATED_TASKS':
+      successMessage = 'revertValidatedTasksSuccess';
+      errorMessage = 'revertValidatedTasksError';
       break;
     case 'TRANSFER_PROJECT':
       successMessage = 'transferProjectSuccess';
@@ -361,6 +366,58 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
   );
 };
 
+const RevertValidatedTasks = ({ projectId }: Object) => {
+  const token = useSelector((state) => state.auth.token);
+  const [user, setUser] = useState(null);
+  const [, contributorsLoading, contributors] = useFetch(`projects/${projectId}/contributions/`);
+
+  // List only contributors who have validated some task
+  const curatedContributors = contributors.userContributions?.filter(
+    (contributor) => contributor.validated > 0,
+  );
+
+  const handleUsernameSelection = (e) => {
+    setUser(e);
+  };
+
+  const revertTasks = () => {
+    return pushToLocalJSONAPI(
+      `projects/${projectId}/tasks/actions/reset-validated-by-user/?username=${user.username}`,
+      null,
+      token,
+      'POST',
+    );
+  };
+
+  const revertTasksAsync = useAsync(revertTasks);
+
+  return (
+    <div>
+      <Select
+        classNamePrefix="react-select"
+        className="w-40 fl pr2 z-3"
+        getOptionLabel={({ username }) => username}
+        getOptionValue={({ username }) => username}
+        onChange={handleUsernameSelection}
+        value={user}
+        options={curatedContributors}
+        isLoading={contributorsLoading}
+      />
+      <Button
+        onClick={() => revertTasksAsync.execute()}
+        loading={revertTasksAsync.status === 'pending'}
+        disabled={revertTasksAsync.status === 'pending' || !user}
+        className={styleClasses.buttonClass}
+      >
+        <FormattedMessage {...messages.revertValidatedTasks} />
+      </Button>
+      <div className="pt1">
+        <ActionStatus status={revertTasksAsync.status} action="REVERT_VALIDATED_TASKS" />
+      </div>
+    </div>
+  );
+};
+
 const TransferProject = ({ projectId, orgId }: Object) => {
   const token = useSelector((state) => state.auth.token);
   const { projectInfo } = useContext(StateContext);
@@ -550,6 +607,16 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         >
           {(close) => <ResetBadImageryModal projectId={projectId} close={close} />}
         </Popup>
+      </div>
+
+      <div className={styleClasses.divClass}>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.revertValidatedTasksTitle} />
+        </label>
+        <p className={styleClasses.pClass}>
+          <FormattedMessage {...messages.revertValidatedTasksDescription} />
+        </p>
+        <RevertValidatedTasks projectId={projectId} />
       </div>
 
       <div className={styleClasses.divClass}>

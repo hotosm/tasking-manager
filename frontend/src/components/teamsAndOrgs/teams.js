@@ -99,8 +99,10 @@ export function Teams({ teams, viewAllQuery, showAddButton = false, isReady, bor
         {viewAllQuery && <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />}
         <div className="cards-container pt4">
           <ReactPlaceholder customPlaceholder={nCardPlaceholders(4)} delay={10} ready={isReady}>
-            {teams && teams.slice(0, 6).map((team, n) => <TeamCard team={team} key={n} />)}
-            {teams && teams.length === 0 && (
+            {teams?.slice(0, 6).map((team, n) => (
+              <TeamCard key={team.teamId} team={team} />
+            ))}
+            {teams?.length === 0 && (
               <span className="blue-grey">
                 <FormattedMessage {...messages.noTeamsFound} />
               </span>
@@ -193,8 +195,8 @@ export function TeamInformation(props) {
           <FormattedMessage {...messages.joinMethod} />
         </label>
         {Object.keys(joinMethods).map((method) => (
-          <div className="pv2">
-            <RadioField name="joinMethod" value={method} />
+          <div className="pv2" key={method}>
+            <RadioField name="joinMethod" value={method} required />
             <span className="f5">
               <FormattedMessage {...messages[joinMethods[method]]} />
             </span>
@@ -405,10 +407,10 @@ export function TeamsBoxList({ teams }: Object) {
   const mappingTeams = teams.filter((team) => team.role === 'MAPPER');
   const validationTeams = teams.filter((team) => team.role === 'VALIDATOR');
   return (
-    <>
+    <div className="flex flex-column flex-row-l gap-1">
       {mappingTeams.length > 0 && (
-        <>
-          <h4 className="mb2 fw6">
+        <div className="w-100 w-30-l">
+          <h4 className="mb1 fw6 mt0">
             <FormattedMessage {...messages.mappingTeams} />
           </h4>
           <div>
@@ -416,21 +418,19 @@ export function TeamsBoxList({ teams }: Object) {
               <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2 ba f6 tc" />
             ))}
           </div>
-        </>
+        </div>
       )}
       {validationTeams.length > 0 && (
-        <>
-          <h4 className="mb2 fw6">
+        <div className="w-100 w-30-l">
+          <h4 className="mb1 fw6 mt0">
             <FormattedMessage {...messages.validationTeams} />
           </h4>
-          <div>
-            {validationTeams.map((team) => (
-              <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2 ba f6 tc" />
-            ))}
-          </div>
-        </>
+          {validationTeams.map((team) => (
+            <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2 ba f6 tc" />
+          ))}
+        </div>
       )}
-    </>
+    </div>
   );
 }
 

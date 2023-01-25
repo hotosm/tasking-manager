@@ -1,10 +1,18 @@
-import React from 'react';
-import TestRenderer from 'react-test-renderer';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import TestRenderer from 'react-test-renderer';
+import userEvent from '@testing-library/user-event';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { FormattedMessage } from 'react-intl';
-import { createComponentWithIntl, ReduxIntlProviders } from '../../../utils/testWithIntl';
-import { TeamBox, TeamsBoxList, TeamsManagement } from '../teams';
+
+import {
+  createComponentWithIntl,
+  ReduxIntlProviders,
+  IntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
+import { TeamBox, TeamsBoxList, TeamsManagement, Teams, TeamCard } from '../teams';
+import { store } from '../../../store';
+import { teams } from '../../../network/tests/mockData/teams';
 
 const dummyTeams = [
   {
@@ -150,6 +158,26 @@ describe('TeamsManagement component', () => {
     expect(container.getElementsByClassName('show-loading-animation mb3')).toHaveLength(0);
   });
 
+  it('should render add button for organisation managers', () => {
+    act(() => {
+      store.dispatch({ type: 'SET_ORGANISATIONS', organisations: [2, 3] });
+    });
+    render(
+      <ReduxIntlProviders>
+        <TeamsManagement
+          userDetails={{ role: 'MAPPER' }}
+          managementView={true}
+          isTeamsFetched={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(
+      screen.getByRole('button', {
+        name: /new/i,
+      }),
+    ).toBeInTheDocument();
+  });
+
   it("should not render 'Manage teams' but render 'My teams' text for non management view", () => {
     render(
       <ReduxIntlProviders>
@@ -197,12 +225,17 @@ describe('TeamsManagement component', () => {
         <TeamsManagement
           teams={[]}
           userDetails={{ role: 'ADMIN' }}
-          managementView={true}
+          managementView={false}
           isTeamsFetched={true}
         />
       </ReduxIntlProviders>,
     );
     expect(screen.getByText(/No team found\./i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {
+        name: /my teams/i,
+      }),
+    ).toBeInTheDocument();
   });
 
   it('filters teams list by the search query', async () => {
@@ -230,5 +263,138 @@ describe('TeamsManagement component', () => {
     });
     expect(screen.queryByRole('heading', { name: 'My Best Team' })).not.toBeInTheDocument();
     expect(screen.queryByText('No team found.')).toBeInTheDocument();
+  });
+
+  it('should filter search query when the close icon button is clicked', async () => {
+    render(
+      <ReduxIntlProviders>
+        <TeamsManagement
+          teams={teams.teams}
+          userDetails={{ role: 'ADMIN' }}
+          managementView={true}
+          isTeamsFetched={true}
+        />
+      </ReduxIntlProviders>,
+    );
+
+    const textfield = screen.getByRole('textbox');
+    await userEvent.type(textfield, 'hot');
+    expect(textfield.value).toBe('hot');
+    const clearIcon = screen.getByLabelText('clear');
+    expect(clearIcon).toBeInTheDocument();
+    await userEvent.click(clearIcon);
+    expect(textfield.value).toBe('');
+  });
+});
+
+describe('Teams component', () => {
+  it('should display loading placeholder when API is being fetched', () => {
+    const { container } = render(
+      <IntlProviders>
+        <Teams teams={[]} isReady={false} viewAllQuery="/view/all" />
+      </IntlProviders>,
+    );
+    expect(container.getElementsByClassName('show-loading-animation')).toHaveLength(36);
+  });
+
+  it('should display component details and teams passed', () => {
+    render(
+      <IntlProviders>
+        <Teams isReady teams={dummyTeams} viewAllQuery="/view/all" showAddButton />
+      </IntlProviders>,
+    );
+    expect(screen.getByRole('heading', { name: /teams/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'View all' })).toBeInTheDocument();
+    expect(screen.getAllByRole('article').length).toBe(1);
+    expect(screen.getByRole('heading', { name: dummyTeams[0].name }));
+    expect(screen.getByRole('button', { name: /new/i })).toBeInTheDocument();
+  });
+
+  it('should navigate to project creation page on new button click', async () => {
+    const { history } = renderWithRouter(
+      <IntlProviders>
+        <Teams isReady teams={dummyTeams} viewAllQuery="/view/all" showAddButton />
+      </IntlProviders>,
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /new/i }));
+    await waitFor(() => expect(history.location.pathname).toBe('/manage/teams/new/'));
+  });
+
+  it('should display no teams found message', () => {
+    render(
+      <IntlProviders>
+        <Teams isReady teams={[]} viewAllQuery="/view/all" />
+      </IntlProviders>,
+    );
+    expect(screen.getByText(/No teams found./i)).toBeInTheDocument();
+  });
+
+  it('should navigate to manage projects page when view all is clicked ', async () => {
+    const { history } = renderWithRouter(
+      <IntlProviders>
+        <Teams isReady teams={[]} viewAllQuery="view/all" />
+      </IntlProviders>,
+    );
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByRole('link', {
+        name: /view all/i,
+      }),
+    );
+    await waitFor(() => expect(history.location.pathname).toBe('/manage/teams/view/all'));
+  });
+
+  it('should not display border and add button when props is false', () => {
+    const { container } = renderWithRouter(
+      <IntlProviders>
+        <Teams isReady teams={[]} viewAllQuery="view/all" border={false} showAddButton={false} />
+      </IntlProviders>,
+    );
+    expect(container.firstChild).not.toHaveClass('b--grey-light ba pa4');
+    expect(screen.queryByRole('button', { name: /new/i })).not.toBeInTheDocument();
+  });
+
+  it('should direct to teams management page when no query for view all link is provided', () => {
+    renderWithRouter(
+      <IntlProviders>
+        <Teams isReady teams={[]} border={false} />
+      </IntlProviders>,
+    );
+    expect(screen.queryByRole('link', { name: 'View all' })).not.toBeInTheDocument();
+  });
+});
+
+describe('Team Card', () => {
+  test('should render component details', () => {
+    const team = teams.teams[0];
+    render(
+      <IntlProviders>
+        <TeamCard team={team} />
+      </IntlProviders>,
+    );
+    expect(
+      screen.getByRole('link', {
+        name: /Organisation Name 123/i,
+      }),
+    ).toBeInTheDocument();
+    [team.name, /managers/i, /team members/i].forEach((heading) =>
+      expect(
+        screen.getByRole('heading', {
+          name: heading,
+        }),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      screen.getByRole('img', {
+        name: team.organisation,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', {
+        name: team.members[0].username,
+      }),
+    ).toBeInTheDocument();
+    ['Private', 'By invite'].forEach((text) => expect(screen.getByText(text)).toBeInTheDocument());
   });
 });

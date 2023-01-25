@@ -14,6 +14,8 @@ import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
+import './styles.scss';
+
 export const PostProjectComment = ({ projectId, updateComments, contributors }) => {
   const token = useSelector((state) => state.auth.token);
   const [comment, setComment] = useState('');
@@ -32,20 +34,24 @@ export const PostProjectComment = ({ projectId, updateComments, contributors }) 
   const saveCommentAsync = useAsync(saveComment);
 
   return (
-    <div className="w-90-ns w-100 cf pv4 bg-white center ph3">
+    <div className="w-100 cf mh4 pv4 bg-white center shadow-7 ba0 br1 post-comment-ctr">
       <div className="cf w-100 flex mb3">
         <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
-        <div className="cf pt3-ns ph3 ph3-m bg-grey-light dib">
+        <div className="pt3-ns ph3 ph3-m ml3 bg-grey-light dib">
           <span
             role="button"
-            className={`pointer db dib-ns ${!isShowPreview && 'bb b--blue-dark bw1 pb1'}`}
+            className={`pointer db dib-ns pb1 bb bw1 ${
+              !isShowPreview ? 'b--blue-dark' : 'b--grey-light'
+            }`}
             onClick={() => setIsShowPreview(false)}
           >
             <FormattedMessage {...messages.write} />
           </span>
           <span
             role="button"
-            className={`pointer ml3 db dib-ns ${isShowPreview && 'bb b--blue-dark bw1 pb1'}`}
+            className={`pointer ml3 db dib-ns pb1 bb bw1 ${
+              isShowPreview ? 'b--blue-dark' : 'b--grey-light'
+            }`}
             onClick={() => setIsShowPreview(true)}
           >
             <FormattedMessage {...messages.preview} />
@@ -80,7 +86,7 @@ export const PostProjectComment = ({ projectId, updateComments, contributors }) 
   );
 };
 
-export const QuestionsAndComments = ({ projectId, contributors }) => {
+export const QuestionsAndComments = ({ projectId, contributors, titleClass }) => {
   const token = useSelector((state) => state.auth.token);
   const [comments, setComments] = useState(null);
   const [page, setPage] = useState(1);
@@ -98,8 +104,11 @@ export const QuestionsAndComments = ({ projectId, contributors }) => {
   }, [page, projectId, token]);
 
   return (
-    <div className="bg-tan">
-      <div className="ph6-l ph4-m ph2 pb3 w-100 w-70-l">
+    <div className="bg-tan-dim">
+      <h3 className={titleClass}>
+        <FormattedMessage {...messages.questionsAndComments} />
+      </h3>
+      <div className="ph6-l ph4 pb5 w-100 w-70-l">
         {comments && comments.chat.length ? (
           <CommentList comments={comments.chat} />
         ) : (
@@ -113,7 +122,7 @@ export const QuestionsAndComments = ({ projectId, contributors }) => {
             activePage={page}
             setPageFn={handlePagination}
             lastPage={comments.pagination.pages}
-            className="tr w-90 center pv3"
+            className="tr w-100 center pv3 flex justify-end"
           />
         )}
         {token ? (
@@ -138,35 +147,35 @@ function CommentList({ comments }: Object) {
   return (
     <div className="pt3">
       {comments.map((comment, n) => (
-        <div className="w-90 center cf mb2 pa3 ba b--grey-light bg-white" key={n}>
-          <div className="cf db">
-            <div className="fl">
+        <div
+          className="w-100 center cf mb2 ba0 br1 b--grey-light bg-white shadow-7 comment-item"
+          key={n}
+        >
+          <div className="flex items-center">
+            <div className="">
               {comment.pictureUrl === null ? null : (
                 <UserAvatar
                   username={comment.username}
                   picture={comment.pictureUrl}
                   colorClasses="white bg-blue-grey"
+                  size="medium"
                 />
               )}
             </div>
-            <div className="fl ml3">
-              <p className="b ma0">
-                <a href={`/users/${comment.username}`} className="blue-dark b underline">
-                  {comment.username}
-                </a>
-              </p>
-              <span className="blue-grey f6">
+            <div className="ml2">
+              <a href={`/users/${comment.username}`} className="blue-dark fw5 link underline-hover">
+                {comment.username}
+              </a>
+              <p className="blue-grey f6 ma0">
                 <RelativeTimeWithUnit date={comment.timestamp} />
-              </span>
+              </p>
             </div>
           </div>
-          <div className="cf db">
-            <div
-              style={{ wordWrap: 'break-word' }}
-              className="blue-grey f5 lh-title markdown-content"
-              dangerouslySetInnerHTML={htmlFromMarkdown(formatUserNamesToLink(comment.message))}
-            />
-          </div>
+          <div
+            style={{ wordWrap: 'break-word' }}
+            className="blue-dark f5 lh-title markdown-content text-dim"
+            dangerouslySetInnerHTML={htmlFromMarkdown(formatUserNamesToLink(comment.message))}
+          />
         </div>
       ))}
     </div>

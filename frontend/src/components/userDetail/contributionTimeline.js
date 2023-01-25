@@ -10,7 +10,7 @@ const HeatmapLegend = () => {
   const legendFontStyle = 'ph2 f7 blue-grey ttc';
 
   return (
-    <div className="nt4-ns w-100 cf tr fr">
+    <div className="nt4-ns w-100 tr fr flex items-center justify-end">
       <span className={legendFontStyle}>
         <FormattedMessage {...messages.heatmapLegendLess} />
       </span>
@@ -59,7 +59,7 @@ export const ContributionTimeline = ({ userStats }) => {
   };
 
   return (
-    <div className="w-100 cf bg-white pv3 pr3 shadow-4">
+    <div className="w-100 cf bg-white pv3 pr3 shadow-6">
       <div className="w-100 fl cf center">
         <CalendarHeatmap
           startDate={shiftDate(today, -365)}

@@ -76,7 +76,8 @@ const RequiredIndicator = () => <span className="ml1 b red">*</span>;
 function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
   const intl = useIntl();
   const labelClasses = 'db pt3 pb2';
-  const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
+  const fieldClasses =
+    'blue-dark w-100 pv2 ph2 input-reset ba br1 b--grey-light bg-transparent lh-copy';
   const formFields = PROFILE_RELEVANT_FIELDS.concat(['selfDescriptionGender']);
   const [resendStatus, setResendStatus] = useState(null);
 
@@ -110,8 +111,8 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
   }
 
   return (
-    <div className="bg-white shadow-4 pa4 mb3">
-      <h3 className="f3 blue-dark mt0 fw6">
+    <div className="bg-white b--card ba br1 pa4 mb4">
+      <h3 className="blue-dark mt0 fw7 mb3">
         <FormattedMessage {...messages.personalInfo} />
       </h3>
       <Form
@@ -120,7 +121,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
         initialValues={userDetails}
         render={({ handleSubmit, pristine, submitting, hasValidationErrors }) => (
           <form onSubmit={handleSubmit} className="blue-grey">
-            <fieldset className="bn ph0" disabled={submitting || !userDetails.username}>
+            <fieldset className="bn ph0 pt0 mh0" disabled={submitting || !userDetails.username}>
               <div className="cf">
                 <label className={labelClasses}>
                   <FormattedMessage {...messages.name} />
@@ -157,11 +158,11 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                       />
                       {meta.error && meta.touched && <div className="mt1 red">{meta.error}</div>}
                       {userDetails.emailAddress && !userDetails.isEmailVerified && !meta.dirty && (
-                        <div className="mt1 red">
+                        <div className="mt2 red lh-base">
                           <FormattedMessage {...messages.emailConfirmationMsg} />
                           <span
                             onClick={resendEmail}
-                            className="ml2 ma0 pa0 link pointer red b underline f6"
+                            className="ml2 ma0 pa0 link pointer red b underline-hover"
                           >
                             <FormattedMessage {...messages.emailResend} />
                           </span>
@@ -248,8 +249,8 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
               <div className="pt2">
                 <FormSubmitButton
                   disabled={pristine || hasValidationErrors}
-                  className="bg-blue-dark white mh1 mv2"
-                  disabledClassName="bg-grey-light white mh1 mv2"
+                  className="bg-blue-dark white mv2"
+                  disabledClassName="bg-grey-light white mv2 settings-width"
                   loading={submitting}
                 >
                   <FormattedMessage {...messages.save} />
@@ -261,7 +262,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
             </fieldset>
           </form>
         )}
-      ></Form>
+      />
     </div>
   );
 }

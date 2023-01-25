@@ -32,9 +32,17 @@ export default defineMessages({
     id: 'comment.hashtags.help.author',
     defaultMessage: 'Add "{hashtag}" to notify the project author about your comment.',
   },
+  contributorsHashtagTip: {
+    id: 'comment.hashtags.help.contributors',
+    defaultMessage: 'Add "{hashtag}" to notify the task contributors about your comment.',
+  },
   nothingToPreview: {
     id: 'comment.preview.nothingToPreview',
     defaultMessage: 'Nothing to preview',
+  },
+  leaveAComment: {
+    id: 'comment.preview.leaveAComment',
+    defaultMessage: 'Leave a comment...',
   },
   attachImage: {
     id: 'comment.write.attachImage',

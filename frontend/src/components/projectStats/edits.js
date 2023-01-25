@@ -24,31 +24,27 @@ export const EditsStats = ({ data }) => {
         />
       </h3>
       <ReactTooltip place="top" className="mw6" effect="solid" />
-      <div className="cf db pb2">
+      <div className="db pb2 project-edit-stats">
         <StatsCard
           field={'changesets'}
           icon={<MappingIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...projectMessages.changesets} />}
           value={changesets || 0}
-          className={'w-25-l w-50-m w-100 mv1'}
         />
         <StatsCard
           icon={<EditIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...projectMessages.totalEdits} />}
           value={edits || 0}
-          className={'w-25-l w-50-m w-100 mv1'}
         />
         <StatsCard
           icon={<HomeIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...userDetailMessages.buildingsMapped} />}
           value={buildings || 0}
-          className={'w-25-l w-50-m w-100 mv1'}
         />
         <StatsCard
           icon={<RoadIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...userDetailMessages.roadMapped} />}
           value={roads || 0}
-          className={'w-25-l w-50-m w-100 mv1'}
         />
       </div>
     </div>

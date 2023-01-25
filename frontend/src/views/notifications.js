@@ -1,18 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { backendToQueryConversion, useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
-import useForceUpdate from '../hooks/UseForceUpdate';
 import { InboxNav, InboxNavMini, InboxNavMiniBottom } from '../components/notifications/inboxNav';
 import {
   NotificationResults,
   NotificationResultsMini,
 } from '../components/notifications/notificationResults';
-import { NotificationBodyModal } from '../components/notifications/notificationBodyCard';
-import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Login } from './login';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import Paginator from '../components/notifications/paginator';
+import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 
 function serializeParams(queryState) {
   const obj = remapParamsToAPI(queryState, backendToQueryConversion);
@@ -45,9 +43,10 @@ export const NotificationPopout = (props) => {
           minWidth: '390px',
           width: '390px',
           zIndex: '100',
+          filter: 'drop-shadow(0px 2px 24px rgba(0, 0, 0, 0.5))',
           ...popoutPosition,
         }}
-        className={`fr ${props.isPopoutFocus ? '' : 'dn '}br2 absolute shadow-2 bg-white`}
+        className={`fr ${props.isPopoutFocus ? '' : 'dn '}br2 absolute bg-white`}
       >
         <InboxNavMini
           newMsgCount={
@@ -60,6 +59,7 @@ export const NotificationPopout = (props) => {
           liveUnreadCount={props.liveUnreadCount}
           retryFn={props.forceUpdate}
           state={props.state}
+          setPopoutFocus={props.setPopoutFocus}
           className="tl"
         />
         <InboxNavMiniBottom
@@ -82,11 +82,20 @@ export const NotificationsPage = (props) => {
   useSetTitleTag('Notifications');
   const userToken = useSelector((state) => state.auth.token);
   const [inboxQuery, setInboxQuery] = useInboxQueryParams();
-  const [forceUpdated, forceUpdate] = useForceUpdate();
-  const [error, loading, notifications] = useFetch(
-    `notifications/?${serializeParams(inboxQuery)}`,
-    forceUpdated,
-  );
+  const [notifications, setNotifications] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchNotifications = () => {
+    return fetchLocalJSONAPI(`notifications/?${serializeParams(inboxQuery)}`, userToken)
+      .then((result) => setNotifications(result))
+      .catch((e) => setError(e));
+  };
+
+  useEffect(() => {
+    fetchNotifications().then(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inboxQuery]);
 
   if (!userToken) {
     return <Login redirectTo={window.location.pathname} />;
@@ -101,10 +110,10 @@ export const NotificationsPage = (props) => {
       <section>
         <InboxNav />
         <NotificationResults
-          retryFn={forceUpdate}
           error={error}
           loading={loading}
           notifications={notifications}
+          retryFn={fetchNotifications}
         />
         <div className="flex justify-end mw8">
           <Paginator
@@ -120,18 +129,4 @@ export const NotificationsPage = (props) => {
 
 export const NotificationPageIndex = () => {
   return null;
-};
-
-export const NotificationDetail = ({ id }) => {
-  const [thisNotificationError, thisNotificationLoading, thisNotification] = useFetch(
-    `notifications/${id}/`,
-  );
-
-  return (
-    <NotificationBodyModal
-      thisNotificationError={thisNotificationError}
-      thisNotificationLoading={thisNotificationLoading}
-      thisNotification={thisNotification}
-    />
-  );
 };

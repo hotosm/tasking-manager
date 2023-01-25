@@ -127,7 +127,6 @@ export const useTasksStatsQueryAPI = (
           if (result && result.headers && result.headers['content-type'].indexOf('json') !== -1) {
             dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
           } else {
-            console.error('Invalid return type for project search');
             dispatch({ type: 'FETCH_FAILURE' });
           }
         } else {
@@ -150,25 +149,16 @@ export const useTasksStatsQueryAPI = (
           const errorResPayload = Object.assign(defaultInitialData, { error: error.response });
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
-          console.log(
-            'Response failure',
-            error.response.data,
-            error.response.status,
-            error.response.headers,
-            errorResPayload,
-          );
           dispatch({ type: 'FETCH_FAILURE', payload: errorResPayload });
         } else if (!didCancel && error.request) {
           const errorReqPayload = Object.assign(defaultInitialData, { error: error.request });
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
           // http.ClientRequest in node.js
-          console.log('request failure', error.request, errorReqPayload);
           dispatch({ type: 'FETCH_FAILURE', payload: errorReqPayload });
         } else if (!didCancel) {
           dispatch({ type: 'FETCH_FAILURE' });
         } else {
-          console.log('tried to cancel on failure', cancel && cancel.params);
           cancel && cancel.end();
         }
       }
@@ -177,7 +167,6 @@ export const useTasksStatsQueryAPI = (
     fetchData();
     return () => {
       didCancel = true;
-      console.log('tried to cancel on effect cleanup ', cancel && cancel.params);
       cancel && cancel.end();
     };
   }, [throttledExternalQueryParamsState, forceUpdate, token, extraQuery]);

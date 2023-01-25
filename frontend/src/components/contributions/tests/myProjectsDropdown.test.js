@@ -1,34 +1,29 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { IntlProvider } from 'react-intl';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import selectEvent from 'react-select-event';
 
 import MyProjectsDropdown from '../myProjectsDropdown';
-import { store } from '../../../store';
+import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 
-it('displays placeholder and typed text on type', () => {
+it('displays placeholder and typed text on type', async () => {
+  const setQueryMock = jest.fn();
   render(
-    <Provider store={store}>
-      <IntlProvider locale="en">
-        <MyProjectsDropdown
-          allQueryParams={{
-            maxDate: undefined,
-            minDate: undefined,
-            orderBy: undefined,
-            page: undefined,
-            projectStatus: undefined,
-            status: undefined,
-            text: undefined,
-          }}
-        />
-      </IntlProvider>
-    </Provider>,
+    <ReduxIntlProviders>
+      <MyProjectsDropdown
+        allQueryParams={{
+          maxDate: undefined,
+          minDate: undefined,
+          orderBy: undefined,
+          page: undefined,
+          projectStatus: undefined,
+          status: undefined,
+          text: undefined,
+        }}
+        setQuery={setQueryMock}
+      />
+    </ReduxIntlProviders>,
   );
 
-  expect(screen.getByText(/Search by project id/i)).toBeInTheDocument();
-  const textfield = screen.getByRole('textbox');
-
-  // add test cases for textfield
-  fireEvent.change(textfield, { target: { value: '1234' } });
-  expect(textfield.value).toBe('1234');
+  await selectEvent.select(screen.getByRole('combobox'), '#8629');
+  expect(setQueryMock).toHaveBeenCalled();
 });

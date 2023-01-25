@@ -79,3 +79,75 @@ export const getProjectStats = (id) => ({
   timeToFinishMapping: 0,
   timeToFinishValidating: 0,
 });
+
+export const projects = {
+  mapResults: [],
+  results: [
+    {
+      projectId: 7935,
+      locale: 'en',
+      name: 'NRCS_Duduwa Mapping',
+      shortDescription:
+        'Nepal Red Cross society is mapping Duduwa Rural municipality under the Preparedness For Emergency Response  programme. The current Action is a continuation and consolidation of the previous two projects aiming at enhancing preparedness for emergency response through the development and establishment of national systems and mechanisms, in line with the new Federal structure and in the framework of the DRR/M Act (2074). \nThe Action is in line with the DG ECHO in terms of Preparedness for emergency response in the Western Parts.',
+      difficulty: 'EASY',
+      priority: 'MEDIUM',
+      organisationName: 'IFRC',
+      organisationLogo: 'https://dummyimage.com/600x400/000/fff',
+      campaigns: [{ id: 74, name: 'Banke Nepal' }],
+      percentMapped: 75,
+      percentValidated: 5,
+      status: 'PUBLISHED',
+      activeMappers: 0,
+      lastUpdated: '2020-05-01T11:03:43.689732Z',
+      dueDate: '2023-03-10T21:00:00.000000Z',
+      totalContributors: 50,
+      country: ['Nepal'],
+    },
+    {
+      projectId: 8006,
+      locale: 'en',
+      name: 'NRCS_Khajura Mapping',
+      shortDescription:
+        'Nepal Red Cross society is mapping Khajura Rural municipality under the Preparedness For Emergency Response  programme. The current Action is a continuation and consolidation of the previous two projects aiming at enhancing preparedness for emergency response through the development and establishment of national systems and mechanisms, in line with the new Federal structure and in the framework of the DRR/M Act (2074). \nThe Action is in line with the DG ECHO in terms of Preparedness for emergency response in the Western Parts.',
+      difficulty: 'EASY',
+      priority: 'MEDIUM',
+      organisationName: 'IFRC',
+      organisationLogo: null,
+      campaigns: [{ id: 74, name: 'Banke Nepal' }],
+      percentMapped: 87,
+      percentValidated: 0,
+      status: 'DRAFT',
+      activeMappers: 0,
+      lastUpdated: '2020-04-26T12:28:30.870191Z',
+      dueDate: null,
+      totalContributors: 79,
+      country: ['Nepal'],
+    },
+  ],
+  pagination: {
+    hasNext: false,
+    hasPrev: false,
+    nextNum: null,
+    page: 1,
+    pages: 1,
+    prevNum: null,
+    perPage: 14,
+    total: 2,
+  },
+};
+
+export const userTouchedProjects = {
+  mappedProjects: [
+    {
+      projectId: 8629,
+      name: 'tessttt',
+      tasksMapped: 1,
+      tasksValidated: 0,
+      status: 'DRAFT',
+      centroid: {
+        type: 'Point',
+        coordinates: [47.119799174, 14.300025921],
+      },
+    },
+  ],
+};

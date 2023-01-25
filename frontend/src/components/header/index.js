@@ -242,14 +242,14 @@ class Header extends React.Component {
         />
       </>
     ) : (
-      <div className="dib">
+      <>
         <LocaleSelector className="bn dn dib-66rem" />
         <AuthButtons
           logInStyle="blue-dark bg-white"
           signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
           redirectTo={this.props.location.pathname}
         />
-      </div>
+      </>
     );
   }
 
@@ -292,7 +292,7 @@ class Header extends React.Component {
           </div>
           <nav className="dn dib-l pl4-l pl6-xl pt1 mv1">{this.renderMenuItems()}</nav>
 
-          <div className="fr dib tr mb1">
+          <div className="fr dib tr mb1 flex items-center">
             {this.renderAuthenticationButtons()}
             <div className="dib v-mid dn-l">
               <Popup trigger={(open) => <BurgerMenu open={open} />} modal closeOnDocumentClick>

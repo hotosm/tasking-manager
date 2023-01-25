@@ -29,10 +29,7 @@ export const createLoginWindow = (redirectTo) => {
     // Perform token exchange.
 
     window.authComplete = (authCode, state) => {
-      const tokens = new URLSearchParams({
-        redirect_uri: OSM_REDIRECT_URI,
-      }).toString();
-      let callback_url = `system/authentication/callback/?${tokens}&code=${authCode}`;
+      let callback_url = `system/authentication/callback/?redirect_uri=${OSM_REDIRECT_URI}&code=${authCode}`;
       const emailAddress = safeStorage.getItem('email_address');
       if (emailAddress !== null) {
         callback_url += `&email_address=${emailAddress}`;

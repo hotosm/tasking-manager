@@ -5,7 +5,7 @@ from flask import current_app
 from enum import Enum
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.postgis.user import User
-from backend.models.postgis.task import Task
+from backend.models.postgis.task import Task, TaskHistory, TaskAction
 from backend.models.postgis.project import Project
 from backend.models.postgis.utils import timestamp, NotFound
 
@@ -118,6 +118,21 @@ class Message(db.Model):
                 .filter(Task.validated_by.isnot(None))
             )
         )
+        return contributors
+
+    @staticmethod
+    def get_all_tasks_contributors(project_id: int, task_id: int):
+        """ Get all contributors of a task """
+        contributors = (
+            TaskHistory.query.distinct(TaskHistory.user_id)
+            .filter(TaskHistory.project_id == project_id)
+            .filter(TaskHistory.task_id == task_id)
+            .filter(TaskHistory.action != TaskAction.COMMENT.name)
+            .all()
+        )
+        contributors = [
+            contributor.actioned_by.username for contributor in contributors
+        ]
         return contributors
 
     def mark_as_read(self):

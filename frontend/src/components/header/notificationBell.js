@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { TopNavLink } from './NavLink';
 import { BellIcon } from '../svgIcons';
 import { NotificationPopout } from '../../views/notifications';
-import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
+import { useFetchWithAbort, useFetchIntervaled } from '../../hooks/UseFetch';
 import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
 import useForceUpdate from '../../hooks/UseForceUpdate';
 import { useInboxQueryAPI } from '../../hooks/UseInboxQueryAPI';
@@ -27,7 +27,7 @@ export const NotificationBell = (props) => {
 
   const [isPopoutFocus, setPopoutFocus] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(false);
-  const [initialUnreadCountError, initialUnreadCountLoading, initialUnreadCount] = useFetch(
+  const [initialUnreadCountError, initialUnreadCountLoading, initialUnreadCount] = useFetchWithAbort(
     '/api/v2/notifications/queries/own/count-unread/',
     trigger,
   );

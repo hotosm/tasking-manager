@@ -264,6 +264,11 @@ export default defineMessages({
     defaultMessage:
       'This project is archived and read-only. You can view the project, but you cannot update tasks.',
   },
+  enforcedRandomTaskSelection: {
+    id: 'project.enforcedRandomTaskSelection',
+    defaultMessage:
+      "This project has enforced random task selection for mapping. When you click the 'Map a task' button, a random task will be presented for mapping.",
+  },
   changesetComment: {
     id: 'project.changesetComment',
     defaultMessage: 'Changeset comment',

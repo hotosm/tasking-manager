@@ -81,9 +81,7 @@ describe('CampaignsManagement component', () => {
         value: '2',
       },
     });
-    expect(screen.getByRole('heading', { name: 'Campaign 2' })).toHaveTextContent(
-      'Campaign 2',
-    );
+    expect(screen.getByRole('heading', { name: 'Campaign 2' })).toHaveTextContent('Campaign 2');
     fireEvent.change(textField, {
       target: {
         value: 'not 2',

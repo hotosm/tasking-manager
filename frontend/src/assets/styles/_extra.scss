@@ -134,6 +134,14 @@ html {
   width: 0.5rem;
 }
 
+.h-pill {
+  height: 0.625rem;
+}
+
+.h-pill-s {
+  height: 0.5rem;
+}
+
 /*
    Add shadow on hover, building on what is already in Tachyons
    adjust for the lighter shadow from design
@@ -161,20 +169,20 @@ a:active {
   background-color: $red; // @extend .bg-green;
 
   .checkbox-toggle {
-    left: 2rem; // @extend .left-2;
-    background-color: $white; // @extend .bg-moon-gray;
-    border-color: $red;
-  }
-
-  .checkbox-toggle-sm {
-    left: 1rem; // @extend .left-1;
-    background-color: $white; // @extend .bg-moon-gray;
-    border-color: $red;
+    left: calc(1.5rem + 0.125rem); // @extend .left-2;
   }
 }
 
-.checkbox-toggle:hover {
-  border: dashed red !important;
+.switch-ctr {
+  width: 3rem;
+  height: 1.5rem;
+
+  .switch-thumb {
+    width: 1.25rem;
+    height: 1.25rem;
+    left: 0.125rem;
+    top: 0.125rem;
+  }
 }
 
 .radio-input {
@@ -314,7 +322,7 @@ a[href="https://www.mapbox.com/map-feedback/"]
 .react-select {
   &__control {
     border-color: $grey-light !important;
-    min-height: 1.5rem !important;
+    min-height: 2.625rem !important;
     border-radius: 0.125rem !important;
 
     &--is-focused {
@@ -328,6 +336,11 @@ a[href="https://www.mapbox.com/map-feedback/"]
 
   &__placeholder {
     color: $blue-dark !important;
+    line-height: 1.71;
+  }
+
+  &__indicator-separator {
+    display: none;
   }
 
   &__option {
@@ -454,6 +467,8 @@ a[href="https://www.mapbox.com/map-feedback/"]
   align-self: flex-start;
 }
 
+// Box Shadow Overrides Starts
+
 .shadow-1 {
   box-shadow: 0px 4px 10px rgb(0 0 0 / 10%);
 }
@@ -464,6 +479,14 @@ a[href="https://www.mapbox.com/map-feedback/"]
 
 .shadow-3 {
   box-shadow: 0px 7px 64px rgba(0, 0, 0, 0.07);
+}
+
+.shadow-6 {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-7 {
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.138162);
 }
 
 .w-md-editor {
@@ -477,4 +500,114 @@ a[href="https://www.mapbox.com/map-feedback/"]
 
 .task-list:hover {
   box-shadow: 0px 7px 20px rgba(0, 0, 0, 0.08);
+}
+
+.project-edit-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+
+  @media screen and (max-width: 60em) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (max-width: 30em) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+// Styles for reactjs-popup
+.popup-overlay {
+  background: rgba(44, 48, 56, 0.7);
+}
+
+.popup-content {
+  font-family: 'Archivo', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  max-height: calc(100vh - 10em);
+  overflow-y: auto;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.105469), 0px 15px 14px rgba(0, 0, 0, 0.270041),
+    0px 34px 24px rgba(0, 0, 0, 0.37534);
+  padding: 0 !important;
+}
+
+.lh-base {
+  line-height: 1.4;
+}
+
+.interest-cards-ctr {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  row-gap: 1.25rem;
+  column-gap: 1rem;
+
+  @media screen and (max-width: 60em) {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 1rem;
+  }
+
+  @media screen and (max-width: 30em) {
+    grid-template-columns: repeat(1, 1fr);
+    row-gap: 0.5rem;
+  }
+}
+
+.interest-card {
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  place-items: center;
+
+  @media screen and (max-width: 30em) {
+    padding: 0.875rem 1rem;
+  }
+}
+
+.text-break {
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
+
+.settings-width {
+  width: 8.75rem;
+
+  @media screen and (max-width: 30em) {
+    width: 100%;
+  }
+}
+
+.break-all-word {
+  word-break: break-all;
+}
+
+.username-heading {
+  font-size: 2.5rem;
+  letter-spacing: 1.25px;
+
+  @media screen and (max-width: 30em) {
+    font-size: 1.5rem;
+    letter-spacing: normal;
+  }
+}
+
+.user-picture-medium {
+  height: 2.5rem;
+  width: 2.5rem;
+}
+
+.bg-tan-dim {
+  background-color: rgba($tan, 0.6);
+}
+
+.text-dim {
+  color: rgba($blue-dark, 0.9);
+}
+
+.gap-1 {
+  gap: 1rem;
+}
+
+// Imported from HOTOSM site to use for long texts
+.blue-dark-abbey {
+  color: #4c4f56;
 }

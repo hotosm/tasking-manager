@@ -12,10 +12,10 @@ import { BigProjectTeaser } from './bigProjectTeaser';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 
 const ProjectDetailTypeBar = (props) => {
-  const titleClasses = 'db ttu f6 blue-light mb2';
+  const titleClasses = 'db ttu f7 blue-grey mb2 fw5';
   return (
     <div className="cf">
-      <div className="w-50-ns w-70 fl">
+      <div className="w-50-ns w-100 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.typesOfMapping} />
         </h3>
@@ -23,7 +23,7 @@ const ProjectDetailTypeBar = (props) => {
           <MappingTypes types={props.mappingTypes} />
         </div>
       </div>
-      <div className="w-50-ns w-30 fl">
+      <div className="w-50-ns w-100 fl mt3 mt0-ns">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.imagery} />
         </h3>
@@ -54,12 +54,11 @@ export function ProjectInfoPanel({ project, tasks, contributors, type }: Object)
           className="pt3"
           totalContributors={contributors.length}
           lastUpdated={project.lastUpdated}
-          littleFont="f5"
-          bigFont="f4"
         />
       </ReactPlaceholder>
       <ProjectProgressBar
-        className="pb2 bg-white"
+        small={false}
+        className="pb3 bg-white"
         percentMapped={percentMapped}
         percentValidated={percentValidated}
         percentBadImagery={percentBadImagery}

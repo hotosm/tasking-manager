@@ -175,9 +175,7 @@ export class _Dropdown extends React.PureComponent {
           onClick={this.toggleDropdown}
           className={`blue-dark ${this.props.className || ''}`}
         >
-          <p className="lh-title dib ma0 f6">
-            {this.getActiveOrDisplay()}
-          </p>
+          <div className="lh-title dib ma0 f6">{this.getActiveOrDisplay()}</div>
           <ChevronDownIcon style={{ width: '11px', height: '11px' }} className="pl3 v-mid pr1" />
         </CustomButton>
         {this.state.display && (

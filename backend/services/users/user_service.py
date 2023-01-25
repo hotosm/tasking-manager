@@ -650,7 +650,7 @@ class UserService:
         len_projs = len(projs)
         if len_projs < limit:
             remaining_projs = (
-                query.filter(Project.mapper_level == user.mapping_level)
+                query.filter(Project.difficulty == user.mapping_level)
                 .limit(limit - len_projs)
                 .all()
             )

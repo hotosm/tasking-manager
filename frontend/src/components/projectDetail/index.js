@@ -21,6 +21,9 @@ import { OSMChaButton } from './osmchaButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useFetch } from '../../hooks/UseFetch';
 
+import './styles.scss';
+import { useWindowSize } from '../../hooks/UseWindowSize';
+
 /* lazy imports must be last import */
 const ProjectTimeline = React.lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
 
@@ -37,14 +40,14 @@ const ProjectDetailMap = (props) => {
       },
     ],
   };
-  
+
   const centroidGeoJSON = props.project.areaOfInterest && {
     type: 'FeatureCollection',
     features: [centroid(props.project.areaOfInterest)],
   };
-  
+
   return (
-    <div className="relative">
+    <div className="relative w-100 h-100">
       {
         /* It disturbs layout otherwise */
         /* eslint-disable-next-line */
@@ -61,10 +64,16 @@ const ProjectDetailMap = (props) => {
         type={props.type}
         error={props.tasksError}
         loading={props.projectLoading}
-        className="dib w-100 fl vh-75"
+        className="w-100 vh-75 h-100-l"
       />
       {taskBordersOnly && supported() && (
-        <div className="cf left-1 top-1 absolute">
+        <div
+          className="cf left-1 top-1 absolute zoom-to-task"
+          style={{
+            filter: 'drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.1))',
+            letterSpacing: '2.69538px',
+          }}
+        >
           <div className="cf ttu bg-white barlow-condensed f4 pv2">
             <span onClick={(e) => setTaskBordersOnly(false)} className="pb2 mh2 pointer ph2">
               <FormattedMessage {...messages.zoomToTasks} />
@@ -81,45 +90,41 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
     project.projectInfo && htmlFromMarkdown(project.projectInfo.shortDescription);
 
   return (
-    <div className={`${className}`}>
-      <div className="h-75 z-1">
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          rows={10}
-          delay={500}
-          ready={typeof project.projectId === 'number'}
-        >
-          <ProjectHeader project={project} showEditLink={true} />
-          <section className="lh-title h-100-ns h5 overflow-x-scroll">
-            <div className="pr2 markdown-content" dangerouslySetInnerHTML={htmlShortDescription} />
-            <div>
-              <a href="#description" className="link base-font bg-white f6 bn pn red pointer">
-                <span className="pr2 ttu f6 fw6">
-                  <FormattedMessage {...messages.readMore} />
-                </span>
-              </a>
-            </div>
-          </section>
-        </ReactPlaceholder>
-      </div>
-
-      <div
-        className="cf ph4-l ph2 pb3 w-100 h-25 z-2 absolute bottom-0 left-0 bg-white"
-        style={{ minHeight: '10rem' }}
+    <div className={`${className} flex flex-column`}>
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        rows={10}
+        delay={500}
+        ready={typeof project.projectId === 'number'}
       >
-        <ProjectInfoPanel
-          project={project}
-          tasks={project.tasks}
-          contributors={contributors}
-          type={type}
-        />
-      </div>
+        <ProjectHeader project={project} showEditLink={true} />
+        <section className="lh-title h5 overflow-y-auto mt3 mb3" style={{ flexGrow: 1 }}>
+          <div
+            className="pr2 blue-dark-abbey markdown-content"
+            dangerouslySetInnerHTML={htmlShortDescription}
+          />
+          <div>
+            <a href="#description" className="link base-font bg-white f6 bn pn red pointer">
+              <span className="pr2 ttu f6 fw6">
+                <FormattedMessage {...messages.readMore} />
+              </span>
+            </a>
+          </div>
+        </section>
+      </ReactPlaceholder>
+      <ProjectInfoPanel
+        project={project}
+        tasks={project.tasks}
+        contributors={contributors}
+        type={type}
+      />
     </div>
   );
 };
 
 export const ProjectDetail = (props) => {
   useSetProjectPageTitleTag(props.project);
+  const size = useWindowSize();
   /* eslint-disable-next-line */
   const [visualError, visualLoading, visualData] = useFetch(
     `projects/${props.project.projectId}/contributions/queries/day/`,
@@ -133,7 +138,7 @@ export const ProjectDetail = (props) => {
 
   const htmlDescription =
     props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
-  const h2Classes = 'pl4 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark';
+  const h2Classes = 'pl4 f3 f2-ns fw5 mt2 mb3 mb4-ns ttu barlow-condensed blue-dark';
   const userLink = (
     <Link to={`/users/${props.project.author}`} className="link blue-dark underline">
       {props.project.author}
@@ -141,30 +146,27 @@ export const ProjectDetail = (props) => {
   );
 
   return (
-    <div className={`${props.className || 'bg-white blue-dark'}`}>
-      <div className="bb b--grey-light">
-        <div className="cf">
-          <ProjectDetailLeft
-            project={props.project}
-            contributors={
-              contributors.hasOwnProperty('userContributions') ? contributors.userContributions : []
-            }
-            type="detail"
-            className="w-100 w-60-l fl ph4-l ph2 pv3 bg-white blue-dark vh-minus-200-ns relative"
-          />
-          <div className="w-100 w-40-l vh-minus-200-ns fl">
-            <ReactPlaceholder
-              showLoadingAnimation={true}
-              type={'media'}
-              rows={26}
-              delay={200}
-              ready={typeof props.project.projectId === 'number'}
-            >
-              <ProjectDetailMap {...props} />
-            </ReactPlaceholder>
-          </div>
+    <div className={`${props.className || 'blue-dark'}`}>
+      <div className="db flex-l tasks-map-height">
+        <ProjectDetailLeft
+          className="w-100 w-60-l ph4 ph2 pv3 blue-dark"
+          project={props.project}
+          contributors={
+            contributors.hasOwnProperty('userContributions') ? contributors.userContributions : []
+          }
+          type="detail"
+        />
+        <div className="w-100 w-40-l">
+          <ReactPlaceholder
+            showLoadingAnimation={true}
+            type={'media'}
+            rows={26}
+            delay={200}
+            ready={typeof props.project.projectId === 'number'}
+          >
+            <ProjectDetailMap {...props} />
+          </ReactPlaceholder>
         </div>
-        <ProjectDetailFooter projectId={props.project.projectId} />
       </div>
 
       <a href="#description" style={{ visibility: 'hidden' }} name="description">
@@ -174,7 +176,7 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.description} />
       </h3>
       <div
-        className="pv2 ph4 w-60-l w-80-m w-100 lh-title markdown-content"
+        className="ph4 w-60-l w-80-m w-100 lh-title markdown-content blue-dark-abbey"
         dangerouslySetInnerHTML={htmlDescription}
       />
       <a href="#coordination" style={{ visibility: 'hidden' }} name="coordination">
@@ -183,10 +185,10 @@ export const ProjectDetail = (props) => {
       <h3 className={`${h2Classes}`}>
         <FormattedMessage {...messages.coordination} />
       </h3>
-      <div className="cf db mb3 ph4">
+      <div className="db mb3 ph4 blue-dark-abbey">
         {props.project.organisationName && (
           <>
-            <p>
+            <p className="ma0">
               <FormattedMessage
                 {...messages.projectCoordination}
                 values={{
@@ -228,37 +230,40 @@ export const ProjectDetail = (props) => {
       <h3 className={`${h2Classes}`}>
         <FormattedMessage {...messages.teamsAndPermissions} />
       </h3>
-      <div className="ph4 mb3 cf db">
-        <div className="w-100 w-30-l fl pr3">
-          <h4 className="mb2 fw6">
-            <FormattedMessage {...messages.whoCanMap} />
-          </h4>
-          <PermissionBox
-            permission={props.project.mappingPermission}
-            className="dib pv2 ph3 mt2 red"
-          />
-          <h4 className="mb2 fw6">
-            <FormattedMessage {...messages.whoCanValidate} />
-          </h4>
-          <PermissionBox
-            permission={props.project.validationPermission}
-            validation
-            className="dib pv2 ph3 mt2 red"
-          />
+      <div className="ph4 mb3 db">
+        <div className=" flex flex-column flex-row-l gap-1">
+          <div className="w-100 w-30-l">
+            <h4 className="mb2 mt0 fw6">
+              <FormattedMessage {...messages.whoCanMap} />
+            </h4>
+            <PermissionBox
+              permission={props.project.mappingPermission}
+              className="dib pv2 ph3 red"
+            />
+          </div>
+          <div className="w-100 w-30-l">
+            <h4 className="mb2 mt0 fw6">
+              <FormattedMessage {...messages.whoCanValidate} />
+            </h4>
+            <PermissionBox
+              permission={props.project.validationPermission}
+              validation
+              className="dib pv2 ph3 red"
+            />
+          </div>
         </div>
-        <div className="w-100 w-70-l fl">
+        <div className="mt3">
           {props.project.teams && <TeamsBoxList teams={props.project.teams} />}
         </div>
       </div>
-
       <a href="#questionsAndComments" style={{ visibility: 'hidden' }} name="questionsAndComments">
         <FormattedMessage {...messages.questionsAndComments} />
       </a>
-      <h3 className={`${h2Classes} mv0 pv4 bg-tan`}>
-        <FormattedMessage {...messages.questionsAndComments} />
-      </h3>
-      <QuestionsAndComments projectId={props.project.projectId} contributors={contributors} />
-
+      <QuestionsAndComments
+        projectId={props.project.projectId}
+        contributors={contributors}
+        titleClass={`${h2Classes} mv0 pt5`}
+      />
       <a href="#contributions" name="contributions" style={{ visibility: 'hidden' }}>
         <FormattedMessage {...messages.contributors} />
       </a>
@@ -275,10 +280,10 @@ export const ProjectDetail = (props) => {
         >
           {contributors && (
             <UserAvatarList
-              size="large"
+              size={'large'}
               textColor="white"
               users={contributors.userContributions}
-              maxLength={15}
+              maxLength={parseInt(size[0] / 75) > 12 ? 12 : parseInt(size[0] / 75)}
             />
           )}
         </ReactPlaceholder>
@@ -310,27 +315,28 @@ export const ProjectDetail = (props) => {
           style={{ width: 150, height: 30 }}
           ready={typeof props.project === 'object'}
         >
-          <Link to={`/projects/${props.project.projectId}/stats`} className="link pr2">
-            <CustomButton className="bg-red white bn pa3">
-              <FormattedMessage {...messages.moreStats} />
-            </CustomButton>
-          </Link>
-          <span className="ph2">
+          <div className="flex gap-1 nowrap flex-wrap">
+            <Link to={`/projects/${props.project.projectId}/stats`} className="link">
+              <CustomButton className="bg-red white bn pa3">
+                <FormattedMessage {...messages.moreStats} />
+              </CustomButton>
+            </Link>
             <OSMChaButton
               project={props.project}
               className="bg-white blue-dark ba b--grey-light pa3"
             />
-          </span>
-          <DownloadAOIButton
-            projectId={props.project.projectId}
-            className="bg-white blue-dark ba b--grey-light pa3"
-          />
-          <DownloadTaskGridButton
-            projectId={props.project.projectId}
-            className="bg-white blue-dark ba b--grey-light pa3"
-          />
+            <DownloadAOIButton
+              projectId={props.project.projectId}
+              className="bg-white blue-dark ba b--grey-light pa3"
+            />
+            <DownloadTaskGridButton
+              projectId={props.project.projectId}
+              className="bg-white blue-dark ba b--grey-light pa3"
+            />
+          </div>
         </ReactPlaceholder>
       </div>
+      <ProjectDetailFooter projectId={props.project.projectId} />
     </div>
   );
 };

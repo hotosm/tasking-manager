@@ -9,7 +9,7 @@ import { formatCountryList } from '../utils/countries';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { CheckIcon, SearchIcon, CloseIcon } from './svgIcons';
 
-export const RadioField = ({ name, value, className }: Object) => (
+export const RadioField = ({ name, value, className, required = false }: Object) => (
   <Field
     name={name}
     component="input"
@@ -18,6 +18,7 @@ export const RadioField = ({ name, value, className }: Object) => (
     className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light ${
       className || ''
     }`}
+    required={required}
   />
 );
 
@@ -37,18 +38,8 @@ export const SwitchToggle = ({
         checked={isChecked}
         onChange={onChange}
       />
-      <div
-        className={`relative z-1 dib ${
-          small ? 'w2 h1' : 'w3 h2'
-        } bg-blue-grey overflow-hidden br4 v-mid bg-animate checkbox-wrapper`}
-      >
-        <div
-          className={`absolute right-auto left-0 ${
-            small ? 'w1 h1' : 'w2 h2'
-          } br4 bg-white ba b-grey-light shadow-4 t-cb bg-animate ${
-            small ? 'checkbox-toggle-sm' : 'checkbox-toggle'
-          }`}
-        ></div>
+      <div className="relative z-1 dib bg-blue-light overflow-hidden br4 v-mid bg-animate checkbox-wrapper switch-ctr">
+        <div className="absolute switch-thumb br4 bg-white t-cb bg-animate checkbox-toggle" />
       </div>
     </div>
     {label && labelPosition === 'right' && <span className="di ml2 f6">{label}</span>}
@@ -195,22 +186,22 @@ export const SelectAll = ({ selected, setSelected, allItems, className }) => {
 };
 
 export const InterestsList = ({ interests, field, changeSelect }) => (
-  <ul className="list w-100 pa0 flex flex-wrap">
-    {interests.map((i) => (
-      <li
-        onClick={() => changeSelect(i.id)}
+  <div className="w-100 pa0 interest-cards-ctr">
+    {interests.map((interest) => (
+      <article
+        key={interest.id}
+        onClick={() => changeSelect(interest.id)}
         className={`${
-          i[field] === true ? 'b--blue-dark bw1' : 'b--grey-light'
-        } bg-white w-30-ns w-100 ba pa3 f6 tc mb2 mr3 relative ttc pointer`}
-        key={i.id}
+          interest[field] === true ? 'b--red bw1 blue-dark' : 'b--grey-light blue-grey'
+        } bg-white ba br1 tc relative ttc pointer text-break lh-base interest-card `}
       >
-        {i.name}
-        {i[field] === true && (
-          <CheckIcon className="f7 pa1 br-100 bg-black white absolute right-0 top-0" />
+        {interest.name}
+        {interest[field] === true && (
+          <CheckIcon className="f7 pa1 br-100 bg-red white absolute right-0 top-0" />
         )}
-      </li>
+      </article>
     ))}
-  </ul>
+  </div>
 );
 
 // Used as a generic search box for input fields in the management section
@@ -249,6 +240,8 @@ export const TextField = ({ value, placeholderMsg, onChange, onCloseIconClick })
               />
               <CloseIcon
                 onClick={onCloseIconClick}
+                role="button"
+                aria-label="clear"
                 className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 red ${
                   !value ? 'pr2 right-0 dn ' : 'pr2 right-0'
                 }`}

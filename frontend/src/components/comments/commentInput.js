@@ -7,7 +7,7 @@ import { useDropzone } from 'react-dropzone';
 
 import 'tributejs/tribute.css';
 
-import { useOnDrop } from '../../hooks/UseUploadImage';
+import { useOnDrop, useUploadImage } from '../../hooks/UseUploadImage';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import HashtagPaste from './hashtagPaste';
 import FileRejections from './fileRejections';
@@ -25,6 +25,7 @@ export const CommentInputField = ({
   autoFocus,
   isShowPreview = false,
   isProjectDetailCommentSection = false,
+  enableContributorsHashtag = false,
 }: Object) => {
   const token = useSelector((state) => state.auth.token);
   const textareaRef = useRef();
@@ -36,6 +37,7 @@ export const CommentInputField = ({
     onDrop,
     ...DROPZONE_SETTINGS,
   });
+  const [fileuploadError, fileuploading, uploadImg] = useUploadImage();
 
   const tribute = new Tribute({
     trigger: '@',
@@ -54,6 +56,7 @@ export const CommentInputField = ({
     itemClass: 'w-100 pv2 ph3 bg-tan hover-bg-blue-grey blue-grey hover-white pointer base-font',
     requireLeadingSpace: true,
     noMatchTemplate: null,
+    allowSpaces: true,
     searchOpts: {
       skip: true,
     },
@@ -71,21 +74,40 @@ export const CommentInputField = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textareaRef.current, contributors]);
 
+  const handleImagePick = async (event) =>
+    await uploadImg(event.target.files[0], appendImgToComment, token);
+
   return (
     <div {...getRootProps()}>
-      <div className={`${isShowPreview ? 'dn' : ''}`}>
-        <MDEditor
-          ref={textareaRef}
-          preview="edit"
-          commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
-          extraCommands={[]}
-          height={200}
-          value={comment}
-          onChange={setComment}
-          textareaProps={getInputProps}
+      <div className={`${isShowPreview ? 'dn' : ''}`} data-color-mode="light">
+        <FormattedMessage {...messages.leaveAComment}>
+          {(val) => (
+            <MDEditor
+              ref={textareaRef}
+              preview="edit"
+              commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
+              extraCommands={[]}
+              height={200}
+              value={comment}
+              onChange={setComment}
+              textareaProps={{
+                ...getInputProps(),
+                spellCheck: 'true',
+                placeholder: val,
+              }}
+              defaultTabEnable
+            />
+          )}
+        </FormattedMessage>
+        <input
+          type="file"
+          id="image_picker"
+          className="dn"
+          accept="image/*"
+          onChange={handleImagePick}
         />
         {isProjectDetailCommentSection && (
-          <div className="flex justify-between ba bt-0 w-100 ph2 pv1 relative b--blue-grey textareaDetail">
+          <div className="dn flex-ns justify-between ba bt-0 w-100 ph2 pv1 relative b--blue-grey textareaDetail">
             <span className="f7 lh-copy gray">
               <FormattedMessage {...messages.attachImage} />
             </span>
@@ -116,9 +138,18 @@ export const CommentInputField = ({
           <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
           <span>, </span>
           <HashtagPaste text={comment} setFn={setComment} hashtag="#author" />
+          {enableContributorsHashtag && (
+            <>
+              <span>, </span>
+              <HashtagPaste text={comment} setFn={setComment} hashtag="#contributors" />
+            </>
+          )}
         </span>
       )}
-      <DropzoneUploadStatus uploading={uploading} uploadError={uploadError} />
+      <DropzoneUploadStatus
+        uploading={uploading || fileuploading}
+        uploadError={uploadError || fileuploadError}
+      />
       <FileRejections files={fileRejections} />
     </div>
   );

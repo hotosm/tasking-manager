@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
@@ -38,7 +38,7 @@ describe('ProjectsAOILayerCheckBox', () => {
     expect(
       screen.getByText("Enable the visualization of the existing projects' areas of interest."),
     ).toBeInTheDocument();
-    userEvent.click(screen.getByRole('checkbox'));
+    fireEvent.click(screen.getByRole('checkbox'));
     expect(testFn).toHaveBeenCalled();
   });
 });

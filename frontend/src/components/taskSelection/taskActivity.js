@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { viewport } from '@mapbox/geo-viewport';
+import { viewport } from '@placemarkio/geo-viewport';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -52,8 +52,9 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
         <CommentInputField
           comment={comment}
           setComment={setComment}
-          enableHashtagPaste={true}
+          enableHashtagPaste
           contributors={contributors}
+          enableContributorsHashtag
         />
       </div>
       <div className="w-20 fr pt3 tr">
@@ -351,7 +352,7 @@ export const TaskActivity = ({
           </div>
         </div>
       </div>
-      <div className="blue-dark overflow-scroll vh-50">
+      <div className="blue-dark overflow-y-auto vh-50">
         <TaskHistory
           projectId={project.projectId}
           taskId={taskId}

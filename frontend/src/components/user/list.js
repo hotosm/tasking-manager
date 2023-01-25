@@ -148,7 +148,7 @@ export const UsersTable = ({ filters, setFilters }) => {
   const [response, setResponse] = useState(null);
   const userDetails = useSelector((state) => state.auth.userDetails);
   const [status, setStatus] = useState({ status: null, message: '' });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {

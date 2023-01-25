@@ -23,7 +23,7 @@ const updateServiceWorker = (registration) => {
 export const UpdateDialog = () => {
   const location = useLocation();
   const [registration, setRegistration] = useState(null);
-  const [close, setClose] = useState(false);
+  const close = useState(false);
 
   const isMapOrValidationPage =
     location.pathname.startsWith('/projects/') &&
@@ -41,11 +41,11 @@ export const UpdateDialog = () => {
           <p className="mb3 mt2">
             <FormattedMessage {...messages.newVersionAvailable} />
           </p>
+          <p className="mb3 mt2">
+            <FormattedMessage {...messages.newVersionAvailableLineTwo} />
+          </p>
           <Button className="bg-red white" onClick={() => updateServiceWorker(registration)}>
             <FormattedMessage {...messages.update} />
-          </Button>
-          <Button className="bg-white blue-dark" onClick={() => setClose(true)}>
-            <FormattedMessage {...messages.remindMeLater} />
           </Button>
         </div>
       )}

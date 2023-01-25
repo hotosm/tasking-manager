@@ -1,10 +1,10 @@
 import React from 'react';
-import { useFetch } from '../../hooks/UseFetch';
+import { useFetchWithAbort } from '../../hooks/UseFetch';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import './styles.scss';
 
 function TopBanner() {
-  const [, error, data] = useFetch(`system/banner/`);
+  const [, error, data] = useFetchWithAbort(`system/banner/`);
 
   return (
     <>
