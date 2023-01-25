@@ -208,6 +208,7 @@ export const TagFilterPickerAutocomplete = ({
       options={tagOptions}
       value={selectedOption || null}
       isClearable={true}
+      isDisabled={fieldsetName === 'interests' && allQueryParams.basedOnMyInterests}
     />
   );
 };
