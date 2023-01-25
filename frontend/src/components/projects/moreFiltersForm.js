@@ -69,6 +69,7 @@ export const MoreFiltersForm = (props) => {
       fieldsetName: 'location',
       selectedTag: countryInQuery,
       options: countriesAPIState,
+      payloadKey: 'value',
     },
     {
       fieldsetName: 'interests',
