@@ -236,11 +236,14 @@ class ProjectSearchService:
             if not search_dto.created_by:
                 project_status_array = [ProjectStatus.PUBLISHED.value]
                 query = query.filter(Project.status.in_(project_status_array))
-        if search_dto.interests:
-            query = query.join(
-                project_interests, project_interests.c.project_id == Project.id
-            ).filter(project_interests.c.interest_id.in_(search_dto.interests))
-        if search_dto.based_on_user_interests:
+
+        if not search_dto.based_on_user_interests:
+            # Only filter by interests if not based on user interests is provided
+            if search_dto.interests:
+                query = query.join(
+                    project_interests, project_interests.c.project_id == Project.id
+                ).filter(project_interests.c.interest_id.in_(search_dto.interests))
+        else:
             user = UserService.get_user_by_id(search_dto.based_on_user_interests)
             query = query.join(
                 project_interests, project_interests.c.project_id == Project.id
