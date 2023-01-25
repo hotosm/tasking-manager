@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { useQueryParam, BooleanParam } from 'use-query-params';
 import { FormattedMessage } from 'react-intl';
@@ -15,6 +16,7 @@ import { formatFilterCountriesData } from '../../utils/countries';
 
 export const MoreFiltersForm = (props) => {
   /* one useQueryParams for the main form */
+  const isLoggedIn = useSelector((state) => state.auth.token);
   const [formQuery, setFormQuery] = useExploreProjectsQueryParams();
 
   const handleInputChange = (event) => {
@@ -91,19 +93,18 @@ export const MoreFiltersForm = (props) => {
       </fieldset>
 
       <fieldset id="mappingTypesExact" className="bn dib v-mid mb4">
-        {mappingTypesInQuery && mappingTypesInQuery.length ? (
+        {mappingTypesInQuery?.length && (
           <SwitchToggle
             label={<FormattedMessage {...messages.exactMatch} />}
             isChecked={Boolean(exactTypes)}
             onChange={() => setExactTypes(!exactTypes || undefined)}
             labelPosition="right"
           />
-        ) : (
-          <></>
         )}
       </fieldset>
       {extraFilters.map((filter) => (
         <ProjectFilterSelect
+          key={filter.fieldsetName}
           fieldsetName={filter.fieldsetName}
           selectedTag={filter.selectedTag}
           options={filter.options}
@@ -114,6 +115,25 @@ export const MoreFiltersForm = (props) => {
           allQueryParamsForChild={formQuery}
         />
       ))}
+      {isLoggedIn && (
+        <fieldset id="userInterestsToggle" className="bn dib v-mid mb4">
+          <SwitchToggle
+            label={<FormattedMessage {...messages.filterByMyInterests} />}
+            isChecked={Boolean(formQuery.basedOnMyInterests)}
+            onChange={({ target: { checked } }) =>
+              setFormQuery(
+                {
+                  ...formQuery,
+                  page: undefined,
+                  basedOnMyInterests: checked || undefined,
+                },
+                'pushIn',
+              )
+            }
+            labelPosition="right"
+          />
+        </fieldset>
+      )}
       <div className="tr w-100 mt3">
         <Link to="/explore">
           <Button className="bg-white blue-dark mr1 f6 pv2">

@@ -167,16 +167,16 @@ export const MoreFilters = (props) => {
   const currentUrl = `/explore${
     stringify(fullProjectsQuery) ? ['?', stringify(fullProjectsQuery)].join('') : ''
   }`;
+
   return (
     <>
       <div className="absolute left-0 z-4 mt1 w-40-l w-100 h-100 bg-white h4 ph1 ph5-l">
         <MoreFiltersForm currentUrl={currentUrl} />
-        {props.children}
       </div>
       <div
         onClick={() => props.navigate(currentUrl)}
         className="absolute right-0 z-4 br w-60-l w-0 h-100 bg-blue-dark o-70 h6"
-      ></div>
+      />
     </>
   );
 };

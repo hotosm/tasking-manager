@@ -132,6 +132,10 @@ export default defineMessages({
     id: 'project.navFilters.interests',
     defaultMessage: 'Interests',
   },
+  filterByMyInterests: {
+    id: 'project.navFilters.filterByMyInterests',
+    defaultMessage: 'Filter by my interests',
+  },
   errorLoadingTheXForY: {
     id: 'project.navFilters.error',
     defaultMessage: 'Error loading the {xWord} for {yWord}',
