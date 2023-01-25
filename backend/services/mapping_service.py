@@ -338,7 +338,15 @@ class MappingService:
             )
 
         current_state = TaskStatus(task.task_status)
-        undo_state = TaskHistory.get_last_status(project_id, task_id, True)
+        # Set the state to the previous state in the workflow
+        if current_state == TaskStatus.VALIDATED:
+            undo_state = TaskStatus.MAPPED
+        elif current_state == TaskStatus.BADIMAGERY:
+            undo_state = TaskStatus.READY
+        elif current_state == TaskStatus.MAPPED:
+            undo_state = TaskStatus.READY
+        else:
+            undo_state = TaskHistory.get_last_status(project_id, task_id, True)
 
         # Refer to last action for user of it.
         last_action = TaskHistory.get_last_action(project_id, task_id)
