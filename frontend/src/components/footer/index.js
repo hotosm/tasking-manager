@@ -11,7 +11,7 @@ import {
   ExternalLinkIcon,
 } from '../svgIcons';
 import messages from '../messages';
-import { getMenuItensForUser } from '../header';
+import { getMenuItemsForUser } from '../header';
 import {
   ORG_TWITTER,
   ORG_GITHUB,
@@ -64,7 +64,7 @@ export function Footer() {
             <FormattedMessage {...messages.definition} />
           </p>
           <div className="menuItems">
-            {getMenuItensForUser(userDetails).map((item) => (
+            {getMenuItemsForUser(userDetails).map((item) => (
               <Fragment key={item.label.id}>
                 {!item.serviceDesk ? (
                   <Link

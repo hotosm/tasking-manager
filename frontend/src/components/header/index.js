@@ -22,7 +22,7 @@ import { createLoginWindow } from '../../utils/login';
 import { NotificationBell } from './notificationBell';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
 
-function getMenuItensForUser(userDetails, organisations) {
+function getMenuItemsForUser(userDetails, organisations) {
   const menuItems = [
     { label: messages.exploreProjects, link: 'explore', showAlways: true },
     {
@@ -180,7 +180,7 @@ class Header extends React.Component {
   };
 
   renderMenuItems() {
-    let filteredMenuItems = getMenuItensForUser(this.props.userDetails, this.props.organisations);
+    let filteredMenuItems = getMenuItemsForUser(this.props.userDetails, this.props.organisations);
 
     return (
       <div className="v-mid">
@@ -300,7 +300,7 @@ class Header extends React.Component {
                   <div>
                     <PopupItems
                       userDetails={this.props.userDetails}
-                      menuItems={getMenuItensForUser(this.props.userDetails)}
+                      menuItems={getMenuItemsForUser(this.props.userDetails)}
                       linkCombo={this.linkCombo}
                       logout={this.props.logout}
                       location={this.props.location}
@@ -326,4 +326,4 @@ const mapStateToProps = (state) => ({
 
 Header = connect(mapStateToProps, { logout })(Header);
 
-export { Header, getMenuItensForUser, AuthButtons };
+export { Header, getMenuItemsForUser, AuthButtons };
