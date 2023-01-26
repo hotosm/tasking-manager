@@ -338,11 +338,7 @@ class StatsService:
                     split=r.split,
                     marked_bad_imagery=r.bad_imagery,
                     invalidated=r.invalidated,
-                    total=r.mapped
-                    + r.validated
-                    + r.bad_imagery
-                    + r.invalidated
-                    + r.split,
+                    total=r.total,
                     mapped_tasks=r.mapped_tasks if r.mapped_tasks is not None else [],
                     validated_tasks=r.validated_tasks
                     if r.validated_tasks is not None
