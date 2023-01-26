@@ -3,7 +3,15 @@ import { screen } from '@testing-library/react';
 
 import { Footer } from '..';
 import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
-import { ORG_PRIVACY_POLICY_URL } from '../../../config';
+import {
+  ORG_TWITTER,
+  ORG_GITHUB,
+  ORG_INSTAGRAM,
+  ORG_FB,
+  ORG_YOUTUBE,
+  ORG_PRIVACY_POLICY_URL,
+  SERVICE_DESK,
+} from '../../../config';
 import messages from '../../messages';
 
 describe('Footer', () => {
@@ -46,15 +54,72 @@ describe('Footer', () => {
         name: messages.privacyPolicy.defaultMessage,
       }),
     ).toBeInTheDocument();
-    // 5 social icons + 1 external link icon
-    expect(container.querySelectorAll('svg').length).toBe(6);
-    ['Twitter', 'Facebook', 'YouTube', 'Instagram', 'GitHub'].forEach((socialLabel) =>
+    let socialLinksCount = 0;
+    [
+      {
+        name: 'Twitter',
+        link: ORG_TWITTER,
+      },
+      {
+        name: 'GitHub',
+        link: ORG_GITHUB,
+      },
+      {
+        name: 'Instagram',
+        link: ORG_INSTAGRAM,
+      },
+      {
+        name: 'Facebook',
+        link: ORG_FB,
+      },
+      {
+        name: 'YouTube',
+        link: ORG_YOUTUBE,
+      },
+    ].forEach((social) => {
+      if (social.link) {
+        expect(
+          screen.getByRole('link', {
+            name: social.name,
+          }),
+        ).toHaveAttribute('href', social.link);
+        socialLinksCount += 1;
+      } else {
+        expect(
+          screen.queryByRole('link', {
+            name: social.name,
+          }),
+        ).not.toBeInTheDocument();
+      }
+    });
+    if (ORG_PRIVACY_POLICY_URL) {
       expect(
         screen.getByRole('link', {
-          name: socialLabel,
+          name: 'Privacy Policy',
         }),
-      ).toBeInTheDocument(),
-    );
+      ).toHaveAttribute('href', `https://${ORG_PRIVACY_POLICY_URL}`);
+    } else {
+      expect(
+        screen.queryByRole('link', {
+          name: 'Privacy Policy',
+        }),
+      ).not.toBeInTheDocument();
+    }
+    if (SERVICE_DESK) {
+      expect(
+        screen.getByRole('link', {
+          name: 'Support',
+        }),
+      ).toBeInTheDocument();
+      expect(container.querySelectorAll('svg').length).toBe(socialLinksCount + 1);
+    } else {
+      expect(
+        screen.queryByRole('link', {
+          name: 'Support',
+        }),
+      ).not.toBeInTheDocument();
+      expect(container.querySelectorAll('svg').length).toBe(socialLinksCount);
+    }
     expect(
       screen.getByRole('link', {
         name: messages.learn.defaultMessage,
