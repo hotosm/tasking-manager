@@ -68,13 +68,30 @@ export const CommentInputField = ({
 
   useEffect(() => {
     // Make sure the type of contributors is not an array until the attachment happens
+    const mentionIcon = document.getElementById('tribute-trigger');
     if (textareaRef.current.textarea && !isBundle.current && Array.isArray(contributors)) {
       isBundle.current = true;
       tribute.attach(textareaRef.current.textarea);
+      mentionIcon.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        tribute.showMenuForCollection(textareaRef.current.textarea, 0);
+      });
       textareaRef.current.textarea.addEventListener('tribute-replaced', (e) => {
         setComment(e.target.value);
       });
     }
+    // cleanup function
+    return () => {
+      mentionIcon.removeEventListener('mousedown', function (e) {
+        e.preventDefault();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        tribute.showMenuForCollection(textareaRef.current.textarea, 0);
+        // setComment((prev) => prev + e.target.value);
+      });
+      textareaRef.current.textarea.removeEventListener('tribute-replaced', (e) => {
+        setComment((prev) => prev + e.target.value);
+      });
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textareaRef.current, contributors]);
 

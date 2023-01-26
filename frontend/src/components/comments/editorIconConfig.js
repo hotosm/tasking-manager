@@ -79,7 +79,7 @@ export const iconConfig = {
     name: 'mention',
     keyCommand: 'mention',
     value: '@',
-    buttonProps: { 'aria-label': 'Mention user', title: 'Mention user' },
+    buttonProps: { 'aria-label': 'Mention user', title: 'Mention user', id: 'tribute-trigger' },
     icon: (
       <svg
         width={ICON_SIZE}
