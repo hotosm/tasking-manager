@@ -49,11 +49,6 @@ describe('Footer', () => {
         name: messages.credits.defaultMessage,
       }),
     ).toHaveAttribute('href', '/about');
-    expect(
-      screen.getByRole('link', {
-        name: messages.privacyPolicy.defaultMessage,
-      }),
-    ).toBeInTheDocument();
     let socialLinksCount = 0;
     [
       {
@@ -95,13 +90,13 @@ describe('Footer', () => {
     if (ORG_PRIVACY_POLICY_URL) {
       expect(
         screen.getByRole('link', {
-          name: 'Privacy Policy',
+          name: messages.privacyPolicy.defaultMessage,
         }),
       ).toHaveAttribute('href', `https://${ORG_PRIVACY_POLICY_URL}`);
     } else {
       expect(
         screen.queryByRole('link', {
-          name: 'Privacy Policy',
+          name: messages.privacyPolicy.defaultMessage,
         }),
       ).not.toBeInTheDocument();
     }

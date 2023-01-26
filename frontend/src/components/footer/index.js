@@ -110,11 +110,13 @@ export function Footer() {
             <Link to={'about'} className="link white">
               <FormattedMessage {...messages.credits} />
             </Link>
-            <div className="pt2 f6 lh-title">
-              <a href={`https://${ORG_PRIVACY_POLICY_URL}`} className="link white">
-                <FormattedMessage {...messages.privacyPolicy} />
-              </a>
-            </div>
+            {ORG_PRIVACY_POLICY_URL && (
+              <div className="pt2 f6 lh-title">
+                <a href={`https://${ORG_PRIVACY_POLICY_URL}`} className="link white">
+                  <FormattedMessage {...messages.privacyPolicy} />
+                </a>
+              </div>
+            )}
           </div>
           <div className="pt2 f6 mb2 w-50-l w-100 tl tr-l self-end flex flex-column items-start items-end-ns ">
             <p className="pb3 flex socials">
