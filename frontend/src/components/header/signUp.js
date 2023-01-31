@@ -171,16 +171,18 @@ const SignupForm = ({ data, setData, step, setStep }) => {
           {step.errMessage}
         </p>
       </div>
-      <p className="mb0 f6">
-        <a
-          className="link pointer red fw5"
-          target="_blank"
-          rel="noopener noreferrer"
-          href={`http://${ORG_PRIVACY_POLICY_URL}`}
-        >
-          <FormattedMessage {...messages.privacyPolicy} />
-        </a>
-      </p>
+      {ORG_PRIVACY_POLICY_URL && (
+        <p className="mb0 f6">
+          <a
+            className="link pointer red fw5"
+            target="_blank"
+            rel="noopener noreferrer"
+            href={`http://${ORG_PRIVACY_POLICY_URL}`}
+          >
+            <FormattedMessage {...messages.privacyPolicy} />
+          </a>
+        </p>
+      )}
       <div className="mt3 tr">
         <Button
           className="bg-red white"
