@@ -48,6 +48,8 @@ import { homepageStats } from './mockData/homepageStats';
 import { countries } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 import { API_URL } from '../../config';
+import { notifications, ownCountUnread } from './mockData/notifications';
+import { authLogin, setUser, userRegister } from './mockData/auth';
 
 const handlers = [
   rest.get(API_URL + 'projects/:id/queries/summary/', async (req, res, ctx) => {
@@ -76,8 +78,28 @@ const handlers = [
   rest.get(API_URL + 'projects/queries/:username/touched', async (req, res, ctx) => {
     return res(ctx.json(userTouchedProjects));
   }),
+  // AUTHENTICATION
+  rest.get(API_URL + 'system/authentication/login/', async (req, res, ctx) => {
+    return res(ctx.json(authLogin));
+  }),
+  rest.post(API_URL + 'users/actions/register/', async (req, res, ctx) => {
+    return res(ctx.json(userRegister));
+  }),
+  rest.patch(API_URL + 'users/me/actions/set-user/', async (req, res, ctx) => {
+    return res(ctx.json(setUser));
+  }),
+  // NOTIFICATIONS
+  rest.get(API_URL + 'notifications', async (req, res, ctx) => {
+    return res(ctx.json(notifications));
+  }),
+  rest.get(API_URL + 'notifications/queries/own/count-unread/', async (req, res, ctx) => {
+    return res(ctx.json(ownCountUnread));
+  }),
   rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
     return res(ctx.json({ Success: 'Message deleted' }));
+  }),
+  rest.post(API_URL + 'notifications/queries/own/post-unread/', async (req, res, ctx) => {
+    return res(ctx.json(null));
   }),
   // USER
   rest.get(API_URL + 'users/statistics/', async (req, res, ctx) => {

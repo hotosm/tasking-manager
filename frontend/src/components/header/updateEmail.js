@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -9,62 +9,62 @@ import { PROFILE_RELEVANT_FIELDS } from '../user/forms/personalInformation';
 import { ORG_PRIVACY_POLICY_URL } from '../../config';
 import { Button } from '../button';
 
-class UpdateEmail extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { email: '', success: false, details: '' };
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-  }
+export const UpdateEmail = ({ closeModal }) => {
+  const dispatch = useDispatch();
 
-  onChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
-  }
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
+  const [userState, setUserState] = useState({ email: '', success: false, details: '' });
 
-  onSubmit = (e) => {
+  const onChange = (e) => {
+    setUserState({ ...userState, [e.target.name]: e.target.value });
+  };
+
+  const onSubmit = (e) => {
     e.preventDefault();
-    let userData = this.props.userDetails;
-    userData.emailAddress = this.state.email;
-    this.props.updateUserEmail(userData, this.props.token, PROFILE_RELEVANT_FIELDS.concat(['id']));
-    this.setState({
+    let userData = userDetails;
+    userData.emailAddress = userState.email;
+    dispatch(updateUserEmail(userData, token, PROFILE_RELEVANT_FIELDS.concat(['id'])));
+    setUserState({
+      ...userState,
       success: true,
       details: <FormattedMessage {...messages.emailUpdateSuccess} />,
     });
-    this.props.closeModal();
+    closeModal();
   };
 
-  render() {
-    return (
-      <div className="tl pa4 bg-white">
-        <h1 className="pb2 ma0 barlow-condensed blue-dark">
-          <FormattedMessage {...messages.emailUpdateTitle} />
-        </h1>
-        <p className="blue-dark lh-copy">
-          <FormattedMessage {...messages.emailUpdateTextPart1} />
+  return (
+    <div className="tl pa4 bg-white">
+      <h1 className="pb2 ma0 barlow-condensed blue-dark">
+        <FormattedMessage {...messages.emailUpdateTitle} />
+      </h1>
+      <p className="blue-dark lh-copy">
+        <FormattedMessage {...messages.emailUpdateTextPart1} />
+      </p>
+      <p className="blue-dark lh-copy">
+        <FormattedMessage {...messages.emailUpdateTextPart2} />
+      </p>
+      <form onSubmit={onSubmit}>
+        <p>
+          <FormattedMessage {...messages.emailPlaceholder}>
+            {(msg) => {
+              return (
+                <input
+                  className="pa2 w-60-l w-100"
+                  type="email"
+                  name="email"
+                  placeholder={msg}
+                  onChange={onChange}
+                  value={userState.email}
+                />
+              );
+            }}
+          </FormattedMessage>
         </p>
-        <p className="blue-dark lh-copy">
-          <FormattedMessage {...messages.emailUpdateTextPart2} />
-        </p>
-        <form onSubmit={this.onSubmit}>
-          <p>
-            <FormattedMessage {...messages.emailPlaceholder}>
-              {(msg) => {
-                return (
-                  <input
-                    className="pa2 w-60-l w-100"
-                    type="email"
-                    name="email"
-                    placeholder={msg}
-                    onChange={this.onChange}
-                    value={this.state.email}
-                  />
-                );
-              }}
-            </FormattedMessage>
-          </p>
-          <Button className="bg-red white" type="submit">
-            <FormattedMessage {...messages.emailUpdateButton} />
-          </Button>
+        <Button className="bg-red white" type="submit">
+          <FormattedMessage {...messages.emailUpdateButton} />
+        </Button>
+        {ORG_PRIVACY_POLICY_URL && (
           <p className="mb0">
             <a
               className="link pointer red fw5"
@@ -75,23 +75,13 @@ class UpdateEmail extends Component {
               <FormattedMessage {...messages.privacyPolicy} />
             </a>
           </p>
-          <p className={this.state.details ? 'dib mb0' : 'dn'}>{this.state.details}</p>
-        </form>
-      </div>
-    );
-  }
-}
-
-const mapStateToProps = (state) => ({
-  userDetails: state.auth.userDetails,
-  token: state.auth.token,
-});
-
-UpdateEmail.propTypes = {
-  updateUserEmail: PropTypes.func.isRequired,
-  closeModal: PropTypes.func.isRequired,
+        )}
+        <p className={userState.details ? 'dib mb0' : 'dn'}>{userState.details}</p>
+      </form>
+    </div>
+  );
 };
 
-UpdateEmail = connect(mapStateToProps, { updateUserEmail })(UpdateEmail);
-
-export { UpdateEmail };
+UpdateEmail.propTypes = {
+  closeModal: PropTypes.func.isRequired,
+};

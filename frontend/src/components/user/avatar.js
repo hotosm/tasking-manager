@@ -18,7 +18,7 @@ export const CurrentUserAvatar = (props) => {
       />
     );
   }
-  return <ProfilePictureIcon {...props} />;
+  return <ProfilePictureIcon {...props} aria-label="Sample avatar" />;
 };
 
 export const UserAvatar = ({

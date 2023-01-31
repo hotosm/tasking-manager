@@ -23,7 +23,6 @@ const updateServiceWorker = (registration) => {
 export const UpdateDialog = () => {
   const location = useLocation();
   const [registration, setRegistration] = useState(null);
-  const close = useState(false);
 
   const isMapOrValidationPage =
     location.pathname.startsWith('/projects/') &&
@@ -34,9 +33,10 @@ export const UpdateDialog = () => {
     document.addEventListener('onNewServiceWorker', handleServiceWorkerEvent);
     return () => document.removeEventListener('onNewServiceWorker', handleServiceWorkerEvent);
   }, []);
+
   return (
     <>
-      {!isMapOrValidationPage && !close && registration !== null && (
+      {!isMapOrValidationPage && registration !== null && (
         <div className="fixed left-1 bottom-1 shadow-2 ph3 pt2 pb3 br1 bg-white z-5 blue-dark fw6 ba b--grey-light">
           <p className="mb3 mt2">
             <FormattedMessage {...messages.newVersionAvailable} />
