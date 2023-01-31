@@ -11,7 +11,7 @@ import { useInboxQueryAPI } from '../../hooks/UseInboxQueryAPI';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useOnResize } from '../../hooks/UseOnResize';
 
-export const NotificationBell = (props) => {
+export const NotificationBell = () => {
   const token = useSelector((state) => state.auth.token);
   const trigger = token !== null;
   const [forceUpdated, forceUpdate] = useForceUpdate();
@@ -27,10 +27,8 @@ export const NotificationBell = (props) => {
 
   const [isPopoutFocus, setPopoutFocus] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(false);
-  const [initialUnreadCountError, initialUnreadCountLoading, initialUnreadCount] = useFetchWithAbort(
-    '/api/v2/notifications/queries/own/count-unread/',
-    trigger,
-  );
+  const [initialUnreadCountError, initialUnreadCountLoading, initialUnreadCount] =
+    useFetchWithAbort('/api/v2/notifications/queries/own/count-unread/', trigger);
   const [unreadCountError, unreadCount] = useFetchIntervaled(
     '/api/v2/notifications/queries/own/count-unread/',
     30000,
@@ -39,11 +37,8 @@ export const NotificationBell = (props) => {
 
   useEffect(() => {
     // unreadCount will receive a value only after 30 seconds,
-    //so while it's undefined, we rely on initialUnreadCount
-    if (
-      (!unreadCount && initialUnreadCount && initialUnreadCount.newMessages) ||
-      (unreadCount && unreadCount.newMessages)
-    ) {
+    // so while it's undefined, we rely on initialUnreadCount
+    if ((!unreadCount && initialUnreadCount?.newMessages) || unreadCount?.newMessages) {
       setUnreadNotifications(true);
     } else {
       setUnreadNotifications(false);
@@ -78,11 +73,8 @@ export const NotificationBell = (props) => {
   };
 
   const liveUnreadCount =
-    (!unreadCountError && unreadCount && unreadCount.unread) ||
-    (!initialUnreadCountLoading &&
-      !initialUnreadCountError &&
-      initialUnreadCount &&
-      initialUnreadCount.unread);
+    (!unreadCountError && unreadCount?.unread) ||
+    (!initialUnreadCountLoading && !initialUnreadCountError && initialUnreadCount?.unread);
 
   return (
     <span ref={notificationBellRef}>
