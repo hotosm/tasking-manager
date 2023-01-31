@@ -64,7 +64,7 @@ class UpdateEmail extends Component {
           </p>
           <Button className="bg-red white" type="submit">
             <FormattedMessage {...messages.emailUpdateButton} />
-          </Button>
+        {ORG_PRIVACY_POLICY_URL && (
           <p className="mb0">
             <a
               className="link pointer red fw5"
@@ -75,17 +75,7 @@ class UpdateEmail extends Component {
               <FormattedMessage {...messages.privacyPolicy} />
             </a>
           </p>
-          <p className={this.state.details ? 'dib mb0' : 'dn'}>{this.state.details}</p>
-        </form>
-      </div>
-    );
-  }
-}
-
-const mapStateToProps = (state) => ({
-  userDetails: state.auth.userDetails,
-  token: state.auth.token,
-});
+        )}
 
 UpdateEmail.propTypes = {
   updateUserEmail: PropTypes.func.isRequired,
