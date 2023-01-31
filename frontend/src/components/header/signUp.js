@@ -10,7 +10,7 @@ import { createLoginWindow } from '../../utils/login';
 import { ORG_PRIVACY_POLICY_URL, OSM_REGISTER_URL } from '../../config';
 import * as safeStorage from '../../utils/safe_storage';
 
-const LoginModal = ({ step, login }) => {
+export const LoginModal = ({ step, login }) => {
   return (
     <div>
       <h1 className="pb2 ma0 barlow-condensed blue-dark">
@@ -41,7 +41,7 @@ const LoginModal = ({ step, login }) => {
   );
 };
 
-const ProceedOSM = ({ data, step, setStep, login }) => {
+export const ProceedOSM = ({ data, step, setStep, login }) => {
   const NextStep = (setStep) => {
     window.open(OSM_REGISTER_URL, '_blank');
     setStep((s) => {
@@ -88,11 +88,6 @@ const SignupForm = ({ data, setData, step, setStep }) => {
   };
 
   const checkFields = () => {
-    if (data.name === '') {
-      setStep({ ...step, errMessage: <FormattedMessage {...messages.invalidName} /> });
-      return;
-    }
-
     const re =
       // eslint-disable-next-line no-useless-escape
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -212,21 +207,19 @@ export const SignUp = ({ closeModal }) => {
 
   const getStep = (step) => {
     switch (step.number) {
-      case 1:
-        return <SignupForm data={data} setData={setData} step={step} setStep={setStep} />;
       case 2:
         return <ProceedOSM data={data} step={step} setStep={setStep} login={login} />;
       case 3:
         return <LoginModal step={step} login={login} />;
       default:
-        return null;
+        return <SignupForm data={data} setData={setData} step={step} setStep={setStep} />;
     }
   };
 
   return (
     <div className="tl pa4 bg-white">
       <span className="fr relative blue-light pt1 link pointer" onClick={() => closeModal()}>
-        <CloseIcon style={{ height: '18px', width: '18px' }} />
+        <CloseIcon aria-label="Close popup" style={{ height: '18px', width: '18px' }} />
       </span>
       {getStep(step)}
     </div>
