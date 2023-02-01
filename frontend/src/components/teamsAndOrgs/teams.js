@@ -303,6 +303,14 @@ export function TeamForm(props) {
 
 export function TeamSideBar({ team, members, managers, requestedToJoin }: Object) {
   const [isUserTeamManager] = useEditTeamAllowed(team);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const searchMembers = () =>
+    searchQuery !== ''
+      ? members.filter((member) => {
+          return member.username.toLowerCase().includes(searchQuery.toLowerCase());
+        })
+      : members;
 
   return (
     <ReactPlaceholder
@@ -360,9 +368,9 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
             </span>
           ) : (
             <div className="cf db mt3">
-              {managers.map((user, n) => (
+              {managers.map((user) => (
                 <UserAvatar
-                  key={n}
+                  key={user.username}
                   username={user.username}
                   picture={user.pictureUrl}
                   size="large"
@@ -379,16 +387,26 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
               <FormattedMessage {...messages.noMembers} />
             </span>
           ) : (
-            <div className="cf db mt3">
-              {members.map((user, n) => (
-                <UserAvatar
-                  key={n}
-                  username={user.username}
-                  picture={user.pictureUrl}
-                  colorClasses="white bg-blue-grey mv1"
-                />
-              ))}
-            </div>
+            <>
+              <div className="cf db mt3">
+                <div className="mb3 w5">
+                  <TextField
+                    value={searchQuery}
+                    placeholderMsg={messages.searchMembers}
+                    onChange={({ target: { value } }) => setSearchQuery(value)}
+                    onCloseIconClick={() => setSearchQuery('')}
+                  />
+                </div>
+                {searchMembers().map((user) => (
+                  <UserAvatar
+                    key={user.username}
+                    username={user.username}
+                    picture={user.pictureUrl}
+                    colorClasses="white bg-blue-grey mv1"
+                  />
+                ))}
+              </div>
+            </>
           )}
           <div className="cf db mt3">
             {requestedToJoin && (

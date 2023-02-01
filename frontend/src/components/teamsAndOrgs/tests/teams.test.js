@@ -10,9 +10,9 @@ import {
   IntlProviders,
   renderWithRouter,
 } from '../../../utils/testWithIntl';
-import { TeamBox, TeamsBoxList, TeamsManagement, Teams, TeamCard } from '../teams';
+import { TeamBox, TeamsBoxList, TeamsManagement, Teams, TeamCard, TeamSideBar } from '../teams';
 import { store } from '../../../store';
-import { teams } from '../../../network/tests/mockData/teams';
+import { teams, team } from '../../../network/tests/mockData/teams';
 
 const dummyTeams = [
   {
@@ -396,5 +396,28 @@ describe('Team Card', () => {
       }),
     ).toBeInTheDocument();
     ['Private', 'By invite'].forEach((text) => expect(screen.getByText(text)).toBeInTheDocument());
+  });
+});
+
+describe('TeamSideBar component', () => {
+  it('should search for users by search query', async () => {
+    render(
+      <ReduxIntlProviders>
+        <TeamSideBar team={team} managers={[]} members={team.members} />
+      </ReduxIntlProviders>,
+    );
+    const inputField = screen.getByRole('textbox');
+    expect(inputField).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', {
+        name: team.members[0].username,
+      }),
+    ).toBeInTheDocument();
+    await userEvent.type(inputField, 'not_sample_user');
+    expect(
+      screen.queryByRole('link', {
+        name: team.members[0].username,
+      }),
+    ).not.toBeInTheDocument();
   });
 });
