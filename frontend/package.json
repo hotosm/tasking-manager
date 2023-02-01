@@ -63,7 +63,7 @@
     "redux": "^4.1.0",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
-    "sass": "^1.35.1",
+    "sass": "^1.58.0",
     "short-number": "^1.0.7",
     "shpjs": "^4.0.4",
     "slug": "^5.1.0",
