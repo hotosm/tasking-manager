@@ -409,6 +409,10 @@ export default defineMessages({
     id: 'management.placeholder.search_users',
     defaultMessage: 'Search for Tasking Manager users',
   },
+  searchMembers: {
+    id: 'management.placeholder.search_members',
+    defaultMessage: 'Search team members...',
+  },
   save: {
     id: 'management.button.save',
     defaultMessage: 'Save',
