@@ -52,16 +52,18 @@ export const ProjectHeader = ({ project, showEditLink }: Object) => {
         organisation={project.organisationName}
         showEditLink={showEditLink && userCanEditProject}
       />
-      <h3
-        className="f2 fw5 mt3 mt2-ns mb3 ttu barlow-condensed blue-dark dib"
-        lang={project.projectInfo.locale}
-      >
-        {project.projectInfo && project.projectInfo.name}
-      </h3>
-      {project.private && <ProjectVisibilityBox className={'pv2 ph3 ml3 mb3 v-mid dib'} />}
-      {['DRAFT', 'ARCHIVED'].includes(project.status) && (
-        <ProjectStatusBox status={project.status} className={'pv2 ph3 ml3 mb3 v-mid dib'} />
-      )}
+      <div>
+        <h3
+          className="f2 fw5 mt3 mt2-ns mb3 ttu barlow-condensed blue-dark dib mr3"
+          lang={project.projectInfo.locale}
+        >
+          {project.projectInfo && project.projectInfo.name}
+        </h3>
+        {project.private && <ProjectVisibilityBox className="pv2 ph3 mb3 mr3 v-mid dib" />}
+        {['DRAFT', 'ARCHIVED'].includes(project.status) && (
+          <ProjectStatusBox status={project.status} className="pv2 ph3 mb3 v-mid dib mr3" />
+        )}
+      </div>
       <TagLine
         campaigns={project.campaigns}
         countries={
