@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import ReactTooltip from 'react-tooltip';
 import DOMPurify from 'dompurify';
@@ -69,6 +69,7 @@ export function NotificationCard({
   selected,
   setSelected,
 }: Object) {
+  const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const ref = useRef();
   const replacedSubject = subject.replace('task=', 'search=');
@@ -77,6 +78,9 @@ export function NotificationCard({
     !read &&
       fetchLocalJSONAPI(`notifications/${messageId}/`, token).then(() => {
         retryFn();
+        dispatch({
+          type: 'DECREMENT_UNREAD_COUNT',
+        });
       });
   };
 
@@ -85,6 +89,9 @@ export function NotificationCard({
       .then(() => {
         setSelected(selected.filter((i) => i !== id));
         retryFn();
+        dispatch({
+          type: 'DECREMENT_UNREAD_COUNT',
+        });
       })
       .catch((e) => {
         console.log(e.message);
@@ -190,11 +197,24 @@ export function NotificationCardMini({
   sentDate,
   setPopoutFocus,
   retryFn,
+  read,
 }: Object) {
+  const dispatch = useDispatch();
+
+  const setMessageAsRead = () => {
+    if (!read) {
+      retryFn();
+      dispatch({
+        type: 'DECREMENT_UNREAD_COUNT',
+      });
+    }
+  };
+
   return (
     <Popup
       modal
       nested
+      onClose={setMessageAsRead}
       trigger={
         <article
           className="db base-font w-100 hover-red blue-dark pointer"
