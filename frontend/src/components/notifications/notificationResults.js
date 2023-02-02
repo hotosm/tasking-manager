@@ -25,20 +25,18 @@ export const NotificationResults = ({
   liveUnreadCount,
   setPopoutFocus,
 }) => {
-  const stateNotifications = !useMiniCard
-    ? notifications.userMessages
-    : state.unreadNotificationsMini;
+  const stateNotifications = notifications.userMessages;
 
   const showRefreshButton =
     useMiniCard &&
-    !state.isError &&
-    state.unreadNotificationsMini &&
-    liveUnreadCount !== state.unreadNotificationsMini.filter((n) => !n.read).length;
+    !error &&
+    notifications.userMessages &&
+    liveUnreadCount !== notifications.userMessages.filter((n) => !n.read).length;
 
   return (
     <div className={className || ''}>
       {!stateNotifications && <span>&nbsp;</span>}
-      {notifications?.userMessages && !error && (
+      {notifications?.userMessages && !error && !useMiniCard && (
         <p className="blue-grey pt2 f7">
           <FormattedMessage
             {...messages.paginationCount}
@@ -58,7 +56,7 @@ export const NotificationResults = ({
         </p>
       )}
 
-      {error ? (
+      {error && (
         <div className="bg-tan pa4 mt3">
           <FormattedMessage
             {...messages.errorLoadingTheXForY}
@@ -73,7 +71,7 @@ export const NotificationResults = ({
             </button>
           </div>
         </div>
-      ) : null}
+      )}
       <div className={`cf`}>
         <ReactPlaceholder
           ready={!loading && stateNotifications}
@@ -111,6 +109,10 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn, setPopoutFocus }
     );
   }
 
+  const unreadCountInSelected = pageOfCards.reduce((acc, msg) => {
+    return !msg.read && selected.includes(msg.messageId) ? acc + 1 : acc;
+  }, 0);
+
   return (
     <>
       {!useMiniCard && (
@@ -126,6 +128,7 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn, setPopoutFocus }
               selected={selected}
               setSelected={setSelected}
               retryFn={retryFn}
+              unreadCountInSelected={unreadCountInSelected}
             />
           </div>
           {pageOfCards.map((card, n) => (

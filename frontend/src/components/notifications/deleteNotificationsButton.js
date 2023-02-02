@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
 import messages from '../deleteModal/messages';
@@ -7,8 +7,14 @@ import { WasteIcon } from '../svgIcons';
 import { Button } from '../button';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
-export const DeleteNotificationsButton = ({ selected, setSelected, retryFn }) => {
+export const DeleteNotificationsButton = ({
+  selected,
+  setSelected,
+  retryFn,
+  unreadCountInSelected,
+}) => {
   const token = useSelector((state) => state.auth.token);
+  const dispatch = useDispatch();
 
   const deleteMessages = (selected) => {
     const payload = JSON.stringify({ messageIds: selected });
@@ -16,6 +22,9 @@ export const DeleteNotificationsButton = ({ selected, setSelected, retryFn }) =>
       .then((success) => {
         setSelected([]);
         retryFn();
+        Array.from({ length: unreadCountInSelected }, () =>
+          dispatch({ type: 'DECREMENT_UNREAD_COUNT' }),
+        );
       })
       .catch((e) => {
         console.log(e.message);
