@@ -41,13 +41,16 @@ export const useFetchWithAbort = (url, trigger = true) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
+  const [refetchIndex, setRefetchIndex] = useState(0);
+
+  const refetch = () => setRefetchIndex((prevRefetchIndex) => prevRefetchIndex + 1);
 
   useEffect(() => {
     const controller = new AbortController();
     const { signal } = controller;
     (async () => {
       if (trigger) {
-        setLoading(true);
+        refetchIndex === 0 && setLoading(true);
         try {
           // replace in locale is needed because the backend uses underscore instead of dash
           const response = await fetchLocalJSONAPIWithAbort(
@@ -67,9 +70,9 @@ export const useFetchWithAbort = (url, trigger = true) => {
       }
     })();
     return () => controller.abort();
-  }, [url, token, trigger, locale]);
+  }, [url, token, trigger, locale, refetchIndex]);
 
-  return [error, loading, data];
+  return [error, loading, data, refetch];
 };
 
 export function useFetchIntervaled(url, delay, trigger = true) {
