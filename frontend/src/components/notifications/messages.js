@@ -54,11 +54,11 @@ export default defineMessages({
   },
   oneNewNotification: {
     id: 'notifications.nav.new.one',
-    defaultMessage: '1 new message',
+    defaultMessage: '1 unread notification',
   },
-  newNotifications: {
-    id: 'notifications.nav.new.plural',
-    defaultMessage: '{n} new ',
+  unreadNotifications: {
+    id: 'notifications.nav.unread.plural',
+    defaultMessage: '{n} unread',
   },
   viewAll: {
     id: 'notifications.nav.viewAll',
