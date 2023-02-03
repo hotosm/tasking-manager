@@ -1,7 +1,12 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
-from backend.models.dtos.team_dto import TeamDTO, NewTeamDTO, UpdateTeamDTO
+from backend.models.dtos.team_dto import (
+    TeamDTO,
+    NewTeamDTO,
+    UpdateTeamDTO,
+    TeamSearchDTO,
+)
 from backend.services.team_service import TeamService, TeamServiceError, NotFound
 from backend.services.users.authentication_service import token_auth
 from backend.services.organisation_service import OrganisationService
@@ -358,40 +363,16 @@ class TeamsAllAPI(Resource):
         """
         try:
             user_id = token_auth.current_user()
+            search_dto = TeamSearchDTO(dict(request.args))
+            search_dto.user_id = user_id
+            search_dto.validate()
+            
         except Exception as e:
             error_msg = f"Teams GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
-
-        filters = {}
-
-        filters["user_id"] = user_id
-        filters["team_name_filter"] = request.args.get("team_name")
-
-        omit_members = strtobool(request.args.get("omitMemberList", "false"))
-        filters["omit_members"] = omit_members
-
         try:
-            member_filter = request.args.get("member")
-            filters["member_filter"] = int(member_filter) if member_filter else None
-
-            manager_filter = request.args.get("manager")
-            filters["manager_filter"] = int(manager_filter) if manager_filter else None
-
-            role_filter = request.args.get("team_role")
-            filters["team_role_filter"] = role_filter
-
-            member_request_filter = request.args.get("member_request")
-            filters["member_request_filter"] = (
-                int(member_request_filter) if member_request_filter else None
-            )
-
-            organisation_filter = request.args.get("organisation")
-            filters["organisation_filter"] = (
-                int(organisation_filter) if organisation_filter else None
-            )
-
-            teams = TeamService.get_all_teams(**filters)
+            teams = TeamService.get_all_teams(search_dto)
             return teams.to_primitive(), 200
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"

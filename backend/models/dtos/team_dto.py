@@ -173,3 +173,18 @@ class UpdateTeamDTO(Model):
         validators=[validate_team_visibility], serialize_when_none=False
     )
     members = ListType(ModelType(TeamMembersDTO), serialize_when_none=False)
+
+class TeamSearchDTO(Model):
+    """ Describes a JSON model to search for a team """
+
+    user_id = LongType(serialized_name="userId")
+    organisation = IntType(serialized_name="organisation")
+    team_name = StringType(serialized_name="team_name")
+    omit_members = BooleanType(serialized_name="omitMemberList", default=False)
+    member = LongType(serialized_name="member")
+    manager = LongType(serialized_name="manager")
+    team_role = StringType(serialized_name="team_role")
+    member_request = LongType(serialized_name="member_request")
+     
+    
+    

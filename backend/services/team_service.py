@@ -9,6 +9,7 @@ from backend.models.dtos.team_dto import (
     TeamsListDTO,
     ProjectTeamDTO,
     TeamDetailsDTO,
+    TeamSearchDTO,
 )
 
 from backend.models.dtos.message_dto import MessageDTO
@@ -22,6 +23,7 @@ from backend.models.postgis.statuses import (
     TeamMemberFunctions,
     TeamVisibility,
     TeamRoles,
+    UserRole,
 )
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
@@ -203,28 +205,19 @@ class TeamService:
         project.delete()
 
     @staticmethod
-    def get_all_teams(
-        user_id: int = None,
-        team_name_filter: str = None,
-        team_role_filter: str = None,
-        member_filter: int = None,
-        member_request_filter: int = None,
-        manager_filter: int = None,
-        organisation_filter: int = None,
-        omit_members: bool = False,
-    ) -> TeamsListDTO:
+    def get_all_teams(search_dto: TeamSearchDTO) -> TeamsListDTO:
 
         query = db.session.query(Team)
 
         orgs_query = None
-        is_admin = UserService.is_user_an_admin(user_id)
+        is_admin = UserService.is_user_an_admin(search_dto.user_id)
 
-        if organisation_filter:
-            orgs_query = query.filter(Team.organisation_id == organisation_filter)
+        if search_dto.organisation:
+            orgs_query = query.filter(Team.organisation_id == search_dto.organisation)
 
-        if manager_filter and not (manager_filter == user_id and is_admin):
+        if search_dto.manager and  not (search_dto.manager == search_dto.user_id and is_admin):
             manager_teams = query.filter(
-                TeamMembers.user_id == manager_filter,
+                TeamMembers.user_id == search_dto.manager,
                 TeamMembers.active == True,  # noqa
                 TeamMembers.function == TeamMemberFunctions.MANAGER.value,
                 Team.id == TeamMembers.team_id,
@@ -234,21 +227,23 @@ class TeamService:
                 Team.organisation_id.in_(
                     [
                         org.id
-                        for org in OrganisationService.get_organisations(manager_filter)
+                        for org in OrganisationService.get_organisations(
+                            search_dto.manager
+                        )
                     ]
                 )
             )
 
             query = manager_teams.union(manager_orgs_teams)
 
-        if team_name_filter:
+        if search_dto.team_name:
             query = query.filter(
-                Team.name.ilike("%" + team_name_filter + "%"),
+                Team.name.ilike("%" + search_dto.team_name + "%"),
             )
 
-        if team_role_filter:
+        if search_dto.team_role:
             try:
-                role = TeamRoles[team_role_filter.upper()].value
+                role = TeamRoles[search_dto.team_role.upper()].value
                 project_teams = (
                     db.session.query(ProjectTeams)
                     .filter(ProjectTeams.role == role)
@@ -258,21 +253,22 @@ class TeamService:
             except KeyError:
                 pass
 
-        if member_filter:
+        if search_dto.member:
             team_member = (
                 db.session.query(TeamMembers)
                 .filter(
-                    TeamMembers.user_id == member_filter, TeamMembers.active.is_(True)
+                    TeamMembers.user_id == search_dto.member,
+                    TeamMembers.active.is_(True),
                 )
                 .subquery()
             )
             query = query.join(team_member)
 
-        if member_request_filter:
+        if search_dto.member_request:
             team_member = (
                 db.session.query(TeamMembers)
                 .filter(
-                    TeamMembers.user_id == member_request_filter,
+                    TeamMembers.user_id == search_dto.member_request,
                     TeamMembers.active.is_(False),
                 )
                 .subquery()
@@ -294,9 +290,9 @@ class TeamService:
             team_dto.organisation = team.organisation.name
             team_dto.organisation_id = team.organisation.id
             team_dto.members = []
-            is_team_member = TeamService.is_user_an_active_team_member(team.id, user_id)
+            is_team_member = TeamService.is_user_an_active_team_member(team.id, search_dto.user_id)
             # Skip if members are not included
-            if not omit_members:
+            if not search_dto.omit_members:
                 team_members = team.members
 
                 team_dto.members = [
