@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
-import { Router, Redirect, globalHistory } from '@reach/router';
+import { Router, Redirect } from '@reach/router';
 import { QueryParamProvider } from 'use-query-params';
+import { ReachAdapter } from 'use-query-params/adapters/reach';
 import ReactPlaceholder from 'react-placeholder';
 import { useMeta } from 'react-meta-elements';
 import { connect } from 'react-redux';
@@ -88,7 +89,7 @@ let App = (props) => {
             <Suspense
               fallback={<ReactPlaceholder showLoadingAnimation={true} rows={30} delay={300} />}
             >
-              <QueryParamProvider reachHistory={globalHistory}>
+              <QueryParamProvider adapter={ReachAdapter}>
                 <Router primary={false}>
                   <Home path="/" />
                   <ProjectsPage path="explore">

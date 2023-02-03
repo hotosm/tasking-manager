@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { globalHistory } from '@reach/router';
+import { ReachAdapter } from 'use-query-params/adapters/reach';
 import { QueryParamProvider } from 'use-query-params';
 import { act, render, screen, waitFor } from '@testing-library/react';
 
@@ -18,7 +18,7 @@ describe('Manage Projects Top Navigation Bar', () => {
     });
 
     const { container } = render(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <MyProjectNav management={false} />
         </ReduxIntlProviders>
@@ -57,7 +57,7 @@ describe('Manage Projects Top Navigation Bar', () => {
     });
 
     const { container } = render(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <MyProjectNav management />
         </ReduxIntlProviders>
@@ -83,7 +83,7 @@ describe('Manage Projects Top Navigation Bar', () => {
 
   it('should navigate to new project creation page on button click', async () => {
     const { history } = renderWithRouter(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <MyProjectNav management />
         </ReduxIntlProviders>

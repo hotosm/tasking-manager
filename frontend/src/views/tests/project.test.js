@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { globalHistory } from '@reach/router';
+import { ReachAdapter } from 'use-query-params/adapters/reach';
 import { QueryParamProvider } from 'use-query-params';
 import { act, render, screen, waitFor } from '@testing-library/react';
 
@@ -17,7 +17,7 @@ describe('UserProjectsPage Component', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <UserProjectsPage navigate={navigateMock} management={false} />
         </ReduxIntlProviders>
@@ -33,7 +33,7 @@ describe('UserProjectsPage Component', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <UserProjectsPage management={false} />
         </ReduxIntlProviders>
@@ -61,7 +61,7 @@ describe('UserProjectsPage Component', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <UserProjectsPage management={false} />
         </ReduxIntlProviders>
@@ -82,7 +82,7 @@ describe('ManageProjectsPage', () => {
     });
 
     render(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <ManageProjectsPage />
         </ReduxIntlProviders>
@@ -102,7 +102,7 @@ describe('ManageProjectsPage', () => {
       store.dispatch({ type: 'TOGGLE_MAP' });
     });
     render(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <ManageProjectsPage />
         </ReduxIntlProviders>
