@@ -245,7 +245,43 @@ class Team(db.Model):
 
         return members
 
-    def get_team_managers(self):
-        return TeamMembers.query.filter_by(
+    def get_team_managers(self, count: int = None):
+        """
+        Returns users with manager role in the team
+        --------------------------------
+        :param count: number of managers to return
+        :return: list of team managers
+        """
+        base_query = TeamMembers.query.filter_by(
             team_id=self.id, function=TeamMemberFunctions.MANAGER.value, active=True
-        ).all()
+        )
+        if count:
+            return base_query.limit(count).all()
+        else:
+            return base_query.all()
+
+    def get_team_members(self, count: int = None):
+        """
+        Returns users with member role in the team
+        --------------------------------
+        :param count: number of members to return
+        :return: list of members in the team
+        """
+        base_query = TeamMembers.query.filter_by(
+            team_id=self.id, function=TeamMemberFunctions.MEMBER.value, active=True
+        )
+        if count:
+            return base_query.limit(count).all()
+        else:
+            return base_query.all()
+
+    def get_members_count_by_role(self, role: TeamMemberFunctions):
+        """
+        Returns number of members with specified role in the team
+        --------------------------------
+        :param role: role to count
+        :return: number of members with specified role in the team
+        """
+        return TeamMembers.query.filter_by(
+            team_id=self.id, function=role.value, active=True
+        ).count()

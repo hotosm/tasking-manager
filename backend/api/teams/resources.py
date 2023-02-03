@@ -351,6 +351,27 @@ class TeamsAllAPI(Resource):
               type: boolean
               description: Set it to true if you don't want the members list on the response.
               default: False
+            - in: query
+              name: fullMemberList
+              type: boolean
+              description: Set it to true if you want full members list otherwise it will be limited to 10 per role.
+              default: True
+            - in: query
+              name: paginate
+              type: boolean
+              description: Set it to true if you want to paginate the results.
+              default: False
+            - in: query
+              name: page
+              type: integer
+              description: Page number to return.
+              default: 1
+            - in: query
+              name: perPage
+              type: integer
+              description: Number of results per page.
+              default: 10
+
         responses:
             201:
                 description: Team list returned successfully
@@ -366,7 +387,7 @@ class TeamsAllAPI(Resource):
             search_dto = TeamSearchDTO(dict(request.args))
             search_dto.user_id = user_id
             search_dto.validate()
-            
+
         except Exception as e:
             error_msg = f"Teams GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

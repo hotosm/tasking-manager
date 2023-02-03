@@ -1,5 +1,5 @@
 from flask import current_app
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 from markdown import markdown
 
 from backend import create_app, db
@@ -13,6 +13,7 @@ from backend.models.dtos.team_dto import (
 )
 
 from backend.models.dtos.message_dto import MessageDTO
+from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.project import ProjectTeams
@@ -210,12 +211,11 @@ class TeamService:
         query = db.session.query(Team)
 
         orgs_query = None
-        is_admin = UserService.is_user_an_admin(search_dto.user_id)
-
+        user = UserService.get_user_by_id(search_dto.user_id)
+        is_admin = UserRole(user.role) == UserRole.ADMIN
         if search_dto.organisation:
             orgs_query = query.filter(Team.organisation_id == search_dto.organisation)
-
-        if search_dto.manager and  not (search_dto.manager == search_dto.user_id and is_admin):
+        if search_dto.manager and search_dto.manager == search_dto.user_id:
             manager_teams = query.filter(
                 TeamMembers.user_id == search_dto.manager,
                 TeamMembers.active == True,  # noqa
@@ -277,9 +277,23 @@ class TeamService:
         if orgs_query:
             query = query.union(orgs_query)
 
+        # Only show public teams or teams that the user is a member of
+        if not is_admin:
+            query = query.filter(
+                or_(
+                    Team.visibility == TeamVisibility.PUBLIC.value,
+                    Team.id.in_([team.id for team in user.teams]),
+                )
+            )
         teams_list_dto = TeamsListDTO()
 
-        for team in query.all():
+        if search_dto.paginate:
+            paginated = query.paginate(search_dto.page, search_dto.per_page, True)
+            teams_list_dto.pagination = Pagination(paginated)
+            teams_list = paginated.items
+        else:
+            teams_list = query.all()
+        for team in teams_list:
             team_dto = TeamDTO()
             team_dto.team_id = team.id
             team_dto.name = team.name
@@ -290,20 +304,24 @@ class TeamService:
             team_dto.organisation = team.organisation.name
             team_dto.organisation_id = team.organisation.id
             team_dto.members = []
-            is_team_member = TeamService.is_user_an_active_team_member(team.id, search_dto.user_id)
             # Skip if members are not included
             if not search_dto.omit_members:
-                team_members = team.members
-
+                if search_dto.full_members_list:
+                    team_members = team.members
+                else:
+                    team_managers = team.get_team_managers(10)
+                    team_members = team.get_team_members(10)
+                    team_members.extend(team_managers)
                 team_dto.members = [
                     team.as_dto_team_member(member) for member in team_members
                 ]
-
-            if team_dto.visibility == "PRIVATE" and not is_admin:
-                if is_team_member:
-                    teams_list_dto.teams.append(team_dto)
-            else:
-                teams_list_dto.teams.append(team_dto)
+                team_dto.members_count = team.get_members_count_by_role(
+                    TeamMemberFunctions.MEMBER
+                )
+                team_dto.managers_count = team.get_members_count_by_role(
+                    TeamMemberFunctions.MANAGER
+                )
+            teams_list_dto.teams.append(team_dto)
         return teams_list_dto
 
     @staticmethod

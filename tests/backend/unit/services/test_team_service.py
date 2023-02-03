@@ -1,5 +1,6 @@
 from backend.models.postgis.utils import NotFound
 from backend.services.team_service import TeamService
+from backend.models.dtos.team_dto import TeamSearchDTO
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_team, create_canned_user
 
@@ -12,17 +13,21 @@ class TestTeamService(BaseTestCase):
 
     def test_search_team(self):
         # Arrange
-        filters = {
-            "user_id": self.test_user.id,
-            "team_name_filter": self.test_team.name,
-            "member_filter": self.test_user.id,
-            "organisation_filter": self.test_team.organisation_id,
-        }
+        team_search_dto = TeamSearchDTO()
+        team_search_dto.user_id = self.test_user.id
+        team_search_dto.team_name = self.test_team.name
+        team_search_dto.member = self.test_user.id
+        team_search_dto.organisation = self.test_team.organisation_id
+
         # Act
-        result = TeamService.get_all_teams(**filters)
+        result = TeamService.get_all_teams(team_search_dto)
         # Assert
+        self.assertEqual(len(result.to_primitive()["teams"]), 1)
+        self.assertEqual(result.to_primitive()["teams"][0]["teamId"], self.test_team.id)
+        self.assertEqual(result.to_primitive()["teams"][0]["name"], self.test_team.name)
         self.assertEqual(
-            result.to_primitive(), {"teams": [self.test_team.as_dto().to_primitive()]}
+            result.to_primitive()["teams"][0]["organisationId"],
+            self.test_team.organisation_id,
         )
 
     def test_get_team_as_dto(self):
