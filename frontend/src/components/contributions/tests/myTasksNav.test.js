@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { globalHistory } from '@reach/router';
+import { ReachAdapter } from 'use-query-params/adapters/reach';
 import { QueryParamProvider } from 'use-query-params';
 
 import { MyTasksNav, isActiveButton } from '../myTasksNav';
@@ -9,7 +9,7 @@ import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 describe('MyTasksNav Component', () => {
   it('should display details', async () => {
     render(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <MyTasksNav />
         </ReduxIntlProviders>
@@ -46,7 +46,7 @@ describe('MyTasksNav Component', () => {
   //   // with the updated values in the test, which would have caused
   //   // the 'Clear filters' button to appear. Uncomment to try
   //   renderWithRouter(
-  //     <QueryParamProvider reachHistory={globalHistory}>
+  //     <QueryParamProvider adapter={ReachAdapter}>
   //       <ReduxIntlProviders>
   //         <MyTasksNav />
   //       </ReduxIntlProviders>

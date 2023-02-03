@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { act, screen, render, waitFor } from '@testing-library/react';
-import { globalHistory } from '@reach/router';
+import { ReachAdapter } from 'use-query-params/adapters/reach';
 import { QueryParamProvider } from 'use-query-params';
 
 import { store } from '../../store';
@@ -18,13 +18,13 @@ describe('Contributions Page', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <ContributionsPage navigate={navigateMock} />
         </ReduxIntlProviders>
       </QueryParamProvider>,
     );
-    
+
     await waitFor(() => expect(navigateMock).toHaveBeenCalled());
   });
 
@@ -38,7 +38,7 @@ describe('Contributions Page', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <ContributionsPage />
         </ReduxIntlProviders>
