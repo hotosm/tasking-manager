@@ -2203,7 +2203,6 @@ class TestProjectsQueriesNoTasksAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 200)
-        print(response.json)
         TestGetProjectsRestAPI.assert_project_response(
             response.json, self.test_project, assert_type="notasks"
         )
