@@ -1,8 +1,9 @@
 import '@testing-library/jest-dom';
 import { render, screen, waitFor, act } from '@testing-library/react';
-import { globalHistory } from '@reach/router';
-import { ReduxIntlProviders } from '../../utils/testWithIntl';
 import { QueryParamProvider } from 'use-query-params';
+import { ReachAdapter } from 'use-query-params/adapters/reach';
+
+import { ReduxIntlProviders } from '../../utils/testWithIntl';
 import { store } from '../../store';
 
 import { Stats } from '../stats';
@@ -13,7 +14,7 @@ describe('Overall styats page', () => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
     render(
-      <QueryParamProvider reachHistory={globalHistory}>
+      <QueryParamProvider adapter={ReachAdapter}>
         <ReduxIntlProviders>
           <Stats />
         </ReduxIntlProviders>
