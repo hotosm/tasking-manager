@@ -1,0 +1,9 @@
+.navigation-items-container::-webkit-scrollbar {
+  display: none;
+}
+
+@media screen and (max-width: 45em) {
+  .dn-sm {
+    display: none;
+  }
+}

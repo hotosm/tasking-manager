@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, navigate } from '@reach/router';
 import Popup from 'reactjs-popup';
@@ -21,18 +21,23 @@ import { logout } from '../../store/actions/auth';
 import { createLoginWindow } from '../../utils/login';
 import { NotificationBell } from './notificationBell';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
+import { HorizontalScroll } from '../horizontalScroll';
+
+import './styles.scss';
 
 export const Header = (props) => {
   const dispatch = useDispatch();
+  const menuItemsContainerRef = useRef(null);
+
   const userDetails = useSelector((state) => state.auth.userDetails);
   const organisations = useSelector((state) => state.auth.organisations);
   const showOrgBar = useSelector((state) => state.orgBarVisibility.isVisible);
 
-  const linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu';
+  const linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu lh-solid nowrap pv2';
 
   const isActive = ({ isPartiallyCurrent }) => {
     return isPartiallyCurrent
-      ? { className: `${linkCombo} bb b--blue-dark bw1 pv2` }
+      ? { className: `${linkCombo} bb b--blue-dark bw1` }
       : { className: linkCombo };
   };
 
@@ -47,27 +52,22 @@ export const Header = (props) => {
     let filteredMenuItems = getMenuItemsForUser(userDetails, organisations);
 
     return (
-      <div className="v-mid">
+      <nav className="navigation-items-container flex overflow-x-auto" ref={menuItemsContainerRef}>
         {filteredMenuItems.map((item) => (
           <Fragment key={item.label.id}>
             {!item.serviceDesk ? (
-              <TopNavLink to={item.link} isActive={isActive}>
+              <TopNavLink to={item.link} isActive={isActive} style={{ outlineOffset: '-1px' }}>
                 <FormattedMessage {...item.label} />
               </TopNavLink>
             ) : (
-              <a
-                href={item.link}
-                target="_blank"
-                rel="noreferrer"
-                className="link mh3 barlow-condensed blue-dark f4 ttu"
-              >
+              <a href={item.link} target="_blank" rel="noreferrer" className={linkCombo}>
                 <FormattedMessage {...item.label} />
                 <ExternalLinkIcon className="pl2 v-cen" style={{ height: '15px' }} />
               </a>
             )}
           </Fragment>
         ))}
-      </div>
+      </nav>
     );
   };
 
@@ -109,25 +109,30 @@ export const Header = (props) => {
           </div>
         </div>
       )}
-      <div className="mt3 pb1 pb2-ns ph2 dib w-100">
-        <div className="cf fl pt1 dib">
-          <Link to={'/'} className="link mv-1">
-            <img
-              src={ORG_LOGO || logo}
-              alt={`${ORG_NAME} logo`}
-              className="h2 ml2 v-mid pb2"
-              onError={({ currentTarget }) => {
-                // fallback to HOT logo if ORG_LOGO is broken
-                currentTarget.onerror = null;
-                currentTarget.src = logo;
-              }}
-            />
-            <span className="barlow-condensed f3 fw6 ml2 blue-dark">Tasking Manager</span>
-          </Link>
-        </div>
-        <nav className="dn dib-l pl4-l pl6-xl pt1 mv1">{renderMenuItems()}</nav>
+      <div className="mv3 ph2 dib w-100 flex justify-between items-center">
+        <Link to={'/'} className="link mv-1 flex flex-nowrap items-center">
+          <img
+            src={ORG_LOGO || logo}
+            alt={`${ORG_NAME} logo`}
+            className="h2 ml2 v-mid"
+            onError={({ currentTarget }) => {
+              // fallback to HOT logo if ORG_LOGO is broken
+              currentTarget.onerror = null;
+              currentTarget.src = logo;
+            }}
+          />
+          <span className="barlow-condensed f3 fw6 ml2 blue-dark nowrap">Tasking Manager</span>
+        </Link>
+        <HorizontalScroll
+          className={'dn dib-l ml5-l mr4-l pl6-xl'}
+          style={{ flexGrow: 1 }}
+          menuItemsContainerRef={menuItemsContainerRef}
+          containerClass=".navigation-items-container"
+        >
+          {renderMenuItems()}
+        </HorizontalScroll>
 
-        <div className="fr dib tr mb1 flex items-center">
+        <div className="flex items-center nowrap">
           <ActionItems
             userDetails={userDetails}
             onUserMenuSelect={onUserMenuSelect}
@@ -246,15 +251,15 @@ export const ActionItems = ({ userDetails, onUserMenuSelect, location, getUserLi
         value={[]}
         display={<UserDisplay username={userDetails.username} />}
         options={getUserLinks(userDetails.role)}
-        className="blue-dark bg-white mr1 v-mid dn dib-ns pv2 ph3 bn"
+        className="blue-dark bg-white v-mid bn dn-sm"
       />
     </>
   ) : (
     <>
-      <LocaleSelector className="bn dn dib-66rem" />
+      <LocaleSelector className="bn dn-sm" />
       <AuthButtons
-        logInStyle="blue-dark bg-white"
-        signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
+        logInStyle="blue-dark bg-white dn-sm"
+        signUpStyle="bg-blue-dark white ml1 v-mid dn-sm"
         redirectTo={location.pathname}
       />
     </>

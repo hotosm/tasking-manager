@@ -1,0 +1,9 @@
+.translate-icon {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.translate-icon-btm {
+  top: 50%;
+  transform: translateY(-50%) rotate(180deg);
+}
