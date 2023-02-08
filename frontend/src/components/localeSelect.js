@@ -8,6 +8,7 @@ import { supportedLocales } from '../utils/internationalization';
 import { setLocale } from '../store/actions/userPreferences';
 
 function LocaleSelect({
+  className,
   userPreferences,
   setLocale,
   removeBorder = true,
@@ -30,14 +31,14 @@ function LocaleSelect({
   };
 
   return (
-    <div className="settings-width ml-auto">
+    <div className={`settings-width ml-auto ${className || ''}`}>
       <Select
         classNamePrefix="react-select"
         styles={{
           control: (baseStyles, state) => ({
             ...baseStyles,
             border: removeBorder ? 'none' : 'auto',
-            width: fullWidth ? '100%' : `${8 * state.getValue()[0].label.length + 50}px`,
+            width: fullWidth ? '100%' : `${8 * state.getValue()[0].label.length + 60}px`,
             marginLeft: 'auto',
           }),
           menu: (baseStyles) => ({
