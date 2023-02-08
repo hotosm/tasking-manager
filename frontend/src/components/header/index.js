@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState, useRef } from 'react';
+import React, { Fragment, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, navigate } from '@reach/router';
 import Popup from 'reactjs-popup';
@@ -7,7 +7,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { ORG_URL, ORG_NAME, ORG_LOGO, SERVICE_DESK } from '../../config';
 import logo from '../../assets/img/main-logo.svg';
-import { ChevronRightIcon, ExternalLinkIcon } from '../svgIcons';
+import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { LocaleSelector } from '../localeSelect';
 import { Button } from '../button';
@@ -21,47 +21,17 @@ import { logout } from '../../store/actions/auth';
 import { createLoginWindow } from '../../utils/login';
 import { NotificationBell } from './notificationBell';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
-import { useWindowSize } from '../../hooks/UseWindowSize';
+import { HorizontalScroll } from '../horizontalScroll';
 
 import './styles.scss';
 
 export const Header = (props) => {
   const dispatch = useDispatch();
   const menuItemsContainerRef = useRef(null);
-  // This triggers rerender when the screen size changes, so had to keep it
-  // even if it's unused
-  // eslint-disable-next-line no-unused-vars
-  const size = useWindowSize();
-  const [scrollLeft, setScrollLeft] = useState(0);
+
   const userDetails = useSelector((state) => state.auth.userDetails);
   const organisations = useSelector((state) => state.auth.organisations);
   const showOrgBar = useSelector((state) => state.orgBarVisibility.isVisible);
-
-  useEffect(() => {
-    const menuItemsContainer = document.querySelector('.menu-items-container');
-    menuItemsContainer.addEventListener('scroll', updateScrollLeft);
-
-    return () => {
-      menuItemsContainer.removeEventListener('scroll', updateScrollLeft);
-    };
-  }, []);
-
-  const updateScrollLeft = (e) => {
-    setScrollLeft(e.target.scrollLeft);
-  };
-
-  const handleScroll = (direction) => {
-    let currentScroll = scrollLeft;
-    if (direction === 'right') {
-      currentScroll += 200;
-    } else {
-      currentScroll -= 200;
-    }
-    menuItemsContainerRef.current.scrollTo({
-      left: currentScroll,
-      behavior: 'smooth',
-    });
-  };
 
   const linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu lh-solid nowrap pv2';
 
@@ -82,7 +52,7 @@ export const Header = (props) => {
     let filteredMenuItems = getMenuItemsForUser(userDetails, organisations);
 
     return (
-      <nav className="menu-items-container flex overflow-x-auto" ref={menuItemsContainerRef}>
+      <nav className="navigation-items-container flex overflow-x-auto" ref={menuItemsContainerRef}>
         {filteredMenuItems.map((item) => (
           <Fragment key={item.label.id}>
             {!item.serviceDesk ? (
@@ -153,30 +123,14 @@ export const Header = (props) => {
           />
           <span className="barlow-condensed f3 fw6 ml2 blue-dark nowrap">Tasking Manager</span>
         </Link>
-        <div
-          className="dn dib-l ml5-l mr4-l pl6-xl relative overflow-hidden"
+        <HorizontalScroll
+          className={'dn dib-l ml5-l mr4-l pl6-xl'}
           style={{ flexGrow: 1 }}
+          menuItemsContainerRef={menuItemsContainerRef}
+          containerClass=".navigation-items-container"
         >
-          <ChevronRightIcon
-            role="button"
-            className={`bg-white absolute left-0 rotate-180 z-1 pointer pa2 translate-icon-btm ${
-              scrollLeft > 0 ? 'db' : 'dn'
-            }`}
-            onClick={() => handleScroll('left')}
-          />
-          <ChevronRightIcon
-            role="button"
-            className={`translate-icon bg-white absolute right-0 z-1 pointer pa2 translate-icon ${
-              scrollLeft <
-              menuItemsContainerRef.current?.scrollWidth -
-                menuItemsContainerRef.current?.clientWidth
-                ? 'db'
-                : 'dn'
-            }`}
-            onClick={() => handleScroll('right')}
-          />
           {renderMenuItems()}
-        </div>
+        </HorizontalScroll>
 
         <div className="flex items-center nowrap">
           <ActionItems
