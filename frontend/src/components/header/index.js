@@ -139,6 +139,20 @@ export const Header = (props) => {
           </div>
         </div>
       )}
+      <div className="mv3 ph2 dib w-100 flex justify-between items-center">
+        <Link to={'/'} className="link mv-1 flex flex-nowrap items-center">
+          <img
+            src={ORG_LOGO || logo}
+            alt={`${ORG_NAME} logo`}
+            className="h2 ml2 v-mid"
+            onError={({ currentTarget }) => {
+              // fallback to HOT logo if ORG_LOGO is broken
+              currentTarget.onerror = null;
+              currentTarget.src = logo;
+            }}
+          />
+          <span className="barlow-condensed f3 fw6 ml2 blue-dark nowrap">Tasking Manager</span>
+        </Link>
         <div
           className="dn dib-l ml5-l mr4-l pl6-xl relative overflow-hidden"
           style={{ flexGrow: 1 }}
@@ -164,7 +178,7 @@ export const Header = (props) => {
           {renderMenuItems()}
         </div>
 
-        <div className="fr dib tr mb1 flex items-center">
+        <div className="flex items-center nowrap">
           <ActionItems
             userDetails={userDetails}
             onUserMenuSelect={onUserMenuSelect}
@@ -283,15 +297,15 @@ export const ActionItems = ({ userDetails, onUserMenuSelect, location, getUserLi
         value={[]}
         display={<UserDisplay username={userDetails.username} />}
         options={getUserLinks(userDetails.role)}
-        className="blue-dark bg-white mr1 v-mid dn dib-ns pv2 ph3 bn"
+        className="blue-dark bg-white v-mid bn dn-sm"
       />
     </>
   ) : (
     <>
-      <LocaleSelector className="bn dn dib-66rem" />
+      <LocaleSelector className="bn dn-sm" />
       <AuthButtons
-        logInStyle="blue-dark bg-white"
-        signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
+        logInStyle="blue-dark bg-white dn-sm"
+        signUpStyle="bg-blue-dark white ml1 v-mid dn-sm"
         redirectTo={location.pathname}
       />
     </>

@@ -12,3 +12,8 @@
   transform: translateY(-50%) rotate(180deg);
 }
 
+@media screen and (max-width: 45em) {
+  .dn-sm {
+    display: none;
+  }
+}

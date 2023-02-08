@@ -76,14 +76,14 @@ export const NotificationBell = () => {
     (!initialUnreadCountLoading && !initialUnreadCountError && initialUnreadCount?.unread);
 
   return (
-    <span ref={notificationBellRef}>
+    <span ref={notificationBellRef} className="mr3">
       <TopNavLink
         to={'inbox/'}
         onClick={handleBellClick}
         onKeyPress={handleBellClick}
         isActive={isNotificationBellActive}
       >
-        <div className="relative dib">
+        <div className="relative dib pt1">
           <BellIcon aria-label="Notifications" role="button" />
           {doesUnreadNotificationsExist && <div className="redicon" />}
         </div>
