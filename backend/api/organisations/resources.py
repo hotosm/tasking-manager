@@ -45,8 +45,6 @@ class OrganisationsBySlugRestAPI(Resource):
         responses:
             200:
                 description: Organisation found
-            401:
-                description: Unauthorized - Invalid credentials
             404:
                 description: Organisation not found
             500:
@@ -151,7 +149,7 @@ class OrganisationsRestAPI(Resource):
         except OrganisationServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except Exception as e:
-            error_msg = f"Organisation PUT - unhandled error: {str(e)}"
+            error_msg = f"Organisation POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
