@@ -337,3 +337,239 @@ class TestTasksQueriesXmlAPI(BaseTestCase):
             response.headers["Content-Disposition"],
             f"attachment; filename=HOT-project-{self.test_project.id}.osm",
         )
+
+
+class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_author_access_token = generate_encoded_token(self.test_author.id)
+        self.test_user = return_canned_user("TEST USER", 11111)
+        self.test_user.create()
+        self.test_user_access_token = generate_encoded_token(self.test_user.id)
+        self.url = (
+            f"/api/v2/projects/{self.test_user.username}/tasks/queries/own/invalidated/"
+        )
+
+    @staticmethod
+    def invalidate_task(task: Task, mapper_id: int, validator_id: int):
+        """
+        Helper function to invalidate a task.
+        ----------------
+        Parameters:
+        task: Task object
+        mapper_id: int
+        validator_id: int
+        """
+        if task.task_status == TaskStatus.MAPPED.value:
+            task.task_status = TaskStatus.READY.value
+            task.update()
+
+        task.lock_task_for_mapping(mapper_id)
+        task.unlock_task(mapper_id, TaskStatus.MAPPED)
+        task.lock_task_for_validating(validator_id)
+        task.unlock_task(validator_id, TaskStatus.INVALIDATED)
+
+    def test_returns_401_if_user_not_authorized(self):
+        """ Test that a 401 is returned if the user is not authorized. """
+        # Act
+        response = self.client.get(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_404_if_user_does_not_exist(self):
+        """ Test that a 404 is returned if the user does not exist. """
+        # Act
+        response = self.client.get(
+            "/api/projects/hello/tasks/queries/own/invalidated/",
+            headers={"Authorization": self.test_user_access_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+
+    def test_returns_invalidated_tasks_mapped_by_user_if_as_validator_set_false(self):
+        """
+        Test that the invalidated tasks mapped by user are returned if the as_validator parameter is set to false.
+        """
+        # Arrange
+        # Lets map a task by test user
+        task = Task.get(2, self.test_project.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task, self.test_user.id, self.test_author.id
+        )
+        # Act
+        response = self.client.get(
+            self.url + "?asValidator=false",
+            headers={"Authorization": self.test_user_access_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["pagination"]["total"], 1)
+        self.assertEqual(len(response.json["invalidatedTasks"]), 1)
+        self.assertEqual(
+            response.json["invalidatedTasks"][0]["taskId"], 2
+        )  # Since we invalidated task 2
+
+    def test_returns_tasks_invalidated_by_user_if_as_validator_set_true(self):
+        """
+        Test that the tasks invalidated by user are returned if the as_validator parameter is set to true.
+        """
+        # Arrange
+        # Lets map a task by test author and invalidate it by test user
+        task = Task.get(2, self.test_project.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task, self.test_author.id, self.test_user.id
+        )
+        # Act
+        response = self.client.get(
+            self.url + "?asValidator=true",
+            headers={"Authorization": self.test_user_access_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["pagination"]["total"], 1)
+        self.assertEqual(len(response.json["invalidatedTasks"]), 1)
+        self.assertEqual(response.json["invalidatedTasks"][0]["taskId"], 2)
+
+    def returns_404_if_no_tasks_found(self):
+        """ Test that a 404 is returned if no tasks are found. """
+        # Act
+
+        response = self.client.get(
+            self.url + "?asValidator=true",
+            headers={"Authorization": self.test_user_access_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+
+    def test_sort_by_sorts_task_by_specified_fields(self):
+        """ Test that the tasks are sorted by the specified_fields. """
+        # Arrange
+        test_project_2, _ = create_canned_project()
+        test_project_3, _ = create_canned_project()
+        # Lets map a task by test author and invalidate it by test user
+        task_1 = Task.get(2, self.test_project.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task_1, self.test_author.id, self.test_user.id
+        )
+        task_3 = Task.get(2, test_project_3.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task_3, self.test_author.id, self.test_user.id
+        )
+        task_2 = Task.get(2, test_project_2.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task_2, self.test_author.id, self.test_user.id
+        )
+        # Sort by projectId in ascending order
+        # Act
+        response = self.client.get(
+            self.url + "?asValidator=true&sortBy=projectId&sortDirection=asc",
+            headers={"Authorization": self.test_user_access_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["pagination"]["total"], 3)
+        self.assertEqual(len(response.json["invalidatedTasks"]), 3)
+        self.assertEqual(
+            response.json["invalidatedTasks"][0]["projectId"], self.test_project.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][1]["projectId"], test_project_2.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][2]["projectId"], test_project_3.id
+        )
+        # Act
+        # Sort by projectId in descending order
+        response = self.client.get(
+            self.url + "?asValidator=true&sortBy=projectId&sortDirection=desc",
+            headers={"Authorization": self.test_user_access_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["pagination"]["total"], 3)
+        self.assertEqual(len(response.json["invalidatedTasks"]), 3)
+        self.assertEqual(
+            response.json["invalidatedTasks"][0]["projectId"], test_project_3.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][1]["projectId"], test_project_2.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][2]["projectId"], self.test_project.id
+        )
+        # Act
+        # Sort by updatedDate in ascending order
+        response = self.client.get(
+            self.url + "?asValidator=true&sortBy=updatedDate&sortDirection=asc",
+            headers={"Authorization": self.test_user_access_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["pagination"]["total"], 3)
+        self.assertEqual(len(response.json["invalidatedTasks"]), 3)
+        self.assertEqual(
+            response.json["invalidatedTasks"][0]["projectId"], self.test_project.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][1]["projectId"], test_project_3.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][2]["projectId"], test_project_2.id
+        )
+        # Act
+        # Sort by updatedDate in descending order
+        response = self.client.get(
+            self.url + "?asValidator=true&sortBy=updatedDate&sortDirection=desc",
+            headers={"Authorization": self.test_user_access_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["pagination"]["total"], 3)
+        self.assertEqual(len(response.json["invalidatedTasks"]), 3)
+        self.assertEqual(
+            response.json["invalidatedTasks"][0]["projectId"], test_project_2.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][1]["projectId"], test_project_3.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][2]["projectId"], self.test_project.id
+        )
+
+    def test_filters_by_closed(self):
+        """ Test that the tasks are filtered by closed. """
+        # Arrange
+        # Lets map a task by test author and invalidate it by test user
+        task_1 = Task.get(2, self.test_project.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task_1, self.test_author.id, self.test_user.id
+        )
+        # Act
+        response = self.client.get(
+            self.url + "?asValidator=true&closed=true",
+            headers={"Authorization": self.test_user_access_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json["pagination"]["total"], 0
+        )  # No closed invalidated tasks
+        self.assertEqual(len(response.json["invalidatedTasks"]), 0)
+
+        # Arrange
+        # Let's remap the task and validate it which will close it
+        task_1.lock_task_for_mapping(self.test_user.id)
+        task_1.unlock_task(self.test_user.id, TaskStatus.MAPPED)
+        task_1.lock_task_for_validating(self.test_user.id)
+        task_1.unlock_task(self.test_user.id, TaskStatus.VALIDATED)
+        # Act
+        response = self.client.get(
+            self.url + "?asValidator=true&closed=true",
+            headers={"Authorization": self.test_user_access_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["pagination"]["total"], 1)
+        self.assertEqual(len(response.json["invalidatedTasks"]), 1)
+        self.assertEqual(response.json["invalidatedTasks"][0]["taskId"], task_1.id)
