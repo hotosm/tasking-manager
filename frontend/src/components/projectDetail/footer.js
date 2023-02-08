@@ -92,7 +92,7 @@ export const ProjectDetailFooter = ({ className, projectId }) => {
       {/* TODO ADD ANCHORS */}
       <div className="relative overflow-hidden w-60-ns pr1 mr4 dn db-l">
         <div
-          className={`menu-overflow-left bg-white absolute left-0 rotate-180 z-1 pointer pl2 ${
+          className={`bg-white absolute left-0 rotate-180 z-1 pointer pl2 ${
             scrollLeft > 0 ? 'db' : 'dn'
           }`}
           onClick={() => handleScroll('left')}
@@ -100,7 +100,7 @@ export const ProjectDetailFooter = ({ className, projectId }) => {
           <ChevronRightIcon />
         </div>
         <div
-          className={`menu-overflow-right bg-white absolute right-0 z-1 pointer pl2 ${
+          className={`bg-white absolute right-0 z-1 pointer pl2 ${
             scrollLeft <
             menuItemsContainerRef.current?.scrollWidth - menuItemsContainerRef.current?.clientWidth
               ? 'db'
