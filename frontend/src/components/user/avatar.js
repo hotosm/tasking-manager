@@ -101,6 +101,7 @@ export const UserAvatarList = ({
   textColor = 'white',
   bgColor,
   size,
+  totalCount,
 }: Object) => {
   const getColor = () =>
     bgColor ? bgColor : getRandomArrayItem(['bg-orange', 'bg-red', 'bg-blue-dark', 'bg-blue-grey']);
@@ -114,8 +115,8 @@ export const UserAvatarList = ({
 
   return (
     <>
-      {users.slice(0, maxLength ? maxLength : users.length).map((user, n) => (
-        <div style={{ marginLeft: n === 0 ? '' : marginLeft }} className="dib" key={n}>
+      {users.slice(0, maxLength ? maxLength : totalCount || users.length).map((user, n) => (
+        <div style={{ marginLeft: n === 0 ? '' : marginLeft }} className="dib" key={user.username}>
           <UserAvatar
             username={user.username}
             picture={user.pictureUrl}
@@ -124,10 +125,14 @@ export const UserAvatarList = ({
           />
         </div>
       ))}
-      {maxLength && users.length - maxLength > 0 && (
+      {maxLength && (totalCount || users.length) - maxLength > 0 && (
         <div style={{ marginLeft: '-1.5rem' }} className="dib">
           <UserAvatar
-            number={`+${users.length - maxLength > 999 ? 999 : users.length - maxLength}`}
+            number={`+${
+              (totalCount || users.length) - maxLength > 999
+                ? 999
+                : (totalCount || users.length) - maxLength
+            }`}
             size={size}
             colorClasses={`blue-dark bg-grey-light`}
             disableLink={true}

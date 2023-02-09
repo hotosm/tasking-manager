@@ -134,6 +134,7 @@ export function TeamCard({ team }: Object) {
               textColor="white"
               users={team.members.filter((user) => user.function === 'MANAGER' && user.active)}
               maxLength={8}
+              totalCount={team.managersCount}
             />
           </div>
           <h4 className="f6 fw5 mv2 ttu blue-light">
@@ -145,6 +146,7 @@ export function TeamCard({ team }: Object) {
               textColor="white"
               users={team.members.filter((user) => user.function !== 'MANAGER' && user.active)}
               maxLength={8}
+              totalCount={team.membersCount}
             />
           </div>
         </div>
