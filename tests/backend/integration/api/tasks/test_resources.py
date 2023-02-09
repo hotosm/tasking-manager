@@ -11,6 +11,7 @@ from tests.backend.helpers.test_helpers import (
 
 from backend.models.postgis.statuses import UserRole, TaskStatus
 from backend.services.project_service import ProjectService
+from backend.services.project_admin_service import ProjectAdminService
 from backend.models.postgis.task import Task
 
 
@@ -573,3 +574,46 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         self.assertEqual(response.json["pagination"]["total"], 1)
         self.assertEqual(len(response.json["invalidatedTasks"]), 1)
         self.assertEqual(response.json["invalidatedTasks"][0]["taskId"], task_1.id)
+
+
+class TestTasksQueriesMappedAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_user = return_canned_user("TEST USER", 1111111)
+        self.test_user.create()
+        self.url = f"/api/v2/projects/{self.test_project.id}/tasks/queries/mapped/"
+
+    def test_returns_404_if_project_does_not_exist(self):
+        """ Test that the endpoint returns 404 if the project does not exist. """
+        # Arrange
+        # Act
+        response = self.client.get("/api/v2/projects/999999/tasks/queries/mapped/")
+        # Assert
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_mapped_tasks(self):
+        # Arrange
+        # Lets reset all tasks in a project to be available for mapping
+        ProjectAdminService.reset_all_tasks(self.test_project.id, self.test_author.id)
+        # Lets map a tasks
+        task_1 = Task.get(1, self.test_project.id)
+        task_2 = Task.get(2, self.test_project.id)
+        task_1.lock_task_for_mapping(self.test_user.id)
+        task_1.unlock_task(self.test_user.id, TaskStatus.MAPPED)
+        task_2.lock_task_for_mapping(self.test_author.id)
+        task_2.unlock_task(self.test_author.id, TaskStatus.MAPPED)
+        # Act
+        response = self.client.get(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json["mappedTasks"][0]["username"], self.test_user.username
+        )
+        self.assertEqual(
+            response.json["mappedTasks"][1]["username"], self.test_author.username
+        )
+        self.assertEqual(response.json["mappedTasks"][0]["mappedTaskCount"], 1)
+        self.assertEqual(response.json["mappedTasks"][1]["mappedTaskCount"], 1)
+        self.assertEqual(response.json["mappedTasks"][0]["tasksMapped"], [1])
+        self.assertEqual(response.json["mappedTasks"][1]["tasksMapped"], [2])

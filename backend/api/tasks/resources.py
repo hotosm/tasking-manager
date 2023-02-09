@@ -466,8 +466,17 @@ class TasksQueriesMappedAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            ProjectService.get_project_by_id(project_id)
             mapped_tasks = ValidatorService.get_mapped_tasks_by_user(project_id)
             return mapped_tasks.to_primitive(), 200
+        except NotFound:
+            return (
+                {
+                    "Error": "Not found; please check the project number.",
+                    "SubCode": "NotFound",
+                },
+                404,
+            )
         except Exception as e:
             error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
