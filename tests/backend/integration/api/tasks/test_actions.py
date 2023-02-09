@@ -11,7 +11,7 @@ from tests.backend.helpers.test_helpers import (
     generate_encoded_token,
     create_canned_license,
 )
-from backend.models.postgis.task import Task
+from backend.models.postgis.task import Task, TaskAction
 
 
 class TasksActionsMapAllAPI(BaseTestCase):
@@ -24,7 +24,7 @@ class TasksActionsMapAllAPI(BaseTestCase):
         self.user_session_token = generate_encoded_token(self.test_user.id)
 
     def test_map_all_tasks_returns_401_for_unauthorized_request(self):
-        "Test returns 401 on request without session token."
+        """Test returns 401 on request without session token."""
 
         # Act
         response = self.client.post(self.url)
@@ -33,7 +33,7 @@ class TasksActionsMapAllAPI(BaseTestCase):
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_map_all_tasks_returns_403_for_non_PM_role_request(self, mock_pm_role):
-        "Test returns 403 on request by user without PM role"
+        """Test returns 403 on request by user without PM role"""
 
         # Arrange
         mock_pm_role.return_value = False
@@ -47,6 +47,7 @@ class TasksActionsMapAllAPI(BaseTestCase):
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_map_all_tasks_is_allowed_for_user_with_pm_role(self, mock_pm_role):
+        """Test returns 200 on request by user with PM role and all tasks are mapped"""
         # Arrange
         init_ready_tasks = Task.get_tasks_by_status(
             self.test_project.id, TaskStatus.READY.name
@@ -82,8 +83,7 @@ class TasksActionsValidateAllAPI(BaseTestCase):
         self.user_session_token = generate_encoded_token(self.test_user.id)
 
     def test_validate_all_tasks_returns_401_for_unauthorized_request(self):
-        # Arrange
-        "Test returns 401 on request without session token."
+        """Test returns 401 on request without session token."""
         # Act
         response = self.client.post(self.url)
         # Assert
@@ -91,7 +91,7 @@ class TasksActionsValidateAllAPI(BaseTestCase):
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_validate_all_tasks_returns_403_for_non_PM_role_request(self, mock_pm_role):
-        "Test returns 403 on request by user without PM role"
+        """Test returns 403 on request by user without PM role"""
 
         # Arrange
         mock_pm_role.return_value = False
@@ -105,6 +105,7 @@ class TasksActionsValidateAllAPI(BaseTestCase):
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_validate_all_tasks_is_allowed_for_user_with_pm_role(self, mock_pm_role):
+        """Test returns 200 on request by user with PM role and all tasks are validated"""
         # Arrange
         init_mapped_tasks = Task.get_tasks_by_status(
             self.test_project.id, TaskStatus.MAPPED.name
@@ -137,8 +138,7 @@ class TasksActionsInvalidateAllAPI(BaseTestCase):
         self.user_session_token = generate_encoded_token(self.test_user.id)
 
     def test_invalidate_all_tasks_returns_401_for_unauthorized_request(self):
-        # Arrange
-        "Test returns 401 on request without session token."
+        """Test returns 401 on request without session token."""
         # Act
         response = self.client.post(self.url)
         # Assert
@@ -148,7 +148,7 @@ class TasksActionsInvalidateAllAPI(BaseTestCase):
     def test_invalidate_all_tasks_returns_403_for_non_PM_role_request(
         self, mock_pm_role
     ):
-        "Test returns 403 on request by user without PM role"
+        """Test returns 403 on request by user without PM role"""
 
         # Arrange
         mock_pm_role.return_value = False
@@ -162,6 +162,7 @@ class TasksActionsInvalidateAllAPI(BaseTestCase):
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_invalidate_all_tasks_is_allowed_for_user_with_pm_role(self, mock_pm_role):
+        """Test that all tasks with status of validated are invalidated"""
         # Arrange
         validated_tasks = Task.get_tasks_by_status(
             self.test_project.id, TaskStatus.VALIDATED.name
@@ -197,8 +198,7 @@ class TasksActionsResetBadImageryAllAPI(BaseTestCase):
         self.user_session_token = generate_encoded_token(self.test_user.id)
 
     def test_reset_all_badimagery_tasks_returns_401_for_unauthorized_request(self):
-        # Arrange
-        "Test returns 401 on request without session token."
+        """Test returns 401 on request without session token."""
         # Act
         response = self.client.post(self.url)
         # Assert
@@ -208,7 +208,7 @@ class TasksActionsResetBadImageryAllAPI(BaseTestCase):
     def test_reset_all_badimagery_tasks_returns_403_for_non_PM_role_request(
         self, mock_pm_role
     ):
-        "Test returns 403 on request by user without PM role"
+        """Test returns 403 on request by user without PM role"""
 
         # Arrange
         mock_pm_role.return_value = False
@@ -224,6 +224,7 @@ class TasksActionsResetBadImageryAllAPI(BaseTestCase):
     def test_reset_all_badimagery_tasks_is_allowed_for_user_with_pm_role(
         self, mock_pm_role
     ):
+        """Test returns 200 on request by user with PM role and resets all bad imagery tasks to ready"""
         # Arrange
         init_bad_imagery_tasks = Task.get_tasks_by_status(
             self.test_project.id, TaskStatus.BADIMAGERY.name
@@ -253,8 +254,7 @@ class TasksActionsResetAllAPI(BaseTestCase):
         self.user_session_token = generate_encoded_token(self.test_user.id)
 
     def test_reset_all_tasks_returns_401_for_unauthorized_request(self):
-        # Arrange
-        "Test returns 401 on request without session token."
+        """Test returns 401 on request without session token."""
         # Act
         response = self.client.post(self.url)
         # Assert
@@ -276,6 +276,7 @@ class TasksActionsResetAllAPI(BaseTestCase):
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_reset_all_tasks_is_allowed_for_user_with_pm_role(self, mock_pm_role):
+        """ Test returns 200 on request by user with PM role and resets all tasks to ready """
         # Arrange
         init_non_ready_tasks = []
         for status in [
@@ -321,16 +322,14 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
         self.user_session_token = generate_encoded_token(self.test_user.id)
 
     def test_mapping_lock_returns_401_for_unauthorized_request(self):
-        # Arrange
-        "Test returns 401 on request without session token."
+        """Test returns 401 on request without session token."""
         # Act
         response = self.client.post(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_mapping_lock_returns_404_for_invalid_project_id(self):
-        # Arrange
-        "Test returns 404 on request with invalid project id."
+        """Test returns 404 on request with invalid project id."""
         # Act
         response = self.client.post(
             "/api/v2/projects/999999/tasks/actions/lock-for-mapping/1/",
@@ -341,8 +340,7 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "NotFound")
 
     def test_mapping_lock_returns_404_for_invalid_task_id(self):
-        # Arrange
-        "Test returns 404 on request with invalid task id."
+        """Test returns 404 on request with invalid task id."""
         # Act
         response = self.client.post(
             f"/api/v2/projects/{self.test_project.id}/tasks/actions/lock-for-mapping/999999/",
@@ -356,7 +354,7 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
     def test_mapping_lock_returns_403_for_if_user_not_allowed_to_map(
         self, mock_permitted
     ):
-        "Test returns 403 on request by user who doesn't have required permission to map."
+        """Test returns 403 on request by user who doesn't have required permission to map."""
         # Arrange
         mock_permitted.return_value = False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
         task = Task.get(1, self.test_project.id)
@@ -421,7 +419,10 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "UserLicenseError")
 
     @patch.object(ProjectService, "is_user_permitted_to_map")
-    def test_mapping_lock_is_allowed_for_user_with_pm_role(self, mock_permitted):
+    def test_mapping_lock_is_allowed_for_user_with_mapping_permission(
+        self, mock_permitted
+    ):
+        """ Test returns 200 if user has mapping permission. """
         # Arrange
         mock_permitted.return_value = True, "User allowed to map"
         task = Task.get(1, self.test_project.id)
@@ -439,3 +440,159 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
             response.json["taskStatus"], TaskStatus.LOCKED_FOR_MAPPING.name
         )
         self.assertEqual(response.json["lockHolder"], self.test_user.username)
+
+
+class TestTasksActionsMappingUnlockAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_user = return_canned_user("Test User", 1111111)
+        self.test_user.create()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.url = f"/api/v2/projects/{self.test_project.id}/tasks/actions/unlock-after-mapping/1/"
+
+    def test_mapping_unlock_returns_401_for_unauthenticated_user(self):
+        """Test returns 401 on request from unauthenticated user."""
+        # Act
+        response = self.client.post(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_mapping_unlock_returns_400_if_invalid_data(self):
+        """Test returns 404 on request with invalid data."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={
+                "status": "test"
+            },  # Since valid status are MAPPED, INVALIDATED, BADIMAGERY
+        )
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json["SubCode"], "InvalidData")
+
+    def test_mapping_unlock_returns_404_for_invalid_project_id(self):
+        """Test returns 404 on request with invalid project id."""
+        # Act
+        response = self.client.post(
+            "/api/v2/projects/999999/tasks/actions/unlock-after-mapping/1/",
+            headers={"Authorization": self.user_session_token},
+            json={"status": "MAPPED"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_mapping_unlock_returns_404_for_invalid_task_id(self):
+        """Test returns 404 on request with invalid task id."""
+        # Act
+        response = self.client.post(
+            f"/api/v2/projects/{self.test_project.id}/tasks/actions/unlock-after-mapping/999999/",
+            headers={"Authorization": self.user_session_token},
+            json={"status": "MAPPED"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_mapping_unlock_returns_403_if_task_not_locked_for_mapping(self):
+        """Test returns 403 if task is not locked for mapping."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"status": "MAPPED"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "LockBeforeUnlocking")
+
+    def test_mapping_unlock_returns_403_if_task_locked_by_other_user(self):
+        """Test returns 403 if task is locked by other user."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
+        task.locked_by = self.test_author.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"status": "MAPPED"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "TaskNotOwned")
+
+    def test_returns_403_if_invalid_new_state_passed(self):
+        """Test returns 403 if invalid new state passed as new task state should be READY, MAPPED or BADIMAGERY."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
+        task.locked_by = self.test_user.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"status": "INVALIDATED"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "InvalidUnlockState")
+
+    def test_mapping_unlock_returns_200_on_success(self):
+        """Test returns 200 on success."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
+        task.locked_by = self.test_user.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"status": "MAPPED"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["taskId"], 1)
+        self.assertEqual(response.json["projectId"], self.test_project.id)
+        self.assertEqual(response.json["taskStatus"], TaskStatus.MAPPED.name)
+        last_task_history = response.json["taskHistory"][0]
+        self.assertEqual(last_task_history["action"], TaskAction.STATE_CHANGE.name)
+        self.assertEqual(last_task_history["actionText"], TaskStatus.MAPPED.name)
+        self.assertEqual(last_task_history["actionBy"], self.test_user.username)
+
+    def test_mapping_unlock_returns_200_on_success_with_comment(self):
+        """Test returns 200 on success."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
+        task.locked_by = self.test_user.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={
+                "status": "BADIMAGERY",  # Lets test with BADIMAGERY this time
+                "comment": "cannot map",
+            },
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["taskId"], 1)
+        self.assertEqual(response.json["projectId"], self.test_project.id)
+        self.assertEqual(response.json["taskStatus"], TaskStatus.BADIMAGERY.name)
+
+        last_task_history = response.json["taskHistory"][0]
+        self.assertEqual(last_task_history["action"], TaskAction.STATE_CHANGE.name)
+        self.assertEqual(last_task_history["actionText"], TaskStatus.BADIMAGERY.name)
+        self.assertEqual(last_task_history["actionBy"], self.test_user.username)
+
+        last_comment_history = response.json["taskHistory"][1]
+        self.assertEqual(last_comment_history["action"], TaskAction.COMMENT.name)
+        self.assertEqual(last_comment_history["actionText"], "cannot map")
+        self.assertEqual(last_comment_history["actionBy"], self.test_user.username)
