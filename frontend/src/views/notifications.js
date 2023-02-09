@@ -74,6 +74,8 @@ export const NotificationsPage = (props) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  console.log('inboxQuery', inboxQuery);
+
   const fetchNotifications = () => {
     return fetchLocalJSONAPI(`notifications/?${serializeParams(inboxQuery)}`, userToken)
       .then((result) => setNotifications(result))

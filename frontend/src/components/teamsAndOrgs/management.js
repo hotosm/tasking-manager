@@ -75,7 +75,10 @@ export function Management(props) {
               className={`link di f6 mr2 ph3 pv2 ba b--grey-light ${
                 props.userOnly ? 'bg-white blue-grey' : 'bg-blue-grey white fw5'
               }`}
-              onClick={() => props.setUserOnly(false)}
+              onClick={() => {
+                props.setUserOnly(false);
+                props.setQuery({ ...props.query, page: 1, isUserTeamsOnly: undefined });
+              }}
             >
               <FormattedMessage {...messages.all} />
             </CustomButton>
@@ -83,7 +86,10 @@ export function Management(props) {
               className={`link di f6 mh1 ph3 pv2 ba b--grey-light ${
                 props.userOnly ? 'bg-blue-grey white fw5' : 'bg-white blue-grey'
               }`}
-              onClick={() => props.setUserOnly(true)}
+              onClick={() => {
+                props.setUserOnly(true);
+                props.setQuery({ ...props.query, page: 1, isUserTeamsOnly: true });
+              }}
             >
               {props.userOnlyLabel}
             </CustomButton>
