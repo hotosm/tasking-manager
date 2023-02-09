@@ -17,7 +17,7 @@ export function ManagementPageIndex() {
     `projects/?managedByMe=true&omitMapResults=true`,
   );
   const [teamsError, teamsLoading, teams] = useFetch(
-    `teams/?manager=${userDetails.id}`,
+    `teams/?manager=${userDetails.id}&fullMemberList=false&paginate=true&perPage=6`,
     userDetails.id !== undefined,
   );
 
