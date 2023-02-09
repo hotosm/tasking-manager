@@ -130,6 +130,7 @@ describe('TeamsManagement component', () => {
     const { container, getByRole } = render(
       <ReduxIntlProviders>
         <TeamsManagement
+          query={{ searchQuery: undefined }}
           userDetails={{ role: 'ADMIN' }}
           managementView={true}
           isTeamsFetched={false}
@@ -149,6 +150,7 @@ describe('TeamsManagement component', () => {
     const { container } = render(
       <ReduxIntlProviders>
         <TeamsManagement
+          query={{ searchQuery: undefined }}
           userDetails={{ role: 'ADMIN' }}
           managementView={true}
           isTeamsFetched={true}
@@ -165,6 +167,7 @@ describe('TeamsManagement component', () => {
     render(
       <ReduxIntlProviders>
         <TeamsManagement
+          query={{ searchQuery: undefined }}
           userDetails={{ role: 'MAPPER' }}
           managementView={true}
           isTeamsFetched={true}
@@ -182,6 +185,7 @@ describe('TeamsManagement component', () => {
     render(
       <ReduxIntlProviders>
         <TeamsManagement
+          query={{ searchQuery: undefined }}
           userDetails={{ role: 'ADMIN' }}
           managementView={true}
           isTeamsFetched={true}
@@ -204,6 +208,7 @@ describe('TeamsManagement component', () => {
     const { container, getByText } = render(
       <ReduxIntlProviders>
         <TeamsManagement
+          query={{ searchQuery: undefined }}
           teams={dummyTeams}
           userDetails={{ role: 'ADMIN' }}
           managementView={true}
@@ -223,6 +228,7 @@ describe('TeamsManagement component', () => {
     render(
       <ReduxIntlProviders>
         <TeamsManagement
+          query={{ searchQuery: undefined }}
           teams={[]}
           userDetails={{ role: 'ADMIN' }}
           managementView={false}
@@ -236,54 +242,6 @@ describe('TeamsManagement component', () => {
         name: /my teams/i,
       }),
     ).toBeInTheDocument();
-  });
-
-  it('filters teams list by the search query', async () => {
-    render(
-      <ReduxIntlProviders>
-        <TeamsManagement
-          teams={dummyTeams}
-          userDetails={{ role: 'ADMIN' }}
-          managementView={true}
-          isTeamsFetched={true}
-        />
-      </ReduxIntlProviders>,
-    );
-    const textField = screen.getByRole('textbox');
-    fireEvent.change(textField, {
-      target: {
-        value: 'my best',
-      },
-    });
-    expect(screen.getByRole('heading', { name: 'My Best Team' })).toHaveTextContent('My Best Team');
-    fireEvent.change(textField, {
-      target: {
-        value: 'not my best',
-      },
-    });
-    expect(screen.queryByRole('heading', { name: 'My Best Team' })).not.toBeInTheDocument();
-    expect(screen.queryByText('No team found.')).toBeInTheDocument();
-  });
-
-  it('should filter search query when the close icon button is clicked', async () => {
-    render(
-      <ReduxIntlProviders>
-        <TeamsManagement
-          teams={teams.teams}
-          userDetails={{ role: 'ADMIN' }}
-          managementView={true}
-          isTeamsFetched={true}
-        />
-      </ReduxIntlProviders>,
-    );
-
-    const textfield = screen.getByRole('textbox');
-    await userEvent.type(textfield, 'hot');
-    expect(textfield.value).toBe('hot');
-    const clearIcon = screen.getByLabelText('clear');
-    expect(clearIcon).toBeInTheDocument();
-    await userEvent.click(clearIcon);
-    expect(textfield.value).toBe('');
   });
 });
 

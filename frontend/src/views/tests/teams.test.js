@@ -1,6 +1,8 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor, within, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { QueryParamProvider } from 'use-query-params';
 
 import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
 import { ManageTeams, EditTeam, CreateTeam, MyTeams } from '../teams';
@@ -9,9 +11,11 @@ import { store } from '../../store';
 describe('List Teams', () => {
   it('should show loading placeholder when teams are being fetched', async () => {
     const { container } = renderWithRouter(
-      <ReduxIntlProviders>
-        <ManageTeams />
-      </ReduxIntlProviders>,
+      <QueryParamProvider adapter={ReachAdapter}>
+        <ReduxIntlProviders>
+          <ManageTeams />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
     );
     act(() => {
       store.dispatch({
@@ -25,9 +29,11 @@ describe('List Teams', () => {
 
   it('should fetch and list teams', async () => {
     const { container } = render(
-      <ReduxIntlProviders>
-        <ManageTeams />
-      </ReduxIntlProviders>,
+      <QueryParamProvider adapter={ReachAdapter}>
+        <ReduxIntlProviders>
+          <ManageTeams />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
     );
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
@@ -39,9 +45,11 @@ describe('List Teams', () => {
 
   it('should navigate to team detail page on team article click', async () => {
     const { history, container } = renderWithRouter(
-      <ReduxIntlProviders>
-        <ManageTeams />
-      </ReduxIntlProviders>,
+      <QueryParamProvider adapter={ReachAdapter}>
+        <ReduxIntlProviders>
+          <ManageTeams />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
     );
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
@@ -206,9 +214,11 @@ describe('Delete Team', () => {
 
 test('MyTeams Component renders its child component', () => {
   render(
-    <ReduxIntlProviders>
-      <MyTeams />
-    </ReduxIntlProviders>,
+    <QueryParamProvider adapter={ReachAdapter}>
+      <ReduxIntlProviders>
+        <MyTeams />
+      </ReduxIntlProviders>
+    </QueryParamProvider>,
   );
   expect(
     screen.getByRole('heading', {
