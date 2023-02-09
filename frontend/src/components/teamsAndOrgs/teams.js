@@ -30,9 +30,9 @@ export function TeamsManagement({
   );
 
   const onSearchInputChange = (e) =>
-    setQuery({ ...query, searchQuery: e.target.value || undefined }, 'pushIn');
+    setQuery({ ...query, searchQuery: e.target.value || undefined, page: 1 }, 'pushIn');
 
-  const clearSearchQuery = () => setQuery({ ...query, searchQuery: undefined }, 'pushIn');
+  const clearSearchQuery = () => setQuery({ ...query, searchQuery: undefined, page: 1 }, 'pushIn');
 
   return (
     <Management
