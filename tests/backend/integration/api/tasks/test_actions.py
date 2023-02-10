@@ -596,3 +596,116 @@ class TestTasksActionsMappingUnlockAPI(BaseTestCase):
         self.assertEqual(last_comment_history["action"], TaskAction.COMMENT.name)
         self.assertEqual(last_comment_history["actionText"], "cannot map")
         self.assertEqual(last_comment_history["actionBy"], self.test_user.username)
+
+
+class TestTasksActionsMappingStopAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_user = return_canned_user("Test User", 11111111)
+        self.test_user.create()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.url = (
+            f"/api/v2/projects/{self.test_project.id}/tasks/actions/stop-mapping/1/"
+        )
+
+    def test_returns_401_if_user_not_authorized(self):
+        """Test returns 401 if user not authorized."""
+        # Act
+        response = self.client.post(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_mapping_stop_returns_404_for_invalid_project_id(self):
+        """Test returns 404 on request with invalid project id."""
+        # Act
+        response = self.client.post(
+            "/api/v2/projects/999999/tasks/actions/stop-mapping/1/",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_mapping_stop_returns_404_for_invalid_task_id(self):
+        """Test returns 404 on request with invalid task id."""
+        # Act
+        response = self.client.post(
+            f"/api/v2/projects/{self.test_project.id}/tasks/actions/stop-mapping/999999/",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_mapping_stop_returns_403_if_task_not_locked_for_mapping(self):
+        """Test returns 403 if task not locked for mapping."""
+        # Since we are not locking the task, it should return 403
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "LockBeforeUnlocking")
+
+    def test_mapping_stop_returns_403_if_task_locked_by_other_user(self):
+        """Test returns 403 if task locked by other user."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
+        task.locked_by = self.test_author.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "TaskNotOwned")
+
+    def test_mapping_stop_returns_200_on_success(self):
+        """Test returns 200 on success."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
+        task.locked_by = self.test_user.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["taskId"], 1)
+        self.assertEqual(response.json["projectId"], self.test_project.id)
+        self.assertEqual(response.json["taskStatus"], TaskStatus.READY.name)
+
+    def test_mapping_stop_returns_200_on_success_with_comment(self):
+        """Test returns 200 on success."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
+        task.locked_by = self.test_user.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={
+                "comment": "cannot map",
+            },
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["taskId"], 1)
+        self.assertEqual(response.json["projectId"], self.test_project.id)
+        self.assertEqual(response.json["taskStatus"], TaskStatus.READY.name)
+
+        last_comment_history = response.json["taskHistory"][0]
+        self.assertEqual(last_comment_history["action"], TaskAction.COMMENT.name)
+        self.assertEqual(last_comment_history["actionText"], "cannot map")
+        self.assertEqual(last_comment_history["actionBy"], self.test_user.username)
