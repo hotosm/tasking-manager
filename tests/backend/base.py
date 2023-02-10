@@ -33,3 +33,4 @@ class BaseTestCase(unittest.TestCase):
         super(BaseTestCase, self).tearDown()
         self.db.session.rollback()
         self.app_context.pop()
+        self.db.session.close()
