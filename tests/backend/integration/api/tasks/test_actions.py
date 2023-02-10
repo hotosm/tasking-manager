@@ -1,5 +1,10 @@
 from unittest.mock import patch
-from backend.models.postgis.statuses import TaskStatus, MappingNotAllowed, ProjectStatus
+from backend.models.postgis.statuses import (
+    TaskStatus,
+    MappingNotAllowed,
+    ProjectStatus,
+    ValidatingNotAllowed,
+)
 
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
@@ -709,3 +714,201 @@ class TestTasksActionsMappingStopAPI(BaseTestCase):
         self.assertEqual(last_comment_history["action"], TaskAction.COMMENT.name)
         self.assertEqual(last_comment_history["actionText"], "cannot map")
         self.assertEqual(last_comment_history["actionBy"], self.test_user.username)
+
+
+class TestTasksActionsValidationLockAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_user = return_canned_user("Test User", 11111111)
+        self.test_user.create()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.url = f"/api/v2/projects/{self.test_project.id}/tasks/actions/lock-for-validation/"
+
+    def test_returns_401_if_user_not_authorized(self):
+        """Test returns 401 if user not authorized."""
+        # Act
+        response = self.client.post(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_validation_lock_returns_400_if_invalid_json(self):
+        """Test returns 400 if invalid json."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": "abcd"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json["SubCode"], "InvalidData")
+
+    def test_validation_lock_returns_404_for_invalid_project_id(self):
+        """Test returns 404 on request with invalid project id."""
+        # Act
+        response = self.client.post(
+            "/api/v2/projects/999999/tasks/actions/lock-for-validation/",
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1, 2]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_validation_lock_returns_404_for_invalid_task_id(self):
+        """Test returns 404 on request with invalid task id."""
+        # Act
+        response = self.client.post(
+            f"/api/v2/projects/{self.test_project.id}/tasks/actions/lock-for-validation/",
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [999999]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_validation_lock_returns_403_if_task_not_ready_for_validation(self):
+        """Test returns 403 if task not ready for validation."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.READY.value  # not ready for validation
+        task.locked_by = self.test_user.id
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "NotReadyForValidation")
+
+    def test_validation_lock_returns_403_if_mapped_by_same_user_and_user_not_admin(
+        self,
+    ):
+        """Test returns 403 if mapped by same user."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.MAPPED.value
+        task.mapped_by = self.test_user.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "CannotValidateMappedTask")
+
+    def test_validation_lock_returns_403_if_user_not_permitted_to_validate(self):
+        """Test returns 403 if user not permitted to validate."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "ProjectNotPublished")
+
+    def test_validation_lock_returns_409_if_user_hasnt_accepted_license(self):
+        """Test returns 409 if user hasn't accepted license."""
+        # Arrange
+        self.test_project.license_id = create_canned_license()
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.test_project.save()
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.MAPPED.value
+        task.mapped_by = self.test_author.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json["SubCode"], "UserLicenseError")
+
+    @patch.object(ProjectService, "is_user_permitted_to_validate")
+    def test_validation_lock_returns_403_if_user_not_on_allowed_list(
+        self, mock_validate_permitted
+    ):
+        """Test returns 403 if user not on allowed list."""
+        # Arrange
+        mock_validate_permitted.return_value = (
+            False,
+            ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST,
+        )
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.MAPPED.value
+        task.mapped_by = self.test_author.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "UserNotAllowed")
+
+    def test_validation_lock_returns_403_if_user_has_already_locked_other_task(self):
+        """Test returns 403 if user has already locked other task."""
+        # Arrange
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.test_project.save()
+        task = Task.get(2, self.test_project.id)
+        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
+        task.locked_by = self.test_user.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "UserAlreadyHasTaskLocked")
+
+    @patch.object(ProjectService, "is_user_permitted_to_validate")
+    def validation_lock_returns_200_if_user_permitted_to_validate(
+        self, mock_validate_permitted
+    ):
+        """Test returns 200 if user permitted to validate."""
+        # Arrange
+        mock_validate_permitted.return_value = (
+            True,
+            ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST,
+        )
+        # Since task 1 is already mapped, we need to change the status of task 2 to invalidated
+        # As ivalidated tasks should also be allowed to be locked for validation
+        task = Task.get(2, self.test_project.id)
+        task.task_status = TaskStatus.INVALIDATED.value
+        task.update()
+
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1, 2]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["tasks"][0]["taskId"], 1)
+        self.assertEqual(
+            response.json["tasks"][0]["taskStatus"],
+            TaskStatus.LOCKED_FOR_VALIDATION.name,
+        )
+        self.assertEqual(response.json["tasks"][1]["taskId"], 2)
+        self.assertEqual(
+            response.json["tasks"][1]["taskStatus"],
+            TaskStatus.LOCKED_FOR_VALIDATION.name,
+        )
