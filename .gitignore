@@ -50,3 +50,12 @@ venv_aws/
 # Backend coverage generated files
 htmlcov/
 .coverage
+
+## Terraform related files
+.terraform
+.terraform/*
+*.tfstate
+*.tfstate.*
+*.bak
+plan.out
+plan.out.json
