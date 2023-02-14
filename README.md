@@ -17,6 +17,11 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 * Join the Tasking Manager Collective Meet up- an opportunity to meet other Tasking Manager contributors. The meet ups take place on the second Wednesday of the month 9:00 or 15:00UTC! Register to receive a calendar invite: https://bit.ly/3s6ntmV or join directly via this link: https://meet.jit.si/TaskingManagerCollectiveMeetUp
 * Read the monthly update blogs on [OSM Discourse](https://community.openstreetmap.org/c/general/38/all).
 
+## Product Roadmap
+We have included below a high level roadmap/plan [subject to change] that can be used as an overview. 
+![image](https://user-images.githubusercontent.com/98902727/218763601-f08e3879-51f3-40a7-ae6e-bdf96f8a5979.png)
+
+
 
 ## Developers
 
