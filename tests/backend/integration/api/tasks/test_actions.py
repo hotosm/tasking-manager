@@ -912,3 +912,184 @@ class TestTasksActionsValidationLockAPI(BaseTestCase):
             response.json["tasks"][1]["taskStatus"],
             TaskStatus.LOCKED_FOR_VALIDATION.name,
         )
+
+
+class TestTasksActionsValidationUnlockAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_user = return_canned_user("Test User", 1111111)
+        self.test_user.create()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.url = f"/api/v2/projects/{self.test_project.id}/tasks/actions/unlock-after-validation/"
+
+    def test_validation_unlock_returns_401_if_user_not_logged_in(self):
+        """Test returns 401 if user not logged in."""
+        # Act
+        response = self.client.post(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_validation_unlock_returns_400_if_invalid_request(self):
+        """Test returns 400 if invalid request."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"validatedTasks": "xxx"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json["SubCode"], "InvalidData")
+
+    def test_validation_unlock_returns_404_if_project_not_found(self):
+        """Test returns 404 if project not found."""
+        # Act
+        response = self.client.post(
+            "/api/v2/projects/999/tasks/actions/unlock-after-validation/",
+            headers={"Authorization": self.user_session_token},
+            json={"validatedTasks": [{"taskId": 1, "status": "VALIDATED"}]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_validation_unlock_returns_404_if_task_not_found(self):
+        """Test returns 404 if task not found."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"validatedTasks": [{"taskId": 999, "status": "VALIDATED"}]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_validation_unlock_returns_403_if_task_not_locked_for_validation(self):
+        """Test returns 403 if task not locked for validation."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"validatedTasks": [{"taskId": 1, "status": "VALIDATED"}]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "NotLockedForValidation")
+
+    @staticmethod
+    def lock_task_for_validation(task_id, project_id, user_id, mapped_by=None):
+        """Lock task for validation."""
+        task = Task.get(task_id, project_id)
+        task.task_status = TaskStatus.LOCKED_FOR_VALIDATION.value
+        task.locked_by = user_id
+        if mapped_by:
+            task.mapped_by = mapped_by
+        task.update()
+
+    def test_validation_unlock_returns_403_if_task_locked_by_other_user(self):
+        """Test returns 403 if task locked by other user."""
+        # Arrange
+        TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
+            1, self.test_project.id, self.test_author.id
+        )
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"validatedTasks": [{"taskId": 1, "status": "VALIDATED"}]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "TaskNotOwned")
+
+    def test_validation_unlock_returns_400_if_invalid_state_passsed(self):
+        """Test returns 400 if invalid state passed."""
+        # Arrange
+        TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
+            1, self.test_project.id, self.test_user.id
+        )
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"validatedTasks": [{"taskId": 1, "status": "READY"}]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json["SubCode"], "InvalidData")
+
+    @staticmethod
+    def assert_validated_task_response(
+        task_response, task_id, status, validator_username, comment=None
+    ):
+        """Assert validated task response."""
+        assert task_response["taskId"] == task_id
+        assert task_response["taskStatus"] == status
+        assert task_response["taskHistory"][0]["action"] == "STATE_CHANGE"
+        assert task_response["taskHistory"][0]["actionText"] == status
+        assert task_response["taskHistory"][0]["actionBy"] == validator_username
+        if comment:
+            assert task_response["taskHistory"][1]["action"] == "COMMENT"
+            assert task_response["taskHistory"][1]["actionText"] == comment
+            assert task_response["taskHistory"][1]["actionBy"] == validator_username
+
+    def test_validation_unlock_returns_200_if_validated(self):
+        """Test returns 200 if validated."""
+        # Arrange
+        TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
+            1, self.test_project.id, self.test_user.id, self.test_user.id
+        )
+        TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
+            2, self.test_project.id, self.test_user.id, self.test_user.id
+        )
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={
+                "validatedTasks": [
+                    {"taskId": 1, "status": "VALIDATED"},
+                    {"taskId": 2, "status": "INVALIDATED"},
+                ]
+            },
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestTasksActionsValidationUnlockAPI.assert_validated_task_response(
+            response.json["tasks"][0], 1, "VALIDATED", self.test_user.username
+        )
+        TestTasksActionsValidationUnlockAPI.assert_validated_task_response(
+            response.json["tasks"][1], 2, "INVALIDATED", self.test_user.username
+        )
+
+    def test_validation_unlock_returns_200_if_validated_with_comment(self):
+        """Test returns 200 if validated with comments."""
+        # Arrange
+        TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
+            1, self.test_project.id, self.test_user.id, self.test_user.id
+        )
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={
+                "validatedTasks": [
+                    {
+                        "taskId": 1,
+                        "status": "VALIDATED",
+                        "comment": "Test comment",
+                    }
+                ]
+            },
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestTasksActionsValidationUnlockAPI.assert_validated_task_response(
+            response.json["tasks"][0],
+            1,
+            "VALIDATED",
+            self.test_user.username,
+            "Test comment",
+        )
