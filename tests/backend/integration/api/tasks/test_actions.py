@@ -1093,3 +1093,145 @@ class TestTasksActionsValidationUnlockAPI(BaseTestCase):
             self.test_user.username,
             "Test comment",
         )
+
+
+class TestTasksActionsValidationStopAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_user = return_canned_user("test_user", 111111111)
+        self.test_user.create()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.url = (
+            f"/api/v2/projects/{self.test_project.id}/tasks/actions/stop-validation/"
+        )
+
+    def test_validation_stop_returns_401_if_not_logged_in(self):
+        """Test returns 401 if not logged in."""
+        # Act
+        response = self.client.post(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_validation_stop_returns_400_if_invalid_data(self):
+        """Test returns 400 if invalid data passed """
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"resetTasks": "invalid"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json["SubCode"], "InvalidData")
+
+    def test_validation_stop_returns_404_if_project_not_found(self):
+        """Test returns 404 if project not found."""
+        # Act
+        response = self.client.post(
+            "/api/v2/projects/999/tasks/actions/stop-validation/",
+            headers={"Authorization": self.user_session_token},
+            json={"resetTasks": [{"taskId": 1}]},
+        )
+
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_validation_stop_returns_404_if_task_not_found(self):
+        """Test returns 404 if task not found."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"resetTasks": [{"taskId": 999}]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_validation_stop_returns_403_if_task_not_locked_for_validation(self):
+        """Test returns 403 if task not locked for validation."""
+        # Arrange
+        TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
+            1, self.test_project.id, self.test_user.id
+        )
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"resetTasks": [{"taskId": 1}, {"taskId": 2}]},
+        )
+        # Assert
+        # Since task 2 is not locked for validation, we should get a 403 even though task 1 is locked for validation
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "NotLockedForValidation")
+
+    def test_validation_stop_returns_403_if_task_locked_by_other_user(self):
+        """Test returns 403 if task locked by other user."""
+        # Arrange
+        TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
+            1, self.test_project.id, self.test_author.id, self.test_author.id
+        )
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"resetTasks": [{"taskId": 1}]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "TaskNotOwned")
+
+    def test_validation_stop_returns_200_if_task_locked_by_user(self):
+        """Test returns 200 if task locked by user."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.unlock_task(self.test_user.id, TaskStatus.MAPPED)
+        last_task_status = TaskStatus(task.task_status).name
+        TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
+            1, self.test_project.id, self.test_user.id, self.test_user.id
+        )
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"resetTasks": [{"taskId": 1}]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["tasks"][0]["taskId"], 1)
+        self.assertEqual(response.json["tasks"][0]["projectId"], self.test_project.id)
+        self.assertEqual(response.json["tasks"][0]["taskStatus"], last_task_status)
+
+    def test_validation_stop_returns_200_if_task_locked_by_user_with_comment(self):
+        """Test returns 200 if task locked by user with comment."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.unlock_task(self.test_user.id, TaskStatus.MAPPED)
+        last_task_status = TaskStatus(task.task_status).name
+        TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
+            1, self.test_project.id, self.test_user.id, self.test_user.id
+        )
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={
+                "resetTasks": [
+                    {
+                        "taskId": 1,
+                        "comment": "Test comment",
+                    }
+                ]
+            },
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["tasks"][0]["taskId"], 1)
+        self.assertEqual(response.json["tasks"][0]["projectId"], self.test_project.id)
+        self.assertEqual(response.json["tasks"][0]["taskStatus"], last_task_status)
+        task_history_comment = response.json["tasks"][0]["taskHistory"][0]
+        self.assertEqual(task_history_comment["action"], "COMMENT")
+        self.assertEqual(task_history_comment["actionText"], "Test comment")
+        self.assertEqual(task_history_comment["actionBy"], self.test_user.username)
