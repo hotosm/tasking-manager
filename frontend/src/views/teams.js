@@ -3,13 +3,25 @@ import { useSelector } from 'react-redux';
 import { Link, useNavigate } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
+import {
+  BooleanParam,
+  encodeQueryParams,
+  NumberParam,
+  StringParam,
+  useQueryParams,
+  withDefault,
+} from 'use-query-params';
+import { stringify } from 'query-string';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
 import { useEditTeamAllowed } from '../hooks/UsePermissions';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import useForceUpdate from '../hooks/UseForceUpdate';
-import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import {
+  fetchLocalJSONAPIWithAbort,
+  pushToLocalJSONAPI,
+} from '../network/genericJSONRequest';
 import {
   getMembersDiff,
   filterActiveMembers,
@@ -29,6 +41,7 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { NotFound } from './notFound';
+import { PaginatorLine } from '../components/paginator';
 
 export function ManageTeams() {
   useSetTitleTag('Manage teams');
@@ -48,37 +61,73 @@ export function ListTeams({ managementView = false }: Object) {
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const [teams, setTeams] = useState(null);
-  const [userTeamsOnly, setUserTeamsOnly] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // QUERY PARAMETERS
+  const [query, setQuery] = useQueryParams({
+    page: withDefault(NumberParam, 1),
+    isUserTeamsOnly: BooleanParam,
+    searchQuery: withDefault(StringParam, undefined),
+  });
+  const isUserTeamsOnly = query.isUserTeamsOnly === undefined ? true : query.isUserTeamsOnly;
+  const [userTeamsOnly, setUserTeamsOnly] = useState(isUserTeamsOnly);
+
+  const encodedQuery = encodeQueryParams(
+    { page: NumberParam, team_name: StringParam },
+    { page: query.page, team_name: query.searchQuery },
+  );
+
+  const pageParam = `${
+    stringify(encodedQuery) ? `&${stringify(encodedQuery)}` : stringify(encodedQuery)
+  }`;
 
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
+      const controller = new AbortController();
+      const { signal } = controller;
       let queryParam;
       if (managementView) {
-        queryParam = userTeamsOnly ? `?manager=${userDetails.id}` : '';
+        queryParam = userTeamsOnly ? `manager=${userDetails.id}` : '';
       } else {
-        queryParam = `?member=${userDetails.id}`;
+        queryParam = `member=${userDetails.id}`;
       }
       setLoading(true);
-      fetchLocalJSONAPI(`teams/${queryParam}`, token)
+      fetchLocalJSONAPIWithAbort(
+        `teams/?fullMemberList=false&paginate=true&${queryParam}${pageParam}`,
+        token,
+        signal,
+      )
         .then((res) => {
-          setTeams(res.teams);
+          setTeams(res);
           setLoading(false);
         })
         .catch((err) => setError(err));
     }
-  }, [userDetails, token, managementView, userTeamsOnly]);
+  }, [userDetails, token, managementView, userTeamsOnly, query, pageParam]);
+
+  const handlePagination = (val) => {
+    setQuery({ ...query, page: val }, 'pushIn');
+  };
 
   return (
-    <TeamsManagement
-      teams={teams}
-      userDetails={userDetails}
-      managementView={managementView}
-      userTeamsOnly={userTeamsOnly}
-      setUserTeamsOnly={setUserTeamsOnly}
-      isTeamsFetched={!loading && !error}
-    />
+    <>
+      <TeamsManagement
+        teams={teams?.teams}
+        userDetails={userDetails}
+        managementView={managementView}
+        userTeamsOnly={userTeamsOnly}
+        setUserTeamsOnly={setUserTeamsOnly}
+        query={query}
+        setQuery={setQuery}
+        isTeamsFetched={!loading && !error}
+      />
+      <PaginatorLine
+        className="flex items-center flex-end gap-1"
+        activePage={query.page}
+        setPageFn={handlePagination}
+        lastPage={teams?.pagination?.pages || 1}
+      />
+    </>
   );
 }
 

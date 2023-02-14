@@ -22,18 +22,17 @@ export function TeamsManagement({
   userTeamsOnly,
   setUserTeamsOnly,
   isTeamsFetched,
+  query,
+  setQuery,
 }: Object) {
-  const [query, setQuery] = useState('');
-
   const isOrgManager = useSelector(
     (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
 
-  const onSearchInputChange = (e) => setQuery(e.target.value);
+  const onSearchInputChange = (e) =>
+    setQuery({ ...query, searchQuery: e.target.value || undefined, page: 1 }, 'pushIn');
 
-  const filteredTeams = teams?.filter((team) =>
-    team.name.toLowerCase().includes(query.toLowerCase()),
-  );
+  const clearSearchQuery = () => setQuery({ ...query, searchQuery: undefined, page: 1 }, 'pushIn');
 
   return (
     <Management
@@ -52,18 +51,18 @@ export function TeamsManagement({
       managementView={managementView}
       userOnly={userTeamsOnly}
       setUserOnly={setUserTeamsOnly}
+      query={query}
+      setQuery={setQuery}
       userOnlyLabel={<FormattedMessage {...messages.myTeams} />}
     >
-      {isTeamsFetched && (
-        <div className="w-20-l w-25-m">
-          <TextField
-            value={query}
-            placeholderMsg={messages.searchTeams}
-            onChange={onSearchInputChange}
-            onCloseIconClick={() => setQuery('')}
-          />
-        </div>
-      )}
+      <div className="w-20-l w-25-m">
+        <TextField
+          value={query.searchQuery || ''}
+          placeholderMsg={messages.searchTeams}
+          onChange={onSearchInputChange}
+          onCloseIconClick={clearSearchQuery}
+        />
+      </div>
       <div className="cards-container mt2">
         <ReactPlaceholder
           showLoadingAnimation={true}
@@ -71,8 +70,8 @@ export function TeamsManagement({
           delay={10}
           ready={isTeamsFetched}
         >
-          {filteredTeams?.length ? (
-            filteredTeams.map((team, n) => <TeamCard team={team} key={n} />)
+          {teams?.length ? (
+            teams.map((team, n) => <TeamCard team={team} key={n} />)
           ) : (
             <div className="pb3 pt2">
               <FormattedMessage {...messages.noTeams} />
@@ -99,7 +98,7 @@ export function Teams({ teams, viewAllQuery, showAddButton = false, isReady, bor
         {viewAllQuery && <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />}
         <div className="cards-container pt4">
           <ReactPlaceholder customPlaceholder={nCardPlaceholders(4)} delay={10} ready={isReady}>
-            {teams?.slice(0, 6).map((team, n) => (
+            {teams?.slice(0, 6).map((team) => (
               <TeamCard key={team.teamId} team={team} />
             ))}
             {teams?.length === 0 && (
@@ -134,6 +133,7 @@ export function TeamCard({ team }: Object) {
               textColor="white"
               users={team.members.filter((user) => user.function === 'MANAGER' && user.active)}
               maxLength={8}
+              totalCount={team.managersCount}
             />
           </div>
           <h4 className="f6 fw5 mv2 ttu blue-light">
@@ -145,6 +145,7 @@ export function TeamCard({ team }: Object) {
               textColor="white"
               users={team.members.filter((user) => user.function !== 'MANAGER' && user.active)}
               maxLength={8}
+              totalCount={team.membersCount}
             />
           </div>
         </div>

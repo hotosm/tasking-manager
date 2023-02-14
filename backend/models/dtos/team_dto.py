@@ -8,6 +8,8 @@ from schematics.types import (
     ListType,
     ModelType,
 )
+
+from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.statuses import (
     TeamMemberFunctions,
     TeamVisibility,
@@ -127,6 +129,8 @@ class TeamDTO(Model):
         required=True, validators=[validate_team_visibility], serialize_when_none=False
     )
     members = ListType(ModelType(TeamMembersDTO))
+    members_count = IntType(serialized_name="membersCount", required=False)
+    managers_count = IntType(serialized_name="managersCount", required=False)
 
 
 class TeamsListDTO(Model):
@@ -137,6 +141,7 @@ class TeamsListDTO(Model):
 
     """ Returns List of all teams"""
     teams = ListType(ModelType(TeamDTO))
+    pagination = ModelType(Pagination)
 
 
 class NewTeamDTO(Model):
@@ -173,3 +178,20 @@ class UpdateTeamDTO(Model):
         validators=[validate_team_visibility], serialize_when_none=False
     )
     members = ListType(ModelType(TeamMembersDTO), serialize_when_none=False)
+
+
+class TeamSearchDTO(Model):
+    """ Describes a JSON model to search for a team """
+
+    user_id = LongType(serialized_name="userId")
+    organisation = IntType(serialized_name="organisation")
+    team_name = StringType(serialized_name="team_name")
+    omit_members = BooleanType(serialized_name="omitMemberList", default=False)
+    full_members_list = BooleanType(serialized_name="fullMemberList", default=True)
+    member = LongType(serialized_name="member")
+    manager = LongType(serialized_name="manager")
+    team_role = StringType(serialized_name="team_role")
+    member_request = LongType(serialized_name="member_request")
+    paginate = BooleanType(serialized_name="paginate", default=False)
+    page = IntType(serialized_name="page", default=1)
+    per_page = IntType(serialized_name="perPage", default=10)
