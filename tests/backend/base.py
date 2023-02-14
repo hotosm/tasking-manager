@@ -34,3 +34,4 @@ class BaseTestCase(unittest.TestCase):
         self.db.session.rollback()
         self.app_context.pop()
         self.db.session.close()
+        self.db.engine.dispose()
