@@ -45,7 +45,7 @@ import {
 } from './mockData/teams';
 import { userTasks } from './mockData/tasksStats';
 import { homepageStats } from './mockData/homepageStats';
-import { countries } from './mockData/miscellaneous';
+import { banner, countries } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 import { API_URL } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
@@ -208,6 +208,9 @@ const handlers = [
   }),
   rest.get(API_URL + 'countries', (req, res, ctx) => {
     return res(ctx.json(countries));
+  }),
+  rest.get(API_URL + 'system/banner/', (req, res, ctx) => {
+    return res(ctx.json(banner));
   }),
   // EXTERNAL API
   rest.get('https://osmstats-api.hotosm.org/wildcard', (req, res, ctx) => {
