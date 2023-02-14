@@ -151,9 +151,12 @@ export function LockedTaskModalContent({ project, error, close, lockTasks }: Obj
     <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
       {licenseError && <LicenseError id={project.licenseId} close={close} lockTasks={lockTasks} />}
       {/* Other error happened */}
-      {!lockedTasks.project && !licenseError && <LockError error={error} close={close} />}
+      {error === 'JOSM' && <LockError error={error} close={close} />}
+      {!lockedTasks.project && !licenseError && error !== 'JOSM' && (
+        <LockError error={error} close={close} />
+      )}
       {/* User has tasks locked on another project */}
-      {lockedTasks.project && lockedTasks.project !== project.projectId && (
+      {lockedTasks.project && lockedTasks.project !== project.projectId && error !== 'JOSM' && (
         <AnotherProjectLock
           projectId={lockedTasks.project}
           action={action}
@@ -161,7 +164,7 @@ export function LockedTaskModalContent({ project, error, close, lockTasks }: Obj
         />
       )}
       {/* User has tasks locked on the current project */}
-      {lockedTasks.project === project.projectId && (
+      {lockedTasks.project === project.projectId && error !== 'JOSM' && (
         <SameProjectLock action={action} lockedTasks={lockedTasks} />
       )}
     </div>
