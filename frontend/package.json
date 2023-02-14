@@ -30,7 +30,7 @@
     "@uiw/react-md-editor": "^3.20.2",
     "RapiD": "facebookincubator/rapid#rapid-v1.1.9-tm.1",
     "axios": "^0.27.2",
-    "chart.js": "^3.7.1",
+    "chart.js": "^3.9.1",
     "chartjs-adapter-date-fns": "^2.0.0",
     "date-fns": "^2.29.3",
     "dompurify": "^2.4.3",
