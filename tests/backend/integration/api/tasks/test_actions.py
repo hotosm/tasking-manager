@@ -1235,3 +1235,98 @@ class TestTasksActionsValidationStopAPI(BaseTestCase):
         self.assertEqual(task_history_comment["action"], "COMMENT")
         self.assertEqual(task_history_comment["actionText"], "Test comment")
         self.assertEqual(task_history_comment["actionBy"], self.test_user.username)
+
+
+class TestTasksActionsSplitAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.url = f"/api/v2/projects/{self.test_project.id}/tasks/actions/split/1/"
+        self.author_session_token = generate_encoded_token(self.test_author.id)
+
+    def test_returns_401_if_not_logged_in(self):
+        """Test returns 401 if not logged in."""
+        # Act
+        response = self.client.post(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_404_if_project_not_found(self):
+        """Test returns 404 if project not found."""
+        # Act
+        response = self.client.post(
+            "/api/v2/projects/999/tasks/actions/split/1/",
+            headers={"Authorization": self.author_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_returns_404_if_task_not_found(self):
+        """Test returns 404 if task not found."""
+        # Act
+        response = self.client.post(
+            f"/api/v2/projects/{self.test_project.id}/tasks/actions/split/999/",
+            headers={"Authorization": self.author_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_returns_403_if_task_too_small_to_split(self):
+        """Test returns 403 if task too small to split."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.zoom = 18
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.author_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "SmallToSplit")
+
+    def test_returns_403_if_task_not_locked_for_mapping(self):
+        """ Test returns 403 if task not locked for mapping."""
+        # Since task should be locked for mapping to split, we should get a 403
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.author_session_token},
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "LockToSplit")
+
+    def test_returns_403_if_task_locked_by_other_user(self):
+        """ Test returns 403 if task locked by other user."""
+        # Arrange
+        test_user = return_canned_user("test user", 1111111)
+        test_user.create()
+        task = Task.get(1, self.test_project.id)
+        task.lock_task_for_mapping(test_user.id)
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.author_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "SplitOtherUserTask")
+
+    def test_returns_200_if_task_locked_by_user(self):
+        """Test returns 200 if task locked by user."""
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.lock_task_for_mapping(self.test_author.id)
+        old_total_tasks = self.test_project.total_tasks
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.author_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.test_project.total_tasks, old_total_tasks + 3)
+        # Check that the task 1 has been removed as it was splitted into 4 tasks
+        self.assertIsNone(Task.get(1, self.test_project.id))
