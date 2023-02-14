@@ -57,7 +57,7 @@ import { SwaggerView } from './views/swagger';
 import { ContributionsPage, ContributionsPageIndex, UserStats } from './views/contributions';
 import { NotificationsPage, NotificationPageIndex } from './views/notifications';
 import { Banner, ArchivalNotificationBanner } from './components/banner/index';
-import TopBanner from './components/banner/TopBanner';
+import { TopBanner } from './components/banner/topBanner';
 
 const ProjectEdit = React.lazy(() =>
   import('./views/projectEdit' /* webpackChunkName: "projectEdit" */),

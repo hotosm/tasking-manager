@@ -13,3 +13,8 @@ export const countries = {
     'Azerbaijan',
   ],
 };
+
+export const banner = {
+  message: 'Banner text',
+  visible: true,
+};

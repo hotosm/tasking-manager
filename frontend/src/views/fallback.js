@@ -6,7 +6,7 @@ import messages from './messages';
 import { Button } from '../components/button';
 import { SERVICE_DESK } from '../config';
 
-export const FallbackComponent = (props) => {
+export const FallbackComponent = () => {
   return (
     <div className="cf w-100 pv5 base-font">
       <h3 className="f2 fw5 barlow-condensed tc">

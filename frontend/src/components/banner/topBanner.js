@@ -3,7 +3,7 @@ import { useFetchWithAbort } from '../../hooks/UseFetch';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import './styles.scss';
 
-function TopBanner() {
+export function TopBanner() {
   const [, error, data] = useFetchWithAbort(`system/banner/`);
 
   return (
@@ -19,5 +19,3 @@ function TopBanner() {
     </>
   );
 }
-
-export default TopBanner;
