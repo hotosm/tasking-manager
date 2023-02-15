@@ -66,11 +66,10 @@ class MappingService:
             last_action = TaskHistory.get_last_action(task.project_id, task.id)
 
             # User requesting task made the last change, so they are allowed to undo it.
-            if last_action.user_id == int(
-                logged_in_user_id
-            ) or ProjectService.is_user_permitted_to_validate(
+            is_user_permitted, _ = ProjectService.is_user_permitted_to_map(
                 task.project_id, logged_in_user_id
-            ):
+            )
+            if last_action.user_id == int(logged_in_user_id) or is_user_permitted:
                 return True
 
         return False
@@ -331,7 +330,6 @@ class MappingService:
     ) -> TaskDTO:
         """Allows a user to Undo the task state they updated"""
         task = MappingService.get_task(task_id, project_id)
-
         if not MappingService._is_task_undoable(user_id, task):
             raise MappingServiceError(
                 "UndoPermissionError- Undo not allowed for this user"

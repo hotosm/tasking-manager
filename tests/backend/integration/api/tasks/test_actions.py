@@ -4,6 +4,8 @@ from backend.models.postgis.statuses import (
     MappingNotAllowed,
     ProjectStatus,
     ValidatingNotAllowed,
+    ValidationPermission,
+    MappingLevel,
 )
 
 from backend.services.project_admin_service import ProjectAdminService
@@ -1330,3 +1332,153 @@ class TestTasksActionsSplitAPI(BaseTestCase):
         self.assertEqual(self.test_project.total_tasks, old_total_tasks + 3)
         # Check that the task 1 has been removed as it was splitted into 4 tasks
         self.assertIsNone(Task.get(1, self.test_project.id))
+
+
+class TestTasksActionsMappingUndoAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_user = return_canned_user("test user", 1111111)
+        self.test_user.mapping_level = MappingLevel.BEGINNER.value
+        self.test_user.create()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.url = (
+            f"/api/v2/projects/{self.test_project.id}/tasks/actions/undo-last-action/1/"
+        )
+        self.author_session_token = generate_encoded_token(self.test_author.id)
+
+    def test_returns_401_if_not_logged_in(self):
+        """Test returns 401 if not logged in."""
+        # Act
+        response = self.client.post(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_404_if_project_not_found(self):
+        """Test returns 404 if project not found."""
+        # Act
+        response = self.client.post(
+            "/api/v2/projects/999/tasks/actions/undo-last-action/1/",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_returns_404_if_task_not_found(self):
+        """Test returns 404 if task not found."""
+        # Act
+        response = self.client.post(
+            f"/api/v2/projects/{self.test_project.id}/tasks/actions/undo-last-action/999/",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_returns_403_if_task_in_invalid_state_for_undo(self):
+        """Test returns 403 if task in invalid state for undo."""
+        # Since task cannot be in READY, LOCKED_FOR_VALIDATION or LOCKED_FOR_MAPPING state for undo,
+        # we should get a 403
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.READY.value
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "UndoPermissionError")
+
+    @staticmethod
+    def validate_task(task_id, project_id, user_id):
+        """Map task."""
+        task = Task.get(task_id, project_id)
+        task.lock_task_for_mapping(user_id)
+        task.unlock_task(user_id, TaskStatus.VALIDATED)
+
+    def test_returns_403_if_user_not_permitted_for_undo(self):
+        """Test returns 403 if user not permitted for undo."""
+        # Only user with validation permission and user who performed the last task action  can undo.
+        # Arrange
+        TestTasksActionsMappingUndoAPI.validate_task(
+            1, self.test_project.id, self.test_author.id
+        )  # create a last task history
+        self.test_project.validation_permission = ValidationPermission.LEVEL.value
+        self.test_project.save()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "UndoPermissionError")
+
+    @staticmethod
+    def assert_undo_response(response, project_id, last_status, username, new_status):
+        """Assert undo response."""
+        assert response.json["taskStatus"] == new_status
+        assert response.json["taskId"] == 1
+        assert response.json["projectId"] == project_id
+        action_history = response.json["taskHistory"][0]
+        comment_history = response.json["taskHistory"][1]
+        assert action_history["action"] == TaskAction.STATE_CHANGE.name
+        assert action_history["actionText"] == new_status
+        assert action_history["actionBy"] == username
+        assert comment_history["action"] == TaskAction.COMMENT.name
+        assert (
+            comment_history["actionText"]
+            == f"Undo state from {last_status} to {new_status}"
+        )
+        assert comment_history["actionBy"] == username
+
+    def test_returns_200_if_undo_by_user_with_last_action(self):
+        """ Test returns 200 if undo by user with last action. """
+        # Arrange
+        TestTasksActionsMappingUndoAPI.validate_task(
+            1, self.test_project.id, self.test_user.id
+        )
+        # Act
+        # Since  test_user is the last user to perform an action on task 1, he should be able to undo
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestTasksActionsMappingUndoAPI.assert_undo_response(
+            response,
+            self.test_project.id,
+            TaskStatus.VALIDATED.name,
+            self.test_user.username,
+            TaskStatus.MAPPED.name,
+        )
+
+    def test_returns_200_if_undo_by_user_with_validation_permission(self):
+        """ Test returns 200 if undo by user with validation permission. """
+        # Arrange
+        TestTasksActionsMappingUndoAPI.validate_task(
+            1, self.test_project.id, self.test_author.id
+        )
+        self.test_project.validation_permission = ValidationPermission.ANY.value
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.test_project.save()
+        # Act
+        # Since  test_user is the last user to perform an action on task 1, he should be able to undo
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestTasksActionsMappingUndoAPI.assert_undo_response(
+            response,
+            self.test_project.id,
+            TaskStatus.VALIDATED.name,
+            self.test_user.username,
+            TaskStatus.MAPPED.name,
+        )
