@@ -1,5 +1,33 @@
 version: 2.1
+orbs:
+  aws-cli: circleci/aws-cli@3.1
 jobs:
+  frontend-modern:
+    working_directory: /home/circleci/app
+    resource_class: large
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - setup_remote_docker
+      - aws-cli/setup:
+          role-arn: 'arn:aws:iam::acid:role/OIDC-Role'
+          aws-region: "us-east-1"
+          profile-name: "OIDC-Profile"
+          role-session-name: "frontend-modern"
+          session-duration: 1800
+      - run:
+          name: Build assets
+          command: |
+            cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
+            export TM_ENVIRONMENT=dev
+            yarn
+            CI=true GENERATE_SOURCEMAP=false yarn build
+      - run:
+        name: Upload to S3
+        command: | 
+          aws s3 sync build/ s3://tasking-manager-frontend-production --delete --cache-control max-age=31536000
+          aws s3 cp s3://tasking-manager-frontend-production s3://tasking-manager-frontend-production --recursive --exclude "*" --include "*.html" --metadata-directive REPLACE --cache-control no-cache --content-type text/html
   build:
     working_directory: /home/circleci/app
     docker:
@@ -227,8 +255,18 @@ jobs:
             aws s3 cp s3://tasking-manager-<< parameters.stack_name >>-react-app s3://tasking-manager-<< parameters.stack_name >>-react-app --recursive --exclude "*" --include "*.html" --metadata-directive REPLACE --cache-control no-cache --content-type text/html
             export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
             aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+
 workflows:
   version: 2
+  frontend-test-flow:
+    jobs:
+      - frontend-modern:
+        context: tasking-manager-frontend
+        filters:
+          branches:
+            only:
+              - develop
+              - enhance/terraform-container-infrastructure
   build-deploy:
     jobs:
       - build:
@@ -346,6 +384,7 @@ workflows:
                 - deployment/hot-tasking-manager
           stack_name: "tm4-production"
           context: tasking-manager-tm4-production
+
 notify:
   webhooks:
     - url: https://api.opsgenie.com/v1/json/circleci?apiKey=$OPSGENIE_API
