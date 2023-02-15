@@ -267,6 +267,7 @@ workflows:
             only:
               - develop
               - enhance/terraform-container-infrastructure
+              - enhance/circleci-oidc
   build-deploy:
     jobs:
       - build:
