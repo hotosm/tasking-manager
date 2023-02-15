@@ -49,7 +49,6 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y libgeos-dev # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-            pip install awscli --upgrade
       - run:
           name: Configure Postgresql Test database
           command: |
@@ -132,23 +131,11 @@ jobs:
             sudo apt-get install -y libgeos-dev jq # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
             pip install awscli --upgrade
-      - run:
-          name: Configure AWS Access Key ID
-          command: |
-            aws configure set aws_access_key_id \
-            $AWS_ACCESS_KEY_ID \
-            --profile default
-      - run:
-          name: Configure AWS Secret Access Key
-          command: |
-            aws configure set aws_secret_access_key \
-            $AWS_SECRET_ACCESS_KEY \
-            --profile default
-      - run:
-          name: Configure AWS default region
-          command: |
-            aws configure set region $AWS_REGION \
-            --profile default
+      - aws-cli/setup:
+          role-arn: 'arn:aws:iam::670261699094:role/CircleCI-OIDC-Connect'
+          profile-name: "OIDC-Profile"
+          role-session-name: "frontend-modern"
+          session-duration: "1800"
       - run:
           name: Get RDS Instance ID
           command: |
@@ -227,27 +214,11 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install modules
-          command: |
-            pip install awscli --upgrade
-      - run:
-          name: Configure AWS Access Key ID
-          command: |
-            aws configure set aws_access_key_id \
-            $AWS_ACCESS_KEY_ID \
-            --profile default
-      - run:
-          name: Configure AWS Secret Access Key
-          command: |
-            aws configure set aws_secret_access_key \
-            $AWS_SECRET_ACCESS_KEY \
-            --profile default
-      - run:
-          name: Configure AWS default region
-          command: |
-            aws configure set region $AWS_REGION \
-            --profile default
+      - aws-cli/setup:
+          role-arn: 'arn:aws:iam::670261699094:role/CircleCI-OIDC-Connect'
+          profile-name: "OIDC-Profile"
+          role-session-name: "frontend-modern"
+          session-duration: "1800"
       - run:
           name: Deploy Frontend to S3
           command: |
