@@ -21,6 +21,28 @@ data "aws_route53_zone" "default" {
   name = var.domain_name_dot_tld
 }
 
+data "aws_iam_policy_document" "cdn_to_s3" {
+  statement {
+    sid     = "AllowCloudFrontServicePrincipal"
+    effect  = "Allow"
+    actions = ["s3:GetObject"]
+    principals {
+      identifiers = ["cloudfront.amazonaws.com"]
+      type        = "Service"
+    }
+    resources = [
+      join("/", [aws_s3_bucket.frontend.arn, "*"])
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values = [
+        aws_cloudfront_distribution.frontend.arn
+      ]
+    }
+  }
+}
+
 locals {
   full_service_name = join(
     "-",
@@ -50,6 +72,19 @@ locals {
 
 resource "aws_s3_bucket" "frontend" {
   bucket = local.full_service_name
+}
+
+resource "aws_s3_bucket_policy" "cdn_to_s3" {
+  bucket = aws_s3_bucket.frontend.id
+  policy = data.aws_iam_policy_document.cdn_to_s3.json
+}
+
+resource "aws_s3_bucket_public_access_block" "frontend" {
+  bucket                  = aws_s3_bucket.frontend.id
+  block_public_acls       = true
+  block_public_policy     = true
+  restrict_public_buckets = true
+  ignore_public_acls      = true
 }
 
 resource "aws_cloudfront_origin_access_control" "frontend" {

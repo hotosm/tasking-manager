@@ -29,9 +29,10 @@ provider "aws" {
   region = var.aws_region
   default_tags {
     tags = {
-      Project       = "tasking-manager"
-      Maintainer    = "DK_Benjamin Yogesh_Girikumar Ramya_Ragupathy and Kathmandu_Living_Labs"
-      Documentation = "docs.hotosm.org/tasking_manager_infra"
+      Project        = "tasking-manager"
+      Maintainer     = "DK_Benjamin Yogesh_Girikumar Ramya_Ragupathy and Kathmandu_Living_Labs"
+      Documentation  = "docs.hotosm.org/tasking_manager_infra"
+      IaC_Management = "Terraform"
     }
   }
 }
