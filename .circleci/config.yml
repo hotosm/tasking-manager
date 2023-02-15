@@ -275,6 +275,8 @@ workflows:
             branches:
               ignore:
                 - /^deployment\/.*/
+                - enhance/circleci-oidc
+                - enhance/terraform-container-infrastructure
       - backend_deploy:
           name: backend-staging
           filters:
