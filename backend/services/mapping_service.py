@@ -66,7 +66,7 @@ class MappingService:
             last_action = TaskHistory.get_last_action(task.project_id, task.id)
 
             # User requesting task made the last change, so they are allowed to undo it.
-            is_user_permitted, _ = ProjectService.is_user_permitted_to_map(
+            is_user_permitted, _ = ProjectService.is_user_permitted_to_validate(
                 task.project_id, logged_in_user_id
             )
             if last_action.user_id == int(logged_in_user_id) or is_user_permitted:

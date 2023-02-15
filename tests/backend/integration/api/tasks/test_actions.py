@@ -1482,3 +1482,104 @@ class TestTasksActionsMappingUndoAPI(BaseTestCase):
             self.test_user.username,
             TaskStatus.MAPPED.name,
         )
+
+
+class TestTasksActionsExtendAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_user = return_canned_user("test_user", 1111111)
+        self.test_user.create()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.author_access_token = generate_encoded_token(self.test_author.id)
+        self.url = f"/api/v2/projects/{self.test_project.id}/tasks/actions/extend/"
+
+    def test_returns_401_if_user_not_logged_in(self):
+        """Test returns 401 if user not logged in."""
+        # Act
+        response = self.client.post(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_400_if_invalid_data(self):
+        """Test returns 400 if invalid data."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": "abcd"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json["SubCode"], "InvalidData")
+
+    def test_returns_404_if_project_not_found(self):
+        """Test returns 404 if project not found."""
+        # Act
+        response = self.client.post(
+            "/api/v2/projects/999/tasks/actions/extend/",
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_returns_404_if_task_not_found(self):
+        """Test returns 404 if task not found."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [999]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_returns_403_if_task_not_locked(self):
+        """Test returns 403 if task not locked."""
+        # Task should be locked for mapping or validation to extend
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "TaskStatusNotLocked")
+
+    def test_returns_403_if_task_is_not_locked_by_requesting_user(self):
+        """Test returns 403 if task is not locked by requesting user."""
+        # Task should be locked for mapping or validation to extend
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.lock_task_for_mapping(self.test_author.id)
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "LockedByAnotherUser")
+
+    def test_returns_200_if_task_locked_by_requesting_user(self):
+        """Test returns 200 if task locked by requesting user."""
+        # Task should be locked for mapping or validation to extend
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.lock_task_for_mapping(self.test_user.id)
+        task_2 = Task.get(2, self.test_project.id)
+        task_2.lock_task_for_mapping(self.test_user.id)
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1, 2]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["Success"], "Successfully extended task expiry")
