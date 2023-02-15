@@ -74,7 +74,7 @@ export const ProjectSearchResults = (props) => {
   );
 };
 
-const ExploreProjectCards = (props) => {
+export const ExploreProjectCards = (props) => {
   if (props.pageOfCards && props.pageOfCards.length === 0) {
     return null;
   }
@@ -89,7 +89,7 @@ const ExploreProjectCards = (props) => {
   ));
 };
 
-const ExploreProjectList = (props) => {
+export const ExploreProjectList = (props) => {
   if (props.pageOfCards && props.pageOfCards.length === 0) {
     return null;
   }
