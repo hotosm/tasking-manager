@@ -12,10 +12,9 @@ jobs:
       - setup_remote_docker
       - aws-cli/setup:
           role-arn: 'arn:aws:iam::acid:role/OIDC-Role'
-          aws-region: "us-east-1"
           profile-name: "OIDC-Profile"
           role-session-name: "frontend-modern"
-          session-duration: 1800
+          session-duration: "1800"
       - run:
           name: Build assets
           command: |
@@ -24,10 +23,10 @@ jobs:
             yarn
             CI=true GENERATE_SOURCEMAP=false yarn build
       - run:
-        name: Upload to S3
-        command: | 
-          aws s3 sync build/ s3://tasking-manager-frontend-production --delete --cache-control max-age=31536000
-          aws s3 cp s3://tasking-manager-frontend-production s3://tasking-manager-frontend-production --recursive --exclude "*" --include "*.html" --metadata-directive REPLACE --cache-control no-cache --content-type text/html
+          name: Upload to S3
+          command: | 
+            aws s3 sync build/ s3://tasking-manager-frontend-production --delete --cache-control max-age=31536000
+            aws s3 cp s3://tasking-manager-frontend-production s3://tasking-manager-frontend-production --recursive --exclude "*" --include "*.html" --metadata-directive REPLACE --cache-control no-cache --content-type text/html
   build:
     working_directory: /home/circleci/app
     docker:
@@ -261,13 +260,13 @@ workflows:
   frontend-test-flow:
     jobs:
       - frontend-modern:
-        context: tasking-manager-frontend
-        filters:
-          branches:
-            only:
-              - develop
-              - enhance/terraform-container-infrastructure
-              - enhance/circleci-oidc
+          context: tasking-manager-frontend
+          filters:
+            branches:
+              only:
+                - develop
+                - enhance/terraform-container-infrastructure
+                - enhance/circleci-oidc
   build-deploy:
     jobs:
       - build:
