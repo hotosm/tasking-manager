@@ -1,6 +1,8 @@
 version: 2.1
+
 orbs:
   aws-cli: circleci/aws-cli@3.1
+
 jobs:
   frontend-modern:
     working_directory: /home/circleci/app
@@ -19,7 +21,7 @@ jobs:
           name: Build assets
           command: |
             cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
-            export TM_ENVIRONMENT=dev
+            npm update
             yarn
             CI=true GENERATE_SOURCEMAP=false yarn build
       - run:
@@ -27,6 +29,7 @@ jobs:
           command: | 
             aws s3 sync build/ s3://tasking-manager-frontend-production --delete --cache-control max-age=31536000
             aws s3 cp s3://tasking-manager-frontend-production s3://tasking-manager-frontend-production --recursive --exclude "*" --include "*.html" --metadata-directive REPLACE --cache-control no-cache --content-type text/html
+
   build:
     working_directory: /home/circleci/app
     docker:
@@ -106,6 +109,7 @@ jobs:
             - env
     # The resource_class feature allows configuring CPU and RAM resources for each job. Different resource classes are available for different executors. https://circleci.com/docs/2.0/configuration-reference/#resourceclass
     resource_class: large
+
   backend_deploy:
     parameters:
       stack_name:
@@ -210,6 +214,7 @@ jobs:
             then
               aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest
             fi
+
   frontend_deploy:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
@@ -257,6 +262,7 @@ jobs:
 
 workflows:
   version: 2
+
   frontend-test-flow:
     jobs:
       - frontend-modern:
@@ -267,6 +273,7 @@ workflows:
                 - develop
                 - enhance/terraform-container-infrastructure
                 - enhance/circleci-oidc
+
   build-deploy:
     jobs:
       - build:
