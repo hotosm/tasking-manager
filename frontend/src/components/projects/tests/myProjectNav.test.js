@@ -37,7 +37,7 @@ describe('Manage Projects Top Navigation Bar', () => {
     ).not.toBeInTheDocument();
     expect(screen.queryAllByRole('combobox').length).toBe(0);
     // Check for SVGs for dropdowns and list/vard view toggle
-    expect(container.querySelectorAll('svg').length).toBe(3);
+    expect(container.querySelectorAll('svg').length).toBe(2);
     expect(screen.getByRole('textbox')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sort by/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /contributed/i })).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe('Manage Projects Top Navigation Bar', () => {
     expect(screen.getAllByRole('combobox').length).toBe(2);
     expect(screen.queryByRole('button', { name: /contributed/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /favorited/i })).not.toBeInTheDocument();
-    expect(container.querySelectorAll('svg').length).toBe(8);
+    expect(container.querySelectorAll('svg').length).toBe(7);
     expect(screen.getAllByRole('graphics-symbol').length).toBe(2);
   });
 
