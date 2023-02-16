@@ -237,7 +237,9 @@ workflows:
   frontend-test-flow:
     jobs:
       - frontend-modern:
-          context: tasking-manager-frontend
+          context:
+            - org-global
+            - tasking-manager-frontend
           filters:
             branches:
               only:
