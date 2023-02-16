@@ -116,6 +116,8 @@ class CampaignsRestAPI(Resource):
                 description: Unauthorized - Invalid credentials
             403:
                 description: Forbidden
+            404:
+                description: Campaign not found
             409:
                 description: Resource duplication
             500:
@@ -186,6 +188,8 @@ class CampaignsRestAPI(Resource):
                 description: Unauthorized - Invalid credentials
             403:
                 description: Forbidden
+            404:
+                description: Campaign not found
             500:
                 description: Internal Server Error
         """
@@ -279,7 +283,7 @@ class CampaignsAllAPI(Resource):
                             1
                         ]
         responses:
-            200:
+            201:
                 description: New campaign created successfully
             401:
                 description: Unauthorized - Invalid credentials
@@ -309,7 +313,7 @@ class CampaignsAllAPI(Resource):
 
         try:
             campaign = CampaignService.create_campaign(campaign_dto)
-            return {"campaignId": campaign.id}, 200
+            return {"campaignId": campaign.id}, 201
         except ValueError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
         except Exception as e:
