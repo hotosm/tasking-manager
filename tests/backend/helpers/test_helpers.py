@@ -23,6 +23,8 @@ from backend.models.postgis.user import User
 from backend.models.postgis.organisation import Organisation
 from backend.services.users.authentication_service import AuthenticationService
 from backend.services.interests_service import InterestService, Interest
+from backend.services.license_service import LicenseService, LicenseDTO
+
 
 TEST_USER_ID = 777777
 TEST_USERNAME = "Thinkwhere Test"
@@ -332,3 +334,13 @@ def create_canned_interest(name="test_interest") -> Interest:
     """Returns test interest without writing to db"""
     test_interest = InterestService.create(name=name)
     return test_interest
+
+
+def create_canned_license(name="test_license") -> int:
+    """Returns test license without writing to db"""
+    license_dto = LicenseDTO()
+    license_dto.name = name
+    license_dto.description = "test license"
+    license_dto.plain_text = "test license"
+    test_license = LicenseService.create_licence(license_dto)
+    return test_license

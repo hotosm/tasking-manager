@@ -466,8 +466,17 @@ class TasksQueriesMappedAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            ProjectService.get_project_by_id(project_id)
             mapped_tasks = ValidatorService.get_mapped_tasks_by_user(project_id)
             return mapped_tasks.to_primitive(), 200
+        except NotFound:
+            return (
+                {
+                    "Error": "Not found; please check the project number.",
+                    "SubCode": "NotFound",
+                },
+                404,
+            )
         except Exception as e:
             error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -545,23 +554,20 @@ class TasksQueriesOwnInvalidatedAPI(Resource):
         try:
             sort_column = {"updatedDate": "updated_date", "projectId": "project_id"}
             if request.args.get("sortBy", "updatedDate") in sort_column:
-                sort_column = sort_column[request.args.get("SortBy", "updatedDate")]
+                sort_column = sort_column[request.args.get("sortBy", "updatedDate")]
             else:
                 sort_column = sort_column["updatedDate"]
-
             # closed needs to be set to True, False, or None
             closed = None
             if request.args.get("closed") == "true":
                 closed = True
             elif request.args.get("closed") == "false":
                 closed = False
-
             # sort direction should only be desc or asc
             if request.args.get("sortDirection") in ["asc", "desc"]:
                 sort_direction = request.args.get("sortDirection")
             else:
                 sort_direction = "desc"
-
             invalidated_tasks = ValidatorService.get_user_invalidated_tasks(
                 request.args.get("asValidator") == "true",
                 username,

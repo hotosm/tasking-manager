@@ -19,7 +19,9 @@ class BaseTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        db.session.remove()
         cls.db.drop_all()
+        cls.db.get_engine(cls.app).dispose()
         super(BaseTestCase, cls).tearDownClass()
 
     def setUp(self):
@@ -27,9 +29,11 @@ class BaseTestCase(unittest.TestCase):
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
         self.app_context.push()
+        self.db.session.begin(subtransactions=True)
         clean_db(self.db)
 
     def tearDown(self):
         super(BaseTestCase, self).tearDown()
         self.db.session.rollback()
+        self.db.session.close()
         self.app_context.pop()
