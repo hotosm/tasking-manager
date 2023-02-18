@@ -4,31 +4,113 @@ orbs:
   aws-cli: circleci/aws-cli@3.1
 
 jobs:
-  frontend-modern:
-    working_directory: /home/circleci/app
+  frontend-code-test:
     resource_class: large
     docker:
       - image: cimg/node:lts
     steps:
       - checkout
       - setup_remote_docker
-      - aws-cli/setup:
-          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
-          profile-name: "OIDC-Profile"
-          role-session-name: "frontend-modern"
-          session-duration: "1800"
       - run:
-          name: Build assets
+          name: Run yarn test
           command: |
             cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
-            npm update
-            yarn
+            CI=true yarn test -w 1
             CI=true GENERATE_SOURCEMAP=false yarn build
+
+  backend-code-check-PEP8:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - setup_remote_docker
       - run:
-          name: Upload to S3
+          name: flake8 tests
           command: | 
-            aws s3 sync build/ s3://tasking-manager-frontend-production --delete --cache-control max-age=31536000
-            aws s3 cp s3://tasking-manager-frontend-production s3://tasking-manager-frontend-production --recursive --exclude "*" --include "*.html" --metadata-directive REPLACE --cache-control no-cache --content-type text/html
+            pip install flake8
+            flake8 manage.py backend tests migrations
+
+  backend-code-check-Black:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: black tests
+          command: | 
+            pip install black
+            black --check manage.py backend tests migrations
+
+  backend-functional-tests:
+    resource_class: large
+    docker:
+      - image: cimg/python:3.10
+        environment:
+          SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
+      - image: cimg/postgres:14.2-postgis
+        environment:
+          POSTGRES_USER: taskingmanager
+          POSTGRES_DB: test_tm
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install packages
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libgeos-dev # Required for shapely
+      - run:
+          name: Configure Postgresql Test database
+          command: |
+            sudo apt-get install postgresql-client
+            psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
+      - run:
+          name: Run backend functional tests
+          command: |
+            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
+            chmod -x tests/backend/test*.py
+            nosetests ./tests/backend --with-xunit \
+              --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
+              --with-coverage --cover-erase --cover-package=./backend
+            coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
+
+  database-backup:
+    resource_class: large
+    docker:
+      - image: cimg/postgres:15.1-postgis
+    steps:
+      - setup_remote_docker
+      - run:
+          name: Find database to backup
+          command: |
+            # Given instance ID, find the timestamp of the latest snapshot
+            SNAPSHOT_TIMESTAMP=$(aws rds describe-db-snapshots \
+              --db-instance-identifier=tt1bf7fs3843m6k \
+              --query="max_by(DBSnapshots, &SnapshotCreateTime).OriginalSnapshotCreateTime" \
+              --output text)
+      - run:
+          name: Make Backup
+          no_output_timeout: 15m
+          command: |
+            # Find out how much time has elapsed between given timestamp and now
+            #
+            # create new aws rds snapshot
+            aws rds create-db-snapshot \
+                        --db-snapshot-identifier tm4-<< parameters.stack_name >>-${RDS_ID}-latest \
+                        --db-instance-identifier ${RDS_ID}
+            aws rds wait db-snapshot-completed \
+                        --db-snapshot-identifier tm4-<< parameters.stack_name >>-${RDS_ID}-latest \
+                        --db-instance-identifier ${RDS_ID}
+            if [[ $? -eq 255 ]]; then
+              echo "Production snapshot creation failed. Exiting with exit-code 125"
+              exit 125
+            fi
+            something here
+      - run:
+          name: Check / validate backup
+          command: |
+            echo "something here"
 
   build:
     working_directory: /home/circleci/app
@@ -234,18 +316,44 @@ jobs:
 workflows:
   version: 2
 
-  frontend-test-flow:
+  the-modern-flow:
     jobs:
-      - frontend-modern:
-          context:
+      - frontend-code-test:
+          context: 
             - org-global
             - tasking-manager-frontend
           filters:
             branches:
               only:
-                - develop
                 - enhance/terraform-container-infrastructure
                 - enhance/circleci-oidc
+
+      - backend-code-check-PEP8:
+          context: tasking-manager-frontend
+          filters:
+            branches:
+              only:
+                - enhance/terraform-container-infrastructure
+                - enhance/circleci-oidc
+
+      - backend-code-check-Black:
+          context: tasking-manager-frontend
+          filters:
+            branches:
+              only:
+                - enhance/terraform-container-infrastructure
+                - enhance/circleci-oidc
+
+      - backend-functional-tests:
+          context: tasking-manager-frontend
+          filters:
+            branches:
+              only:
+                - enhance/terraform-container-infrastructure
+                - enhance/circleci-oidc
+          requires:
+            - backend-code-check-PEP8
+            - backend-code-check-Black
 
   build-deploy:
     jobs:
