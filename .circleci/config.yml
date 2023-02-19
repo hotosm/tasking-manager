@@ -11,6 +11,21 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ checksum "frontend/yarn.lock" }}
+      - run: Install dependencies
+          name: Install node dependencies
+          command: |
+            yarn --version
+            cd ${CIRCLE_WORKING_DIRECTORY}/frontend
+            yarn install
+      - save_cache:
+          keys:
+            - yarn-deps-{{ checksum "frontend/yarn.lock" }}
+          paths:
+            - frontend/node_modules
+            - env
       - run:
           name: Run yarn test
           command: |
