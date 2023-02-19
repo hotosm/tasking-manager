@@ -14,15 +14,14 @@ jobs:
       - restore_cache:
           keys:
             - yarn-deps-{{ checksum "frontend/yarn.lock" }}
-      - run: Install dependencies
+      - run:
           name: Install node dependencies
           command: |
             yarn --version
             cd ${CIRCLE_WORKING_DIRECTORY}/frontend
             yarn install
       - save_cache:
-          keys:
-            - yarn-deps-{{ checksum "frontend/yarn.lock" }}
+          key: yarn-deps-{{ checksum "frontend/yarn.lock" }}
           paths:
             - frontend/node_modules
             - env
