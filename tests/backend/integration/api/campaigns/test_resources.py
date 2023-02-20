@@ -165,7 +165,7 @@ class TestCampaignsRestAPI(BaseTestCase):
         )
         self.assertEqual(response_body["SubCode"], "UserNotPermitted")
 
-    def test_delete_campaign_by_unauthenticated_user_passes(self):
+    def test_delete_campaign_by_unauthenticated_user_fails(self):
         """
         Test that endpoint returns 401 for deletion of campaign by unauthenticated user
         """
