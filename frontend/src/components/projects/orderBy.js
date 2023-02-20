@@ -46,26 +46,21 @@ export function OrderBySelector(props) {
     },
   ];
 
-  const onSortSelect = (arr) => {
-    if (arr.length === 1) {
-      props.setQuery(
-        {
-          ...props.allQueryParams,
-          page: undefined,
-          orderBy: arr[0].sort,
-          orderByType: arr[0].type,
-        },
-        'pushIn',
-      );
-    } else if (arr.length > 1) {
-      throw new Error('filter select array is bigger.');
-    }
-  };
+  const onSortSelect = (arr) =>
+    props.setQuery(
+      {
+        ...props.allQueryParams,
+        page: undefined,
+        orderBy: arr[0].sort,
+        orderByType: arr[0].type,
+      },
+      'pushIn',
+    );
 
   return (
     <Dropdown
       onChange={onSortSelect}
-      value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}` || []}
+      value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}`}
       options={options}
       display={<FormattedMessage {...messages.sortBy} />}
       className={`ba b--tan bg-white mr3 v-mid pv2 br1 pl3 fw5 blue-dark ${props.className || ''}`}
