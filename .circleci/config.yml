@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@3.1
+  opsgenie: opsgenie/opsgenie@1.0.8
 
 jobs:
   frontend-code-test:
@@ -341,25 +342,37 @@ workflows:
               only:
                 - enhance/terraform-container-infrastructure
                 - enhance/circleci-oidc
+          post-steps:
+            - opsgenie/notify
 
       - backend-code-check-PEP8:
-          context: tasking-manager-frontend
+          context:
+            - org-global
+            - tasking-manager-frontend
           filters:
             branches:
               only:
                 - enhance/terraform-container-infrastructure
                 - enhance/circleci-oidc
+          post-steps:
+            - opsgenie/notify
 
       - backend-code-check-Black:
-          context: tasking-manager-frontend
+          context:
+            - org-global
+            - tasking-manager-frontend
           filters:
             branches:
               only:
                 - enhance/terraform-container-infrastructure
                 - enhance/circleci-oidc
+          post-steps:
+            - opsgenie/notify
 
       - backend-functional-tests:
-          context: tasking-manager-frontend
+          context:
+            - org-global
+            - tasking-manager-frontend
           filters:
             branches:
               only:
@@ -368,6 +381,8 @@ workflows:
           requires:
             - backend-code-check-PEP8
             - backend-code-check-Black
+          post-steps:
+            - opsgenie/notify
 
   build-deploy:
     jobs:
@@ -489,6 +504,3 @@ workflows:
           stack_name: "tm4-production"
           context: tasking-manager-tm4-production
 
-notify:
-  webhooks:
-    - url: https://api.opsgenie.com/v1/json/circleci?apiKey=$OPSGENIE_API
