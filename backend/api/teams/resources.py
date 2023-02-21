@@ -160,12 +160,14 @@ class TeamsRestAPI(Resource):
                         type: boolean
                         default: false
         responses:
-            201:
+            200:
                 description: Team updated successfully
             400:
                 description: Client Error - Invalid Request
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
@@ -184,7 +186,7 @@ class TeamsRestAPI(Resource):
                 return {
                     "Error": "User is not a admin or a manager for the team",
                     "SubCode": "UserNotTeamManager",
-                }, 401
+                }, 403
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return {"Error": str(e), "SubCode": "InvalidData"}, 400
@@ -480,7 +482,7 @@ class TeamsAllAPI(Resource):
             return str(e), 400
         except NotFound:
             error_msg = "Team POST - Organisation does not exist"
-            return {"Error": error_msg, "SubCode": "NotFound"}, 400
+            return {"Error": error_msg, "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Team POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
