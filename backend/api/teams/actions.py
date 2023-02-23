@@ -145,8 +145,8 @@ class TeamsActionsJoinAPI(Resource):
                     team_id, authenticated_user_id, username, role, action
                 )
                 return {"Success": "True"}, 200
-        except NotFound as e:
-            return {"Error": str(e), "SubCode": "NotFound"}, 404
+        except NotFound:
+            return {"Error": "Team not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Team Join PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -353,7 +353,10 @@ class TeamsActionsMessageMembersAPI(Resource):
             try:
                 team = TeamService.get_team_by_id(team_id)
             except NotFound:
-                return {"Error": "Team not found"}, 404
+                return {
+                    "Error": "Team not found",
+                    "SubCode": "NotFound",
+                }, 404
 
             is_manager = TeamService.is_user_team_manager(
                 team_id, authenticated_user_id
