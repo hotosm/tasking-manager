@@ -178,3 +178,13 @@ export const osmStatsProd = {
     art: 78,
   },
 };
+
+export const osmStatsProject = {
+  changesets: 987654321,
+  users: 112,
+  roads: 5658.62006919192,
+  buildings: 12923,
+  edits: 123456789,
+  latest: '2020-10-05T23:21:22.000Z',
+  hashtag: `hotosm-project-1`,
+};
