@@ -180,7 +180,7 @@ export default function ProjectEdit() {
     if (!token) {
       navigate('/login');
     }
-  }, []);
+  }, [navigate, token]);
 
   if (projectInfo.projectId && !userCanEditProject) {
     return (
