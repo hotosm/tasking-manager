@@ -50,6 +50,7 @@ class TeamJoinNotAllowed(Exception):
 class TeamService:
     @staticmethod
     def request_to_join_team(team_id: int, user_id: int):
+        team = TeamService.get_team_by_id(team_id)
         # If user has team manager permission add directly to the team without request.E.G. Admins, Org managers
         if TeamService.is_user_team_member(team_id, user_id):
             raise TeamServiceError(
@@ -61,7 +62,6 @@ class TeamService:
             )
             return
 
-        team = TeamService.get_team_by_id(team_id)
         # Cannot send join request to BY_INVITE team
         if team.join_method == TeamJoinMethod.BY_INVITE.value:
             raise TeamServiceError(
@@ -535,7 +535,7 @@ class TeamService:
     @staticmethod
     def is_user_team_manager(team_id: int, user_id: int):
         # Admin manages all teams
-        team = Team.get(team_id)
+        team = TeamService.get_team_by_id(team_id)
         if UserService.is_user_an_admin(user_id):
             return True
 
