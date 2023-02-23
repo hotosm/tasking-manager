@@ -2,7 +2,12 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { IntlProviders, ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  IntlProviders,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../utils/testWithIntl';
 import { ListCampaigns, CampaignError, CreateCampaign, EditCampaign } from '../campaigns';
 
 describe('ListCampaigns', () => {
@@ -16,7 +21,7 @@ describe('ListCampaigns', () => {
   });
 
   it('should fetch and list campaigns', async () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <ListCampaigns />
       </ReduxIntlProviders>,
@@ -75,13 +80,20 @@ describe('CreateCampaign', () => {
   });
 
   it('should navigate to the newly created campaign detail page on creation success', async () => {
-    const { history, createButton } = setup();
+    const { router } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <CreateCampaign />
+      </ReduxIntlProviders>,
+    );
+    const createButton = screen.getByRole('button', {
+      name: /create campaign/i,
+    });
     const inputText = screen.getByRole('textbox');
     fireEvent.change(inputText, { target: { value: 'New Campaign Name' } });
     expect(inputText.value).toBe('New Campaign Name');
     expect(createButton).toBeEnabled();
     fireEvent.click(createButton);
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/campaigns/123'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/campaigns/123'));
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
@@ -177,7 +189,7 @@ describe('EditCampaign', () => {
 
 describe('Delete Campaign', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    renderWithRouter(
       <ReduxIntlProviders>
         <EditCampaign id={123} />
       </ReduxIntlProviders>,
@@ -186,7 +198,6 @@ describe('Delete Campaign', () => {
 
     return {
       inputText,
-      history,
     };
   };
 
@@ -217,7 +228,11 @@ describe('Delete Campaign', () => {
   });
 
   it('should direct to campaigns list page on successful deletion of a campaign', async () => {
-    const { history } = setup();
+    const { router } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <EditCampaign id={123} />
+      </ReduxIntlProviders>,
+    );
     expect(await screen.findByText('NRCS_Duduwa Mapping')).toBeInTheDocument();
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
@@ -229,6 +244,6 @@ describe('Delete Campaign', () => {
     });
     fireEvent.click(deleteConfirmationButton);
     expect(await screen.findByText('Campaign deleted successfully.')).toBeInTheDocument();
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/campaigns'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/campaigns'));
   });
 });

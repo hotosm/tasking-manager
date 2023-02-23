@@ -1,14 +1,14 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import MyTasksOrderDropdown from '../myTasksOrderDropdown';
-import { IntlProviders } from '../../../utils/testWithIntl';
+import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 
 describe('MyTasksOrderDropdown', () => {
   const setQueryMock = jest.fn();
   const setup = async () => {
-    render(
+    renderWithRouter(
       <IntlProviders>
         <MyTasksOrderDropdown
           allQueryParams={{
@@ -43,7 +43,7 @@ describe('MyTasksOrderDropdown', () => {
   });
 
   it('should preselect option if the query matches', async () => {
-    render(
+    renderWithRouter(
       <IntlProviders>
         <MyTasksOrderDropdown
           allQueryParams={{

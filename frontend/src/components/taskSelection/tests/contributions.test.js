@@ -1,9 +1,9 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import selectEvent from 'react-select-event';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { tasks } from '../../../network/tests/mockData/taskGrid';
 import { projectContributions } from '../../../network/tests/mockData/contributions';
 import Contributions from '../contributions';
@@ -12,7 +12,7 @@ describe('Contributions', () => {
   const selectTask = jest.fn();
 
   it('render users, links and ', async () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <Contributions
           project={{ projectId: 1, osmchaFilterId: 'abc1234' }}
@@ -67,7 +67,7 @@ describe('Contributions', () => {
     expect(screen.queryByText('test_1')).not.toBeInTheDocument();
   });
   it('clean user selection if we click on the selected tasks of the user', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <Contributions
           project={{ projectId: 1, osmchaFilterId: 'abc1234' }}

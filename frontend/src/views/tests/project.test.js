@@ -1,30 +1,33 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 
 import { store } from '../../store';
 import { ManageProjectsPage, UserProjectsPage } from '../project';
-import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../utils/testWithIntl';
 import { projects } from '../../network/tests/mockData/projects';
 
 describe('UserProjectsPage Component', () => {
   it('should redirect to login page if no user token is present', async () => {
-    const navigateMock = jest.fn();
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: null });
     });
 
-    renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { router } = createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
-          <UserProjectsPage navigate={navigateMock} management={false} />
+          <UserProjectsPage management={false} />
         </ReduxIntlProviders>
       </QueryParamProvider>,
     );
 
-    await waitFor(() => expect(navigateMock).toHaveBeenCalled());
+    await waitFor(() => expect(router.state.location.pathname).toBe('/login'));
   });
 
   it('should display component details', async () => {
@@ -33,7 +36,7 @@ describe('UserProjectsPage Component', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <UserProjectsPage management={false} />
         </ReduxIntlProviders>
@@ -61,7 +64,7 @@ describe('UserProjectsPage Component', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <UserProjectsPage management={false} />
         </ReduxIntlProviders>
@@ -81,8 +84,8 @@ describe('ManageProjectsPage', () => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
 
-    render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ManageProjectsPage />
         </ReduxIntlProviders>
@@ -101,8 +104,8 @@ describe('ManageProjectsPage', () => {
     act(() => {
       store.dispatch({ type: 'TOGGLE_MAP' });
     });
-    render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ManageProjectsPage />
         </ReduxIntlProviders>

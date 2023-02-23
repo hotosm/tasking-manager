@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { TaskHistory } from '../taskActivity';
 
 describe('TaskHistory', () => {
@@ -43,7 +43,7 @@ describe('TaskHistory', () => {
     numberOfComments: null,
   };
   it('renders the task history comments and activities for a given project', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <TaskHistory projectId={2} taskId={15} commentPayload={history} />
       </ReduxIntlProviders>,
@@ -88,7 +88,7 @@ describe('TaskHistory', () => {
       projectId: 2,
       taskStatus: 'INVALIDATED',
     };
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <TaskHistory projectId={2} taskId={15} commentPayload={history} />
       </ReduxIntlProviders>,

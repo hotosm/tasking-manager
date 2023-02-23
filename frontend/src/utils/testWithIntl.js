@@ -1,9 +1,9 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
-import { createHistory, createMemorySource, LocationProvider } from '@reach/router';
-import TestRenderer from 'react-test-renderer';
 import { IntlProvider } from 'react-intl';
+import { BrowserRouter, createMemoryRouter, RouterProvider } from 'react-router-dom';
+import TestRenderer from 'react-test-renderer';
 
 import { store } from '../store';
 
@@ -15,18 +15,13 @@ export const createComponentWithReduxAndIntl = (children, props = { locale: 'en'
   return TestRenderer.create(<ReduxIntlProviders {...props}>{children}</ReduxIntlProviders>);
 };
 
-export function renderWithRouter(
-  ui,
-  { route = '/', history = createHistory(createMemorySource(route)) } = {},
-) {
+export const renderWithRouter = (ui, { route = '/' } = {}) => {
+  window.history.pushState({}, 'Test page', route);
+
   return {
-    ...render(<LocationProvider history={history}>{ui}</LocationProvider>),
-    // adding `history` to the returned utilities to allow us
-    // to reference it in our tests (just try to avoid using
-    // this to test implementation details).
-    history,
+    ...render(ui, { wrapper: BrowserRouter }),
   };
-}
+};
 
 export const ReduxIntlProviders = ({
   children,
@@ -41,3 +36,33 @@ export const ReduxIntlProviders = ({
 export const IntlProviders = ({ children, props = { locale: 'en' } }: Object) => (
   <IntlProvider {...props}>{children}</IntlProvider>
 );
+
+export const createComponentWithMemoryRouter = (component, { route = '/starting/path' } = {}) => {
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/',
+        element: <>Navigated from Start</>,
+      },
+      {
+        path: route,
+        // Render the component causing the navigate to '/'
+        element: component,
+      },
+      {
+        path: '*',
+        element: <>Avoid match warnings</>,
+      },
+    ],
+    {
+      // Set for where you want to start in the routes. Remember, KISS (Keep it simple, stupid) the routes.
+      initialEntries: [route],
+      // We don't need to explicitly set this, but it's nice to have.
+      initialIndex: 0,
+    },
+  );
+
+  const { container } = render(<RouterProvider router={router} />);
+
+  return { container, router };
+};

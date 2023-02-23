@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { IntlProviders, renderWithRouter } from '../../utils/testWithIntl';
@@ -7,9 +7,10 @@ import { FallbackComponent } from '../fallback';
 import { SERVICE_DESK } from '../../config';
 import messages from '../messages';
 
+
 describe('Fallback component', () => {
   it('should render component details', () => {
-    render(
+    renderWithRouter(
       <IntlProviders>
         <FallbackComponent />
       </IntlProviders>,
@@ -32,7 +33,7 @@ describe('Fallback component', () => {
   });
 
   it('should render service desk link if present', () => {
-    render(
+    renderWithRouter(
       <IntlProviders>
         <FallbackComponent />
       </IntlProviders>,
@@ -51,14 +52,18 @@ describe('Fallback component', () => {
 
   it('should trigger navigate on return button click', async () => {
     const mockedUsedNavigate = jest.fn();
-    jest.mock('@reach/router', () => ({
-      navigate: () => mockedUsedNavigate,
+
+    jest.mock('react-router-dom', () => ({
+      ...jest.requireActual('react-router-dom'),
+      useNavigate: () => mockedUsedNavigate,
     }));
+
     renderWithRouter(
       <IntlProviders>
         <FallbackComponent />
       </IntlProviders>,
     );
+
     const returnBtn = screen.getByRole('button', {
       name: messages.return.defaultMessage,
     });

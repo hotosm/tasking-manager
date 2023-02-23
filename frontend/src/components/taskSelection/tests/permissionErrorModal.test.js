@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { MemoryRouter } from 'react-router-dom';
 
 import { createComponentWithIntl } from '../../../utils/testWithIntl';
 import { UserPermissionErrorContent } from '../permissionErrorModal';
@@ -16,11 +17,13 @@ describe('test if UserPermissionErrorContent', () => {
   let value = false;
   const closeTestFn = (v) => (value = v);
   const element = createComponentWithIntl(
-    <UserPermissionErrorContent
-      project={project}
-      userLevel="BEGINNER"
-      close={() => closeTestFn(true)}
-    />,
+    <MemoryRouter>
+      <UserPermissionErrorContent
+        project={project}
+        userLevel="BEGINNER"
+        close={() => closeTestFn(true)}
+      />
+    </MemoryRouter>,
   );
   const testInstance = element.root;
   it('has a span with a CloseIcon as children', () => {

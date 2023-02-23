@@ -1,15 +1,15 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, screen, act } from '@testing-library/react';
+import { screen, act } from '@testing-library/react';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { ProjectSearchResults } from '../projectSearchResults';
 import { projects } from '../../../network/tests/mockData/projects';
 import { store } from '../../../store';
 
 describe('Project Search Results', () => {
   it('should display project cards', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults
           state={{ isLoading: false, isError: false, projects: projects.results }}
@@ -30,7 +30,7 @@ describe('Project Search Results', () => {
       });
     });
     
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults management state={{ isLoading: false, projects: projects.results }} />
       </ReduxIntlProviders>,
@@ -46,7 +46,7 @@ describe('Project Search Results', () => {
 
   it('should display error and provide actionable to retry', async () => {
     const retryFn = jest.fn();
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults state={{ isError: true, projects: [] }} retryFn={retryFn} />
       </ReduxIntlProviders>,

@@ -7,19 +7,6 @@ import { UpdateDialog } from '../updateDialog';
 import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 
 describe('Update Dialog', () => {
-  const originalWindowContext = window.location;
-
-  beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: { reload: jest.fn() },
-    });
-  });
-
-  afterAll(() => {
-    Object.defineProperty(window, 'location', { configurable: true, value: originalWindowContext });
-  });
-
   it('should not render prompt for mapping page', () => {
     const { container } = renderWithRouter(
       <IntlProviders>

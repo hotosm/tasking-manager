@@ -1,17 +1,21 @@
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, waitFor, within, act } from '@testing-library/react';
+import { screen, fireEvent, waitFor, within, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 
-import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../utils/testWithIntl';
 import { ManageTeams, EditTeam, CreateTeam, MyTeams } from '../teams';
 import { store } from '../../store';
 
 describe('List Teams', () => {
   it('should show loading placeholder when teams are being fetched', async () => {
     const { container } = renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ManageTeams />
         </ReduxIntlProviders>
@@ -28,8 +32,8 @@ describe('List Teams', () => {
   });
 
   it('should fetch and list teams', async () => {
-    const { container } = render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { container } = renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ManageTeams />
         </ReduxIntlProviders>
@@ -44,8 +48,8 @@ describe('List Teams', () => {
   });
 
   it('should navigate to team detail page on team article click', async () => {
-    const { history, container } = renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { router, container } = createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ManageTeams />
         </ReduxIntlProviders>
@@ -56,13 +60,13 @@ describe('List Teams', () => {
     );
     const user = userEvent.setup();
     await user.click(screen.getByRole('heading', { name: /team test/i }));
-    await waitFor(() => expect(history.location.pathname).toBe('/teams/1/membership/'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/teams/1/membership/'));
   });
 });
 
 describe('Create Team', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    const { router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <CreateTeam />
       </ReduxIntlProviders>,
@@ -75,7 +79,7 @@ describe('Create Team', () => {
     return {
       user,
       createButton,
-      history,
+      router,
     };
   };
 
@@ -93,7 +97,7 @@ describe('Create Team', () => {
   });
 
   it('should navigate to the newly created team detail page on creation success', async () => {
-    const { createButton, history, user } = setup();
+    const { createButton, router, user } = setup();
     const nameInput = screen.getAllByRole('textbox')[0];
     const orgSelect = screen.getByRole('combobox');
     const joinMethodOption = screen.getAllByRole('radio')[0];
@@ -104,7 +108,7 @@ describe('Create Team', () => {
     expect(createButton).toBeEnabled();
     await user.click(joinMethodOption);
     await user.click(createButton);
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/teams/123'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/teams/123'));
   });
 });
 
@@ -201,20 +205,32 @@ describe('Delete Team', () => {
   });
 
   it('should direct to teams list page on successful deletion of a team', async () => {
-    const { history } = setup();
-    const dialog = screen.getByRole('dialog');
+    const { router } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <EditTeam id={123} />
+      </ReduxIntlProviders>,
+      {
+        route: '/manage/teams/123',
+      },
+    );
+
+    const deleteButton = screen.getByRole('button', {
+      name: /delete/i,
+    });
+    fireEvent.click(deleteButton);
+    const dialog = await screen.findByRole('dialog');
     const deleteConfirmationButton = within(dialog).getByRole('button', {
       name: /delete/i,
     });
     fireEvent.click(deleteConfirmationButton);
     expect(await screen.findByText('Team deleted successfully.')).toBeInTheDocument();
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/teams'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/teams'));
   });
 });
 
 test('MyTeams Component renders its child component', () => {
-  render(
-    <QueryParamProvider adapter={ReachAdapter}>
+  renderWithRouter(
+    <QueryParamProvider adapter={ReactRouter6Adapter}>
       <ReduxIntlProviders>
         <MyTeams />
       </ReduxIntlProviders>

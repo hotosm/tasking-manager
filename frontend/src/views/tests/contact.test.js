@@ -1,12 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
 import { ContactPage } from '../contact';
 
 test('Contact page', () => {
-  const { container } = render(
+  const { container } = renderWithRouter(
     <ReduxIntlProviders>
       <ContactPage />
     </ReduxIntlProviders>,

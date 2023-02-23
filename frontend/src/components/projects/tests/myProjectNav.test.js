@@ -1,11 +1,15 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 import { act, render, screen, waitFor } from '@testing-library/react';
 
 import { MyProjectNav, FilterButton } from '../myProjectNav';
-import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 import { store } from '../../../store';
 
 describe('Manage Projects Top Navigation Bar', () => {
@@ -17,8 +21,8 @@ describe('Manage Projects Top Navigation Bar', () => {
       });
     });
 
-    const { container } = render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { container } = renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <MyProjectNav management={false} />
         </ReduxIntlProviders>
@@ -56,8 +60,8 @@ describe('Manage Projects Top Navigation Bar', () => {
       });
     });
 
-    const { container } = render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { container } = renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <MyProjectNav management />
         </ReduxIntlProviders>
@@ -82,8 +86,8 @@ describe('Manage Projects Top Navigation Bar', () => {
   });
 
   it('should navigate to new project creation page on button click', async () => {
-    const { history } = renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { router } = createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <MyProjectNav management />
         </ReduxIntlProviders>
@@ -96,7 +100,7 @@ describe('Manage Projects Top Navigation Bar', () => {
         name: /new/i,
       }),
     );
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/projects/new/'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/projects/new/'));
   });
 });
 

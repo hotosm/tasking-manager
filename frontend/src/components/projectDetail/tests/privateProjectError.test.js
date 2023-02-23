@@ -1,13 +1,13 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import PrivateProjectError from '../privateProjectError';
-import { IntlProviders } from '../../../utils/testWithIntl';
+import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 
 describe('PrivateProjectError component', () => {
   it('renders all items', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <IntlProviders>
         <PrivateProjectError />
       </IntlProviders>,

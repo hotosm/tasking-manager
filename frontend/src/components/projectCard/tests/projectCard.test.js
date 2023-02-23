@@ -1,13 +1,13 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 
 import { ProjectCard } from '../projectCard';
-import { IntlProviders } from '../../../utils/testWithIntl';
+import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { projects } from '../../../network/tests/mockData/projects';
 
 describe('Project Card', () => {
   it('should render project details on the card', () => {
-    render(
+    renderWithRouter(
       <IntlProviders>
         <ProjectCard {...projects.results[0]} />
       </IntlProviders>,
@@ -24,7 +24,7 @@ describe('Project Card', () => {
   });
 
   it('should render status and not priority if provided', () => {
-    render(
+    renderWithRouter(
       <IntlProviders>
         <ProjectCard {...projects.results[1]} />
       </IntlProviders>,

@@ -1,14 +1,13 @@
-import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { screen, waitFor } from '@testing-library/react';
 
 import { UsersTable } from '../list';
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { store } from '../../../store';
 
 describe('User list card', () => {
   it('renders user card', async () => {
-    const { container, getByText, getAllByRole } = render(
+    const { container, getByText, getAllByRole } = renderWithRouter(
       <ReduxIntlProviders store={store}>
         <UsersTable
           filters={{
