@@ -1,7 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { SearchIcon, CloseIcon } from '../svgIcons';
 
-// import onClickOutside from 'react-click-outside';
 import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
 /* via https://github.com/Pomax/react-onclickoutside/issues/310 b/c of ref problems with onClickOutside */
 
@@ -14,8 +13,6 @@ export const ProjectSearchBox = ({
   searchField = 'text',
 }) => {
   const [isFocus, setFocus] = useState(false);
-  // const [searchTerm, setSearchTerm] = useState(props.fullProjectsQuery.text);
-
   const inputRef = useRef(null);
   const navRef = useRef(null);
 
