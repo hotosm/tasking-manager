@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from '@reach/router';
+import { useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';

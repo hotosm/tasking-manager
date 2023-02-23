@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { navigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import mapboxgl from 'mapbox-gl';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { FormattedMessage } from 'react-intl';
@@ -19,6 +19,7 @@ try {
 }
 
 const UserCountriesMap = ({ projects }) => {
+  const navigate = useNavigate();
   const locale = useSelector((state) => state.preferences['locale']);
 
   const [map, setMap] = useState(null);
@@ -55,7 +56,7 @@ const UserCountriesMap = ({ projects }) => {
       map.resize(); //https://docs.mapbox.com/help/troubleshooting/blank-tiles/
       map.on('load', () => mapboxLayerDefn(map, geojson, (id) => navigate(`/projects/${id}/`)));
     }
-  }, [map, projects.mappedProjects]);
+  }, [map, navigate, projects.mappedProjects]);
 
   if (!mapboxgl.supported()) {
     return <WebglUnsupported className="w-two-thirds-l w-100 h-100 fl" />;

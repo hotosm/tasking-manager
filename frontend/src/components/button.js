@@ -1,4 +1,4 @@
-import { Link } from '@reach/router';
+import { Link } from 'react-router-dom';
 
 import { LoadingIcon } from './svgIcons';
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
@@ -35,8 +36,9 @@ const ContactUsPopup = ({ icon, title, body, proceed, proceedFn }) => (
   </Popup>
 );
 
-export const ContactPage = (props) => {
+export const ContactPage = () => {
   useSetTitleTag('Contact us');
+  const navigate = useNavigate();
   const [sentStatus, setSentStatus] = useState(null);
   const [popups, setPopupMessage] = useState(null);
 
@@ -49,12 +51,13 @@ export const ContactPage = (props) => {
           body={<FormattedMessage {...messages.contactUsThanksBody} />}
           proceed={<FormattedMessage {...messages.contactUsThanksProceed} />}
           proceedFn={() => {
-            props.navigate('/');
+            navigate('/');
           }}
         />,
       );
     }
-  }, [sentStatus, props]);
+  }, [navigate, sentStatus]);
+
   const sendContactUs = (form) => {
     setSentStatus('started');
 

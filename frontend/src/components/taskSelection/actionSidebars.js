@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { navigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import ReactTooltip from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
@@ -44,6 +44,7 @@ export function CompletionTabForMapping({
   selectedStatus,
   setSelectedStatus,
 }: Object) {
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
   const [showHelp, setShowHelp] = useState(false);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
@@ -319,6 +320,7 @@ export function CompletionTabForValidation({
   validationComments,
   setValidationComments,
 }: Object) {
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const [redirectToPreviousProject, setRedirectToPreviousProject] = useState(true);

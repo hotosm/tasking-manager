@@ -1,6 +1,6 @@
-import React, { useState, useLayoutEffect, useCallback, Suspense } from 'react';
+import React, { useState, useLayoutEffect, useCallback, Suspense, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Redirect, navigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import { useQueryParam, NumberParam } from 'use-query-params';
 import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
@@ -36,9 +36,10 @@ const ProjectCreationMap = React.lazy(() =>
   import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
 );
 
-const ProjectCreate = (props) => {
+const ProjectCreate = () => {
   const intl = useIntl();
   const token = useSelector((state) => state.auth.token);
+  const navigate = useNavigate();
   const [drawModeIsActive, setDrawModeIsActive] = useState(false);
   const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(false);
 
@@ -219,12 +220,14 @@ const ProjectCreate = (props) => {
           }),
         );
     },
-    [metadata, setErr, intl, token],
+    [metadata, token, intl, navigate],
   );
 
-  if (!token) {
-    return <Redirect to={'/login'} noThrow />;
-  }
+  useEffect(() => {
+    if (!token) {
+      return navigate('/login');
+    }
+  }, [navigate, token]);
 
   const renderCurrentStep = () => {
     switch (step) {

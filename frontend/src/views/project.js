@@ -1,6 +1,7 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import ReactPlaceholder from 'react-placeholder';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { ProjectNav } from '../components/projects/projectNav';
 import { MyProjectNav } from '../components/projects/myProjectNav';
@@ -23,16 +24,17 @@ import { ProjectDetailPlaceholder } from '../components/projectDetail/projectDet
 
 const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
 
-export const CreateProject = (props) => {
+export const CreateProject = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <ProjectCreate {...props} />
+      <ProjectCreate />
     </Suspense>
   );
 };
 
-export const ProjectsPage = (props) => {
+export const ProjectsPage = () => {
   useSetTitleTag('Explore projects');
+  const location = useLocation();
   const initialData = {
     mapResults: {
       features: [],
@@ -51,13 +53,8 @@ export const ProjectsPage = (props) => {
 
   return (
     <div className="pull-center">
-      <ProjectNav location={props.location}>
-        {
-          props.children
-          /* This is where the MoreFilters component is rendered
-        using the router, as a child route.
-        */
-        }
+      <ProjectNav location={location}>
+        <Outlet />
       </ProjectNav>
       <section className={`${searchResultWidth} explore-projects-container`}>
         <div>
@@ -82,8 +79,10 @@ export const ProjectsPage = (props) => {
   );
 };
 
-export const UserProjectsPage = (props) => {
-  useSetTitleTag(props.management ? 'Manage projects' : 'My projects');
+export const UserProjectsPage = ({ management }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  useSetTitleTag(management ? 'Manage projects' : 'My projects');
   const userToken = useSelector((state) => state.auth.token);
 
   const initialData = {
@@ -102,10 +101,12 @@ export const UserProjectsPage = (props) => {
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
   const searchResultWidth = isMapShown ? 'two-column' : 'one-column';
 
-  if (!userToken) {
-    /* use replace to so the back button does not get interrupted */
-    props.navigate('/login', { replace: true });
-  }
+  useEffect(() => {
+    if (!userToken) {
+      /* use replace to so the back button does not get interrupted */
+      navigate('/login', { replace: true });
+    }
+  }, [navigate, userToken]);
 
   if (
     !fullProjectsQuery.createdByMe &&
@@ -119,14 +120,14 @@ export const UserProjectsPage = (props) => {
 
   return (
     <div className="pull-center">
-      <MyProjectNav location={props.location} management={props.management} />
+      <MyProjectNav location={location} management={management} />
       <section className={`${searchResultWidth} explore-projects-container`}>
         <div className="">
           <ProjectSearchResults
             state={state}
             retryFn={forceUpdate}
-            showBottomButtons={props.location && props.location.pathname.startsWith('/manage/')}
-            management={props.management}
+            showBottomButtons={location && location.pathname.startsWith('/manage/')}
+            management={management}
           />
           <ProjectCardPaginator projectAPIstate={state} setQueryParam={setProjectQuery} />
         </div>
@@ -148,7 +149,8 @@ export const ProjectsPageIndex = (props) => {
   return null;
 };
 
-export const MoreFilters = (props) => {
+export const MoreFilters = () => {
+  const navigate = useNavigate();
   const [fullProjectsQuery] = useExploreProjectsQueryParams();
 
   const currentUrl = `/explore${
@@ -161,15 +163,17 @@ export const MoreFilters = (props) => {
         <MoreFiltersForm currentUrl={currentUrl} />
       </div>
       <div
-        onClick={() => props.navigate(currentUrl)}
+        onClick={() => navigate(currentUrl)}
         className="absolute right-0 z-4 br w-60-l w-0 h-100 bg-blue-dark o-70 h6"
       />
     </>
   );
 };
 
-export const ProjectDetailPage = (props) => {
-  const [error, loading, data] = useFetch(`projects/${props.id}/`, props.id);
+export const ProjectDetailPage = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [error, loading, data] = useFetch(`projects/${id}/`, id);
 
   return (
     <ReactPlaceholder
@@ -184,7 +188,7 @@ export const ProjectDetailPage = (props) => {
           projectLoading={loading}
           tasksError={error}
           tasks={data.tasks}
-          navigate={props.navigate}
+          navigate={navigate}
           type="detail"
         />
       )}
@@ -193,7 +197,7 @@ export const ProjectDetailPage = (props) => {
           {error.message === 'PrivateProject' ? (
             <PrivateProjectError />
           ) : (
-            <NotFound projectId={props.id} />
+            <NotFound projectId={id} />
           )}
         </>
       )}

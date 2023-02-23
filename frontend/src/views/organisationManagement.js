@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from '@reach/router';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
@@ -151,16 +151,17 @@ export function CreateOrganisation() {
   );
 }
 
-export function EditOrganisation(props) {
+export function EditOrganisation() {
+  const { id } = useParams();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const [initManagers, setInitManagers] = useState(false);
   const [managers, setManagers] = useState([]);
-  const [error, loading, organisation] = useFetch(`organisations/${props.id}/`, props.id);
+  const [error, loading, organisation] = useFetch(`organisations/${id}/`, id);
   const [isUserAllowed] = useEditOrgAllowed(organisation);
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?organisationId=${props.id}&omitMapResults=true&projectStatuses=PUBLISHED,DRAFT,ARCHIVED`,
-    props.id,
+    `projects/?organisationId=${id}&omitMapResults=true&projectStatuses=PUBLISHED,DRAFT,ARCHIVED`,
+    id,
   );
   const [errorMessage, setErrorMessage] = useState(null);
   useSetTitleTag(`Edit ${organisation.name}`);
@@ -184,11 +185,11 @@ export function EditOrganisation(props) {
 
   const updateManagers = () => {
     let payload = JSON.stringify({ managers: managers.map((i) => i.username) });
-    pushToLocalJSONAPI(`organisations/${props.id}/`, payload, token, 'PATCH');
+    pushToLocalJSONAPI(`organisations/${id}/`, payload, token, 'PATCH');
   };
 
   const updateOrg = (payload) => {
-    pushToLocalJSONAPI(`organisations/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
+    pushToLocalJSONAPI(`organisations/${id}/`, JSON.stringify(payload), token, 'PATCH')
       .then(() => setErrorMessage(null))
       .catch((err) => setErrorMessage(err.message));
   };
@@ -257,7 +258,7 @@ export function EditOrganisation(props) {
             />
             <Teams
               teams={organisation.teams}
-              viewAllQuery={`?organisationId=${props.id}`}
+              viewAllQuery={`?organisationId=${id}`}
               isReady={!error && !loading}
             />
           </div>
