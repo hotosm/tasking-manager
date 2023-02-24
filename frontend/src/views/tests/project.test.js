@@ -1,46 +1,32 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { globalHistory } from '@reach/router';
-import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 import { act, render, screen, waitFor } from '@testing-library/react';
-import { setupFaultyHandlers } from '../../network/tests/server';
 
 import { store } from '../../store';
 import {
-  CreateProject,
   ManageProjectsPage,
+  UserProjectsPage,
+  CreateProject,
   MoreFilters,
   ProjectDetailPage,
   ProjectsPage,
   ProjectsPageIndex,
-  UserProjectsPage,
 } from '../project';
-import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../utils/testWithIntl';
+import { setupFaultyHandlers } from '../../network/tests/server';
+
 import { projects } from '../../network/tests/mockData/projects';
-
-test('More Filters should close the more filters container when clicked outside the container', async () => {
-  const navigateMock = jest.fn();
-  renderWithRouter(
-    <QueryParamProvider adapter={ReachAdapter}>
-      <ReduxIntlProviders>
-        <MoreFilters navigate={navigateMock} />
-      </ReduxIntlProviders>
-    </QueryParamProvider>,
-  );
-  expect(
-    screen.getByRole('link', {
-      name: /apply/i,
-    }),
-  ).toBeInTheDocument();
-
-  await userEvent.click(screen.getAllByRole('button')[2]);
-  expect(navigateMock).toHaveBeenCalled();
-});
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 test('CreateProject renders ProjectCreate', async () => {
   renderWithRouter(
-    <QueryParamProvider adapter={ReachAdapter}>
+    <QueryParamProvider adapter={ReactRouter6Adapter}>
       <ReduxIntlProviders>
         <CreateProject />
       </ReduxIntlProviders>
@@ -51,20 +37,19 @@ test('CreateProject renders ProjectCreate', async () => {
 
 describe('UserProjectsPage Component', () => {
   it('should redirect to login page if no user token is present', async () => {
-    const navigateMock = jest.fn();
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: null });
     });
 
-    renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { router } = createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
-          <UserProjectsPage navigate={navigateMock} management={false} />
+          <UserProjectsPage management={false} />
         </ReduxIntlProviders>
       </QueryParamProvider>,
     );
 
-    await waitFor(() => expect(navigateMock).toHaveBeenCalled());
+    await waitFor(() => expect(router.state.location.pathname).toBe('/login'));
   });
 
   it('should display component details', async () => {
@@ -73,7 +58,7 @@ describe('UserProjectsPage Component', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <UserProjectsPage management={false} location={{ pathname: '/manage' }} />
         </ReduxIntlProviders>
@@ -101,7 +86,7 @@ describe('UserProjectsPage Component', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <UserProjectsPage management={false} />
         </ReduxIntlProviders>
@@ -115,11 +100,10 @@ describe('UserProjectsPage Component', () => {
 });
 
 test('More Filters should close the more filters container when clicked outside the container', async () => {
-  const navigateMock = jest.fn();
-  renderWithRouter(
-    <QueryParamProvider adapter={ReachAdapter}>
+  const { router } = createComponentWithMemoryRouter(
+    <QueryParamProvider adapter={ReactRouter6Adapter}>
       <ReduxIntlProviders>
-        <MoreFilters navigate={navigateMock} />
+        <MoreFilters />
       </ReduxIntlProviders>
     </QueryParamProvider>,
   );
@@ -130,7 +114,7 @@ test('More Filters should close the more filters container when clicked outside 
   ).toBeInTheDocument();
 
   await userEvent.click(screen.getAllByRole('button')[2]);
-  expect(navigateMock).toHaveBeenCalledWith('/explore?managedByMe=1');
+  await waitFor(() => expect(router.state.location.pathname).toBe('/explore'));
 });
 
 describe('ManageProjectsPage', () => {
@@ -140,8 +124,8 @@ describe('ManageProjectsPage', () => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
 
-    render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ManageProjectsPage />
         </ReduxIntlProviders>
@@ -160,8 +144,8 @@ describe('ManageProjectsPage', () => {
     act(() => {
       store.dispatch({ type: 'TOGGLE_MAP' });
     });
-    render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ManageProjectsPage />
         </ReduxIntlProviders>
@@ -177,16 +161,16 @@ describe('ManageProjectsPage', () => {
 });
 
 test('ProjectsPageIndex is a null DOM element', () => {
-  const { container } = render(<ProjectsPageIndex />);
+  const { container } = renderWithRouter(<ProjectsPageIndex />);
   expect(container).toBeEmptyDOMElement();
 });
 
 describe('Projects Page', () => {
   const setup = () => {
     renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
-          <ProjectsPage location={globalHistory.location} />
+          <ProjectsPage />
         </ReduxIntlProviders>
       </QueryParamProvider>,
     );
@@ -230,7 +214,7 @@ describe('Project Detail Page', () => {
     act(() => {
       store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
     });
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectDetailPage id={123} navigate={() => jest.fn()} />
       </ReduxIntlProviders>,
@@ -244,10 +228,20 @@ describe('Project Detail Page', () => {
   it('should display private project error message', async () => {
     setupFaultyHandlers();
     render(
-      <ReduxIntlProviders>
-        <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-      </ReduxIntlProviders>,
+      <MemoryRouter initialEntries={['/projects/123']}>
+        <Routes>
+          <Route
+            path="projects/:id"
+            element={
+              <ReduxIntlProviders>
+                <ProjectDetailPage id={123} navigate={() => jest.fn()} />
+              </ReduxIntlProviders>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
     );
+
     await waitFor(() =>
       expect(
         screen.getByText("You don't have permission to access this project"),
@@ -258,10 +252,20 @@ describe('Project Detail Page', () => {
   it('should display generic error message', async () => {
     setupFaultyHandlers();
     render(
-      <ReduxIntlProviders>
-        <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-      </ReduxIntlProviders>,
+      <MemoryRouter initialEntries={['/projects/123']}>
+        <Routes>
+          <Route
+            path="projects/:id"
+            element={
+              <ReduxIntlProviders>
+                <ProjectDetailPage id={123} navigate={() => jest.fn()} />
+              </ReduxIntlProviders>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
     );
+
     await waitFor(() =>
       expect(
         screen.getByRole('heading', {

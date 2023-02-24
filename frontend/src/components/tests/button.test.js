@@ -3,6 +3,7 @@ import '@testing-library/jest-dom';
 
 import { Button, CustomButton, EditButton } from '../button';
 import { BanIcon } from '../svgIcons';
+import { renderWithRouter } from "../../utils/testWithIntl";
 
 describe('Button', () => {
   it('children and onClick props', () => {
@@ -123,7 +124,7 @@ describe('CustomButton', () => {
 });
 
 it('children and link props of EditButton', () => {
-  render(<EditButton url="/manage/projects/1/">Edit project</EditButton>);
+  renderWithRouter(<EditButton url="/manage/projects/1/">Edit project</EditButton>);
 
   expect(screen.getByText('Edit project')).toBeInTheDocument();
   expect(screen.getByText('Edit project').href).toContain('/manage/projects/1/');

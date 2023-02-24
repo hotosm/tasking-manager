@@ -1,15 +1,25 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
-import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { MemoryRouter } from 'react-router-dom';
+import { screen } from '@testing-library/react';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
+
 import { QueryParamProvider } from 'use-query-params';
 import userEvent from '@testing-library/user-event';
 
-import { createComponentWithIntl, ReduxIntlProviders } from '../../../utils/testWithIntl';
+import {
+  createComponentWithIntl,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 import { MappingTypeFilterPicker } from '../mappingTypeFilterPicker';
 import { RoadIcon } from '../../svgIcons';
 
 it('mapping type options show the road icon', () => {
-  const filtersForm = createComponentWithIntl(<MappingTypeFilterPicker />);
+  const filtersForm = createComponentWithIntl(
+    <MemoryRouter>
+      <MappingTypeFilterPicker />
+    </MemoryRouter>,
+  );
   const testInstance = filtersForm.root;
   // RoadIcon is present because mapping types is rendered
   expect(() => testInstance.findByType(RoadIcon)).not.toThrow(
@@ -19,9 +29,9 @@ it('mapping type options show the road icon', () => {
 
 it('should set query for the clicked icon', async () => {
   const setMappingTypesQueryMock = jest.fn();
-  render(
+  renderWithRouter(
     <ReduxIntlProviders>
-      <QueryParamProvider adapter={ReachAdapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <MappingTypeFilterPicker setMappingTypesQuery={setMappingTypesQueryMock} />
       </QueryParamProvider>
     </ReduxIntlProviders>,
@@ -36,9 +46,9 @@ it('should set query for the clicked icon', async () => {
 
 it('should highlight active selected map icon', async () => {
   const setMappingTypesQueryMock = jest.fn();
-  render(
+  renderWithRouter(
     <ReduxIntlProviders>
-      <QueryParamProvider adapter={ReachAdapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <MappingTypeFilterPicker
           mappingTypes={['ROADS']}
           setMappingTypesQuery={setMappingTypesQueryMock}
@@ -52,9 +62,9 @@ it('should highlight active selected map icon', async () => {
 
 it('should concatinate values with the present query', async () => {
   const setMappingTypesQueryMock = jest.fn();
-  render(
+  renderWithRouter(
     <ReduxIntlProviders>
-      <QueryParamProvider adapter={ReachAdapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <MappingTypeFilterPicker
           mappingTypes={['ROADS', 'BUILDINGS']}
           setMappingTypesQuery={setMappingTypesQueryMock}
@@ -76,9 +86,9 @@ it('should concatinate values with the present query', async () => {
 
 it('should deselect from the query value', async () => {
   const setMappingTypesQueryMock = jest.fn();
-  render(
+  renderWithRouter(
     <ReduxIntlProviders>
-      <QueryParamProvider adapter={ReachAdapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <MappingTypeFilterPicker
           mappingTypes={['ROADS', 'BUILDINGS']}
           setMappingTypesQuery={setMappingTypesQueryMock}
@@ -92,8 +102,5 @@ it('should deselect from the query value', async () => {
       name: /roads/i,
     }),
   );
-  expect(setMappingTypesQueryMock).toHaveBeenCalledWith(
-    ['BUILDINGS'],
-    'pushIn',
-  );
+  expect(setMappingTypesQueryMock).toHaveBeenCalledWith(['BUILDINGS'], 'pushIn');
 });

@@ -1,11 +1,14 @@
+import '@testing-library/jest-dom';
 import React from 'react';
 import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 
-import '@testing-library/jest-dom';
-
-import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../utils/testWithIntl';
 import { ListOrganisations, CreateOrganisation, EditOrganisation } from '../organisationManagement';
 import { store } from '../../store/';
 
@@ -16,14 +19,13 @@ describe('List Interests', () => {
       store.dispatch({ type: 'SET_USER_DETAILS', userDetails: userDetails });
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
-    const { container, history } = renderWithRouter(
+    const { container } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <ListOrganisations />
       </ReduxIntlProviders>,
     );
     return {
       container,
-      history,
     };
   };
 
@@ -58,7 +60,7 @@ describe('List Interests', () => {
 
 describe('Create Organization', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    const { router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <CreateOrganisation />
       </ReduxIntlProviders>,
@@ -72,7 +74,7 @@ describe('Create Organization', () => {
     return {
       createButton,
       cancelButton,
-      history,
+      router,
     };
   };
 
@@ -90,7 +92,7 @@ describe('Create Organization', () => {
   });
 
   it('should navigate to the newly created campaign detail page on creation success', async () => {
-    const { history, createButton } = setup();
+    const { router, createButton } = setup();
     const nameInput = screen.getAllByRole('textbox')[0];
     const user = userEvent.setup();
     await user.type(nameInput, 'New Organization Name');
@@ -98,7 +100,7 @@ describe('Create Organization', () => {
     fireEvent.mouseDown(subscriptionType);
     user.click(screen.getByText('Free'));
     user.click(createButton);
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/organisations/123'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/organisations/123'));
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
@@ -190,14 +192,14 @@ describe('EditCampaign', () => {
 
 describe('Delete Campaign', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    const { router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <EditOrganisation id={123} />
       </ReduxIntlProviders>,
     );
 
     return {
-      history,
+      router,
     };
   };
 
@@ -230,7 +232,7 @@ describe('Delete Campaign', () => {
   });
 
   it('should direct to organizations list page on successful deletion of a organization', async () => {
-    const { history } = setup();
+    const { router } = setup();
     expect(await screen.findByText('NRCS_Duduwa Mapping')).toBeInTheDocument();
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
@@ -244,6 +246,6 @@ describe('Delete Campaign', () => {
     await waitFor(() =>
       expect(screen.getByText('Organisation deleted successfully.')).toBeInTheDocument(),
     );
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/organisations'));
+    await waitFor(() => expect(router.state.location.pathname).toEqual('/manage/organisations'));
   });
 });

@@ -1,7 +1,8 @@
 import React, { Suspense, useEffect } from 'react';
-import { Router, Redirect } from '@reach/router';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
-import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
+
 import ReactPlaceholder from 'react-placeholder';
 import { useMeta } from 'react-meta-elements';
 import { connect } from 'react-redux';
@@ -55,13 +56,22 @@ import { ProjectStats } from './views/projectStats';
 import { ContactPage } from './views/contact';
 import { SwaggerView } from './views/swagger';
 import { ContributionsPage, ContributionsPageIndex, UserStats } from './views/contributions';
-import { NotificationsPage, NotificationPageIndex } from './views/notifications';
+import { NotificationsPage } from './views/notifications';
 import { Banner, ArchivalNotificationBanner } from './components/banner/index';
 import { TopBanner } from './components/banner/topBanner';
 
 const ProjectEdit = React.lazy(() =>
   import('./views/projectEdit' /* webpackChunkName: "projectEdit" */),
 );
+
+// Use this to Redirect to intended page
+function Redirect({ to }) {
+  let navigate = useNavigate();
+  useEffect(() => {
+    navigate(to);
+  });
+  return null;
+}
 
 let App = (props) => {
   useMeta({ property: 'og:url', content: process.env.REACT_APP_BASE_URL });
@@ -79,87 +89,79 @@ let App = (props) => {
         <Preloader />
       ) : (
         <div className="w-100 base-font bg-white" lang={props.locale}>
-          <Router>
-            <TopBanner path="/" />
-          </Router>
-          <Router>
-            <Header path="/*" />
-          </Router>
+          <TopBanner />
+          <Header />
           <main className="cf w-100 base-font">
             <Suspense
               fallback={<ReactPlaceholder showLoadingAnimation={true} rows={30} delay={300} />}
             >
-              <QueryParamProvider adapter={ReachAdapter}>
-                <Router primary={false}>
-                  <Home path="/" />
-                  <ProjectsPage path="explore">
-                    <ProjectsPageIndex path="/" />
-                    <MoreFilters path="/filters/*" />
-                  </ProjectsPage>
-                  <ProjectDetailPage path="projects/:id" />
-                  <SelectTask path="projects/:id/tasks" />
-                  <MapTask path="projects/:id/map" />
-                  <ValidateTask path="projects/:id/validate" />
-                  <ProjectStats path="projects/:id/stats" />
-                  <OrganisationStats path="organisations/:id/stats/" />
-                  <OrganisationDetail path="organisations/:slug/" />
-                  <Redirect from="learn" to="map" noThrow />
-                  <LearnPage path="learn/:type" />
-                  <QuickstartPage path="learn/quickstart" />
-                  <AboutPage path="about" />
-                  <ContactPage path="contact/" />
-                  <ContributionsPageIndex path="contributions">
-                    <UserStats path="/" />
-                    <ContributionsPage path="tasks/*" />
-                    <UserProjectsPage path="projects/*" />
-                    <MyTeams path="teams/*" />
-                  </ContributionsPageIndex>
-                  <UserDetail path="users/:username" />
-                  <NotificationsPage path="inbox">
-                    <NotificationPageIndex path="/" />
-                  </NotificationsPage>
-                  <Authorized path="authorized" />
-                  <Login path="login" />
-                  <Welcome path="welcome" />
-                  <Settings path="settings" />
-                  <EmailVerification path="verify-email" />
-                  <ManagementSection path="manage">
-                    <ManagementPageIndex path="/" />
-                    <Stats path="stats/" />
-                    <ListOrganisations path="organisations/" />
-                    <CreateOrganisation path="organisations/new/" />
-                    <EditOrganisation path="organisations/:id/" />
-                    <ManageTeams path="teams/" />
-                    <UsersList path="users/" />
-                    <CreateTeam path="teams/new" />
-                    <EditTeam path="teams/:id" />
-                    <ListCampaigns path="campaigns/" />
-                    <CreateCampaign path="campaigns/new" />
-                    <EditCampaign path="campaigns/:id" />
-                    <CreateProject path="projects/new" />
-                    <ProjectEdit path="projects/:id" />
-                    <ManageProjectsPage path="projects/*" />
-                    <ListInterests path="categories/" />
-                    <EditInterest path="categories/:id" />
-                    <CreateInterest path="categories/new" />
-                    <CreateLicense path="licenses/new" />
-                    <ListLicenses path="licenses/" />
-                    <EditLicense path="licenses/:id" />
-                  </ManagementSection>
-                  <TeamDetail path="teams/:id/membership" />
-                  <SwaggerView path="/api-docs/" />
-                  <Redirect from="project/:id" to="/projects/:id" noThrow />
-                  <Redirect from="contribute/" to="/explore" noThrow />
-                  <NotFound default />
-                </Router>
+              <QueryParamProvider adapter={ReactRouter6Adapter}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="explore" element={<ProjectsPage />}>
+                    <Route index element={<ProjectsPageIndex />} />
+                    <Route path="filters/*" element={<MoreFilters />} />
+                  </Route>
+                  <Route path="projects/:id" element={<ProjectDetailPage />} />
+                  <Route path="projects/:id/tasks" element={<SelectTask />} />
+                  <Route path="projects/:id/map" element={<MapTask />} />
+                  <Route path="projects/:id/validate" element={<ValidateTask />} />
+                  <Route path="projects/:id/stats" element={<ProjectStats />} />
+                  <Route path="organisations/:id/stats/" element={<OrganisationStats />} />
+                  <Route path="organisations/:slug/" element={<OrganisationDetail />} />
+                  <Route path="learn" element={<Redirect to="map" />} />
+                  <Route path="learn/:type" element={<LearnPage />} />
+                  <Route path="learn/quickstart" element={<QuickstartPage />} />
+                  <Route path="about" element={<AboutPage />} />
+                  <Route path="contact/" element={<ContactPage />} />
+                  <Route path="contributions" element={<ContributionsPageIndex />}>
+                    <Route index element={<UserStats />} />
+                    <Route path="tasks/*" element={<ContributionsPage />} />
+                    <Route path="projects/*" element={<UserProjectsPage />} />
+                    <Route path="teams/*" element={<MyTeams />} />
+                  </Route>
+                  {/* <Route path="/contributions" element={<UserStats />} /> */}
+                  <Route path="users/:username" element={<UserDetail />} />
+                  <Route path="inbox" element={<NotificationsPage />} />
+                  <Route path="authorized" element={<Authorized />} />
+                  <Route path="login" element={<Login />} />
+                  <Route path="welcome" element={<Welcome />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="verify-email" element={<EmailVerification />} />
+                  <Route path="manage" element={<ManagementSection />}>
+                    <Route index element={<ManagementPageIndex />} />
+                    <Route path="stats/" element={<Stats />} />
+                    <Route path="organisations/" element={<ListOrganisations />} />
+                    <Route path="organisations/new/" element={<CreateOrganisation />} />
+                    <Route path="organisations/:id/" element={<EditOrganisation />} />
+                    <Route path="teams/" element={<ManageTeams />} />
+                    <Route path="users/" element={<UsersList />} />
+                    <Route path="teams/new" element={<CreateTeam />} />
+                    <Route path="teams/:id" element={<EditTeam />} />
+                    <Route path="campaigns/" element={<ListCampaigns />} />
+                    <Route path="campaigns/new" element={<CreateCampaign />} />
+                    <Route path="campaigns/:id" element={<EditCampaign />} />
+                    <Route path="projects/new" element={<CreateProject />} />
+                    <Route path="projects/:id" element={<ProjectEdit />} />
+                    <Route path="projects/*" element={<ManageProjectsPage />} />
+                    <Route path="categories/" element={<ListInterests />} />
+                    <Route path="categories/:id" element={<EditInterest />} />
+                    <Route path="categories/new" element={<CreateInterest />} />
+                    <Route path="licenses/new" element={<CreateLicense />} />
+                    <Route path="licenses/" element={<ListLicenses />} />
+                    <Route path="licenses/:id" element={<EditLicense />} />
+                  </Route>
+                  <Route path="teams/:id/membership" element={<TeamDetail />} />
+                  <Route path="/api-docs/" element={<SwaggerView />} />
+                  <Route path="project/:id" element={<Redirect to="/projects/:id" />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
               </QueryParamProvider>
             </Suspense>
           </main>
+          <Footer />
           <ArchivalNotificationBanner />
           {MATOMO_ID && <Banner />}
-          <Router primary={false}>
-            <Footer path="/*" />
-          </Router>
         </div>
       )}
     </Sentry.ErrorBoundary>

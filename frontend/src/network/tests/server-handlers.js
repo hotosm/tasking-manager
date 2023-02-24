@@ -10,7 +10,7 @@ import {
   userFavorite,
 } from './mockData/projects';
 import { featuredProjects } from './mockData/featuredProjects';
-import { newUsersStats, osmStatsProd, userStats } from './mockData/userStats';
+import { newUsersStats, osmStatsProd, osmStatsProject, userStats } from './mockData/userStats';
 import { projectContributions, projectContributionsByDay } from './mockData/contributions';
 import {
   usersList,
@@ -232,6 +232,12 @@ const handlers = [
     'https://osm-stats-production-api.azurewebsites.net/users/:username',
     (req, res, ctx) => {
       return res(ctx.json(osmStatsProd));
+    },
+  ),
+  rest.get(
+    'https://osm-stats-production-api.azurewebsites.net/stats/:projectId',
+    (req, res, ctx) => {
+      return res(ctx.json(osmStatsProject));
     },
   ),
 ];

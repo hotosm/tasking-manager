@@ -1,21 +1,24 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
-import { globalHistory } from '@reach/router';
-import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { screen } from '@testing-library/react';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 import { decodeQueryParams, StringParam } from 'serialize-query-params';
 
-import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 import { ProjectNav } from '../projectNav';
 import messages from '../messages';
 import { parse } from 'query-string';
 
 describe('Project Navigation Bar', () => {
   it('should render component details', () => {
-    render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
-          <ProjectNav location={globalHistory.location} />
+          <ProjectNav />
         </ReduxIntlProviders>
       </QueryParamProvider>,
     );
@@ -28,16 +31,16 @@ describe('Project Navigation Bar', () => {
   });
 
   it('should display the clear filters button', async () => {
-    const { history } = renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { router } = createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
-          <ProjectNav location={globalHistory.location} />
+          <ProjectNav />
         </ReduxIntlProviders>
       </QueryParamProvider>,
       { route: '?text=something' },
     );
 
-    expect(decodeQueryParams({ text: StringParam }, parse(history.location.search))).toEqual({
+    expect(decodeQueryParams({ text: StringParam }, parse(router.state.location.search))).toEqual({
       text: 'something',
     });
   });

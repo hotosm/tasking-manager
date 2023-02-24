@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { navigate, useLocation } from '@reach/router';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import Popup from 'reactjs-popup';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -49,6 +49,7 @@ export function TaskMapAction({
   action,
   editor,
 }) {
+  const navigate = useNavigate();
   const location = useLocation();
   const aboutToExpireTimeoutRef = useRef();
   const expiredTimeoutRef = useRef();
@@ -169,7 +170,16 @@ export function TaskMapAction({
         navigate(`./?editor=${editorToUse[0]}`);
       }
     }
-  }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds]);
+  }, [
+    editor,
+    project,
+    projectIsReady,
+    userDetails.defaultEditor,
+    action,
+    tasks,
+    tasksIds,
+    navigate,
+  ]);
 
   useEffect(() => {
     if (location.state?.directedFrom) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, navigate, useLocation } from '@reach/router';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -44,6 +44,7 @@ export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Obj
 }
 
 export function SameProjectLock({ lockedTasks, action }: Object) {
+  const navigate = useNavigate();
   return (
     <>
       <h3 className="barlow-condensed f3 fw6 mv0">

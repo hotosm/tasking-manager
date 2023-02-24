@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { globalHistory } from '@reach/router';
 import { screen, fireEvent, act, within, waitFor, render } from '@testing-library/react';
 
 import '../../../utils/mockMatchMedia';
@@ -14,11 +13,8 @@ describe('Header', () => {
   const setup = () => {
     renderWithRouter(
       <ReduxIntlProviders>
-        <Header location={globalHistory.location} />
+        <Header />
       </ReduxIntlProviders>,
-      {
-        route: '/explore',
-      },
     );
   };
 
@@ -63,7 +59,7 @@ describe('Header', () => {
   // it('should use local logo image if no org logo is present', () => {
   //   const { rerender } = renderWithRouter(
   //     <ReduxIntlProviders>
-  //       <Header location={globalHistory.location} />
+  //       <Header />
   //     </ReduxIntlProviders>,
   //   );
 
@@ -101,7 +97,7 @@ describe('Header', () => {
       screen.getByRole('link', {
         name: /explore projects/i,
       }),
-    ).toHaveClass('bb b--blue-dark bw1 pv2');
+    ).toHaveClass('link mh3 barlow-condensed blue-dark f4 ttu lh-solid nowrap pv2');
     expect(
       screen.getByRole('link', {
         name: /about/i,
@@ -114,7 +110,7 @@ describe('Right side action items', () => {
   const setup = () => {
     renderWithRouter(
       <ReduxIntlProviders>
-        <Header location={globalHistory.location} />
+        <Header />
       </ReduxIntlProviders>,
     );
   };
@@ -162,7 +158,7 @@ describe('Dropdown menu of logged in user', () => {
   const setup = () =>
     renderWithRouter(
       <ReduxIntlProviders>
-        <Header location={globalHistory.location} />
+        <Header />
       </ReduxIntlProviders>,
     );
 
@@ -244,7 +240,7 @@ describe('AuthButtons Component', () => {
 
 describe('PopupItems Component', () => {
   test('when user is logged in', async () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <PopupItems
           menuItems={getMenuItemsForUser({ username: 'somebody', role: 'ADMIN' })}
@@ -270,7 +266,7 @@ describe('PopupItems Component', () => {
   });
 
   test('when user is not logged in', async () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <PopupItems
           menuItems={getMenuItemsForUser({ username: 'somebody', role: 'ADMIN' })}
@@ -337,7 +333,7 @@ test('users should be prompted to update their email', () => {
   });
   renderWithRouter(
     <ReduxIntlProviders>
-      <Header location={globalHistory.location} />
+      <Header />
     </ReduxIntlProviders>,
   );
   expect(

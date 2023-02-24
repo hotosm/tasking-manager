@@ -1,13 +1,13 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { TopProjects } from '../topProjects';
 
 describe('TopProjects card', () => {
   it('renders a message if the user has not stats yet', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <TopProjects projects={{ mappedProjects: [] }} />
       </ReduxIntlProviders>,
@@ -37,7 +37,7 @@ describe('TopProjects card', () => {
         },
       ],
     };
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <TopProjects projects={projects} />
       </ReduxIntlProviders>,

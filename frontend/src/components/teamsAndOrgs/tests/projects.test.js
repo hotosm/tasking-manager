@@ -1,14 +1,18 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 
 import { Projects } from '../projects';
 import { projects } from '../../../network/tests/mockData/projects';
-import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  IntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 
 describe('Projects component', () => {
   it('should display loading placeholder when API is being fetched', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <IntlProviders>
         <Projects projects={[]} viewAllEndpoint="/view/all" />
       </IntlProviders>,
@@ -17,7 +21,7 @@ describe('Projects component', () => {
   });
 
   it('should display component details and projects passed', () => {
-    render(
+    renderWithRouter(
       <IntlProviders>
         <Projects projects={projects} viewAllEndpoint="/view/all" showAddButton />
       </IntlProviders>,
@@ -30,18 +34,18 @@ describe('Projects component', () => {
   });
 
   it('should navigate to project creation page on new button click', async () => {
-    const { history } = renderWithRouter(
+    const { router } = createComponentWithMemoryRouter(
       <IntlProviders>
         <Projects projects={projects} viewAllEndpoint="/view/all" showAddButton />
       </IntlProviders>,
     );
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: /new/i }));
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/projects/new/'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/projects/new/'));
   });
 
   it('should display no projects found message', () => {
-    render(
+    renderWithRouter(
       <IntlProviders>
         <Projects ownerEntity="user" projects={{ results: [] }} viewAllEndpoint="/view/all" />
       </IntlProviders>,
@@ -50,7 +54,7 @@ describe('Projects component', () => {
   });
 
   it('should navigate to manage projects page when view all is clicked ', async () => {
-    const { history } = renderWithRouter(
+    const { router } = createComponentWithMemoryRouter(
       <IntlProviders>
         <Projects projects={projects} viewAllEndpoint="/path/to/view/all" />
       </IntlProviders>,
@@ -61,6 +65,6 @@ describe('Projects component', () => {
         name: /view all/i,
       }),
     );
-    await waitFor(() => expect(history.location.pathname).toBe('/path/to/view/all'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/path/to/view/all'));
   });
 });

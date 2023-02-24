@@ -1,12 +1,14 @@
 import React from 'react';
-import { FlagIcon } from '../svgIcons';
-import { FormattedMessage } from 'react-intl';
-import { useFavProjectAPI } from '../../hooks/UseFavProjectAPI';
-import { navigate } from '@reach/router';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
+
+import { FlagIcon } from '../svgIcons';
+import { useFavProjectAPI } from '../../hooks/UseFavProjectAPI';
 import messages from './messages';
 
 export const AddToFavorites = (props) => {
+  const navigate = useNavigate();
   const userToken = useSelector((state) => state.auth.token);
   const [state, dispatchToggle] = useFavProjectAPI(false, props.projectId, userToken);
   const isFav = state.isFav;

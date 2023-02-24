@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom';
-import { act, render, screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 
 import { store } from '../../store';
 import { ManagementPageIndex } from '../management';
 import { teams } from '../../network/tests/mockData/teams';
-import { ReduxIntlProviders } from '../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
 import { projects } from '../../network/tests/mockData/projects';
 
 describe('Management Page Overview Section', () => {
@@ -16,7 +16,7 @@ describe('Management Page Overview Section', () => {
       });
     });
 
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ManagementPageIndex />
       </ReduxIntlProviders>,

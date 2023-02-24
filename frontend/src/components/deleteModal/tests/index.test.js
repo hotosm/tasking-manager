@@ -2,7 +2,11 @@ import React from 'react';
 import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 import { interest } from '../../../network/tests/mockData/management';
 import { DeleteModal } from '../index';
 
@@ -44,7 +48,15 @@ describe('Delete Interest', () => {
   });
 
   it('should direct to interests list page on successful deletion of an interest', async () => {
-    const { deleteButton, history } = setup();
+    const { router } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <DeleteModal id={interest.id} name={interest.name} type="interests" />
+      </ReduxIntlProviders>,
+    );
+
+    const deleteButton = screen.getByRole('button', {
+      name: 'Delete',
+    });
 
     fireEvent.click(deleteButton);
     const dialog = screen.getByRole('dialog');
@@ -55,6 +67,6 @@ describe('Delete Interest', () => {
     expect(
       await screen.findByRole('heading', { name: /interest deleted successfully./i }),
     ).toBeInTheDocument();
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/interests'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/interests'));
   });
 });

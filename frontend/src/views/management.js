@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
+import { Outlet, useLocation } from 'react-router-dom';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -40,6 +41,7 @@ export function ManagementPageIndex() {
 }
 
 export const ManagementSection = (props) => {
+  const location = useLocation();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const isOrgManager = useSelector(
@@ -56,13 +58,15 @@ export const ManagementSection = (props) => {
     >
       {isOrgManager ||
       userDetails.role === 'ADMIN' ||
-      props.location.pathname.startsWith('/manage/teams/') ||
-      props.location.pathname.startsWith('/manage/projects/') ? (
+      location.pathname.startsWith('/manage/teams/') ||
+      location.pathname.startsWith('/manage/projects/') ? (
         <div className="w-100 ph5-l pb5-l pb2-m ph2-m cf bg-tan blue-dark">
           {(isOrgManager || userDetails.role === 'ADMIN') && (
             <ManagementMenu isAdmin={userDetails && userDetails.role === 'ADMIN'} />
           )}
-          <div className="ph0-ns ph2">{props.children}</div>
+          <div className="ph0-ns ph2">
+            <Outlet />
+          </div>
         </div>
       ) : (
         <div className="cf w-100 pv5">

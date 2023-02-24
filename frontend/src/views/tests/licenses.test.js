@@ -2,7 +2,11 @@ import React from 'react';
 import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../utils/testWithIntl';
 import { ListLicenses, CreateLicense, EditLicense } from '../licenses';
 
 describe('List Licenses', () => {
@@ -36,7 +40,14 @@ describe('List Licenses', () => {
   });
 
   it('should navigate to license edit page when clicked on the license card', async () => {
-    const { container, history } = setup();
+    const { container, router } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <ListLicenses />
+      </ReduxIntlProviders>,
+      {
+        route: '/manage/licenses',
+      },
+    );
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
@@ -45,7 +56,7 @@ describe('List Licenses', () => {
         name: /license 1/i,
       }),
     );
-    await waitFor(() => expect(history.location.pathname).toBe('/1'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/licenses/1/'));
   });
 });
 
@@ -80,7 +91,12 @@ describe('Create License', () => {
   });
 
   it('should navigate to the newly created license detail page on creation success', async () => {
-    const { history, createButton } = setup();
+    const { router } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <CreateLicense />
+      </ReduxIntlProviders>,
+    );
+    const createButton = screen.getByRole('button', { name: /create license/i });
     const nameInput = screen.getAllByRole('textbox')[0];
     fireEvent.change(nameInput, { target: { value: 'New license Name' } });
     const descriptionInput = screen.getAllByRole('textbox')[1];
@@ -88,7 +104,7 @@ describe('Create License', () => {
     const plainTextInput = screen.getAllByRole('textbox')[2];
     fireEvent.change(plainTextInput, { target: { value: 'New license plain text' } });
     fireEvent.click(createButton);
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/licenses/123'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/licenses/123'));
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
@@ -213,7 +229,12 @@ describe('Delete License', () => {
   });
 
   it('should direct to licenses list page on successful deletion of a license', async () => {
-    const { history, nameInput } = setup();
+    const { router } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <EditLicense id={1} />
+      </ReduxIntlProviders>,
+    );
+    const nameInput = screen.getAllByRole('textbox')[0];
     await waitFor(() => expect(nameInput.value).toBe('Sample License'));
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
@@ -225,6 +246,6 @@ describe('Delete License', () => {
     });
     fireEvent.click(deleteConfirmationButton);
     expect(await screen.findByText('License deleted successfully.')).toBeInTheDocument();
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/licenses'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/licenses'));
   });
 });

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { navigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -9,6 +9,7 @@ import { CloseIcon } from '../svgIcons';
 import { TeamBox } from '../teamsAndOrgs/teams';
 
 export function UserPermissionErrorContent({ project, userLevel, close }: Object) {
+  const navigate = useNavigate();
   const [userPermissionError, setUserPermissionEror] = useState(null);
   useEffect(() => {
     setUserPermissionEror(getPermissionErrorMessage(project, userLevel));

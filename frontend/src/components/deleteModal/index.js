@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import Popup from 'reactjs-popup';
 

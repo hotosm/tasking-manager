@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { navigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
@@ -16,6 +16,7 @@ import { MappingTypes } from '../mappingTypes';
 import { LockedTaskModalContent } from './lockedTasks';
 
 const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, selectedTasks }) => {
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences.locale);
   const [editor, setEditor] = useState(defaultUserEditor);

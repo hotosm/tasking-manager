@@ -1,31 +1,32 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { act, screen, render, waitFor } from '@testing-library/react';
-import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { act, screen, waitFor } from '@testing-library/react';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 
 import { store } from '../../store';
-import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../utils/testWithIntl';
 import { ContributionsPage, ContributionsPageIndex, UserStats } from '../contributions';
 
 describe('Contributions Page', () => {
   it('should navigate to login page if no user token is present', async () => {
-    // The navigate function is passed as a prop from the root file
-    // so creating a mock function to simulate the navigation to login page
-    const navigateMock = jest.fn();
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: null });
     });
 
-    renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { router } = createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
-          <ContributionsPage navigate={navigateMock} />
+          <ContributionsPage />
         </ReduxIntlProviders>
       </QueryParamProvider>,
     );
 
-    await waitFor(() => expect(navigateMock).toHaveBeenCalled());
+    await waitFor(() => expect(router.state.location.pathname).toEqual('/login'));
   });
 
   it('should display contents of the child components', async () => {
@@ -38,7 +39,7 @@ describe('Contributions Page', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ContributionsPage />
         </ReduxIntlProviders>
@@ -58,7 +59,7 @@ describe('Contributions Page', () => {
 });
 
 describe('Contributions Page Index', () => {
-  it('should render child component and props children', async () => {
+  it('should render header profile', async () => {
     act(() => {
       store.dispatch({
         type: 'SET_USER_DETAILS',
@@ -67,13 +68,12 @@ describe('Contributions Page Index', () => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
 
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
-        <ContributionsPageIndex>Hello world</ContributionsPageIndex>
+        <ContributionsPageIndex />
       </ReduxIntlProviders>,
     );
     expect(screen.getAllByRole('link', { name: 'test_user' }).length).toBe(4);
-    expect(screen.getByText('Hello world')).toBeInTheDocument();
   });
 });
 

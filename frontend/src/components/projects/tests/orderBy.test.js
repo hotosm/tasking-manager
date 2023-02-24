@@ -1,13 +1,13 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { IntlProviders } from '../../../utils/testWithIntl';
+import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { OrderBySelector } from '../orderBy';
 
 test('should select option on click', async () => {
   const setQueryMock = jest.fn();
-  render(
+  renderWithRouter(
     <IntlProviders>
       <OrderBySelector
         allQueryParams={{

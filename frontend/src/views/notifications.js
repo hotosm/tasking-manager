@@ -116,7 +116,3 @@ export const NotificationsPage = (props) => {
     </div>
   );
 };
-
-export const NotificationPageIndex = () => {
-  return null;
-};

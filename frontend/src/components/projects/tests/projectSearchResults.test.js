@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, screen, act } from '@testing-library/react';
+import { screen, act } from '@testing-library/react';
 
-import { IntlProviders, ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import {
   ExploreProjectCards,
   ExploreProjectList,
@@ -13,7 +13,7 @@ import { store } from '../../../store';
 
 describe('Project Search Results', () => {
   it('should display project cards', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults
           state={{
@@ -41,7 +41,7 @@ describe('Project Search Results', () => {
       });
     });
 
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults management state={{ isLoading: false, projects: projects.results }} />
       </ReduxIntlProviders>,
@@ -57,7 +57,7 @@ describe('Project Search Results', () => {
 
   it('should display error and provide actionable to retry', async () => {
     const retryFn = jest.fn();
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults state={{ isError: true, projects: [] }} retryFn={retryFn} />
       </ReduxIntlProviders>,
@@ -72,7 +72,7 @@ describe('Project Search Results', () => {
   });
 
   it('should display loading indicators', async () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults state={{ isLoading: true, isError: false, projects: [] }} />
       </ReduxIntlProviders>,
@@ -81,7 +81,7 @@ describe('Project Search Results', () => {
   });
 
   it('should display 0 projects if the pagination total is absent', async () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults
           state={{
@@ -97,7 +97,7 @@ describe('Project Search Results', () => {
 });
 
 test('ExploreProjectCards should display empty DOM element when no project is passed as props', () => {
-  const { container } = render(
+  const { container } = renderWithRouter(
     <IntlProviders>
       <ExploreProjectCards pageOfCards={[]} />
     </IntlProviders>,
@@ -106,7 +106,7 @@ test('ExploreProjectCards should display empty DOM element when no project is pa
 });
 
 test('ExploreProjectList should display empty DOM element when no project is passed as props', () => {
-  const { container } = render(
+  const { container } = renderWithRouter(
     <IntlProviders>
       <ExploreProjectList pageOfCards={[]} />
     </IntlProviders>,

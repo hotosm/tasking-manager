@@ -2,13 +2,17 @@ import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../utils/testWithIntl';
 import { ListInterests, CreateInterest, EditInterest } from '../interests';
 
 describe('List Interests', () => {
   const setup = () => {
     const { container, history } = renderWithRouter(
-      <ReduxIntlProviders path="/manage/interest">
+      <ReduxIntlProviders>
         <ListInterests />
       </ReduxIntlProviders>,
       {
@@ -36,7 +40,14 @@ describe('List Interests', () => {
   });
 
   it('should navigate to interest edit page when clicked on the interest card', async () => {
-    const { container, history } = setup();
+    const { container, router } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <ListInterests />
+      </ReduxIntlProviders>,
+      {
+        route: '/manage/interests',
+      },
+    );
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
@@ -45,7 +56,7 @@ describe('List Interests', () => {
         name: /Interest Name 1/i,
       }),
     );
-    await waitFor(() => expect(history.location.pathname).toBe('/1'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/interests/1/'));
   });
 });
 
@@ -80,11 +91,16 @@ describe('Create Interest', () => {
   });
 
   it('should navigate to the newly created interest detail page on creation success', async () => {
-    const { history, createButton } = setup();
+    const { router } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <CreateInterest />
+      </ReduxIntlProviders>,
+    );
+    const createButton = screen.getByRole('button', { name: /create category/i });
     const nameInput = screen.getByRole('textbox');
     fireEvent.change(nameInput, { target: { value: 'New interest Name' } });
     fireEvent.click(createButton);
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/categories/123'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/categories/123'));
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path

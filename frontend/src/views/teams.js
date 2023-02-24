@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from '@reach/router';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
 import {
@@ -18,10 +18,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { useEditTeamAllowed } from '../hooks/UsePermissions';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import useForceUpdate from '../hooks/UseForceUpdate';
-import {
-  fetchLocalJSONAPIWithAbort,
-  pushToLocalJSONAPI,
-} from '../network/genericJSONRequest';
+import { fetchLocalJSONAPIWithAbort, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import {
   getMembersDiff,
   filterActiveMembers,
@@ -263,10 +260,11 @@ export function CreateTeam() {
 }
 
 export function EditTeam(props) {
+  const { id } = useParams();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const [forceUpdated, forceUpdate] = useForceUpdate();
-  const [error, loading, team] = useFetch(`teams/${props.id}/`, forceUpdated);
+  const [error, loading, team] = useFetch(`teams/${id}/`, forceUpdated);
   const [initManagers, setInitManagers] = useState(false);
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
@@ -340,9 +338,7 @@ export function EditTeam(props) {
     if (payload.joinMethod !== 'BY_INVITE') {
       payload.visibility = 'PUBLIC';
     }
-    pushToLocalJSONAPI(`teams/${props.id}/`, JSON.stringify(payload), token, 'PATCH').then(
-      forceUpdate,
-    );
+    pushToLocalJSONAPI(`teams/${id}/`, JSON.stringify(payload), token, 'PATCH').then(forceUpdate);
   };
 
   if (team && team.teamId && !canUserEditTeam) {
@@ -418,15 +414,16 @@ export function EditTeam(props) {
   );
 }
 
-export function TeamDetail(props) {
-  useSetTitleTag(`Team #${props.id}`);
+export function TeamDetail() {
+  const { id } = useParams();
+  useSetTitleTag(`Team #${id}`);
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const [error, loading, team] = useFetch(`teams/${props.id}/`);
+  const [error, loading, team] = useFetch(`teams/${id}/`);
   // eslint-disable-next-line
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?teamId=${props.id}&omitMapResults=true`,
-    props.id,
+    `projects/?teamId=${id}&omitMapResults=true`,
+    id,
   );
   const [isMember, setIsMember] = useState(false);
   const [managers, setManagers] = useState([]);
@@ -447,7 +444,7 @@ export function TeamDetail(props) {
 
   const joinTeam = () => {
     pushToLocalJSONAPI(
-      `teams/${props.id}/actions/join/`,
+      `teams/${id}/actions/join/`,
       JSON.stringify({ role: 'MEMBER', username: userDetails.username }),
       token,
       'POST',
@@ -459,7 +456,7 @@ export function TeamDetail(props) {
 
   const leaveTeam = () => {
     pushToLocalJSONAPI(
-      `teams/${props.id}/actions/leave/`,
+      `teams/${id}/actions/leave/`,
       JSON.stringify({ username: userDetails.username }),
       token,
       'POST',
@@ -486,7 +483,7 @@ export function TeamDetail(props) {
           <div className="w-60-l w-100 mt2 pl5-l pl0 fl">
             <Projects
               projects={projects}
-              viewAllEndpoint={`/explore/?team=${props.id}`}
+              viewAllEndpoint={`/explore/?team=${id}`}
               ownerEntity="team"
               showManageButtons={false}
             />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
@@ -17,7 +18,8 @@ const ContributorsStats = React.lazy(() => import('../components/projectStats/co
 const TasksByStatus = React.lazy(() => import('../components/projectStats/taskStatus'));
 const ProjectTimeline = React.lazy(() => import('../components/projectDetail/timeline'));
 
-export function ProjectStats({ id }: Object) {
+export function ProjectStats() {
+  const { id } = useParams();
   useSetTitleTag(`Project #${id} Stats`);
   const [error, loading, project] = useFetch(`projects/${id}/queries/summary/`, id);
   // eslint-disable-next-line

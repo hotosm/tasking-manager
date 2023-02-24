@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { AddToFavorites } from '../favorites';
 
 describe('AddToFavorites button', () => {
@@ -10,7 +10,7 @@ describe('AddToFavorites button', () => {
     const props = {
       projectId: 1,
     };
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <AddToFavorites {...props} />
       </ReduxIntlProviders>,
