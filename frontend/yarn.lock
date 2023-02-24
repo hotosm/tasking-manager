@@ -13317,10 +13317,10 @@ rbush@^2.0.1:
   dependencies:
     quickselect "^1.0.1"
 
-react-accessible-accordion@^3.3.4:
-  version "3.3.4"
-  resolved "https://registry.npmjs.org/react-accessible-accordion/-/react-accessible-accordion-3.3.4.tgz"
-  integrity sha512-EUq+KmVRIIG5u1fR5XIbb2JU7w7NouLjuyfuPvnhuDIfNNWNYap1I8ijn2rdA6OQi1gGSRGbVzHs+3wxH/M0Sw==
+react-accessible-accordion@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/react-accessible-accordion/-/react-accessible-accordion-5.0.0.tgz#5b61d06aec38906a99f977c10324d9bddec0f64c"
+  integrity sha512-MT2obYpTgLIIfPr9d7hEyvPB5rg8uJcHpgA83JSRlEUHvzH48+8HJPvzSs+nM+XprTugDgLfhozO5qyJpBvYRQ==
 
 react-app-polyfill@^2.0.0:
   version "2.0.0"
