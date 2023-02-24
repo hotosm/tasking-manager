@@ -46,7 +46,7 @@ describe('MyTasksNav Component', () => {
   //   // with the updated values in the test, which would have caused
   //   // the 'Clear filters' button to appear. Uncomment to try
   //   renderWithRouter(
-  //     <QueryParamProvider adapter={ReachAdapter}>
+  //     <QueryParamProvider adapter={ReactRouter6Adapter}>
   //       <ReduxIntlProviders>
   //         <MyTasksNav />
   //       </ReduxIntlProviders>

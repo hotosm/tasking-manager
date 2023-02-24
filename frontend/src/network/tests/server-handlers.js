@@ -4,7 +4,10 @@ import {
   getProjectSummary,
   getProjectStats,
   projects,
+  projectDetail,
   userTouchedProjects,
+  projectComments,
+  userFavorite,
 } from './mockData/projects';
 import { featuredProjects } from './mockData/featuredProjects';
 import { newUsersStats, osmStatsProd, osmStatsProject, userStats } from './mockData/userStats';
@@ -61,6 +64,15 @@ const handlers = [
   }),
   rest.get(API_URL + 'projects/:id/contributions/', async (req, res, ctx) => {
     return res(ctx.json(projectContributions));
+  }),
+  rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
+    return res(ctx.json(projectDetail));
+  }),
+  rest.get(API_URL + 'projects/:id/comments/', async (req, res, ctx) => {
+    return res(ctx.json(projectComments));
+  }),
+  rest.get(API_URL + 'projects/:id/favorite/', async (req, res, ctx) => {
+    return res(ctx.json(userFavorite));
   }),
   rest.get(API_URL + 'projects/:id/statistics/', async (req, res, ctx) => {
     const { id } = req.params;
@@ -230,4 +242,18 @@ const handlers = [
   ),
 ];
 
-export { handlers };
+const faultyHandlers = [
+  rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
+    return res.once(
+      ctx.status(403),
+      ctx.json({
+        SubCode: `PrivateProject`,
+      }),
+    );
+  }),
+  rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+];
+
+export { handlers, faultyHandlers };

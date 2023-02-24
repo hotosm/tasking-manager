@@ -19,25 +19,6 @@ export const MoreFiltersForm = (props) => {
   const isLoggedIn = useSelector((state) => state.auth.token);
   const [formQuery, setFormQuery] = useExploreProjectsQueryParams();
 
-  const handleInputChange = (event) => {
-    const target = event.target;
-    let value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    if (name === 'types' || !name) {
-      // handle mappingTypes toggles in its separate fn inside that component
-      // exactTypes doesn't have a name and is handled in a separate fn
-      return;
-    }
-    setFormQuery(
-      {
-        ...formQuery,
-        page: undefined,
-        [name]: value,
-      },
-      'pushIn',
-    );
-  };
-
   /* dereference the formQuery */
   const {
     campaign: campaignInQuery,
@@ -82,7 +63,7 @@ export const MoreFiltersForm = (props) => {
   ];
 
   return (
-    <form className="pt4" onChange={handleInputChange}>
+    <form className="pt4">
       <fieldset id="mappingType" className="bn dib">
         <legend className={titleStyle}>
           <FormattedMessage {...messages.typesOfMapping} />
@@ -94,7 +75,7 @@ export const MoreFiltersForm = (props) => {
       </fieldset>
 
       <fieldset id="mappingTypesExact" className="bn dib v-mid mb4">
-        {mappingTypesInQuery?.length && (
+        {mappingTypesInQuery?.length > 0 && (
           <SwitchToggle
             label={<FormattedMessage {...messages.exactMatch} />}
             isChecked={Boolean(exactTypes)}

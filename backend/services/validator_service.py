@@ -97,7 +97,7 @@ class ValidatorService:
                     )
             else:
                 raise ValidatorServiceError(
-                    f"Validation not allowed because: {error_reason}"
+                    f"ValidtionNotAllowed- Validation not allowed because: {error_reason}"
                 )
 
         # Lock all tasks for validation

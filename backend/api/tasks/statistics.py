@@ -64,13 +64,17 @@ class TasksStatisticsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            start_date = validate_date_input(request.args.get("startDate"))
+            if request.args.get("startDate"):
+                start_date = validate_date_input(request.args.get("startDate"))
+            else:
+                return {
+                    "Error": "Start date is required",
+                    "SubCode": "MissingDate",
+                }, 400
             end_date = validate_date_input(request.args.get("endDate", date.today()))
-            if not (start_date):
-                raise KeyError("MissingDate- Missing start date parameter")
             if end_date < start_date:
                 raise ValueError(
-                    "InvalidStartDate- Start date must be earlier than end date"
+                    "InvalidDateRange- Start date must be earlier than end date"
                 )
             if (end_date - start_date) > timedelta(days=366):
                 raise ValueError(

@@ -34,7 +34,6 @@ export const CreateProject = () => {
 
 export const ProjectsPage = () => {
   useSetTitleTag('Explore projects');
-  const location = useLocation();
   const initialData = {
     mapResults: {
       features: [],
@@ -53,7 +52,7 @@ export const ProjectsPage = () => {
 
   return (
     <div className="pull-center">
-      <ProjectNav location={location}>
+      <ProjectNav >
         <Outlet />
       </ProjectNav>
       <section className={`${searchResultWidth} explore-projects-container`}>
@@ -164,6 +163,7 @@ export const MoreFilters = () => {
       </div>
       <div
         onClick={() => navigate(currentUrl)}
+        role="button"
         className="absolute right-0 z-4 br w-60-l w-0 h-100 bg-blue-dark o-70 h6"
       />
     </>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -79,6 +79,7 @@ const DifficultyDropdown = (props) => {
 };
 
 export const ProjectNav = (props) => {
+  const location = useLocation()
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
   const encodedParams = stringify(fullProjectsQuery)
     ? ['?', stringify(fullProjectsQuery)].join('')
@@ -96,7 +97,7 @@ export const ProjectNav = (props) => {
     ? 'bg-red white'
     : 'bg-white blue-dark';
   const filterRouteToggled =
-    props.location.pathname.indexOf('filters') > -1
+    location.pathname.indexOf('filters') > -1
       ? '/explore' + encodedParams
       : './filters/' + encodedParams;
 
