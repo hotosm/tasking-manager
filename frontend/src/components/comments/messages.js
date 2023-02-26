@@ -44,6 +44,14 @@ export default defineMessages({
     id: 'comment.preview.leaveAComment',
     defaultMessage: 'Leave a comment...',
   },
+  write: {
+    id: 'textarea.write',
+    defaultMessage: 'Write',
+  },
+  preview: {
+    id: 'textarea.preview',
+    defaultMessage: 'Preview',
+  },
   attachImage: {
     id: 'comment.write.attachImage',
     defaultMessage: 'Attach image by dragging and dropping',

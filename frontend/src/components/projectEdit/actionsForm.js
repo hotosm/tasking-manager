@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
-import { useDropzone } from 'react-dropzone';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -12,12 +11,9 @@ import { Alert } from '../alert';
 import { DeleteModal } from '../deleteModal';
 import { styleClasses, StateContext } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
-import { useOnDrop } from '../../hooks/UseUploadImage';
 import { useFetch } from '../../hooks/UseFetch';
 import { useAsync } from '../../hooks/UseAsync';
-import FileRejections from '../comments/fileRejections';
-import DropzoneUploadStatus from '../comments/uploadStatus';
-import { DROPZONE_SETTINGS } from '../../config';
+import { CommentInputField } from '../comments/commentInput';
 
 const ActionStatus = ({ status, action }) => {
   let successMessage = '';
@@ -276,20 +272,17 @@ const MapAllTasksModal = ({ projectId, close }: Object) => {
 };
 
 const MessageContributorsModal = ({ projectId, close }: Object) => {
-  const [data, setData] = useState({ message: '', subject: '' });
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
   const token = useSelector((state) => state.auth.token);
-  const appendImgToMessage = (url) =>
-    setData({ ...data, message: `${data.message}\n![image](${url})\n` });
-  const [uploadError, uploading, onDrop] = useOnDrop(appendImgToMessage);
-  const { fileRejections, getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    ...DROPZONE_SETTINGS,
-  });
 
   const messageAllContributors = () => {
     return pushToLocalJSONAPI(
       `projects/${projectId}/actions/message-contributors/`,
-      JSON.stringify(data),
+      JSON.stringify({
+        subject: subject,
+        message: message,
+      }),
       token,
       'POST',
     );
@@ -297,8 +290,8 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
 
   const messageAllContributorsAsync = useAsync(messageAllContributors);
 
-  const handleChange = (e) => {
-    setData({ ...data, [e.target.name]: e.target.value });
+  const handleSubjectChange = (e) => {
+    setSubject(e.target.value);
   };
 
   return (
@@ -313,8 +306,8 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
         {(msg) => {
           return (
             <input
-              value={data.subject}
-              onChange={handleChange}
+              value={subject}
+              onChange={handleSubjectChange}
               name="subject"
               className="db center pa2 w-100 fl mb3"
               type="text"
@@ -326,28 +319,21 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
       <FormattedMessage {...messages.messagePlaceholder}>
         {(msg) => {
           return (
-            <div {...getRootProps()}>
-              <textarea
-                {...getInputProps()}
-                value={data.message}
-                onChange={handleChange}
-                name="message"
-                className="dib w-100 fl pa2 mb2"
-                style={{ display: 'inline-block' }} // we need to set display, as dropzone makes it none as default
-                type="text"
-                placeholder={msg}
-                rows={4}
+            <div className="dib w-100 mt-3">
+              <CommentInputField
+                comment={message}
+                setComment={setMessage}
+                enableHashtagPaste={true}
+                contributors={[]}
+                isShowTabNavs
               />
             </div>
           );
         }}
       </FormattedMessage>
-      <DropzoneUploadStatus uploading={uploading} uploadError={uploadError} />
-      <FileRejections files={fileRejections} />
       <p className={styleClasses.pClass}>
         <FormattedMessage {...messages.messageContributorsTranslationAlert} />
       </p>
-
       <ActionStatus status={messageAllContributorsAsync.status} action="MESSAGE_CONTRIBUTORS" />
       <p>
         <Button className={styleClasses.whiteButtonClass} onClick={close}>
@@ -522,6 +508,7 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
           }
           modal
           closeOnDocumentClick
+          nested
         >
           {(close) => <MessageContributorsModal projectId={projectId} close={close} />}
         </Popup>
