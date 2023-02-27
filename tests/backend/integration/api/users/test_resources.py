@@ -428,3 +428,42 @@ class TestUsersAllAPI(BaseTestCase):
         self.assertEqual(len(response.json["users"]), 1)
         self.assertEqual(response.json["pagination"]["page"], 1)
         self.assertEqual(response.json["pagination"]["total"], 1)
+
+
+class TestUsersRecommendedProjectsAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = return_canned_user(TEST_USERNAME, TEST_USER_ID)
+        self.user.create()
+        self.user_session_token = generate_encoded_token(TEST_USER_ID)
+        self.url = f"/api/v2/users/{self.user.username}/recommended-projects/"
+
+    def test_returns_401_without_session_token(self):
+        """ Test that the API returns 401 if no session token is provided """
+        # Act
+        response = self.client.get(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_404_if_user_does_not_exist(self):
+        """ Test that the API returns 404 if user does not exist """
+        # Act
+        response = self.client.get(
+            "/api/v2/users/999/recommendedProjects/",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+
+    def test_returns_recommended_projects(self):
+        """ Test that the API returns recommended projects """
+        # Arrange
+        project, _ = create_canned_project()
+        project.create()
+        # Act
+        response = self.client.get(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
