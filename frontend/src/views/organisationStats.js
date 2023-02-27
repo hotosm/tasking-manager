@@ -53,6 +53,12 @@ export const OrganisationStats = () => {
     isOrgManager;
   useSetTitleTag(`${organisation.name || 'Organization'} stats`);
 
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+    }
+  });
+
   if (token) {
     return (
       <ReactPlaceholder
@@ -130,6 +136,6 @@ export const OrganisationStats = () => {
       </ReactPlaceholder>
     );
   } else {
-    navigate('/login');
+    return null;
   }
 };
