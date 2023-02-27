@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
@@ -14,6 +14,12 @@ export function Login({ redirectTo }: Object) {
   const navigate = useNavigate();
   const location = useLocation();
   const userIsloggedIn = useSelector((state) => state.auth.token);
+
+  useEffect(() => {
+    if (userIsloggedIn) {
+      navigate(redirectTo || location.state?.from || '/welcome');
+    }
+  }, [location.state?.from, navigate, redirectTo, userIsloggedIn]);
 
   if (!userIsloggedIn) {
     return (
@@ -43,6 +49,6 @@ export function Login({ redirectTo }: Object) {
       </div>
     );
   } else {
-    navigate(redirectTo || location.state?.from || '/welcome');
+    return null;
   }
 }
