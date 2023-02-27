@@ -13,10 +13,12 @@ from backend.models.postgis.statuses import (
     TeamJoinMethod,
     TeamMemberFunctions,
 )
+from backend.api.teams import TEAM_NOT_FOUND
 
 TEST_ADMIN_USERNAME = "Test Admin"
 TEST_MESSAGE = "This is a test message"
 TEST_SUBJECT = "Test Subject"
+NON_EXISTENT_USER = "Random User"
 
 
 class TestTeamsActionsJoinAPI(BaseTestCase):
@@ -61,7 +63,7 @@ class TestTeamsActionsJoinAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "Team not found")
+        self.assertEqual(response_body["Error"], TEAM_NOT_FOUND)
 
     def test_request_to_join_team_with_invite_only_request_fails(self):
         """
@@ -153,7 +155,7 @@ class TestTeamsActionsJoinAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "Team not found")
+        self.assertEqual(response_body["Error"], TEAM_NOT_FOUND)
         self.assertEqual(response_body["SubCode"], "NotFound")
 
 
@@ -243,7 +245,7 @@ class TestTeamsActionsAddAPI(BaseTestCase):
         response = self.client.post(
             self.endpoint_url,
             json={
-                "username": "Random User",
+                "username": NON_EXISTENT_USER,
                 "role": TeamMemberFunctions.MEMBER.name.lower(),
             },
             headers={"Authorization": self.admin_token},
@@ -259,7 +261,7 @@ class TestTeamsActionsAddAPI(BaseTestCase):
         response = self.client.post(
             "/api/v2/teams/99/actions/add/",
             json={
-                "username": "Random User",
+                "username": NON_EXISTENT_USER,
                 "role": TeamMemberFunctions.MEMBER.name.lower(),
             },
             headers={"Authorization": self.admin_token},
@@ -346,7 +348,7 @@ class TestTeamsActionsLeaveAPI(BaseTestCase):
         response = self.client.post(
             self.endpoint_url,
             json={
-                "username": "Random User",
+                "username": NON_EXISTENT_USER,
             },
             headers={"Authorization": self.admin_token},
         )
@@ -398,7 +400,7 @@ class TestTeamsActionsMessageMembersAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "Team not found")
+        self.assertEqual(response_body["Error"], TEAM_NOT_FOUND)
         self.assertEqual(response_body["SubCode"], "NotFound")
 
     def test_message_team_members_by_unauthenticated_user_fails(self):

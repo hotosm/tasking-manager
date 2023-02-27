@@ -12,6 +12,8 @@ from backend.services.team_service import (
 from backend.services.users.authentication_service import token_auth, tm
 from backend.models.postgis.user import User
 
+TEAM_NOT_FOUND = "Team not found"
+
 
 class TeamsActionsJoinAPI(Resource):
     @token_auth.login_required
@@ -53,7 +55,7 @@ class TeamsActionsJoinAPI(Resource):
         except TeamServiceError as e:
             return {"Error": str(e), "SubCode": "InvalidRequest"}, 400
         except NotFound:
-            return {"Error": "Team not found", "SubCode": "NotFound"}, 404
+            return {"Error": TEAM_NOT_FOUND, "SubCode": "NotFound"}, 404
         except Exception as e:
             return {"Error": str(e), "SubCode": "InternalServerError"}, 500
 
@@ -146,7 +148,7 @@ class TeamsActionsJoinAPI(Resource):
                 )
                 return {"Success": "True"}, 200
         except NotFound:
-            return {"Error": "Team not found", "SubCode": "NotFound"}, 404
+            return {"Error": TEAM_NOT_FOUND, "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Team Join PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -354,7 +356,7 @@ class TeamsActionsMessageMembersAPI(Resource):
                 team = TeamService.get_team_by_id(team_id)
             except NotFound:
                 return {
-                    "Error": "Team not found",
+                    "Error": TEAM_NOT_FOUND,
                     "SubCode": "NotFound",
                 }, 404
 
