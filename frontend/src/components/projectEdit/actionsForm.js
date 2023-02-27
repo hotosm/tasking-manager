@@ -323,7 +323,7 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
               <CommentInputField
                 comment={message}
                 setComment={setMessage}
-                enableHashtagPaste={true}
+                enableHashtagPaste={false}
                 contributors={[]}
                 isShowTabNavs
               />
