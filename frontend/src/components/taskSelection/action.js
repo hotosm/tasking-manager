@@ -288,7 +288,7 @@ export function TaskMapAction({
                 ready={typeof project.projectId === 'number' && project.projectId > 0}
               >
                 {(activeEditor === 'ID' || activeEditor === 'RAPID') && (
-                  <SidebarToggle setShowSidebar={setShowSidebar} />
+                  <SidebarToggle setShowSidebar={setShowSidebar} activeEditor={activeEditor} />
                 )}
                 <HeaderLine
                   author={project.author}
