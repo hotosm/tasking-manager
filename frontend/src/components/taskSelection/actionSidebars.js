@@ -713,8 +713,10 @@ export function ReopenEditor({ project, action, editor, callEditor }: Object) {
   );
 }
 
-export function SidebarToggle({ setShowSidebar }: Object) {
+export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
   const iDContext = useSelector((state) => state.editor.context);
+  const rapidContext = useSelector((state) => state.editor.rapidContext);
+
   return (
     <div>
       <FormattedMessage {...messages.hideSidebar}>
@@ -723,7 +725,8 @@ export function SidebarToggle({ setShowSidebar }: Object) {
             <SidebarIcon
               onClick={() => {
                 setShowSidebar(false);
-                iDContext.ui().restart();
+                activeEditor === 'ID' && iDContext.ui().restart();
+                activeEditor === 'RAPID' && rapidContext.ui().restart();
               }}
             />
           </div>
