@@ -27,6 +27,8 @@ export const CommentInputField = ({
   isShowFooter = false,
   enableContributorsHashtag = false,
   isShowUserPicture = false,
+  placeholderMsg = messages.leaveAComment,
+  markdownTextareaProps = {},
 }: Object) => {
   const token = useSelector((state) => state.auth.token);
   const textareaRef = useRef();
@@ -106,8 +108,8 @@ export const CommentInputField = ({
           </div>
         </div>
       )}
-      <div className={`${isShowPreview ? 'dn' : ''}`} data-color-mode="light">
-        <FormattedMessage {...messages.leaveAComment}>
+      <div className={`${isShowPreview ? 'dn' : ''} bg-white`} data-color-mode="light">
+        <FormattedMessage {...placeholderMsg}>
           {(val) => (
             <MDEditor
               ref={textareaRef}
@@ -121,6 +123,7 @@ export const CommentInputField = ({
                 ...getInputProps(),
                 spellCheck: 'true',
                 placeholder: val,
+                ...markdownTextareaProps,
               }}
               defaultTabEnable
             />

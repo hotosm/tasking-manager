@@ -344,6 +344,10 @@ export default defineMessages({
     id: 'projects.formInputs.language',
     defaultMessage: 'Default language',
   },
+  typeHere: {
+    id: 'projects.formInputs.type',
+    defaultMessage: 'Type here...',
+  },
   translations: {
     id: 'projects.formInputs.language.translations',
     defaultMessage: 'Translations',
