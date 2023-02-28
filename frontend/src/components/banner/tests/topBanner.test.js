@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { banner } from '../../../network/tests/mockData/miscellaneous';
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { TopBanner } from '../topBanner';
 
 it('should render the banner text ', async () => {
-  render(
+  renderWithRouter(
     <ReduxIntlProviders>
       <TopBanner />
     </ReduxIntlProviders>,
