@@ -64,7 +64,7 @@ export function CompletionTabForMapping({
       )
         .then((res) => {
           clearLockedTasks();
-          navigate((redirectToPreviousProject && directedFrom) || `../tasks/`, {
+          navigate((redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`, {
             state: {
               lastLockedTasksIds: res.tasks.map((task) => task.taskId),
               lastLockedProjectId: project.projectId,
@@ -357,7 +357,7 @@ export function CompletionTabForValidation({
         token,
       ).then((r) => {
         clearLockedTasks();
-        navigate((redirectToPreviousProject && directedFrom) || `../tasks/`, {
+        navigate((redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`, {
           state: {
             lastLockedTasksIds: tasksIds,
             lastLockedProjectId: project.projectId,
@@ -385,12 +385,16 @@ export function CompletionTabForValidation({
       };
       return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
-        navigate((redirectToPreviousProject && directedFrom) || `../tasks/?filter=MAPPED`, {
-          state: {
-            lastLockedTasksIds: tasksIds,
-            lastLockedProjectId: project.projectId,
+        navigate(
+          (redirectToPreviousProject && directedFrom) ||
+            `/projects/${project.projectId}/tasks/?filter=MAPPED`,
+          {
+            state: {
+              lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
+            },
           },
-        });
+        );
       });
     } else if (disabled) {
       return new Promise((resolve, reject) => {
