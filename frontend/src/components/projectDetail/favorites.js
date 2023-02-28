@@ -34,7 +34,6 @@ export const AddToFavorites = (props) => {
           )}
         </span>
       </button>
-      {isFav && props.children}
     </>
   );
 };

@@ -335,3 +335,7 @@ export const projectComments = {
 export const userFavorite = {
   favorited: false,
 };
+
+export const favoritePost = (id) => ({
+  project_id: 123,
+});
