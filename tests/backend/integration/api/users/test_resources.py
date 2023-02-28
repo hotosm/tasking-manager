@@ -86,6 +86,27 @@ class TestUsersQueriesUsernameAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json["SubCode"], "NotFound")
 
+    @staticmethod
+    def assert_user_detail_response(
+        response,
+        user_id=TEST_USER_ID,
+        username=TEST_USERNAME,
+        email=TEST_EMAIL,
+        gender=None,
+        own_info=True,
+    ):
+        assert response.status_code == 200
+        assert response.json["id"] == user_id
+        assert response.json["username"] == username
+        if not own_info:
+            assert response.json["emailAddress"] is None
+            assert response.json["gender"] is None
+            assert response.json["selfDescriptionGender"] is None
+        else:
+            assert response.json["emailAddress"] == email
+            assert response.json["gender"] == gender
+            assert response.json["isEmailVerified"] == False
+
     def test_returns_email_and_gender_if_own_info_requested(self):
         """ Test response contains email and gender info if user is requesting own info """
         # Arrange
@@ -98,13 +119,14 @@ class TestUsersQueriesUsernameAPI(BaseTestCase):
             headers={"Authorization": self.user_session_token},
         )
         # Assert
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json["id"], TEST_USER_ID)
-        self.assertEqual(response.json["username"], TEST_USERNAME)
-        self.assertEqual(response.json["emailAddress"], TEST_EMAIL)
-        self.assertEqual(response.json["gender"], UserGender.MALE.name)
-        self.assertEqual(response.json["isEmailVerified"], False)
-        self.assertEqual(response.json["selfDescriptionGender"], None)
+        TestUsersQueriesUsernameAPI.assert_user_detail_response(
+            response,
+            TEST_USER_ID,
+            TEST_USERNAME,
+            TEST_EMAIL,
+            UserGender.MALE.name,
+            True,
+        )
 
     def test_email_and_gender_not_returned_if_requested_by_other(self):
         """Test response does not contain email and gender info if user is requesting info for another user"""
@@ -121,12 +143,9 @@ class TestUsersQueriesUsernameAPI(BaseTestCase):
             headers={"Authorization": user_2_session_token},
         )
         # Assert
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json["id"], TEST_USER_ID)
-        self.assertEqual(response.json["username"], TEST_USERNAME)
-        self.assertIsNone(response.json["emailAddress"])
-        self.assertIsNone(response.json["gender"])
-        self.assertIsNone(response.json["selfDescriptionGender"])
+        TestUsersQueriesUsernameAPI.assert_user_detail_response(
+            response, TEST_USER_ID, TEST_USERNAME, None, None, False
+        )
 
 
 class TestUsersQueriesOwnLockedAPI(BaseTestCase):
@@ -467,3 +486,69 @@ class TestUsersRecommendedProjectsAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 200)
+
+
+class TestUsersRestAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = return_canned_user(TEST_USERNAME, TEST_USER_ID)
+        self.user.create()
+        self.user_session_token = generate_encoded_token(TEST_USER_ID)
+        self.url = f"/api/v2/users/{self.user.id}/"
+
+    def test_returns_401_without_session_token(self):
+        """ Test that the API returns 401 if no session token is provided """
+        # Act
+        response = self.client.get(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_404_if_user_does_not_exist(self):
+        """ Test that the API returns 404 if user does not exist """
+        # Act
+        response = self.client.get(
+            "/api/v2/users/999/",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+
+    def test_returns_email_and_gender_if_own_info_requested(self):
+        """ Test response contains all user info if user is requesting own info """
+        # Arrange
+        self.user.email_address = TEST_EMAIL
+        self.user.gender = UserGender.MALE.value
+        self.user.save()
+        # Act
+        response = self.client.get(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        TestUsersQueriesUsernameAPI.assert_user_detail_response(
+            response,
+            TEST_USER_ID,
+            TEST_USERNAME,
+            TEST_EMAIL,
+            UserGender.MALE.name,
+            True,
+        )
+
+    def test_email_and_gender_not_returned_if_requested_by_other(self):
+        """Test response does not sensetive info if user is requesting info for another user"""
+        # Arrange
+        self.user.email_address = TEST_EMAIL
+        self.user.gender = UserGender.FEMALE.value
+        self.user.save()
+        user_2 = return_canned_user("user_2", 2222222)
+        user_2.create()
+        user_2_session_token = generate_encoded_token(user_2.id)
+        # Act
+        response = self.client.get(
+            self.url,
+            headers={"Authorization": user_2_session_token},
+        )
+        # Assert
+        TestUsersQueriesUsernameAPI.assert_user_detail_response(
+            response, TEST_USER_ID, TEST_USERNAME, None, None, False
+        )
