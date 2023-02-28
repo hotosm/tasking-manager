@@ -105,7 +105,7 @@ class TestUsersQueriesUsernameAPI(BaseTestCase):
         else:
             assert response.json["emailAddress"] == email
             assert response.json["gender"] == gender
-            assert response.json["isEmailVerified"] == False
+            assert response.json["isEmailVerified"] is False
 
     def test_returns_email_and_gender_if_own_info_requested(self):
         """ Test response contains email and gender info if user is requesting own info """
