@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 import { useOnClickOutside } from '../hooks/UseOnClickOutside';
 import { ChevronDownIcon, CheckIcon } from './svgIcons';
 import { CustomButton } from './button';
 
 const DropdownContent = React.forwardRef((props, ref) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const isActive = (obj) => {
     return props.value === obj.value;
   };

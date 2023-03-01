@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { ProjectsMap } from '../projectsMap';

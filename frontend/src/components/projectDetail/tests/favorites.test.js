@@ -16,7 +16,9 @@ describe('AddToFavorites button', () => {
       </ReduxIntlProviders>,
     );
     const button = screen.getByRole('button');
-    expect(button.className).toBe(' input-reset base-font bg-white blue-dark bn pointer flex nowrap items-center ml3');
+    expect(button.className).toBe(
+      ' input-reset base-font bg-white blue-dark bn pointer flex nowrap items-center ml3',
+    );
     expect(button.className).not.toBe('dn input-reset base-font bg-white blue-dark f6 bn pointer');
     expect(container.querySelector('svg').classList.value).toBe('pr2 v-btm o-50 blue-grey');
     expect(button.textContent).toBe('Add to Favorites');

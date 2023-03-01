@@ -79,7 +79,7 @@ const DifficultyDropdown = (props) => {
 };
 
 export const ProjectNav = (props) => {
-  const location = useLocation()
+  const location = useLocation();
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
   const encodedParams = stringify(fullProjectsQuery)
     ? ['?', stringify(fullProjectsQuery)].join('')

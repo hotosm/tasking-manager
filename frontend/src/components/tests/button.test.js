@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 
 import { Button, CustomButton, EditButton } from '../button';
 import { BanIcon } from '../svgIcons';
-import { renderWithRouter } from "../../utils/testWithIntl";
+import { renderWithRouter } from '../../utils/testWithIntl';
 
 describe('Button', () => {
   it('children and onClick props', () => {

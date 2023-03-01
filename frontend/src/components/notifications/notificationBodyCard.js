@@ -11,7 +11,7 @@ import { useFetch } from '../../hooks/UseFetch';
 import { CloseIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { DeleteButton } from '../teamsAndOrgs/management';
-import {ORG_NAME} from '../../config';
+import { ORG_NAME } from '../../config';
 import './styles.scss';
 
 export const NotificationBodyModal = (props) => {
