@@ -32,6 +32,9 @@ class UsersActionsSetUsersAPI(Resource):
               description: JSON object to update a user
               schema:
                   properties:
+                      id:
+                        type: integer
+                        example: 1
                       name:
                           type: string
                           example: Your Name
