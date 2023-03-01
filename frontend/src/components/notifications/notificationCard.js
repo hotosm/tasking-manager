@@ -231,7 +231,7 @@ export function NotificationCardMini({
             </div>
             <div>
               <div
-                className="f7 messageSubjectLinks"
+                className="f7 messageSubjectLinks ws-normal"
                 style={{ lineHeight: 1.21 }}
                 dangerouslySetInnerHTML={rawHtmlNotification(subject)}
               />
