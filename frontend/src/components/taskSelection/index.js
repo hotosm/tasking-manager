@@ -47,6 +47,7 @@ const getRandomTaskByAction = (activities, taskAction) => {
 };
 
 export function TaskSelection({ project, type, loading }: Object) {
+  useSetProjectPageTitleTag(project);
   const location = useLocation();
   const user = useSelector((state) => state.auth.userDetails);
   const userOrgs = useSelector((state) => state.auth.organisations);
@@ -67,7 +68,6 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
   const defaultUpdateInterval = 60000;
   const [updateInterval, setUpdateInterval] = useState(defaultUpdateInterval);
-  useSetProjectPageTitleTag(project);
 
   // get teams the user is part of
   const [userTeamsError, userTeamsLoading, userTeams] = useFetch(
@@ -298,17 +298,18 @@ export function TaskSelection({ project, type, loading }: Object) {
   return (
     <div>
       <div className="cf vh-minus-200-ns">
-        {!userTeamsLoading && ['mappingIsComplete', 'selectAnotherProject'].includes(taskAction) && (
-          <Popup modal open closeOnEscape={true} closeOnDocumentClick={true}>
-            {(close) => (
-              <UserPermissionErrorContent
-                project={project}
-                userLevel={user.mappingLevel}
-                close={close}
-              />
-            )}
-          </Popup>
-        )}
+        {!userTeamsLoading &&
+          ['mappingIsComplete', 'selectAnotherProject'].includes(taskAction) && (
+            <Popup modal open closeOnEscape={true} closeOnDocumentClick={true}>
+              {(close) => (
+                <UserPermissionErrorContent
+                  project={project}
+                  userLevel={user.mappingLevel}
+                  close={close}
+                />
+              )}
+            </Popup>
+          )}
         <div className="w-100 w-50-ns fl pt3 overflow-y-auto-ns vh-minus-200-ns h-100">
           <div className="pl4-l pl2 pr4">
             <ReactPlaceholder

@@ -72,6 +72,7 @@ function TaskItem({
     >
       <div
         className="w-80 pv3 fl cf pointer"
+        role="button"
         onClick={() => selectTask(data.taskId, data.taskStatus)}
       >
         <div className="w-70-l w-40 fl dib truncate">
