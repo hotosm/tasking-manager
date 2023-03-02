@@ -1,7 +1,7 @@
 import { TM_DEFAULT_CHANGESET_COMMENT } from '../../../config';
 
 export const getProjectSummary = (id) => ({
-  projectId: id,
+  projectId: Number(id),
   defaultLocale: 'en',
   author: 'test_user',
   created: '2019-08-27T12:18:07.186897Z',
@@ -33,7 +33,7 @@ export const getProjectSummary = (id) => ({
     coordinates: [-41.669134813, -14.20341561],
   },
   difficulty: 'EASY',
-  mappingPermission: 'LEVEL',
+  mappingPermission: 'ANY',
   validationPermission: 'LEVEL',
   allowedUsernames: [],
   enforceRandomTaskSelection: false,
@@ -59,7 +59,7 @@ export const getProjectSummary = (id) => ({
 });
 
 export const getProjectStats = (id) => ({
-  projectId: id,
+  projectId: Number(id),
   'projectArea(in sq.km)': 3506.03997973834,
   totalMappers: 105,
   totalTasks: 2779,
@@ -339,3 +339,50 @@ export const userFavorite = {
 export const favoritePost = (id) => ({
   project_id: 123,
 });
+
+export const activities = {
+  activity: [
+    {
+      taskId: 1,
+      taskStatus: 'READY',
+      actionDate: '2023-02-08T13:41:24.917474Z',
+      actionBy: 'Patrik_B',
+    },
+    {
+      taskId: 2,
+      taskStatus: 'READY',
+      actionDate: '2022-11-16T08:31:56.917380Z',
+      actionBy: 'helnershingthapa',
+    },
+    {
+      taskId: 3,
+      taskStatus: 'READY',
+      actionDate: '2023-02-28T06:10:55.329731Z',
+      actionBy: 'helnershingthapa',
+    },
+    {
+      taskId: 4,
+      taskStatus: 'INVALIDATED',
+      actionDate: '2022-12-19T10:28:55.565213Z',
+      actionBy: 'helnershingthapa',
+    },
+    {
+      taskId: 5,
+      taskStatus: 'MAPPED',
+      actionDate: '2022-11-30T05:36:43.518052Z',
+      actionBy: 'Aadesh Baral',
+    },
+    {
+      taskId: 6,
+      taskStatus: 'MAPPED',
+      actionDate: '2022-11-22T05:36:43.518052Z',
+      actionBy: 'Patrik_B',
+    },
+    {
+      taskId: 7,
+      taskStatus: 'VALIDATED',
+      actionDate: '2022-11-16T08:31:56.897777Z',
+      actionBy: 'helnershingthapa',
+    },
+  ],
+};

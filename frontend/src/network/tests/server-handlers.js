@@ -9,6 +9,7 @@ import {
   projectComments,
   userFavorite,
   favoritePost,
+  activities,
 } from './mockData/projects';
 import { featuredProjects } from './mockData/featuredProjects';
 import { newUsersStats, osmStatsProd, osmStatsProject, userStats } from './mockData/userStats';
@@ -59,6 +60,15 @@ const handlers = [
   rest.get(API_URL + 'projects/:id/queries/summary/', async (req, res, ctx) => {
     const { id } = req.params;
     return res(ctx.json(getProjectSummary(id)));
+  }),
+  rest.get(API_URL + 'projects/:id/activities/latest/', async (req, res, ctx) => {
+    return res(ctx.json(activities));
+  }),
+  rest.get(API_URL + 'projects/:id/queries/priority-areas/', async (req, res, ctx) => {
+    return res(ctx.json([]));
+  }),
+  rest.get(API_URL + 'projects/', async (req, res, ctx) => {
+    return res(ctx.json(projects));
   }),
   rest.get(API_URL + 'projects/', async (req, res, ctx) => {
     return res(ctx.json(projects));
