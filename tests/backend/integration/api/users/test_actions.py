@@ -7,6 +7,7 @@ from tests.backend.helpers.test_helpers import (
     create_canned_interest,
 )
 from backend.services.messaging.smtp_service import SMTPService
+from backend.models.postgis.statuses import UserRole
 
 TEST_EMAIL = "test@test.com"
 
@@ -226,3 +227,83 @@ class TestUsersActionsVerifyEmailAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         mock_send_message.assert_called_once()
+
+
+class TestUsersActionsSetRoleAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_user = return_canned_user()
+        self.test_user.create()
+        self.admin_user = return_canned_user("test_admin", 222222)
+        self.admin_user.role = UserRole.ADMIN.value
+        self.admin_user.create()
+        self.url = f"/api/v2/users/{self.test_user.username}/actions/set-role/{UserRole.ADMIN.name}/"
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.admin_session_token = generate_encoded_token(self.admin_user.id)
+
+    def test_returns_401_if_no_token(self):
+        """ Test that the API returns 401 if no token is provided """
+        # Act
+        response = self.client.patch(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_403_if_user_not_admin(self):
+        """ Test that the API returns 403 if user is not admin """
+        # Act
+        response = self.client.patch(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "NeedAdminRole")
+
+    def test_returns_403_if_unknown_user_role(self):
+        """Test API returns 403 if unknown user role is provided"""
+        # Act
+        response = self.client.patch(
+            f"/api/v2/users/{self.test_user.username}/actions/set-role/GOD/",
+            headers={"Authorization": self.admin_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "UnknownAddRole")
+
+    def test_returns_404_if_user_not_found(self):
+        """ Test that the API returns 404 if user is not found """
+        # Act
+        response = self.client.patch(
+            "/api/v2/users/unknown/actions/set-role/ADMIN/",
+            headers={"Authorization": self.admin_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_returns_200_if_user_role_set(self):
+        """ Test that the API returns 200 if user role is set """
+        # Act
+        response = self.client.patch(
+            self.url,
+            headers={"Authorization": self.admin_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["Success"], "Role Added")
+        self.assertEqual(self.test_user.role, UserRole.ADMIN.value)
+
+    def test_returns_200_if_user_role_removed(self):
+        """ Test that the API returns 200 if user role is removed """
+        # Arrange
+        self.test_user.role = UserRole.ADMIN.value
+        self.test_user.save()
+        # Act
+        response = self.client.patch(
+            f"/api/v2/users/{self.test_user.username}/actions/set-role/{UserRole.MAPPER.name}/",
+            headers={"Authorization": self.admin_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["Success"], "Role Added")
+        self.assertEqual(self.test_user.role, UserRole.MAPPER.value)
