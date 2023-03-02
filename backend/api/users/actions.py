@@ -416,7 +416,7 @@ class UsersActionsSetInterestsAPI(Resource):
                 token_auth.current_user(), data["interests"]
             )
             return user_interests.to_primitive(), 200
-        except ValueError as e:
+        except (ValueError, KeyError) as e:
             return {"Error": str(e)}, 400
         except NotFound:
             return {"Error": "Interest not Found", "SubCode": "NotFound"}, 404
