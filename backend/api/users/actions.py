@@ -307,6 +307,8 @@ class UsersActionsVerifyEmailAPI(Resource):
         try:
             MessageService.resend_email_validation(token_auth.current_user())
             return {"Success": "Verification email resent"}, 200
+        except ValueError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

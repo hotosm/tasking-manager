@@ -602,6 +602,8 @@ class MessageService:
     def resend_email_validation(user_id: int):
         """Resends the email validation email to the logged in user"""
         user = UserService.get_user_by_id(user_id)
+        if user.email_address is None:
+            raise ValueError("EmailNotSet- User does not have an email address")
         SMTPService.send_verification_email(user.email_address, user.username)
 
     @staticmethod

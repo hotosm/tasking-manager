@@ -17,7 +17,7 @@ class TestUsersActionsSetUsersAPI(BaseTestCase):
         self.test_user = return_canned_user()
         self.test_user.create()
         self.url = "/api/v2/users/me/actions/set-user/"
-        self.user_seesion_token = generate_encoded_token(self.test_user.id)
+        self.user_session_token = generate_encoded_token(self.test_user.id)
 
     def test_returns_401_if_no_token(self):
         """ Test that the API returns 401 if no token is provided """
@@ -31,7 +31,7 @@ class TestUsersActionsSetUsersAPI(BaseTestCase):
         # Act
         response = self.client.patch(
             self.url,
-            headers={"Authorization": self.user_seesion_token},
+            headers={"Authorization": self.user_session_token},
             json={"id": 2},
         )
         # Assert
@@ -42,7 +42,7 @@ class TestUsersActionsSetUsersAPI(BaseTestCase):
         # Act
         response = self.client.patch(
             self.url,
-            headers={"Authorization": self.user_seesion_token},
+            headers={"Authorization": self.user_session_token},
             json={"id": self.test_user.id, "emailAddress": "invalid_email"},
         )
         # Assert
@@ -77,7 +77,7 @@ class TestUsersActionsSetUsersAPI(BaseTestCase):
         # Act
         response = self.client.patch(
             self.url,
-            headers={"Authorization": self.user_seesion_token},
+            headers={"Authorization": self.user_session_token},
             json=sample_payload,
         )
         # Assert
@@ -99,7 +99,7 @@ class TestUsersActionsSetUsersAPI(BaseTestCase):
         # Act
         response = self.client.patch(
             self.url,
-            headers={"Authorization": self.user_seesion_token},
+            headers={"Authorization": self.user_session_token},
             json={"id": self.test_user.id, "emailAddress": TEST_EMAIL},
         )
         # Assert
@@ -137,7 +137,7 @@ class TestUsersActionsSetInterestsAPI(BaseTestCase):
         self.test_user = return_canned_user()
         self.test_user.create()
         self.url = "/api/v2/users/me/actions/set-interests/"
-        self.user_seesion_token = generate_encoded_token(self.test_user.id)
+        self.user_session_token = generate_encoded_token(self.test_user.id)
 
     def test_returns_401_if_no_token(self):
         """ Test that the API returns 401 if no token is provided """
@@ -151,7 +151,7 @@ class TestUsersActionsSetInterestsAPI(BaseTestCase):
         # Act
         response = self.client.post(
             self.url,
-            headers={"Authorization": self.user_seesion_token},
+            headers={"Authorization": self.user_session_token},
             json={"interests": [999]},
         )
         # Assert
@@ -162,7 +162,7 @@ class TestUsersActionsSetInterestsAPI(BaseTestCase):
         # Act
         response = self.client.post(
             self.url,
-            headers={"Authorization": self.user_seesion_token},
+            headers={"Authorization": self.user_session_token},
             json={"key": "invalid"},
         )
         # Assert
@@ -177,7 +177,7 @@ class TestUsersActionsSetInterestsAPI(BaseTestCase):
         # Act
         response = self.client.post(
             self.url,
-            headers={"Authorization": self.user_seesion_token},
+            headers={"Authorization": self.user_session_token},
             json=sample_payload,
         )
         # Assert
@@ -185,3 +185,44 @@ class TestUsersActionsSetInterestsAPI(BaseTestCase):
         self.assertEqual(len(response.json["interests"]), 2)
         self.assertEqual(response.json["interests"][0]["id"], interest_1.id)
         self.assertEqual(response.json["interests"][1]["id"], interest_2.id)
+
+
+class TestUsersActionsVerifyEmailAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_user = return_canned_user()
+        self.test_user.create()
+        self.url = "/api/v2/users/me/actions/verify-email/"
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+
+    def test_returns_401_if_no_token(self):
+        """ Test that the API returns 401 if no token is provided """
+        # Act
+        response = self.client.patch(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_400_if_user_has_not_set_email(self):
+        """ Test that the API returns 400 if user has not set email """
+        # Act
+        response = self.client.patch(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 400)
+
+    @patch.object(SMTPService, "_send_message")
+    def test_returns_200_if_verification_email_resent(self, mock_send_message):
+        """ Test that the API returns 200 if verification email is resent """
+        # Arrange
+        self.test_user.email_address = TEST_EMAIL
+        self.test_user.save()
+        # Act
+        response = self.client.patch(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        mock_send_message.assert_called_once()
