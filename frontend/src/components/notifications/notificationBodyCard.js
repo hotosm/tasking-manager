@@ -11,6 +11,7 @@ import { useFetch } from '../../hooks/UseFetch';
 import { CloseIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { DeleteButton } from '../teamsAndOrgs/management';
+import { ORG_NAME } from '../../config';
 import './styles.scss';
 
 export const NotificationBodyModal = (props) => {
@@ -85,7 +86,7 @@ export function NotificationBodyCard({
   const token = useSelector((state) => state.auth.token);
   const { value, unit } = selectUnit(new Date((sentDate && new Date(sentDate)) || new Date()));
   const showASendingUser =
-    fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && 'System');
+    fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && ORG_NAME);
 
   let replacedSubject;
   let replacedMessage;

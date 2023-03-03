@@ -3,7 +3,11 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 
-import { createComponentWithMemoryRouter, ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../utils/testWithIntl';
 import { UsersList } from '../users';
 
 describe('List Users', () => {

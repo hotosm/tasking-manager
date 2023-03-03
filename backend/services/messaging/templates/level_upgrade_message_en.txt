@@ -1,8 +1,7 @@
 Hi [USERNAME],<br />
 <br />
-Congratulations! You're now an [LEVEL] mapper.<br />
-Thank you very much for mapping with us!<br /><br />
+Congratulations! You're now an <span style="font-weight:bold">[LEVEL]</span> mapper.
 As an [LEVEL] mapper you are now able to contribute in a wide range of projects.<br />
 <br />
-Many thanks,<br />
+Thank you very much for mapping with us!<br /><br />
 [ORG_CODE] Mapping Team

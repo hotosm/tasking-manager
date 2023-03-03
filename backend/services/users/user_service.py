@@ -19,7 +19,7 @@ from backend.models.dtos.user_dto import (
 )
 from backend.models.dtos.interests_dto import InterestsListDTO, InterestDTO
 from backend.models.postgis.interests import Interest, project_interests
-from backend.models.postgis.message import Message
+from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.project import Project
 from backend.models.postgis.user import User, UserRole, MappingLevel, UserEmail
 from backend.models.postgis.task import TaskHistory, TaskAction, Task
@@ -788,15 +788,18 @@ class UserService:
         text_template = get_txt_template("level_upgrade_message_en.txt")
         replace_list = [
             ["[USERNAME]", username],
-            ["[LEVEL]", level],
+            ["[LEVEL]", level.capitalize()],
             ["[ORG_CODE]", current_app.config["ORG_CODE"]],
         ]
         text_template = template_var_replacing(text_template, replace_list)
 
         level_upgrade_message = Message()
         level_upgrade_message.to_user_id = user_id
-        level_upgrade_message.subject = "Mapper level upgrade"
+        level_upgrade_message.subject = (
+            f"Congratulations🎉, You're now an {level} mapper."
+        )
         level_upgrade_message.message = text_template
+        level_upgrade_message.message_type = MessageType.SYSTEM.value
         level_upgrade_message.save()
 
     @staticmethod

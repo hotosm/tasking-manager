@@ -7,7 +7,6 @@ import { FallbackComponent } from '../fallback';
 import { SERVICE_DESK } from '../../config';
 import messages from '../messages';
 
-
 describe('Fallback component', () => {
   it('should render component details', () => {
     renderWithRouter(

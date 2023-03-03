@@ -4,7 +4,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import WebFont from 'webfontloader';
 import * as Sentry from '@sentry/react';
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from 'react-router-dom';
 import { BrowserTracing } from '@sentry/tracing';
 
 import App from './App';

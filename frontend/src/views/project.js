@@ -52,7 +52,7 @@ export const ProjectsPage = () => {
 
   return (
     <div className="pull-center">
-      <ProjectNav >
+      <ProjectNav>
         <Outlet />
       </ProjectNav>
       <section className={`${searchResultWidth} explore-projects-container`}>
