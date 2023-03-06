@@ -115,6 +115,7 @@ class TestInterestsRestAPI(BaseTestCase):
         self.test_interest = create_canned_interest()
         self.session_token = generate_encoded_token(self.test_user.id)
         self.endpoint_url = f"/api/v2/interests/{self.test_interest.id}/"
+        self.non_existent_interest_url = "/api/v2/interests/99/"
 
     # get
     def test_get_an_interest_by_unauthenticated_user_fails(self):
@@ -148,7 +149,7 @@ class TestInterestsRestAPI(BaseTestCase):
         # setup: make test user organisation admin
         add_manager_to_organisation(self.test_organisation, self.test_user)
         response = self.client.get(
-            "/api/v2/interests/99/",
+            self.non_existent_interest_url,
             headers={"Authorization": self.session_token},
         )
         response_body = response.get_json()
@@ -205,7 +206,7 @@ class TestInterestsRestAPI(BaseTestCase):
         # setup: make test user organisation admin
         add_manager_to_organisation(self.test_organisation, self.test_user)
         response = self.client.patch(
-            "/api/v2/interests/99/",
+            self.non_existent_interest_url,
             headers={"Authorization": self.session_token},
             json={"name": NEW_INTEREST_NAME},
         )
@@ -276,7 +277,7 @@ class TestInterestsRestAPI(BaseTestCase):
         # setup: make test user organisation admin
         add_manager_to_organisation(self.test_organisation, self.test_user)
         response = self.client.delete(
-            "/api/v2/interests/99/",
+            self.non_existent_interest_url,
             headers={"Authorization": self.session_token},
         )
         response_body = response.get_json()
