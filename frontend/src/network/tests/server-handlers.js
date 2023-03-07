@@ -58,11 +58,10 @@ import { authLogin, setUser, userRegister } from './mockData/auth';
 
 const handlers = [
   rest.get(API_URL + 'projects/:id/queries/summary/', async (req, res, ctx) => {
-    const { id } = req.params;
-    return res(ctx.json(getProjectSummary(id)));
+    return res(ctx.json(getProjectSummary(Number(req.params.id))));
   }),
   rest.get(API_URL + 'projects/:id/activities/latest/', async (req, res, ctx) => {
-    return res(ctx.json(activities));
+    return res(ctx.json(activities(Number(req.params.id))));
   }),
   rest.get(API_URL + 'projects/:id/queries/priority-areas/', async (req, res, ctx) => {
     return res(ctx.json([]));

@@ -6,12 +6,10 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 
 import { store } from '../../store';
-import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import { ReduxIntlProviders } from '../../utils/testWithIntl';
 import { SelectTask } from '../taskSelection';
 
 describe('Task Selection Page', () => {
-  store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
-  store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
   const setup = () =>
     render(
       <MemoryRouter initialEntries={['/projects/123/tasks']}>
@@ -33,15 +31,30 @@ describe('Task Selection Page', () => {
   it('should redirect to login page if the user is not logged in', () => {
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: null });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
     });
-    renderWithRouter(
-      <ReduxIntlProviders>
-        <SelectTask />
-      </ReduxIntlProviders>,
-    );
+    setup();
     expect(
       screen.getByRole('button', {
         name: /log in/i,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('should display message hinting users that they are not ready to work on the project', async () => {
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 69, username: 'user_3', isExpert: false, role: 'READ_ONLY' },
+      });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+    });
+    setup();
+
+    expect(await screen.findByText(/Project Specific Mapping Notes/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {
+        name: /you are not ready to work on this project/i,
       }),
     ).toBeInTheDocument();
   });
@@ -67,7 +80,6 @@ describe('Task Selection Page', () => {
         userDetails: { id: 69, username: 'user_3', isExpert: true },
       });
     });
-
     setup();
     const taskItems = await screen.findAllByText(/last updated by/i);
     expect(taskItems.length).toBe(6);
@@ -75,12 +87,6 @@ describe('Task Selection Page', () => {
   });
 
   it('should change the button text to map selected task when user selects a task', async () => {
-    act(() => {
-      store.dispatch({
-        type: 'SET_USER_DETAILS',
-        userDetails: { id: 69, username: 'user_3', isExpert: true },
-      });
-    });
     setup();
     await screen.findAllByText(/last updated by/i);
     expect(
@@ -118,12 +124,6 @@ describe('Task Selection Page', () => {
   });
 
   it('should change the button text to map another task when user selects a task for validation but the user level is not met', async () => {
-    act(() => {
-      store.dispatch({
-        type: 'SET_USER_DETAILS',
-        userDetails: { id: 69, username: 'user_3', isExpert: true },
-      });
-    });
     setup();
     await screen.findAllByText(/last updated by/i);
     // Selecting a task that is available for validation
@@ -194,13 +194,6 @@ describe('Task Selection Page', () => {
   });
 
   it('should filter the task list by search query', async () => {
-    act(() => {
-      store.dispatch({
-        type: 'SET_USER_DETAILS',
-        userDetails: { id: 69, username: 'user_3', isExpert: false },
-      });
-      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
-    });
     setup();
     await screen.findAllByText(/last updated by/i);
     expect(
@@ -218,4 +211,224 @@ describe('Task Selection Page', () => {
       }),
     ).not.toBeInTheDocument();
   });
+
+  it('should navigate to the contributions tab', async () => {
+    setup();
+    await screen.findAllByText(/last updated by/i);
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /contributions/i,
+      }),
+    );
+    expect(
+      screen.getByRole('button', {
+        name: /statistics/i,
+      }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('Random Task Selection', () => {
+  const setup = () =>
+    render(
+      <MemoryRouter initialEntries={['/projects/963/tasks']}>
+        <Routes>
+          <Route
+            path="projects/:id/tasks"
+            element={
+              <QueryParamProvider adapter={ReactRouter6Adapter}>
+                <ReduxIntlProviders>
+                  <SelectTask />
+                </ReduxIntlProviders>
+              </QueryParamProvider>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+  it('should not change the button text to map selected task when user selects a task for mapping', async () => {
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 69, username: 'user_3', isExpert: true },
+      });
+    });
+    setup();
+    await screen.findAllByText(/last updated by/i);
+    expect(
+      screen.getByRole('button', {
+        name: /map a task/i,
+      }),
+    ).toBeInTheDocument();
+    // Selecting a task that is available for mapping
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /Task #1 Patrik_B/i,
+      }),
+    );
+    expect(
+      screen.queryByRole('button', {
+        name: /map selected task/i,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should display text clue that random task selection has been enforced', async () => {
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 69, username: 'user_3', isExpert: false },
+      });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+    });
+
+    setup();
+    expect(await screen.findByText(/Project Specific Mapping Notes/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/This project has enforced random task selection for mapping/i),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('Complete Project', () => {
+  const setup = () =>
+    render(
+      <MemoryRouter initialEntries={['/projects/6/tasks']}>
+        <Routes>
+          <Route
+            path="projects/:id/tasks"
+            element={
+              <QueryParamProvider adapter={ReactRouter6Adapter}>
+                <ReduxIntlProviders>
+                  <SelectTask />
+                </ReduxIntlProviders>
+              </QueryParamProvider>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+  it('should display button to select another project', async () => {
+    setup();
+    await screen.findAllByText(/last updated by/i);
+    expect(
+      screen.getByRole('button', {
+        name: /select another project/i,
+      }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('Mapped Project', () => {
+  const setup = () =>
+    render(
+      <MemoryRouter initialEntries={['/projects/3/tasks']}>
+        <Routes>
+          <Route
+            path="projects/:id/tasks"
+            element={
+              <QueryParamProvider adapter={ReactRouter6Adapter}>
+                <ReduxIntlProviders>
+                  <SelectTask />
+                </ReduxIntlProviders>
+              </QueryParamProvider>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+  it('should display button to validate a task', async () => {
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 69, username: 'user_3', isExpert: false, role: 'ADMIN' },
+      });
+    });
+    setup();
+    await screen.findAllByText(/last updated by/i);
+    expect(
+      screen.getByRole('button', {
+        name: /validate a task/i,
+      }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('Resume Mapping', () => {
+  const setup = () =>
+    render(
+      <MemoryRouter initialEntries={['/projects/222/tasks']}>
+        <Routes>
+          <Route
+            path="projects/:id/tasks"
+            element={
+              <QueryParamProvider adapter={ReactRouter6Adapter}>
+                <ReduxIntlProviders>
+                  <SelectTask />
+                </ReduxIntlProviders>
+              </QueryParamProvider>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+  it('should display button to resume mapping', async () => {
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 69, username: 'Patrik_B', isExpert: false, role: 'ADMIN' },
+      });
+    });
+    setup();
+    await screen.findAllByText(/last updated by/i);
+    expect(
+      screen.getByRole('button', {
+        name: /resume mapping/i,
+      }),
+    ).toBeInTheDocument();
+  });
+});
+
+test('it should pre select task from the list from URL params', async () => {
+  act(() => {
+    store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+    store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
+    store.dispatch({
+      type: 'SET_USER_DETAILS',
+      userDetails: { id: 69, username: 'user_3', isExpert: true },
+    });
+  });
+
+  render(
+    <MemoryRouter initialEntries={['/projects/123/tasks?search=1']}>
+      <Routes>
+        <Route
+          path="projects/:id/tasks"
+          element={
+            <QueryParamProvider adapter={ReactRouter6Adapter}>
+              <ReduxIntlProviders>
+                <SelectTask />
+              </ReduxIntlProviders>
+            </QueryParamProvider>
+          }
+        />
+      </Routes>
+    </MemoryRouter>,
+  );
+  await screen.findAllByText(/last updated by/i);
+  expect(screen.getByPlaceholderText(/filter tasks by id or username/i)).toHaveValue('1');
+  expect(
+    screen.getByRole('button', {
+      name: /map selected task/i,
+    }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', {
+      name: /Task #1 Patrik_B/i,
+    }).parentElement,
+  ).toHaveClass('ba b--blue-dark bw1');
 });
