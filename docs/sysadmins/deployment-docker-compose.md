@@ -1,4 +1,4 @@
-# Deploying Tasking Manager using Docker Compose Process
+# Deploying Tasking Manager using Docker Compose
 
 ## Overview
 This guide is aimed at organisations who may want to deploy their own version of Tasking Manager (TM). It draws on experiences of deploying TM for the Ireland chapter of OpenStreetMap who use TM to organise the mapping of buildings in Ireland.
@@ -6,6 +6,7 @@ The information here is focused on our deployment of TM using Docker. Our deploy
 
 ## Requirements
 - A server (we are using Ubuntu 20.04) with public IP address
+- DNS entry pointing to your server IP (e.g. tasks.yourdomain.tld A 123.123.123.123)
 - SSH access to your server
 
 ## Steps
