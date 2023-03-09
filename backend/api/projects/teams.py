@@ -31,7 +31,7 @@ class ProjectsTeamsAPI(Resource):
         responses:
             200:
                 description: Teams listed successfully
-            403:
+            401:
                 description: Forbidden, if user is not authenticated
             404:
                 description: Not found
@@ -41,6 +41,8 @@ class ProjectsTeamsAPI(Resource):
         try:
             teams_dto = TeamService.get_project_teams_as_dto(project_id)
             return teams_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Team GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -85,9 +87,9 @@ class ProjectsTeamsAPI(Resource):
             201:
                 description: Team project assignment created
             401:
-                description: Forbidden, if user is not a manager of the project
-            403:
                 description: Forbidden, if user is not authenticated
+            403:
+                description: Forbidden, if user is not a manager of the project or team
             404:
                 description: Not found
             500:
@@ -97,7 +99,7 @@ class ProjectsTeamsAPI(Resource):
             return {
                 "Error": "User is not an admin or a manager for the team",
                 "SubCode": "UserPermissionError",
-            }, 401
+            }, 403
 
         try:
             role = request.get_json(force=True)["role"]
@@ -107,7 +109,7 @@ class ProjectsTeamsAPI(Resource):
 
         try:
             if not ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user, project_id
+                token_auth.current_user(), project_id
             ):
                 raise ValueError()
             TeamService.add_team_project(team_id, project_id, role)
@@ -119,6 +121,8 @@ class ProjectsTeamsAPI(Resource):
                 },
                 201,
             )
+        except NotFound:
+            return {"Error": "No Project Found", "SubCode": "NotFound"}, 404
         except ValueError:
             return {
                 "Error": "User is not a manager of the project",
@@ -184,11 +188,11 @@ class ProjectsTeamsAPI(Resource):
 
         try:
             if not ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user, project_id
+                token_auth.current_user(), project_id
             ):
                 raise ValueError()
             TeamService.change_team_role(team_id, project_id, role)
-            return {"Status": "Team role updated successfully."}, 200
+            return {"Status": "Team role updated successfully"}, 200
         except NotFound as e:
             return {"Error": str(e), "SubCode": "NotFound"}, 404
         except ValueError:
@@ -229,9 +233,9 @@ class ProjectsTeamsAPI(Resource):
             200:
                 description: Team unassigned of the project
             401:
-                description: Forbidden, if user is not a manager of the project
-            403:
                 description: Forbidden, if user is not authenticated
+            403:
+                description: Forbidden, if user is not a manager of the project
             404:
                 description: Not found
             500:
@@ -239,7 +243,7 @@ class ProjectsTeamsAPI(Resource):
         """
         try:
             if not ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user, project_id
+                token_auth.current_user(), project_id
             ):
                 raise ValueError()
             TeamService.delete_team_project(team_id, project_id)
