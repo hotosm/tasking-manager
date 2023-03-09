@@ -69,7 +69,7 @@ export const getProjectSummary = (id) => ({
   licenseId: null,
   idPresets: ['building/house', 'building/residential', 'building'],
   mappingEditors: ['ID', 'JOSM'],
-  validationEditors: ['JOSM', 'POTLATCH_2', 'FIELD_PAPERS'],
+  validationEditors: ['JOSM', 'POTLATCH_2', 'FIELD_PAPERS', 'ID'],
 });
 
 export const getProjectStats = (id) => ({

@@ -50,11 +50,12 @@ import {
 } from './mockData/teams';
 import { userTasks } from './mockData/tasksStats';
 import { homepageStats } from './mockData/homepageStats';
-import { banner, countries } from './mockData/miscellaneous';
+import { banner, countries, josmRemote } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 import { API_URL } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
 import { authLogin, setUser, userRegister } from './mockData/auth';
+import { lockForMapping, lockForValidation } from './mockData/taskHistory';
 
 const handlers = [
   rest.get(API_URL + 'projects/:id/queries/summary/', async (req, res, ctx) => {
@@ -237,6 +238,16 @@ const handlers = [
   rest.get(API_URL + 'system/banner/', (req, res, ctx) => {
     return res(ctx.json(banner));
   }),
+  //TASKS
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/lock-for-mapping/:taskId',
+    (req, res, ctx) => {
+      return res(ctx.json(lockForMapping));
+    },
+  ),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation/', (req, res, ctx) => {
+    return res(ctx.json(lockForValidation));
+  }),
   // EXTERNAL API
   rest.get('https://osmstats-api.hotosm.org/wildcard', (req, res, ctx) => {
     return res(ctx.json(homepageStats));
@@ -253,6 +264,9 @@ const handlers = [
       return res(ctx.json(osmStatsProject));
     },
   ),
+  rest.get('http://127.0.0.1:8111/version', (req, res, ctx) => {
+    return res(ctx.json(josmRemote));
+  }),
 ];
 
 const faultyHandlers = [
@@ -265,6 +279,18 @@ const faultyHandlers = [
     );
   }),
   rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.get('http://127.0.0.1:8111/version', async (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/lock-for-mapping/:taskId',
+    (req, res, ctx) => {
+      return res.networkError('Failed to connect');
+    },
+  ),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation', (req, res, ctx) => {
     return res.networkError('Failed to connect');
   }),
 ];
