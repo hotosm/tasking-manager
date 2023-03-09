@@ -42,7 +42,7 @@ The HOT community principles are:
 
 - Repeated harassment of others. In general, if someone asks you to stop, then stop.
 
-**Assume all communications are positive.** Always remain polite, and assume good faith. It is surprisingly easy to misunderstand each other, be it online or in person, particularly in such a culturally diverse setting as ours. Misunderstandings are particularly easy to arise when we are in a rush, or otherwise distracted. Please ask clarifying questions before assuming that a communication was inappropriate.
+**Assume all communications are positive.** Always remain polite, and assume good faith. It is surprisingly easy to misunderstand each other, be it online or in person, particularly in such a culturally diverse setting as ours. Misunderstandings are particularly easy to arise when we are in a rush, or otherwise distracted. Please ask clarifying questions before assuming that the communication was inappropriate.
 
 **When we disagree, try to understand why.** Disagreements, both social and technical, happen easily and often. It is important that we resolve such disagreements and differing views constructively. At times it can be hard to appreciate a viewpoint that contradicts your own perceptions. Instead of pushing back, try to understand where the other person is coming from, and don’t be afraid to ask questions. You can be most helpful if your own replies serve to clarify, rather than to escalate an issue. Also don’t forget that it can be easy to make mistakes, and allow for the possibility that the mistake may have been yours. When this happens it is better to resolve the issue together, and to learn from the experience together, than to place blame.
 
@@ -69,7 +69,7 @@ Further sources:
 
 As a first measure, it is preferable to work out issues directly with the people involved, or to work with other Community Members who can help you resolve the issue. This may take several forms:
 
-- Talk with one another. Assume that communications are positive and that people are treating each other with respect. Cues about emotions are often lacking from digital communications. Many of our modes of digital communication tend towards brevity, which can be easier to interpret incorrectly as being negative.
+- Talk with one another. Assume that communications are positive and that people are treating each other with respect. Cues about emotions are often lacking in digital communications. Many of our modes of digital communication tend towards brevity, which can be easier to interpret incorrectly as being negative.
 
 - Contact a representative of the [Community Working Group](https://www.hotosm.org/community/working-groups/), which exists to support the HOT Community. Representatives are available to discuss any concerns about behaviour within the community, or ideas to promote positive behaviours. You can email them at [community@hotosm.org](mailto:community@hotosm.org).
 
