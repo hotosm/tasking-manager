@@ -40,6 +40,7 @@ import {
   interestUpdationSuccess,
   interestDeletionSuccess,
   licenses,
+  licenseAccepted,
 } from './mockData/management';
 import {
   teams,
@@ -199,6 +200,9 @@ const handlers = [
   }),
   rest.post(API_URL + 'licenses', (req, res, ctx) => {
     return res(ctx.json(licenseCreationSuccess));
+  }),
+  rest.post(API_URL + 'licenses/:id/actions/accept-for-me/', (req, res, ctx) => {
+    return res(ctx.json(licenseAccepted));
   }),
   // CAMPAIGNS
   rest.get(API_URL + 'campaigns', (req, res, ctx) => {

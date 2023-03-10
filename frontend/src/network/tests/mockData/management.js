@@ -68,6 +68,10 @@ export const campaignDeletionSuccess = {
   Success: 'Campaign deleted',
 };
 
+export const licenseAccepted = {
+  Success: 'Terms Accepted',
+};
+
 export const interests = {
   interests: [
     {
