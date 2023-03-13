@@ -148,7 +148,7 @@ export const CommentInputField = ({
         )}
       </div>
       {isShowPreview && (
-        <div className="db" style={{ minHeight: 200 }}>
+        <div className="db ba ph3" style={{ minHeight: 200, borderColor: '#F0EEEE' }}>
           {comment && (
             <div
               style={{ wordWrap: 'break-word' }}
@@ -163,7 +163,7 @@ export const CommentInputField = ({
           )}
         </div>
       )}
-      {comment && enableHashtagPaste && !isShowPreview && (
+      {enableHashtagPaste && !isShowPreview && (
         <span className="db blue-grey f6 pt2">
           <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
           <span>, </span>

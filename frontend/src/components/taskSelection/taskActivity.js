@@ -15,7 +15,7 @@ import { getTaskContributors } from '../../utils/getTaskContributors';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
+import { UserAvatar } from '../user/avatar';
 import { CloseIcon } from '../svgIcons';
 import { ID_EDITOR_URL } from '../../config';
 import { Button, CustomButton } from '../button';
@@ -44,20 +44,17 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
   };
 
   return (
-    <div className="w-100 pt3 ph3-ns ph1">
-      <div className="fl w-10">
-        <CurrentUserAvatar className="h2 w2 fr mr2 br-100" />
-      </div>
-      <div className="fl w-70 f6">
-        <CommentInputField
-          comment={comment}
-          setComment={setComment}
-          enableHashtagPaste
-          contributors={contributors}
-          enableContributorsHashtag
-        />
-      </div>
-      <div className="w-20 fr pt3 tr">
+    <div className="w-100 pt3 ph3-ns ph1 flex flex-column">
+      <CommentInputField
+        comment={comment}
+        setComment={setComment}
+        enableHashtagPaste
+        contributors={contributors}
+        enableContributorsHashtag
+        isShowUserPicture
+        isShowTabNavs
+      />
+      <div className="ml-auto mb5">
         <Button onClick={() => saveComment()} className="bg-red white f6">
           <FormattedMessage {...messages.comment} />
         </Button>
