@@ -248,6 +248,7 @@ export function CompletionTabForMapping({
             contributors={contributors}
             enableHashtagPaste={true}
             enableContributorsHashtag
+            isShowTabNavs
           />
         </p>
       </div>
