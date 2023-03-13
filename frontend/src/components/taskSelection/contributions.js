@@ -76,6 +76,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
       <div className="w-20 fl tr dib truncate">
         <div
           className="dib pt2 pointer"
+          role="button"
           onClick={() => displayTasks(user.mappedTasks, 'MAPPED', user.username)}
           title={intl.formatMessage(messages.mappedByUser, { username: user.username })}
         >
@@ -87,6 +88,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
       <div className="w-20 fl tr dib truncate">
         <div
           className="dib pt2 pointer"
+          role="button"
           onClick={() => displayTasks(user.validatedTasks, 'VALIDATED', user.username)}
           title={intl.formatMessage(messages.validatedByUser, { username: user.username })}
         >
@@ -100,6 +102,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
       <div className="w-20 fl tr dib truncate">
         <div
           className="dib pt2 pointer"
+          role="button"
           onClick={() =>
             displayTasks([...user.mappedTasks, ...user.validatedTasks], 'ALL', user.username)
           }

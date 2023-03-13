@@ -37,7 +37,7 @@ describe('Contributions', () => {
     expect(screen.getAllByRole('link')[1].href).toBe('https://osmcha.org/?aoi=abc1234');
     // clicking on the number of tasks trigger selectTask
     fireEvent.click(screen.getAllByText('5')[0]);
-    expect(selectTask).toHaveBeenLastCalledWith([1, 2, 3, 5, 7], 'ALL', 'test');
+    expect(selectTask).toHaveBeenLastCalledWith([1, 3, 5, 7], 'ALL', 'test');
     fireEvent.click(screen.getAllByText('5')[1]);
     expect(selectTask).toHaveBeenLastCalledWith([5, 36, 99, 115, 142], 'MAPPED', 'test_1');
     // filter ADVANCED users

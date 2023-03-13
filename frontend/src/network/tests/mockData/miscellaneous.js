@@ -18,3 +18,12 @@ export const banner = {
   message: 'Banner text',
   visible: true,
 };
+
+export const josmRemote = {
+  protocolversion: {
+    major: 1,
+    minor: 12,
+  },
+  application: 'JOSM RemoteControl',
+  version: 18646,
+};

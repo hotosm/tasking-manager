@@ -47,6 +47,7 @@ const getRandomTaskByAction = (activities, taskAction) => {
 };
 
 export function TaskSelection({ project, type, loading }: Object) {
+  useSetProjectPageTitleTag(project);
   const location = useLocation();
   const user = useSelector((state) => state.auth.userDetails);
   const userOrgs = useSelector((state) => state.auth.organisations);
@@ -67,7 +68,6 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
   const defaultUpdateInterval = 60000;
   const [updateInterval, setUpdateInterval] = useState(defaultUpdateInterval);
-  useSetProjectPageTitleTag(project);
 
   // get teams the user is part of
   const [userTeamsError, userTeamsLoading, userTeams] = useFetch(

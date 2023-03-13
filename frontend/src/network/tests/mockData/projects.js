@@ -1,4 +1,19 @@
 import { TM_DEFAULT_CHANGESET_COMMENT } from '../../../config';
+import nextDay from 'date-fns/nextDay';
+
+export const PROJECT_ID_WITH_RANDOM_TASK_ENFORCED = 963;
+export const PROJECT_ID_ALL_VALIDATED = 6;
+export const PROJECT_ID_ALL_MAPPED = 3;
+
+const status = {
+  [PROJECT_ID_ALL_VALIDATED]: {
+    mappedPercent: 100,
+    validatedPercent: 100,
+  },
+  [PROJECT_ID_ALL_MAPPED]: {
+    mappedPercent: 100,
+  },
+};
 
 export const getProjectSummary = (id) => ({
   projectId: id,
@@ -25,18 +40,18 @@ export const getProjectSummary = (id) => ({
   osmchaFilterId: '9322aa63-cccc-4d0d-9f93-403678e52345',
   mappingTypes: ['BUILDINGS'],
   changesetComment: `${TM_DEFAULT_CHANGESET_COMMENT}-${id} #brumado-buildings`,
-  percentMapped: 16,
-  percentValidated: 6,
+  percentMapped: status[id]?.mappedPercent || 16,
+  percentValidated: status[id]?.validatedPercent || 6,
   percentBadImagery: 0,
   aoiCentroid: {
     type: 'Point',
     coordinates: [-41.669134813, -14.20341561],
   },
   difficulty: 'EASY',
-  mappingPermission: 'LEVEL',
+  mappingPermission: 'ANY',
   validationPermission: 'LEVEL',
   allowedUsernames: [],
-  enforceRandomTaskSelection: false,
+  enforceRandomTaskSelection: id === PROJECT_ID_WITH_RANDOM_TASK_ENFORCED,
   private: false,
   teams: [],
   projectInfo: {
@@ -55,11 +70,11 @@ export const getProjectSummary = (id) => ({
   licenseId: null,
   idPresets: ['building/house', 'building/residential', 'building'],
   mappingEditors: ['ID', 'JOSM'],
-  validationEditors: ['JOSM', 'POTLATCH_2', 'FIELD_PAPERS'],
+  validationEditors: ['JOSM', 'POTLATCH_2', 'FIELD_PAPERS', 'ID'],
 });
 
 export const getProjectStats = (id) => ({
-  projectId: id,
+  projectId: Number(id),
   'projectArea(in sq.km)': 3506.03997973834,
   totalMappers: 105,
   totalTasks: 2779,
@@ -99,7 +114,7 @@ export const projects = {
       status: 'PUBLISHED',
       activeMappers: 0,
       lastUpdated: '2020-05-01T11:03:43.689732Z',
-      dueDate: '2023-03-10T21:00:00.000000Z',
+      dueDate: nextDay(new Date(), 1),
       totalContributors: 50,
       country: ['Nepal'],
     },
@@ -339,3 +354,53 @@ export const userFavorite = {
 export const favoritePost = (id) => ({
   project_id: 123,
 });
+
+export const activities = (id) => {
+  const isProjectValidated = id === PROJECT_ID_ALL_VALIDATED;
+  return {
+    activity: [
+      {
+        taskId: 1,
+        taskStatus: isProjectValidated ? 'VALIDATED' : 'READY',
+        actionDate: '2023-02-08T13:41:24.917474Z',
+        actionBy: 'Patrik_B',
+      },
+      {
+        taskId: 2,
+        taskStatus: isProjectValidated ? 'VALIDATED' : 'READY',
+        actionDate: '2022-11-16T08:31:56.917380Z',
+        actionBy: 'helnershingthapa',
+      },
+      {
+        taskId: 3,
+        taskStatus: isProjectValidated ? 'VALIDATED' : 'READY',
+        actionDate: '2023-02-28T06:10:55.329731Z',
+        actionBy: 'helnershingthapa',
+      },
+      {
+        taskId: 4,
+        taskStatus: isProjectValidated ? 'VALIDATED' : 'INVALIDATED',
+        actionDate: '2022-12-19T10:28:55.565213Z',
+        actionBy: 'helnershingthapa',
+      },
+      {
+        taskId: 5,
+        taskStatus: isProjectValidated ? 'VALIDATED' : 'MAPPED',
+        actionDate: '2022-11-30T05:36:43.518052Z',
+        actionBy: 'Aadesh Baral',
+      },
+      {
+        taskId: 6,
+        taskStatus: id === 222 ? 'LOCKED_FOR_MAPPING' : isProjectValidated ? 'VALIDATED' : 'MAPPED',
+        actionDate: '2022-11-22T05:36:43.518052Z',
+        actionBy: 'Patrik_B',
+      },
+      {
+        taskId: 7,
+        taskStatus: 'VALIDATED',
+        actionDate: '2022-11-16T08:31:56.897777Z',
+        actionBy: 'helnershingthapa',
+      },
+    ],
+  };
+};
