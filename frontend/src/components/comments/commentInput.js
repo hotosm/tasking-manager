@@ -163,7 +163,7 @@ export const CommentInputField = ({
           )}
         </div>
       )}
-      {comment && enableHashtagPaste && !isShowPreview && (
+      {enableHashtagPaste && !isShowPreview && (
         <span className="db blue-grey f6 pt2">
           <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
           <span>, </span>
