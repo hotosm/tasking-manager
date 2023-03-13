@@ -148,7 +148,7 @@ export const CommentInputField = ({
         )}
       </div>
       {isShowPreview && (
-        <div className="db" style={{ minHeight: 200 }}>
+        <div className="db ba ph3" style={{ minHeight: 200, borderColor: '#F0EEEE' }}>
           {comment && (
             <div
               style={{ wordWrap: 'break-word' }}
