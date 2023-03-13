@@ -1,4 +1,5 @@
 import { TM_DEFAULT_CHANGESET_COMMENT } from '../../../config';
+import nextDay from 'date-fns/nextDay';
 
 export const PROJECT_ID_WITH_RANDOM_TASK_ENFORCED = 963;
 export const PROJECT_ID_ALL_VALIDATED = 6;
@@ -113,7 +114,7 @@ export const projects = {
       status: 'PUBLISHED',
       activeMappers: 0,
       lastUpdated: '2020-05-01T11:03:43.689732Z',
-      dueDate: '2023-03-10T21:00:00.000000Z',
+      dueDate: nextDay(new Date(), 1),
       totalContributors: 50,
       country: ['Nepal'],
     },

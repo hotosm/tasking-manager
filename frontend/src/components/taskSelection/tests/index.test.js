@@ -45,7 +45,7 @@ describe('Contributions', () => {
     );
     expect(
       screen.getByRole('button', {
-        name: /Task #2 helnershingthapa, 4 months ago Available for mapping/i,
+        name: /Task #2 helnershingthapa/i,
       }).parentElement,
     ).toHaveClass('ba b--blue-dark bw1');
   });
@@ -81,8 +81,55 @@ describe('Contributions', () => {
     );
     expect(
       screen.getByRole('button', {
-        name: /Task #6 Patrik_B, 4 months ago Ready for validation/i,
+        name: /Task #6 Patrik_B/i,
       }).parentElement,
     ).toHaveClass('ba b--blue-dark bw1');
+  });
+
+  it('should sort tasks by their relevant options', async () => {
+    renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
+        <ReduxIntlProviders>
+          <TaskSelection project={getProjectSummary(123)} />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
+    );
+
+    await screen.findAllByText(/last updated by/i);
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /Most recently updated/i,
+      }),
+    );
+    await userEvent.click(await screen.findByText(/sort by task number/i));
+    const firstTask = screen.getByRole('button', {
+      name: /Task #1 Patrik_B/i,
+    });
+    const secondTask = screen.getByRole('button', {
+      name: /Task #2 helnershingthapa/i,
+    });
+    expect(firstTask.compareDocumentPosition(secondTask)).toBe(4);
+  });
+
+  it('should clear text when close icon is clicked', async () => {
+    renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
+        <ReduxIntlProviders>
+          <TaskSelection project={getProjectSummary(123)} />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
+    );
+
+    await screen.findAllByText(/last updated by/i);
+    const userQueryText = screen.getByRole('textbox');
+    await userEvent.type(userQueryText, 'hello');
+    expect(userQueryText).toHaveValue('hello');
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /clear/i,
+      }),
+    );
+    expect(userQueryText).toHaveValue('');
   });
 });
