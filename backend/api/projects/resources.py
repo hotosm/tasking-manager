@@ -29,6 +29,7 @@ from backend.services.project_admin_service import (
     InvalidGeoJson,
     InvalidData,
 )
+from backend.services.recommendation_service import ProjectRecommendationService
 
 
 class ProjectsRestAPI(Resource):
@@ -1239,5 +1240,39 @@ class ProjectsQueriesFeaturedAPI(Resource):
             return projects_dto.to_primitive(), 200
         except Exception as e:
             error_msg = f"FeaturedProjects GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+
+
+class ProjectQueriesRelatedProjectsAPI(Resource):
+    def get(self, project_id):
+        """
+        Get related projects
+        ---
+        tags:
+            - projects
+        produces:
+            - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: Project ID to get related projects for
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Related projects
+            500:
+                description: Internal Server Error
+        """
+        try:
+            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            projects_dto = ProjectRecommendationService.get_related_projects(
+                project_id, preferred_locale
+            )
+            return projects_dto.to_primitive(), 200
+        except Exception as e:
+            error_msg = f"RelatedProjects GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
