@@ -227,7 +227,7 @@ export function TaskMapAction({
   return (
     <>
       <Portal>
-        <div className="cf w-100 vh-minus-77-ns overflow-y-hidden">
+        <div className="cf w-100 vh-minus-69-ns overflow-y-hidden">
           <div className={`fl h-100 relative ${showSidebar ? 'w-70' : 'w-100-minus-4rem'}`}>
             {['ID', 'RAPID'].includes(editor) ? (
               <React.Suspense
@@ -297,7 +297,7 @@ export function TaskMapAction({
                 />
                 <div className="cf pb3">
                   <h3
-                    className="f2 fw6 mt2 mb1 ttu barlow-condensed blue-dark"
+                    className="f2 fw5 lh-title mt2 mb1 ttu barlow-condensed blue-dark"
                     lang={project.projectInfo && project.projectInfo.locale}
                   >
                     {project.projectInfo && project.projectInfo.name}
@@ -330,7 +330,7 @@ export function TaskMapAction({
                     action={action}
                   />
                 </div>
-                <div className="pt1">
+                <div className="pt0">
                   {activeSection === 'completion' && (
                     <>
                       {action === 'MAPPING' && (

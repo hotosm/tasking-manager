@@ -179,7 +179,7 @@ export function CompletionTabForMapping({
       )}
       <div className="cf">
         {taskInstructions && <TaskSpecificInstructions instructions={taskInstructions} />}
-        <h4 className="ttu blue-grey f5">
+        <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.editStatus} />
           <QuestionCircleIcon
             className="pointer dib v-mid pl2 pb1 blue-light"
@@ -238,7 +238,7 @@ export function CompletionTabForMapping({
         )}
       </div>
       <div className="cf">
-        <h4 className="ttu blue-grey f5">
+        <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.comment} />
         </h4>
         <p>

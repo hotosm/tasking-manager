@@ -108,5 +108,5 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
     }
   }, [session, iDContext, setDisable, presets, locale, gpxUrl]);
 
-  return <div className="w-100 vh-minus-77-ns" id="id-container"></div>;
+  return <div className="w-100 vh-minus-69-ns" id="id-container"></div>;
 }
