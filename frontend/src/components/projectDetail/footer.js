@@ -36,10 +36,10 @@ const menuItems = [
     href: '#contributions',
     label: <FormattedMessage {...messages.contributions} />,
   },
-  // {
-  //   href: '#relatedProjects',
-  //   label: <FormattedMessage {...messages.relatedProjects} />,
-  // },
+  {
+    href: '#relatedProjects',
+    label: <FormattedMessage {...messages.relatedProjects} />,
+  },
 ];
 
 export const ProjectDetailFooter = ({ className, projectId }) => {

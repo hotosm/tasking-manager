@@ -14,6 +14,7 @@ import { TeamsBoxList } from '../teamsAndOrgs/teams';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { ProjectDetailFooter } from './footer';
 import { QuestionsAndComments } from './questionsAndComments';
+import { RelatedProjects } from './relatedProjects';
 import { PermissionBox } from './permissionBox';
 import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
@@ -288,14 +289,13 @@ export const ProjectDetail = (props) => {
           )}
         </ReactPlaceholder>
       </div>
-
       <a href="#contributionTimeline" style={{ visibility: 'hidden' }} name="contributionTimeline">
         <FormattedMessage {...messages.contributionsTimeline} />
       </a>
       <h3 className={`${h2Classes}`}>
         <FormattedMessage {...messages.contributionsTimeline} />
       </h3>
-      <div className="mb5 ph4 w-100 w-60-l">
+      <div className="ph4 w-100 w-60-l">
         <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
           <ReactPlaceholder
             showLoadingAnimation={true}
@@ -335,6 +335,15 @@ export const ProjectDetail = (props) => {
             />
           </div>
         </ReactPlaceholder>
+      </div>
+      <a href="#relatedProjects" style={{ visibility: 'hidden' }} name="relatedProjects">
+        <FormattedMessage {...messages.relatedProjects} />
+      </a>
+      <h3 className={`${h2Classes} mv0 pt5`}>
+        <FormattedMessage {...messages.relatedProjects} />
+      </h3>
+      <div className="mb5 w-100 w-60-l">
+        <RelatedProjects projectId={props.project.projectId} />
       </div>
       <ProjectDetailFooter projectId={props.project.projectId} />
     </div>
