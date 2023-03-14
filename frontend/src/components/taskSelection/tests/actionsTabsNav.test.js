@@ -22,10 +22,10 @@ describe('ActionTabsNav', () => {
         />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText('Completion').className).toContain('bb b--blue-dark');
-    expect(screen.getByText('Instructions').className).not.toContain('bb b--blue-dark');
-    expect(screen.getByText('History').className).not.toContain('bb b--blue-dark');
-    expect(screen.getByText('3').className).toBe('bg-red white dib br-100 tc f6 ml1 mb1 v-mid');
+    expect(screen.getByText('Completion').className).toContain('dib mr4-l mr3 pb2 pointer bb b--red bw1');
+    expect(screen.getByText('Instructions').className).not.toContain('dib mr4-l mr3 pb2 pointer bb b--red bw1');
+    expect(screen.getByText('History').className).not.toContain('dib mr4-l mr3 pb2 pointer bb b--red bw1');
+    expect(screen.getByText('3').className).toBe('bg-red white br-100 f6 ml1 flex items-center justify-center');
     expect(screen.queryByText('Resources')).not.toBeInTheDocument();
     fireEvent.click(screen.getByText('Instructions'));
     expect(setActiveSection).toHaveBeenLastCalledWith('instructions');
@@ -80,7 +80,7 @@ describe('ActionTabsNav', () => {
     expect(screen.getByText('Instructions').className).not.toContain('bb b--blue-dark');
     expect(screen.getByText('History').className).not.toContain('bb b--blue-dark');
     expect(screen.queryByText('4')).not.toBeInTheDocument();
-    expect(screen.getByText('Resources').className).toContain('bb b--blue-dark');
+    expect(screen.getByText('Resources').className).toContain('dib mr4-l mr3 pb2 pointer bb b--red bw1');
     fireEvent.click(screen.getByText('History'));
     expect(historyTabSwitch).toHaveBeenCalled();
     fireEvent.click(screen.getByText('Completion'));
