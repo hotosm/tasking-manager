@@ -63,6 +63,7 @@ export function MessageMembers({ teamId, members }: Object) {
             comment={message}
             setComment={setMessage}
             contributors={members?.map((member) => member.username)}
+            isShowTabNavs
           />
         </div>
         {!message && <MessageStatus status={status} />}
