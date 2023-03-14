@@ -611,8 +611,8 @@ const TaskValidationSelector = ({
               setComment={setComment}
               contributors={contributors.length ? contributors : contributorsList}
               enableHashtagPaste
-              autoFocus
               enableContributorsHashtag
+              isShowTabNavs
             />
           </div>
           {isValidatingMultipleTasks && comment && (
