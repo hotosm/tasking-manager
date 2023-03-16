@@ -1,0 +1,26 @@
+.timeline-container > div:first-of-type {
+  border-top: 1px solid #f0efef;
+}
+
+.timeline-item {
+  box-shadow: 0px 1px 0px rgba(206, 206, 206, 0.5);
+}
+
+.timeline-item::before {
+  content: '';
+  background-color: #929db3;
+  bottom: 0;
+  display: block;
+  left: 40px;
+  position: absolute;
+  top: 0;
+  width: 2px;
+}
+
+.oval {
+  height: 12px;
+  width: 12px;
+  background-color: #fff;
+  border: 2px solid #929db3;
+  border-radius: 50%;
+}
