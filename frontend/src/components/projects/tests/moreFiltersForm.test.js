@@ -16,22 +16,19 @@ import { MoreFiltersForm } from '../moreFiltersForm';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 describe('MoreFiltersForm', () => {
-  const setup = async () => {
-    renderWithRouter(
+  it('should not display toggle to filter by user interests if not logged in', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_TOKEN', token: null });
+    });
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <QueryParamProvider adapter={ReactRouter6Adapter}>
           <MoreFiltersForm currentUrl="/current-url" />
         </QueryParamProvider>
       </ReduxIntlProviders>,
     );
-    await screen.findByTitle('American Red Cross');
-  };
-
-  it('should not display toggle to filter by user interests if not logged in', async () => {
-    act(() => {
-      store.dispatch({ type: 'SET_TOKEN', token: null });
-    });
-    setup();
+    await userEvent.click(container.querySelector('#organisation > div > div'));
+    await screen.findByText('American Red Cross');
     expect(screen.queryByLabelText('filter by user interests')).not.toBeInTheDocument();
   });
 
