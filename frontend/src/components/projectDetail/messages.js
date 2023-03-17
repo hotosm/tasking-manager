@@ -311,4 +311,8 @@ export default defineMessages({
     id: 'project.inaccessible.exploreOtherProjects',
     defaultMessage: 'Explore other projects',
   },
+  noRelatedProjectsFound: {
+    id: 'project.noRelatedProjectsFound',
+    defaultMessage: 'No related projects found',
+  },
 });
