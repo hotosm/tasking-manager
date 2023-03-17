@@ -1245,6 +1245,7 @@ class ProjectsQueriesFeaturedAPI(Resource):
 
 
 class ProjectQueriesRelatedProjectsAPI(Resource):
+    @token_auth.login_required(optional=True)
     def get(self, project_id):
         """
         Get related projects
@@ -1254,6 +1255,12 @@ class ProjectQueriesRelatedProjectsAPI(Resource):
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: false
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: Project ID to get related projects for
@@ -1263,15 +1270,23 @@ class ProjectQueriesRelatedProjectsAPI(Resource):
         responses:
             200:
                 description: Related projects
+            404:
+                description: Project not found
             500:
                 description: Internal Server Error
         """
         try:
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            authenticated_user_id = (
+                token_auth.current_user() if token_auth.current_user() else None
+            )
+            limit = int(request.args.get("limit", 4))
+            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE", "en")
             projects_dto = ProjectRecommendationService.get_related_projects(
-                project_id, preferred_locale
+                project_id, authenticated_user_id, preferred_locale, limit
             )
             return projects_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"RelatedProjects GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
