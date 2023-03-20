@@ -671,7 +671,7 @@ def add_api_endpoints(app):
     api.add_resource(
         TeamsRestAPI,
         format_url("teams/<int:team_id>/"),
-        methods=["GET", "PUT", "DELETE", "PATCH"],
+        methods=["GET", "DELETE", "PATCH"],
     )
 
     # Teams actions endpoints
