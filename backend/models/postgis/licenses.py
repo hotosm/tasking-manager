@@ -1,5 +1,6 @@
-from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
 from backend import db
+from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
+from backend.models.postgis.utils import NotFound
 
 # Secondary table defining the many-to-many join
 user_licenses_table = db.Table(
@@ -28,7 +29,12 @@ class License(db.Model):
     @staticmethod
     def get_by_id(license_id: int):
         """ Get license by id """
-        return License.query.get(license_id)
+        map_license = License.query.get(license_id)
+
+        if map_license is None:
+            raise NotFound()
+
+        return map_license
 
     @classmethod
     def create_from_dto(cls, dto: LicenseDTO) -> int:

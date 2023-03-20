@@ -41,11 +41,11 @@ class LicensesActionsAcceptAPI(Resource):
             UserService.accept_license_terms(token_auth.current_user(), license_id)
             return {"Success": "Terms Accepted"}, 200
         except NotFound:
-            return {"Error": "User or mapping not found", "SubCode": "NotFound"}, 404
+            return {"Error": "User or License not found", "SubCode": "NotFound"}, 404
         except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
+            error_msg = f"License Accept - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {
-                "Error": "Unable to update license terms",
+                "Error": "Unable to accept license terms",
                 "SubCode": "InternalServerError",
             }, 500
