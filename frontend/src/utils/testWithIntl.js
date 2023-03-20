@@ -37,7 +37,10 @@ export const IntlProviders = ({ children, props = { locale: 'en' } }: Object) =>
   <IntlProvider {...props}>{children}</IntlProvider>
 );
 
-export const createComponentWithMemoryRouter = (component, { route = '/starting/path' } = {}) => {
+export const createComponentWithMemoryRouter = (
+  component,
+  { route = '/starting/path', entryRoute = route } = {},
+) => {
   const router = createMemoryRouter(
     [
       {
@@ -46,7 +49,7 @@ export const createComponentWithMemoryRouter = (component, { route = '/starting/
       },
       {
         path: route,
-        // Render the component causing the navigate to '/'
+        // Render the component causing the navigate to route
         element: component,
       },
       {
@@ -55,10 +58,8 @@ export const createComponentWithMemoryRouter = (component, { route = '/starting/
       },
     ],
     {
-      // Set for where you want to start in the routes. Remember, KISS (Keep it simple, stupid) the routes.
-      initialEntries: [route],
-      // We don't need to explicitly set this, but it's nice to have.
-      initialIndex: 0,
+      initialEntries: ['/', entryRoute],
+      initialIndex: 1,
     },
   );
 
