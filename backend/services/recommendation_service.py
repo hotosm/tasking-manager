@@ -3,6 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MultiLabelBinarizer
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import func
+from cachetools import TTLCache, cached
 
 from backend import db
 from backend.models.postgis.project import Project, Interest, project_interests
@@ -12,6 +13,7 @@ from backend.services.project_search_service import ProjectSearchService
 from backend.models.postgis.utils import NotFound
 from backend.services.users.user_service import UserService
 
+related_projects_cache = TTLCache(maxsize=1000, ttl=60 * 60 * 24)  # 24 hours
 
 project_columns = [
     "id",
@@ -179,6 +181,7 @@ class ProjectRecommendationService:
         return all_projects_df
 
     @staticmethod
+    @cached(cache=related_projects_cache)
     def get_related_projects(
         project_id, user_id=None, preferred_locale="en", limit=4
     ) -> ProjectSearchResultsDTO:
