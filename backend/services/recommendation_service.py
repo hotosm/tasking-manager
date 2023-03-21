@@ -85,13 +85,12 @@ class ProjectRecommendationService:
         :return: None as it modifies the data frame in place
         """
         mlb = MultiLabelBinarizer()
-        table.join(
-            pd.DataFrame(
-                mlb.fit_transform(table.pop(column)),
-                columns=mlb.classes_,
-                index=table.index,
-            ).add_prefix(prefix),
-        )
+        mlb.fit(table[column])
+        mlb_table = pd.DataFrame(mlb.transform(table[column]), columns=mlb.classes_)
+        mlb_table = mlb_table.add_prefix(prefix)
+        table = pd.concat([table, mlb_table], axis=1)
+        table = table.drop(column, axis=1)
+        return table
 
     @staticmethod
     def one_hot_encoding(table, columns):
@@ -134,10 +133,12 @@ class ProjectRecommendationService:
         table = ProjectRecommendationService.one_hot_encoding(table, one_hot_columns)
 
         # Convert multi label column mapping_types into multiple columns
-        ProjectRecommendationService.mlb_transform(
+        table = ProjectRecommendationService.mlb_transform(
             table, "mapping_types", "mapping_types_"
         )
-        ProjectRecommendationService.mlb_transform(table, "categories", "categories_")
+        table = ProjectRecommendationService.mlb_transform(
+            table, "categories", "categories_"
+        )
         return table
 
     @staticmethod
