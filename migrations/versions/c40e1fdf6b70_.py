@@ -6,6 +6,7 @@ Create Date: 2020-02-04 22:23:22.457001
 
 """
 from alembic import op
+import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "c40e1fdf6b70"
@@ -41,11 +42,11 @@ class Determiner:
 
 def upgrade():
     conn = op.get_bind()
-    conn.execute("ALTER TABLE projects ADD mapping_permission Integer;")
-    conn.execute("ALTER TABLE projects ADD validation_permission Integer;")
+    conn.execute(sa.text("ALTER TABLE projects ADD mapping_permission Integer;"))
+    conn.execute(sa.text("ALTER TABLE projects ADD validation_permission Integer;"))
     fetch_all_projects = "select id, restrict_mapping_level_to_project, \
                            restrict_validation_role, restrict_validation_level_intermediate from projects;"
-    all_projects = conn.execute(fetch_all_projects)
+    all_projects = conn.execute(sa.text(fetch_all_projects))
     for project in all_projects:
         mapping_permission = None
         validation_permission = None
@@ -80,15 +81,19 @@ def upgrade():
 
 def downgrade():
     conn = op.get_bind()
-    conn.execute("ALTER TABLE projects ADD restrict_mapping_level_to_project boolean;")
-    conn.execute("ALTER TABLE projects ADD restrict_validation_role boolean;")
     conn.execute(
-        "ALTER TABLE projects ADD restrict_validation_level_intermediate boolean;"
+        sa.text("ALTER TABLE projects ADD restrict_mapping_level_to_project boolean;")
+    )
+    conn.execute(sa.text("ALTER TABLE projects ADD restrict_validation_role boolean;"))
+    conn.execute(
+        sa.text(
+            "ALTER TABLE projects ADD restrict_validation_level_intermediate boolean;"
+        )
     )
     fetch_all_projects = (
         "select id, mapping_permission, validation_permission from projects;"
     )
-    all_projects = conn.execute(fetch_all_projects)
+    all_projects = conn.execute(sa.text(fetch_all_projects))
     for project in all_projects:
         project_id = project[0]
         mapping_permission = project[1]

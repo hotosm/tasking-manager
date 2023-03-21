@@ -42,8 +42,8 @@ def downgrade():
         sa.Column("invite_only", sa.BOOLEAN(), autoincrement=False, nullable=True),
     )
     op.execute(
-        f"UPDATE teams SET invite_only = true WHERE join_method = {TeamJoinMethod.BY_REQUEST.value}"
-        f"UPDATE teams SET invite_only = false WHERE join_method != {TeamJoinMethod.BY_REQUEST.value}"
+        f"UPDATE teams SET invite_only = true WHERE join_method = {TeamJoinMethod.BY_REQUEST.value};"
+        f"UPDATE teams SET invite_only = false WHERE join_method != {TeamJoinMethod.BY_REQUEST.value};"
     )
     op.alter_column("teams", "invite_only", nullable=False)
     op.drop_column("teams", "join_method")
