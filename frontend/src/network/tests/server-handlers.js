@@ -12,6 +12,7 @@ import {
   activities,
   taskDetail,
   stopMapping,
+  stopValidation,
 } from './mockData/projects';
 import { featuredProjects } from './mockData/featuredProjects';
 import {
@@ -69,6 +70,7 @@ import {
   lockForValidation,
   splitTask,
   submitMappingTask,
+  submitValidationTask,
   userLockedTasks,
 } from './mockData/taskHistory';
 
@@ -126,6 +128,12 @@ const handlers = [
     API_URL + 'projects/:projectId/tasks/actions/stop-mapping/:taskId/',
     async (req, res, ctx) => {
       return res(ctx.json(stopMapping));
+    },
+  ),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/stop-validation/',
+    async (req, res, ctx) => {
+      return res(ctx.json(stopValidation));
     },
   ),
   // AUTHENTICATION
@@ -282,6 +290,12 @@ const handlers = [
     API_URL + 'projects/:projectId/tasks/actions/unlock-after-mapping/:taskId',
     (req, res, ctx) => {
       return res(ctx.json(submitMappingTask));
+    },
+  ),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/unlock-after-validation/',
+    (req, res, ctx) => {
+      return res(ctx.json(submitValidationTask));
     },
   ),
   rest.get(API_URL + 'users/queries/tasks/locked/', (req, res, ctx) => {

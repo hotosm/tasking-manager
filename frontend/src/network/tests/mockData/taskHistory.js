@@ -202,6 +202,8 @@ export const lockForValidation = {
 
 export const submitMappingTask = lockForMapping;
 
+export const submitValidationTask = lockForValidation;
+
 export const userLockedTasks = {
   lockedTasks: [],
   projectId: null,
