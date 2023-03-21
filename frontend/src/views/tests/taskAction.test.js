@@ -4,7 +4,7 @@ import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 import userEvent from '@testing-library/user-event';
 
-import { MapTask, TaskAction } from '../taskAction';
+import { MapTask, TaskAction, ValidateTask } from '../taskAction';
 import {
   createComponentWithMemoryRouter,
   ReduxIntlProviders,
@@ -12,7 +12,7 @@ import {
 } from '../../utils/testWithIntl';
 import { store } from '../../store';
 
-describe('Mapping Task Action Page', () => {
+describe('Submitting Mapping Status for a Task', () => {
   const setup = () => {
     const { router } = createComponentWithMemoryRouter(
       <QueryParamProvider adapter={ReactRouter6Adapter}>
@@ -246,4 +246,39 @@ describe('Submitting Validation Status for Tasks', () => {
     expect(router.state.location.search).toBe('?filter=MAPPED');
   });
 });
+
+describe('Tabs in Task Action Page', () => {
+  const setup = async () => {
+    const { router } = createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
+        <ReduxIntlProviders>
+          <ValidateTask />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
+      {
+        route: '/projects/:id/validate/',
+        entryRoute: '/projects/123/validate',
+      },
+    );
+    await screen.findByRole('button', { name: /submit task/i });
+    return { router };
+  };
+
+  it('should display project instructions on the instruction tab', async () => {
+    await setup();
+    await userEvent.click(screen.getByRole('button', { name: /instructions/i }));
+    expect(screen.getByText(/Project Specific Mapping Notes:/i)).toBeInTheDocument();
+  });
+
+  it('should display task history on the history tab', async () => {
+    await setup();
+    await userEvent.click(screen.getByRole('button', { name: /history/i }));
+    expect(screen.getByRole('radio', { name: /comments/i })).toBeChecked();
+  });
+
+  it('should display resources on the resources tab', async () => {
+    await setup();
+    await userEvent.click(screen.getByRole('button', { name: /resources/i }));
+    expect(screen.getByRole('button', { name: 'Download Tasks Grid' })).toBeInTheDocument();
+  });
 });
