@@ -1,5 +1,5 @@
-ARG PYTHON_IMG_TAG=3.9
-FROM python:${PYTHON_IMG_TAG}-buster
+ARG PYTHON_IMG_TAG=3.10
+FROM python:${PYTHON_IMG_TAG}-bullseye
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app

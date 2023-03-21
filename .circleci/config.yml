@@ -35,7 +35,7 @@ jobs:
 
   backend-code-check-PEP8:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
     steps:
       - checkout
       - setup_remote_docker
@@ -47,7 +47,7 @@ jobs:
 
   backend-code-check-Black:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
     steps:
       - checkout
       - setup_remote_docker
@@ -61,7 +61,7 @@ jobs:
     resource_class: large
     docker:
 
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
         environment:
           SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
           POSTGRES_TEST_DB: test_tm
@@ -162,10 +162,10 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-      - image: cimg/python:3.9.14-node
+      - image: cimg/python:3.10.7-node
         environment:
           SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
-      - image: cimg/postgres:14.2-postgis
+      - image: cimg/postgres:14.7-postgis
         environment:
           POSTGRES_USER: taskingmanager
           POSTGRES_DB: test_tm
@@ -235,7 +235,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
-      - image: cimg/python:3.9.14-node
+      - image: cimg/python:3.10.7-node
     steps:
       - checkout
       - setup_remote_docker
@@ -272,7 +272,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
     docker:
-      - image: cimg/python:3.9.14-node
+      - image: cimg/python:3.10.7-node
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"
