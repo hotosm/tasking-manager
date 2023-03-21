@@ -64,7 +64,7 @@ and ask the person to check on the error.
         * ```pip install --upgrade pdm```
         * ```pdm export --without-hashes > requirements.txt```
         * ```pip install requirements.txt```
-  b. introduced database migrations: `python manage.py db upgrade`
+  b. introduced database migrations: `flask db upgrade`
   c. frontend dependency installation: `cd frontend && yarn && cd ..`
   d. rebuild the frontend: `cd frontend && yarn build && cd ..`
 
@@ -134,7 +134,7 @@ This is important to do even if there are no frontend changes because you may ha
 
 Upgrade the database (it may be wise to back up your database first):
 
-`python manage.py db upgrade` or `pdm run upgrade`
+`flask db upgrade` or `pdm run upgrade`
 
 If you get an error, you may have an upgraded database from a prior PR. Try downgrading to develop (`python manage.py db downgrade`).
 
@@ -169,7 +169,7 @@ After reviewing, you'll want to downgrade your database, return to develop, and 
 #   so if a PR contains multiple revisions,
 #   you may have to run this command more than once
 
-python manage.py db downgrade or pdm run downgrade
+flask db downgrade or pdm run downgrade
 
 # _now_ you can return to develop.
 # if you do before downgrading, flask_migrate will not
