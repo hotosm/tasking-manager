@@ -164,4 +164,86 @@ describe('Mapping Task Action Page', () => {
     );
     await waitFor(() => expect(router.state.location.pathname).toBe('/projects/123/tasks/'));
   });
+
+  it('should redirect to login page if the user is not logged in', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_TOKEN', token: null });
+    });
+    setup();
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', {
+          name: /log in/i,
+        }),
+      ).toBeInTheDocument(),
+    );
+  });
+});
+
+describe('Submitting Validation Status for Tasks', () => {
+  const setup = () => {
+    const { router } = createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
+        <ReduxIntlProviders>
+          <ValidateTask />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
+      {
+        route: '/projects/:id/validate/',
+        entryRoute: '/projects/123/validate',
+      },
+    );
+
+    return { router };
+  };
+
+  it('should stop validation and direct to tasks selection page', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 123 },
+      });
+    });
+
+    const { router } = setup();
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', {
+          name: /submit task/i,
+        }),
+      ).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getByRole('button', { name: /stop validation/i }));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/projects/123/tasks/'));
+  });
+
+  it('should submit task validation status (YES option) and direct to tasks selection page', async () => {
+    const { router } = setup();
+    const submitBtn = await screen.findByRole('button', {
+      name: /submit task/i,
+    });
+    expect(submitBtn).toBeDisabled();
+    const user = userEvent.setup();
+    await user.click(screen.getAllByRole('radio')[0]);
+    expect(submitBtn).toBeEnabled();
+    await user.click(submitBtn);
+    await waitFor(() => expect(router.state.location.pathname).toBe('/projects/123/tasks/'));
+  });
+
+  it('should submit task validation status (NO option) and direct to tasks selection page', async () => {
+    const { router } = setup();
+    const submitBtn = await screen.findByRole('button', {
+      name: /submit task/i,
+    });
+    expect(submitBtn).toBeDisabled();
+    const user = userEvent.setup();
+    await user.click(screen.getAllByRole('radio')[1]);
+    expect(submitBtn).toBeEnabled();
+    await user.click(submitBtn);
+    await waitFor(() => expect(router.state.location.pathname).toBe('/projects/123/tasks/'));
+    expect(router.state.location.search).toBe('?filter=MAPPED');
+  });
+});
 });
