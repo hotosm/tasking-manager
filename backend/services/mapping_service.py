@@ -221,9 +221,9 @@ class MappingService:
         root = ET.Element(
             "gpx",
             attrib=dict(
-                xmlns="http://www.topografix.com/GPX/1/1",
                 version="1.1",
                 creator="HOT Tasking Manager",
+                xmlns="http://www.topografix.com/GPX/1/1",
             ),
         )
 
@@ -247,7 +247,7 @@ class MappingService:
 
         # Construct trkseg elements
         if task_ids_str is not None:
-            task_ids = map(int, task_ids_str.split(","))
+            task_ids = list(map(int, task_ids_str.split(",")))
             tasks = Task.get_tasks(project_id, task_ids)
             if not tasks or len(tasks) == 0:
                 raise NotFound()
@@ -287,7 +287,7 @@ class MappingService:
         )
 
         if task_ids_str:
-            task_ids = map(int, task_ids_str.split(","))
+            task_ids = list(map(int, task_ids_str.split(",")))
             tasks = Task.get_tasks(project_id, task_ids)
             if not tasks or len(tasks) == 0:
                 raise NotFound()
