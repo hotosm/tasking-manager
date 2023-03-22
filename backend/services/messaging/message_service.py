@@ -8,7 +8,7 @@ from flask import current_app
 from sqlalchemy import text, func
 from markdown import markdown
 
-from backend import create_app, db
+from backend import db
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType, NotFound
@@ -122,9 +122,7 @@ class MessageService:
         over a minute to run, so this method is expected to be called on its own thread
         """
 
-        app = (
-            create_app()
-        )  # Because message-all run on background thread it needs it's own app context
+        app = current_app  # Because message-all run on background thread it needs it's own app context
 
         with app.app_context():
             contributors = Message.get_all_contributors(project_id)
@@ -318,9 +316,7 @@ class MessageService:
         transferred_by: str,
     ):
         """Will send a message to the manager of the organization after a project is transferred"""
-        app = (
-            create_app()
-        )  # Because message-all run on background thread it needs it's own app context
+        app = current_app  # Because message-all run on background thread it needs it's own app context
 
         with app.app_context():
             project = Project.get(project_id)
@@ -466,7 +462,7 @@ class MessageService:
     ):
         """Send alert to user if they were @'d in a chat message"""
         # Because message-all run on background thread it needs it's own app context
-        app = create_app()
+        app = current_app
         with app.app_context():
             usernames = MessageService._parse_message_for_username(chat, project_id)
             if len(usernames) != 0:

@@ -13,15 +13,21 @@ class BaseTestCase(unittest.TestCase):
     def setUpClass(cls):
         super(BaseTestCase, cls).setUpClass()
         cls.app = create_app("backend.config.TestEnvironmentConfig")
+        cls.app.config.update({"TESTING": True})
         cls.db = db
         cls.db.app = cls.app
-        cls.db.create_all()
+        with cls.app.app_context():
+            cls.db.create_all()
 
     @classmethod
     def tearDownClass(cls):
-        db.session.remove()
-        cls.db.drop_all()
-        cls.db.get_engine(cls.app).dispose()
+        with cls.app.app_context():
+            db.session.remove()
+            cls.db.drop_all()
+            if cls.app in cls.db.engines:
+                cls.db.engines[cls.app].dispose()
+            if None in cls.db.engines:
+                cls.db.engines[None].dispose()
         super(BaseTestCase, cls).tearDownClass()
 
     def setUp(self):
