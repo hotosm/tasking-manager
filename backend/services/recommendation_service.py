@@ -122,8 +122,7 @@ class ProjectRecommendationService:
         ]
 
         # Since country is saved as array in the database
-        table["country"] = table["country"].apply(lambda x: x[0])
-
+        table["country"] = table["country"].apply(lambda x: x[0] if x else None)
         # Since some categories are set as [None] we need to replace it with []
         table["categories"] = table["categories"].apply(
             lambda x: [] if x == [None] else x
@@ -192,7 +191,7 @@ class ProjectRecommendationService:
         :return: list of related projects in the order of similarity
         """
         target_project = Project.query.get(project_id)
-        if not target_project:
+        if not target_project or target_project.status != ProjectStatus.PUBLISHED.value:
             raise NotFound()
         user = UserService.get_user_by_id(user_id) if user_id else None
 
@@ -215,7 +214,13 @@ class ProjectRecommendationService:
 
         count = 0
         while len(dto.results) < limit:
-            project = query.filter(Project.id == related_projects[count]).all()
+            # In case the user is not authorized to view the project and related projects are less than the limit
+            # then we need to break the loop and return the results
+            try:
+                project_id = related_projects[count]
+            except IndexError:
+                break
+            project = query.filter(Project.id == project_id).all()
             if project:
                 dto.results.append(
                     ProjectSearchService.create_result_dto(
