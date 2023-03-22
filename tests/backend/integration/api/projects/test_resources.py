@@ -259,14 +259,16 @@ class TestGetProjectsRestAPI(BaseTestCase):
         assert expected_project.id == project_response["projectId"]
         # Since some of the fields are not returned in summary mode we need to skip them
         if assert_type != "summary":
-            assert geojson.is_valid(project_response["areaOfInterest"])
+            assert geojson.loads(
+                geojson.dumps(project_response["areaOfInterest"])
+            ).is_valid
             assert ["type", "coordinates"] == list(
                 project_response["areaOfInterest"].keys()
             )
             if assert_type == "notasks":
                 assert "tasks" not in project_response
             else:
-                assert geojson.is_valid(project_response["tasks"])
+                assert geojson.loads(geojson.dumps(project_response["tasks"])).is_valid
             assert (
                 is_known_task_creation_mode(project_response["taskCreationMode"])
                 is None

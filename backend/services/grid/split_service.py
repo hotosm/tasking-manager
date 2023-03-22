@@ -147,11 +147,13 @@ class SplitService:
         """
         first_half = [
             g
-            for g in geometries
+            for g in geometries.geoms
             if getattr(g.centroid, axis) <= getattr(centroid, axis)
         ]
         second_half = [
-            g for g in geometries if getattr(g.centroid, axis) > getattr(centroid, axis)
+            g
+            for g in geometries.geoms
+            if getattr(g.centroid, axis) > getattr(centroid, axis)
         ]
         return (MultiPolygon(first_half), MultiPolygon(second_half))
 

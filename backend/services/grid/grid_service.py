@@ -119,10 +119,10 @@ class GridService:
                 "MustBeMultiPloygon- Area Of Interest: geometry must be a MultiPolygon"
             )
 
-        is_valid_geojson = geojson.is_valid(aoi_multi_polygon_geojson)
-        if is_valid_geojson["valid"] == "no":
+        if not aoi_multi_polygon_geojson.is_valid:
             raise InvalidGeoJson(
-                f"InvalidMultipolygon- Area of Interest: Invalid MultiPolygon - {is_valid_geojson['message']}"
+                "InvalidMultipolygon- Area of Interest: Invalid MultiPolygon - "
+                + ", ".join(aoi_multi_polygon_geojson.errors())
             )
 
         return aoi_multi_polygon_geojson
@@ -183,7 +183,7 @@ class GridService:
         ):
             # adapt the geometry for use as a shapely geometry
             # http://toblerity.org/shapely/manual.html#shapely.geometry.asShape
-            feature.geometry = shapely.geometry.asShape(feature.geometry)
+            feature.geometry = shapely.geometry.shape(feature.geometry)
             return feature
         else:
             return None
