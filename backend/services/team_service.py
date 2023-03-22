@@ -288,7 +288,9 @@ class TeamService:
         teams_list_dto = TeamsListDTO()
 
         if search_dto.paginate:
-            paginated = query.paginate(search_dto.page, search_dto.per_page, True)
+            paginated = query.paginate(
+                page=search_dto.page, per_page=search_dto.per_page, error_out=True
+            )
             teams_list_dto.pagination = Pagination(paginated)
             teams_list = paginated.items
         else:

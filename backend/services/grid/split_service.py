@@ -88,9 +88,10 @@ class SplitService:
         transformed_geometry = ST_Transform(shape.from_shape(multipolygon, 3857), 4326)
 
         # use DB to get the geometry as geojson
-        return geojson.loads(
-            db.engine.execute(transformed_geometry.ST_AsGeoJSON()).scalar()
-        )
+        with db.engine.connect() as conn:
+            return geojson.loads(
+                conn.execute(transformed_geometry.ST_AsGeoJSON()).scalar()
+            )
 
     @staticmethod
     def _create_split_tasks_from_geometry(task) -> list:
@@ -127,9 +128,10 @@ class SplitService:
             feature = geojson.Feature()
             # Tasks expect multipolygons. Convert and use the database to get as GeoJSON
             multipolygon_geometry = shape.from_shape(split_geometry, 4326)
-            feature.geometry = geojson.loads(
-                db.engine.execute(multipolygon_geometry.ST_AsGeoJSON()).scalar()
-            )
+            with db.engine.connect() as conn:
+                feature.geometry = geojson.loads(
+                    conn.execute(multipolygon_geometry.ST_AsGeoJSON()).scalar()
+                )
             feature.properties["x"] = None
             feature.properties["y"] = None
             feature.properties["zoom"] = None
@@ -174,9 +176,10 @@ class SplitService:
         original_geometry = shape.to_shape(original_task.geometry)
 
         # Fetch the task geometry in meters
-        original_task_area_m = db.engine.execute(
-            ST_Area(ST_GeogFromWKB(original_task.geometry))
-        ).scalar()
+        with db.engine.connect() as conn:
+            original_task_area_m = conn.execute(
+                ST_Area(ST_GeogFromWKB(original_task.geometry))
+            ).scalar()
 
         if (
             original_task.zoom and original_task.zoom >= 18

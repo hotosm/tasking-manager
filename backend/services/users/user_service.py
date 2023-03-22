@@ -2,7 +2,7 @@ from cachetools import TTLCache, cached
 from flask import current_app
 import datetime
 from sqlalchemy.sql.expression import literal
-from sqlalchemy import func, or_, desc, and_, distinct, cast, Time
+from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column
 from backend import db
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
 from backend.models.dtos.user_dto import (
@@ -291,7 +291,7 @@ class UserService:
                 Task.project_id == sq.c.project_id,
             ),
         )
-        tasks = tasks.add_columns("max", "comments")
+        tasks = tasks.add_columns(column("max"), column("comments"))
 
         if sort_by == "action_date":
             tasks = tasks.order_by(sq.c.max)
@@ -311,7 +311,7 @@ class UserService:
         if project_id:
             tasks = tasks.filter_by(project_id=project_id)
 
-        results = tasks.paginate(page, page_size, True)
+        results = tasks.paginate(page=page, per_page=page_size, error_out=True)
 
         task_list = []
 

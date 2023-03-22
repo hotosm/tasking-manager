@@ -9,7 +9,7 @@ from flask import current_app
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
 from sqlalchemy.sql.expression import cast, or_
-from sqlalchemy import text, desc, func, Time, orm, literal
+from sqlalchemy import desc, func, Time, orm, literal
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 import requests
@@ -354,15 +354,21 @@ class Project(db.Model):
         return new_proj
 
     @staticmethod
-    def get(project_id: int):
+    def get(project_id: int) -> Optional["Project"]:
         """
         Gets specified project
         :param project_id: project ID in scope
         :return: Project if found otherwise None
         """
-        return Project.query.options(
-            orm.noload("tasks"), orm.noload("messages"), orm.noload("project_chat")
-        ).get(project_id)
+        return db.session.get(
+            Project,
+            project_id,
+            options=[
+                orm.noload(Project.tasks),
+                orm.noload(Project.messages),
+                orm.noload(Project.project_chat),
+            ],
+        )
 
     def update(self, project_dto: ProjectDTO):
         """Updates project from DTO"""
@@ -647,10 +653,13 @@ class Project(db.Model):
         """Create Project Stats model for postgis project object"""
         project_stats = ProjectStatsDTO()
         project_stats.project_id = self.id
-        project_area_sql = "select ST_Area(geometry, true)/1000000 as area from public.projects where id = :id"
-        project_area_result = db.engine.execute(text(project_area_sql), id=self.id)
+        project_stats.area = (
+            db.session.query(func.ST_Area(Project.geometry, True))
+            .where(Project.id == self.id)
+            .first()[0]
+            / 1000000
+        )
 
-        project_stats.area = project_area_result.fetchone()["area"]
         project_stats.total_mappers = (
             db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
         )
@@ -926,7 +935,8 @@ class Project(db.Model):
 
     def get_aoi_geometry_as_geojson(self):
         """Helper which returns the AOI geometry as a geojson object"""
-        aoi_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
+        with db.engine.connect() as conn:
+            aoi_geojson = conn.execute(self.geometry.ST_AsGeoJSON()).scalar()
         return geojson.loads(aoi_geojson)
 
     def get_project_teams(self):
