@@ -169,6 +169,7 @@ export function CompletionTabForMapping({
       {showReadCommentsAlert && (
         <div
           className="tc pa2 mb1 bg-grey-light blue-dark pointer"
+          role="button"
           onClick={() => historyTabSwitch()}
         >
           <InfoIcon className="v-mid h1 w1" />
@@ -184,6 +185,8 @@ export function CompletionTabForMapping({
           <QuestionCircleIcon
             className="pointer dib v-mid pl2 pb1 blue-light"
             height="1.25rem"
+            role="button"
+            aria-label="toggle help"
             onClick={() => setShowHelp(!showHelp)}
           />
         </h4>
@@ -671,7 +674,7 @@ function CompletionInstructions({ setVisibility }: Object) {
         className="br-100 bg-grey-light white h1 w1 fr pointer tc v-mid di"
         onClick={() => setVisibility(false)}
       >
-        <CloseIcon className="pv1" />
+        <CloseIcon className="pv1" aria-label="hide instructions" />
       </span>
       <div className="blue-grey">
         <p>
@@ -728,6 +731,8 @@ export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
         {(msg) => (
           <div className="fr pointer" title={msg}>
             <SidebarIcon
+              role="button"
+              aria-label="Hide sidebar"
               onClick={() => {
                 setShowSidebar(false);
                 activeEditor === 'ID' && iDContext.ui().restart();
@@ -787,7 +792,11 @@ function TaskSpecificInstructions({ instructions, open = true }: Object) {
   const [isOpen, setIsOpen] = useState(open);
   return (
     <>
-      <h4 className="ttu blue-grey mt1 mb0 pointer" onClick={() => setIsOpen(!isOpen)}>
+      <h4
+        className="ttu blue-grey mt1 mb0 pointer"
+        role="button"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {isOpen ? (
           <ChevronDownIcon style={{ height: '14px' }} className="pr1 pb1 v-mid" />
         ) : (

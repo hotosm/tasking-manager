@@ -349,6 +349,9 @@ const faultyHandlers = [
   rest.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation', (req, res, ctx) => {
     return res.networkError('Failed to connect');
   }),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
 ];
 
 export { handlers, faultyHandlers };
