@@ -65,7 +65,7 @@ class TestProjectActionsIntersectingTilesAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 200)
-        self.assertDeepAlmostEqual(response.json, expected_response, places=6)
+        self.assertDeepAlmostEqual(expected_response, geojson.loads(response.text))
 
     def test_returns_not_clipped_grid_if_clip_to_aoi_set_false(self):
         """Test that the endpoint returns a not clipped grid if clipToAoi is set to false"""
@@ -83,7 +83,7 @@ class TestProjectActionsIntersectingTilesAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 200)
-        self.assertDeepAlmostEqual(response.json, expected_response, places=6)
+        self.assertDeepAlmostEqual(expected_response, geojson.loads(response.text))
 
     def test_raises_invalid_geojson_exception_if_invalid_aoi(self):
         """Test that the endpoint raises an InvalidGeoJson exception if the grid is invalid"""

@@ -1,7 +1,11 @@
 import unittest
 
+from typing import Optional
 from shapely.geometry import shape
 from backend import create_app, db
+import geojson
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
 
 def clean_db(db):
@@ -10,9 +14,19 @@ def clean_db(db):
 
 
 class BaseTestCase(unittest.TestCase):
+    DEFAULT_PRECISION: Optional[int]
+    app: Optional[Flask]
+    db: Optional[SQLAlchemy]
+
     @classmethod
     def setUpClass(cls):
         super(BaseTestCase, cls).setUpClass()
+        cls.DEFAULT_PRECISION = geojson.geometry.DEFAULT_PRECISION
+        # OSM uses 7, which means the worst error of longitude is ±5.56595 mm
+        # at the equator. The worst error for 6 decimal places of longitude is
+        # ±5.56595 cm at the equator. This is the default, and realistically
+        # is probably more than enough for the TM.
+        geojson.geometry.DEFAULT_PRECISION = 7
         cls.app = create_app("backend.config.TestEnvironmentConfig")
         cls.app.config.update({"TESTING": True})
         cls.db = db
@@ -22,6 +36,7 @@ class BaseTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        geojson.geometry.DEFAULT_PRECISION = cls.DEFAULT_PRECISION
         with cls.app.app_context():
             db.session.remove()
             cls.db.drop_all()

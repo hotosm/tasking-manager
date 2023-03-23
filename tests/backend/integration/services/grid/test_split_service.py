@@ -35,7 +35,7 @@ class TestSplitService(BaseTestCase):
         # act
         result = SplitService._create_split_tasks(x, y, zoom, task_stub)
         # assert
-        self.assertDeepAlmostEqual(expected, result, places=6)
+        self.assertDeepAlmostEqual(expected, result)
 
     def test_split_geom_raise_grid_service_error_when_task_not_usable(self):
         with self.assertRaises(SplitServiceError):
@@ -115,4 +115,4 @@ class TestSplitService(BaseTestCase):
             json.dumps(get_canned_json("non_square_split_results.json"))
         )
         result = SplitService._create_split_tasks(task.x, task.y, task.zoom, task)
-        self.assertDeepAlmostEqual(expected, result, places=6)
+        self.assertDeepAlmostEqual(expected, result)

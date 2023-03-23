@@ -1,7 +1,7 @@
 import geojson
 import json
 from shapely.geometry import MultiPolygon, mapping
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 import shapely.geometry
 from flask import current_app
 from backend.models.dtos.grid_dto import GridDTO
@@ -26,8 +26,8 @@ class GridService:
         :return: geojson.FeatureCollection trimmed task grid
         """
         # get items out of the dto
-        grid = grid_dto.grid
-        aoi = grid_dto.area_of_interest
+        grid = geojson.loads(geojson.dumps(grid_dto.grid))
+        aoi = geojson.loads(geojson.dumps(grid_dto.area_of_interest))
         clip_to_aoi = grid_dto.clip_to_aoi
 
         # create a shapely shape from the aoi
@@ -229,7 +229,7 @@ class GridService:
         :return: Multipolygon
         """
         # http://toblerity.org/shapely/manual.html#shapely.ops.cascaded_union
-        geometry = cascaded_union(geoms)
+        geometry = unary_union(geoms)
         if geometry.geom_type == "Polygon":
             # shapely may return a POLYGON rather than a MULTIPOLYGON if there is just one shape
             # force Multipolygon
