@@ -572,21 +572,23 @@ const TaskValidationSelector = ({
           <input
             type="radio"
             value="VALIDATED"
+            id={`#${id}-VALIDATED`}
             className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
             checked={currentStatus === 'VALIDATED'}
             onChange={() => updateStatus(id, 'VALIDATED')}
           />
-          <label htmlFor="VALIDATED">
+          <label htmlFor={`#${id}-VALIDATED`}>
             <FormattedMessage {...messages.complete} />
           </label>
           <input
             type="radio"
             value="INVALIDATED"
+            id={`#${id}-INVALIDATED`}
             className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
             checked={currentStatus === 'INVALIDATED'}
             onChange={() => updateStatus(id, 'INVALIDATED')}
           />
-          <label htmlFor="INVALIDATED">
+          <label htmlFor={`#${id}-INVALIDATED`}>
             <FormattedMessage {...messages.incomplete} />
           </label>
           <CustomButton
