@@ -484,7 +484,8 @@ class ProjectService:
     ) -> ProjectSummary:
         """Gets the project summary DTO"""
         project = ProjectService.get_project_by_id(project_id)
-        return project.get_project_summary(preferred_locale)
+        # We don't want to cache the project stats, so we set calculate_completion to False
+        return project.get_project_summary(preferred_locale, calculate_completion=False)
 
     @staticmethod
     def get_project_summary(

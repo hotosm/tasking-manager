@@ -803,7 +803,9 @@ class Project(db.Model):
 
         return project_stats
 
-    def get_project_summary(self, preferred_locale) -> ProjectSummary:
+    def get_project_summary(
+        self, preferred_locale, calculate_completion=True
+    ) -> ProjectSummary:
         """Create Project Summary model for postgis project object"""
         summary = ProjectSummary()
         summary.project_id = self.id
@@ -880,9 +882,10 @@ class Project(db.Model):
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
-        summary.percent_mapped = self.calculate_tasks_percent("mapped")
-        summary.percent_validated = self.calculate_tasks_percent("validated")
-        summary.percent_bad_imagery = self.calculate_tasks_percent("bad_imagery")
+        if calculate_completion:
+            summary.percent_mapped = self.calculate_tasks_percent("mapped")
+            summary.percent_validated = self.calculate_tasks_percent("validated")
+            summary.percent_bad_imagery = self.calculate_tasks_percent("bad_imagery")
 
         summary.project_teams = [
             ProjectTeamDTO(
