@@ -576,13 +576,7 @@ class ProjectService:
             return
         project = ProjectService.get_project_by_id(project_id)
 
-        project_completion = Project.calculate_tasks_percent(
-            "project_completion",
-            project.total_tasks,
-            project.tasks_mapped,
-            project.tasks_validated,
-            project.tasks_bad_imagery,
-        )
+        project_completion = project.calculate_tasks_percent("project_completion")
         if project_completion == 50 and project.progress_email_sent:
             return  # Don't send progress email if it's already sent
         if project_completion in [50, 100]:

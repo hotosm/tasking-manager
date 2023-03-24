@@ -120,6 +120,7 @@ class ProjectSearchService:
         project_info_dto = ProjectInfo.get_dto_for_locale(
             project.id, preferred_locale, project.default_locale
         )
+        project_obj = Project.get(project.id)
         list_dto = ListSearchResultDTO()
         list_dto.project_id = project.id
         list_dto.locale = project_info_dto.locale
@@ -129,19 +130,11 @@ class ProjectSearchService:
         list_dto.short_description = project_info_dto.short_description
         list_dto.last_updated = project.last_updated
         list_dto.due_date = project.due_date
-        list_dto.percent_mapped = Project.calculate_tasks_percent(
+        list_dto.percent_mapped = project_obj.calculate_tasks_percent(
             "mapped",
-            project.total_tasks,
-            project.tasks_mapped,
-            project.tasks_validated,
-            project.tasks_bad_imagery,
         )
-        list_dto.percent_validated = Project.calculate_tasks_percent(
+        list_dto.percent_validated = project_obj.calculate_tasks_percent(
             "validated",
-            project.total_tasks,
-            project.tasks_mapped,
-            project.tasks_validated,
-            project.tasks_bad_imagery,
         )
         list_dto.status = ProjectStatus(project.status).name
         list_dto.active_mappers = Project.get_active_mappers(project.id)
