@@ -660,27 +660,9 @@ class Project(db.Model):
             .filter(ProjectChat.project_id == self.id)
             .count()
         )
-        project_stats.percent_mapped = Project.calculate_tasks_percent(
-            "mapped",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        project_stats.percent_validated = Project.calculate_tasks_percent(
-            "validated",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        project_stats.percent_bad_imagery = Project.calculate_tasks_percent(
-            "bad_imagery",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
+        project_stats.percent_mapped = self.calculate_tasks_percent("mapped")
+        project_stats.percent_validated = self.calculate_tasks_percent("validated")
+        project_stats.percent_bad_imagery = self.calculate_tasks_percent("bad_imagery")
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         project_stats.aoi_centroid = geojson.loads(centroid_geojson)
         project_stats.total_time_spent = 0
@@ -898,27 +880,10 @@ class Project(db.Model):
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
-        summary.percent_mapped = Project.calculate_tasks_percent(
-            "mapped",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        summary.percent_validated = Project.calculate_tasks_percent(
-            "validated",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        summary.percent_bad_imagery = Project.calculate_tasks_percent(
-            "bad_imagery",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
+        summary.percent_mapped = self.calculate_tasks_percent("mapped")
+        summary.percent_validated = self.calculate_tasks_percent("validated")
+        summary.percent_bad_imagery = self.calculate_tasks_percent("bad_imagery")
+
         summary.project_teams = [
             ProjectTeamDTO(
                 dict(
@@ -1027,27 +992,10 @@ class Project(db.Model):
         base_dto.author = User.get_by_id(self.author_id).username
         base_dto.active_mappers = Project.get_active_mappers(self.id)
         base_dto.task_creation_mode = TaskCreationMode(self.task_creation_mode).name
-        base_dto.percent_mapped = Project.calculate_tasks_percent(
-            "mapped",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        base_dto.percent_validated = Project.calculate_tasks_percent(
-            "validated",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        base_dto.percent_bad_imagery = Project.calculate_tasks_percent(
-            "bad_imagery",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
+
+        base_dto.percent_mapped = self.calculate_tasks_percent("mapped")
+        base_dto.percent_validated = self.calculate_tasks_percent("validated")
+        base_dto.percent_bad_imagery = self.calculate_tasks_percent("bad_imagery")
 
         base_dto.project_teams = [
             ProjectTeamDTO(
@@ -1154,28 +1102,29 @@ class Project(db.Model):
         tags_dto.tags = [r[0] for r in query]
         return tags_dto
 
-    @staticmethod
-    def calculate_tasks_percent(
-        target, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery
-    ):
+    def calculate_tasks_percent(self, target):
         """Calculates percentages of contributions"""
         try:
             if target == "mapped":
                 return int(
-                    (tasks_mapped + tasks_validated)
-                    / (total_tasks - tasks_bad_imagery)
+                    (self.tasks_mapped + self.tasks_validated)
+                    / (self.total_tasks - self.tasks_bad_imagery)
                     * 100
                 )
             elif target == "validated":
-                return int(tasks_validated / (total_tasks - tasks_bad_imagery) * 100)
+                return int(
+                    self.tasks_validated
+                    / (self.total_tasks - self.tasks_bad_imagery)
+                    * 100
+                )
             elif target == "bad_imagery":
-                return int((tasks_bad_imagery / total_tasks) * 100)
+                return int((self.tasks_bad_imagery / self.total_tasks) * 100)
             elif target == "project_completion":
                 # To calculate project completion we assign 2 points to each task
                 # one for mapping and one for validation
                 return int(
-                    (tasks_mapped + (tasks_validated * 2))
-                    / ((total_tasks - tasks_bad_imagery) * 2)
+                    (self.tasks_mapped + (self.tasks_validated * 2))
+                    / ((self.total_tasks - self.tasks_bad_imagery) * 2)
                     * 100
                 )
         except ZeroDivisionError:
