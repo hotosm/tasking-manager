@@ -479,12 +479,27 @@ class ProjectService:
 
     @staticmethod
     @cached(summary_cache)
-    def get_project_summary(
+    def get_cached_project_summary(
         project_id: int, preferred_locale: str = "en"
     ) -> ProjectSummary:
         """Gets the project summary DTO"""
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_summary(preferred_locale)
+
+    @staticmethod
+    def get_project_summary(
+        project_id: int, preferred_locale: str = "en"
+    ) -> ProjectSummary:
+        """Gets the project summary DTO"""
+        project = ProjectService.get_project_by_id(project_id)
+        summary = ProjectService.get_cached_project_summary(
+            project_id, preferred_locale
+        )
+        # Since we don't want to cache the project stats, we need to update them
+        summary.percent_mapped = project.calculate_tasks_percent("mapped")
+        summary.percent_validated = project.calculate_tasks_percent("validated")
+        summary.percent_bad_imagery = project.calculate_tasks_percent("bad_imagery")
+        return summary
 
     @staticmethod
     def set_project_as_featured(project_id: int):
