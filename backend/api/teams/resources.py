@@ -386,7 +386,22 @@ class TeamsAllAPI(Resource):
         """
         try:
             user_id = token_auth.current_user()
-            search_dto = TeamSearchDTO(dict(request.args))
+            search_dto = TeamSearchDTO()
+            search_dto.team_name = request.args.get("team_name", None)
+            search_dto.member = request.args.get("member", None)
+            search_dto.manager = request.args.get("manager", None)
+            search_dto.member_request = request.args.get("member_request", None)
+            search_dto.team_role = request.args.get("team_role", None)
+            search_dto.organisation = request.args.get("organisation", None)
+            search_dto.omit_member_list = strtobool(
+                request.args.get("omitMemberList", "false")
+            )
+            search_dto.full_member_list = strtobool(
+                request.args.get("fullMemberList", "true")
+            )
+            search_dto.paginate = strtobool(request.args.get("paginate", "false"))
+            search_dto.page = request.args.get("page", 1)
+            search_dto.per_page = request.args.get("perPage", 10)
             search_dto.user_id = user_id
             search_dto.validate()
 
