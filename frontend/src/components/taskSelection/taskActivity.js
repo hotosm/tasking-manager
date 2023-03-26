@@ -210,10 +210,13 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
         </div>
         <div className="timeline-container">
           {groupBySession()?.map((grouped, n) => (
-            <div key={n} className={`relative grouped-ctr timeline-item ph3 mt4`}>
+            <div
+              key={grouped[0].historyId}
+              className={`grouped-ctr session ph3 mt4 bb b--grey-light`}
+            >
               {grouped.map((history, n) => (
-                <div className="flex pb4" key={n}>
-                  <div className="flex justify-center" style={{ width: '50px' }}>
+                <div className="flex activity relative" key={history.historyId}>
+                  <div className="flex justify-center">
                     {n === 0 ? (
                       <UserAvatar
                         username={grouped[0].actionBy}
@@ -227,7 +230,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
                   <div className="mh2 f6 blue-dark" key={n}>
                     <p className="ma0 blue-grey">
                       {n === 0 && (
-                        <>
+                        <div className="mt2 dib">
                           <a
                             href={'/users/' + history.actionBy}
                             className="blue-dark b no-underline underline-hover"
@@ -235,14 +238,14 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
                             {history.actionBy}
                           </a>
                           &nbsp;
-                        </>
+                        </div>
                       )}
                       {getTaskActionMessage(history.action, history.actionText)}{' '}
                       <RelativeTimeWithUnit date={history.actionDate} />
                     </p>
                     {history.action === 'COMMENT' && (
-                      <p
-                        className="ma0 markdown-content"
+                      <div
+                        className="ma0 comment"
                         dangerouslySetInnerHTML={htmlFromMarkdown(
                           formatUserNamesToLink(history.actionText),
                         )}
