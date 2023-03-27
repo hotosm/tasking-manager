@@ -7,7 +7,7 @@ import {
   NumberParam,
   BooleanParam,
 } from 'use-query-params';
-import { stringify as stringifyUQP } from 'query-string';
+import queryString from 'query-string';
 import axios from 'axios';
 import { subMonths, format } from 'date-fns';
 
@@ -228,5 +228,5 @@ export const useProjectsQueryAPI = (
 
 export const stringify = (obj) => {
   const encodedQuery = encodeQueryParams(projectQueryAllSpecification, obj);
-  return stringifyUQP(encodedQuery);
+  return queryString.stringify(encodedQuery);
 };
