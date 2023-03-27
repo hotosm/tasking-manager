@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import humanizeDuration from 'humanize-duration';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import { ClockIcon } from '../svgIcons';
 import messages from './messages';

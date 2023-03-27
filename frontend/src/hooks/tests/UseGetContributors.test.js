@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import useGetContributors from '../UseGetContributors';
 import { history } from '../../network/tests/mockData/taskHistory';

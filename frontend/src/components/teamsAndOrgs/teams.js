@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import { Form, Field, useFormState } from 'react-final-form';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import messages from './messages';
 import { InfoIcon } from '../svgIcons';

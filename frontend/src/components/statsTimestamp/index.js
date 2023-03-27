@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useIntl } from 'react-intl';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import { fetchExternalJSONAPI } from '../../network/genericJSONRequest';
 import { OHSOME_STATS_BASE_URL } from '../../config';

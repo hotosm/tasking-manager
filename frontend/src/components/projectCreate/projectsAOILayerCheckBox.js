@@ -1,6 +1,6 @@
 import { CheckBoxInput } from '../formInputs';
 import { FormattedMessage } from 'react-intl';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import messages from './messages';
 import statusMessages from '../projectDetail/messages';

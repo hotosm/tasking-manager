@@ -3,7 +3,7 @@ import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { encodeQueryParams, StringParam } from 'use-query-params';
-import { stringify } from 'query-string';
+import queryString from 'query-string';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -66,7 +66,7 @@ export function OrganisationDetail() {
         <div className="w-100 mt4">
           <Projects
             projects={projects}
-            viewAllEndpoint={`/explore/?${stringify(
+            viewAllEndpoint={`/explore/?${queryString.stringify(
               encodeQueryParams(
                 {
                   organisation: StringParam,

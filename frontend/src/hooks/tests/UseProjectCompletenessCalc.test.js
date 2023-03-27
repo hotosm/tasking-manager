@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import { useComputeCompleteness, useTasksByStatus } from '../UseProjectCompletenessCalc';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
