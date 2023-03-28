@@ -400,11 +400,6 @@ export function CompletionTabForValidation({
           },
         );
       });
-    } else if (disabled) {
-      return new Promise((resolve, reject) => {
-        setShowMapChangesModal('unlock');
-        resolve();
-      });
     }
   };
   const submitTaskAsync = useAsync(submitTask);
