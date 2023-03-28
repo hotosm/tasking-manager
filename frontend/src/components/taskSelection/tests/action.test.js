@@ -24,6 +24,53 @@ const setup = () => {
   );
 };
 
+describe('Task Map Action', () => {
+  it('should display JOSM error', async () => {
+    setupFaultyHandlers();
+    setup();
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByRole('button', {
+        name: /iD Editor/i,
+      }),
+    );
+    await user.click(screen.getByText('JOSM'));
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', {
+          name: messages.JOSMError.defaultMessage,
+        }),
+      ).toBeInTheDocument(),
+    );
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /close/i,
+      }),
+    );
+    expect(
+      screen.queryByRole('heading', {
+        name: messages.JOSMError.defaultMessage,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('should expand accordition to view task details', async () => {
+    setup();
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByRole('button', {
+        name: /history/i,
+      }),
+    );
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Task 1765',
+      }),
+    );
+    expect(screen.getByRole('radio', { name: /comments/i })).toBeChecked();
+  });
+});
+
 describe('Session Expire Dialogs', () => {
   beforeEach(() => {
     jest.useFakeTimers();
