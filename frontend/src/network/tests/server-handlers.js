@@ -123,7 +123,7 @@ const handlers = [
     return res(ctx.json(userTouchedProjects));
   }),
   rest.get(API_URL + 'projects/:projectId/tasks/:taskId/', async (req, res, ctx) => {
-    return res(ctx.json(taskDetail));
+    return res(ctx.json(taskDetail(Number(req.params.taskId))));
   }),
   rest.post(
     API_URL + 'projects/:projectId/tasks/actions/stop-mapping/:taskId/',
