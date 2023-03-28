@@ -306,3 +306,7 @@ export const splitTask = {
     },
   ],
 };
+
+export const extendTask = {
+  Success: 'Successfully extended task expiry',
+};

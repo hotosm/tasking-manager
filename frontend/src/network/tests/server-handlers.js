@@ -66,6 +66,7 @@ import { API_URL } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
 import { authLogin, setUser, userRegister } from './mockData/auth';
 import {
+  extendTask,
   lockForMapping,
   lockForValidation,
   splitTask,
@@ -304,6 +305,9 @@ const handlers = [
   rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', (req, res, ctx) => {
     return res(ctx.json(splitTask));
   }),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', (req, res, ctx) => {
+    return res(ctx.json(extendTask));
+  }),
   // EXTERNAL API
   rest.get('https://osmstats-api.hotosm.org/wildcard', (req, res, ctx) => {
     return res(ctx.json(homepageStats));
@@ -347,6 +351,9 @@ const faultyHandlers = [
     },
   ),
   rest.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', (req, res, ctx) => {
     return res.networkError('Failed to connect');
   }),
   rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', (req, res, ctx) => {
