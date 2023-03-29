@@ -1,66 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 import { polyfill } from './polyfill';
 
-import ar from '../locales/ar.json';
-import cs from '../locales/cs.json';
-import de from '../locales/de.json';
-import el from '../locales/el.json';
-import en from '../locales/en.json';
-import es from '../locales/es.json';
-import fa_IR from '../locales/fa_IR.json';
-import fr from '../locales/fr.json';
-import he from '../locales/he.json';
-import hu from '../locales/hu.json';
-import id from '../locales/id.json';
-import it from '../locales/it.json';
-import ja from '../locales/ja.json';
-import ko from '../locales/ko.json';
-import mg from '../locales/mg.json';
-import ml from '../locales/ml.json';
-import nl_NL from '../locales/nl_NL.json';
-import pt from '../locales/pt.json';
-import pt_BR from '../locales/pt_BR.json';
-import ru from '../locales/ru.json';
-import sv from '../locales/sv.json';
-import sw from '../locales/sw.json';
-import tl from '../locales/tl.json';
-import tr from '../locales/tr.json';
-import uk from '../locales/uk.json';
-import zh_TW from '../locales/zh_TW.json';
-
 import { setLocale } from '../store/actions/userPreferences';
 import * as config from '../config';
-
-const translatedMessages = {
-  ar: ar,
-  cs: cs,
-  de: de,
-  el: el,
-  en: en,
-  es: es,
-  'fa-IR': fa_IR,
-  fr: fr,
-  he: he,
-  hu: hu,
-  id: id,
-  it: it,
-  ja: ja,
-  ko: ko,
-  mg: mg,
-  ml: ml,
-  nl: nl_NL,
-  pt: pt,
-  'pt-BR': pt_BR,
-  ru: ru,
-  sv: sv,
-  sw: sw,
-  tl: tl,
-  tr: tr,
-  uk: uk,
-  zh: zh_TW,
-};
 
 // commented values doesn't have a good amount of strings translated
 const supportedLocales = [
@@ -107,30 +51,41 @@ function getSupportedLocale(locale) {
   return { value: 'en', label: 'English' };
 }
 
-function getTranslatedMessages(locale) {
+async function getTranslatedMessages(locale) {
   let localeCode = getSupportedLocale(locale);
+  let val = localeCode;
   if (localeCode.hasOwnProperty('value')) {
-    return translatedMessages[localeCode.value];
+    val = localeCode.value;
   }
-  return translatedMessages[locale];
+  if (val) {
+    const parsed = val.replace('-', '_');
+    return await import(/* webpackChunkName: "lang-[request]" */ `../locales/${parsed}.json`);
+  }
+  return await import(/* webpackChunkName: "lang-en" */ '../locales/en.json');
 }
 
 /* textComponent is for orderBy <select>, see codesandbox at https://github.com/facebook/react/issues/15513 */
 let ConnectedIntl = (props) => {
+  const [i18nMessages, setI18nMessages] = useState(null);
+
   useEffect(() => {
     if (props.locale === null) {
       props.setLocale(getSupportedLocale(navigator.language).value);
     }
+    getTranslatedMessages(props.locale).then((messages) => setI18nMessages(messages));
   }, [props]);
 
   polyfill(props.locale ? props.locale.substr(0, 2) : config.DEFAULT_LOCALE);
 
+  if (i18nMessages === undefined || i18nMessages === null) {
+    return <div />;
+  }
   return (
     <IntlProvider
       key={props.locale || config.DEFAULT_LOCALE}
       locale={props.locale ? props.locale.substr(0, 2) : config.DEFAULT_LOCALE}
       textComponent={React.Fragment}
-      messages={getTranslatedMessages(props.locale)}
+      messages={i18nMessages}
       timeZone={Intl.DateTimeFormat().resolvedOptions().timeZone}
     >
       {props.children}
