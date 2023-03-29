@@ -28,7 +28,6 @@ import {
   ReopenEditor,
   UnsavedMapChangesModalContent,
 } from './actionSidebars';
-import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { MultipleTaskHistoriesAccordion } from './multipleTaskHistories';
 import { ResourcesTab } from './resourcesTab';
 import { ActionTabsNav } from './actionTabsNav';
