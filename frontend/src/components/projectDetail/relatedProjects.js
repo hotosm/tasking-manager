@@ -1,41 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import ReactPlaceholder from 'react-placeholder';
-import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
+import { useFetch } from '../../hooks/UseFetch';
 import { ProjectCard } from '../projectCard/projectCard';
-import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { nCardPlaceholders } from '../projectCard/nCardPlaceholder';
 import messages from './messages';
 
 export const RelatedProjects = ({ projectId }) => {
-  const [relatedProjects, setRelatedProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const userToken = useSelector((state) => state.auth.token);
+  const [, loading, relatedProjects] = useFetch(
+    `projects/queries/${projectId}/related-projects/?limit=4`,
+  );
 
-  useEffect(() => {
-    fetchLocalJSONAPI(`projects/queries/${projectId}/related-projects/?limit=4`, userToken).then(
-      (data) => {
-        setRelatedProjects(data.results);
-        setLoading(false);
-      },
-    );
-  }, [projectId, userToken]);
   return (
     <div className="bg-white mb3">
-      {!loading && relatedProjects.length === 0 ? (
+      {!loading && relatedProjects.results.length === 0 ? (
         <p className="blue-light f6 mv3 mh4">
           <FormattedMessage {...messages.noRelatedProjectsFound} />
         </p>
       ) : (
-        <div className="pt4 ph4 cards-container">
+        <div className="ph4 cards-container">
           <ReactPlaceholder
             customPlaceholder={nCardPlaceholders(4)}
-            showLoadingAnimation={true}
+            showLoadingAnimation
             delay={10}
             ready={!loading}
           >
-            {relatedProjects.map((project) => (
+            {relatedProjects.results?.map((project) => (
               <ProjectCard key={project.id} showBottomButtons={false} {...project} />
             ))}
           </ReactPlaceholder>
