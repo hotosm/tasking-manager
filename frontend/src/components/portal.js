@@ -1,22 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const PORTAL_ROOT = document.getElementById('action-root');
+let portalRoot = document.getElementById('action-root');
+if (!portalRoot) {
+  portalRoot = document.createElement('div');
+  portalRoot.setAttribute('id', 'action-root');
+  document.body.appendChild(portalRoot);
+}
 
 class Portal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.el = document.createElement('div');
-  }
+  el = document.createElement('div');
 
   componentDidMount() {
-    PORTAL_ROOT.style.display = 'block';
-    PORTAL_ROOT.appendChild(this.el);
+    portalRoot.style.display = 'block';
+    portalRoot.appendChild(this.el);
   }
 
   componentWillUnmount() {
-    PORTAL_ROOT.style.display = 'none';
-    PORTAL_ROOT.removeChild(this.el);
+    portalRoot.style.display = 'none';
+    portalRoot.removeChild(this.el);
   }
 
   render() {

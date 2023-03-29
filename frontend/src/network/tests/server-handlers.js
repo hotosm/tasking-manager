@@ -10,9 +10,18 @@ import {
   userFavorite,
   favoritePost,
   activities,
+  taskDetail,
+  stopMapping,
+  stopValidation,
 } from './mockData/projects';
 import { featuredProjects } from './mockData/featuredProjects';
-import { newUsersStats, osmStatsProd, osmStatsProject, userStats } from './mockData/userStats';
+import {
+  newUsersStats,
+  osmStatsProd,
+  osmStatsProject,
+  userLockedTasksDetails,
+  userStats,
+} from './mockData/userStats';
 import { projectContributions, projectContributionsByDay } from './mockData/contributions';
 import {
   usersList,
@@ -56,7 +65,15 @@ import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 import { API_URL } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
 import { authLogin, setUser, userRegister } from './mockData/auth';
-import { lockForMapping, lockForValidation } from './mockData/taskHistory';
+import {
+  extendTask,
+  lockForMapping,
+  lockForValidation,
+  splitTask,
+  submitMappingTask,
+  submitValidationTask,
+  userLockedTasks,
+} from './mockData/taskHistory';
 
 const handlers = [
   rest.get(API_URL + 'projects/:id/queries/summary/', async (req, res, ctx) => {
@@ -105,6 +122,21 @@ const handlers = [
   rest.get(API_URL + 'projects/queries/:username/touched', async (req, res, ctx) => {
     return res(ctx.json(userTouchedProjects));
   }),
+  rest.get(API_URL + 'projects/:projectId/tasks/:taskId/', async (req, res, ctx) => {
+    return res(ctx.json(taskDetail(Number(req.params.taskId))));
+  }),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/stop-mapping/:taskId/',
+    async (req, res, ctx) => {
+      return res(ctx.json(stopMapping));
+    },
+  ),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/stop-validation/',
+    async (req, res, ctx) => {
+      return res(ctx.json(stopValidation));
+    },
+  ),
   // AUTHENTICATION
   rest.get(API_URL + 'system/authentication/login/', async (req, res, ctx) => {
     return res(ctx.json(authLogin));
@@ -152,6 +184,9 @@ const handlers = [
   }),
   rest.get(API_URL + 'users/:username/statistics/', async (req, res, ctx) => {
     return res(ctx.json(userStats));
+  }),
+  rest.get(API_URL + 'users/queries/tasks/locked/details/', async (req, res, ctx) => {
+    return res(ctx.json(userLockedTasksDetails));
   }),
   // ORGANIZATIONS
   rest.get(API_URL + 'organisations', (req, res, ctx) => {
@@ -252,6 +287,27 @@ const handlers = [
   rest.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation/', (req, res, ctx) => {
     return res(ctx.json(lockForValidation));
   }),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/unlock-after-mapping/:taskId',
+    (req, res, ctx) => {
+      return res(ctx.json(submitMappingTask));
+    },
+  ),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/unlock-after-validation/',
+    (req, res, ctx) => {
+      return res(ctx.json(submitValidationTask));
+    },
+  ),
+  rest.get(API_URL + 'users/queries/tasks/locked/', (req, res, ctx) => {
+    return res(ctx.json(userLockedTasks));
+  }),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', (req, res, ctx) => {
+    return res(ctx.json(splitTask));
+  }),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', (req, res, ctx) => {
+    return res(ctx.json(extendTask));
+  }),
   // EXTERNAL API
   rest.get('https://osmstats-api.hotosm.org/wildcard', (req, res, ctx) => {
     return res(ctx.json(homepageStats));
@@ -295,6 +351,12 @@ const faultyHandlers = [
     },
   ),
   rest.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', (req, res, ctx) => {
     return res.networkError('Failed to connect');
   }),
 ];

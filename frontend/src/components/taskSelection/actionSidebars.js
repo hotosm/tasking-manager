@@ -169,6 +169,7 @@ export function CompletionTabForMapping({
       {showReadCommentsAlert && (
         <div
           className="tc pa2 mb1 bg-grey-light blue-dark pointer"
+          role="button"
           onClick={() => historyTabSwitch()}
         >
           <InfoIcon className="v-mid h1 w1" />
@@ -184,6 +185,8 @@ export function CompletionTabForMapping({
           <QuestionCircleIcon
             className="pointer dib v-mid pl2 pb1 blue-light"
             height="1.25rem"
+            role="button"
+            aria-label="toggle help"
             onClick={() => setShowHelp(!showHelp)}
           />
         </h4>
@@ -397,11 +400,6 @@ export function CompletionTabForValidation({
           },
         );
       });
-    } else if (disabled) {
-      return new Promise((resolve, reject) => {
-        setShowMapChangesModal('unlock');
-        resolve();
-      });
     }
   };
   const submitTaskAsync = useAsync(submitTask);
@@ -569,21 +567,23 @@ const TaskValidationSelector = ({
           <input
             type="radio"
             value="VALIDATED"
+            id={`#${id}-VALIDATED`}
             className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
             checked={currentStatus === 'VALIDATED'}
             onChange={() => updateStatus(id, 'VALIDATED')}
           />
-          <label htmlFor="VALIDATED">
+          <label htmlFor={`#${id}-VALIDATED`}>
             <FormattedMessage {...messages.complete} />
           </label>
           <input
             type="radio"
             value="INVALIDATED"
+            id={`#${id}-INVALIDATED`}
             className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
             checked={currentStatus === 'INVALIDATED'}
             onChange={() => updateStatus(id, 'INVALIDATED')}
           />
-          <label htmlFor="INVALIDATED">
+          <label htmlFor={`#${id}-INVALIDATED`}>
             <FormattedMessage {...messages.incomplete} />
           </label>
           <CustomButton
@@ -671,7 +671,7 @@ function CompletionInstructions({ setVisibility }: Object) {
         className="br-100 bg-grey-light white h1 w1 fr pointer tc v-mid di"
         onClick={() => setVisibility(false)}
       >
-        <CloseIcon className="pv1" />
+        <CloseIcon className="pv1" aria-label="hide instructions" />
       </span>
       <div className="blue-grey">
         <p>
@@ -728,6 +728,8 @@ export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
         {(msg) => (
           <div className="fr pointer" title={msg}>
             <SidebarIcon
+              role="button"
+              aria-label="Hide sidebar"
               onClick={() => {
                 setShowSidebar(false);
                 activeEditor === 'ID' && iDContext.ui().restart();
@@ -787,7 +789,11 @@ function TaskSpecificInstructions({ instructions, open = true }: Object) {
   const [isOpen, setIsOpen] = useState(open);
   return (
     <>
-      <h4 className="ttu blue-grey mt1 mb0 pointer" onClick={() => setIsOpen(!isOpen)}>
+      <h4
+        className="ttu blue-grey mt1 mb0 pointer"
+        role="button"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {isOpen ? (
           <ChevronDownIcon style={{ height: '14px' }} className="pr1 pb1 v-mid" />
         ) : (

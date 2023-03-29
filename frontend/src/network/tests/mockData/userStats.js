@@ -1,3 +1,5 @@
+import { formatISO } from 'date-fns';
+
 export const newUsersStats = {
   total: 1044,
   beginner: 1034,
@@ -187,4 +189,96 @@ export const osmStatsProject = {
   edits: 123456789,
   latest: '2020-10-05T23:21:22.000Z',
   hashtag: `hotosm-project-1`,
+};
+
+export const userLockedTasksDetails = {
+  tasks: [
+    {
+      taskId: 1997,
+      projectId: 123,
+      taskStatus: 'LOCKED_FOR_MAPPING',
+      lockHolder: 'helnershingthapa',
+      taskHistory: [
+        {
+          historyId: 10764790,
+          taskId: null,
+          action: 'LOCKED_FOR_MAPPING',
+          actionText: null,
+          actionDate: '2023-03-16T16:49:29.977470Z',
+          actionBy: 'helnershingthapa',
+          pictureUrl:
+            'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXQ2Q3c9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--fe41f1b2a5d6cf492a7133f15c81f105dec06ff7/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBPZ2h3Ym1jNkZISmxjMmw2WlY5MGIxOXNhVzFwZEZzSGFXbHBhUT09IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--058ac785867b32287d598a314311e2253bd879a3/unnamed.webp',
+          issues: null,
+        },
+      ],
+      taskAnnotation: [],
+      perTaskInstructions: '',
+      autoUnlockSeconds: 7200,
+      lastUpdated: formatISO(new Date()),
+      numberOfComments: null,
+    },
+  ],
+};
+
+export const userMultipleLockedTasksDetails = {
+  tasks: [
+    {
+      taskId: 1765,
+      projectId: 5871,
+      taskStatus: 'LOCKED_FOR_VALIDATION',
+      lockHolder: 'helnershingthapa',
+      taskHistory: [
+        {
+          historyId: 10764882,
+          taskId: null,
+          action: 'LOCKED_FOR_VALIDATION',
+          actionText: null,
+          actionDate: '2023-03-27T06:04:11.910738Z',
+          actionBy: 'helnershingthapa',
+          pictureUrl:
+            'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXQ2Q3c9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--fe41f1b2a5d6cf492a7133f15c81f105dec06ff7/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBPZ2h3Ym1jNkZISmxjMmw2WlY5MGIxOXNhVzFwZEZzSGFXbHBhUT09IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--058ac785867b32287d598a314311e2253bd879a3/unnamed.webp',
+          issues: null,
+        },
+        {
+          historyId: 10534983,
+          taskId: null,
+          action: 'COMMENT',
+          actionText: 'This is a sample comment.',
+          actionDate: '2020-04-18T12:28:34.889677Z',
+          actionBy: 'commenter',
+          pictureUrl: null,
+          issues: null,
+        },
+      ],
+      taskAnnotation: [],
+      perTaskInstructions: '',
+      autoUnlockSeconds: 7200,
+      lastUpdated: formatISO(new Date()),
+      numberOfComments: null,
+    },
+    {
+      taskId: 1829,
+      projectId: 5871,
+      taskStatus: 'LOCKED_FOR_VALIDATION',
+      lockHolder: 'helnershingthapa',
+      taskHistory: [
+        {
+          historyId: 10764881,
+          taskId: null,
+          action: 'LOCKED_FOR_VALIDATION',
+          actionText: null,
+          actionDate: '2023-03-27T06:04:11.844339Z',
+          actionBy: 'helnershingthapa',
+          pictureUrl:
+            'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXQ2Q3c9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--fe41f1b2a5d6cf492a7133f15c81f105dec06ff7/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBPZ2h3Ym1jNkZISmxjMmw2WlY5MGIxOXNhVzFwZEZzSGFXbHBhUT09IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--058ac785867b32287d598a314311e2253bd879a3/unnamed.webp',
+          issues: null,
+        },
+      ],
+      taskAnnotation: [],
+      perTaskInstructions: '',
+      autoUnlockSeconds: 7200,
+      lastUpdated: '2023-03-27T06:04:11.844339Z',
+      numberOfComments: null,
+    },
+  ],
 };

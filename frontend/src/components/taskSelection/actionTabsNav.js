@@ -25,6 +25,7 @@ export const ActionTabsNav = ({
         className="ttu w-100 barlow-condensed menu-items-container f4 blue-dark nowrap bb b--grey-light fw5 overflow-x-auto"
       >
         <span
+          role="button"
           className={`dib mr4-l mr3 pb2 pointer ${
             activeSection === 'completion' && 'bb b--red bw1'
           }`}
@@ -33,6 +34,7 @@ export const ActionTabsNav = ({
           <FormattedMessage {...messages.completion} />
         </span>
         <span
+          role="button"
           className={`dib mr4-l mr3 pb2 pointer ${
             activeSection === 'instructions' && 'bb b--red bw1'
           }`}
@@ -41,6 +43,7 @@ export const ActionTabsNav = ({
           <FormattedMessage {...messages.instructions} />
         </span>
         <span
+          role="button"
           className={`inline-flex items-center mr4-l mr3 pb2 pointer ${
             activeSection === 'history' && 'bb b--red bw1'
           }`}
@@ -58,6 +61,7 @@ export const ActionTabsNav = ({
         </span>
         {action === 'VALIDATION' && (
           <span
+            role="button"
             className={`dib mr4-l mr3 pb2 pointer ${
               activeSection === 'resources' && 'bb b--red bw1'
             }`}

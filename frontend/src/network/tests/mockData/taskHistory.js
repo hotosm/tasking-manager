@@ -199,3 +199,114 @@ export const lockForValidation = {
     },
   ],
 };
+
+export const submitMappingTask = lockForMapping;
+
+export const submitValidationTask = lockForValidation;
+
+export const userLockedTasks = {
+  lockedTasks: [],
+  projectId: null,
+  taskStatus: null,
+};
+
+export const splitTask = {
+  tasks: [
+    {
+      taskId: 1836,
+      projectId: 5871,
+      taskStatus: 'READY',
+      taskHistory: [
+        {
+          historyId: 10764804,
+          taskId: null,
+          action: 'STATE_CHANGE',
+          actionText: 'READY',
+          actionDate: '2023-03-20T05:16:58.686069Z',
+          actionBy: 'helnershingthapa',
+          pictureUrl:
+            'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXQ2Q3c9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--fe41f1b2a5d6cf492a7133f15c81f105dec06ff7/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBPZ2h3Ym1jNkZISmxjMmw2WlY5MGIxOXNhVzFwZEZzSGFXbHBhUT09IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--058ac785867b32287d598a314311e2253bd879a3/unnamed.webp',
+          issues: null,
+        },
+      ],
+      taskAnnotation: [],
+      perTaskInstructions: '',
+      autoUnlockSeconds: 7200,
+      lastUpdated: '2023-03-20T05:16:58.686069Z',
+      numberOfComments: null,
+    },
+    {
+      taskId: 1837,
+      projectId: 5871,
+      taskStatus: 'READY',
+      taskHistory: [
+        {
+          historyId: 10764813,
+          taskId: null,
+          action: 'STATE_CHANGE',
+          actionText: 'READY',
+          actionDate: '2023-03-20T05:16:58.760333Z',
+          actionBy: 'helnershingthapa',
+          pictureUrl:
+            'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXQ2Q3c9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--fe41f1b2a5d6cf492a7133f15c81f105dec06ff7/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBPZ2h3Ym1jNkZISmxjMmw2WlY5MGIxOXNhVzFwZEZzSGFXbHBhUT09IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--058ac785867b32287d598a314311e2253bd879a3/unnamed.webp',
+          issues: null,
+        },
+      ],
+      taskAnnotation: [],
+      perTaskInstructions: '',
+      autoUnlockSeconds: 7200,
+      lastUpdated: '2023-03-20T05:16:58.760333Z',
+      numberOfComments: null,
+    },
+    {
+      taskId: 1838,
+      projectId: 5871,
+      taskStatus: 'READY',
+      taskHistory: [
+        {
+          historyId: 10764822,
+          taskId: null,
+          action: 'STATE_CHANGE',
+          actionText: 'READY',
+          actionDate: '2023-03-20T05:16:58.832135Z',
+          actionBy: 'helnershingthapa',
+          pictureUrl:
+            'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXQ2Q3c9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--fe41f1b2a5d6cf492a7133f15c81f105dec06ff7/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBPZ2h3Ym1jNkZISmxjMmw2WlY5MGIxOXNhVzFwZEZzSGFXbHBhUT09IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--058ac785867b32287d598a314311e2253bd879a3/unnamed.webp',
+          issues: null,
+        },
+      ],
+      taskAnnotation: [],
+      perTaskInstructions: '',
+      autoUnlockSeconds: 7200,
+      lastUpdated: '2023-03-20T05:16:58.832135Z',
+      numberOfComments: null,
+    },
+    {
+      taskId: 1839,
+      projectId: 5871,
+      taskStatus: 'READY',
+      taskHistory: [
+        {
+          historyId: 10764831,
+          taskId: null,
+          action: 'STATE_CHANGE',
+          actionText: 'READY',
+          actionDate: '2023-03-20T05:16:58.923338Z',
+          actionBy: 'helnershingthapa',
+          pictureUrl:
+            'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXQ2Q3c9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--fe41f1b2a5d6cf492a7133f15c81f105dec06ff7/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBPZ2h3Ym1jNkZISmxjMmw2WlY5MGIxOXNhVzFwZEZzSGFXbHBhUT09IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--058ac785867b32287d598a314311e2253bd879a3/unnamed.webp',
+          issues: null,
+        },
+      ],
+      taskAnnotation: [],
+      perTaskInstructions: '',
+      autoUnlockSeconds: 7200,
+      lastUpdated: '2023-03-20T05:16:58.923338Z',
+      numberOfComments: null,
+    },
+  ],
+};
+
+export const extendTask = {
+  Success: 'Successfully extended task expiry',
+};

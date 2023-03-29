@@ -14,7 +14,12 @@ describe('Contributions', () => {
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: null });
       store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 420, username: 'somebodyWhoHasntContributed', isExpert: true },
+      });
     });
+
     renderWithRouter(
       <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
@@ -23,23 +28,16 @@ describe('Contributions', () => {
       </QueryParamProvider>,
     );
 
-    await screen.findAllByText(/last updated by/i);
-
+    await waitFor(() =>
+      expect(screen.getByText(/Project Specific Mapping Notes/i)).toBeInTheDocument(),
+    );
     await userEvent.click(
       screen.getByRole('button', {
         name: /contributions/i,
       }),
     );
-
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', {
-          name: 'Select tasks mapped by user_3',
-        }),
-      ).toBeInTheDocument(),
-    );
     await userEvent.click(
-      screen.getByRole('button', {
+      await screen.findByRole('button', {
         name: 'Select tasks mapped by user_3',
       }),
     );
@@ -59,23 +57,16 @@ describe('Contributions', () => {
       </QueryParamProvider>,
     );
 
-    await screen.findAllByText(/last updated by/i);
-
+    await waitFor(() =>
+      expect(screen.getByText(/Project Specific Mapping Notes/i)).toBeInTheDocument(),
+    );
     await userEvent.click(
-      screen.getByRole('button', {
+      await screen.findByRole('button', {
         name: /contributions/i,
       }),
     );
-
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', {
-          name: 'Select tasks validated by user_3',
-        }),
-      ).toBeInTheDocument(),
-    );
     await userEvent.click(
-      screen.getByRole('button', {
+      await screen.findByRole('button', {
         name: 'Select tasks validated by user_3',
       }),
     );
@@ -86,7 +77,7 @@ describe('Contributions', () => {
     ).toHaveClass('ba b--blue-dark bw1');
   });
 
-  it('should sort tasks by their relevant options', async () => {
+  it('should sort tasks by their task number', async () => {
     renderWithRouter(
       <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
@@ -95,7 +86,14 @@ describe('Contributions', () => {
       </QueryParamProvider>,
     );
 
-    await screen.findAllByText(/last updated by/i);
+    await waitFor(() =>
+      expect(screen.getByText(/Project Specific Mapping Notes/i)).toBeInTheDocument(),
+    );
+    await userEvent.click(
+      await screen.findByRole('button', {
+        name: /tasks/i,
+      }),
+    );
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -121,7 +119,14 @@ describe('Contributions', () => {
       </QueryParamProvider>,
     );
 
-    await screen.findAllByText(/last updated by/i);
+    await waitFor(() =>
+      expect(screen.getByText(/Project Specific Mapping Notes/i)).toBeInTheDocument(),
+    );
+    await userEvent.click(
+      await screen.findByRole('button', {
+        name: /tasks/i,
+      }),
+    );
     const userQueryText = screen.getByRole('textbox');
     await userEvent.type(userQueryText, 'hello');
     expect(userQueryText).toHaveValue('hello');

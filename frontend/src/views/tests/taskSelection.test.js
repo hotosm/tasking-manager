@@ -147,9 +147,10 @@ describe('Task Selection Page', () => {
       });
     });
     setup();
+    const user = userEvent.setup();
     await screen.findAllByText(/last updated by/i);
     // Selecting a single task that is available for validation
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /Task #5 Aadesh Baral/i,
       }),
@@ -160,7 +161,7 @@ describe('Task Selection Page', () => {
       }),
     ).toBeInTheDocument();
     // Selecting a single task that is available for validation
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /Task #6 Patrik_B/i,
       }),
@@ -171,7 +172,7 @@ describe('Task Selection Page', () => {
       }),
     ).toBeInTheDocument();
     // Unselecting selected tasks one by one
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /Task #5 Aadesh Baral/i,
       }),
@@ -181,7 +182,7 @@ describe('Task Selection Page', () => {
         name: /validate selected task/i,
       }),
     ).toBeInTheDocument();
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /Task #6 Patrik_B/i,
       }),

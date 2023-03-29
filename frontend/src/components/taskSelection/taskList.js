@@ -50,7 +50,7 @@ export function TaskStatus({ status, lockHolder }: Object) {
   );
 }
 
-function TaskItem({
+export function TaskItem({
   data,
   project,
   setZoomedTaskId,
@@ -134,6 +134,7 @@ function TaskItem({
                 width="18px"
                 height="18px"
                 className="pointer hover-blue-grey"
+                role="button"
                 onClick={() => setZoomedTaskId(data.taskId)}
               />
             </div>
