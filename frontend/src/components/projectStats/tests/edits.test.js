@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { EditsStats } from '../edits';
@@ -15,7 +15,7 @@ describe('EditsStats component', () => {
     edits: 310483,
   };
 
-  it('render contents', () => {
+  it('render contents', async () => {
     const { getByText } = render(
       <Provider store={store}>
         <ConnectedIntl>
@@ -24,6 +24,7 @@ describe('EditsStats component', () => {
       </Provider>,
     );
 
+    await waitFor(() => expect(getByText('Changesets')).toBeInTheDocument());
     expect(getByText('Changesets')).toBeInTheDocument();
     expect(getByText('Buildings mapped')).toBeInTheDocument();
     expect(getByText('Km road mapped')).toBeInTheDocument();

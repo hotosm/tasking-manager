@@ -2,6 +2,7 @@ import React from 'react';
 import TestRenderer from 'react-test-renderer';
 import { Provider } from 'react-redux';
 import { IntlProvider } from 'react-intl';
+import { waitFor } from '@testing-library/react';
 
 import {
   ConnectedIntl,
@@ -13,13 +14,13 @@ import { isLangSupported } from '../countries';
 import { store } from '../../store';
 
 describe('getTranslatedMessages', () => {
-  it('with an invalid locale code should return the default locale', () => {
-    expect(typeof getTranslatedMessages('xy')).toBe('object');
-    expect(getTranslatedMessages('xy')).toStrictEqual(getTranslatedMessages('en'));
+  it('with an invalid locale code should return the default locale', async () => {
+    expect(typeof (await getTranslatedMessages('xy'))).toBe('object');
+    expect(await getTranslatedMessages('xy')).toStrictEqual(await getTranslatedMessages('en'));
   });
-  it('with a valid locale code should return a different value than the default locale', () => {
-    expect(getTranslatedMessages('pt')).not.toEqual(getTranslatedMessages('en'));
-    expect(getTranslatedMessages('pt-BR')).not.toEqual(getTranslatedMessages('en'));
+  it('with a valid locale code should return a different value than the default locale', async () => {
+    expect(await getTranslatedMessages('pt')).not.toEqual(await getTranslatedMessages('en'));
+    expect(await getTranslatedMessages('pt-BR')).not.toEqual(await getTranslatedMessages('en'));
   });
 });
 
@@ -45,7 +46,7 @@ test('supportedLocales matches with the languages supported by iso-countries-lan
 
 describe('ConnectedIntl component', () => {
   const { act } = TestRenderer;
-  it('locale and messages are correctly set to "pt-BR"', () => {
+  it('locale and messages are correctly set to "pt-BR"', async () => {
     act(() => {
       store.dispatch({ type: 'SET_LOCALE', locale: 'pt-BR' });
     });
@@ -57,13 +58,13 @@ describe('ConnectedIntl component', () => {
       </Provider>,
     );
     const element = instance.root;
-    expect(element.findByType(IntlProvider).props.locale).toBe('pt');
+    await waitFor(() => expect(element.findByType(IntlProvider).props.locale).toBe('pt'));
     expect(element.findByType(IntlProvider).props.messages).toStrictEqual(
-      getTranslatedMessages('pt-BR'),
+      await getTranslatedMessages('pt-BR'),
     );
   });
 
-  test('locale and messages are correctly set to "es"', () => {
+  test('locale and messages are correctly set to "es"', async () => {
     act(() => {
       store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
     });
@@ -75,9 +76,9 @@ describe('ConnectedIntl component', () => {
       </Provider>,
     );
     const element = instance.root;
-    expect(element.findByType(IntlProvider).props.locale).toBe('es');
+    await waitFor(() => expect(element.findByType(IntlProvider).props.locale).toBe('es'));
     expect(element.findByType(IntlProvider).props.messages).toStrictEqual(
-      getTranslatedMessages('es'),
+      await getTranslatedMessages('es'),
     );
   });
 });

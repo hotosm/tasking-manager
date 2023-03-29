@@ -6,13 +6,15 @@ import { IntlProviders } from '../../../utils/testWithIntl';
 import { ShareButton } from '../shareButton';
 
 describe('test if shareButton', () => {
-  it('render shareButton for project with id 1', () => {
+  it('render shareButton for project with id 1', async () => {
+    const user = userEvent.setup();
     const { container } = render(
       <IntlProviders>
         <ShareButton projectId={1} />
       </IntlProviders>,
     );
     expect(screen.getByText('Share')).toBeInTheDocument();
+    await user.hover(screen.getByText('Share'));
     expect(screen.getByText('Tweet')).toBeInTheDocument();
     expect(screen.getByText('Post on Facebook')).toBeInTheDocument();
     expect(screen.getByText('Share on LinkedIn')).toBeInTheDocument();
