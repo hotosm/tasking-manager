@@ -227,7 +227,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
                       <div className="oval z-1" />
                     )}
                   </div>
-                  <div className="mh2 f6 blue-dark" key={n}>
+                  <div className="mh2 f6 blue-dark" style={{ marginTop: '-2px' }}>
                     <p className="ma0 blue-grey">
                       {n === 0 && (
                         <div className="mt2 dib">
