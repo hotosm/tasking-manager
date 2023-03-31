@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -42,20 +41,25 @@ export function ManagementPageIndex() {
 
 export const ManagementSection = (props) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const isOrgManager = useSelector(
     (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
 
+  useEffect(() => {
+    if (!token) {
+      navigate('/login', {
+        state: {
+          from: location.pathname,
+        },
+      });
+    }
+  }, [location.pathname, navigate, token]);
+
   return (
-    <ReactPlaceholder
-      type="media"
-      rows={10}
-      showLoadingAnimation={true}
-      style={{ padding: '2rem' }}
-      ready={typeof token !== undefined}
-    >
+    <>
       {isOrgManager ||
       userDetails.role === 'ADMIN' ||
       location.pathname.startsWith('/manage/teams/') ||
@@ -77,6 +81,6 @@ export const ManagementSection = (props) => {
           </div>
         </div>
       )}
-    </ReactPlaceholder>
+    </>
   );
 };

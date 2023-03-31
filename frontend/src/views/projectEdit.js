@@ -1,6 +1,6 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
@@ -63,7 +63,6 @@ const doesValidationTeamNotExist = (teams, validationPermission) =>
   teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
 
 export default function ProjectEdit() {
-  const navigate = useNavigate();
   const { id } = useParams();
   useSetTitleTag(`Edit project #${id}`);
   const [errorLanguages, loadingLanguages, languages] = useFetch('system/languages/');
@@ -175,12 +174,6 @@ export default function ProjectEdit() {
     }
   };
   const saveChangesAsync = useAsync(saveChanges);
-
-  useEffect(() => {
-    if (!token) {
-      navigate('/login');
-    }
-  }, [navigate, token]);
 
   if (projectInfo.projectId && !userCanEditProject) {
     return (
