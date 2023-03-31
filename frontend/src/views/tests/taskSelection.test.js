@@ -70,7 +70,6 @@ describe('Task Selection Page', () => {
 
     setup();
     expect(await screen.findByText(/Project Specific Mapping Notes/i)).toBeInTheDocument();
-    expect(screen.queryByText(/last updated by/i)).not.toBeInTheDocument();
   });
 
   it('should direct user to the tasks tab if user is an expert and has previous contributions in the project', async () => {

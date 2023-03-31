@@ -1,6 +1,4 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { format, startOfYear } from 'date-fns';
 import { FormattedMessage } from 'react-intl';
 
@@ -14,8 +12,6 @@ import { FeatureStats } from '../components/teamsAndOrgs/featureStats';
 
 export const Stats = () => {
   useSetTitleTag('Stats');
-  const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.token);
   const [query, setQuery] = useTasksStatsQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
   useEffect(() => {
@@ -28,12 +24,6 @@ export const Stats = () => {
     query,
     query.startDate ? forceUpdated : false,
   );
-
-  useEffect(() => {
-    if (!token) {
-      navigate('/login');
-    }
-  }, [navigate, token]);
 
   return (
     <div className="w-100 cf pv4">
