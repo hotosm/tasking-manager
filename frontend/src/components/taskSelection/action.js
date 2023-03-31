@@ -91,6 +91,11 @@ export function TaskMapAction({
     project.projectId && tasksIds && tasksIds.length === 1,
   );
 
+  const [, , priorityAreas] = useFetch(
+    `projects/${project.projectId}/queries/priority-areas/`,
+    project.projectId !== undefined,
+  );
+
   const contributors = taskHistory?.taskHistory
     ? getTaskContributors(taskHistory.taskHistory, userDetails.username)
     : [];
@@ -395,6 +400,7 @@ export function TaskMapAction({
                                   animateZoom={false}
                                   selected={tasksIds}
                                   showTaskIds={action === 'VALIDATION'}
+                                  priorityAreas={priorityAreas}
                                 />
                               </div>
                             )}
