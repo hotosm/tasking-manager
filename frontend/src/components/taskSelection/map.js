@@ -499,7 +499,7 @@ export const TasksMap = ({
     return (
       <>
         {showTaskIds && hoveredTaskId && (
-          <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2 w-100 h-100">
+          <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2">
             <FormattedMessage {...messages.taskId} values={{ id: hoveredTaskId }} />
           </div>
         )}
