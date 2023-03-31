@@ -1,6 +1,5 @@
 from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
 from backend.models.postgis.licenses import License
-from backend.models.postgis.utils import NotFound
 
 
 class LicenseService:
@@ -11,10 +10,6 @@ class LicenseService:
         :raises: NotFound
         """
         map_license = License.get_by_id(license_id)
-
-        if map_license is None:
-            raise NotFound()
-
         return map_license
 
     @staticmethod
