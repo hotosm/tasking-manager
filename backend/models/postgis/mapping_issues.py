@@ -3,7 +3,6 @@ from backend.models.dtos.mapping_issues_dto import (
     MappingIssueCategoryDTO,
     MappingIssueCategoriesDTO,
 )
-from werkzeug.exceptions import NotFound
 
 
 class MappingIssueCategory(db.Model):
@@ -54,8 +53,6 @@ class MappingIssueCategory(db.Model):
             category_query = category_query.filter_by(archived=False)
 
         results = category_query.all()
-        if len(results) == 0:
-            raise NotFound()
 
         dto = MappingIssueCategoriesDTO()
         for result in results:
