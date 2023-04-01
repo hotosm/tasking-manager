@@ -24,6 +24,10 @@ from backend.models.postgis.organisation import Organisation
 from backend.services.users.authentication_service import AuthenticationService
 from backend.services.interests_service import Interest
 from backend.services.license_service import LicenseService, LicenseDTO
+from backend.services.mapping_issues_service import (
+    MappingIssueCategoryService,
+    MappingIssueCategoryDTO,
+)
 
 
 TEST_USER_ID = 777777
@@ -352,3 +356,11 @@ def create_canned_license(name="test_license") -> int:
     license_dto.plain_text = "test license"
     test_license = LicenseService.create_licence(license_dto)
     return test_license
+
+
+def create_canned_mapping_issue(name="Test Issue") -> int:
+    """"""
+    issue_dto = MappingIssueCategoryDTO()
+    issue_dto.name = name
+    test_issue_id = MappingIssueCategoryService.create_mapping_issue_category(issue_dto)
+    return test_issue_id
