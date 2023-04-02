@@ -6,6 +6,8 @@ from backend.models.postgis.utils import NotFound
 from backend.services.mapping_issues_service import MappingIssueCategoryService
 from backend.services.users.authentication_service import token_auth, tm
 
+ISSUE_NOT_FOUND = "Mapping-issue category not found"
+
 
 class IssuesRestAPI(Resource):
     def get(self, category_id):
@@ -40,7 +42,7 @@ class IssuesRestAPI(Resource):
             return category_dto.to_primitive(), 200
         except NotFound:
             return {
-                "Error": "Mapping-issue category not found",
+                "Error": ISSUE_NOT_FOUND,
                 "SubCode": "NotFound",
             }, 404
         except Exception as e:
@@ -114,7 +116,7 @@ class IssuesRestAPI(Resource):
             return updated_category.to_primitive(), 200
         except NotFound:
             return {
-                "Error": "Mapping-issue category not found",
+                "Error": ISSUE_NOT_FOUND,
                 "SubCode": "NotFound",
             }, 404
         except Exception as e:
@@ -166,7 +168,7 @@ class IssuesRestAPI(Resource):
             return {"Success": "Mapping-issue category deleted"}, 200
         except NotFound:
             return {
-                "Error": "Mapping-issue category not found",
+                "Error": ISSUE_NOT_FOUND,
                 "SubCode": "NotFound",
             }, 404
         except Exception as e:
