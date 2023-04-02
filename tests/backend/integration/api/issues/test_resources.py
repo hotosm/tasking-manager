@@ -162,9 +162,8 @@ class TestIssuesAllAPI(BaseTestCase):
         response_json = response.get_json()
         # test
         self.assertEqual(response.status_code, 200)
-        list = response_json["categories"]
-        self.assertEqual(len(list), 1)
-        self.assertEqual(list[0]["name"], TEST_ISSUE_NAME)
+        self.assertEqual(len(response_json["categories"]), 1)
+        self.assertEqual(response_json["categories"][0]["name"], TEST_ISSUE_NAME)
 
     # post
     def test_create_issue_by_unauthenticated_user_fails(self):
