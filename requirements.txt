@@ -40,7 +40,7 @@ mccabe==0.6.1
 mypy-extensions==1.0.0
 newrelic==8.8.0
 nose==1.3.7
-oauthlib==3.2.0
+oauthlib==3.2.2
 pathspec==0.11.1
 psycopg2==2.8.6
 pycodestyle==2.6.0
