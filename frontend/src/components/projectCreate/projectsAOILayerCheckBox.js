@@ -1,6 +1,6 @@
 import { CheckBoxInput } from '../formInputs';
 import { FormattedMessage } from 'react-intl';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 
 import messages from './messages';
 import statusMessages from '../projectDetail/messages';
@@ -17,11 +17,11 @@ export const ProjectsAOILayerCheckBox = ({ isActive, setActive, disabled, isAoiL
           changeState={() => setActive(!isActive)}
           className="dib mr2 v-mid"
         />
-        <span className="di v-mid" data-tip>
+        <span data-tooltip-id="showProjectAOITooltip" className="di v-mid">
           <FormattedMessage {...messages.showProjectsAOILayer} />
         </span>
         <span className="ml1">{isAoiLoading && <AnimatedLoadingIcon />}</span>
-        <ReactTooltip place="bottom">
+        <Tooltip id="showProjectAOITooltip" place="bottom">
           {disabled ? (
             <FormattedMessage {...messages.disabledAOILayer} />
           ) : (
@@ -46,7 +46,7 @@ export const ProjectsAOILayerCheckBox = ({ isActive, setActive, disabled, isAoiL
               </div>
             </div>
           )}
-        </ReactTooltip>
+        </Tooltip>
       </div>
     </>
   );

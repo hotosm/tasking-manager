@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -24,13 +24,13 @@ export function ShareButton({ projectId }: Object) {
 
   return (
     <>
-      <div className="flex items-center" data-for="shareProject" data-tip="custom show">
+      <div className="flex items-center" data-tooltip-id="shareProjectTooltip">
         <ShareIcon className="pr2 blue-grey" />
         <span className="dn db-ns">
           <FormattedMessage {...messages.share} />
         </span>
       </div>
-      <ReactTooltip delayHide={500} effect="solid" clickable={true} id="shareProject">
+      <Tooltip delayHide={500} clickable={true} id="shareProjectTooltip" place={'top'}>
         <FormattedMessage
           {...messages.shareMessage}
           values={{ id: projectId, site: `${ORG_CODE} Tasking Manager` }}
@@ -58,7 +58,7 @@ export function ShareButton({ projectId }: Object) {
           <LinkedinIcon style={iconStyle} className="blue v-mid pb1 pr2" />
           <FormattedMessage {...messages.shareOnLinkedIn} />
         </div>
-      </ReactTooltip>
+      </Tooltip>
     </>
   );
 }

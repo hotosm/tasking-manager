@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
 
 import messages from '../projectCard/messages';
@@ -29,22 +29,30 @@ export function ProjectListItem({ project }: Object) {
           <FormattedMessage {...messages.percentMapped} values={{ n: project.percentMapped }}>
             {(msg) => (
               <>
-                <div className="w-25-ns w-third fl" data-tip={msg}>
+                <div
+                  className="w-25-ns w-third fl"
+                  data-tooltip-content={msg}
+                  data-tooltip-id={'projectsListPercentMappedTooltip'}
+                >
                   <MappedIcon className="h1 w1 pr2" />
                   {project.percentMapped}%
                 </div>
-                <ReactTooltip place="bottom" />
+                <Tooltip place="bottom" id={'projectsListPercentMappedTooltip'} float={true} />
               </>
             )}
           </FormattedMessage>
           <FormattedMessage {...messages.percentValidated} values={{ n: project.percentValidated }}>
             {(msg) => (
               <>
-                <div className="w-25-ns w-third fl" data-tip={msg}>
+                <div
+                  className="w-25-ns w-third fl"
+                  data-tooltip-content={msg}
+                  data-tooltip-id={'projectsListPercentValidatedTooltip'}
+                >
                   <ValidatedIcon className="h1 w1 pr2" />
                   {project.percentValidated}%
                 </div>
-                <ReactTooltip place="bottom" />
+                <Tooltip place="bottom" id={'projectsListPercentValidatedTooltip'} float={true} />
               </>
             )}
           </FormattedMessage>
@@ -54,11 +62,15 @@ export function ProjectListItem({ project }: Object) {
           >
             {(msg) => (
               <>
-                <div className="w-20-ns w-third fl" data-tip={msg}>
+                <div
+                  className="w-20-ns w-third fl"
+                  data-tooltip-content={msg}
+                  data-tooltip-id={'projectsListTotalContributorsTooltip'}
+                >
                   <UserIcon className="h1 w1 pr2" />
                   {project.totalContributors}
                 </div>
-                <ReactTooltip place="bottom" />
+                <Tooltip place="bottom" id={'projectsListTotalContributorsTooltip'} float={true} />
               </>
             )}
           </FormattedMessage>

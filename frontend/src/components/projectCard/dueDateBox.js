@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import humanizeDuration from 'humanize-duration';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 
 import { ClockIcon } from '../svgIcons';
 import messages from './messages';
@@ -48,7 +48,7 @@ export function DueDateBox({
               ? 'bg-red white'
               : 'bg-tan blue-grey'
           } ${intervalMili ? '' : 'mw4'}`}
-          data-tip={tooltipMsg}
+          data-tooltip-id="dueDateBoxTooltip"
           style={{ paddingTop: '0.375rem', paddingBottom: '0.375rem' }}
         >
           {!isTaskStatusPage ? (
@@ -66,7 +66,7 @@ export function DueDateBox({
             />
           </span>
         </span>
-        {tooltipMsg && <ReactTooltip place="bottom" />}
+        {tooltipMsg && <Tooltip place="bottom" id="dueDateBoxTooltip" content={tooltipMsg} />}
       </>
     );
   } else {

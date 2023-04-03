@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
@@ -18,11 +18,13 @@ describe('ProjectsAOILayerCheckBox', () => {
     expect(screen.getByRole('checkbox').className).toContain('b--grey-light');
     expect(screen.getByRole('checkbox').className).not.toContain('b--red');
     await user.hover(screen.getByText('Show existing projects AoIs'));
-    expect(
-      screen.getByText(
-        "Zoom in to be able to activate the visualization of other projects' areas of interest.",
-      ),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          "Zoom in to be able to activate the visualization of other projects' areas of interest.",
+        ),
+      ).toBeInTheDocument(),
+    );
     await user.click(screen.getByRole('checkbox'));
     expect(testFn).not.toHaveBeenCalled();
   });
@@ -37,9 +39,11 @@ describe('ProjectsAOILayerCheckBox', () => {
     expect(screen.getByRole('checkbox').className).not.toContain('b--grey-light');
     expect(screen.getByRole('checkbox').className).toContain('b--red');
     await user.hover(screen.getByText('Show existing projects AoIs'));
-    expect(
-      screen.getByText("Enable the visualization of the existing projects' areas of interest."),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        screen.getByText("Enable the visualization of the existing projects' areas of interest."),
+      ).toBeInTheDocument(),
+    );
     await user.click(screen.getByRole('checkbox'));
     expect(testFn).toHaveBeenCalled();
   });

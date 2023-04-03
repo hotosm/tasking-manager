@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useIntl, FormattedMessage } from 'react-intl';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 
 import messages from './messages';
 import { CustomButton } from '../button';
@@ -28,7 +28,10 @@ export const DeleteButton = ({ className, onClick, showText = true }: Object) =>
   const intl = useIntl();
   return (
     <CustomButton className={`red bg-transparent ba b--red pv1 ${className}`} onClick={onClick}>
-      <div data-for="Delete" data-tip={!showText ? intl.formatMessage(messages.delete) : ''}>
+      <div
+        data-tooltip-id="Delete"
+        data-tooltip-content={!showText ? intl.formatMessage(messages.delete) : ''}
+      >
         <WasteIcon className="v-mid h1 w1" />
         {showText && (
           <span className="v-mid f4 fw6 ttu barlow-condensed pl2">
@@ -36,7 +39,7 @@ export const DeleteButton = ({ className, onClick, showText = true }: Object) =>
           </span>
         )}
       </div>
-      <ReactTooltip effect="solid" id="Delete" />
+      <Tooltip effect="solid" id="Delete" />
     </CustomButton>
   );
 };

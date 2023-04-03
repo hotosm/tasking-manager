@@ -56,13 +56,17 @@ describe('Appearance of unsaved map changes to be dealt with while mapping', () 
   });
 
   test('when submitting a task', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <QueryClientProviders>
         <ReduxIntlProviders>
           <CompletionTabForMapping project={{ projectId: 123 }} disabled />
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
+    const button = screen.getByRole('button', { name: 'Submit task' });
+    expect(button).toBeDisabled();
+    await user.hover(button);
+    await waitFor(() => expect(screen.getByRole('tooltip')).toBeInTheDocument());
     expect(screen.getByText(messages.unsavedChangesTooltip.defaultMessage)).toBeInTheDocument();
   });
 
@@ -220,7 +224,7 @@ describe('Appearance of unsaved map changes to be dealt with while validating', 
   });
 
   test('when submitting a task', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <QueryClientProviders>
         <ReduxIntlProviders>
           <CompletionTabForValidation
@@ -232,6 +236,10 @@ describe('Appearance of unsaved map changes to be dealt with while validating', 
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
+    const button = screen.getByRole('button', { name: 'Submit task' });
+    expect(button).toBeDisabled();
+    await user.hover(button);
+    await waitFor(() => expect(screen.getByRole('tooltip')).toBeInTheDocument());
     expect(screen.getByText(messages.unsavedChangesTooltip.defaultMessage)).toBeInTheDocument();
   });
 });
