@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import toast from 'react-hot-toast';
 
@@ -55,7 +55,7 @@ describe('CampaignError', () => {
 
 describe('CreateCampaign', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    const { user, history } = renderWithRouter(
       <ReduxIntlProviders>
         <CreateCampaign />
       </ReduxIntlProviders>,
@@ -67,6 +67,7 @@ describe('CreateCampaign', () => {
       name: /cancel/i,
     });
     return {
+      user,
       createButton,
       cancelButton,
       history,
@@ -79,14 +80,15 @@ describe('CreateCampaign', () => {
   });
 
   it('should enable create campaign button when the value is changed', async () => {
-    const { createButton } = setup();
+    const { user, createButton } = setup();
     const inputText = screen.getByRole('textbox');
-    fireEvent.change(inputText, { target: { value: 'New Campaign Name' } });
+    await user.clear(inputText);
+    await user.type(inputText, 'New Campaign Name');
     expect(createButton).toBeEnabled();
   });
 
   it('should navigate to the newly created campaign detail page on creation success', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <CreateCampaign />
       </ReduxIntlProviders>,
@@ -95,10 +97,11 @@ describe('CreateCampaign', () => {
       name: /create campaign/i,
     });
     const inputText = screen.getByRole('textbox');
-    fireEvent.change(inputText, { target: { value: 'New Campaign Name' } });
+    await user.clear(inputText);
+    await user.type(inputText, 'New Campaign Name');
     expect(inputText.value).toBe('New Campaign Name');
     expect(createButton).toBeEnabled();
-    fireEvent.click(createButton);
+    await user.click(createButton);
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledTimes(1);
       expect(router.state.location.pathname).toBe('/manage/campaigns/123');
@@ -107,7 +110,7 @@ describe('CreateCampaign', () => {
 
   it('should display toast with error has occured message', async () => {
     setupFaultyHandlers();
-    createComponentWithMemoryRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <CreateCampaign />
       </ReduxIntlProviders>,
@@ -116,10 +119,11 @@ describe('CreateCampaign', () => {
       name: /create campaign/i,
     });
     const inputText = screen.getByRole('textbox');
-    fireEvent.change(inputText, { target: { value: 'New Campaign Name' } });
+    await user.clear(inputText);
+    await user.type(inputText, 'New Campaign Name');
     expect(inputText.value).toBe('New Campaign Name');
     expect(createButton).toBeEnabled();
-    fireEvent.click(createButton);
+    await user.click(createButton);
     await waitFor(() =>
       expect(screen.getByText(/Failed to create campaign. Please try again./i)).toBeInTheDocument(),
     );
@@ -130,7 +134,7 @@ describe('CreateCampaign', () => {
 
 describe('EditCampaign', () => {
   const setup = () => {
-    const { container, history } = renderWithRouter(
+    const { user, container, history } = renderWithRouter(
       <ReduxIntlProviders>
         <EditCampaign id={123} />
       </ReduxIntlProviders>,
@@ -138,6 +142,7 @@ describe('EditCampaign', () => {
     const inputText = screen.getByRole('textbox');
 
     return {
+      user,
       container,
       inputText,
       history,
@@ -151,9 +156,10 @@ describe('EditCampaign', () => {
   });
 
   it('should display save button when project name is changed', async () => {
-    const { inputText } = setup();
+    const { user, inputText } = setup();
     await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
-    fireEvent.change(inputText, { target: { value: 'Changed Campaign Name' } });
+    await user.clear(inputText);
+    await user.type(inputText, 'Changed Campaign Name');
     const saveButton = screen.getByRole('button', {
       name: /save/i,
     });
@@ -161,9 +167,10 @@ describe('EditCampaign', () => {
   });
 
   it('should also display cancel button when project name is changed', async () => {
-    const { inputText } = setup();
+    const { user, inputText } = setup();
     await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
-    fireEvent.change(inputText, { target: { value: 'Changed Campaign Name' } });
+    await user.clear(inputText);
+    await user.type(inputText, 'Changed Campaign Name');
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
@@ -171,13 +178,14 @@ describe('EditCampaign', () => {
   });
 
   it('should return input text value to default when cancel button is clicked', async () => {
-    const { inputText } = setup();
+    const { user, inputText } = setup();
     await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
-    fireEvent.change(inputText, { target: { value: 'Changed Campaign Name' } });
+    await user.clear(inputText);
+    await user.type(inputText, 'Changed Campaign Name');
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    fireEvent.click(cancelButton);
+    await user.click(cancelButton);
     expect(inputText.value).toBe('Campaign Name 123');
   });
 
@@ -197,14 +205,15 @@ describe('EditCampaign', () => {
   });
 
   it('should hide the save button after campaign edit is successful', async () => {
-    const { inputText } = setup();
+    const { user, inputText } = setup();
     await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
-    fireEvent.change(inputText, { target: { value: 'Changed Campaign Name' } });
+    await user.clear(inputText);
+    await user.type(inputText, 'Changed Campaign Name');
     const saveButton = screen.getByRole('button', { name: /save/i });
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
     const savingLoder = within(saveButton).getByRole('img', {
       hidden: true,
     });
@@ -218,11 +227,12 @@ describe('EditCampaign', () => {
 
   it('should display toast with error has occured message', async () => {
     setupFaultyHandlers();
-    const { inputText } = setup();
+    const { user, inputText } = setup();
     await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
-    fireEvent.change(inputText, { target: { value: 'Changed Campaign Name' } });
+    await user.clear(inputText);
+    await user.type(inputText, 'Changed Campaign Name');
     const saveButton = screen.getByRole('button', { name: /save/i });
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
     await waitFor(() => {
       expect(screen.getByText(/There was an error saving this campaign./i)).toBeInTheDocument();
     });
@@ -231,7 +241,7 @@ describe('EditCampaign', () => {
 
 describe('Delete Campaign', () => {
   const setup = () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <EditCampaign id={123} />
       </ReduxIntlProviders>,
@@ -239,38 +249,39 @@ describe('Delete Campaign', () => {
     const inputText = screen.getByRole('textbox');
 
     return {
+      user,
       inputText,
     };
   };
 
   it('should ask for confirmation when user tries to delete a campaign', async () => {
-    setup();
+    const { user } = setup();
     expect(await screen.findByText('NRCS_Duduwa Mapping')).toBeInTheDocument();
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     expect(screen.getByText('Are you sure you want to delete this campaign?')).toBeInTheDocument();
   });
 
   it('should close the confirmation popup when cancel is clicked', async () => {
-    setup();
+    const { user } = setup();
     expect(await screen.findByText('NRCS_Duduwa Mapping')).toBeInTheDocument();
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    fireEvent.click(cancelButton);
+    await user.click(cancelButton);
     expect(
       screen.queryByText('Are you sure you want to delete this campaign?'),
     ).not.toBeInTheDocument();
   });
 
   it('should direct to campaigns list page on successful deletion of a campaign', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <EditCampaign id={123} />
       </ReduxIntlProviders>,
@@ -279,12 +290,12 @@ describe('Delete Campaign', () => {
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     const dialog = screen.getByRole('dialog');
     const deleteConfirmationButton = within(dialog).getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteConfirmationButton);
+    await user.click(deleteConfirmationButton);
     expect(await screen.findByText('Campaign deleted successfully.')).toBeInTheDocument();
     await waitFor(() => {
       expect(router.state.location.pathname).toBe('/manage/campaigns');
@@ -293,7 +304,7 @@ describe('Delete Campaign', () => {
 
   it('should direct to campaigns list page on successful deletion of a campaign', async () => {
     setupFaultyHandlers();
-    createComponentWithMemoryRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <EditCampaign id={123} />
       </ReduxIntlProviders>,
@@ -302,12 +313,12 @@ describe('Delete Campaign', () => {
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     const dialog = screen.getByRole('dialog');
     const deleteConfirmationButton = within(dialog).getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteConfirmationButton);
+    await user.click(deleteConfirmationButton);
     await waitFor(() => {
       expect(
         screen.getByText(/An error occurred when trying to delete this campaign/i),

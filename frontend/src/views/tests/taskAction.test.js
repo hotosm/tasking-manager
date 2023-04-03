@@ -2,7 +2,6 @@ import '@testing-library/jest-dom';
 import { screen, act, waitFor } from '@testing-library/react';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
-import userEvent from '@testing-library/user-event';
 
 import { MapTask, TaskAction, ValidateTask } from '../taskAction';
 import {
@@ -14,7 +13,7 @@ import { store } from '../../store';
 
 describe('Submitting Mapping Status for a Task', () => {
   const setup = () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <MapTask />
@@ -26,7 +25,7 @@ describe('Submitting Mapping Status for a Task', () => {
       },
     );
 
-    return { router };
+    return { user, router };
   };
 
   it('should stop mapping and direct to tasks selection page', async () => {
@@ -39,7 +38,7 @@ describe('Submitting Mapping Status for a Task', () => {
       });
     });
 
-    const { router } = setup();
+    const { user, router } = setup();
     await waitFor(() => {
       expect(
         screen.getByRole('button', {
@@ -47,7 +46,7 @@ describe('Submitting Mapping Status for a Task', () => {
         }),
       ).toBeInTheDocument();
     });
-    await userEvent.click(screen.getByRole('button', { name: /select another task/i }));
+    await user.click(screen.getByRole('button', { name: /select another task/i }));
     await waitFor(() => expect(router.state.location.pathname).toBe('/projects/123/tasks/'));
   });
 
@@ -69,12 +68,11 @@ describe('Submitting Mapping Status for a Task', () => {
   });
 
   it('should submit task mapping status (YES option) and direct to tasks selection page', async () => {
-    const { router } = setup();
+    const { user, router } = setup();
     const submitBtn = await screen.findByRole('button', {
       name: /submit task/i,
     });
     expect(submitBtn).toBeDisabled();
-    const user = userEvent.setup();
     await user.click(
       screen.getByRole('radio', {
         name: /yes/i,
@@ -86,12 +84,11 @@ describe('Submitting Mapping Status for a Task', () => {
   });
 
   it('should submit task mapping status (NO option) and direct to tasks selection page', async () => {
-    const { router } = setup();
+    const { user, router } = setup();
     const submitBtn = await screen.findByRole('button', {
       name: /submit task/i,
     });
     expect(submitBtn).toBeDisabled();
-    const user = userEvent.setup();
     await user.click(
       screen.getByRole('radio', {
         name: /no/i,
@@ -111,12 +108,11 @@ describe('Submitting Mapping Status for a Task', () => {
       });
     });
 
-    const { router } = setup();
+    const { user, router } = setup();
     const submitBtn = await screen.findByRole('button', {
       name: /submit task/i,
     });
     expect(submitBtn).toBeDisabled();
-    const user = userEvent.setup();
     await user.click(
       screen.getByRole('radio', {
         name: /the imagery is bad/i,
@@ -136,12 +132,11 @@ describe('Submitting Mapping Status for a Task', () => {
       });
     });
 
-    const { router } = setup();
+    const { user, router } = setup();
     const submitBtn = await screen.findByRole('button', {
       name: /submit task/i,
     });
     expect(submitBtn).toBeDisabled();
-    const user = userEvent.setup();
     await user.click(
       screen.getByRole('radio', {
         name: /the imagery is bad/i,
@@ -153,11 +148,11 @@ describe('Submitting Mapping Status for a Task', () => {
   });
 
   it('should split the task and direct to tasks selection page', async () => {
-    const { router } = setup();
+    const { user, router } = setup();
     await screen.findByRole('button', {
       name: /submit task/i,
     });
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /split task/i,
       }),
@@ -182,7 +177,7 @@ describe('Submitting Mapping Status for a Task', () => {
 
 describe('Submitting Validation Status for Tasks', () => {
   const setup = () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ValidateTask />
@@ -194,7 +189,7 @@ describe('Submitting Validation Status for Tasks', () => {
       },
     );
 
-    return { router };
+    return { user, router };
   };
 
   it('should stop validation and direct to tasks selection page', async () => {
@@ -207,7 +202,7 @@ describe('Submitting Validation Status for Tasks', () => {
       });
     });
 
-    const { router } = setup();
+    const { user, router } = setup();
     await waitFor(() => {
       expect(
         screen.getByRole('button', {
@@ -215,17 +210,16 @@ describe('Submitting Validation Status for Tasks', () => {
         }),
       ).toBeInTheDocument();
     });
-    await userEvent.click(screen.getByRole('button', { name: /stop validation/i }));
+    await user.click(screen.getByRole('button', { name: /stop validation/i }));
     await waitFor(() => expect(router.state.location.pathname).toBe('/projects/123/tasks/'));
   });
 
   it('should submit task validation status (YES option) and direct to tasks selection page', async () => {
-    const { router } = setup();
+    const { user, router } = setup();
     const submitBtn = await screen.findByRole('button', {
       name: /submit task/i,
     });
     expect(submitBtn).toBeDisabled();
-    const user = userEvent.setup();
     await user.click(screen.getAllByRole('radio')[0]);
     expect(submitBtn).toBeEnabled();
     await user.click(submitBtn);
@@ -233,12 +227,11 @@ describe('Submitting Validation Status for Tasks', () => {
   });
 
   it('should submit task validation status (NO option) and direct to tasks selection page', async () => {
-    const { router } = setup();
+    const { user, router } = setup();
     const submitBtn = await screen.findByRole('button', {
       name: /submit task/i,
     });
     expect(submitBtn).toBeDisabled();
-    const user = userEvent.setup();
     await user.click(screen.getAllByRole('radio')[1]);
     expect(submitBtn).toBeEnabled();
     await user.click(submitBtn);
@@ -249,7 +242,7 @@ describe('Submitting Validation Status for Tasks', () => {
 
 describe('Tabs in Task Action Page', () => {
   const setup = async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ValidateTask />
@@ -261,24 +254,24 @@ describe('Tabs in Task Action Page', () => {
       },
     );
     await screen.findByRole('button', { name: /submit task/i });
-    return { router };
+    return { user, router };
   };
 
   it('should display project instructions on the instruction tab', async () => {
-    await setup();
-    await userEvent.click(screen.getByRole('button', { name: /instructions/i }));
+    const { user } = await setup();
+    await user.click(screen.getByRole('button', { name: /instructions/i }));
     expect(screen.getByText(/Project Specific Mapping Notes:/i)).toBeInTheDocument();
   });
 
   it('should display task history on the history tab', async () => {
-    await setup();
-    await userEvent.click(screen.getByRole('button', { name: /history/i }));
+    const { user } = await setup();
+    await user.click(screen.getByRole('button', { name: /history/i }));
     expect(screen.getByRole('radio', { name: /comments/i })).toBeChecked();
   });
 
   it('should display resources on the resources tab', async () => {
-    await setup();
-    await userEvent.click(screen.getByRole('button', { name: /resources/i }));
+    const { user } = await setup();
+    await user.click(screen.getByRole('button', { name: /resources/i }));
     expect(screen.getByRole('button', { name: 'Download Tasks Grid' })).toBeInTheDocument();
   });
 });

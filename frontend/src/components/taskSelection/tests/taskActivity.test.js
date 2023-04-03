@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
@@ -42,8 +42,8 @@ describe('TaskHistory', () => {
     lastUpdated: Date.now() - 1e3 * 60 * 60,
     numberOfComments: null,
   };
-  it('renders the task history comments and activities for a given project', () => {
-    renderWithRouter(
+  it('renders the task history comments and activities for a given project', async () => {
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <TaskHistory projectId={2} taskId={15} commentPayload={history} />
       </ReduxIntlProviders>,
@@ -65,7 +65,7 @@ describe('TaskHistory', () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByText('locked for validation 2 hours ago')).not.toBeInTheDocument();
 
-    fireEvent.click(historyRadioButtons[1]); // check activities radio option
+    await user.click(historyRadioButtons[1]); // check activities radio option
     expect(historyRadioButtons[0]).not.toBeChecked();
     expect(historyRadioButtons[2]).not.toBeChecked();
     expect(screen.getByText('marked as more mapping needed 1 minute ago')).toBeInTheDocument();
@@ -73,7 +73,7 @@ describe('TaskHistory', () => {
     expect(screen.queryByText('commented 1 hour ago')).not.toBeInTheDocument();
     expect(screen.queryByText('missing buildings')).not.toBeInTheDocument();
 
-    fireEvent.click(historyRadioButtons[2]); // check All radio option
+    await user.click(historyRadioButtons[2]); // check All radio option
     expect(historyRadioButtons[0]).not.toBeChecked();
     expect(historyRadioButtons[1]).not.toBeChecked();
     expect(screen.getByText('marked as more mapping needed 1 minute ago')).toBeInTheDocument();
@@ -82,13 +82,13 @@ describe('TaskHistory', () => {
     expect(screen.getByText('missing buildings')).toBeInTheDocument();
   });
 
-  it('does not render any task history when not provided', () => {
+  it('does not render any task history when not provided', async () => {
     let history = {
       taskId: 15,
       projectId: 2,
       taskStatus: 'INVALIDATED',
     };
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <TaskHistory projectId={2} taskId={15} commentPayload={history} />
       </ReduxIntlProviders>,
@@ -104,11 +104,11 @@ describe('TaskHistory', () => {
     expect(historyRadioButtons[1]).not.toBeChecked();
     expect(historyRadioButtons[2]).not.toBeChecked();
 
-    fireEvent.click(historyRadioButtons[1]); // check activities radio option
+    await user.click(historyRadioButtons[1]); // check activities radio option
     expect(historyRadioButtons[0]).not.toBeChecked();
     expect(historyRadioButtons[2]).not.toBeChecked();
 
-    fireEvent.click(historyRadioButtons[2]); // check All radio option
+    await user.click(historyRadioButtons[2]); // check All radio option
     expect(historyRadioButtons[0]).not.toBeChecked();
     expect(historyRadioButtons[1]).not.toBeChecked();
   });

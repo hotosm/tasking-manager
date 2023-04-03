@@ -20,18 +20,18 @@ import { store } from '../../../store';
 
 describe('Appeareance of unsaved map changes to be dealt with while mapping', () => {
   test('when splitting a task', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <CompletionTabForMapping disabled />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(screen.getByRole('button', { name: /split task/i }));
+    await user.click(screen.getByRole('button', { name: /split task/i }));
     expect(
       screen.getByRole('heading', {
         name: messages.unsavedChanges.defaultMessage,
       }),
     ).toBeInTheDocument();
-    await userEvent.click(
+    await user.click(
       within(screen.getByRole('dialog')).getByRole('button', {
         name: /close/i,
       }),
@@ -53,12 +53,12 @@ describe('Appeareance of unsaved map changes to be dealt with while mapping', ()
   });
 
   test('when selecting another task', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <CompletionTabForMapping disabled />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /select another task/i,
       }),
@@ -74,13 +74,13 @@ describe('Appeareance of unsaved map changes to be dealt with while mapping', ()
 describe('Miscellaneous modals and prompts', () => {
   test('should display/hide split task error', async () => {
     setupFaultyHandlers();
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <CompletionTabForMapping project={{ projectId: 123 }} tasksIds={[1997]} />
       </ReduxIntlProviders>,
     );
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /split task/i,
       }),
@@ -88,7 +88,7 @@ describe('Miscellaneous modals and prompts', () => {
     await waitFor(() =>
       expect(screen.getByText('It was not possible to split the task')).toBeInTheDocument(),
     );
-    await userEvent.click(
+    await user.click(
       within(screen.getByRole('dialog')).getByRole('button', {
         name: /close/i,
       }),
@@ -98,14 +98,14 @@ describe('Miscellaneous modals and prompts', () => {
 
   test('should prompt the user to read comments', async () => {
     const historyTabSwitchMock = jest.fn();
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <CompletionTabForMapping showReadCommentsAlert historyTabSwitch={historyTabSwitchMock} />
       </ReduxIntlProviders>,
     );
 
     expect(screen.getByText(messages.readTaskComments.defaultMessage)).toBeInTheDocument();
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: messages.readTaskComments.defaultMessage,
       }),
@@ -114,27 +114,27 @@ describe('Miscellaneous modals and prompts', () => {
   });
 
   test('should display/hide help text', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <CompletionTabForMapping showReadCommentsAlert />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(screen.getByLabelText('toggle help'));
+    await user.click(screen.getByLabelText('toggle help'));
     expect(screen.getByText(messages.instructionsSelect.defaultMessage)).toBeInTheDocument();
-    await userEvent.click(screen.getByLabelText('hide instructions'));
+    await user.click(screen.getByLabelText('hide instructions'));
     expect(screen.queryByText(messages.instructionsSelect.defaultMessage)).not.toBeInTheDocument();
   });
 
   test('should display/hide task specific instructions', async () => {
     const instruction = 'this is a sample instruction';
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <CompletionTabForMapping taskInstructions={instruction} />
       </ReduxIntlProviders>,
     );
 
     expect(screen.getByText(instruction)).toBeInTheDocument();
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: messages.taskExtraInfo.defaultMessage,
       }),
@@ -144,7 +144,7 @@ describe('Miscellaneous modals and prompts', () => {
 
   test('should display/hide task specific instructions', async () => {
     const instruction = 'this is a sample instruction';
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <CompletionTabForValidation
           taskInstructions={instruction}
@@ -155,7 +155,7 @@ describe('Miscellaneous modals and prompts', () => {
     );
 
     expect(screen.queryByText(instruction)).not.toBeInTheDocument();
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: messages.taskExtraInfo.defaultMessage,
       }),
@@ -166,18 +166,18 @@ describe('Miscellaneous modals and prompts', () => {
 
 describe('Appeareance of unsaved map changes to be dealt with while validating', () => {
   test('when stopping validation session', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <CompletionTabForValidation disabled validationStatus={{}} tasksIds={[]} />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(screen.getByRole('button', { name: /stop validation/i }));
+    await user.click(screen.getByRole('button', { name: /stop validation/i }));
     expect(
       screen.getByRole('heading', {
         name: messages.unsavedChanges.defaultMessage,
       }),
     ).toBeInTheDocument();
-    await userEvent.click(
+    await user.click(
       within(screen.getByRole('dialog')).getByRole('button', {
         name: /close/i,
       }),
@@ -201,7 +201,7 @@ describe('Appeareance of unsaved map changes to be dealt with while validating',
 
 describe('Completion Tab for Validation', () => {
   it('should update status and comments for multiple tasks', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <CompletionTabForValidation
           project={{ projectId: 123 }}
@@ -214,7 +214,6 @@ describe('Completion Tab for Validation', () => {
         />
       </ReduxIntlProviders>,
     );
-    const user = userEvent.setup();
     await user.click(
       screen.getAllByRole('radio', {
         name: /yes/i,
@@ -246,7 +245,7 @@ describe('Completion Tab for Validation', () => {
   });
 
   it('should display radio to mark all tasks', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <CompletionTabForValidation
           project={{ projectId: 123 }}
@@ -265,7 +264,7 @@ describe('Completion Tab for Validation', () => {
       </ReduxIntlProviders>,
     );
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /submit task/i,
       }),
@@ -277,6 +276,7 @@ describe('Completion Tab for Validation', () => {
 describe('Toggling display of the sidebar', () => {
   it('should call the sidebar toggle function for ID editor', async () => {
     const restartMock = jest.fn();
+    const user = userEvent.setup();
     const context = {
       ui: jest.fn().mockReturnValue({
         restart: restartMock,
@@ -291,7 +291,7 @@ describe('Toggling display of the sidebar', () => {
         <SidebarToggle setShowSidebar={setShowSidebarMock} activeEditor="ID" />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /hide sidebar/i,
       }),
@@ -302,6 +302,7 @@ describe('Toggling display of the sidebar', () => {
 
   it('should call the sidebar toggle function for RAPID editor', async () => {
     const restartMock = jest.fn();
+    const user = userEvent.setup();
     const context = {
       ui: jest.fn().mockReturnValue({
         restart: restartMock,
@@ -316,7 +317,7 @@ describe('Toggling display of the sidebar', () => {
         <SidebarToggle setShowSidebar={setShowSidebarMock} activeEditor="RAPID" />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /hide sidebar/i,
       }),

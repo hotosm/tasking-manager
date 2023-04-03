@@ -1,11 +1,12 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, createMemoryRouter, RouterProvider } from 'react-router-dom';
 import TestRenderer from 'react-test-renderer';
 
 import { store } from '../store';
+import userEvent from '@testing-library/user-event';
 
 export const createComponentWithIntl = (children, props = { locale: 'en' }) => {
   return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);
@@ -16,9 +17,10 @@ export const createComponentWithReduxAndIntl = (children, props = { locale: 'en'
 };
 
 export const renderWithRouter = (ui, { route = '/' } = {}) => {
-  window.history.pushState({}, 'Test page', route);
+  act(() => window.history.pushState({}, 'Test page', route));
 
   return {
+    user: userEvent.setup(),
     ...render(ui, { wrapper: BrowserRouter }),
   };
 };
@@ -41,6 +43,7 @@ export const createComponentWithMemoryRouter = (
   component,
   { route = '/starting/path', entryRoute = route } = {},
 ) => {
+  const user = userEvent.setup();
   const router = createMemoryRouter(
     [
       {
@@ -65,5 +68,5 @@ export const createComponentWithMemoryRouter = (
 
   const { container } = render(<RouterProvider router={router} />);
 
-  return { container, router };
+  return { user, container, router };
 };

@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { ReduxIntlProviders, createComponentWithMemoryRouter } from '../../../utils/testWithIntl';
 import { NotificationResults, NotificationResultsMini } from '../notificationResults';
@@ -10,7 +9,7 @@ import messages from '../messages';
 describe('Mini Notification Results', () => {
   it('should display the refresh button', async () => {
     const retryFnMock = jest.fn();
-    createComponentWithMemoryRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <NotificationResultsMini notifications={notifications} retryFn={retryFnMock} />
       </ReduxIntlProviders>,
@@ -18,7 +17,7 @@ describe('Mini Notification Results', () => {
     const refreshBtn = screen.getByRole('button', {
       name: /refresh/i,
     });
-    await userEvent.click(refreshBtn);
+    await user.click(refreshBtn);
     expect(retryFnMock).toHaveBeenCalledTimes(1);
   });
 
@@ -44,7 +43,7 @@ describe('Notifications Results', () => {
 
   it('should fetch for notifications on clicking the try again button', async () => {
     const retryFnMock = jest.fn();
-    createComponentWithMemoryRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <NotificationResults
           notifications={notifications}
@@ -57,7 +56,7 @@ describe('Notifications Results', () => {
     const retryBtn = screen.getByRole('button', {
       name: /try again/i,
     });
-    await userEvent.click(retryBtn);
+    await user.click(retryBtn);
     expect(retryFnMock).toHaveBeenCalledTimes(1);
   });
 

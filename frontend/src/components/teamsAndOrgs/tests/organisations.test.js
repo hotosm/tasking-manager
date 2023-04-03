@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { screen, fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { FormattedMessage } from 'react-intl';
 import { Provider } from 'react-redux';
 
@@ -171,7 +171,7 @@ describe('OrgsManagement with', () => {
   });
 
   it('filters organisations list by the search query', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <IntlProviders>
         <OrgsManagement
           organisations={orgData.organisations}
@@ -182,19 +182,13 @@ describe('OrgsManagement with', () => {
       </IntlProviders>,
     );
     const textField = screen.getByRole('textbox');
-    fireEvent.change(textField, {
-      target: {
-        value: 'Singapore',
-      },
-    });
+    await user.clear(textField);
+    await user.type(textField, 'Singapore');
     expect(screen.getByRole('heading', { name: 'Singapore Red Cross' })).toHaveTextContent(
       'Singapore Red Cross',
     );
-    fireEvent.change(textField, {
-      target: {
-        value: 'not Singapore',
-      },
-    });
+    await user.clear(textField);
+    await user.type(textField, 'not Singapore');
     expect(screen.queryByRole('heading', { name: 'Singapore Red Cross' })).not.toBeInTheDocument();
     expect(screen.queryByText('No organizations were found.')).toBeInTheDocument();
   });

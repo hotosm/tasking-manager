@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/react';
 
 import { Projects } from '../projects';
@@ -34,12 +33,11 @@ describe('Projects component', () => {
   });
 
   it('should navigate to project creation page on new button click', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <IntlProviders>
         <Projects projects={projects} viewAllEndpoint="/view/all" showAddButton />
       </IntlProviders>,
     );
-    const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: /new/i }));
     await waitFor(() => expect(router.state.location.pathname).toBe('/manage/projects/new/'));
   });
@@ -54,12 +52,11 @@ describe('Projects component', () => {
   });
 
   it('should navigate to manage projects page when view all is clicked ', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <IntlProviders>
         <Projects projects={projects} viewAllEndpoint="/path/to/view/all" />
       </IntlProviders>,
     );
-    const user = userEvent.setup();
     await user.click(
       screen.getByRole('link', {
         name: /view all/i,

@@ -184,12 +184,13 @@ describe('Imagery', () => {
       writeText: jest.fn().mockImplementation(() => Promise.resolve()),
     };
     global.navigator.clipboard = mockClipboard;
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <Imagery value={'wms'} />
       </IntlProviders>,
     );
-    await userEvent.click(screen.getByRole('img'));
+    await user.click(screen.getByRole('img'));
     expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith('wms');
     jest.resetAllMocks();

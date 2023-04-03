@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
-import { screen, fireEvent, waitFor, within, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { screen, waitFor, within, act } from '@testing-library/react';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 import toast from 'react-hot-toast';
@@ -55,7 +54,7 @@ describe('List Teams', () => {
   });
 
   it('should navigate to team detail page on team article click', async () => {
-    const { router, container } = createComponentWithMemoryRouter(
+    const { user, router, container } = createComponentWithMemoryRouter(
       <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ManageTeams />
@@ -65,7 +64,6 @@ describe('List Teams', () => {
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
-    const user = userEvent.setup();
     await user.click(screen.getByRole('heading', { name: /team test/i }));
     await waitFor(() => expect(router.state.location.pathname).toBe('/teams/1/membership/'));
   });
@@ -73,12 +71,11 @@ describe('List Teams', () => {
 
 describe('Create Team', () => {
   const setup = () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <CreateTeam />
       </ReduxIntlProviders>,
     );
-    const user = userEvent.setup();
     const createButton = screen.getByRole('button', {
       name: /create team/i,
     });
@@ -138,14 +135,15 @@ describe('Edit Team', () => {
   });
 
   it('should display save and cancel button when project details are changed', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <EditTeam id={123} />
       </ReduxIntlProviders>,
     );
     const nameInput = screen.getAllByRole('textbox')[0];
     await waitFor(() => expect(nameInput.value).toBe('Team Test'));
-    fireEvent.change(nameInput, { target: { value: 'Changed Team Test' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed Team Test');
     const saveButton = screen.getByRole('button', {
       name: /save/i,
     });
@@ -157,15 +155,15 @@ describe('Edit Team', () => {
   });
 
   it('should hide the save button on successful updation of team details', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <EditTeam id={123} />
       </ReduxIntlProviders>,
     );
-    const user = userEvent.setup();
     const nameInput = screen.getAllByRole('textbox')[0];
     await waitFor(() => expect(nameInput.value).toBe('Team Test'));
-    fireEvent.change(nameInput, { target: { value: 'Changed Team Test' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed Team Test');
     const saveButton = screen.getByRole('button', {
       name: /save/i,
     });
@@ -176,15 +174,15 @@ describe('Edit Team', () => {
 
   it('should display callout alert error when team info cannot be updated', async () => {
     setupFaultyHandlers();
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <EditTeam id={123} />
       </ReduxIntlProviders>,
     );
-    const user = userEvent.setup();
     const nameInput = screen.getAllByRole('textbox')[0];
     await waitFor(() => expect(nameInput.value).toBe('Team Test'));
-    fireEvent.change(nameInput, { target: { value: 'Changed Team Test' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed Team Test');
     const saveButton = screen.getByRole('button', {
       name: /save/i,
     });
@@ -198,8 +196,8 @@ describe('Edit Team', () => {
 });
 
 describe('Delete Team', () => {
-  const setup = () => {
-    const { history } = renderWithRouter(
+  const setup = async () => {
+    const { user, history } = renderWithRouter(
       <ReduxIntlProviders>
         <EditTeam id={123} />
       </ReduxIntlProviders>,
@@ -209,15 +207,16 @@ describe('Delete Team', () => {
       name: /delete/i,
     });
 
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     return {
+      user,
       history,
       deleteButton,
     };
   };
 
   it('should ask for confirmation when user tries to delete a team', async () => {
-    setup();
+    await setup();
     const deleteDialog = screen.getByRole('dialog');
     expect(
       within(deleteDialog).getByRole('heading', {
@@ -227,18 +226,18 @@ describe('Delete Team', () => {
   });
 
   it('should close the confirmation dialog when cancel is clicked', async () => {
-    setup();
+    const { user } = await setup();
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    fireEvent.click(cancelButton);
+    await user.click(cancelButton);
     expect(
       screen.queryByText('Are you sure you want to delete this team?'),
     ).not.toBeInTheDocument();
   });
 
   it('should direct to teams list page on successful deletion of a team', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <EditTeam id={123} />
       </ReduxIntlProviders>,
@@ -250,19 +249,19 @@ describe('Delete Team', () => {
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     const dialog = await screen.findByRole('dialog');
     const deleteConfirmationButton = within(dialog).getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteConfirmationButton);
+    await user.click(deleteConfirmationButton);
     expect(await screen.findByText('Team deleted successfully.')).toBeInTheDocument();
     await waitFor(() => expect(router.state.location.pathname).toBe('/manage/teams'));
   });
 
   it('should display toast message if the team deletion fails', async () => {
     setupFaultyHandlers();
-    createComponentWithMemoryRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <EditTeam id={123} />
       </ReduxIntlProviders>,
@@ -274,12 +273,12 @@ describe('Delete Team', () => {
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     const dialog = await screen.findByRole('dialog');
     const deleteConfirmationButton = within(dialog).getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteConfirmationButton);
+    await user.click(deleteConfirmationButton);
     await waitFor(() =>
       expect(
         screen.getByText(/An error occurred when trying to delete this team./i),

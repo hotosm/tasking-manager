@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { screen, waitFor, render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { MessageAvatar, NotificationCard, NotificationCardMini } from '../notificationCard';
 import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
@@ -22,7 +21,7 @@ describe('Message Avatar', () => {
 describe('Notification Card', () => {
   const fetchNotificationsMock = jest.fn();
   it('should mark the notification as read', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <NotificationCard
           {...notifications.userMessages[0]}
@@ -32,7 +31,7 @@ describe('Notification Card', () => {
       </ReduxIntlProviders>,
     );
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /Mark notification as read/i,
       }),
@@ -42,7 +41,7 @@ describe('Notification Card', () => {
 
   it('should delete the notification', async () => {
     const setSelectedMock = jest.fn();
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <NotificationCard
           {...notifications.userMessages[0]}
@@ -53,7 +52,7 @@ describe('Notification Card', () => {
       </ReduxIntlProviders>,
     );
 
-    await userEvent.click(screen.getAllByRole('button')[1]);
+    await user.click(screen.getAllByRole('button')[1]);
     await waitFor(() => {
       expect(fetchNotificationsMock).toHaveBeenCalledTimes(1);
     });
@@ -62,7 +61,7 @@ describe('Notification Card', () => {
   it('should catch error on deletion error', async () => {
     setupFaultyHandlers();
     const setSelectedMock = jest.fn();
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <NotificationCard
           {...notifications.userMessages[0]}
@@ -73,7 +72,7 @@ describe('Notification Card', () => {
       </ReduxIntlProviders>,
     );
 
-    await userEvent.click(screen.getAllByRole('button')[1]);
+    await user.click(screen.getAllByRole('button')[1]);
     // Error is then consoled
     expect(fetchNotificationsMock).not.toHaveBeenCalled();
   });
@@ -81,7 +80,7 @@ describe('Notification Card', () => {
   it('should open any links in the notification message', async () => {
     global.open = jest.fn();
     const setSelectedMock = jest.fn();
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <NotificationCard
           {...notifications.userMessages[0]}
@@ -91,7 +90,7 @@ describe('Notification Card', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('link', {
         name: 'Sample Team',
       }),
@@ -103,7 +102,7 @@ describe('Notification Card', () => {
     global.open = jest.fn();
 
     const setSelectedMock = jest.fn();
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <NotificationCard
           {...notifications.userMessages[0]}
@@ -113,7 +112,7 @@ describe('Notification Card', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(screen.getByText(/requested to join/i));
+    await user.click(screen.getByText(/requested to join/i));
     // Awaiting portion of the notification message inside the dialog
     await waitFor(() =>
       expect(
@@ -126,18 +125,18 @@ describe('Notification Card', () => {
 describe('Notification Card Mini', () => {
   it('should refetch notifications on closing the dialog', async () => {
     const fetchNotificationsMock = jest.fn();
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <NotificationCardMini {...notifications.userMessages[0]} retryFn={fetchNotificationsMock} />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(screen.getByRole('article'));
+    await user.click(screen.getByRole('article'));
     await waitFor(() =>
       expect(
         screen.getByText(/Access the team management page to accept or reject that request./i),
       ).toBeInTheDocument(),
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /close/i,
       }),

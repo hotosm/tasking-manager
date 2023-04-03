@@ -8,12 +8,13 @@ import { IntlProviders } from '../../../utils/testWithIntl';
 describe('Action Buttons (Mark as read and Deletion)', () => {
   it('should select all notifications under a category', async () => {
     const setIsAllSelectedMock = jest.fn();
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <SelectAllNotifications setIsAllSelected={setIsAllSelectedMock} />
       </IntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /select all notifications/i,
       }),
@@ -23,12 +24,13 @@ describe('Action Buttons (Mark as read and Deletion)', () => {
 
   it('should empty selection upon clearing them', async () => {
     const setSelectedMock = jest.fn();
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <SelectAllNotifications isAllSelected setSelected={setSelectedMock} />
       </IntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /clear selection/i,
       }),

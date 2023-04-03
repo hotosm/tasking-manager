@@ -31,6 +31,7 @@ describe('test if shareButton', () => {
 
   it('render open corresponding window popup', async () => {
     global.open = jest.fn();
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <ShareButton projectId={1} />

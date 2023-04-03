@@ -31,6 +31,7 @@ describe('Action Buttons', () => {
   });
 
   it('should decrement unread count in redux store if all notifications are not selected upon marking notifications as read', async () => {
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -44,7 +45,7 @@ describe('Action Buttons', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /mark as read/i,
       }),
@@ -55,6 +56,7 @@ describe('Action Buttons', () => {
   });
 
   it('should fetch unread count if all notifications are selected upon marking notifications as read', async () => {
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -67,7 +69,7 @@ describe('Action Buttons', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /mark as read/i,
       }),
@@ -78,6 +80,7 @@ describe('Action Buttons', () => {
   });
 
   it('should decrement unread count in redux store if all notifications are not selected upon deleting notifications', async () => {
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -92,7 +95,7 @@ describe('Action Buttons', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /delete/i,
       }),
@@ -103,6 +106,7 @@ describe('Action Buttons', () => {
   });
 
   it('should fetch unread count if all notifications are selected upon deleting notifications', async () => {
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -115,7 +119,7 @@ describe('Action Buttons', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /delete/i,
       }),
@@ -128,6 +132,7 @@ describe('Action Buttons', () => {
   // Error are consoled in all cases of POST error
   it('should catch error when marking multiple selected notifications as read', async () => {
     setupFaultyHandlers();
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -141,7 +146,7 @@ describe('Action Buttons', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /mark as read/i,
       }),
@@ -151,6 +156,7 @@ describe('Action Buttons', () => {
 
   it('should catch error when marking all notifications in a category as read', async () => {
     setupFaultyHandlers();
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -163,7 +169,7 @@ describe('Action Buttons', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /mark as read/i,
       }),
@@ -174,6 +180,7 @@ describe('Action Buttons', () => {
   it('should catch error when deleting multiple selected notifications', async () => {
     act(() => {});
     setupFaultyHandlers();
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -187,7 +194,7 @@ describe('Action Buttons', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /delete/i,
       }),
@@ -197,6 +204,7 @@ describe('Action Buttons', () => {
 
   it('should catch error when deleting all notifications in a category', async () => {
     setupFaultyHandlers();
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -209,7 +217,7 @@ describe('Action Buttons', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /delete/i,
       }),

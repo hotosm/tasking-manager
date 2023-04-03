@@ -9,12 +9,13 @@ test('should copy API key to the clipboard', async () => {
     writeText: jest.fn().mockImplementation(() => Promise.resolve()),
   };
   global.navigator.clipboard = mockClipboard;
+  const user = userEvent.setup();
   render(
     <IntlProviders>
       <APIKeyCard token="validToken" />
     </IntlProviders>,
   );
-  await userEvent.click(screen.getByRole('img'));
+  await user.click(screen.getByRole('img'));
   expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
   expect(navigator.clipboard.writeText).toHaveBeenCalledWith('Token validToken');
   jest.resetAllMocks();
