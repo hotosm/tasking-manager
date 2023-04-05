@@ -1,4 +1,8 @@
 version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@3.1
+
 jobs:
   build:
     working_directory: /home/circleci/app
@@ -94,6 +98,11 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - aws-cli/setup:
+          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile-name: "OIDC-Profile"
+          role-session-name: "backend-deploy"
+          session-duration: "1800"
       - run:
           name: Install modules
           command: |
@@ -101,23 +110,6 @@ jobs:
             sudo apt-get install -y libgeos-dev jq # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
             pip install awscli --upgrade
-      - run:
-          name: Configure AWS Access Key ID
-          command: |
-            aws configure set aws_access_key_id \
-            $AWS_ACCESS_KEY_ID \
-            --profile default
-      - run:
-          name: Configure AWS Secret Access Key
-          command: |
-            aws configure set aws_secret_access_key \
-            $AWS_SECRET_ACCESS_KEY \
-            --profile default
-      - run:
-          name: Configure AWS default region
-          command: |
-            aws configure set region $AWS_REGION \
-            --profile default
       - run:
           name: Get RDS Instance ID
           command: |
@@ -195,27 +187,11 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install modules
-          command: |
-            pip install awscli --upgrade
-      - run:
-          name: Configure AWS Access Key ID
-          command: |
-            aws configure set aws_access_key_id \
-            $AWS_ACCESS_KEY_ID \
-            --profile default
-      - run:
-          name: Configure AWS Secret Access Key
-          command: |
-            aws configure set aws_secret_access_key \
-            $AWS_SECRET_ACCESS_KEY \
-            --profile default
-      - run:
-          name: Configure AWS default region
-          command: |
-            aws configure set region $AWS_REGION \
-            --profile default
+      - aws-cli/setup:
+          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile-name: "OIDC-Profile"
+          role-session-name: "frontend-deploy"
+          session-duration: "1800"
       - run:
           name: Deploy Frontend to S3
           command: |
@@ -227,6 +203,7 @@ jobs:
             aws s3 cp s3://tasking-manager-<< parameters.stack_name >>-react-app s3://tasking-manager-<< parameters.stack_name >>-react-app --recursive --exclude "*" --include "*.html" --metadata-directive REPLACE --cache-control no-cache --content-type text/html
             export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
             aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+
 workflows:
   version: 2
   build-deploy:
@@ -248,7 +225,9 @@ workflows:
             - build
           stack_name: "staging"
           gitsha: $CIRCLE_SHA1
-          context: tasking-manager-staging
+          context:
+            - org-global
+            - tasking-manager-staging
       - frontend_deploy:
           name: frontend-staging
           filters:
@@ -258,7 +237,9 @@ workflows:
                 - staging-test
           requires:
             - build
-          context: tasking-manager-staging
+          context:
+            - org-global
+            - tasking-manager-staging
           stack_name: "staging"
 
       - backend_deploy:
@@ -280,7 +261,9 @@ workflows:
                 - fix/cfn-init-codedeploy
           requires:
             - build
-          context: tasking-manager-staging
+          context:
+            - org-global
+            - tasking-manager-staging
           stack_name: "test"
       - backend_deploy:
           name: teachosm
@@ -334,7 +317,9 @@ workflows:
                 - deployment/hot-tasking-manager
           stack_name: "tm4-production"
           gitsha: $CIRCLE_SHA1
-          context: tasking-manager-tm4-production
+          context:
+            - org-global
+            - tasking-manager-tm4-production
   frontend-production:
     jobs:
       - frontend_deploy:
@@ -345,7 +330,9 @@ workflows:
                 - deployment/hot-tasking-manager-frontend
                 - deployment/hot-tasking-manager
           stack_name: "tm4-production"
-          context: tasking-manager-tm4-production
+          context:
+            - org-global
+            - tasking-manager-tm4-production
 notify:
   webhooks:
     - url: https://api.opsgenie.com/v1/json/circleci?apiKey=$OPSGENIE_API
