@@ -168,7 +168,6 @@ export function TaskSelection({ project }: Object) {
       setMapInit(true);
     }
   }, [
-    lockedTasks,
     dispatch,
     activities,
     mapInit,
