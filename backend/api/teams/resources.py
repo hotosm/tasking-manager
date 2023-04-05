@@ -285,12 +285,13 @@ class TeamsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
-            return {
-                "Error": "User is not a manager for the team",
-                "SubCode": "UserNotTeamManager",
-            }, 401
         try:
+            if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
+                return {
+                    "Error": "User is not a manager for the team",
+                    "SubCode": "UserNotTeamManager",
+                }, 401
+
             TeamService.delete_team(team_id)
             return {"Success": "Team deleted"}, 200
         except NotFound:

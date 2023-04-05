@@ -13,7 +13,7 @@ from backend.models.postgis.statuses import (
     TeamJoinMethod,
     TeamMemberFunctions,
 )
-from backend.api.teams import TEAM_NOT_FOUND
+from backend.api.teams.actions import TEAM_NOT_FOUND
 
 TEST_ADMIN_USERNAME = "Test Admin"
 TEST_MESSAGE = "This is a test message"
