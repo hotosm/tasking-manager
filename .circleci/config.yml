@@ -73,7 +73,7 @@ jobs:
               --with-coverage --cover-erase --cover-package=./backend
             coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
       - store_test_results:
-          path: tests/backend/results
+          path: tests/backend/results/unitresults.xml
       - store_artifacts:
           path: tests/backend/results
       - save_cache:
