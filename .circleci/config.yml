@@ -102,7 +102,7 @@ jobs:
           role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
           profile-name: "OIDC-Profile"
           role-session-name: "backend-deploy"
-          session-duration: "1800"
+          session-duration: "2700"
       - run:
           name: Install modules
           command: |
