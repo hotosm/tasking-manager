@@ -87,18 +87,19 @@ jobs:
             -c "CREATE EXTENSION postgis;"
       - run: pip install --upgrade pip pdm
       - run: pdm config --global python.use_venv False
-      - run: pdm export --prod --without-hashes > requirements.txt
+      - run: pdm export --dev --without-hashes > requirements.txt
       - run: pip install -r requirements.txt
       - run: mkdir --mode 766 -p /tmp/logs
       - run: mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
       - run: find ./tests/backend -name "test*.py" -exec chmod -x {} \;
       - run: echo "export TM_LOG_DIR=/tmp/logs" >> $BASH_ENV
+      - run: coverage erase
       - run:
           name: Run backend functional tests
           command: |
-            nosetests ./tests/backend --with-xunit \
-              --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
-              --with-coverage --cover-erase --cover-package=./backend
+            coverage run --source ./backend -m pytest \
+              --rootdir ./tests/backend \
+              --junit-xml ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml
       - run: coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
       - store_test_results:
           path: tests/backend/results/unitresults.xml
@@ -184,7 +185,7 @@ jobs:
       - run: cd ${CIRCLE_WORKING_DIRECTORY}
       - run: pip install --upgrade pip pdm
       - run: pdm config --global python.use_venv False
-      - run: pdm export --prod --without-hashes > requirements.txt
+      - run: pdm export --dev --without-hashes > requirements.txt
       - run: pip install -r requirements.txt
       - run: mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
       - run: find ./tests/backend -name "test*.py" -exec chmod -x {} \;
@@ -192,9 +193,9 @@ jobs:
       - run:
           name: Run backend tests
           command: |
-            nosetests ./tests/backend --with-xunit \
-              --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
-              --with-coverage --cover-erase --cover-package=./backend
+            coverage run --source ./backend -m pytest \
+              --rootdir ./tests/backend \
+              --junit-xml ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml
       - run: coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
       - store_test_results:
           path: tests/backend/results/unitresults.xml
