@@ -83,6 +83,82 @@ jobs:
             - env
     # The resource_class feature allows configuring CPU and RAM resources for each job. Different resource classes are available for different executors. https://circleci.com/docs/2.0/configuration-reference/#resourceclass
     resource_class: large
+
+  backend-deploy-test:
+    parameters:
+      stack_name:
+        description: "the name of the stack for cfn-config"
+        type: string
+    working_directory: /home/circleci/tasking-manager
+    resource_class: medium
+    docker:
+      - image: cimg/python:3.7
+    steps:
+      - checkout
+      - setup_remote_docker
+      - aws-cli/setup:
+          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile-name: "OIDC-Profile"
+          role-session-name: "backend-deploy"
+          session-duration: "2700"
+      - run:
+          name: Install modules
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libgeos-dev jq # Required for shapely
+      - run:
+          name: Get RDS Instance ID
+          command: |
+            chmod +x .circleci/rdsid.sh
+            RDS_ID=$(./.circleci/rdsid.sh '{"aws:cloudformation:stack-name": "tasking-manager-<< parameters.stack_name >>"}')
+            echo "$RDS_ID"
+      - run:
+          name: Remove last snapshot and backup database
+          no_output_timeout: 15m
+          command: |
+            aws --version
+            DESCRIBE_SNAPSHOT=$(aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest --db-instance-identifier $RDS_ID --output text)
+            NONCE=$(openssl rand -hex 4)
+            echo "export NONCE=$NONCE" >> $BASH_ENV
+            echo "$DESCRIBE_SNAPSHOT"
+      - run:
+          name: Cleanup
+          when: always
+          command: |
+            aws --version
+            DESCRIBE_SNAPSHOT=$(aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-${NONCE} --db-instance-identifier ${RDS_ID} --output text)
+            RDS_ID_NEW=$(./.circleci/rdsid.sh '{"aws:cloudformation:stack-name": "tasking-manager-<< parameters.stack_name >>"}')
+            echo "$RDS_ID_NEW"
+
+  frontend-deploy-test:
+    working_directory: /home/circleci/tasking-manager
+    resource_class: large
+    docker:
+      - image: cimg/node:16.20
+    parameters:
+      stack_name:
+        description: "the name of the stack for cfn-config"
+        type: string
+    steps:
+      - checkout
+      - setup_remote_docker
+      - aws-cli/setup:
+          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile-name: "OIDC-Profile"
+          role-session-name: "frontend-deploy"
+          session-duration: "1800"
+      - run:
+          name: Deploy Frontend to S3
+          command: |
+            cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
+            export TM_ENVIRONMENT=<< parameters.stack_name >>
+            yarn
+            CI=true GENERATE_SOURCEMAP=false yarn build
+            aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-react-app --delete --cache-control max-age=31536000
+            aws s3 cp s3://tasking-manager-<< parameters.stack_name >>-react-app s3://tasking-manager-<< parameters.stack_name >>-react-app --recursive --exclude "*" --include "*.html" --metadata-directive REPLACE --cache-control no-cache --content-type text/html
+            export DISTRIBUTION_ID=$(aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value")
+            aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+
   backend_deploy:
     parameters:
       stack_name:
@@ -175,6 +251,7 @@ jobs:
             then
               aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest
             fi
+
   frontend_deploy:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
@@ -206,133 +283,33 @@ jobs:
 
 workflows:
   version: 2
-  build-deploy:
+
+  circleci-test:
     jobs:
       - build:
-          context: tasking-manager-testing
+          context: org-global
           filters:
             branches:
-              ignore:
-                - /^deployment\/.*/
-      - backend_deploy:
-          name: backend-staging
-          filters:
-            branches:
-              only:
-                - develop
-                - staging-test
-          requires:
-            - build
-          stack_name: "staging"
-          gitsha: $CIRCLE_SHA1
-          context:
-            - org-global
-            - tasking-manager-staging
-      - frontend_deploy:
-          name: frontend-staging
-          filters:
-            branches:
-              only:
-                - develop
-                - staging-test
-          requires:
-            - build
-          context:
-            - org-global
-            - tasking-manager-staging
-          stack_name: "staging"
+              only: staging-test
 
-      - backend_deploy:
-          name: test
-          filters:
-            branches:
-              only:
-                - fix/cfn-init-codedeploy
+      - frontend-deploy-test:
           requires:
-            - build
-          stack_name: "test"
-          gitsha: $CIRCLE_SHA1
-          context: tasking-manager-staging
-      - frontend_deploy:
-          name: test
+            - build 
+          context: org-global
+          stack_name: "staging"
           filters:
             branches:
-              only:
-                - fix/cfn-init-codedeploy
-          requires:
-            - build
-          context:
-            - org-global
-            - tasking-manager-staging
-          stack_name: "test"
-      - backend_deploy:
-          name: teachosm
+              only: staging-test
+
+      - backend-deploy-test:
+          requires: 
+            - build 
+          context: org-global
+          stack_name: "staging"
           filters:
             branches:
-              only:
-                - deployment/teachosm-tasking-manager
-          requires:
-            - build
-          stack_name: "teachosm"
-          gitsha: $CIRCLE_SHA1
-          context: tasking-manager-teachosm
-      - frontend_deploy:
-          name: teachosm
-          filters:
-            branches:
-              only:
-                - deployment/teachosm-tasking-manager
-          requires:
-            - build
-          context: tasking-manager-teachosm
-          stack_name: "teachosm"
-      - backend_deploy:
-          name: assisted
-          filters:
-            branches:
-              only:
-                - deployment/assisted-tasking-manager
-          requires:
-            - build
-          stack_name: "assisted"
-          gitsha: $CIRCLE_SHA1
-          context: tasking-manager-assisted
-      - frontend_deploy:
-          name: assisted
-          filters:
-            branches:
-              only:
-                - deployment/assisted-tasking-manager
-          requires:
-            - build
-          stack_name: "assisted"
-          context: tasking-manager-assisted
-  backend-production:
-    jobs:
-      - backend_deploy:
-          name: backend-production
-          filters:
-            branches:
-              only:
-                - deployment/hot-tasking-manager
-          stack_name: "tm4-production"
-          gitsha: $CIRCLE_SHA1
-          context:
-            - org-global
-            - tasking-manager-tm4-production
-  frontend-production:
-    jobs:
-      - frontend_deploy:
-          name: frontend-production
-          filters:
-            branches:
-              only:
-                - deployment/hot-tasking-manager-frontend
-                - deployment/hot-tasking-manager
-          stack_name: "tm4-production"
-          context:
-            - org-global
-            - tasking-manager-tm4-production
+              only: staging-test
+
 notify:
   webhooks:
     - url: https://api.opsgenie.com/v1/json/circleci?apiKey=$OPSGENIE_API
