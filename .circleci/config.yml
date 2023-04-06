@@ -7,13 +7,13 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-      - image: cimg/python:3.7.14-node
+      - image: cimg/python:3.7-node
         environment:
-          SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
-      - image: cimg/postgres:14.2-postgis
+          SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/tm_test
+      - image: cimg/postgres:14.7-postgis
         environment:
           POSTGRES_USER: taskingmanager
-          POSTGRES_DB: test_tm
+          POSTGRES_DB: tm_test
     steps:
       - checkout
       - setup_remote_docker
@@ -27,6 +27,7 @@ jobs:
       - run:
           name: Configure Postgresql Test database
           command: |
+            echo "User: $POSTGRES_USER ; Database: $POSTGERS_DB"
             sudo apt-get install postgresql-client
             psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
       - run:
@@ -170,7 +171,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
-      - image: cimg/python:3.7.14-node
+      - image: cimg/python:3.7-node
     steps:
       - checkout
       - setup_remote_docker
@@ -256,7 +257,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
     docker:
-      - image: cimg/python:3.7.14-node
+      - image: cimg/python:3.7-node
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"
@@ -293,8 +294,6 @@ workflows:
               only: staging-test
 
       - frontend-deploy-test:
-          requires:
-            - build 
           context: org-global
           stack_name: "staging"
           filters:
@@ -302,8 +301,6 @@ workflows:
               only: staging-test
 
       - backend-deploy-test:
-          requires: 
-            - build 
           context: org-global
           stack_name: "staging"
           filters:
