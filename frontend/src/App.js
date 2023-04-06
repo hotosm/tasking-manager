@@ -5,7 +5,7 @@ import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 
 import ReactPlaceholder from 'react-placeholder';
 import { useMeta } from 'react-meta-elements';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import * as Sentry from '@sentry/react';
 
 import { getUserDetails } from './store/actions/auth';
@@ -76,7 +76,8 @@ function Redirect({ to }) {
 let App = (props) => {
   useMeta({ property: 'og:url', content: process.env.REACT_APP_BASE_URL });
   useMeta({ name: 'author', content: ORG_NAME });
-  const { isLoading } = props;
+  const isLoading = useSelector((state) => state.loader.isLoading);
+  const locale = useSelector((state) => state.preferences.locale);
 
   useEffect(() => {
     // fetch user details endpoint when the user is returning to a logged in session
@@ -167,12 +168,5 @@ let App = (props) => {
     </Sentry.ErrorBoundary>
   );
 };
-
-const mapStateToProps = (state) => ({
-  isLoading: state.loader.isLoading,
-  locale: state.preferences.locale,
-});
-
-App = connect(mapStateToProps)(App);
 
 export default App;
