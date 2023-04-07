@@ -249,7 +249,10 @@ def add_api_endpoints(app):
         NotificationsQueriesCountUnreadAPI,
         NotificationsQueriesPostUnreadAPI,
     )
-    from backend.api.notifications.actions import NotificationsActionsDeleteMultipleAPI
+    from backend.api.notifications.actions import (
+        NotificationsActionsDeleteMultipleAPI,
+        NotificationsActionsMarkAllReadAPI,
+    )
 
     # Users API endpoint
     from backend.api.users.resources import (
@@ -734,6 +737,9 @@ def add_api_endpoints(app):
         NotificationsActionsDeleteMultipleAPI,
         format_url("notifications/delete-multiple/"),
         methods=["DELETE"],
+    )
+    api.add_resource(
+        NotificationsActionsMarkAllReadAPI, format_url("notifications/mark-all-read/")
     )
 
     # Users REST endpoint

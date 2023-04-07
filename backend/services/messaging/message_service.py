@@ -755,6 +755,24 @@ class MessageService:
         return message
 
     @staticmethod
+    def mark_all_messages_read(user_id: int):
+        """Marks all messages as read for the user"""
+        # https://docs.sqlalchemy.org/en/13/orm/query.html#sqlalchemy.orm.query.Query.update
+        Message.query.filter_by(to_user_id=user_id, read=False).update(
+            {Message.read: True},
+            synchronize_session=False,
+        )
+        db.session.commit()
+
+        # Also update the notification count
+        user_notification = Notification.query.filter(
+            Notification.user_id == user_id
+        ).first()
+        if user_notification:
+            user_notification.unread_count = 0
+            user_notification.update()
+
+    @staticmethod
     def get_message_as_dto(message_id: int, user_id: int):
         """Gets the selected message and marks it as read"""
         message = MessageService.get_message(message_id, user_id)

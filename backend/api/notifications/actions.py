@@ -53,3 +53,38 @@ class NotificationsActionsDeleteMultipleAPI(Resource):
                 "Error": "Unable to delete messages",
                 "SubCode": "InternalServerError",
             }, 500
+
+
+class NotificationsActionsMarkAllReadAPI(Resource):
+    @token_auth.login_required
+    def post(self):
+        """
+        Mark all messages as read for logged in user
+        ---
+        tags:
+          - notifications
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+        responses:
+            200:
+                description: Messages marked as read
+            500:
+                description: Internal Server Error
+        """
+        try:
+            MessageService.mark_all_messages_read(token_auth.current_user())
+            return {"Success": "Messages marked as read"}, 200
+        except Exception as e:
+            error_msg = f"MarkAllMessagesRead - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {
+                "Error": "Unable to mark messages as read",
+                "SubCode": "InternalServerError",
+            }, 500
