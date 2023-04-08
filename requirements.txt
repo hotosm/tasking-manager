@@ -4,6 +4,9 @@
 ## -r ci-requirements.txt
 click ~= 8.1
 black ~= 23.3
+mccabe ~= 0.7
+pyflakes ~= 3.0
+pycodestyle ~= 2.10
 flake8 >= 5.0.4, == 5.0.* ; python_version < "3.8"
 flake8 == 6.0.0 ; python_version >= "3.8"
 
@@ -42,15 +45,12 @@ Jinja2==2.11.3
 Mako==1.2.2
 Markdown==3.3.3
 MarkupSafe==1.1.1
-mccabe==0.6.1
 mypy-extensions==1.0.0
 newrelic==8.8.0
 nose==1.3.7
 oauthlib==3.2.0
 pathspec==0.11.1
 psycopg2==2.8.6
-pycodestyle==2.6.0
-pyflakes==2.2.0
 pyparsing==2.4.7
 pyproj==2.6.1.post1
 python-dateutil==2.8.1
