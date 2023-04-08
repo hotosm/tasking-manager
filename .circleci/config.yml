@@ -81,6 +81,8 @@ jobs:
       - image: cimg/python:3.7-node
         environment:
           SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/hot_ci
+          PGDATABASE: hot_ci
+          PGUSER: taskingmanager
       - image: cimg/postgres:14.7-postgis
         environment:
           POSTGRES_USER: taskingmanager
@@ -134,85 +136,6 @@ jobs:
       - store_artifacts:
           path: tests/backend/results
 
-  build:
-    # TODO: Split me into separate Frontend and Backend builds
-    working_directory: /home/circleci/app
-    resource_class: large
-    docker:
-      - image: cimg/python:3.7-node
-        environment:
-          SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
-      - image: cimg/postgres:14.7-postgis
-        environment:
-          POSTGRES_USER: taskingmanager
-          POSTGRES_DB: test_tm
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Install modules
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y libgeos-dev # Required for shapely
-            sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-      - run:
-          name: Configure Postgresql Test database
-          command: |
-            sudo apt-get install postgresql-client
-            psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
-      - run:
-          name: Set folder permissions
-          command: |
-            chown -R circleci:circleci ${CIRCLE_WORKING_DIRECTORY}
-            chmod -R 755 ${CIRCLE_WORKING_DIRECTORY}
-      - restore_cache:
-          keys:
-            - node-{{ .Environment.CACHEVERSION }}-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
-      - run:
-          name: Install requirements
-          command: |
-            # Install NPM packages and build frontend
-            cd ${CIRCLE_WORKING_DIRECTORY}/frontend
-            yarn
-            cd ${CIRCLE_WORKING_DIRECTORY}
-            # Install Python dependencies
-            pip install --upgrade pip
-            pip install -r requirements.txt
-      - run:
-          name: Run backend code checks
-          command: |
-            cd ${CIRCLE_WORKING_DIRECTORY}
-            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/lint
-            black --check manage.py backend tests migrations
-            flake8 manage.py backend tests migrations
-      - run:
-          name: Run frontend tests
-          command: |
-            # JS Unit Tests
-            cd ${CIRCLE_WORKING_DIRECTORY}/frontend
-            CI=true yarn test -w 1
-            CI=true GENERATE_SOURCEMAP=false yarn build
-      - run:
-          name: Run backend tests
-          command: |
-            # Run Python tests
-            cd ${CIRCLE_WORKING_DIRECTORY}
-            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
-            find ./tests/backend -name "test*.py" -exec chmod -x {} \;
-            nosetests ./tests/backend --with-xunit \
-              --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
-              --with-coverage --cover-erase --cover-package=./backend
-            coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
-      - store_test_results:
-          path: tests/backend/results
-      - store_artifacts:
-          path: tests/backend/results
-      - save_cache:
-          key: node-{{ .Environment.CACHEVERSION }}-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
-          paths:
-            - frontend/node_modules
-            - env
-
   backend_deploy:
     parameters:
       stack_name:
@@ -257,7 +180,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
     docker:
-      - image: cimg/python:3.7-node
+      - image: cimg/node:16.20
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"
@@ -296,12 +219,10 @@ workflows:
           context:
             - org-global
             - tasking-manager-tm4-production
-      - build
       - backend_deploy:
           name: backend-production
           stack_name: "tm4-production"
           requires:
-            - build
             - database_snapshot
           gitsha: $CIRCLE_SHA1
           context:
@@ -310,8 +231,6 @@ workflows:
       - frontend_deploy:
           name: frontend-production
           stack_name: "tm4-production"
-          requires:
-            - build
           context:
             - org-global
             - tasking-manager-tm4-production
@@ -321,7 +240,6 @@ workflows:
       and:
         - equal: [ deployment/hot-tasking-manager-frontend, << pipeline.git.branch >> ]
     jobs:
-      - build
       - frontend_deploy:
           stack_name: "tm4-production"
 
@@ -370,19 +288,14 @@ workflows:
       - database-snapshot:
           name: Backup TeachOSM database
           stack_name: "teachosm"
-      - build
       - backend_deploy:
           name: Deploy TeachOSM Backend
           stack_name: "teachosm"
-          requires:
-            - build
           gitsha: $CIRCLECI_SHA1
           context: tasking-manager-teachosm
       - frontend_deploy:
           name: Deploy TeachOSM Frontend
           stack_name: "teachosm"
-          requires:
-            - build
           context: tasking-manager-teachosm
 
   tm-assisted-all:
@@ -393,29 +306,13 @@ workflows:
       - database-snapshot:
           name: Backup TM Assisted database
           stack_name: "assisted"
-      - build
       - backend_deploy:
           name: Deploy TM Assisted Backend
           stack_name: "assisted"
-          requires:
-            - build
           gitsha: $CIRCLECI_SHA1
           context: tasking-manager-assisted
       - frontend_deploy:
           name: Deploy TM Assisted Frontend
           stack_name: "assisted"
-          requires:
-            - build
           context: tasking-manager-assisted
-
-
-  build-only-all:
-    when:
-      not:
-        matches:
-          pattern: "^deployment/.*"
-          value: << pipeline.git.branch >>
-    jobs:
-      - build:
-          context: tasking-manager-testing
 
