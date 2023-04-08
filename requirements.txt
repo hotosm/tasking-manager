@@ -5,7 +5,7 @@
 click ~= 8.1
 black ~= 23.3
 flake8 >= 5.0.4, == 5.0.* ; python_version < "3.8"
-flake8 == 6.0.0
+flake8 == 6.0.0 ; python_version >= "3.8"
 
 alembic==1.4.3
 aniso8601==8.0.0
