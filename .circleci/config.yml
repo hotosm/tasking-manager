@@ -23,7 +23,7 @@ jobs:
       - run:
           name: Get RDS Instance ID
           command: |
-            RDS_ID=$(aws rds describe-db-instances --query 'DBInstances[?contains(TagList[].Key, `aws:cloudformation:stack-name`) && contains(TagList[].Value, `tasking-manager-<< parameters.stack_name >>'`)].[DBInstanceIdentifier]' --output text)
+            RDS_ID=$(aws rds describe-db-instances --query 'DBInstances[?contains(TagList[].Key, `aws:cloudformation:stack-name`) && contains(TagList[].Value, `tasking-manager-<< parameters.stack_name >>`)].[DBInstanceIdentifier]' --output text)
             echo "export RDS_ID=$RDS_ID" >> $BASH_ENV
       - run:
           name: Backup the database
@@ -99,7 +99,7 @@ jobs:
           command: |
             echo "User = $POSTGRES_USER / Database = $POSTGRES_DB"
             sudo apt-get install postgresql-client
-            psql -h localhost -U $POSTGRES_USER $POSTGRES_DB -c "CREATE EXTENSION postgis;"
+            psql -d $SQLALCHEMY_DATABASE_URI -c "CREATE EXTENSION postgis;"
       - run:
           name: Set folder permissions
           command: |
