@@ -96,6 +96,12 @@ jobs:
             sudo apt-get install -y libgeos-dev # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
       - run:
+          name: Install requirements
+          command: |
+            # Install Python dependencies
+            pip install --upgrade pip
+            pip install -r requirements.txt
+      - run:
           name: Run backend code static checks
           command: |
             cd ${CIRCLE_WORKING_DIRECTORY}
@@ -112,12 +118,6 @@ jobs:
           command: |
             chown -R circleci:circleci ${CIRCLE_WORKING_DIRECTORY}
             chmod -R 755 ${CIRCLE_WORKING_DIRECTORY}
-      - run:
-          name: Install requirements
-          command: |
-            # Install Python dependencies
-            pip install --upgrade pip
-            pip install -r requirements.txt
       - run:
           name: Run backend unit tests
           command: |
@@ -160,7 +160,6 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y libgeos-dev jq # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-
       - run:
           name: Download config file
           command: |
