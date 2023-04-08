@@ -293,6 +293,9 @@ workflows:
       - database-snapshot:
           name: Backup production database
           stack_name: "tm4-production"
+          context:
+            - org-global
+            - tasking-manager-tm4-production
       - build
       - backend_deploy:
           name: backend-production
@@ -336,6 +339,9 @@ workflows:
       - database-snapshot:
           name: Backup staging database
           stack_name: "staging"
+          context:
+            - org-global
+            - tasking-manager-staging
       - frontend-tests
       - backend-tests
       - backend_deploy:
