@@ -96,9 +96,15 @@ jobs:
             sudo apt-get install -y libgeos-dev # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
       - run:
+          name: Run backend code static checks
+          command: |
+            cd ${CIRCLE_WORKING_DIRECTORY}
+            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/lint
+            black --check manage.py backend tests migrations
+            flake8 manage.py backend tests migrations
+      - run:
           name: Configure Postgresql Test database
           command: |
-            echo "User = $POSTGRES_USER / Database = $POSTGRES_DB"
             sudo apt-get install postgresql-client
             psql -d $SQLALCHEMY_DATABASE_URI -c "CREATE EXTENSION postgis;"
       - run:
@@ -113,14 +119,7 @@ jobs:
             pip install --upgrade pip
             pip install -r requirements.txt
       - run:
-          name: Run backend code checks
-          command: |
-            cd ${CIRCLE_WORKING_DIRECTORY}
-            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/lint
-            black --check manage.py backend tests migrations
-            flake8 manage.py backend tests migrations
-      - run:
-          name: Run backend tests
+          name: Run backend unit tests
           command: |
             # Run Python tests
             cd ${CIRCLE_WORKING_DIRECTORY}
