@@ -73,19 +73,42 @@ jobs:
             - frontend/node_modules
             - env
 
-  backend-tests:
-    # TODO: Split me into separate Frontend and Backend builds
+  backend-static-tests:
     working_directory: /home/circleci/app
     resource_class: large
     docker:
-      - image: cimg/python:3.7-node
+      - image: cimg/python:3.7
+
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install black and flake8
+          command: |
+            pip install -r requirements.txt
+      - run:
+          name: Run backend code static checks
+          command: |
+            cd ${CIRCLE_WORKING_DIRECTORY}
+            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/lint # TODO: what is this?
+            black --check manage.py backend tests migrations
+            flake8 manage.py backend tests migrations
+
+  backend-unit-tests:
+    working_directory: /home/circleci/app
+    resource_class: large
+    docker:
+
+      - image: cimg/python:3.7
         environment:
           SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/hot_ci
           TM_DB: postgresql://taskingmanager@localhost/hot_ci
+
       - image: cimg/postgres:14.7-postgis
         environment:
           POSTGRES_USER: taskingmanager
           POSTGRES_DB: hot_ci
+
     steps:
       - checkout
       - setup_remote_docker
@@ -96,28 +119,15 @@ jobs:
             sudo apt-get install -y libgeos-dev # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
       - run:
-          name: Install requirements
+          name: Install Python dependencies
           command: |
-            # Install Python dependencies
             pip install --upgrade pip
             pip install -r requirements.txt
-      - run:
-          name: Run backend code static checks
-          command: |
-            cd ${CIRCLE_WORKING_DIRECTORY}
-            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/lint
-            black --check manage.py backend tests migrations
-            flake8 manage.py backend tests migrations
       - run:
           name: Configure Postgresql Test database
           command: |
             sudo apt-get install postgresql-client
             psql -d $SQLALCHEMY_DATABASE_URI -c "CREATE EXTENSION postgis;"
-      - run:
-          name: Set folder permissions
-          command: |
-            chown -R circleci:circleci ${CIRCLE_WORKING_DIRECTORY}
-            chmod -R 755 ${CIRCLE_WORKING_DIRECTORY}
       - run:
           name: Run backend unit tests
           command: |
@@ -258,13 +268,14 @@ workflows:
             - org-global
             - tasking-manager-staging
       - frontend-tests
-      - backend-tests
+      - backend-static-tests
+      - backend-unit-tests
       - backend_deploy:
           name: Deploy development/staging backend
           gitsha: $CIRCLE_SHA1
           stack_name: "staging"
           requires:
-            - backend-tests
+            - backend-unit-tests
           context:
             - org-global
             - tasking-manager-staging
