@@ -42,6 +42,97 @@ jobs:
               exit 125
             fi
 
+  frontend-tests:
+    working_directory: /home/circleci/app
+    resource_class: large
+    docker:
+      - image: cimg/node:16.20
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - node-{{ .Environment.CACHEVERSION }}-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
+      - run:
+          name: Install requirements
+          command: |
+            # Install NPM packages and build frontend
+            cd ${CIRCLE_WORKING_DIRECTORY}/frontend
+            yarn
+      - run:
+          name: Run frontend tests
+          command: |
+            # JS Unit Tests
+            cd ${CIRCLE_WORKING_DIRECTORY}/frontend
+            CI=true yarn test -w 1
+            CI=true GENERATE_SOURCEMAP=false yarn build
+            cd ${CIRCLE_WORKING_DIRECTORY}
+      - save_cache:
+          key: node-{{ .Environment.CACHEVERSION }}-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
+          paths:
+            - frontend/node_modules
+            - env
+
+  backend-tests:
+    # TODO: Split me into separate Frontend and Backend builds
+    working_directory: /home/circleci/app
+    resource_class: large
+    docker:
+      - image: cimg/python:3.7-node
+        environment:
+          SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
+      - image: cimg/postgres:14.7-postgis
+        environment:
+          POSTGRES_USER: taskingmanager
+          POSTGRES_DB: test_tm
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install modules
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libgeos-dev # Required for shapely
+            sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
+      - run:
+          name: Configure Postgresql Test database
+          command: |
+            sudo apt-get install postgresql-client
+            psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
+      - run:
+          name: Set folder permissions
+          command: |
+            chown -R circleci:circleci ${CIRCLE_WORKING_DIRECTORY}
+            chmod -R 755 ${CIRCLE_WORKING_DIRECTORY}
+      - run:
+          name: Install requirements
+          command: |
+            # Install Python dependencies
+            pip install --upgrade pip
+            pip install -r requirements.txt
+      - run:
+          name: Run backend code checks
+          command: |
+            cd ${CIRCLE_WORKING_DIRECTORY}
+            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/lint
+            black --check manage.py backend tests migrations
+            flake8 manage.py backend tests migrations
+      - run:
+          name: Run backend tests
+          command: |
+            # Run Python tests
+            cd ${CIRCLE_WORKING_DIRECTORY}
+            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
+            find ./tests/backend -name "test*.py" -exec chmod -x {} \;
+            nosetests ./tests/backend --with-xunit \
+              --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
+              --with-coverage --cover-erase --cover-package=./backend
+            coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
+      - store_test_results:
+          path: tests/backend/results
+      - store_artifacts:
+          path: tests/backend/results
+
   build:
     # TODO: Split me into separate Frontend and Backend builds
     working_directory: /home/circleci/app
@@ -63,7 +154,6 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y libgeos-dev # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-            pip install awscli --upgrade
       - run:
           name: Configure Postgresql Test database
           command: |
@@ -148,7 +238,6 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y libgeos-dev jq # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-            pip install awscli --upgrade
 
       - run:
           name: Download config file
@@ -232,21 +321,39 @@ workflows:
       - frontend_deploy:
           stack_name: "tm4-production"
 
-  staging-all:
+  development-staging-all:
     when:
-      or:
-        - equal: [ develop, << pipeline.git.branch >> ]
-        - equal: [ staging-test, << pipeline.git.branch >> ]
+      and:
+        - not:
+          matches:
+            pattern: "^deployment/.*"
+            value: << pipeline.git.branch >>
+        - or:
+          - equal: [ develop, << pipeline.git.branch >> ]
+          - equal: [ staging-test, << pipeline.git.branch >> ]
     jobs:
       - database-snapshot:
           name: Backup staging database
           stack_name: "staging"
-      - build
+      - frontend-tests
+      - backend-tests
       - backend_deploy:
+          name: Deploy development/staging backend
+          gitsha: $CIRCLE_SHA1
           stack_name: "staging"
-          gitsha: $CIRCLECI_SHA1
+          requires:
+            - backend-tests
+          context:
+            - org-global
+            - tasking-manager-staging
       - frontend_deploy:
+          name: Deploy development/staging frontend
           stack_name: "staging"
+          requires:
+            - frontend-tests
+          context:
+            - org-global
+            - tasking-manager-staging
 
   teachosm-all:
     when:
@@ -294,31 +401,6 @@ workflows:
             - build
           context: tasking-manager-assisted
 
-  development-staging-all:
-    when:
-      or:
-        - equal: [ develop, << pipeline.git.branch >> ]
-        - equal: [ staging-test, << pipeline.git.branch >> ]
-    jobs:
-      - build:
-          context: tasking-manager-testing
-      - backend_deploy:
-          name: Deploy development/staging backend
-          stack_name: "staging"
-          requires:
-            - build
-          gitsha: $CIRCLE_SHA1
-          context:
-            - org-global
-            - tasking-manager-staging
-      - frontend_deploy:
-          name: Deploy development/staging frontend
-          stack_name: "staging"
-          requires:
-            - build
-          context:
-            - org-global
-            - tasking-manager-staging
 
   build-only-all:
     when:
