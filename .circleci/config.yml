@@ -81,8 +81,7 @@ jobs:
       - image: cimg/python:3.7-node
         environment:
           SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/hot_ci
-          PGDATABASE: hot_ci
-          PGUSER: taskingmanager
+          TM_DB: postgresql://taskingmanager@localhost/hot_ci
       - image: cimg/postgres:14.7-postgis
         environment:
           POSTGRES_USER: taskingmanager
