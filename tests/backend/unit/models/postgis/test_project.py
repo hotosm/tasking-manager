@@ -61,4 +61,7 @@ class TestProject(BaseTestCase):
         # Act
         test_project.set_country_info()
         # Assert
-        self.assertNotEqual(0, len(test_project.country))
+        self.assertNotEqual(
+            0, len(test_project.country), "Nominatim may have given a bad response"
+        )
+        self.assertEqual(["United Kingdom"], test_project.country)

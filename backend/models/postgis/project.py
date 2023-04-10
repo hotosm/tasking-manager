@@ -267,11 +267,18 @@ class Project(db.Model):
             current_app.config["OSM_NOMINATIM_SERVER_URL"], lat, lng
         )
         try:
-            country_info = requests.get(url).json()  # returns a dict
+            response = requests.get(url)
+            response.raise_for_status()
+            country_info = response.json()  # returns a dict
             if country_info["address"].get("country") is not None:
                 self.country = [country_info["address"]["country"]]
-        except (KeyError, AttributeError, requests.exceptions.ConnectionError):
-            pass
+        except (
+            KeyError,
+            AttributeError,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.HTTPError,
+        ) as e:
+            current_app.logger.debug(e, exc_info=True)
 
         self.save()
 
