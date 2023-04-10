@@ -152,7 +152,6 @@ class TestEnvironmentConfig(EnvironmentConfig):
         + f":{POSTGRES_PASSWORD}"
         + f"@{POSTGRES_ENDPOINT}:"
         + f"{POSTGRES_PORT}"
-        + f"/test_{POSTGRES_DB}"
+        + f"/{POSTGRES_DB}"
     )
     LOG_LEVEL = "DEBUG"
-    print(SQLALCHEMY_DATABASE_URI)
