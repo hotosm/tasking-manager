@@ -9,6 +9,7 @@ import NotificationPlaceholder from './notificationPlaceholder';
 import { DeleteNotificationsButton } from './deleteNotificationsButton';
 import { RefreshIcon } from '../svgIcons';
 import { SelectAll } from '../formInputs';
+import { ReadNotificationsButton } from './readNotificationsButton';
 
 export const NotificationResultsMini = (props) => {
   return <NotificationResults {...props} useMiniCard={true} />;
@@ -125,6 +126,12 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn, setPopoutFocus }
               className="dib v-mid mv3 ml2"
             />
             <DeleteNotificationsButton
+              selected={selected}
+              setSelected={setSelected}
+              retryFn={retryFn}
+              unreadCountInSelected={unreadCountInSelected}
+            />
+            <ReadNotificationsButton
               selected={selected}
               setSelected={setSelected}
               retryFn={retryFn}
