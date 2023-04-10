@@ -67,10 +67,6 @@ class ProjectRecommendationService:
         query = (
             query.outerjoin(subquery, Project.id == subquery.c.project_id)
             .filter(Project.status == ProjectStatus.PUBLISHED.value)
-            .filter(
-                Project.total_tasks
-                != Project.tasks_validated + Project.tasks_bad_imagery
-            )  # Only return projects which are not completed
             .group_by(Project.id)
         )
         result = query.all()
@@ -191,15 +187,17 @@ class ProjectRecommendationService:
         :return: list of related projects in the order of similarity
         """
         target_project = Project.query.get(project_id)
-        if not target_project or target_project.status != ProjectStatus.PUBLISHED.value:
+        # Check if the project exists and is published
+        project_is_published = (
+            target_project and target_project.status == ProjectStatus.PUBLISHED.value
+        )
+        if not project_is_published:
             raise NotFound()
-        user = UserService.get_user_by_id(user_id) if user_id else None
 
         projects_df = ProjectRecommendationService.create_project_matrix()
         target_project_df = projects_df[projects_df["id"] == project_id]
 
         dto = ProjectSearchResultsDTO()
-
         # If there is only one project then return empty list as there is no other project to compare
         if projects_df.shape[0] < 2:
             return dto
@@ -207,7 +205,14 @@ class ProjectRecommendationService:
         related_projects = ProjectRecommendationService.get_similar_project_ids(
             projects_df, target_project_df
         )
+
+        user = UserService.get_user_by_id(user_id) if user_id else None
+
         query = ProjectSearchService.create_search_query(user)
+        # Only return projects which are not completed
+        query = query.filter(
+            Project.total_tasks != Project.tasks_validated + Project.tasks_bad_imagery
+        )
 
         # Set the limit to the number of related projects if it is less than the limit
         limit = min(limit, len(related_projects)) if related_projects else 0
