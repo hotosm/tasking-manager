@@ -170,9 +170,10 @@ const NotificationCards = ({
               setIsAllSelected={setIsAllSelected}
             />
           )}
+          {pageOfCards.map((card) => (
             <NotificationCard
               {...card}
-              key={n}
+              key={card.messageId}
               retryFn={retryFn}
               selected={selected}
               setSelected={setSelected}
@@ -186,7 +187,7 @@ const NotificationCards = ({
           .map((card, n) => (
             <NotificationCardMini
               {...card}
-              key={n}
+              key={card.messageId}
               setPopoutFocus={setPopoutFocus}
               retryFn={retryFn}
             />
