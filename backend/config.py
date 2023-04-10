@@ -155,3 +155,4 @@ class TestEnvironmentConfig(EnvironmentConfig):
         + f"/test_{POSTGRES_DB}"
     )
     LOG_LEVEL = "DEBUG"
+    print(SQLALCHEMY_DATABASE_URI)
