@@ -1,0 +1,24 @@
+##
+## Requirements for testing and continuous integration
+## TODO: Split this out into its own requirements file and then include here
+## -r ci-requirements.txt
+##
+## Black
+click ~= 8.1
+mypy-extensions==1.0.0
+pathspec ~= 0.11
+black ~= 23.3
+typed-ast==1.5.4
+typing_extensions==4.5.0
+
+##
+## flake8
+##
+mccabe ~= 0.7
+importlib-metadata ~= 4.2 ; python_version < "3.8"
+pyflakes ~= 2.5 ; python_version < "3.8"
+pyflakes ~= 3.0 ; python_version >= "3.8"
+pycodestyle ~= 2.9 ; python_version < "3.8"
+pycodestyle ~= 2.10 ; python_version >= "3.8"
+flake8 >= 5.0.4, == 5.0.* ; python_version < "3.8"
+flake8 == 6.0.0 ; python_version >= "3.8"

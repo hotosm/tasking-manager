@@ -85,7 +85,7 @@ jobs:
       - run:
           name: Install black and flake8
           command: |
-            pip install -r requirements.txt
+            pip install -r ci-requirements.txt
       - run:
           name: Run backend code static checks
           command: |
