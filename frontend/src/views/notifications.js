@@ -104,6 +104,7 @@ export const NotificationsPage = (props) => {
           loading={loading}
           notifications={notifications}
           retryFn={fetchNotifications}
+          inboxQuery={inboxQuery}
         />
         <div className="flex justify-end mw8">
           <Paginator

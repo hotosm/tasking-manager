@@ -40,6 +40,24 @@ export default defineMessages({
     id: 'notifications.markAsRead',
     defaultMessage: 'Mark as read',
   },
+  selectAll: {
+    id: 'notifications.selectAll',
+    defaultMessage:
+      'Select all {count} notifications {activeTab, select, all {} other {in {activeTab}}}',
+  },
+  allNotificationsSelected: {
+    id: 'notifications.allNotificationsSelected',
+    defaultMessage:
+      'All {count} notifications {activeTab, select, all {} other {in {activeTab}}} are selected. ',
+  },
+  allPageNotificationsSelected: {
+    id: 'notifications.allPageNotificationsSelected',
+    defaultMessage: 'All notifications on this page are selected.',
+  },
+  clearSelection: {
+    id: 'notifications.clearSelection',
+    defaultMessage: 'Clear selection',
+  },
   errorLoadingTheXForY: {
     id: 'notifications.navFilters.error',
     defaultMessage: 'Error loading the {xWord} for {yWord}',

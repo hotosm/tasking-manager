@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
@@ -10,6 +10,7 @@ import { DeleteNotificationsButton } from './deleteNotificationsButton';
 import { RefreshIcon } from '../svgIcons';
 import { SelectAll } from '../formInputs';
 import { ReadNotificationsButton } from './readNotificationsButton';
+import { SelectAllNotifications } from './selectAllNotifications';
 
 export const NotificationResultsMini = (props) => {
   return <NotificationResults {...props} useMiniCard={true} />;
@@ -25,6 +26,7 @@ export const NotificationResults = ({
   useMiniCard,
   liveUnreadCount,
   setPopoutFocus,
+  inboxQuery,
 }) => {
   const stateNotifications = notifications.userMessages;
 
@@ -85,6 +87,8 @@ export const NotificationResults = ({
             useMiniCard={useMiniCard}
             retryFn={retryFn}
             setPopoutFocus={setPopoutFocus}
+            totalNotifications={notifications.pagination?.total}
+            inboxQuery={inboxQuery}
           />
         </ReactPlaceholder>
       </div>
@@ -99,8 +103,27 @@ export const NotificationResults = ({
   );
 };
 
-const NotificationCards = ({ pageOfCards, useMiniCard, retryFn, setPopoutFocus }) => {
+const NotificationCards = ({
+  pageOfCards,
+  useMiniCard,
+  retryFn,
+  setPopoutFocus,
+  totalNotifications,
+  inboxQuery,
+}) => {
   const [selected, setSelected] = useState([]);
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  useEffect(() => {
+    setSelected([]);
+    setIsAllSelected(false);
+  }, [inboxQuery?.types]);
+
+  useEffect(() => {
+    if (selected.length !== 10) {
+      setIsAllSelected(false);
+    }
+  }, [selected]);
 
   if (pageOfCards.length === 0) {
     return (
@@ -118,7 +141,7 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn, setPopoutFocus }
     <>
       {!useMiniCard && (
         <>
-          <div className="mb2 ph3">
+          <div className="mb2 ph3 flex gap-1 items-center">
             <SelectAll
               allItems={pageOfCards.map((message) => message.messageId)}
               setSelected={setSelected}
@@ -138,7 +161,15 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn, setPopoutFocus }
               unreadCountInSelected={unreadCountInSelected}
             />
           </div>
-          {pageOfCards.map((card, n) => (
+          {selected.length === 10 && totalNotifications > 10 && (
+            <SelectAllNotifications
+              inboxQuery={inboxQuery}
+              totalNotifications={totalNotifications}
+              setSelected={setSelected}
+              isAllSelected={isAllSelected}
+              setIsAllSelected={setIsAllSelected}
+            />
+          )}
             <NotificationCard
               {...card}
               key={n}
