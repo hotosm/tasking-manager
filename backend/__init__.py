@@ -66,6 +66,7 @@ def create_app(env="backend.config.EnvironmentConfig"):
 
     # Connect to database
     app.logger.debug("Connecting to the database")
+    app.logger.debug(f"Database Credentials: {EnvironmentConfig.SQLALCHEMY_DATABASE_URI}") 
     db.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)

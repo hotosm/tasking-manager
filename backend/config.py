@@ -152,6 +152,6 @@ class TestEnvironmentConfig(EnvironmentConfig):
         + f":{POSTGRES_PASSWORD}"
         + f"@{POSTGRES_ENDPOINT}:"
         + f"{POSTGRES_PORT}"
-        + f"/{POSTGRES_DB}"
+        + f"/test_{POSTGRES_DB}"
     )
     LOG_LEVEL = "DEBUG"
