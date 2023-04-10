@@ -23,7 +23,6 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y libgeos-dev # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-            pip install awscli --upgrade
       - run:
           name: Configure Postgresql Test database
           command: |
@@ -109,7 +108,6 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y libgeos-dev jq # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-            pip install awscli --upgrade
       - run:
           name: Get RDS Instance ID
           command: |
