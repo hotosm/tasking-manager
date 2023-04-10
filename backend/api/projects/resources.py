@@ -1267,11 +1267,16 @@ class ProjectQueriesRelatedProjectsAPI(Resource):
               required: true
               type: integer
               default: 1
+            - in: query
+              name: limit
+              type: integer
+              description: Number of related projects to return
+              default: 4
         responses:
             200:
                 description: Related projects
             404:
-                description: Project not found
+                description: Project not found or project is not published
             500:
                 description: Internal Server Error
         """
@@ -1286,7 +1291,10 @@ class ProjectQueriesRelatedProjectsAPI(Resource):
             )
             return projects_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
+            return {
+                "Error": "Project Not Found or Project is not published",
+                "SubCode": "NotFound",
+            }, 404
         except Exception as e:
             error_msg = f"RelatedProjects GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
