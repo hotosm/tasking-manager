@@ -335,4 +335,4 @@ workflows:
             - tasking-manager-tm4-production
 notify:
   webhooks:
-    - url: https://api.opsgenie.com/v1/json/circleci?apiKey=$OPSGENIE_API
+    - url: https://api.opsgenie.com/v1/json/circleci?apiKey=${OPSGENIE_API}
