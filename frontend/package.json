@@ -84,11 +84,11 @@
     "patch-id": "bash -c \"cp patch/imagery.min.json public/static/id/data\"",
     "patch-rapid": "bash -c \"cp patch/rapid-imagery.min.json public/static/rapid/data/imagery.min.json\"",
     "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
-    "start": "npm run preparation && npm run copy-static && npm run patch-id && npm run patch-rapid && react-scripts start",
-    "build": "npm run preparation && npm run update-static && npm run patch-id && npm run patch-rapid && react-scripts build && npm run sentry:sourcemaps",
+    "start": "npm run preparation && npm run copy-static && npm run patch-id && npm run patch-rapid && craco start",
+    "build": "npm run preparation && npm run update-static && npm run patch-id && npm run patch-rapid && craco build && npm run sentry:sourcemaps",
     "prettier": "prettier --write 'src/**/*.js'",
     "lint": "eslint src",
-    "test": "npm run lint && react-scripts test --env=jsdom",
+    "test": "npm run lint && craco test --env=jsdom",
     "coverage": "npm run test -- --coverage --watchAll=false",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "sentry:sourcemaps": "if sentry-cli info; then sentry-cli sourcemaps inject --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build && sentry-cli sourcemaps upload --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build; fi"
@@ -110,6 +110,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@craco/craco": "^7.1.0",
     "@sentry/cli": "^2.28.6",
     "@tanstack/eslint-plugin-query": "^4.29.8",
     "@testing-library/jest-dom": "^5.16.5",
@@ -119,7 +120,7 @@
     "jest-canvas-mock": "^2.5.2",
     "msw": "^1.3.2",
     "prettier": "^2.8.8",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "^5.0.1",
     "react-select-event": "^5.5.1",
     "react-test-renderer": "^18.2.0",
     "source-map-explorer": "^2.5.3"
