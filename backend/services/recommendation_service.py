@@ -162,9 +162,14 @@ class ProjectRecommendationService:
 
         return similar_projects
 
+    # This function is cached so that the matrix is not calculated every time
+    # as it is expensive and not changing often
     @staticmethod
-    def create_project_matrix():
+    @cached(cache=related_projects_cache)
+    def create_project_matrix(target_project=None):
         """Creates project matrix that is required to calculate the similarity
+        :param target_project: target project id (not used).
+        This is required to reset the cache when a new project is published
         :return: project matrix data frame with encoded columns
         """
         all_projects = ProjectRecommendationService.get_all_published_projects()
@@ -177,11 +182,11 @@ class ProjectRecommendationService:
         return all_projects_df
 
     @staticmethod
-    @cached(cache=related_projects_cache)
     def get_related_projects(
         project_id, user_id=None, preferred_locale="en", limit=4
     ) -> ProjectSearchResultsDTO:
-        """Gets related projects
+        """Get related projects based on the given project ID.
+        ----------------------------------------
         :param project_id: project id
         :param preferred_locale: preferred locale
         :return: list of related projects in the order of similarity
@@ -196,6 +201,10 @@ class ProjectRecommendationService:
 
         projects_df = ProjectRecommendationService.create_project_matrix()
         target_project_df = projects_df[projects_df["id"] == project_id]
+        if target_project_df.empty:
+            # If the target project is not in the projects_df then it means it is published
+            # but not yet in the cache. So we need to update the cache
+            projects_df = ProjectRecommendationService.create_project_matrix(target_project=project_id)
 
         dto = ProjectSearchResultsDTO()
         # If there is only one project then return empty list as there is no other project to compare
