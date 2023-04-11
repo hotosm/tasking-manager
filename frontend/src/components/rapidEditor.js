@@ -74,7 +74,6 @@ export default function RapidEditor({
       RapiDContext.embed(true)
         .assetPath('/static/rapid/')
         .locale(locale)
-        .setsDocumentTitle(false)
         .containerNode(document.getElementById('rapid-container'));
       // init the ui or restart if it was loaded previously
       if (RapiDContext.ui() !== undefined) {
