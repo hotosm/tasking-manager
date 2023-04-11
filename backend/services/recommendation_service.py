@@ -204,7 +204,9 @@ class ProjectRecommendationService:
         if target_project_df.empty:
             # If the target project is not in the projects_df then it means it is published
             # but not yet in the cache. So we need to update the cache
-            projects_df = ProjectRecommendationService.create_project_matrix(target_project=project_id)
+            projects_df = ProjectRecommendationService.create_project_matrix(
+                target_project=project_id
+            )
 
         dto = ProjectSearchResultsDTO()
         # If there is only one project then return empty list as there is no other project to compare
