@@ -92,7 +92,7 @@ export default function RapidEditor({
             nameNode.textContent = intl.formatMessage(messages.gpxNameAttribute, {
               projectId: projectId[0],
             });
-            RapiDContext.layers().layer('data').geojson(gpx(gpxData));
+            RapiDContext.scene().layers.get('custom-data').geojson(gpx(gpxData));
           })
           .catch((error) => {
             console.error('Error loading GPX data');
