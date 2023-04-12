@@ -631,7 +631,7 @@ const Resources = {
       LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
       Port: 443,
       Protocol: 'HTTPS',
-      SslPolicy: 'ELBSecurityPolicy-FS-1-2-2019-08'
+      SslPolicy: 'ELBSecurityPolicy-TLS13-1-2-2021-06'
     }
   },
   TaskingManagerLoadBalancerHTTPListener: {
