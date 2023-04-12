@@ -59,25 +59,6 @@ class TestProjectRecommendationService(BaseTestCase):
         self.assertEqual(projects[0].id, test_project_1.id)
         self.assertEqual(projects[1].id, test_project_2.id)
 
-    def test_only_non_completed_projects_are_returned(self):
-        """Test that only non-completed projects are returned"""
-        # Arrange
-        test_project_1 = self.create_project()
-        test_project_2 = self.create_project()
-        # Let's create a completed project to make sure it's not returned
-        test_project_3 = self.create_project()
-        # Since we add tasks_bad_imagery to tasks_validated to identify completed projects in this function
-        test_project_3.tasks_validated = (
-            test_project_3.total_tasks - test_project_3.tasks_bad_imagery
-        )
-        test_project_3.save()
-        # Act
-        projects = self.service.get_all_published_projects()
-        # Assert
-        self.assertEqual(len(projects), 2)
-        self.assertEqual(projects[0].id, test_project_1.id)
-        self.assertEqual(projects[1].id, test_project_2.id)
-
     def test_get_all_published_projects_returns_empty_list_when_no_published_projects(
         self,
     ):

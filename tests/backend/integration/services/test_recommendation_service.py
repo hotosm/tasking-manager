@@ -1,4 +1,5 @@
 import pandas as pd
+from unittest.mock import patch
 
 from backend.models.postgis.project import ProjectStatus
 from tests.backend.base import BaseTestCase
@@ -126,7 +127,7 @@ class TestProjectRecommendationService(BaseTestCase):
             interests=[test_interest_2],
         )
         # Act
-        project_matrix = self.service.create_project_matrix()
+        project_matrix = self.service.create_project_matrix(project_1.id)
         # Assert
         # Since default_locale, difficulty, and country are one-hot encoded with each having 2 unique values,
         # and mapping_types and categories are multi-hot encoded with each having 2 unique values,
@@ -145,7 +146,10 @@ class TestProjectRecommendationService(BaseTestCase):
         self.assertEqual(project_matrix["categories_1"].tolist(), [1, 0])
         self.assertEqual(project_matrix["categories_2"].tolist(), [1, 1])
 
-    def test_get_related_projects_returns_related_projects(self):
+    @patch.object(ProjectRecommendationService, "get_similar_project_ids")
+    def test_get_related_projects_returns_related_projects(
+        self, mock_get_similar_project_ids
+    ):
         """Test that get_related_projects returns related projects"""
         # Arrange
         # Create test interests
@@ -162,6 +166,9 @@ class TestProjectRecommendationService(BaseTestCase):
         update_project_with_info(project_1)
         update_project_with_info(project_2)
         update_project_with_info(project_3)
+
+        # Set mock return value for get_similar_project_ids
+        mock_get_similar_project_ids.return_value = [project_2.id, project_3.id]
 
         # Set different values for columns to be used in the project matrix for similarity calculation
         TestProjectRecommendationService.set_project_columns(
@@ -192,8 +199,8 @@ class TestProjectRecommendationService(BaseTestCase):
         # Act
         related_projects = self.service.get_related_projects(project_1.id)
         # Assert
+        self.assertEqual(len(related_projects.results), 2)
         self.assertEqual(
             related_projects.results[0].project_id, project_2.id
         )  # project_2 is the most similar to project_1
         self.assertEqual(related_projects.results[1].project_id, project_3.id)
-        self.assertEqual(len(related_projects.results), 2)

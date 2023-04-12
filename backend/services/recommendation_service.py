@@ -207,6 +207,7 @@ class ProjectRecommendationService:
             projects_df = ProjectRecommendationService.create_project_matrix(
                 target_project=project_id
             )
+            target_project_df = projects_df[projects_df["id"] == project_id]
 
         dto = ProjectSearchResultsDTO()
         # If there is only one project then return empty list as there is no other project to compare
