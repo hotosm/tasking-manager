@@ -775,8 +775,7 @@ const Resources = {
       },
       HostedZoneId: 'Z2O929GW6VWG99',
     }
-  }
-
+  },
   TaskingManagerDNSEntries: {
     Type: "AWS::Route53::RecordSetGroup",
     Condition: "IsHOTOSMUrl",
