@@ -767,13 +767,40 @@ const Resources = {
     Type: 'AWS::Route53::RecordSet',
     Condition: 'IsHOTOSMUrl',
     Properties: {
-      Name: cf.ref('TaskingManagerURL'),
+      Name: 't0.hotosm.org',
       Type: 'A',
       AliasTarget: {
         DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
         HostedZoneId: 'Z2FDTNDATAQYW2'
       },
       HostedZoneId: 'Z2O929GW6VWG99',
+    }
+  }
+
+  TaskingManagerDNSEntries: {
+    Type: "AWS::Route53::RecordSetGroup",
+    Condition: "IsHOTOSMUrl",
+    Properties: {
+      Comment: "DNS records pointing to CDN Frontend",
+      HostedZoneId: 'Z2O929GW6VWG99', // This is hotosm.org hosted Zone ID on Route53
+      RecordSets: [
+        {
+          Name: cf.ref('TaskingManagerURL'),
+          Type: 'A',
+          AliasTarget: {
+            DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
+            HostedZoneId: 'Z2FDTNDATAQYW2' // TODO: This is defined in the AWS Documentation
+          }
+        },
+        {
+          Name: cf.ref('TaskingManagerURL'),
+          Type: 'AAAA',
+          AliasTarget: {
+            DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
+            HostedZoneId: 'Z2FDTNDATAQYW2' // TODO: This is defined in the AWS Documentation
+          },
+        }
+      ]
     }
   }
 };
