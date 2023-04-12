@@ -62,7 +62,7 @@ export default function RapidEditor({
     if (session && locale && RapiD && RapiDContext) {
       // if presets is not a populated list we need to set it as null
       try {
-        if (presets.length) {
+        if (presets && presets.length) {
           window.iD.presetManager.addablePresetIDs(presets);
         } else {
           window.iD.presetManager.addablePresetIDs(null);
