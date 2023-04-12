@@ -431,11 +431,6 @@ const Resources = {
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3 manage.py db upgrade',
         'echo "------------------------------------------------------------"',
-        'pushd /home/ubuntu',
-        'wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install',
-        'chmod +x ./install && sudo ./install auto',
-        'sudo systemctl start codedeploy-agent',
-        'popd',
         cf.sub('export NEW_RELIC_LICENSE_KEY="${NewRelicLicense}"'),
         cf.sub('export TM_SENTRY_BACKEND_DSN="${SentryBackendDSN}"'),
         'export NEW_RELIC_ENVIRONMENT=$TM_ENVIRONMENT',
@@ -460,7 +455,6 @@ const Resources = {
         }]
       },
       ManagedPolicyArns: [
-          'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy',
           'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy',
           'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
       ],
