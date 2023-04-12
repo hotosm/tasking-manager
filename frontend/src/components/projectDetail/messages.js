@@ -313,6 +313,6 @@ export default defineMessages({
   },
   noRelatedProjectsFound: {
     id: 'project.noRelatedProjectsFound',
-    defaultMessage: 'No related projects found',
+    defaultMessage: 'Could not find any related projects for this project',
   },
 });

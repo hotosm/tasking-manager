@@ -203,7 +203,7 @@ class ProjectRecommendationService:
         target_project_df = projects_df[projects_df["id"] == project_id]
         if target_project_df.empty:
             # If the target project is not in the projects_df then it means it is published
-            # but not yet in the cache. So we need to update the cache
+            # but not yet in the cache of create_project_matrix. So we need to update the cache.
             projects_df = ProjectRecommendationService.create_project_matrix(
                 target_project=project_id
             )

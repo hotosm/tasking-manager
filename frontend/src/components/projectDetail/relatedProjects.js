@@ -8,14 +8,14 @@ import { nCardPlaceholders } from '../projectCard/nCardPlaceholder';
 import messages from './messages';
 
 export const RelatedProjects = ({ projectId }) => {
-  const [, loading, relatedProjects] = useFetch(
+  const [error, loading, relatedProjects] = useFetch(
     `projects/queries/${projectId}/related-projects/?limit=4`,
   );
 
   return (
     <div className="bg-white mb3">
-      {!loading && relatedProjects.results.length === 0 ? (
-        <p className="blue-light f6 mv3 mh4">
+      { !loading && (error || relatedProjects.results.length === 0) ? (
+        <p className="blue-light mv3 mh4">
           <FormattedMessage {...messages.noRelatedProjectsFound} />
         </p>
       ) : (
