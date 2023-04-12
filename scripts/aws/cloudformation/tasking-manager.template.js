@@ -721,6 +721,8 @@ const Resources = {
           cf.ref('TaskingManagerURL')
         ],
         Enabled: true,
+        HttpVersion: "http2",
+        IPV6Enabled: true,
         Origins: [{
           Id: cf.join('-', [cf.stackName, 'react-app']),
           DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
@@ -755,7 +757,7 @@ const Resources = {
         },
         ViewerCertificate: {
           AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
-          MinimumProtocolVersion: 'TLSv1.2_2018',
+          MinimumProtocolVersion: 'TLSv1.2_2021',
           SslSupportMethod: 'sni-only'
         }
       }
