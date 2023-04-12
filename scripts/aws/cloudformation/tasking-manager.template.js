@@ -1,6 +1,16 @@
 const cf = require('@mapbox/cloudfriend');
 
 const Parameters = {
+  TaskingManagerBackendAMI {
+    Type: 'String',
+    Description: 'AMI ID of Backend VM, currently Ubuntu 20.04 LTS - Choose ami-0aa2b7722dc1b5612 for latest',
+    Default: 'ami-00fa576fb10a52a1c'
+  },
+  TaskingManagerBackendInstanceType {
+    Type: 'String',
+    Description: 'Instance Type of  Backend VM',
+    Default: 'c6a.large'
+  },
   GitSha: {
     Type: 'String'
   },
@@ -41,7 +51,7 @@ const Parameters = {
   DatabaseEngineVersion: {
     Description: 'AWS PostgreSQL Engine version',
     Type: 'String',
-    Default: '11.12'
+    Default: '11.19'
   },
   DatabaseInstanceType: {
     Description: 'Database instance type',
@@ -352,8 +362,8 @@ const Resources = {
     },
     Properties: {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-      ImageId: 'ami-00fa576fb10a52a1c',
-      InstanceType: 'c5d.large',
+      ImageId: cf.ref('TaskingManagerBackendAMI'),
+      InstanceType: cf.ref('TaskingManagerBackendInstanceType'),
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
       UserData: cf.userData([
         '#!/bin/bash',
