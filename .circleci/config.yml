@@ -241,29 +241,6 @@ workflows:
           stack_name: "staging"
 
       - backend_deploy:
-          name: test
-          filters:
-            branches:
-              only:
-                - fix/cfn-init-codedeploy
-          requires:
-            - build
-          stack_name: "test"
-          gitsha: $CIRCLE_SHA1
-          context: tasking-manager-staging
-      - frontend_deploy:
-          name: test
-          filters:
-            branches:
-              only:
-                - fix/cfn-init-codedeploy
-          requires:
-            - build
-          context:
-            - org-global
-            - tasking-manager-staging
-          stack_name: "test"
-      - backend_deploy:
           name: teachosm
           filters:
             branches:
