@@ -55,7 +55,7 @@ class NotificationsActionsDeleteMultipleAPI(Resource):
             }, 500
 
 
-class NotificationsActionsMarkAllReadAPI(Resource):
+class NotificationsActionsMarkAsReadAllAPI(Resource):
     @token_auth.login_required
     def post(self):
         """
