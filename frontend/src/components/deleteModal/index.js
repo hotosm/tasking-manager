@@ -10,6 +10,8 @@ import { DeleteButton } from '../teamsAndOrgs/management';
 import { Button } from '../button';
 import { AlertIcon } from '../svgIcons';
 
+const DeleteTrigger = React.forwardRef((props, ref) => <DeleteButton {...props} />);
+
 export function DeleteModal({ id, name, type, className, endpointURL, onDelete }: Object) {
   const navigate = useNavigate();
   const modalRef = useRef();
@@ -46,7 +48,7 @@ export function DeleteModal({ id, name, type, className, endpointURL, onDelete }
     <Popup
       ref={modalRef}
       trigger={
-        <DeleteButton className={`${className || ''} dib ml3`} showText={type !== 'comments'} />
+        <DeleteTrigger className={`${className || ''} dib ml3`} showText={type !== 'comments'} />
       }
       modal
       closeOnDocumentClick

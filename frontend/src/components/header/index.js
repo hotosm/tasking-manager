@@ -1,4 +1,4 @@
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment, useRef, forwardRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
@@ -208,6 +208,19 @@ const UserDisplay = ({ username }) => {
   );
 };
 
+const SignupTrigger = forwardRef((props, ref) => {
+  const { signUpStyle, alternativeSignUpText, ...remainingProps } = props;
+  return (
+    <Button className={signUpStyle} {...remainingProps}>
+      {alternativeSignUpText ? (
+        <FormattedMessage {...messages.createAccount} />
+      ) : (
+        <FormattedMessage {...messages.signUp} />
+      )}
+    </Button>
+  );
+});
+
 export const AuthButtons = ({
   logInStyle,
   signUpStyle,
@@ -227,13 +240,7 @@ export const AuthButtons = ({
       </Button>
       <Popup
         trigger={
-          <Button className={signUpStyle}>
-            {alternativeSignUpText ? (
-              <FormattedMessage {...messages.createAccount} />
-            ) : (
-              <FormattedMessage {...messages.signUp} />
-            )}
-          </Button>
+          <SignupTrigger signUpStyle={signUpStyle} alternativeSignUpText={alternativeSignUpText} />
         }
         modal
         closeOnDocumentClick
