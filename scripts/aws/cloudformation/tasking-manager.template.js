@@ -696,19 +696,25 @@ const Resources = {
         Version: "2012-10-17",
         Statement: [
           {
-            Action: [ "s3:GetObject", "s3:ListBucket" ],
+            Action: [ "s3:GetObject" ],
             Effect: 'Allow',
             Principal: "*",
             Resource: [
-              cf.join("/",
-                [
+              cf.join("/", [
                   cf.getAtt("TaskingManagerReactBucket", "Arn"),
                   "*"
-                ],
-              cf.getAtt("TaskingManagerReactBucket", "Arn")
-              )
+              ])
             ],
-            Sid: 'AllowCloudFrontServicePrincipalReadOnly'
+            Sid: "PublicGetObject"
+          },
+          {
+            Action: [ "s3:ListBucket" ],
+            Effect: "Allow",
+            Principal: "*",
+            Resource: [
+              cf.getAtt("TaskingManagerReactBucket", "Arn")
+            ],
+            Sid: "PublicListBucket"
           }
         ]
       }
