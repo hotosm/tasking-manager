@@ -262,16 +262,14 @@ export function CompletionTabForMapping({
         <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.comment} />
         </h4>
-        <p>
-          <CommentInputField
-            comment={taskComment}
-            setComment={setTaskComment}
-            contributors={contributors}
-            enableHashtagPaste={true}
-            enableContributorsHashtag
-            isShowTabNavs
-          />
-        </p>
+        <CommentInputField
+          comment={taskComment}
+          setComment={setTaskComment}
+          contributors={contributors}
+          enableHashtagPaste={true}
+          enableContributorsHashtag
+          isShowTabNavs
+        />
       </div>
       {directedFrom && (
         <div className="flex items-center">
