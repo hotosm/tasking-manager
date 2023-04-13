@@ -773,6 +773,16 @@ class MessageService:
             user_notification.update()
 
     @staticmethod
+    def mark_multiple_messages_read(message_ids: list, user_id: int):
+        """Marks the specified messages as read for the user
+        ---------------------------------------------------
+        :param message_ids: List of message ids to mark as read
+        :param user_id: The user id
+        returns: None
+        """
+        Message.mark_multiple_messages_read(message_ids, user_id)
+
+    @staticmethod
     def get_message_as_dto(message_id: int, user_id: int):
         """Gets the selected message and marks it as read"""
         message = MessageService.get_message(message_id, user_id)

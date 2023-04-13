@@ -88,3 +88,53 @@ class NotificationsActionsMarkAllReadAPI(Resource):
                 "Error": "Unable to mark messages as read",
                 "SubCode": "InternalServerError",
             }, 500
+
+
+class NotificationsActionsMarkAsReadMultipleAPI(Resource):
+    @token_auth.login_required
+    def post(self):
+        """
+            Mark specified messages as read for logged in user
+            ---
+            tags:
+            - notifications
+            produces:
+                - application/json
+            parameters:
+                - in: header
+                name: Authorization
+                description: Base64 encoded session token
+                required: true
+                type: string
+                default: Token sessionTokenHere==
+                - in: body
+                name: body
+                required: true
+                description: JSON object containing message ids to mark as read
+                schema:
+                    properties:
+                        messageIds:
+                            type: array
+                            items: integer
+                            required: true
+            responses:
+                200:
+                    description: Messages marked as read
+                500:
+                    description: Internal Server Error
+        """
+        try:
+            message_ids = request.get_json()["messageIds"]
+            if message_ids:
+                MessageService.mark_multiple_messages_read(
+                    message_ids, token_auth.current_user()
+                )
+
+            return {"Success": "Messages marked as read"}, 200
+        except Exception as e:
+            error_msg = f"MarkMultipleMessagesRead - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {
+                "Error": "Unable to mark messages as read",
+                "SubCode": "InternalServerError",
+            }, 500

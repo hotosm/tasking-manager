@@ -252,6 +252,7 @@ def add_api_endpoints(app):
     from backend.api.notifications.actions import (
         NotificationsActionsDeleteMultipleAPI,
         NotificationsActionsMarkAllReadAPI,
+        NotificationsActionsMarkAsReadMultipleAPI,
     )
 
     # Users API endpoint
@@ -740,6 +741,11 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         NotificationsActionsMarkAllReadAPI, format_url("notifications/mark-all-read/")
+    )
+    api.add_resource(
+        NotificationsActionsMarkAsReadMultipleAPI,
+        format_url("notifications/mark-as-read-multiple/"),
+        methods=["POST"],
     )
 
     # Users REST endpoint

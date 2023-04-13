@@ -175,3 +175,15 @@ class Message(db.Model):
         """ Deletes the current model from the DB """
         db.session.delete(self)
         db.session.commit()
+
+    @staticmethod
+    def mark_multiple_messages_read(message_ids: list, user_id: int):
+        """Marks the specified messages as read
+        ----------------------------------------
+        :param message_ids: list of message ids to mark as read
+        :param user_id: user id of the user who is marking the messages as read
+        """
+        Message.query.filter(
+            Message.to_user_id == user_id, Message.id.in_(message_ids)
+        ).update({Message.read: True}, synchronize_session=False)
+        db.session.commit()
