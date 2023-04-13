@@ -696,7 +696,7 @@ const Resources = {
         Version: "2012-10-17",
         Statement: [
           {
-            Action: [ 's3:GetObject'],
+            Action: [ "s3:GetObject", "s3:ListBucket" ],
             Effect: 'Allow',
             Principal: "*",
             Resource: [
