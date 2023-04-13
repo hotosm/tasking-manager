@@ -704,7 +704,8 @@ const Resources = {
                 [
                   cf.getAtt("TaskingManagerReactBucket", "Arn"),
                   "*"
-                ]
+                ],
+              cf.getAtt("TaskingManagerReactBucket", "Arn")
               )
             ],
             Sid: 'AllowCloudFrontServicePrincipalReadOnly'
