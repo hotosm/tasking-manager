@@ -678,37 +678,52 @@ const Resources = {
     Type: 'AWS::S3::Bucket',
     Properties: {
       BucketName: cf.join('-', [cf.stackName, 'react-app']),
-      AccessControl: "PublicRead",
-      PublicAccessBlockConfiguration: {
-        BlockPublicAcls: false,
-        BlockPublicPolicy: false,
-        IgnorePublicAcls: false,
-        RestrictPublicBuckets: false
-      },
       WebsiteConfiguration: {
         ErrorDocument: 'index.html',
         IndexDocument: 'index.html'
-      }
+      },
+      AccessControl: "Private"
     }
   },
   TaskingManagerReactBucketPolicy: {
     Type: 'AWS::S3::BucketPolicy',
+    Metadata: {
+      TODO: "Condition: { StringEquals: { AWS:SourceArn: arn:aws:cloudfront::6000000:distribution/EH2ANTHENTH } }"
+    },
     Properties: {
       Bucket : cf.ref('TaskingManagerReactBucket'),
       PolicyDocument: {
         Version: "2012-10-17",
-        Statement:[{
-          Action: [ 's3:GetObject'],
-          Effect: 'Allow',
-          Principal: '*',
-          Resource: [ cf.join('',
-            [
-              cf.getAtt('TaskingManagerReactBucket', 'Arn'), 
-              '/*'
-            ]
-          )],
-          Sid: 'AddPerm'
-        }]
+        Statement: [
+          {
+            Action: [ 's3:GetObject'],
+            Effect: 'Allow',
+            Principal: {
+              "Service": [ "cloudfront.amazonaws.com" ]
+            },
+            Resource: [
+              cf.join("/",
+                [
+                  cf.getAtt("TaskingManagerReactBucket", "Arn"),
+                  "*"
+                ]
+              )
+            ],
+            Sid: 'AllowCloudFrontServicePrincipalReadOnly'
+          }
+        ]
+      }
+    }
+  },
+  FrontendOriginAccessPolicy: {
+    Type: "AWS::CloudFront::OriginAccessControl",
+    Properties: {
+      OriginAccessControlConfig: {
+        Description : "Policy for CloudFront to access S3",
+        Name : cf.join("-", [ "tm4", cf.ref("NetworkEnvironment") ]),
+        OriginAccessControlOriginType : "s3",
+        SigningBehavior : "always",
+        SigningProtocol : "sigv4"
       }
     }
   },
@@ -716,20 +731,23 @@ const Resources = {
     Type: "AWS::CloudFront::Distribution",
     Properties: {
       DistributionConfig: {
+        Comment: cf.join(" ", [ "Frontend CDN for Tasking Manager", cf.ref("NetworkEnvironment") ] ),
         DefaultRootObject: 'index.html',
-        Aliases: [
-          cf.ref('TaskingManagerURL')
-        ],
+        Aliases: [ cf.ref('TaskingManagerURL') ],
         Enabled: true,
         HttpVersion: "http2",
         IPV6Enabled: true,
-        Origins: [{
-          Id: cf.join('-', [cf.stackName, 'react-app']),
-          DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only'
+        Origins: [
+          {
+            Id: cf.join('-', [cf.stackName, 'react-app']),
+            DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'), // NOTE: Can also be WebsiteURL
+            CustomOriginConfig: {
+              OriginProtocolPolicy: "https-only",
+              OriginSSLProtocols: [ "TLSv1.2" ]
+            },
+            OriginAccessControlId: cf.ref("FrontendOriginAccessPolicy")
           }
-        }],
+        ],
         CustomErrorResponses: [{
           ErrorCachingMinTTL : 0,
           ErrorCode: 403,
