@@ -147,13 +147,12 @@ export function QuickstartPage() {
             const idx = i + 1;
             return (
               <div className="pv2" key={v.message}>
-                <p>
-                  <span className="b mr1">{idx}.</span>
-                  {<FormattedMessage {...messages[v.message]} values={v.values} />}
-                  <div className="w-60-l cf flex items-center shadow-4 mv3">
-                    <img src={v.img} alt={`Quickstart guide screenshot of step ${idx}`} />
-                  </div>
-                </p>
+                <p />
+                <span className="b mr1">{idx}.</span>
+                {<FormattedMessage {...messages[v.message]} values={v.values} />}
+                <div className="w-60-l cf flex items-center shadow-4 mv3">
+                  <img src={v.img} alt={`Quickstart guide screenshot of step ${idx}`} />
+                </div>
                 {v.note ? (
                   <p className="i">
                     {<FormattedMessage {...messages[v.note]} values={v.values} />}
