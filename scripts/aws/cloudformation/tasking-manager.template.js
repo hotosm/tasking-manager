@@ -698,9 +698,7 @@ const Resources = {
           {
             Action: [ 's3:GetObject'],
             Effect: 'Allow',
-            Principal: {
-              "Service": [ "cloudfront.amazonaws.com" ]
-            },
+            Principal: "*",
             Resource: [
               cf.join("/",
                 [
