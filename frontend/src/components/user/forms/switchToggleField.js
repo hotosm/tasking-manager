@@ -24,9 +24,13 @@ function _SwitchToggleField(props) {
     setValue(!value);
   };
 
+  let val = value;
+  if ((val === undefined || val === null) && props.hasOwnProperty('default')) {
+    val = props.default;
+  }
   return (
     <div className={`fr ${props.removeVerticalPadding ? '' : 'pv2'} dib`}>
-      <SwitchToggle onChange={(e) => onSwitchChange()} isChecked={value} />
+      <SwitchToggle onChange={(e) => onSwitchChange()} isChecked={val} />
     </div>
   );
 }
