@@ -715,18 +715,6 @@ const Resources = {
       }
     }
   },
-  FrontendOriginAccessPolicy: {
-    Type: "AWS::CloudFront::OriginAccessControl",
-    Properties: {
-      OriginAccessControlConfig: {
-        Description : "Policy for CloudFront to access S3",
-        Name : cf.join("-", [ "tm4", cf.ref("NetworkEnvironment") ]),
-        OriginAccessControlOriginType : "s3",
-        SigningBehavior : "always",
-        SigningProtocol : "sigv4"
-      }
-    }
-  },
   TaskingManagerReactCloudfront: {
     Type: "AWS::CloudFront::Distribution",
     Properties: {
@@ -744,8 +732,7 @@ const Resources = {
             CustomOriginConfig: {
               OriginProtocolPolicy: "https-only",
               OriginSSLProtocols: [ "TLSv1.2" ]
-            },
-            OriginAccessControlId: cf.ref("FrontendOriginAccessPolicy")
+            }
           }
         ],
         CustomErrorResponses: [{
