@@ -682,7 +682,7 @@ const Resources = {
         ErrorDocument: 'index.html',
         IndexDocument: 'index.html'
       },
-      AccessControl: "Private"
+      AccessControl: "PublicRead"
     }
   },
   TaskingManagerReactBucketPolicy: {
