@@ -501,6 +501,10 @@ const TransferProject = ({ projectId, orgId }: Object) => {
   );
 };
 
+const FormattedButtonTrigger = React.forwardRef((props, ref) => (
+  <Button {...props}>{props.children}</Button>
+));
+
 export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
   const navigate = useNavigate();
 
@@ -512,9 +516,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </label>
         <Popup
           trigger={
-            <Button className={styleClasses.actionClass}>
+            <FormattedButtonTrigger className={styleClasses.actionClass}>
               <FormattedMessage {...messages.messageContributors} />
-            </Button>
+            </FormattedButtonTrigger>
           }
           modal
           closeOnDocumentClick
@@ -538,9 +542,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </p>
         <Popup
           trigger={
-            <Button className={styleClasses.actionClass}>
+            <FormattedButtonTrigger className={styleClasses.actionClass}>
               <FormattedMessage {...messages.mapAll} />
-            </Button>
+            </FormattedButtonTrigger>
           }
           modal
           closeOnDocumentClick
@@ -549,9 +553,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </Popup>
         <Popup
           trigger={
-            <Button className={styleClasses.actionClass}>
+            <FormattedButtonTrigger className={styleClasses.actionClass}>
               <FormattedMessage {...messages.invalidateAll} />
-            </Button>
+            </FormattedButtonTrigger>
           }
           modal
           closeOnDocumentClick
@@ -560,9 +564,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </Popup>
         <Popup
           trigger={
-            <Button className={styleClasses.actionClass}>
+            <FormattedButtonTrigger className={styleClasses.actionClass}>
               <FormattedMessage {...messages.validateAllTasks} />
-            </Button>
+            </FormattedButtonTrigger>
           }
           modal
           closeOnDocumentClick
@@ -586,9 +590,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </p>
         <Popup
           trigger={
-            <Button className={styleClasses.actionClass}>
+            <FormattedButtonTrigger className={styleClasses.actionClass}>
               <FormattedMessage {...messages.resetAllButton} />
-            </Button>
+            </FormattedButtonTrigger>
           }
           modal
           closeOnDocumentClick
@@ -597,9 +601,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </Popup>
         <Popup
           trigger={
-            <Button className={styleClasses.actionClass}>
+            <FormattedButtonTrigger className={styleClasses.actionClass}>
               <FormattedMessage {...messages.resetBadImageryButton} />
-            </Button>
+            </FormattedButtonTrigger>
           }
           modal
           closeOnDocumentClick
