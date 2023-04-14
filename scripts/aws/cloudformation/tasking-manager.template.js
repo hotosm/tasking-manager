@@ -3,7 +3,7 @@ const cf = require('@mapbox/cloudfriend');
 const Parameters = {
   TaskingManagerBackendAMI: {
     Type: "AWS::EC2::Image::Id",
-    Description: 'AMI ID of Backend VM, currently Ubuntu 20.04 LTS - Was ami-00fa576fb10a52a1c'
+    Description: 'AMI ID of Backend VM, currently Ubuntu 20.04 LTS - Was ami-00fa576fb10a52a1c',
     Default: "ami-0aa2b7722dc1b5612",
   },
   TaskingManagerBackendInstanceType: {
