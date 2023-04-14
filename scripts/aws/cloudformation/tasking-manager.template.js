@@ -2,9 +2,9 @@ const cf = require('@mapbox/cloudfriend');
 
 const Parameters = {
   TaskingManagerBackendAMI: {
-    Type: 'String',
-    Description: 'AMI ID of Backend VM, currently Ubuntu 20.04 LTS - Choose ami-0aa2b7722dc1b5612 for latest',
-    Default: 'ami-00fa576fb10a52a1c'
+    Type: "AWS::EC2::Image::Id",
+    Description: 'AMI ID of Backend VM, currently Ubuntu 20.04 LTS - Was ami-00fa576fb10a52a1c'
+    Default: "ami-0aa2b7722dc1b5612",
   },
   TaskingManagerBackendInstanceType: {
     Type: 'String',
@@ -75,7 +75,7 @@ const Parameters = {
   },
   ELBSubnets: {
     Description: 'ELB subnets',
-    Type: 'String'
+    Type: "List<AWS::EC2::Subnet::Id>"
   },
   SSLCertificateIdentifier: {
     Type: 'String',
@@ -233,16 +233,8 @@ const Resources = {
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
             ResourceLabel: cf.join('/', [
-              cf.select(1,
-                cf.split('loadbalancer/',
-                  cf.select(5,
-                    cf.split(':', cf.ref("TaskingManagerLoadBalancer"))
-                  )
-                )
-              ),
-              cf.select(5,
-                cf.split(':', cf.ref("TaskingManagerTargetGroup"))
-              )
+              cf.getAtt("TaskingManagerLoadBalancer", "LoadBalancerFullName"),
+              cf.getAtt("TaskingManagerTargetGroup", "TargetGroupFullName")
             ])
           }
         },
@@ -583,7 +575,7 @@ const Resources = {
     Properties: {
       Name: cf.stackName,
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
-      Subnets: cf.split(',', cf.ref('ELBSubnets')),
+      Subnets: cf.ref('ELBSubnets'),
       Type: 'application'
     }
   },
