@@ -201,3 +201,19 @@ class Message(db.Model):
             Message.to_user_id == user_id, Message.id.in_(message_ids)
         ).update({Message.read: True}, synchronize_session=False)
         db.session.commit()
+
+    @staticmethod
+    def mark_all_messages_read(user_id: int, message_type_filters: list = None):
+        """Marks all messages as read
+        ----------------------------------------
+        :param user_id: user id of the user who is marking the messages as read
+        :param message_type_filters: list of message types to filter by
+        """
+        # https://docs.sqlalchemy.org/en/13/orm/query.html#sqlalchemy.orm.query.Query.update
+        query = Message.query.filter(
+            Message.to_user_id == user_id, Message.read == false()
+        )
+        if message_type_filters:
+            query = query.filter(Message.message_type.in_(message_type_filters))
+        query.update({Message.read: True}, synchronize_session=False)
+        db.session.commit()

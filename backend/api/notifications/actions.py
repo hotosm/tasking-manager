@@ -112,6 +112,10 @@ class NotificationsActionsMarkAsReadAllAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - in: query
+              name: messageType
+              type: string
+              description: Optional message-type filter; leave blank to mark all as read
         responses:
             200:
                 description: Messages marked as read
@@ -119,7 +123,10 @@ class NotificationsActionsMarkAsReadAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            MessageService.mark_all_messages_read(token_auth.current_user())
+            messageType = request.args.get("messageType")
+            MessageService.mark_all_messages_read(
+                token_auth.current_user(), messageType
+            )
             return {"Success": "Messages marked as read"}, 200
         except Exception as e:
             error_msg = f"MarkAllMessagesRead - unhandled error: {str(e)}"

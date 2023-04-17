@@ -755,22 +755,16 @@ class MessageService:
         return message
 
     @staticmethod
-    def mark_all_messages_read(user_id: int):
-        """Marks all messages as read for the user"""
-        # https://docs.sqlalchemy.org/en/13/orm/query.html#sqlalchemy.orm.query.Query.update
-        Message.query.filter_by(to_user_id=user_id, read=False).update(
-            {Message.read: True},
-            synchronize_session=False,
-        )
-        db.session.commit()
-
-        # Also update the notification count
-        user_notification = Notification.query.filter(
-            Notification.user_id == user_id
-        ).first()
-        if user_notification:
-            user_notification.unread_count = 0
-            user_notification.update()
+    def mark_all_messages_read(user_id: int, message_type: str = None):
+        """Marks all messages as read for the user
+        -----------------------------------------
+        :param user_id: The user id
+        :param message_type: The message types to mark as read
+        returns: None
+        """
+        if message_type is not None:
+            message_type = map(int, message_type.split(","))
+        Message.mark_all_messages_read(user_id, message_type)
 
     @staticmethod
     def mark_multiple_messages_read(message_ids: list, user_id: int):
@@ -809,8 +803,8 @@ class MessageService:
         returns: None
         """
         if message_type is not None:
-            message_type_filters = map(int, message_type.split(","))
-        Message.delete_all_messages(user_id, message_type_filters)
+            message_type = map(int, message_type.split(","))
+        Message.delete_all_messages(user_id, message_type)
 
     @staticmethod
     def get_task_link(
