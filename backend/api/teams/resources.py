@@ -414,7 +414,7 @@ class TeamsAllAPI(Resource):
             teams = TeamService.get_all_teams(search_dto)
             return teams.to_primitive(), 200
         except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
+            error_msg = f"Teams GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 

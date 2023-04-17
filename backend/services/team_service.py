@@ -277,12 +277,13 @@ class TeamService:
         if orgs_query:
             query = query.union(orgs_query)
 
-        # Only show public teams or teams that the user is a member of
+        # Only show public teams and teams that the user is a member of
         if not is_admin:
             query = query.filter(
                 or_(
                     Team.visibility == TeamVisibility.PUBLIC.value,
-                    Team.id.in_([team.id for team in user.teams]),
+                    # Since user.teams returns TeamMembers, we need to get the team_id
+                    Team.id.in_([team.team_id for team in user.teams]),
                 )
             )
         teams_list_dto = TeamsListDTO()
