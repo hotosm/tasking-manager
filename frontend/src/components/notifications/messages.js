@@ -40,6 +40,10 @@ export default defineMessages({
     id: 'notifications.markAsRead',
     defaultMessage: 'Mark as read',
   },
+  errorLoadingNotifications: {
+    id: 'notifications.errorLoadingNotifications',
+    defaultMessage: 'There was an error while loading your notifications',
+  },
   errorLoadingTheXForY: {
     id: 'notifications.navFilters.error',
     defaultMessage: 'Error loading the {xWord} for {yWord}',

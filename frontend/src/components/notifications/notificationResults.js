@@ -58,13 +58,7 @@ export const NotificationResults = ({
 
       {error && (
         <div className="bg-tan pa4 mt3">
-          <FormattedMessage
-            {...messages.errorLoadingTheXForY}
-            values={{
-              xWord: <FormattedMessage {...messages.projects} />,
-              yWord: 'Notifications',
-            }}
-          />
+          <FormattedMessage {...messages.errorLoadingNotifications} />
           <div className="pa2">
             <button className="pa1" onClick={() => retryFn()}>
               <FormattedMessage {...messages.notificationsRetry} />
