@@ -7,7 +7,6 @@ import {
   NotificationResultsMini,
 } from '../components/notifications/notificationResults';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { Login } from './login';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import Paginator from '../components/notifications/paginator';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
@@ -83,13 +82,14 @@ export const NotificationsPage = (props) => {
   };
 
   useEffect(() => {
-    fetchNotifications().then(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inboxQuery]);
-
-  if (!userToken) {
-    return <Login redirectTo={window.location.pathname} />;
-  }
+    if (!userToken) {
+      navigate('/login', {
+        state: {
+          from: location.pathname,
+        },
+      });
+    }
+  }, [location.pathname, navigate, userToken]);
 
   return (
     <div className="pb5 ph6-l ph2 pt180 pull-center bg-washed-blue notifications-container">
