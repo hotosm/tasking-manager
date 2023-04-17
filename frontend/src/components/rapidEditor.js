@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { gpx } from '@tmcw/togeojson';
-import * as RapiD from 'RapiD/dist/iD.legacy';
-import 'RapiD/dist/RapiD.css';
+import * as Rapid from 'RapiD/dist/rapid';
+import 'RapiD/dist/rapid.css';
 
 import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 import messages from './messages';
@@ -19,68 +19,78 @@ export default function RapidEditor({
   const dispatch = useDispatch();
   const session = useSelector((state) => state.auth.session);
   const intl = useIntl();
-  const RapiDContext = useSelector((state) => state.editor.rapidContext);
+  const RapidContext = useSelector((state) => state.editor.rapidContext);
   const locale = useSelector((state) => state.preferences.locale);
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
   const windowInit = typeof window !== 'undefined';
   const customSource =
-    RapiDContext && RapiDContext.background() && RapiDContext.background().findSource('custom');
+    RapidContext && RapidContext.imagery() && RapidContext.imagery().findSource('custom');
 
+  function getBackground(customImageryIsSet, imagery, RapidContext, customSource) {
+    if (imagery.startsWith('http')) {
+      return customSource.template(imagery);
+    } else if (RapidContext && RapidContext.imagery()) {
+      return RapidContext.imagery().findSource(imagery);
+    }
+  }
   useEffect(() => {
     if (!customImageryIsSet && imagery && customSource) {
+      const imagerySource = getBackground(customImageryIsSet, imagery, RapidContext, customSource);
       if (imagery.startsWith('http')) {
-        RapiDContext.background().baseLayerSource(customSource.template(imagery));
+        RapidContext.imagery().baseLayerSource(imagerySource);
         setCustomImageryIsSet(true);
         // this line is needed to update the value on the custom background dialog
-        window.iD.prefs('background-custom-template', imagery);
-      } else {
-        const imagerySource = RapiDContext.background().findSource(imagery);
-        if (imagerySource) {
-          RapiDContext.background().baseLayerSource(imagerySource);
-        }
+        window.Rapid.prefs('background-custom-template', imagery);
+      } else if (imagerySource) {
+        RapidContext.imagery().baseLayerSource(imagerySource);
       }
     }
-  }, [customImageryIsSet, imagery, RapiDContext, customSource]);
+  }, [customImageryIsSet, imagery, RapidContext, customSource]);
 
   useEffect(() => {
     if (windowInit) {
-      if (RapiDContext === null) {
-        // we need to keep iD context on redux store because iD works better if
+      if (RapidContext === null) {
+        // we need to keep Rapid context on redux store because Rapid works better if
         // the context is not restarted while running in the same browser session
-        dispatch({ type: 'SET_RAPIDEDITOR', context: window.iD.coreContext() });
+        dispatch({ type: 'SET_RAPIDEDITOR', context: window.Rapid.coreContext() });
       }
     }
-  }, [windowInit, RapiDContext, dispatch]);
+  }, [windowInit, RapidContext, dispatch]);
 
   useEffect(() => {
-    if (RapiDContext && comment) {
-      RapiDContext.defaultChangesetComment(comment);
+    if (RapidContext && comment) {
+      RapidContext.defaultChangesetComment(comment);
     }
-  }, [comment, RapiDContext]);
+  }, [comment, RapidContext]);
 
   useEffect(() => {
-    if (session && locale && RapiD && RapiDContext) {
+    if (session && locale && Rapid && RapidContext) {
       // if presets is not a populated list we need to set it as null
       try {
         if (presets && presets.length) {
-          window.iD.presetManager.addablePresetIDs(presets);
+          window.Rapid.presetManager.addablePresetIDs(presets);
         } else {
-          window.iD.presetManager.addablePresetIDs(null);
+          window.Rapid.presetManager.addablePresetIDs(null);
         }
       } catch (e) {
-        window.iD.presetManager.addablePresetIDs(null);
+        window.Rapid.presetManager.addablePresetIDs(null);
       }
       // setup the context
-      RapiDContext.embed(true)
+      RapidContext.embed(true)
         .assetPath('/static/rapid/')
         .locale(locale)
         .containerNode(document.getElementById('rapid-container'));
       // init the ui or restart if it was loaded previously
-      if (RapiDContext.ui() !== undefined) {
-        RapiDContext.reset();
-        RapiDContext.ui().restart();
+      if (RapidContext.ui() !== undefined) {
+        RapidContext.reset();
+        RapidContext.ui().restart();
       } else {
-        RapiDContext.init();
+        // Keep Rapid from defaulting to Bing
+        const imageryInfo = getBackground(customImageryIsSet, imagery, RapidContext, customSource);
+        if (imageryInfo) {
+          window.location.hash = window.location.hash + '&background=' + imagery;
+        }
+        RapidContext.init();
       }
       if (gpxUrl) {
         fetch(gpxUrl)
@@ -92,16 +102,20 @@ export default function RapidEditor({
             nameNode.textContent = intl.formatMessage(messages.gpxNameAttribute, {
               projectId: projectId[0],
             });
-            RapiDContext.scene().layers.get('custom-data').geojson(gpx(gpxData));
+            RapidContext.ui()
+              .ensureLoaded()
+              .then(() => {
+                RapiDContext.map().scene.layers.get('custom-data').geojson(gpx(gpxData));
+              });
           })
           .catch((error) => {
             console.error('Error loading GPX data');
           });
       }
 
-      RapiDContext.rapidContext().showPowerUser = powerUser;
+      RapidContext.rapidContext().showPowerUser = powerUser;
 
-      let osm = RapiDContext.connection();
+      let osm = RapidContext.connection();
       const auth = {
         url: OSM_SERVER_URL,
         client_id: OSM_CLIENT_ID,
@@ -114,15 +128,24 @@ export default function RapidEditor({
       const thereAreChanges = (changes) =>
         changes.modified.length || changes.created.length || changes.deleted.length;
 
-      RapiDContext.history().on('change', () => {
-        if (thereAreChanges(RapiDContext.history().changes())) {
+      RapidContext.history().on('change', () => {
+        if (thereAreChanges(RapidContext.history().changes())) {
           setDisable(true);
         } else {
           setDisable(false);
         }
       });
     }
-  }, [session, RapiDContext, setDisable, presets, locale, gpxUrl, powerUser, intl]);
+  }, [
+    session,
+    RapidContext,
+    setDisable,
+    presets,
+    locale,
+    gpxUrl,
+    powerUser,
+    intl
+  ]);
 
   return <div className="w-100 vh-minus-69-ns" id="rapid-container"></div>;
 }
