@@ -64,7 +64,7 @@ class NotificationsActionsMarkAsReadAllAPI(Resource):
         tags:
           - notifications
         produces:
-            - application/json
+          - application/json
         parameters:
             - in: header
               name: Authorization
@@ -94,34 +94,34 @@ class NotificationsActionsMarkAsReadMultipleAPI(Resource):
     @token_auth.login_required
     def post(self):
         """
-            Mark specified messages as read for logged in user
-            ---
-            tags:
-            - notifications
-            produces:
-                - application/json
-            parameters:
-                - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
-                - in: body
-                name: body
-                required: true
-                description: JSON object containing message ids to mark as read
-                schema:
-                    properties:
-                        messageIds:
-                            type: array
-                            items: integer
-                            required: true
-            responses:
-                200:
-                    description: Messages marked as read
-                500:
-                    description: Internal Server Error
+        Mark specified messages as read for logged in user
+        ---
+        tags:
+          - notifications
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: body
+              name: body
+              required: true
+              description: JSON object containing message ids to mark as read
+              schema:
+                  properties:
+                      messageIds:
+                          type: array
+                          items: integer
+                          required: true
+        responses:
+            200:
+                description: Messages marked as read
+            500:
+                description: Internal Server Error
         """
         try:
             message_ids = request.get_json()["messageIds"]

@@ -740,7 +740,8 @@ def add_api_endpoints(app):
         methods=["DELETE"],
     )
     api.add_resource(
-        NotificationsActionsMarkAsReadAllAPI, format_url("notifications/mark-as-read-all/"),
+        NotificationsActionsMarkAsReadAllAPI,
+        format_url("notifications/mark-as-read-all/"),
         methods=["POST"],
     )
     api.add_resource(
