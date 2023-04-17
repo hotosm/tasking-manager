@@ -801,6 +801,18 @@ class MessageService:
         Message.delete_multiple_messages(message_ids, user_id)
 
     @staticmethod
+    def delete_all_messages(user_id: int, message_type: str = None):
+        """Deletes all messages to the user
+        ----------------------------------
+        :param user_id: The user id
+        :param message_type: The message types to delete (comma separated)
+        returns: None
+        """
+        if message_type is not None:
+            message_type_filters = map(int, message_type.split(","))
+        Message.delete_all_messages(user_id, message_type_filters)
+
+    @staticmethod
     def get_task_link(
         project_id: int, task_id: int, base_url=None, highlight=False
     ) -> str:

@@ -171,6 +171,20 @@ class Message(db.Model):
         ).delete(synchronize_session=False)
         db.session.commit()
 
+    @staticmethod
+    def delete_all_messages(user_id: int, message_type_filters: list = None):
+        """Deletes all messages to the user
+        -----------------------------------
+        :param user_id: user id of the user whose messages are to be deleted
+        :param message_type_filters: list of message types to filter by
+        returns: None
+        """
+        query = Message.query.filter(Message.to_user_id == user_id)
+        if message_type_filters:
+            query = query.filter(Message.message_type.in_(message_type_filters))
+        query.delete(synchronize_session=False)
+        db.session.commit()
+
     def delete(self):
         """ Deletes the current model from the DB """
         db.session.delete(self)

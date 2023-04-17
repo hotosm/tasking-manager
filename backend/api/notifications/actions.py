@@ -55,6 +55,46 @@ class NotificationsActionsDeleteMultipleAPI(Resource):
             }, 500
 
 
+class NotificationsActionsDeleteAllAPI(Resource):
+    @token_auth.login_required
+    def delete(self):
+        """
+        Delete all messages for logged in user
+        ---
+        tags:
+          - notifications
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: query
+              name: messageType
+              type: string
+              description: Optional message-type filter; leave blank to delete all
+        responses:
+            200:
+                description: Messages deleted
+            500:
+                description: Internal Server Error
+        """
+        try:
+            messageType = request.args.get("messageType")
+            MessageService.delete_all_messages(token_auth.current_user(), messageType)
+            return {"Success": "Messages deleted"}, 200
+        except Exception as e:
+            error_msg = f"DeleteAllMessages - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {
+                "Error": "Unable to delete messages",
+                "SubCode": "InternalServerError",
+            }, 500
+
+
 class NotificationsActionsMarkAsReadAllAPI(Resource):
     @token_auth.login_required
     def post(self):
