@@ -7,12 +7,11 @@ import 'react-placeholder/lib/reactPlaceholder.css';
 import messages from './messages';
 import { NotificationCard, NotificationCardMini } from './notificationCard';
 import NotificationPlaceholder from './notificationPlaceholder';
-import { DeleteNotificationsButton } from './deleteNotificationsButton';
 import { RefreshIcon } from '../svgIcons';
 import { SelectAll } from '../formInputs';
-import { ReadNotificationsButton } from './readNotificationsButton';
 import { SelectAllNotifications } from './selectAllNotifications';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { ActionButtons } from './actionButtons';
 
 export const NotificationResultsMini = (props) => {
   return <NotificationResults {...props} useMiniCard={true} />;
@@ -153,16 +152,7 @@ const NotificationCards = ({
               selected={selected}
               className="dib v-mid mv3 ml2"
             />
-            <DeleteNotificationsButton
-              selected={selected}
-              setSelected={setSelected}
-              retryFn={retryFn}
-              unreadCountInSelected={unreadCountInSelected}
-              isAllSelected={isAllSelected}
-              inboxQuery={inboxQuery}
-              updateUnreadCount={updateUnreadCount}
-            />
-            <ReadNotificationsButton
+            <ActionButtons
               selected={selected}
               setSelected={setSelected}
               retryFn={retryFn}
