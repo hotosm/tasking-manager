@@ -72,7 +72,7 @@ export const NotificationsPage = () => {
   const location = useLocation();
   const userToken = useSelector((state) => state.auth.token);
   const [inboxQuery, setInboxQuery] = useInboxQueryParams();
-  const [error, loading, notifications, refetch] = useFetchWithAbort(
+  const [error, loading, notifications] = useFetchWithAbort(
     `notifications/?${serializeParams(inboxQuery)}`,
   );
 
@@ -94,7 +94,6 @@ export const NotificationsPage = () => {
           error={error}
           loading={loading}
           notifications={notifications}
-          retryFn={refetch}
           inboxQuery={inboxQuery}
         />
         <div className="flex justify-end mw8">

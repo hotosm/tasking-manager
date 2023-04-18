@@ -20,7 +20,6 @@ export const NotificationResults = ({
   className,
   error,
   loading,
-  state,
   notifications,
   retryFn,
   useMiniCard,
