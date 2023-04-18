@@ -117,7 +117,7 @@ export const MyContributionsNav = ({ username, authUser }) => {
   const items = [
     { url: `/contributions`, label: <FormattedMessage {...messages.myStats} /> },
     {
-      url: '/contributions/projects?mappedByMe=1&action=any',
+      url: '/contributions/projects/?mappedByMe=1&action=any',
       label: <FormattedMessage {...messages.myProjects} />,
     },
     { url: '/contributions/tasks', label: <FormattedMessage {...messages.myTasks} /> },

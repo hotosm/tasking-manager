@@ -99,7 +99,7 @@ test('section menu should render display menus for contributions tab', () => {
     screen.getByRole('link', {
       name: 'My projects',
     }),
-  ).toHaveAttribute('href', '/contributions/projects?mappedByMe=1&action=any');
+  ).toHaveAttribute('href', '/contributions/projects/?mappedByMe=1&action=any');
   expect(
     screen.getByRole('link', {
       name: 'My tasks',

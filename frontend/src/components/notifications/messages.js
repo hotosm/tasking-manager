@@ -58,6 +58,10 @@ export default defineMessages({
     id: 'notifications.clearSelection',
     defaultMessage: 'Clear selection',
   },
+  errorLoadingNotifications: {
+    id: 'notifications.errorLoadingNotifications',
+    defaultMessage: 'There was an error while loading your notifications',
+  },
   errorLoadingTheXForY: {
     id: 'notifications.navFilters.error',
     defaultMessage: 'Error loading the {xWord} for {yWord}',

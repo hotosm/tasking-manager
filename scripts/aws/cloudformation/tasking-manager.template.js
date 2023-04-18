@@ -1,6 +1,16 @@
 const cf = require('@mapbox/cloudfriend');
 
 const Parameters = {
+  TaskingManagerBackendAMI: {
+    Type: "AWS::EC2::Image::Id",
+    Description: 'AMI ID of Backend VM, currently Ubuntu 20.04 LTS - Was ami-00fa576fb10a52a1c',
+    Default: "ami-0aa2b7722dc1b5612",
+  },
+  TaskingManagerBackendInstanceType: {
+    Type: 'String',
+    Description: 'Instance Type of  Backend VM',
+    Default: 'c6a.large'
+  },
   GitSha: {
     Type: 'String'
   },
@@ -41,7 +51,7 @@ const Parameters = {
   DatabaseEngineVersion: {
     Description: 'AWS PostgreSQL Engine version',
     Type: 'String',
-    Default: '11.12'
+    Default: '11.19'
   },
   DatabaseInstanceType: {
     Description: 'Database instance type',
@@ -65,7 +75,7 @@ const Parameters = {
   },
   ELBSubnets: {
     Description: 'ELB subnets',
-    Type: 'String'
+    Type: "List<AWS::EC2::Subnet::Id>"
   },
   SSLCertificateIdentifier: {
     Type: 'String',
@@ -223,16 +233,8 @@ const Resources = {
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
             ResourceLabel: cf.join('/', [
-              cf.select(1,
-                cf.split('loadbalancer/',
-                  cf.select(5,
-                    cf.split(':', cf.ref("TaskingManagerLoadBalancer"))
-                  )
-                )
-              ),
-              cf.select(5,
-                cf.split(':', cf.ref("TaskingManagerTargetGroup"))
-              )
+              cf.getAtt("TaskingManagerLoadBalancer", "LoadBalancerFullName"),
+              cf.getAtt("TaskingManagerTargetGroup", "TargetGroupFullName")
             ])
           }
         },
@@ -352,8 +354,8 @@ const Resources = {
     },
     Properties: {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-      ImageId: 'ami-00fa576fb10a52a1c',
-      InstanceType: 'c5d.large',
+      ImageId: cf.ref('TaskingManagerBackendAMI'),
+      InstanceType: cf.ref('TaskingManagerBackendInstanceType'),
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
       UserData: cf.userData([
         '#!/bin/bash',
@@ -431,11 +433,6 @@ const Resources = {
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3 manage.py db upgrade',
         'echo "------------------------------------------------------------"',
-        'pushd /home/ubuntu',
-        'wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install',
-        'chmod +x ./install && sudo ./install auto',
-        'sudo systemctl start codedeploy-agent',
-        'popd',
         cf.sub('export NEW_RELIC_LICENSE_KEY="${NewRelicLicense}"'),
         cf.sub('export TM_SENTRY_BACKEND_DSN="${SentryBackendDSN}"'),
         'export NEW_RELIC_ENVIRONMENT=$TM_ENVIRONMENT',
@@ -460,7 +457,6 @@ const Resources = {
         }]
       },
       ManagedPolicyArns: [
-          'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy',
           'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy',
           'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
       ],
@@ -579,7 +575,7 @@ const Resources = {
     Properties: {
       Name: cf.stackName,
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
-      Subnets: cf.split(',', cf.ref('ELBSubnets')),
+      Subnets: cf.ref('ELBSubnets'),
       Type: 'application'
     }
   },
@@ -627,7 +623,7 @@ const Resources = {
       LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
       Port: 443,
       Protocol: 'HTTPS',
-      SslPolicy: 'ELBSecurityPolicy-FS-1-2-2019-08'
+      SslPolicy: 'ELBSecurityPolicy-TLS13-1-2-2021-06'
     }
   },
   TaskingManagerLoadBalancerHTTPListener: {
@@ -674,37 +670,45 @@ const Resources = {
     Type: 'AWS::S3::Bucket',
     Properties: {
       BucketName: cf.join('-', [cf.stackName, 'react-app']),
-      AccessControl: "PublicRead",
-      PublicAccessBlockConfiguration: {
-        BlockPublicAcls: false,
-        BlockPublicPolicy: false,
-        IgnorePublicAcls: false,
-        RestrictPublicBuckets: false
-      },
       WebsiteConfiguration: {
         ErrorDocument: 'index.html',
         IndexDocument: 'index.html'
-      }
+      },
+      AccessControl: "Private"
     }
   },
   TaskingManagerReactBucketPolicy: {
     Type: 'AWS::S3::BucketPolicy',
+    Metadata: {
+      TODO: "Condition: { StringEquals: { AWS:SourceArn: arn:aws:cloudfront::6000000:distribution/EH2ANTHENTH } }"
+    },
     Properties: {
       Bucket : cf.ref('TaskingManagerReactBucket'),
       PolicyDocument: {
         Version: "2012-10-17",
-        Statement:[{
-          Action: [ 's3:GetObject'],
-          Effect: 'Allow',
-          Principal: '*',
-          Resource: [ cf.join('',
-            [
-              cf.getAtt('TaskingManagerReactBucket', 'Arn'), 
-              '/*'
-            ]
-          )],
-          Sid: 'AddPerm'
-        }]
+        Statement: [
+          {
+            Action: [ "s3:GetObject" ],
+            Effect: 'Allow',
+            Principal: "*",
+            Resource: [
+              cf.join("/", [
+                  cf.getAtt("TaskingManagerReactBucket", "Arn"),
+                  "*"
+              ])
+            ],
+            Sid: "PublicGetObject"
+          },
+          {
+            Action: [ "s3:ListBucket" ],
+            Effect: "Allow",
+            Principal: "*",
+            Resource: [
+              cf.getAtt("TaskingManagerReactBucket", "Arn")
+            ],
+            Sid: "PublicListBucket"
+          }
+        ]
       }
     }
   },
@@ -712,18 +716,22 @@ const Resources = {
     Type: "AWS::CloudFront::Distribution",
     Properties: {
       DistributionConfig: {
+        Comment: cf.join(" ", [ "Frontend CDN for Tasking Manager", cf.ref("NetworkEnvironment") ] ),
         DefaultRootObject: 'index.html',
-        Aliases: [
-          cf.ref('TaskingManagerURL')
-        ],
+        Aliases: [ cf.ref('TaskingManagerURL') ],
         Enabled: true,
-        Origins: [{
-          Id: cf.join('-', [cf.stackName, 'react-app']),
-          DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only'
+        HttpVersion: "http2",
+        IPV6Enabled: true,
+        Origins: [
+          {
+            Id: cf.join('-', [cf.stackName, 'react-app']),
+            DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'), // NOTE: Can also be WebsiteURL
+            CustomOriginConfig: {
+              OriginProtocolPolicy: "https-only",
+              OriginSSLProtocols: [ "TLSv1.2" ]
+            }
           }
-        }],
+        ],
         CustomErrorResponses: [{
           ErrorCachingMinTTL : 0,
           ErrorCode: 403,
@@ -751,7 +759,7 @@ const Resources = {
         },
         ViewerCertificate: {
           AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
-          MinimumProtocolVersion: 'TLSv1.2_2018',
+          MinimumProtocolVersion: 'TLSv1.2_2021',
           SslSupportMethod: 'sni-only'
         }
       }
@@ -761,13 +769,39 @@ const Resources = {
     Type: 'AWS::Route53::RecordSet',
     Condition: 'IsHOTOSMUrl',
     Properties: {
-      Name: cf.ref('TaskingManagerURL'),
+      Name: 't0.hotosm.org',
       Type: 'A',
       AliasTarget: {
         DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
         HostedZoneId: 'Z2FDTNDATAQYW2'
       },
       HostedZoneId: 'Z2O929GW6VWG99',
+    }
+  },
+  TaskingManagerDNSEntries: {
+    Type: "AWS::Route53::RecordSetGroup",
+    Condition: "IsHOTOSMUrl",
+    Properties: {
+      Comment: "DNS records pointing to CDN Frontend",
+      HostedZoneId: 'Z2O929GW6VWG99', // This is hotosm.org hosted Zone ID on Route53
+      RecordSets: [
+        {
+          Name: cf.ref('TaskingManagerURL'),
+          Type: 'A',
+          AliasTarget: {
+            DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
+            HostedZoneId: 'Z2FDTNDATAQYW2' // TODO: This is defined in the AWS Documentation
+          }
+        },
+        {
+          Name: cf.ref('TaskingManagerURL'),
+          Type: 'AAAA',
+          AliasTarget: {
+            DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
+            HostedZoneId: 'Z2FDTNDATAQYW2' // TODO: This is defined in the AWS Documentation
+          },
+        }
+      ]
     }
   }
 };

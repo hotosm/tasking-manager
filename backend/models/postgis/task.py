@@ -796,8 +796,13 @@ class Task(db.Model):
             user_id=user_id,
             mapping_issues=issues,
         )
-
-        if (
+        # If undo, clear the mapped_by and validated_by fields
+        if undo:
+            if new_state == TaskStatus.MAPPED:
+                self.validated_by = None
+            elif new_state == TaskStatus.READY:
+                self.mapped_by = None
+        elif (
             new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY]
             and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION
         ):
