@@ -151,8 +151,14 @@ const handlers = [
   rest.get(API_URL + 'notifications', async (req, res, ctx) => {
     return res(ctx.json(notifications));
   }),
+  rest.get(API_URL + 'notifications/:id', async (req, res, ctx) => {
+    return res(ctx.json(notifications.userMessages[0]));
+  }),
   rest.get(API_URL + 'notifications/queries/own/count-unread/', async (req, res, ctx) => {
     return res(ctx.json(ownCountUnread));
+  }),
+  rest.delete(API_URL + 'notifications/:id/', async (req, res, ctx) => {
+    return res(ctx.json({ Success: 'Message deleted' }));
   }),
   rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
     return res(ctx.json({ Success: 'Message deleted' }));
@@ -357,6 +363,12 @@ const faultyHandlers = [
     return res.networkError('Failed to connect');
   }),
   rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.delete(API_URL + 'notifications/:id/', async (req, res, ctx) => {
     return res.networkError('Failed to connect');
   }),
 ];
