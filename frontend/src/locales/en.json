@@ -187,6 +187,7 @@
   "notifications.filter.projects": "Projects",
   "notifications.filter.clear": "Clear filters",
   "notifications.markAsRead": "Mark as read",
+  "notifications.errorLoadingNotifications": "There was an error while loading your notifications",
   "notifications.navFilters.error": "Error loading the {xWord} for {yWord}",
   "notifications.navFilters.error.simple": "Error loading the {xWord}",
   "notifications.pagination.count": "Showing {number} of {total}",
