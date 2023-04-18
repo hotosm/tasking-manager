@@ -32,9 +32,10 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
           name="defaultLocale"
           onChange={updateDefaultLocale}
           className="pa2 bg-white ba ba--grey-light"
+          value={defaultLocale}
         >
           {languages.map((l) => (
-            <option key={l.code} selected={l.code === defaultLocale ? true : false} value={l.code}>
+            <option key={l.code} value={l.code}>
               {l.language} ({l.code})
             </option>
           ))}
