@@ -72,7 +72,7 @@ export const NotificationsPage = () => {
   const location = useLocation();
   const userToken = useSelector((state) => state.auth.token);
   const [inboxQuery, setInboxQuery] = useInboxQueryParams();
-  const [error, loading, notifications] = useFetchWithAbort(
+  const [error, loading, notifications, refetch] = useFetchWithAbort(
     `notifications/?${serializeParams(inboxQuery)}`,
   );
 
@@ -95,6 +95,7 @@ export const NotificationsPage = () => {
           loading={loading}
           notifications={notifications}
           inboxQuery={inboxQuery}
+          retryFn={refetch}
         />
         <div className="flex justify-end mw8">
           <Paginator

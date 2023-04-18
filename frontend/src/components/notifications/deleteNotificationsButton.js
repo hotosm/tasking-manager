@@ -12,23 +12,41 @@ export const DeleteNotificationsButton = ({
   setSelected,
   retryFn,
   unreadCountInSelected,
+  isAllSelected,
+  inboxQuery,
+  updateUnreadCount,
 }) => {
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
 
   const deleteMessages = (selected) => {
+    const param = inboxQuery.types ? `?messageType=${inboxQuery.types?.join(',')}` : '';
     const payload = JSON.stringify({ messageIds: selected });
-    pushToLocalJSONAPI(`/api/v2/notifications/delete-multiple/`, payload, token, 'DELETE')
-      .then((success) => {
-        setSelected([]);
-        retryFn();
-        Array.from({ length: unreadCountInSelected }, () =>
-          dispatch({ type: 'DECREMENT_UNREAD_COUNT' }),
-        );
-      })
-      .catch((e) => {
-        console.log(e.message);
-      });
+
+    if (isAllSelected) {
+      pushToLocalJSONAPI(`/api/v2/notifications/delete-all/${param}`, null, token, 'DELETE')
+        .then(() => {
+          setSelected([]);
+          retryFn();
+          updateUnreadCount();
+        })
+        .catch((e) => {
+          console.log(e.message);
+        });
+    } else {
+      pushToLocalJSONAPI(`/api/v2/notifications/delete-multiple/`, payload, token, 'DELETE')
+        .then(() => {
+          setSelected([]);
+          retryFn();
+          // The decrement count is readily available; deducting count from selected
+          Array.from({ length: unreadCountInSelected }, () =>
+            dispatch({ type: 'DECREMENT_UNREAD_COUNT' }),
+          );
+        })
+        .catch((e) => {
+          console.log(e.message);
+        });
+    }
   };
 
   return (
