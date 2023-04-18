@@ -167,9 +167,12 @@ const NotificationCards = ({
               setSelected={setSelected}
               retryFn={retryFn}
               unreadCountInSelected={unreadCountInSelected}
+              isAllSelected={isAllSelected}
+              inboxQuery={inboxQuery}
+              updateUnreadCount={updateUnreadCount}
             />
           </div>
-          {selected.length === 10 && totalNotifications > 10 && (
+          {selected.length === 10 && totalNotifications > 10 && !inboxQuery.project && (
             <SelectAllNotifications
               inboxQuery={inboxQuery}
               totalNotifications={totalNotifications}
