@@ -33,13 +33,7 @@ export const ProjectSearchResults = (props) => {
       </p>
       {state.isError ? (
         <div className="bg-tan pa4">
-          <FormattedMessage
-            {...messages.errorLoadingTheXForY}
-            values={{
-              xWord: <FormattedMessage {...messages.projects} />,
-              yWord: 'Explore Projects',
-            }}
-          />
+          <FormattedMessage {...messages.errorLoadingNotifications} />
           <div className="pa2">
             <button className="pa1" onClick={() => props.retryFn()}>
               <FormattedMessage {...messages.retry} />
