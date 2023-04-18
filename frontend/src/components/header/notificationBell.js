@@ -40,10 +40,11 @@ export const NotificationBell = () => {
     // so while it's undefined, we rely on initialUnreadCount
     if ((!unreadCount && initialUnreadCount?.newMessages) || unreadCount?.newMessages) {
       setDoesUnreadNotificationsExist(true);
+      refetch();
     } else {
       setDoesUnreadNotificationsExist(false);
     }
-  }, [initialUnreadCount, unreadCount]);
+  }, [initialUnreadCount, unreadCount, refetch]);
 
   const handleBellClick = (e) => {
     e.preventDefault();
