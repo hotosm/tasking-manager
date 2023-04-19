@@ -296,6 +296,18 @@ class StatsService:
             .join(project_contributions, User.id == project_contributions.c.user_id)
             .outerjoin(mapped_stmt, User.id == mapped_stmt.c.mapped_by)
             .outerjoin(validated_stmt, User.id == validated_stmt.c.validated_by)
+            .group_by(
+                User.id,
+                User.username,
+                User.name,
+                User.mapping_level,
+                User.picture_url,
+                User.date_registered,
+                mapped_stmt.c.count,
+                mapped_stmt.c.task_ids,
+                validated_stmt.c.count,
+                validated_stmt.c.task_ids,
+            )
             .order_by(desc("total"))
             .all()
         )
