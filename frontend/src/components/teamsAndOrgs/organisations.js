@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
 import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 import Select from 'react-select';
@@ -197,7 +197,6 @@ export function OrgInformation({ hasSlug, formState }) {
   const token = useSelector((state) => state.auth.token);
   const userDetails = useSelector((state) => state.auth.userDetails);
   const [uploadError, uploading, uploadImg] = useUploadImage();
-  const location = useLocation();
   const intl = useIntl();
   //eslint-disable-next-line
   const [isCopied, setCopied] = useCopyClipboard();
@@ -247,7 +246,7 @@ export function OrgInformation({ hasSlug, formState }) {
                   <ClipboardIcon
                     className="h1 w1 ph1 v-mid"
                     onClick={() =>
-                      setCopied(`${location.origin}/organisations/${props.input.value}/`)
+                      setCopied(`${window.location.origin}/organisations/${props.input.value}/`)
                     }
                   />
                 </span>
