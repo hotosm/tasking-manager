@@ -65,26 +65,24 @@ export const ActionButtons = ({
         );
   }
 
-  return (
-    <div className="pl2 dib">
-      {selected.length ? (
-        <>
-          <Button
-            onClick={() => markNotificationsAsRead()}
-            className="bg-red white"
-            disabled={!token}
-          >
-            <EyeIcon className="w1 h1 pr2 v-mid white" />
-            <FormattedMessage {...messages.markAsRead} />
-          </Button>
-          <Button onClick={() => deleteMessages()} className="bg-red white ml3" disabled={!token}>
-            <WasteIcon className="w1 h1 pr2 v-mid white" />
-            <FormattedMessage {...deletionMessages.delete} />
-          </Button>
-        </>
-      ) : (
-        <></>
-      )}
-    </div>
-  );
+  if (selected.length) {
+    return (
+      <div className="pl2 dib">
+        <Button
+          onClick={() => markNotificationsAsRead()}
+          className="bg-red white"
+          disabled={!token}
+        >
+          <EyeIcon className="w1 h1 pr2 v-mid white" />
+          <FormattedMessage {...messages.markAsRead} />
+        </Button>
+        <Button onClick={() => deleteMessages()} className="bg-red white ml3" disabled={!token}>
+          <WasteIcon className="w1 h1 pr2 v-mid white" />
+          <FormattedMessage {...deletionMessages.delete} />
+        </Button>
+      </div>
+    );
+  } else {
+    return null;
+  }
 };
