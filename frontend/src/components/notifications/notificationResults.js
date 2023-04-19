@@ -97,7 +97,7 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn, setPopoutFocus }
 
   if (pageOfCards.length === 0) {
     return (
-      <div className="mb3 blue-grey">
+      <div className={`mb3 ${useMiniCard ? 'ph3 ml2' : ''} blue-grey`}>
         <FormattedMessage {...messages[useMiniCard ? 'noUnreadMessages' : 'noMessages']} />
       </div>
     );
