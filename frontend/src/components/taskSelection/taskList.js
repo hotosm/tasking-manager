@@ -148,7 +148,7 @@ export function TaskItem({
                 height="18px"
                 className={`pointer ${isCopied ? '' : 'hover-blue-grey'}`}
                 onClick={() =>
-                  setCopied(`${location.origin}${location.pathname}?search=${data.taskId}`)
+                  setCopied(`${window.location.origin}${location.pathname}?search=${data.taskId}`)
                 }
               />
             </div>
