@@ -763,7 +763,8 @@ class MessageService:
         returns: None
         """
         if message_type is not None:
-            message_type = map(int, message_type.split(","))
+            # Wrap in list for unit tests to work
+            message_type = list(map(int, message_type.split(",")))
         Message.mark_all_messages_read(user_id, message_type)
 
     @staticmethod
@@ -803,7 +804,8 @@ class MessageService:
         returns: None
         """
         if message_type is not None:
-            message_type = map(int, message_type.split(","))
+            # Wrap in list for unit tests to work
+            message_type = list(map(int, message_type.split(",")))
         Message.delete_all_messages(user_id, message_type)
 
     @staticmethod

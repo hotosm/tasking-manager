@@ -3,7 +3,7 @@ from unittest.mock import patch
 from backend.models.dtos.message_dto import MessageDTO
 from backend.services.messaging.message_service import MessageService
 from backend.models.postgis.statuses import TaskStatus
-from backend.models.postgis.message import MessageType
+from backend.models.postgis.message import MessageType, Message, NotFound
 from backend.models.postgis.task import Task
 from backend.services.messaging.smtp_service import SMTPService
 from tests.backend.helpers.test_helpers import (
@@ -109,3 +109,137 @@ class TestMessageService(BaseTestCase):
             test_project.id, self.test_user.username, test_author.username
         )
         mock_send_message.assert_called()
+
+    def send_multiple_welcome_messages(self, number_of_messages: int):
+        """ Sends multiple welcome messages """
+        message_ids = []
+        for _ in range(number_of_messages):
+            message_id = MessageService.send_welcome_message(self.test_user)
+            message_ids.append(message_id)
+        return message_ids
+
+    def test_delete_multiple_messages(self):
+        """Test that multiple messages can be deleted at once"""
+        # Arrange
+        message_ids = self.send_multiple_welcome_messages(3)
+        # Act
+        MessageService.delete_multiple_messages(
+            message_ids[:2], self.test_user.id
+        )
+        # Assert
+        messages = Message.get_all_messages(user_id=self.test_user.id)
+        self.assertEqual(len(messages.user_messages), 1)
+        self.assertEqual(messages.user_messages[0].message_id, message_ids[2])
+
+    def test_delete_all_messages(self):
+        """Test that all messages can be deleted at once"""
+        # Arrange
+        self.send_multiple_welcome_messages(3)
+        # Act
+        MessageService.delete_all_messages(self.test_user.id)
+        # Assert
+        with self.assertRaises(NotFound):
+            Message.get_all_messages(user_id=self.test_user.id)
+
+    def test_delete_all_message_by_type(self):
+        """Test that all messages can be deleted at once"""
+        # Arrange
+        self.send_multiple_welcome_messages(2)
+        test_user_2 = return_canned_user("test_user_2", 222222222)
+        test_user_2.create()
+        MessageService.send_team_join_notification(
+            test_user_2.id,
+            test_user_2.username,
+            self.test_user.id,
+            "test_team",
+            10,
+            "MANAGER",
+        )
+        # Send welcome message to test_user_2 to ensure that it is not deleted
+        MessageService.send_welcome_message(test_user_2)
+        # Act
+        MessageService.delete_all_messages(self.test_user.id, "1,2,3")
+        # Assert
+        user_1_messages = Message.get_all_messages(user_id=self.test_user.id)
+        # Since we deleted all messages of type 1,2,3, welcome messages should be deleted as it is of type 1
+        # Team join notification is of type 7, so it should still be there
+        self.assertEqual(len(user_1_messages.user_messages), 1)
+        self.assertEqual(
+            user_1_messages.user_messages[0].message_type,
+            MessageType.INVITATION_NOTIFICATION.name,
+        )
+        # Also assert that messages of other users are not deleted
+        user_2_messages = Message.get_all_messages(user_id=test_user_2.id)
+        self.assertEqual(len(user_2_messages.user_messages), 1)
+
+    def test_mark_multiple_messages_as_read(self):
+        # Arrange
+        message_ids = self.send_multiple_welcome_messages(3)
+        # Act
+        MessageService.mark_multiple_messages_read(
+            message_ids[:2], self.test_user.id
+        )
+        # Assert
+        messages = MessageService.get_all_messages(
+            user_id=self.test_user.id,
+            locale="en",
+            page=1,
+            sort_by="date",  # Required for function to work
+            sort_direction="desc",  # Required for function to work
+            status="unread",
+        )
+        self.assertEqual(len(messages.user_messages), 1)
+        self.assertEqual(messages.user_messages[0].message_id, message_ids[2])
+
+    def test_mark_all_messages_as_read(self):
+        # Arrange
+        self.send_multiple_welcome_messages(3)
+        # Act
+        MessageService.mark_all_messages_read(self.test_user.id)
+        # Assert
+        unread_count = Message.get_unread_message_count(self.test_user.id)
+        self.assertEqual(unread_count, 0)
+
+    def test_mark_all_messages_as_read_by_type(self):
+        # Arrange
+        self.send_multiple_welcome_messages(2)
+        test_user_2 = return_canned_user("test_user_2", 222222222)
+        test_user_2.create()
+        MessageService.send_team_join_notification(
+            test_user_2.id,
+            test_user_2.username,
+            self.test_user.id,
+            "test_team",
+            10,
+            "MANAGER",
+        )
+        # Send welcome message to test_user_2 to ensure that it is not marked as read
+        MessageService.send_welcome_message(test_user_2)
+        # Act
+        MessageService.mark_all_messages_read(self.test_user.id, "1,2,3")
+        # Assert
+        user_1_messages = MessageService.get_all_messages(
+            user_id=self.test_user.id,
+            locale="en",
+            page=1,
+            sort_by="date",  # Required for function to work
+            sort_direction="desc",  # Required for function to work
+            status="unread",
+        )
+        # Since we marked all messages of type 1,2,3 as read, welcome messages should be read as it is of type 1
+        # Team join notification is of type 7, so it should still be there unread
+        self.assertEqual(len(user_1_messages.user_messages), 1)
+        self.assertEqual(
+            user_1_messages.user_messages[0].message_type,
+            MessageType.INVITATION_NOTIFICATION.name,
+        )
+        # Also assert that messages of other users are not marked as read
+        user_2_messages = MessageService.get_all_messages(
+            user_id=test_user_2.id,
+            locale="en",
+            page=1,
+            sort_by="date",  # Required for function to work
+            sort_direction="desc",  # Required for function to work
+            status="unread",
+        )
+        self.assertEqual(user_2_messages.pagination.total, 1)
