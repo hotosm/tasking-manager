@@ -1,6 +1,5 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 
 import messages from './messages';
 import { ClipboardIcon } from '../svgIcons';
@@ -26,9 +25,10 @@ function getCustomMessageId(imagery) {
 export function Imagery({ value = '' }: Object) {
   const intl = useIntl();
   //eslint-disable-next-line
-  const [isCopied, setCopied] = useCopyClipboard();
   const imageryOption = useImageryOption(value);
   const customMessageId = getCustomMessageId(value);
+
+  const handleCopyToClipboard = () => navigator.clipboard.writeText(value);
 
   return (
     <p className={`f125 fw7 pt1 pr3 ma0 truncate blue-dark`}>
@@ -52,7 +52,7 @@ export function Imagery({ value = '' }: Object) {
           className="pointer pl2 blue-light hover-blue-dark"
           title={intl.formatMessage(messages.copyImageryURL)}
         >
-          <ClipboardIcon width="16px" height="16px" onClick={() => setCopied(value)} />
+          <ClipboardIcon width="16px" height="16px" onClick={handleCopyToClipboard} />
         </span>
       )}
     </p>

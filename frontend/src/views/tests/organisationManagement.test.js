@@ -175,6 +175,21 @@ describe('EditCampaign', () => {
     ).toBeInTheDocument();
   });
 
+  it('should copy the organization URL to clipboard', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
+        writeText: jest.fn().mockImplementation(() => Promise.resolve()),
+      },
+    });
+    setup();
+    await waitFor(() => expect(screen.getByText('Manage organization')).toBeInTheDocument());
+    await userEvent.click(screen.getAllByRole('button')[2]);
+    expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      `${window.location.origin}/organisations/organisation-name-123/`,
+    );
+  });
+
   it('should hide the save button after organisation edit is successful', async () => {
     setup();
     await waitFor(() => expect(screen.getByText('Manage organization')).toBeInTheDocument());
