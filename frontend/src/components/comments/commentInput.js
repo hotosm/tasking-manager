@@ -18,7 +18,7 @@ import { iconConfig } from './editorIconConfig';
 import messages from './messages';
 import { CurrentUserAvatar } from '../user/avatar';
 
-export const CommentInputField = ({
+function CommentInputField({
   comment,
   setComment,
   contributors,
@@ -29,7 +29,7 @@ export const CommentInputField = ({
   isShowUserPicture = false,
   placeholderMsg = messages.leaveAComment,
   markdownTextareaProps = {},
-}: Object) => {
+}: Object) {
   const token = useSelector((state) => state.auth.token);
   const textareaRef = useRef();
   const isBundle = useRef(false);
@@ -179,4 +179,6 @@ export const CommentInputField = ({
       <FileRejections files={fileRejections} />
     </div>
   );
-};
+}
+
+export default CommentInputField;

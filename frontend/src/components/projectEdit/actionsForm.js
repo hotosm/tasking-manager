@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import Select from 'react-select';
@@ -13,7 +13,10 @@ import { styleClasses, StateContext } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useFetch } from '../../hooks/UseFetch';
 import { useAsync } from '../../hooks/UseAsync';
-import { CommentInputField } from '../comments/commentInput';
+import ReactPlaceholder from 'react-placeholder';
+const CommentInputField = React.lazy(() =>
+  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
+);
 
 const ActionStatus = ({ status, action }) => {
   let successMessage = '';
@@ -324,13 +327,17 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
         {(msg) => {
           return (
             <div className="dib w-100 mt-3">
-              <CommentInputField
-                comment={message}
-                setComment={setMessage}
-                enableHashtagPaste={false}
-                contributors={[]}
-                isShowTabNavs
-              />
+              <Suspense
+                fallback={<ReactPlaceholder showLoadingAnimation={true} rows={10} delay={300} />}
+              >
+                <CommentInputField
+                  comment={message}
+                  setComment={setMessage}
+                  enableHashtagPaste={false}
+                  contributors={[]}
+                  isShowTabNavs
+                />
+              </Suspense>
             </div>
           );
         }}

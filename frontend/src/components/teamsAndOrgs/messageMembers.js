@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { Button } from '../button';
-import { CommentInputField } from '../comments/commentInput';
 import { MessageStatus } from '../comments/status';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import ReactPlaceholder from 'react-placeholder';
+
+const CommentInputField = React.lazy(() =>
+  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
+);
 
 export function MessageMembers({ teamId, members }: Object) {
   const token = useSelector((state) => state.auth.token);
@@ -64,12 +68,16 @@ export function MessageMembers({ teamId, members }: Object) {
           </div>
         )}
         <div className="cf mb1">
-          <CommentInputField
-            comment={message}
-            setComment={setMessage}
-            contributors={members?.map((member) => member.username)}
-            isShowTabNavs
-          />
+          <Suspense
+            fallback={<ReactPlaceholder showLoadingAnimation={true} rows={10} delay={300} />}
+          >
+            <CommentInputField
+              comment={message}
+              setComment={setMessage}
+              contributors={members?.map((member) => member.username)}
+              isShowTabNavs
+            />
+          </Suspense>
         </div>
         {!message && <MessageStatus status={status} />}
       </div>
