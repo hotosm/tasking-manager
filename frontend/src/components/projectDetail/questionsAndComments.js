@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { useMutation } from '@tanstack/react-query';
@@ -9,7 +9,6 @@ import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { PaginatorLine } from '../paginator';
 import { Button } from '../button';
 import { Alert } from '../alert';
-import { CommentInputField } from '../comments/commentInput';
 import { MessageStatus } from '../comments/status';
 import { UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
@@ -18,6 +17,10 @@ import { DeleteModal } from '../deleteModal';
 import { postProjectComment, useCommentsQuery } from '../../api/questionsAndComments';
 
 import './styles.scss';
+
+const CommentInputField = React.lazy(() =>
+  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
+);
 
 export const PostProjectComment = ({ projectId, refetchComments, contributors }) => {
   const token = useSelector((state) => state.auth.token);
@@ -39,17 +42,19 @@ export const PostProjectComment = ({ projectId, refetchComments, contributors })
   return (
     <div className="w-100 cf mh4 pv4 bg-white center shadow-7 ba0 br1 post-comment-ctr">
       <div className={`w-100 h-100`} style={{ position: 'relative', display: 'block' }}>
-        <CommentInputField
-          comment={comment}
-          setComment={setComment}
-          enableHashtagPaste
-          isShowUserPicture
-          isShowFooter
-          isShowTabNavs
-          contributors={
-            Array.isArray(contributors) ? contributors.map((user) => user.username) : undefined
-          }
-        />
+        <Suspense fallback={<ReactPlaceholder showLoadingAnimation={true} rows={13} delay={300} />}>
+          <CommentInputField
+            comment={comment}
+            setComment={setComment}
+            enableHashtagPaste
+            isShowUserPicture
+            isShowFooter
+            isShowTabNavs
+            contributors={
+              Array.isArray(contributors) ? contributors.map((user) => user.username) : undefined
+            }
+          />
+        </Suspense>
       </div>
 
       <div className="fl w-100 tr pt1 pr0-ns pr1 ml-auto">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
@@ -28,7 +28,6 @@ import { getEditors } from '../../utils/editorsList';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { getTaskContributors } from '../../utils/getTaskContributors';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { CommentInputField } from '../comments/commentInput';
 import { useFetchLockedTasks, useClearLockedTasks } from '../../hooks/UseLockedTasks';
 import {
   submitMappingTask,
@@ -37,6 +36,11 @@ import {
   stopValidation,
   submitValidationTask,
 } from '../../api/projects';
+import ReactPlaceholder from 'react-placeholder';
+
+const CommentInputField = React.lazy(() =>
+  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
+);
 
 export function CompletionTabForMapping({
   project,
@@ -262,14 +266,16 @@ export function CompletionTabForMapping({
         <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.comment} />
         </h4>
-        <CommentInputField
-          comment={taskComment}
-          setComment={setTaskComment}
-          contributors={contributors}
-          enableHashtagPaste={true}
-          enableContributorsHashtag
-          isShowTabNavs
-        />
+        <Suspense fallback={<ReactPlaceholder showLoadingAnimation={true} rows={11} delay={300} />}>
+          <CommentInputField
+            comment={taskComment}
+            setComment={setTaskComment}
+            contributors={contributors}
+            enableHashtagPaste={true}
+            enableContributorsHashtag
+            isShowTabNavs
+          />
+        </Suspense>
       </div>
       {directedFrom && (
         <div className="flex items-center">
@@ -639,14 +645,18 @@ const TaskValidationSelector = ({
       {showCommentInput && (
         <>
           <div className="cf w-100 db pt2">
-            <CommentInputField
-              comment={comment}
-              setComment={setComment}
-              contributors={isValidatingMultipleTasks ? contributorsList : contributors}
-              enableHashtagPaste
-              enableContributorsHashtag
-              isShowTabNavs
-            />
+            <Suspense
+              fallback={<ReactPlaceholder showLoadingAnimation={true} rows={11} delay={300} />}
+            >
+              <CommentInputField
+                comment={comment}
+                setComment={setComment}
+                contributors={isValidatingMultipleTasks ? contributorsList : contributors}
+                enableHashtagPaste
+                enableContributorsHashtag
+                isShowTabNavs
+              />
+            </Suspense>
           </div>
           {isValidatingMultipleTasks && comment && (
             <div className="fw5 tr bb b--grey-light bw1 pb2">

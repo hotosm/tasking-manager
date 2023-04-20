@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import { useSelector } from 'react-redux';
 
 import { viewport } from '@placemarkio/geo-viewport';
@@ -21,13 +21,17 @@ import { CloseIcon } from '../svgIcons';
 import { ID_EDITOR_URL } from '../../config';
 import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
-import { CommentInputField } from '../comments/commentInput';
 import { useTaskDetail } from '../../api/projects';
 import { Alert } from '../alert';
 import { MessageStatus } from '../comments/status';
 import { postTaskComment } from '../../api/questionsAndComments';
 
 import './styles.scss';
+import ReactPlaceholder from 'react-placeholder';
+
+const CommentInputField = React.lazy(() =>
+  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
+);
 
 const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => {
   const token = useSelector((state) => state.auth.token);
@@ -50,15 +54,17 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
 
   return (
     <div className="w-100 pt3 ph3-ns ph1 flex flex-column">
-      <CommentInputField
-        comment={comment}
-        setComment={setComment}
-        enableHashtagPaste
-        contributors={contributors}
-        enableContributorsHashtag
-        isShowUserPicture
-        isShowTabNavs
-      />
+      <Suspense fallback={<ReactPlaceholder showLoadingAnimation={true} rows={12} delay={300} />}>
+        <CommentInputField
+          comment={comment}
+          setComment={setComment}
+          enableHashtagPaste
+          contributors={contributors}
+          enableContributorsHashtag
+          isShowUserPicture
+          isShowTabNavs
+        />
+      </Suspense>
       <div className="ml-auto mb5 flex flex-column gap-1 items-end">
         <Button
           onClick={() => saveComment()}
@@ -155,7 +161,7 @@ export const TaskHistory = ({ projectId, taskId }) => {
         ))}
       </div>
       <div className="timeline-container">
-        {/* This can handle displaying a messaage for the no comments section 
+        {/* This can handle displaying a messaage for the no comments section
         because no activities will be handled earlier */}
         {shownHistory.length === 0 ? (
           <div className="ma4 dark-gray tc">
