@@ -83,8 +83,8 @@ class NotificationsActionsDeleteAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            messageType = request.args.get("messageType")
-            MessageService.delete_all_messages(token_auth.current_user(), messageType)
+            message_type = request.args.get("messageType")
+            MessageService.delete_all_messages(token_auth.current_user(), message_type)
             return {"Success": "Messages deleted"}, 200
         except Exception as e:
             error_msg = f"DeleteAllMessages - unhandled error: {str(e)}"
@@ -123,9 +123,9 @@ class NotificationsActionsMarkAsReadAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            messageType = request.args.get("messageType")
+            message_type = request.args.get("messageType")
             MessageService.mark_all_messages_read(
-                token_auth.current_user(), messageType
+                token_auth.current_user(), message_type
             )
             return {"Success": "Messages marked as read"}, 200
         except Exception as e:

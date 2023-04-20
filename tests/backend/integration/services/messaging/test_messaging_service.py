@@ -123,9 +123,7 @@ class TestMessageService(BaseTestCase):
         # Arrange
         message_ids = self.send_multiple_welcome_messages(3)
         # Act
-        MessageService.delete_multiple_messages(
-            message_ids[:2], self.test_user.id
-        )
+        MessageService.delete_multiple_messages(message_ids[:2], self.test_user.id)
         # Assert
         messages = Message.get_all_messages(user_id=self.test_user.id)
         self.assertEqual(len(messages.user_messages), 1)
@@ -176,9 +174,7 @@ class TestMessageService(BaseTestCase):
         # Arrange
         message_ids = self.send_multiple_welcome_messages(3)
         # Act
-        MessageService.mark_multiple_messages_read(
-            message_ids[:2], self.test_user.id
-        )
+        MessageService.mark_multiple_messages_read(message_ids[:2], self.test_user.id)
         # Assert
         messages = MessageService.get_all_messages(
             user_id=self.test_user.id,
