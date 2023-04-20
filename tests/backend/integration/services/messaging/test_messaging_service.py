@@ -17,9 +17,12 @@ from tests.backend.base import BaseTestCase
 
 
 class TestMessageService(BaseTestCase):
-    def test_welcome_message_sent(self):
-        self.test_user = return_canned_user()
+    def setUp(self):
+        super().setUp()
+        self.test_user = return_canned_user("TEST_USER", 111111111)
         self.test_user.create()
+
+    def test_welcome_message_sent(self):
         # Act
         message_id = MessageService.send_welcome_message(self.test_user)
         self.assertIsNotNone(message_id)
@@ -51,12 +54,9 @@ class TestMessageService(BaseTestCase):
         status = TaskStatus.VALIDATED.value
         canned_project, canned_author = create_canned_project()
         update_project_with_info(canned_project)
-        canned_user = return_canned_user()
-        canned_user.id, canned_user.username = 100000, "test_user"
-        canned_user.create()
         # Act
         MessageService.send_message_after_validation(
-            status, canned_author.id, canned_user.id, 1, canned_project.id
+            status, canned_author.id, self.test_user.id, 1, canned_project.id
         )
 
         # Assert
@@ -67,11 +67,8 @@ class TestMessageService(BaseTestCase):
         # Arrange
         canned_project, canned_author = create_canned_project()
         canned_project = update_project_with_info(canned_project)
-        canned_user = return_canned_user()
-        canned_user.id, canned_user.username = 100000, "test_user"
-        canned_user.create()
         task = Task.get(1, canned_project.id)
-        task.mapped_by = canned_user.id
+        task.mapped_by = self.test_user.id
         message_dto = MessageDTO()
         message_dto.message_id = 12
         message_dto.subject = "Test subject"
@@ -92,9 +89,6 @@ class TestMessageService(BaseTestCase):
         # Arrange
         canned_project, canned_author = create_canned_project()
         canned_project = update_project_with_info(canned_project)
-        canned_user = return_canned_user()
-        canned_user.id, canned_user.username = 100000, "test_user"
-        canned_user.create()
         # Act
         MessageService.send_message_after_comment(
             canned_author.id, "@test_user Test message", 1, canned_project.id
@@ -105,14 +99,13 @@ class TestMessageService(BaseTestCase):
     @patch.object(SMTPService, "_send_message")
     def test_send_project_transfer_messgae(self, mock_send_message):
         test_project, test_author = create_canned_project()
-        test_user = return_canned_user("test_user", 11111)
-        test_user.email_address = "test@hotmalinator.com"
-        test_user.is_email_verified = True
-        test_user.create()
+        self.test_user.email_address = "test@hotmalinator.com"
+        self.test_user.is_email_verified = True
+        self.test_user.save()
         test_organisation = create_canned_organisation()
         test_project.organisation = test_organisation
-        add_manager_to_organisation(test_organisation, test_user)
+        add_manager_to_organisation(test_organisation, self.test_user)
         MessageService.send_project_transfer_message(
-            test_project.id, test_user.username, test_author.username
+            test_project.id, self.test_user.username, test_author.username
         )
         mock_send_message.assert_called()
