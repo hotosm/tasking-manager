@@ -578,7 +578,7 @@ dependencies = [
 
 [metadata]
 lock_version = "4.0"
-content_hash = "sha256:5e13e717f39332a0119bd083357d56a160042ac95c7278b93ea38b7896c6a9f1"
+content_hash = "sha256:937b4cad1d865b2ff33c3e6572fddebc655f9385a20479c4ec8a7e0a05d33f55"
 
 [metadata.files]
 "alembic 1.4.3" = [

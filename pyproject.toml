@@ -82,7 +82,7 @@ dependencies = [
     "zope.event==4.6",
     "zope.interface==6.0",
 ]
-requires-python = ">=3.10,<=3.11"
+requires-python = ">=3.9,<=3.11"
 readme = "README.md"
 license = {text = "BSD-2-Clause"}
 

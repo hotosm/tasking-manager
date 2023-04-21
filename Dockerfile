@@ -1,5 +1,5 @@
 ARG ALPINE_IMG_TAG=3.17
-ARG PYTHON_IMG_TAG=3.10
+ARG PYTHON_IMG_TAG=3.9
 
 FROM docker.io/python:${PYTHON_IMG_TAG}-alpine${ALPINE_IMG_TAG} as base
 ARG APP_VERSION=0.1.0
@@ -82,7 +82,7 @@ FROM runtime as debug
 RUN pip install --user --no-warn-script-location \
     --no-cache-dir debugpy==1.6.7
 CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678", \
-    "-m", "gunicorn", "-c", "python:backend.gunicorn", "manage:application" \
+    "-m", "gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
     "--reload", "--log-level", "error"]
 
 
@@ -90,7 +90,5 @@ CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678",
 FROM runtime as prod
 # Pre-compile packages to .pyc (init speed gains)
 RUN python -c "import compileall; compileall.compile_path(maxlevels=10, quiet=1)"
-# Note: 4 workers as running with docker
-# Note: For Kubernetes, change to uvicorn and a single worker
-CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application" \
-    "--workers", "4", "--log-level", "error"]
+CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
+    "--workers", "1", "--log-level", "error"]
