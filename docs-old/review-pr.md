@@ -53,11 +53,17 @@ and ask the person to check on the error.
 1. Test behaviour and edge cases
   Install the PR on your local setup, make sure you run
   a. backend dependency installation:
-    * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
-    * `pip install --upgrade pdm`
-    * `pdm config --global python.use_venv False`
-    * `eval "$(pdm --pep582)"`
-    * `pdm install`
+    * Linux/Mac (Option 1: pep582):
+        * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
+        * ```pip install --upgrade pdm```
+        * ```pdm config --global python.use_venv False```
+        * ```pdm --pep582 >> ~/.bash_profile```
+        * ```source ~/.bash_profile```
+        * ```pdm install```
+    * Linux/Mac (Option 2: pip (system/venv)):
+        * ```pip install --upgrade pdm```
+        * ```pdm export --without-hashes > requirements.txt```
+        * ```pip install requirements.txt```
   b. introduced database migrations: `python manage.py db upgrade`
   c. frontend dependency installation: `cd frontend && yarn && cd ..`
   d. rebuild the frontend: `cd frontend && yarn build && cd ..`
@@ -105,11 +111,11 @@ git pull https://github.com/author/tasking-manager.git branchname
 
 Make sure that python dependencies are up to date:
 
-* `pip install --upgrade pdm`
-* `pdm config --global python.use_venv False`
-* `eval "$(pdm --pep582)"`
-* `pdm install`
-
+* Option 1:
+    * ```pdm install```
+* Option 2:
+    * ```pdm export --without-hashes > requirements.txt```
+    * ```pip install requirements.txt```
 
 ### Frontend
 
