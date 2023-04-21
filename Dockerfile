@@ -73,7 +73,7 @@ COPY scripts/database scripts/database/
 COPY manage.py .
 # Add non-root user, permissions
 RUN adduser -D -u 900 -h /home/appuser -s /bin/false appuser \
-    && chown -R appuser:appuser /opt /home/appuser
+    && chown -R appuser:appuser /usr/src /home/appuser
 USER appuser
 
 
