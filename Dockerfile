@@ -71,16 +71,16 @@ COPY migrations migrations/
 COPY scripts/world scripts/world/
 COPY scripts/database scripts/database/
 COPY manage.py .
-# Add non-root user, permissions
+# Add non-root user, permissions, init log dir
 RUN adduser -D -u 900 -h /home/appuser -s /bin/false appuser \
     && chown -R appuser:appuser /usr/src /home/appuser
-USER appuser
 
 
 
 FROM runtime as debug
-RUN pip install --user --no-warn-script-location \
+RUN pip install --no-warn-script-location \
     --no-cache-dir debugpy==1.6.7
+USER appuser
 CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678", \
     "-m", "gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
     "--reload", "--log-level", "error"]
@@ -90,5 +90,6 @@ CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678",
 FROM runtime as prod
 # Pre-compile packages to .pyc (init speed gains)
 RUN python -c "import compileall; compileall.compile_path(maxlevels=10, quiet=1)"
+USER appuser
 CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
     "--workers", "1", "--log-level", "error"]
