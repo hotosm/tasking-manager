@@ -110,7 +110,7 @@ class TestOrgansitaionService(BaseTestCase):
         test_project.status = ProjectStatus.PUBLISHED.value
         test_project.save()
         # Act
-        org_stats = OrganisationService.get_organisation_stats(self.test_org.id, None)
+        org_stats = OrganisationService.get_organisation_stats(self.test_org.id)
         # Assert
         self.assertEqual(org_stats.projects.published, 1)
         self.assertEqual(org_stats.projects.draft, 0)

@@ -197,7 +197,9 @@ class OrganisationService:
         return projects
 
     @staticmethod
-    def get_organisation_stats(organisation_id: int, year: int) -> OrganizationStatsDTO:
+    def get_organisation_stats(
+        organisation_id: int, year: int = None
+    ) -> OrganizationStatsDTO:
         projects = db.session.query(
             Project.id, Project.status, Project.last_updated, Project.created
         ).filter(Project.organisation_id == organisation_id)
