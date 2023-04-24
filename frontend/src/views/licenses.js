@@ -5,6 +5,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { LicenseInformation, LicensesManagement, LicenseForm } from '../components/licenses';
@@ -20,7 +21,27 @@ export const EditLicense = () => {
   useSetTitleTag(`Edit ${license.name}`);
 
   const updateLicense = (payload) => {
-    pushToLocalJSONAPI(`licenses/${id}/`, JSON.stringify(payload), token, 'PATCH');
+    pushToLocalJSONAPI(`licenses/${id}/`, JSON.stringify(payload), token, 'PATCH')
+      .then(() =>
+        toast.success(
+          <FormattedMessage
+            {...messages.entityInfoUpdationSuccess}
+            values={{
+              entity: 'license',
+            }}
+          />,
+        ),
+      )
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.entityInfoUpdationFailure}
+            values={{
+              entity: 'license',
+            }}
+          />,
+        ),
+      );
   };
 
   return (
@@ -64,11 +85,29 @@ export const CreateLicense = () => {
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
 
-  const createLicense = (payload) => {
-    pushToLocalJSONAPI('licenses/', JSON.stringify(payload), token, 'POST').then((result) =>
-      navigate(`/manage/licenses/${result.licenseId}`),
-    );
-  };
+  const createLicense = (payload) =>
+    pushToLocalJSONAPI('licenses/', JSON.stringify(payload), token, 'POST')
+      .then((result) => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'license',
+            }}
+          />,
+        );
+        navigate(`/manage/licenses/${result.licenseId}`);
+      })
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.entityCreationFailure}
+            values={{
+              entity: 'license',
+            }}
+          />,
+        ),
+      );
 
   return (
     <Form

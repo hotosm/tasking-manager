@@ -365,6 +365,12 @@ const faultyHandlers = [
   rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', (req, res, ctx) => {
     return res.networkError('Failed to connect');
   }),
+  rest.post(API_URL + 'licenses', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.patch(API_URL + 'licenses/:id', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
   rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
     return res.networkError('Failed to connect');
   }),
