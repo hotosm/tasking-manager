@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -59,10 +59,28 @@ export function CreateCampaign() {
   const createCampaign = (payload) => {
     return pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'campaign',
+            }}
+          />,
+        );
         setError(false);
         navigate(`/manage/campaigns/${result.campaignId}`);
       })
-      .catch((e) => setError(true));
+      .catch((e) => {
+        toast.error(
+          <FormattedMessage
+            {...messages.entityCreationFailure}
+            values={{
+              entity: 'campaign',
+            }}
+          />,
+        );
+        setError(true);
+      });
   };
 
   const createCampaignAsync = useAsync(createCampaign);
@@ -127,8 +145,28 @@ export function EditCampaign() {
 
   const updateCampaign = (payload) => {
     return pushToLocalJSONAPI(`campaigns/${id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then((res) => setNameError(false))
-      .catch((e) => setNameError(true));
+      .then(() => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityInfoUpdationSuccess}
+            values={{
+              entity: 'campaign',
+            }}
+          />,
+        );
+        setNameError(false);
+      })
+      .catch(() => {
+        toast.error(
+          <FormattedMessage
+            {...messages.entityInfoUpdationFailure}
+            values={{
+              entity: 'campaign',
+            }}
+          />,
+        );
+        setNameError(true);
+      });
   };
 
   const updateCampaignAsync = useAsync(updateCampaign);
