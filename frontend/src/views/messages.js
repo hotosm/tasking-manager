@@ -120,6 +120,15 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.team.button.create',
     defaultMessage: 'Create team',
   },
+  affiliationUpdationSuccess: {
+    id: 'management.team.affiliationUpdationSuccess',
+    defaultMessage: '{affiliation, select, managers {Managers} other {Members}} updated',
+  },
+  affiliationUpdationFailure: {
+    id: 'management.team.affiliationUpdationFailure',
+    defaultMessage:
+      'Failed to updated {affiliation, select, managers {Managers} other {Members}}. Please try again',
+  },
   createCampaign: {
     id: 'teamsAndOrgs.management.campaign.button.create',
     defaultMessage: 'Create campaign',
