@@ -13,6 +13,7 @@ class NotificationService:
             raise NotFound()
 
         notifications.update()
+        return notifications.unread_count
 
     @staticmethod
     def get_unread_message_count(user_id: int):
