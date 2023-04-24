@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, Suspense } from 'react';
+import { useState, useContext, useEffect, Suspense, lazy, forwardRef } from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import Select from 'react-select';
@@ -14,7 +14,7 @@ import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSON
 import { useFetch } from '../../hooks/UseFetch';
 import { useAsync } from '../../hooks/UseAsync';
 import ReactPlaceholder from 'react-placeholder';
-const CommentInputField = React.lazy(() =>
+const CommentInputField = lazy(() =>
   import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
 );
 
@@ -508,7 +508,7 @@ const TransferProject = ({ projectId, orgId }: Object) => {
   );
 };
 
-const FormattedButtonTrigger = React.forwardRef((props, ref) => (
+const FormattedButtonTrigger = forwardRef((props, ref) => (
   <Button {...props}>{props.children}</Button>
 ));
 

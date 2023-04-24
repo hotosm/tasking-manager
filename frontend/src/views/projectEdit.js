@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import { createContext, useState, useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
@@ -24,7 +24,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { useAsync } from '../hooks/UseAsync';
 import { useEditProjectAllowed } from '../hooks/UsePermissions';
 
-export const StateContext = React.createContext();
+export const StateContext = createContext();
 
 export const styleClasses = {
   divClass: 'w-70-l w-100 pb4 mb3',

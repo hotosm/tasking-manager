@@ -1,4 +1,3 @@
-import React from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import { Tooltip } from 'react-tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';

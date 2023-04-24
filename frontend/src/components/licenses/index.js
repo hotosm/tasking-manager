@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';

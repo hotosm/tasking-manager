@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { HorizontalScroll } from '../horizontalScroll';

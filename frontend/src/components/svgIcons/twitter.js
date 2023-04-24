@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class TwitterIcon extends React.PureComponent {
+export class TwitterIcon extends PureComponent {
   render() {
     return (
       <svg width="15" height="14" viewBox="0 0 15 14" {...this.props} aria-label="Twitter">

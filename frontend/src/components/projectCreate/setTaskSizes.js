@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useState, useCallback } from 'react';
 import area from '@turf/area';
 import transformScale from '@turf/transform-scale';
 import { featureCollection } from '@turf/helpers';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import { lazy, useState, useEffect, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useQueryParam, StringParam } from 'use-query-params';
@@ -31,7 +31,7 @@ import {
   useTasksQuery,
 } from '../../api/projects';
 import { useTeamsQuery } from '../../api/teams';
-const TaskSelectionFooter = React.lazy(() => import('./footer'));
+const TaskSelectionFooter = lazy(() => import('./footer'));
 
 const getRandomTaskByAction = (activities, taskAction) => {
   if (['validateATask', 'validateAnotherTask'].includes(taskAction)) {

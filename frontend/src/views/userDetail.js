@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense } from 'react';
+import { lazy, useEffect, useState, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -17,10 +17,10 @@ import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
-const TopCauses = React.lazy(() =>
+const TopCauses = lazy(() =>
   import('../components/userDetail/topCauses' /* webpackChunkName: "topCauses" */),
 );
-const EditsByNumbers = React.lazy(() =>
+const EditsByNumbers = lazy(() =>
   import('../components/userDetail/editsByNumbers' /* webpackChunkName: "editsByNumbers" */),
 );
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { getYear } from 'date-fns';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 

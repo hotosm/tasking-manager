@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class WasteIcon extends React.PureComponent {
+export class WasteIcon extends PureComponent {
   render() {
     return (
       <svg width="14" height="16" viewBox="0 0 14 16" {...this.props}>

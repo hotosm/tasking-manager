@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class ExternalLinkIcon extends React.PureComponent {
+export class ExternalLinkIcon extends PureComponent {
   render() {
     return (
       <svg width="11" height="11" viewBox="0 0 11 11" {...this.props}>
@@ -13,7 +13,7 @@ export class ExternalLinkIcon extends React.PureComponent {
   }
 }
 
-export class InternalLinkIcon extends React.PureComponent {
+export class InternalLinkIcon extends PureComponent {
   // Icon produced by FontAwesome project: https://github.com/FortAwesome/Font-Awesome/
   // License: CC-By 4.0
   render() {

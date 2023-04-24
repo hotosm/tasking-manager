@@ -1,4 +1,3 @@
-import React from 'react';
 import { TextBlock, TextRow, RectShape } from 'react-placeholder/lib/placeholders';
 
 import { LoadingIcon } from '../svgIcons';

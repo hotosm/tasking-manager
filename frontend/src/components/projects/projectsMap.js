@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useCallback } from 'react';
+import { createRef, useLayoutEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -96,7 +96,7 @@ export const mapboxLayerDefn = (map, mapResults, clickOnProjectID, disablePoiCli
 };
 
 export const ProjectsMap = ({ mapResults, fullProjectsQuery, setQuery, className }) => {
-  const mapRef = React.createRef();
+  const mapRef = createRef();
   const locale = useSelector((state) => state.preferences['locale']);
   const [map, setMapObj] = useState(null);
 

@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { useMutation } from '@tanstack/react-query';
@@ -18,7 +18,7 @@ import { postProjectComment, useCommentsQuery } from '../../api/questionsAndComm
 
 import './styles.scss';
 
-const CommentInputField = React.lazy(() =>
+const CommentInputField = lazy(() =>
   import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
 );
 

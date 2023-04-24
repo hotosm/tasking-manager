@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class SelectTask extends React.PureComponent {
+export class SelectTask extends PureComponent {
   render() {
     return (
       <svg width="120px" height="100px" viewBox="0 0 120 100" {...this.props}>

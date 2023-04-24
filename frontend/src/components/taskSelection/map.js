@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import { createRef, useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import bbox from '@turf/bbox';
 import mapboxgl from 'mapbox-gl';
@@ -41,7 +41,7 @@ export const TasksMap = ({
   selected: selectedOnMap,
 }) => {
   const intl = useIntl();
-  const mapRef = React.createRef();
+  const mapRef = createRef();
   const locale = useSelector((state) => state.preferences['locale']);
   const authDetails = useSelector((state) => state.auth.userDetails);
   const [hoveredTaskId, setHoveredTaskId] = useState(null);

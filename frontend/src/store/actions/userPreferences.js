@@ -1,4 +1,4 @@
-import * as safeStorage from '../../utils/safe_storage';
+import { setItem } from '../../utils/safe_storage';
 
 export const types = {
   SET_LOCALE: 'SET_LOCALE',
@@ -16,6 +16,6 @@ export function updateLocale(locale) {
 }
 
 export const setLocale = (locale) => (dispatch) => {
-  safeStorage.setItem('locale', locale);
+  setItem('locale', locale);
   dispatch(updateLocale(locale));
 };

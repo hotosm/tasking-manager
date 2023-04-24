@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { forwardRef, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
@@ -10,7 +10,7 @@ import { DeleteButton } from '../teamsAndOrgs/management';
 import { Button } from '../button';
 import { AlertIcon } from '../svgIcons';
 
-const DeleteTrigger = React.forwardRef((props, ref) => <DeleteButton {...props} />);
+const DeleteTrigger = forwardRef((props, ref) => <DeleteButton {...props} />);
 
 export function DeleteModal({ id, name, type, className, endpointURL, onDelete }: Object) {
   const navigate = useNavigate();

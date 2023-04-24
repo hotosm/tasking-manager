@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import { createRef, useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import mapboxgl from 'mapbox-gl';
@@ -23,7 +23,7 @@ const UserCountriesMap = ({ projects }) => {
   const locale = useSelector((state) => state.preferences['locale']);
 
   const [map, setMap] = useState(null);
-  const mapRef = React.createRef();
+  const mapRef = createRef();
 
   useLayoutEffect(() => {
     mapboxgl.supported() &&

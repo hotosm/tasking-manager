@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useMatch } from 'react-router-dom';
 
 export const TopNavLink = (props) => {

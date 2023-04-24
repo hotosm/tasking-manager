@@ -1,6 +1,5 @@
 import { TM_DEFAULT_CHANGESET_COMMENT } from '../../../config';
-import nextDay from 'date-fns/nextDay';
-import { formatISO } from 'date-fns';
+import { formatISO, nextDay } from 'date-fns';
 
 export const PROJECT_ID_WITH_RANDOM_TASK_ENFORCED = 963;
 export const PROJECT_ID_ALL_VALIDATED = 6;

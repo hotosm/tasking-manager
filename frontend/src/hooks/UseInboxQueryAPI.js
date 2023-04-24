@@ -5,7 +5,7 @@ import queryString from 'query-string';
 import axios from 'axios';
 
 import { CommaArrayParam } from '../utils/CommaArrayParam';
-import { useThrottle } from '../hooks/UseThrottle';
+import { useThrottle } from './UseThrottle';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import { API_URL } from '../config';
 

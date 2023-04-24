@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useCallback, Suspense, useEffect } from 'react';
+import { lazy, useState, useLayoutEffect, useCallback, Suspense, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useQueryParam, NumberParam } from 'use-query-params';
@@ -34,7 +34,7 @@ import {
 } from '../../utils/geoFileFunctions';
 import { getErrorMsg } from './fileUploadErrors';
 
-const ProjectCreationMap = React.lazy(() =>
+const ProjectCreationMap = lazy(() =>
   import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
 );
 

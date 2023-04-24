@@ -1,5 +1,3 @@
-import React from 'react';
-
 const FileRejections = ({ files }: Object) => {
   // Component that receives the rejected files from Dropzone
   return (

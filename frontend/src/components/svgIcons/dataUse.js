@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class DataUseIcon extends React.PureComponent {
+export class DataUseIcon extends PureComponent {
   render() {
     return (
       <svg width="105" height="91" viewBox="0 0 105 91" {...this.props}>

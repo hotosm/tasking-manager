@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage, useIntl } from 'react-intl';
 
