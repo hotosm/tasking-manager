@@ -383,6 +383,15 @@ const faultyHandlers = [
   rest.delete(API_URL + 'campaigns/:id', (req, res, ctx) => {
     return res.networkError('Failed to connect');
   }),
+  rest.post(API_URL + 'teams', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.patch(API_URL + 'teams/:id/', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.delete(API_URL + 'teams/:id', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
   rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
     return res.networkError('Failed to connect');
   }),

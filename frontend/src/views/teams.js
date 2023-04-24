@@ -12,6 +12,7 @@ import {
   withDefault,
 } from 'use-query-params';
 import { stringify } from 'query-string';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -184,13 +185,32 @@ export function CreateTeam() {
 
   const createTeam = (payload) => {
     delete payload['organisation'];
-    pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST').then((result) => {
-      managers
-        .filter((user) => user.username !== userDetails.username)
-        .map((user) => joinTeamRequest(result.teamId, user.username, 'MANAGER', token));
-      members.map((user) => joinTeamRequest(result.teamId, user.username, 'MEMBER', token));
-      navigate(`/manage/teams/${result.teamId}`);
-    });
+    pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST')
+      .then((result) => {
+        managers
+          .filter((user) => user.username !== userDetails.username)
+          .map((user) => joinTeamRequest(result.teamId, user.username, 'MANAGER', token));
+        members.map((user) => joinTeamRequest(result.teamId, user.username, 'MEMBER', token));
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'team',
+            }}
+          />,
+        );
+        navigate(`/manage/teams/${result.teamId}`);
+      })
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.entityCreationFailure}
+            values={{
+              entity: 'team',
+            }}
+          />,
+        ),
+      );
   };
 
   return (
@@ -318,7 +338,28 @@ export function EditTeam(props) {
     Promise.all([
       ...usersAdded.map((user) => joinTeamRequest(team.teamId, user, 'MANAGER', token)),
       ...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, 'MANAGER', token)),
-    ]).then(forceUpdate);
+    ])
+      .then(() => {
+        toast.success(
+          <FormattedMessage
+            {...messages.affiliationUpdationSuccess}
+            values={{
+              affiliation: 'managers',
+            }}
+          />,
+        );
+        forceUpdate();
+      })
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.affiliationUpdationFailure}
+            values={{
+              affiliation: 'managers',
+            }}
+          />,
+        ),
+      );
   };
 
   const updateMembers = () => {
@@ -331,14 +372,56 @@ export function EditTeam(props) {
         }),
       ),
       ...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, 'MEMBER', token)),
-    ]).then(forceUpdate);
+    ])
+      .then(() => {
+        toast.success(
+          <FormattedMessage
+            {...messages.affiliationUpdationSuccess}
+            values={{
+              affiliation: 'members',
+            }}
+          />,
+        );
+        forceUpdate();
+      })
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.affiliationUpdationFailure}
+            values={{
+              affiliation: 'members',
+            }}
+          />,
+        ),
+      );
   };
 
   const updateTeam = (payload) => {
     if (payload.joinMethod !== 'BY_INVITE') {
       payload.visibility = 'PUBLIC';
     }
-    pushToLocalJSONAPI(`teams/${id}/`, JSON.stringify(payload), token, 'PATCH').then(forceUpdate);
+    pushToLocalJSONAPI(`teams/${id}/`, JSON.stringify(payload), token, 'PATCH')
+      .then(() => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityInfoUpdationSuccess}
+            values={{
+              entity: 'team',
+            }}
+          />,
+        );
+        forceUpdate();
+      })
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.entityInfoUpdationFailure}
+            values={{
+              entity: 'team',
+            }}
+          />,
+        ),
+      );
   };
 
   if (team && team.teamId && !canUserEditTeam) {
