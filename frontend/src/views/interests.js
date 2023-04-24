@@ -4,6 +4,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { InterestsManagement, InterestForm, InterestInformation } from '../components/interests';
@@ -19,9 +20,28 @@ export const CreateInterest = () => {
   const token = useSelector((state) => state.auth.token);
 
   const createInterest = (payload) => {
-    pushToLocalJSONAPI('interests/', JSON.stringify(payload), token, 'POST').then((result) =>
-      navigate(`/manage/categories/${result.id}`),
-    );
+    pushToLocalJSONAPI('interests/', JSON.stringify(payload), token, 'POST')
+      .then((result) => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'category',
+            }}
+          />,
+        );
+        navigate(`/manage/categories/${result.id}`);
+      })
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.entityCreationFailure}
+            values={{
+              entity: 'category',
+            }}
+          />,
+        ),
+      );
   };
 
   return (
@@ -98,7 +118,27 @@ export const EditInterest = () => {
   );
 
   const updateInterest = (payload) => {
-    pushToLocalJSONAPI(`interests/${id}/`, JSON.stringify(payload), token, 'PATCH');
+    pushToLocalJSONAPI(`interests/${id}/`, JSON.stringify(payload), token, 'PATCH')
+      .then(() =>
+        toast.success(
+          <FormattedMessage
+            {...messages.entityInfoUpdationSuccess}
+            values={{
+              entity: 'category',
+            }}
+          />,
+        ),
+      )
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.entityInfoUpdationFailure}
+            values={{
+              entity: 'category',
+            }}
+          />,
+        ),
+      );
   };
 
   return (

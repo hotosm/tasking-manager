@@ -1,6 +1,7 @@
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import toast from 'react-hot-toast';
 
 import {
   createComponentWithMemoryRouter,
@@ -8,6 +9,12 @@ import {
   renderWithRouter,
 } from '../../utils/testWithIntl';
 import { ListInterests, CreateInterest, EditInterest } from '../interests';
+import { setupFaultyHandlers } from '../../network/tests/server';
+
+jest.mock('react-hot-toast', () => ({
+  success: jest.fn(),
+  error: jest.fn(),
+}));
 
 describe('List Interests', () => {
   const setup = () => {
@@ -100,7 +107,26 @@ describe('Create Interest', () => {
     const nameInput = screen.getByRole('textbox');
     fireEvent.change(nameInput, { target: { value: 'New interest Name' } });
     fireEvent.click(createButton);
-    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/categories/123'));
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledTimes(1);
+      expect(router.state.location.pathname).toBe('/manage/categories/123');
+    });
+  });
+
+  it('should display toast with error has occured message', async () => {
+    setupFaultyHandlers();
+    createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <CreateInterest />
+      </ReduxIntlProviders>,
+    );
+    const createButton = screen.getByRole('button', { name: /create category/i });
+    const nameInput = screen.getByRole('textbox');
+    fireEvent.change(nameInput, { target: { value: 'New interest Name' } });
+    fireEvent.click(createButton);
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledTimes(1);
+    });
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
@@ -108,16 +134,19 @@ describe('Create Interest', () => {
 
 describe('Edit Interest', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    createComponentWithMemoryRouter(
       <ReduxIntlProviders>
-        <EditInterest id={1} />
+        <EditInterest />
       </ReduxIntlProviders>,
+      {
+        route: '/interests/:id',
+        entryRoute: '/interests/1',
+      },
     );
     const nameInput = screen.getByRole('textbox');
 
     return {
       nameInput,
-      history,
     };
   };
 

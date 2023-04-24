@@ -371,6 +371,9 @@ const faultyHandlers = [
   rest.patch(API_URL + 'licenses/:id', (req, res, ctx) => {
     return res.networkError('Failed to connect');
   }),
+  rest.post(API_URL + 'interests', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),  
   rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
     return res.networkError('Failed to connect');
   }),
