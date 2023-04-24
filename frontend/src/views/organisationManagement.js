@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -87,9 +88,25 @@ export function CreateOrganisation() {
     payload.managers = managers.map((user) => user.username);
     pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'organization',
+            }}
+          />,
+        );
         navigate(`/manage/organisations/${result.organisationId}`);
       })
       .catch((err) => {
+        toast.error(
+          <FormattedMessage
+            {...messages.entityCreationFailure}
+            values={{
+              entity: 'organization',
+            }}
+          />,
+        );
         setError(err.message);
       });
   };
@@ -185,13 +202,53 @@ export function EditOrganisation() {
 
   const updateManagers = () => {
     let payload = JSON.stringify({ managers: managers.map((i) => i.username) });
-    pushToLocalJSONAPI(`organisations/${id}/`, payload, token, 'PATCH');
+    pushToLocalJSONAPI(`organisations/${id}/`, payload, token, 'PATCH')
+      .then(() =>
+        toast.success(
+          <FormattedMessage
+            {...messages.affiliationUpdationSuccess}
+            values={{
+              affiliation: 'managers',
+            }}
+          />,
+        ),
+      )
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.affiliationUpdationFailure}
+            values={{
+              affiliation: 'managers',
+            }}
+          />,
+        ),
+      );
   };
 
   const updateOrg = (payload) => {
     pushToLocalJSONAPI(`organisations/${id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then(() => setErrorMessage(null))
-      .catch((err) => setErrorMessage(err.message));
+      .then(() => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityInfoUpdationSuccess}
+            values={{
+              entity: 'organization',
+            }}
+          />,
+        );
+        setErrorMessage(null);
+      })
+      .catch((err) => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityInfoUpdationFailure}
+            values={{
+              entity: 'organization',
+            }}
+          />,
+        );
+        setErrorMessage(err.message);
+      });
   };
 
   return (
