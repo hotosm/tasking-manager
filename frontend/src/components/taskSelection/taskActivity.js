@@ -1,4 +1,4 @@
-import { useState, useMemo, Suspense } from 'react';
+import { useState, useMemo, Suspense, lazy } from 'react';
 import { useSelector } from 'react-redux';
 
 import { viewport } from '@placemarkio/geo-viewport';
@@ -27,9 +27,8 @@ import { MessageStatus } from '../comments/status';
 import { postTaskComment } from '../../api/questionsAndComments';
 
 import './styles.scss';
-import ReactPlaceholder from 'react-placeholder';
 
-const CommentInputField = React.lazy(() =>
+const CommentInputField = lazy(() =>
   import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
 );
 

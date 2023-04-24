@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { connect } from 'react-redux';
 import { Form, Field } from 'react-final-form';
 import { Tooltip } from 'react-tooltip';

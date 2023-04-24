@@ -1,4 +1,3 @@
-import React from 'react';
 import TestRenderer from 'react-test-renderer';
 import { Provider } from 'react-redux';
 import { IntlProvider } from 'react-intl';

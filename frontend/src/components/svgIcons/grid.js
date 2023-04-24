@@ -1,9 +1,9 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
 // Icons produced by FontAwesome project: https://github.com/FortAwesome/Font-Awesome/
 // License: CC-By 4.0
 
-export class FourCellsGridIcon extends React.PureComponent {
+export class FourCellsGridIcon extends PureComponent {
   render() {
     return (
       <svg viewBox="0 0 512 512" {...this.props}>
@@ -16,7 +16,7 @@ export class FourCellsGridIcon extends React.PureComponent {
   }
 }
 
-export class NineCellsGridIcon extends React.PureComponent {
+export class NineCellsGridIcon extends PureComponent {
   render() {
     return (
       <svg viewBox="0 0 512 512" {...this.props}>

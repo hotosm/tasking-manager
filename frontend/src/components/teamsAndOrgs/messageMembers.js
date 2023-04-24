@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import toast from 'react-hot-toast';
@@ -9,7 +9,7 @@ import { MessageStatus } from '../comments/status';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import ReactPlaceholder from 'react-placeholder';
 
-const CommentInputField = React.lazy(() =>
+const CommentInputField = lazy(() =>
   import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
 );
 

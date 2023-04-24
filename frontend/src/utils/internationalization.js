@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 import { polyfill } from './polyfill';
 
 import { setLocale } from '../store/actions/userPreferences';
-import * as config from '../config';
+import { DEFAULT_LOCALE } from '../config';
 
 // commented values doesn't have a good amount of strings translated
 const supportedLocales = [
@@ -75,16 +75,16 @@ let ConnectedIntl = (props) => {
     getTranslatedMessages(props.locale).then((messages) => setI18nMessages(messages));
   }, [props]);
 
-  polyfill(props.locale ? props.locale.substr(0, 2) : config.DEFAULT_LOCALE);
+  polyfill(props.locale ? props.locale.substring(0, 3) : DEFAULT_LOCALE);
 
   if (i18nMessages === undefined || i18nMessages === null) {
     return <div />;
   }
   return (
     <IntlProvider
-      key={props.locale || config.DEFAULT_LOCALE}
-      locale={props.locale ? props.locale.substr(0, 2) : config.DEFAULT_LOCALE}
-      textComponent={React.Fragment}
+      key={props.locale || DEFAULT_LOCALE}
+      locale={props.locale ? props.locale.substring(0, 2) : DEFAULT_LOCALE}
+      textComponent={Fragment}
       messages={i18nMessages}
       timeZone={Intl.DateTimeFormat().resolvedOptions().timeZone}
     >

@@ -1,24 +1,23 @@
-import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
-import WebFont from 'webfontloader';
-import * as Sentry from '@sentry/react';
+import { load } from 'webfontloader';
+import { init, BrowserTracing, Replay } from '@sentry/react';
 import 'react-tooltip/dist/react-tooltip.css'; // Needed by for { Tooltip } from 'react-tooltip' to work properly
 
 import App from './App';
 import { store, persistor } from './store';
 import { ConnectedIntl } from './utils/internationalization';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import { register, unregister, onServiceWorkerUpdate } from './serviceWorkerRegistration';
 import { ENABLE_SERVICEWORKER, SENTRY_FRONTEND_DSN, ENVIRONMENT } from './config';
 
 if (SENTRY_FRONTEND_DSN) {
-  Sentry.init({
+  init({
     dsn: SENTRY_FRONTEND_DSN,
     environment: ENVIRONMENT,
     integrations: [
-      new Sentry.BrowserTracing(),
-      new Sentry.Replay({
+      new BrowserTracing(),
+      new Replay({
         // Additional SDK configuration goes in here, for example:
         maskAllText: true,
         blockAllMedia: true,
@@ -34,7 +33,7 @@ if (SENTRY_FRONTEND_DSN) {
   });
 }
 
-WebFont.load({
+load({
   google: {
     families: ['Barlow Condensed:400,500,600,700', 'Archivo:400,500,600,700', 'sans-serif'],
   },
@@ -61,7 +60,7 @@ if (
   ENABLE_SERVICEWORKER === 'true' ||
   ENABLE_SERVICEWORKER === true
 ) {
-  serviceWorkerRegistration.register({ onUpdate: serviceWorkerRegistration.onServiceWorkerUpdate });
+  register({ onUpdate: onServiceWorkerUpdate });
 } else {
-  serviceWorkerRegistration.unregister();
+  unregister();
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
@@ -38,7 +38,7 @@ import {
 } from '../../api/projects';
 import ReactPlaceholder from 'react-placeholder';
 
-const CommentInputField = React.lazy(() =>
+const CommentInputField = lazy(() =>
   import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
 );
 
