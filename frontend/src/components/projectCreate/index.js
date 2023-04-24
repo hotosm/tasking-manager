@@ -9,10 +9,12 @@ import area from '@turf/area';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
 import truncate from '@turf/truncate';
+import toast from 'react-hot-toast';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 import messages from './messages';
+import viewsMessages from '../../views/messages';
 import { createProject } from '../../store/actions/project';
 import { store } from '../../store';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
@@ -212,13 +214,31 @@ const ProjectCreate = () => {
         projectParams.cloneFromProjectId = cloneProjectData.id;
       }
       pushToLocalJSONAPI('projects/', JSON.stringify(projectParams), token)
-        .then((res) => navigate(`/manage/projects/${res.projectId}`))
-        .catch((e) =>
+        .then((res) => {
+          toast.success(
+            <FormattedMessage
+              {...viewsMessages.entityCreationSuccess}
+              values={{
+                entity: 'project',
+              }}
+            />,
+          );
+          navigate(`/manage/projects/${res.projectId}`);
+        })
+        .catch((e) => {
+          toast.error(
+            <FormattedMessage
+              {...viewsMessages.entityCreationFailure}
+              values={{
+                entity: 'project',
+              }}
+            />,
+          );
           setErr({
             error: true,
             message: <FormattedMessage {...messages.creationFailed} values={{ error: e }} />,
-          }),
-        );
+          });
+        });
     },
     [metadata, token, intl, navigate],
   );
