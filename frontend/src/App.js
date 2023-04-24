@@ -1,5 +1,6 @@
 import React, { Suspense, useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import ReactPlaceholder from 'react-placeholder';
 import { useMeta } from 'react-meta-elements';
 import { useSelector } from 'react-redux';
@@ -41,6 +42,17 @@ const App = () => {
           </main>
           <ArchivalNotificationBanner />
           {MATOMO_ID && <Banner />}
+          <Toaster
+            position="bottom-left"
+            toastOptions={{
+              style: {
+                padding: '1rem',
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+              },
+            }}
+          />
         </div>
       )}
     </Sentry.ErrorBoundary>
