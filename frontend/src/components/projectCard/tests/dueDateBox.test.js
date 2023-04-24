@@ -28,7 +28,7 @@ describe('test DueDate', () => {
       </ReduxIntlProviders>,
     );
     expect(screen.queryByText('Tooltip works')).not.toBeInTheDocument();
-    userEvent.hover(screen.getByText('5 days left'));
+    await userEvent.hover(screen.getByText('5 days left'));
     await waitFor(() => expect(screen.getByText('Tooltip works')).toBeInTheDocument());
     expect(screen.getByText('Tooltip works')).toBeInTheDocument();
     expect(container.querySelectorAll('span')[0].className).toContain('bg-tan blue-grey');

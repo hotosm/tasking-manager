@@ -109,8 +109,8 @@ describe('Create Organization', () => {
     await user.type(nameInput, 'New Organization Name');
     const subscriptionType = screen.getByRole('combobox');
     fireEvent.mouseDown(subscriptionType);
-    user.click(screen.getByText('Free'));
-    user.click(createButton);
+    await user.click(screen.getByText('Free'));
+    await user.click(createButton);
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledTimes(1);
       expect(router.state.location.pathname).toBe('/manage/organisations/123');
@@ -125,8 +125,8 @@ describe('Create Organization', () => {
     await user.type(nameInput, 'New Organization Name');
     const subscriptionType = screen.getByRole('combobox');
     fireEvent.mouseDown(subscriptionType);
-    user.click(screen.getByText('Free'));
-    user.click(createButton);
+    await user.click(screen.getByText('Free'));
+    await user.click(createButton);
     await waitFor(() =>
       expect(
         screen.getByText(/Failed to create organization. Please try again./i),

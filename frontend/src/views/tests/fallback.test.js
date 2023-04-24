@@ -67,6 +67,6 @@ describe('Fallback component', () => {
       name: messages.return.defaultMessage,
     });
     await userEvent.click(returnBtn);
-    waitFor(() => expect(mockedUsedNavigate).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(mockedUsedNavigate).toHaveBeenCalledTimes(1));
   });
 });

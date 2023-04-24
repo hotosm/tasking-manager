@@ -47,7 +47,7 @@ describe('MoreFiltersForm', () => {
 
     expect(switchControl).toBeInTheDocument();
     await userEvent.click(switchControl);
-    waitFor(() =>
+    await waitFor(() =>
       expect(
         decodeQueryParams(
           {
