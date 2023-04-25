@@ -41,16 +41,14 @@ const RecommendedProjects = ({ username, userIsloggedIn }) => {
     `users/${username}/recommended-projects/`,
     username !== undefined,
   );
-  const cardWidthClass = 'w-third-l';
 
   return (
     <div className="pv4 w-100">
-      <ReactPlaceholder
-        customPlaceholder={nCardPlaceholders(5, cardWidthClass)}
-        ready={!error && !loading}
-      >
-        <RecommendedProjectsCards projects={projects.results} />
-      </ReactPlaceholder>
+      <div className="cards-container">
+        <ReactPlaceholder customPlaceholder={nCardPlaceholders(5)} ready={!error && !loading}>
+          <RecommendedProjectsCards projects={projects.results} />
+        </ReactPlaceholder>
+      </div>
     </div>
   );
 };
