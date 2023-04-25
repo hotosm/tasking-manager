@@ -18,7 +18,9 @@ export const ProgressBar = ({
     <div className={`cf db ${className || ''}`}>
       <div className="relative" ref={hoverRef}>
         <div
-          className={`absolute bg-blue-grey br-pill ${small ? heightClassname : 'h-pill'} hide-child`}
+          className={`absolute bg-blue-grey br-pill ${
+            small ? heightClassname : 'h-pill'
+          } hide-child`}
           style={{ width: `${firstBarValue > 100 ? 100 : firstBarValue}%` }}
           role="progressbar"
           aria-valuenow={firstBarValue}

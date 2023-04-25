@@ -64,12 +64,15 @@ export function CompletionTabForMapping({
       )
         .then((res) => {
           clearLockedTasks();
-          navigate((redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`, {
-            state: {
-              lastLockedTasksIds: res.tasks.map((task) => task.taskId),
-              lastLockedProjectId: project.projectId,
+          navigate(
+            (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+            {
+              state: {
+                lastLockedTasksIds: res.tasks.map((task) => task.taskId),
+                lastLockedProjectId: project.projectId,
+              },
             },
-          });
+          );
         })
         .catch((e) => {
           setSplitTaskError(true);
@@ -361,12 +364,15 @@ export function CompletionTabForValidation({
         token,
       ).then((r) => {
         clearLockedTasks();
-        navigate((redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`, {
-          state: {
-            lastLockedTasksIds: tasksIds,
-            lastLockedProjectId: project.projectId,
+        navigate(
+          (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+          {
+            state: {
+              lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
+            },
           },
-        });
+        );
       });
     } else {
       return new Promise((resolve, reject) => {

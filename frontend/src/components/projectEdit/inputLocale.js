@@ -159,9 +159,7 @@ const LocalizedInputField = ({ type, maxLength, name, locale, updateContext }) =
       )}
       {maxLength && (
         <div
-          className={`tr w-80 f7 ${
-            value && value.length > 0.9 * maxLength ? 'red' : 'blue-light'
-          }`}
+          className={`tr w-80 f7 ${value && value.length > 0.9 * maxLength ? 'red' : 'blue-light'}`}
         >
           {value ? value.length : 0} / {maxLength}
         </div>
