@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
+import { useModifyMembers } from '../hooks/UseModifyMembers';
 import { useEditOrgAllowed } from '../hooks/UsePermissions';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { Members } from '../components/teamsAndOrgs/members';
@@ -66,24 +67,14 @@ export function CreateOrganisation() {
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const [managers, setManagers] = useState([]);
+  const {
+    members: managers,
+    setMembers: setManagers,
+    addMember: addManagers,
+    removeMember: removeManagers,
+  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (userDetails && userDetails.username && managers.length === 0) {
-      setManagers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
-    }
-  }, [userDetails, managers]);
-
-  const addManagers = (values) => {
-    const newValues = values.filter(
-      (newUser) => !managers.map((i) => i.username).includes(newUser.username),
-    );
-    setManagers(managers.concat(newValues));
-  };
-  const removeManagers = (username) => {
-    setManagers(managers.filter((i) => i.username !== username));
-  };
   const createOrg = (payload) => {
     payload.managers = managers.map((user) => user.username);
     pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST')
@@ -173,7 +164,12 @@ export function EditOrganisation() {
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const [initManagers, setInitManagers] = useState(false);
-  const [managers, setManagers] = useState([]);
+  const {
+    members: managers,
+    setMembers: setManagers,
+    addMember: addManager,
+    removeMember: removeManager,
+  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
   const [error, loading, organisation] = useFetch(`organisations/${id}/`, id);
   const [isUserAllowed] = useEditOrgAllowed(organisation);
   const [projectsError, projectsLoading, projects] = useFetch(
@@ -188,17 +184,7 @@ export function EditOrganisation() {
       setManagers(organisation.managers);
       setInitManagers(true);
     }
-  }, [organisation, managers, initManagers]);
-
-  const addManagers = (values) => {
-    const newValues = values.filter(
-      (newUser) => !managers.map((i) => i.username).includes(newUser.username),
-    );
-    setManagers(managers.concat(newValues));
-  };
-  const removeManagers = (username) => {
-    setManagers(managers.filter((i) => i.username !== username));
-  };
+  }, [organisation, managers, initManagers, setManagers]);
 
   const updateManagers = () => {
     let payload = JSON.stringify({ managers: managers.map((i) => i.username) });
@@ -300,8 +286,8 @@ export function EditOrganisation() {
               errorMessage={errorMessage}
             />
             <Members
-              addMembers={addManagers}
-              removeMembers={removeManagers}
+              addMembers={addManager}
+              removeMembers={removeManager}
               saveMembersFn={updateManagers}
               resetMembersFn={setManagers}
               members={managers}

@@ -19,6 +19,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { useEditTeamAllowed } from '../hooks/UsePermissions';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import useForceUpdate from '../hooks/UseForceUpdate';
+import { useModifyMembers } from '../hooks/UseModifyMembers';
 import { fetchLocalJSONAPIWithAbort, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import {
   getMembersDiff,
@@ -152,36 +153,13 @@ export function CreateTeam() {
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const [managers, setManagers] = useState([]);
-  const [members, setMembers] = useState([]);
-
-  useEffect(() => {
-    if (userDetails && userDetails.username && managers.length === 0) {
-      setManagers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
-    }
-  }, [userDetails, managers]);
-
-  const addManagers = (values) => {
-    const newValues = values.filter(
-      (newUser) => !managers.map((i) => i.username).includes(newUser.username),
-    );
-    setManagers(managers.concat(newValues));
-  };
-
-  const removeManagers = (username) => {
-    setManagers(managers.filter((i) => i.username !== username));
-  };
-
-  const addMembers = (values) => {
-    const newValues = values.filter(
-      (newUser) => !members.map((i) => i.username).includes(newUser.username),
-    );
-    setMembers(members.concat(newValues));
-  };
-
-  const removeMembers = (username) => {
-    setMembers(members.filter((i) => i.username !== username));
-  };
+  const {
+    members: managers,
+    setMembers: setManagers,
+    addMember: addManager,
+    removeMember: removeManager,
+  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
+  const { members, setMembers, addMember, removeMember } = useModifyMembers([]);
 
   const createTeam = (payload) => {
     delete payload['organisation'];
@@ -235,8 +213,8 @@ export function CreateTeam() {
               <div className="w-40-l w-100 fl pl5-l pl0 ">
                 <div className="mb3">
                   <Members
-                    addMembers={addManagers}
-                    removeMembers={removeManagers}
+                    addMembers={addManager}
+                    removeMembers={removeManager}
                     members={managers}
                     resetMembersFn={setManagers}
                     creationMode={true}
@@ -244,8 +222,8 @@ export function CreateTeam() {
                 </div>
                 <div className="mb3">
                   <Members
-                    addMembers={addMembers}
-                    removeMembers={removeMembers}
+                    addMembers={addMember}
+                    removeMembers={removeMember}
                     members={members}
                     resetMembersFn={setMembers}
                     creationMode={true}

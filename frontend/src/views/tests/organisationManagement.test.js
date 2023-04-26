@@ -21,7 +21,7 @@ jest.mock('react-hot-toast', () => ({
 
 describe('List Interests', () => {
   const setup = () => {
-    const userDetails = { id: 1, role: 'ADMIN' };
+    const userDetails = { id: 1, role: 'ADMIN', username: 'somebodysomewhere' };
     act(() => {
       store.dispatch({ type: 'SET_USER_DETAILS', userDetails: userDetails });
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
