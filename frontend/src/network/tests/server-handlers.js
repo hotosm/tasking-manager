@@ -335,6 +335,10 @@ const handlers = [
   }),
 ];
 
+const failedToConnectError = (req, res, ctx) => {
+  return res.networkError('Failed to connect');
+};
+
 const faultyHandlers = [
   rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
     return res.once(
@@ -344,63 +348,30 @@ const faultyHandlers = [
       }),
     );
   }),
-  rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.get('http://127.0.0.1:8111/version', async (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
+  rest.get(API_URL + 'projects/:id/', failedToConnectError),
+  rest.get('http://127.0.0.1:8111/version', failedToConnectError),
   rest.post(
     API_URL + 'projects/:projectId/tasks/actions/lock-for-mapping/:taskId',
-    (req, res, ctx) => {
-      return res.networkError('Failed to connect');
-    },
+    failedToConnectError,
   ),
-  rest.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.post(API_URL + 'licenses', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.patch(API_URL + 'licenses/:id', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.post(API_URL + 'interests', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.post(API_URL + 'campaigns', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.patch(API_URL + 'campaigns/:id', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.delete(API_URL + 'campaigns/:id', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.post(API_URL + 'teams', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.patch(API_URL + 'teams/:id/', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.delete(API_URL + 'teams/:id', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.post(API_URL + 'organisations', (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
-  rest.delete(API_URL + 'notifications/:id/', async (req, res, ctx) => {
-    return res.networkError('Failed to connect');
-  }),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/lock-for-validation',
+    failedToConnectError,
+  ),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', failedToConnectError),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', failedToConnectError),
+  rest.post(API_URL + 'licenses', failedToConnectError),
+  rest.patch(API_URL + 'licenses/:id', failedToConnectError),
+  rest.post(API_URL + 'interests', failedToConnectError),
+  rest.post(API_URL + 'campaigns', failedToConnectError),
+  rest.patch(API_URL + 'campaigns/:id', failedToConnectError),
+  rest.delete(API_URL + 'campaigns/:id', failedToConnectError),
+  rest.post(API_URL + 'teams', failedToConnectError),
+  rest.patch(API_URL + 'teams/:id/', failedToConnectError),
+  rest.delete(API_URL + 'teams/:id', failedToConnectError),
+  rest.post(API_URL + 'organisations', failedToConnectError),
+  rest.delete(API_URL + 'notifications/delete-multiple/', failedToConnectError),
+  rest.delete(API_URL + 'notifications/:id/', failedToConnectError),
 ];
 
 export { handlers, faultyHandlers };
