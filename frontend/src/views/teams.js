@@ -311,18 +311,31 @@ export function EditTeam(props) {
     setMembers((prevMembers) => prevMembers.filter((i) => i.username !== username));
   };
 
-  const updateManagers = () => {
-    const { usersAdded, usersRemoved } = getMembersDiff(team.members, managers, true);
+  const updateAffiliation = (affiliationType) => {
+    const role = affiliationType === 'managers' ? 'MANAGER' : 'MEMBER';
+    const { usersAdded, usersRemoved } = getMembersDiff(
+      team.members,
+      affiliationType === 'managers' ? managers : members,
+      affiliationType === 'managers',
+    );
+
     Promise.all([
-      ...usersAdded.map((user) => joinTeamRequest(team.teamId, user, 'MANAGER', token)),
-      ...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, 'MANAGER', token)),
+      ...usersAdded.map((user) =>
+        joinTeamRequest(team.teamId, user, role, token).catch((err) => {
+          affiliationType === 'managers'
+            ? setManagerJoinTeamError(err.message)
+            : setMemberJoinTeamError(err.message);
+          affiliationType === 'managers' ? removeManagers(user) : removeMembers(user);
+        }),
+      ),
+      ...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, role, token)),
     ])
       .then(() => {
         toast.success(
           <FormattedMessage
             {...messages.affiliationUpdationSuccess}
             values={{
-              affiliation: 'managers',
+              affiliation: affiliationType,
             }}
           />,
         );
@@ -333,45 +346,19 @@ export function EditTeam(props) {
           <FormattedMessage
             {...messages.affiliationUpdationFailure}
             values={{
-              affiliation: 'managers',
+              affiliation: affiliationType,
             }}
           />,
         ),
       );
   };
 
+  const updateManagers = () => {
+    updateAffiliation('managers');
+  };
+
   const updateMembers = () => {
-    const { usersAdded, usersRemoved } = getMembersDiff(team.members, members);
-    Promise.all([
-      ...usersAdded.map((user) =>
-        joinTeamRequest(team.teamId, user, 'MEMBER', token).catch((err) => {
-          setMemberJoinTeamError(err.message);
-          removeMembers(user);
-        }),
-      ),
-      ...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, 'MEMBER', token)),
-    ])
-      .then(() => {
-        toast.success(
-          <FormattedMessage
-            {...messages.affiliationUpdationSuccess}
-            values={{
-              affiliation: 'members',
-            }}
-          />,
-        );
-        forceUpdate();
-      })
-      .catch(() =>
-        toast.error(
-          <FormattedMessage
-            {...messages.affiliationUpdationFailure}
-            values={{
-              affiliation: 'members',
-            }}
-          />,
-        ),
-      );
+    updateAffiliation('members');
   };
 
   const updateTeam = (payload) => {
