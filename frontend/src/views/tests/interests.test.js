@@ -195,7 +195,7 @@ describe('Edit Interest', () => {
       name: /cancel/i,
     });
     fireEvent.click(saveButton);
-    expect(saveButton).not.toBeInTheDocument();
+    await waitFor(() => expect(saveButton).not.toBeInTheDocument());
     expect(cancelButton).not.toBeInTheDocument();
   });
 });

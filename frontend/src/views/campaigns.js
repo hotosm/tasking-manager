@@ -19,6 +19,7 @@ import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Alert } from '../components/alert';
 import { useAsync } from '../hooks/UseAsync';
+import { updateEntity } from '../utils/management';
 
 export const CampaignError = ({ error }) => {
   return (
@@ -144,29 +145,9 @@ export function EditCampaign() {
   const [nameError, setNameError] = useState(false);
 
   const updateCampaign = (payload) => {
-    return pushToLocalJSONAPI(`campaigns/${id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then(() => {
-        toast.success(
-          <FormattedMessage
-            {...messages.entityInfoUpdationSuccess}
-            values={{
-              entity: 'campaign',
-            }}
-          />,
-        );
-        setNameError(false);
-      })
-      .catch(() => {
-        toast.error(
-          <FormattedMessage
-            {...messages.entityInfoUpdationFailure}
-            values={{
-              entity: 'campaign',
-            }}
-          />,
-        );
-        setNameError(true);
-      });
+    const onSuccess = () => setNameError(false);
+    const onFailure = () => setNameError(true);
+    return updateEntity(`campaigns/${id}/`, 'campaign', payload, token, onSuccess, onFailure);
   };
 
   const updateCampaignAsync = useAsync(updateCampaign);

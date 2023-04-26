@@ -24,6 +24,7 @@ import { ChartLineIcon } from '../components/svgIcons';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Alert } from '../components/alert';
+import { updateEntity } from '../utils/management';
 
 export function ListOrganisations() {
   useSetTitleTag('Manage organizations');
@@ -212,29 +213,9 @@ export function EditOrganisation() {
   };
 
   const updateOrg = (payload) => {
-    pushToLocalJSONAPI(`organisations/${id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then(() => {
-        toast.success(
-          <FormattedMessage
-            {...messages.entityInfoUpdationSuccess}
-            values={{
-              entity: 'organization',
-            }}
-          />,
-        );
-        setErrorMessage(null);
-      })
-      .catch((err) => {
-        toast.success(
-          <FormattedMessage
-            {...messages.entityInfoUpdationFailure}
-            values={{
-              entity: 'organization',
-            }}
-          />,
-        );
-        setErrorMessage(err.message);
-      });
+    const onSuccess = () => setErrorMessage(null);
+    const onFailure = (error) => setErrorMessage(error.message);
+    updateEntity(`organisations/${id}/`, 'organization', payload, token, onSuccess, onFailure);
   };
 
   return (

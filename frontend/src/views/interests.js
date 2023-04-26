@@ -13,6 +13,7 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { DeleteModal } from '../components/deleteModal';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { updateEntity } from '../utils/management';
 
 export const CreateInterest = () => {
   useSetTitleTag('Create new category');
@@ -117,29 +118,7 @@ export const EditInterest = () => {
     id,
   );
 
-  const updateInterest = (payload) => {
-    pushToLocalJSONAPI(`interests/${id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then(() =>
-        toast.success(
-          <FormattedMessage
-            {...messages.entityInfoUpdationSuccess}
-            values={{
-              entity: 'category',
-            }}
-          />,
-        ),
-      )
-      .catch(() =>
-        toast.error(
-          <FormattedMessage
-            {...messages.entityInfoUpdationFailure}
-            values={{
-              entity: 'category',
-            }}
-          />,
-        ),
-      );
-  };
+  const updateInterest = (payload) => updateEntity(`interests/${id}/`, 'category', payload, token);
 
   return (
     <div className="cf pv4 bg-tan">

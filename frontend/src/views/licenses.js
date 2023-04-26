@@ -12,6 +12,7 @@ import { LicenseInformation, LicensesManagement, LicenseForm } from '../componen
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import { updateEntity } from '../utils/management';
 
 export const EditLicense = () => {
   const { id } = useParams();
@@ -20,29 +21,7 @@ export const EditLicense = () => {
   const [error, loading, license] = useFetch(`licenses/${id}/`);
   useSetTitleTag(`Edit ${license.name}`);
 
-  const updateLicense = (payload) => {
-    pushToLocalJSONAPI(`licenses/${id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then(() =>
-        toast.success(
-          <FormattedMessage
-            {...messages.entityInfoUpdationSuccess}
-            values={{
-              entity: 'license',
-            }}
-          />,
-        ),
-      )
-      .catch(() =>
-        toast.error(
-          <FormattedMessage
-            {...messages.entityInfoUpdationFailure}
-            values={{
-              entity: 'license',
-            }}
-          />,
-        ),
-      );
-  };
+  const updateLicense = (payload) => updateEntity(`licenses/${id}/`, 'license', payload, token);
 
   return (
     <div className="cf pv4 bg-tan">

@@ -41,6 +41,7 @@ import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { NotFound } from './notFound';
 import { PaginatorLine } from '../components/paginator';
+import { updateEntity } from '../utils/management';
 
 export function ManageTeams() {
   useSetTitleTag('Manage teams');
@@ -365,28 +366,7 @@ export function EditTeam(props) {
     if (payload.joinMethod !== 'BY_INVITE') {
       payload.visibility = 'PUBLIC';
     }
-    pushToLocalJSONAPI(`teams/${id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then(() => {
-        toast.success(
-          <FormattedMessage
-            {...messages.entityInfoUpdationSuccess}
-            values={{
-              entity: 'team',
-            }}
-          />,
-        );
-        forceUpdate();
-      })
-      .catch(() =>
-        toast.error(
-          <FormattedMessage
-            {...messages.entityInfoUpdationFailure}
-            values={{
-              entity: 'team',
-            }}
-          />,
-        ),
-      );
+    updateEntity(`teams/${id}/`, 'team', payload, token, forceUpdate);
   };
 
   if (team && team.teamId && !canUserEditTeam) {
