@@ -4,7 +4,6 @@ import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import ReactPlaceholder from 'react-placeholder';
 import bbox from '@turf/bbox';
-import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 import { FormattedMessage, FormattedRelativeTime } from 'react-intl';
 
 import messages from './messages';
@@ -60,9 +59,14 @@ export function TaskItem({
   userCanValidate,
   selected = [],
 }: Object) {
-  const [isCopied, setCopied] = useCopyClipboard();
+  const [isCopied, setIsCopied] = useState(false);
   const location = useLocation();
   const { value, unit } = selectUnit(new Date(data.actionDate));
+
+  const handleCopyToClipboard = () =>
+    navigator.clipboard
+      .writeText(`${window.location.origin}${location.pathname}?search=${data.taskId}`)
+      .then(() => setIsCopied(true));
 
   return (
     <div
@@ -144,12 +148,11 @@ export function TaskItem({
           {(msg) => (
             <div className={`ph2 dib v-mid ${isCopied ? 'grey-light' : ''}`} title={msg}>
               <InternalLinkIcon
+                role="button"
                 width="18px"
                 height="18px"
                 className={`pointer ${isCopied ? '' : 'hover-blue-grey'}`}
-                onClick={() =>
-                  setCopied(`${location.origin}${location.pathname}?search=${data.taskId}`)
-                }
+                onClick={handleCopyToClipboard}
               />
             </div>
           )}
