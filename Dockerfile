@@ -13,7 +13,8 @@ LABEL org.hotosm.tasks.app-version="${APP_VERSION}" \
       org.hotosm.tasks.dockerfile-version="${DOCKERFILE_VERSION}" \
       org.hotosm.tasks.maintainer="${MAINTAINER}" \
       org.hotosm.tasks.api-port="5000"
-ENV TZ UTC # Fix timezone (do not change - see issue #3638)
+# Fix timezone (do not change - see issue #3638)
+ENV TZ UTC
 
 
 
