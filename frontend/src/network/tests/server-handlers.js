@@ -372,6 +372,8 @@ const faultyHandlers = [
   rest.post(API_URL + 'organisations', failedToConnectError),
   rest.delete(API_URL + 'notifications/delete-multiple/', failedToConnectError),
   rest.delete(API_URL + 'notifications/:id/', failedToConnectError),
+  rest.patch(API_URL + 'users/:username/actions/set-level/:level', failedToConnectError),
+  rest.patch(API_URL + 'users/:username/actions/set-role/:role', failedToConnectError),
 ];
 
 export { handlers, faultyHandlers };
