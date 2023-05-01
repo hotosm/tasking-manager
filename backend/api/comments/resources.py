@@ -11,7 +11,7 @@ from backend.services.mapping_service import MappingService, MappingServiceError
 from backend.services.users.authentication_service import token_auth, tm
 
 
-class CommentsProjectsRestAPI(Resource):
+class CommentsProjectsAllAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id):
@@ -134,6 +134,64 @@ class CommentsProjectsRestAPI(Resource):
             current_app.logger.critical(error_msg)
             return {
                 "Error": "Unable to fetch chat messages",
+                "SubCode": "InternalServerError",
+            }, 500
+
+
+class CommentsProjectsRestAPI(Resource):
+    @token_auth.login_required
+    def delete(self, project_id, comment_id):
+        """
+        Delete a chat message
+        ---
+        tags:
+          - comments
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: Project ID to attach the chat message to
+              required: true
+              type: integer
+              default: 1
+            - name: comment_id
+              in: path
+              description: Comment ID to delete
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Comment deleted
+            403:
+                description: User is not authorized to delete comment
+            404:
+                description: Comment not found
+            500:
+                description: Internal Server Error
+        """
+        authenticated_user_id = token_auth.current_user()
+        try:
+            ChatService.delete_project_chat_by_id(
+                project_id, comment_id, authenticated_user_id
+            )
+            return {"Success": "Comment deleted"}, 200
+        except NotFound:
+            return {"Error": "Comment not found", "SubCode": "NotFound"}, 404
+        except ValueError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except Exception as e:
+            error_msg = f"Chat DELETE - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {
+                "Error": "Unable to delete chat message",
                 "SubCode": "InternalServerError",
             }, 500
 

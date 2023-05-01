@@ -1,7 +1,8 @@
 import threading
-
 from flask import current_app
 
+from backend import db
+from backend.models.postgis.utils import NotFound
 from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO
 from backend.models.postgis.project_chat import ProjectChat
 from backend.models.postgis.project_info import ProjectInfo
@@ -11,7 +12,6 @@ from backend.services.project_admin_service import ProjectAdminService
 from backend.services.team_service import TeamService
 from backend.models.postgis.statuses import TeamRoles
 from backend.models.postgis.project import ProjectStatus
-from backend import db
 
 
 class ChatService:
@@ -83,3 +83,37 @@ class ChatService:
     def get_messages(project_id: int, page: int, per_page: int) -> ProjectChatDTO:
         """Get all messages attached to a project"""
         return ProjectChat.get_messages(project_id, page, per_page)
+
+    @staticmethod
+    def delete_project_chat_by_id(project_id: int, comment_id: int, user_id: int):
+        """Deletes a message from a project chat
+        ----------------------------------------
+        :param project_id: The id of the project the message belongs to
+        :param message_id: The message id to delete
+        :param user_id: The id of the requesting user
+        ----------------------------------------
+        :raises NotFound: When the message is not found
+        :raises Unauthorized: When the user is not allowed to delete the message
+        ----------------------------------------
+        returns: None
+        """
+        chat_message = ProjectChat.query.filter(
+            ProjectChat.project_id == project_id,
+            ProjectChat.id == comment_id,
+        ).one_or_none()
+        if chat_message is None:
+            raise NotFound("Message not found")
+
+        is_user_allowed = (
+            chat_message.user_id == user_id
+            or ProjectAdminService.is_user_action_permitted_on_project(
+                user_id, project_id
+            )
+        )
+        if is_user_allowed:
+            db.session.delete(chat_message)
+            db.session.commit()
+        else:
+            raise ValueError(
+                "DeletePermissionError- User not allowed to delete message"
+            )
