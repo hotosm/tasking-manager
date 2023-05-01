@@ -14,7 +14,7 @@ click==7.1.2
 coverage==6.4
 entrypoints==0.3
 flake8==3.8.4
-Flask==1.1.2
+Flask==2.3.2
 Flask-Cors==3.0.9
 Flask-HTTPAuth==4.1.0
 Flask-Mail==0.9.1
