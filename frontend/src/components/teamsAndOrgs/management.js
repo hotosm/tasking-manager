@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FormattedMessage } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
-import { useIntl } from 'react-intl';
 
 import messages from './messages';
 import { CustomButton } from '../button';

@@ -4,13 +4,15 @@ import '@testing-library/jest-dom';
 import { store } from '../../../store';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { getProjectSummary } from '../../../network/tests/mockData/projects';
 import { QuestionsAndComments, PostProjectComment } from '../questionsAndComments';
 
 describe('test if QuestionsAndComments component', () => {
+  const project = getProjectSummary(1);
   it('only renders text asking user to log in for non-logged in user', () => {
     render(
       <ReduxIntlProviders store={store}>
-        <QuestionsAndComments projectId={1} />
+        <QuestionsAndComments project={project} />
       </ReduxIntlProviders>,
     );
     expect(screen.getByText('Log in to be able to post comments.')).toBeInTheDocument();
@@ -39,7 +41,7 @@ describe('test if QuestionsAndComments component', () => {
     });
     render(
       <ReduxIntlProviders store={store}>
-        <QuestionsAndComments projectId={1} />
+        <QuestionsAndComments project={project} />
       </ReduxIntlProviders>,
     );
 
