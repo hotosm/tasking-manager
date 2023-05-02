@@ -61,7 +61,7 @@ describe('Task Item', () => {
       {
         route: '/projects/6/tasks',
       },
-    );    
+    );
     await userEvent.click(screen.getAllByRole('button')[2]);
     expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
