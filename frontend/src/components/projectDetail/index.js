@@ -260,7 +260,7 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.questionsAndComments} />
       </a>
       <QuestionsAndComments
-        projectId={props.project.projectId}
+        project={props.project}
         contributors={contributors}
         titleClass={`${h2Classes} mv0 pt5`}
       />
