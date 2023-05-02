@@ -1,8 +1,9 @@
-import React from 'react';
+import '@testing-library/jest-dom';
+import { render, screen, waitFor } from '@testing-library/react';
 import { FormattedNumber } from 'react-intl';
 
-import { StatsNumber } from '../stats';
-import { createComponentWithIntl } from '../../../utils/testWithIntl';
+import { StatsNumber, StatsSection } from '../stats';
+import { IntlProviders, createComponentWithIntl } from '../../../utils/testWithIntl';
 
 it('test number formatting in English', () => {
   const testNumber = createComponentWithIntl(<StatsNumber value={744531} />);
@@ -16,4 +17,18 @@ it('test number formatting smaller than 1000', () => {
   const testInstance = testNumber.root;
   expect(testInstance.findByType(FormattedNumber).props.value).toBe(744);
   expect(testInstance.children).not.toContain('K');
+});
+
+describe('Stats Section', () => {
+  it('should display OSM and TM stats', async () => {
+    render(
+      <IntlProviders>
+        <StatsSection />
+      </IntlProviders>,
+    );
+    // A stat from OSM's TM Stat
+    await waitFor(() => expect(screen.getByText('101.4M')).toBeInTheDocument());
+    // A stat from TM Stat
+    await waitFor(() => expect(screen.getByText(3)).toBeInTheDocument());
+  });
 });
