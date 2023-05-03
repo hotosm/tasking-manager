@@ -4,12 +4,14 @@ from tests.backend.helpers.test_helpers import (
     generate_encoded_token,
     return_canned_user,
 )
+from backend.models.postgis.utils import NotFound
 from backend.models.postgis.statuses import UserRole
+from backend.services.messaging.chat_service import ChatService, ChatMessageDTO
 
 TEST_MESSAGE = "Test comment"
 
 
-class TestCommentsProjectsRestAPI(BaseTestCase):
+class TestCommentsProjectsAllAPI(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.test_project, self.test_author = create_canned_project()
@@ -109,6 +111,114 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_body, {"chat": [], "pagination": None})
         # to do: add comments and test again
+
+
+class TestCommentsProjectsRestAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_author_token = generate_encoded_token(self.test_author.id)
+        self.test_user = return_canned_user(username="test_user", id=10000)
+        self.test_user.create()
+        self.test_user_token = generate_encoded_token(self.test_user.id)
+        self.test_comment = self.create_project_chat(self.test_author)
+        self.endpoint_url = (
+            f"/api/v2/projects/{self.test_project.id}/comments/{self.test_comment.id}/"
+        )
+        self.non_existent_url = f"/api/v2/projects/{self.test_project.id}/comments/100/"
+
+    def create_project_chat(self, user):
+        """
+        Helper method to create a project chat for a user for testing
+        ----------------
+        :param user: User object
+        :return: Comment object
+        """
+        chat_dto = ChatMessageDTO()
+        chat_dto.message = "Test Message"
+        chat_dto.user_id = user.id
+        chat_dto.project_id = self.test_project.id
+        chat_dto.timestamp = "2022-06-30T05:45:06.198755Z"
+        chat_dto.username = user.username
+        comments = ChatService.post_message(
+            chat_dto, self.test_project.id, self.test_author.id
+        )
+        return comments.chat[0]
+
+    # delete
+    def test_delete_comment_returns_401_if_user_not_logged_in(self):
+        """
+        Test that endpoint returns 401 when deleting a comment of a project by an unauthenticated user
+        """
+        # Act
+        response = self.client.delete(self.endpoint_url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_delete_non_existent_comment_fails(self):
+        """ Test that endpoint returns 404 when deleting a non-existent comment """
+        # Act
+        response = self.client.delete(
+            self.non_existent_url, headers={"Authorization": self.test_author_token}
+        )
+        response_body = response.get_json()
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response_body["Error"], "Comment not found")
+        self.assertEqual(response_body["SubCode"], "NotFound")
+
+    def test_returns_403_if_user_not_allowed_to_delete_comment(self):
+        """
+        Test that endpoint returns 403 when deleting a comment
+        by a user who is not allowed i.e. not the comment author or PM.
+        """
+        # Act
+        response = self.client.delete(
+            self.endpoint_url, headers={"Authorization": self.test_user_token}
+        )
+        # Assert
+        response_body = response.get_json()
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response_body["Error"], " User not allowed to delete message")
+        self.assertEqual(response_body["SubCode"], "DeletePermissionError")
+
+    def test_comment_can_be_deleted_by_author(self):
+        """ Test that endpoint returns 200 when deleting a comment of a project by the comment author """
+        # Arrange
+        # Let's create a comment by the test user and delete it using the test user
+        test_comment = self.create_project_chat(self.test_user)
+        endpoint_url = (
+            f"/api/v2/projects/{self.test_project.id}/comments/{test_comment.id}/"
+        )
+        # Act
+        response = self.client.delete(
+            endpoint_url, headers={"Authorization": self.test_user_token}
+        )
+        response_body = response.get_json()
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_body["Success"], "Comment deleted")
+        with self.assertRaises(NotFound):
+            ChatService.get_project_chat_by_id(self.test_project.id, test_comment.id)
+
+    def test_pm_can_delete_any_comment(self):
+        """ Test that endpoint returns 200 when deleting a comment of a project by the PM """
+        # Arrange
+        # Let's create a comment by the test user and delete it using the test author
+        test_comment = self.create_project_chat(self.test_user)
+        endpoint_url = (
+            f"/api/v2/projects/{self.test_project.id}/comments/{test_comment.id}/"
+        )
+        # Act
+        response = self.client.delete(
+            endpoint_url, headers={"Authorization": self.test_author_token}
+        )
+        response_body = response.get_json()
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_body["Success"], "Comment deleted")
+        with self.assertRaises(NotFound):
+            ChatService.get_project_chat_by_id(self.test_project.id, test_comment.id)
 
 
 class TestCommentsTasksRestAPI(BaseTestCase):
