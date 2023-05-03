@@ -85,6 +85,26 @@ class ChatService:
         return ProjectChat.get_messages(project_id, page, per_page)
 
     @staticmethod
+    def get_project_chat_by_id(project_id: int, comment_id: int) -> ProjectChat:
+        """Get a message from a project chat
+        ----------------------------------------
+        :param project_id: The id of the project the message belongs to
+        :param message_id: The message id to fetch
+        ----------------------------------------
+        :raises NotFound: When the message is not found
+        ----------------------------------------
+        returns: The message
+        """
+        chat_message = ProjectChat.query.filter(
+            ProjectChat.project_id == project_id,
+            ProjectChat.id == comment_id,
+        ).one_or_none()
+        if chat_message is None:
+            raise NotFound("Message not found")
+
+        return chat_message
+
+    @staticmethod
     def delete_project_chat_by_id(project_id: int, comment_id: int, user_id: int):
         """Deletes a message from a project chat
         ----------------------------------------
