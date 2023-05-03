@@ -1,6 +1,5 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
-import ReactPlaceholder from 'react-placeholder';
 import { useMeta } from 'react-meta-elements';
 import { useSelector } from 'react-redux';
 import * as Sentry from '@sentry/react';
@@ -33,11 +32,7 @@ const App = () => {
       ) : (
         <div className="w-100 base-font bg-white" lang={locale}>
           <main className="cf w-100 base-font">
-            <Suspense
-              fallback={<ReactPlaceholder showLoadingAnimation={true} rows={30} delay={300} />}
-            >
-              <RouterProvider router={router} />
-            </Suspense>
+            <RouterProvider router={router} fallbackElement={<Preloader />} />
           </main>
           <ArchivalNotificationBanner />
           {MATOMO_ID && <Banner />}
