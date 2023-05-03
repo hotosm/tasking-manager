@@ -86,7 +86,7 @@ export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
         <FormattedMessage {...messages.questionsAndComments} />
       </h3>
       <div className="ph6-l ph4 pb5 w-100 w-70-l">
-        {comments && comments.chat?.length ? (
+        {comments?.chat?.length ? (
           <CommentList
             userCanEditProject={userCanEditProject}
             projectId={projectId}
@@ -99,7 +99,7 @@ export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
           </div>
         )}
 
-        {comments && comments.pagination && comments.pagination.pages > 0 && (
+        {comments?.pagination?.pages > 0 && (
           <PaginatorLine
             activePage={page}
             setPageFn={handlePagination}
@@ -125,12 +125,12 @@ export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
   );
 };
 
-function CommentList({ userCanEditProject, projectId, comments, retryFn }: Object) {
+export function CommentList({ userCanEditProject, projectId, comments, retryFn }: Object) {
   const token = useSelector((state) => state.auth.token);
   const username = useSelector((state) => state.auth.userDetails.username);
 
-  const deleteComment = (project_id, comment_id) => {
-    fetchLocalJSONAPI(`projects/${project_id}/comments/${comment_id}/`, token, 'DELETE')
+  const deleteComment = (commentId) => {
+    fetchLocalJSONAPI(`projects/${projectId}/comments/${commentId}/`, token, 'DELETE')
       .then(() => {
         retryFn();
       })
@@ -141,7 +141,7 @@ function CommentList({ userCanEditProject, projectId, comments, retryFn }: Objec
 
   return (
     <div className="pt3">
-      {comments.map((comment, n) => (
+      {comments.map((comment) => (
         <div
           className="w-100 center cf mb2 ba0 br1 b--grey-light bg-white shadow-7 comment-item"
           key={comment.id}
@@ -169,15 +169,15 @@ function CommentList({ userCanEditProject, projectId, comments, retryFn }: Objec
               </div>
             </div>
             <div>
-              {userCanEditProject || comment.username === username ? (
+              {(userCanEditProject || comment.username === username) && (
                 <DeleteButton
                   className={`bg-transparent bw0 w2 h2 lh-copy overflow-hidden blue-light p0 mb1 hover-red`}
                   showText={false}
                   onClick={() => {
-                    deleteComment(projectId, comment.id);
+                    deleteComment(comment.id);
                   }}
                 />
-              ) : null}
+              )}
             </div>
           </div>
           <div
