@@ -149,14 +149,12 @@ function CommentList({ userCanEditProject, projectId, comments, retryFn }: Objec
           <div className="flex justify-between">
             <div className="flex items-center">
               <div className="">
-                {comment.pictureUrl === null ? null : (
-                  <UserAvatar
-                    username={comment.username}
-                    picture={comment.pictureUrl}
-                    colorClasses="white bg-blue-grey"
-                    size="medium"
-                  />
-                )}
+                <UserAvatar
+                  username={comment.username}
+                  picture={comment.pictureUrl}
+                  colorClasses="white bg-blue-grey"
+                  size="medium"
+                />
               </div>
               <div className="ml2">
                 <a
