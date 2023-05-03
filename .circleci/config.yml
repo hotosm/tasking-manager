@@ -227,7 +227,6 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y libgeos-dev jq # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-            pip install awscli --upgrade
       - aws-cli/setup:
           role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
           profile-name: "OIDC-Profile"
