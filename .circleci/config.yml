@@ -126,6 +126,9 @@ jobs:
             then
                 echo "Snapshot does not exist, creating one now."
             else
+                aws rds wait db-snapshot-available \
+                        --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest \
+                        --db-instance-identifier ${RDS_ID}
                 aws rds copy-db-snapshot \
                         --source-db-snapshot tm3-<< parameters.stack_name >>-${RDS_ID}-latest \
                         --target-db-snapshot tm3-<< parameters.stack_name >>-${RDS_ID}-${NONCE}
@@ -133,6 +136,8 @@ jobs:
                         --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest
             fi
             # create new aws rds snapshot
+            aws rds wait db-instance-available \
+                        --db-instance-identifier ${RDS_ID}
             aws rds create-db-snapshot \
                         --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest \
                         --db-instance-identifier ${RDS_ID}
