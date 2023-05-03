@@ -41,7 +41,7 @@ export default function RapidEditor({
     RapidContext.imagery()
     ._setupPromise
     .then(() => {
-      if (!customImageryIsSet && imagery && customSource) {
+      if (!customImageryIsSet && imagery && customSource && customSource._name ) {
         const imagerySource = getBackground(customImageryIsSet, imagery, RapidContext, customSource);
         if (imagery.startsWith('http')) {
           RapidContext.imagery().baseLayerSource(imagerySource);
