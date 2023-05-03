@@ -13,6 +13,7 @@ export const ProjectSearchResults = (props) => {
   const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
   const state = props.state;
   const cardWidthClass = 'w-100';
+  const isShowListView = props.management && listViewIsActive;
 
   return (
     <div className={`${props.className}`}>
@@ -47,8 +48,8 @@ export const ProjectSearchResults = (props) => {
           </div>
         </div>
       ) : null}
-      <div className={`${!listViewIsActive ? 'cards-container' : ''}`}>
-        {props.management && listViewIsActive ? (
+      <div className={`${!isShowListView ? 'cards-container' : ''}`}>
+        {isShowListView ? (
           <ReactPlaceholder
             showLoadingAnimation={true}
             rows={15}
