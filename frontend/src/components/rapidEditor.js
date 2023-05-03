@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { gpx } from '@tmcw/togeojson';
-import * as Rapid from 'RapiD/dist/rapid';
+import * as Rapid from 'RapiD/dist/rapid.legacy';
 import 'RapiD/dist/rapid.css';
 
 import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
@@ -27,6 +27,8 @@ export default function RapidEditor({
     RapidContext && RapidContext.imagery() && RapidContext.imagery().findSource('custom');
 
   function getBackground(customImageryIsSet, imagery, RapidContext, customSource) {
+    if (!imagery) return;
+
     if (imagery.startsWith('http')) {
       return customSource.template(imagery);
     } else if (RapidContext && RapidContext.imagery()) {
@@ -34,17 +36,24 @@ export default function RapidEditor({
     }
   }
   useEffect(() => {
-    if (!customImageryIsSet && imagery && customSource) {
-      const imagerySource = getBackground(customImageryIsSet, imagery, RapidContext, customSource);
-      if (imagery.startsWith('http')) {
-        RapidContext.imagery().baseLayerSource(imagerySource);
-        setCustomImageryIsSet(true);
-        // this line is needed to update the value on the custom background dialog
-        window.Rapid.prefs('background-custom-template', imagery);
-      } else if (imagerySource) {
-        RapidContext.imagery().baseLayerSource(imagerySource);
+    if (!RapidContext || !RapidContext.imagery || !RapidContext.imagery()) return;
+
+    RapidContext.imagery()
+    ._setupPromise
+    .then(() => {
+      if (!customImageryIsSet && imagery && customSource) {
+        const imagerySource = getBackground(customImageryIsSet, imagery, RapidContext, customSource);
+        if (imagery.startsWith('http')) {
+          RapidContext.imagery().baseLayerSource(imagerySource);
+          setCustomImageryIsSet(true);
+          // this line is needed to update the value on the custom background dialog
+          window.Rapid.prefs('background-custom-template', imagery);
+        } else if (imagerySource) {
+          RapidContext.imagery().baseLayerSource(imagerySource);
+        }
       }
-    }
+    });
+
   }, [customImageryIsSet, imagery, RapidContext, customSource]);
 
   useEffect(() => {
@@ -85,11 +94,6 @@ export default function RapidEditor({
         RapidContext.reset();
         RapidContext.ui().restart();
       } else {
-        // Keep Rapid from defaulting to Bing
-        const imageryInfo = getBackground(customImageryIsSet, imagery, RapidContext, customSource);
-        if (imageryInfo) {
-          window.location.hash = window.location.hash + '&background=' + imagery;
-        }
         RapidContext.init();
       }
       if (gpxUrl) {
@@ -112,6 +116,29 @@ export default function RapidEditor({
             console.error('Error loading GPX data');
           });
       }
+
+        // Keep Rapid from defaulting to Bing
+        RapidContext.imagery()
+          ._setupPromise
+          .then(() => {
+            const imageryInfo = getBackground(customImageryIsSet, imagery, RapidContext, customSource);
+            if (imageryInfo) {
+              // RapidContext.urlhash().setParam('background', imagery)
+              // window.location.hash = window.location.hash + '&background=' + imagery;
+              let hashParams = new URLSearchParams(window.location.hash);
+
+              //SearchParams will actually need the leading hash if the param is first in the hash list.
+              if (hashParams.get('#background')) {
+                hashParams.set('#background', imagery);
+              } else {
+                hashParams.set('background', imagery);
+              }
+
+
+              let newBackgroundImageURL = window.location.pathname + window.location.search + '#' + hashParams.toString();
+              window.history.pushState(null, '', newBackgroundImageURL);
+            }
+          });
 
       RapidContext.rapidContext().showPowerUser = powerUser;
 

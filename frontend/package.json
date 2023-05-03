@@ -27,7 +27,7 @@
     "@turf/transform-scale": "^6.5.0",
     "@turf/truncate": "^6.5.0",
     "@uiw/react-md-editor": "^3.22.0",
-    "RapiD": "facebookincubator/rapid#rapid-v1.1.9-tm.1",
+    "RapiD": "facebookincubator/rapid#rapid-v2.0.3",
     "axios": "^1.4.0",
     "chart.js": "^3.7.1",
     "chartjs-adapter-date-fns": "^3.0.0",
@@ -133,5 +133,8 @@
     "transformIgnorePatterns": [
       "node_modules/@uiw/react-md-editor/"
     ]
+  },
+  "volta": {
+    "node": "16.20.0"
   }
 }
