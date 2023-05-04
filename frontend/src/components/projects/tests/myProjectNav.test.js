@@ -1,11 +1,15 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 import { act, render, screen, waitFor } from '@testing-library/react';
 
 import { MyProjectNav, FilterButton } from '../myProjectNav';
-import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 import { store } from '../../../store';
 
 describe('Manage Projects Top Navigation Bar', () => {
@@ -17,8 +21,8 @@ describe('Manage Projects Top Navigation Bar', () => {
       });
     });
 
-    const { container } = render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { container } = renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <MyProjectNav management={false} />
         </ReduxIntlProviders>
@@ -37,7 +41,7 @@ describe('Manage Projects Top Navigation Bar', () => {
     ).not.toBeInTheDocument();
     expect(screen.queryAllByRole('combobox').length).toBe(0);
     // Check for SVGs for dropdowns and list/vard view toggle
-    expect(container.querySelectorAll('svg').length).toBe(3);
+    expect(container.querySelectorAll('svg').length).toBe(2);
     expect(screen.getByRole('textbox')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sort by/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /contributed/i })).toBeInTheDocument();
@@ -56,8 +60,8 @@ describe('Manage Projects Top Navigation Bar', () => {
       });
     });
 
-    const { container } = render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { container } = renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <MyProjectNav management />
         </ReduxIntlProviders>
@@ -77,13 +81,13 @@ describe('Manage Projects Top Navigation Bar', () => {
     expect(screen.getAllByRole('combobox').length).toBe(2);
     expect(screen.queryByRole('button', { name: /contributed/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /favorited/i })).not.toBeInTheDocument();
-    expect(container.querySelectorAll('svg').length).toBe(8);
+    expect(container.querySelectorAll('svg').length).toBe(7);
     expect(screen.getAllByRole('graphics-symbol').length).toBe(2);
   });
 
   it('should navigate to new project creation page on button click', async () => {
-    const { history } = renderWithRouter(
-      <QueryParamProvider adapter={ReachAdapter}>
+    const { router } = createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <MyProjectNav management />
         </ReduxIntlProviders>
@@ -96,7 +100,7 @@ describe('Manage Projects Top Navigation Bar', () => {
         name: /new/i,
       }),
     );
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/projects/new/'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/projects/new/'));
   });
 });
 

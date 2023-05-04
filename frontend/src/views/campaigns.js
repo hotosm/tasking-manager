@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from '@reach/router';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
@@ -113,10 +113,11 @@ export function CreateCampaign() {
   );
 }
 
-export function EditCampaign(props) {
+export function EditCampaign() {
+  const { id } = useParams();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const [error, loading, campaign] = useFetch(`campaigns/${props.id}/`, props.id);
+  const [error, loading, campaign] = useFetch(`campaigns/${id}/`, id);
   useSetTitleTag(`Edit ${campaign.name}`);
   const [projectsError, projectsLoading, projects] = useFetch(
     `projects/?campaign=${encodeURIComponent(campaign.name)}&omitMapResults=true`,
@@ -125,7 +126,7 @@ export function EditCampaign(props) {
   const [nameError, setNameError] = useState(false);
 
   const updateCampaign = (payload) => {
-    return pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
+    return pushToLocalJSONAPI(`campaigns/${id}/`, JSON.stringify(payload), token, 'PATCH')
       .then((res) => setNameError(false))
       .catch((e) => setNameError(true));
   };

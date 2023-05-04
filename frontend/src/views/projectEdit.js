@@ -1,6 +1,6 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Redirect } from '@reach/router';
+import { useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
@@ -62,7 +62,8 @@ const doesValidationTeamNotExist = (teams, validationPermission) =>
   teams.filter((team) => team.role === 'VALIDATOR').length === 0 &&
   teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
 
-export default function ProjectEdit({ id }) {
+export default function ProjectEdit() {
+  const { id } = useParams();
   useSetTitleTag(`Edit project #${id}`);
   const [errorLanguages, loadingLanguages, languages] = useFetch('system/languages/');
   const mandatoryFields = ['name', 'shortDescription', 'description', 'instructions'];
@@ -173,10 +174,6 @@ export default function ProjectEdit({ id }) {
     }
   };
   const saveChangesAsync = useAsync(saveChanges);
-
-  if (!token) {
-    return <Redirect to={'/login'} noThrow />;
-  }
 
   if (projectInfo.projectId && !userCanEditProject) {
     return (

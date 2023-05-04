@@ -6,17 +6,14 @@ import { MultipleTaskHistoriesAccordion } from '../multipleTaskHistories';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 
 describe('MultipleTaskHistories Accordion', () => {
-  let handleChange = jest.fn();
-
   it('does not render accordion with task history items if there are no tasks', () => {
     render(
       <ReduxIntlProviders>
-        <MultipleTaskHistoriesAccordion handleChange={handleChange} tasks={[]} projectId={1} />
+        <MultipleTaskHistoriesAccordion tasks={[]} projectId={1} />
       </ReduxIntlProviders>,
     );
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
-    expect(handleChange).not.toHaveBeenCalled();
     expect(screen.queryByText(/Comments/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Activities/i)).not.toBeInTheDocument();
   });
@@ -56,7 +53,7 @@ describe('MultipleTaskHistories Accordion', () => {
     ];
     render(
       <ReduxIntlProviders>
-        <MultipleTaskHistoriesAccordion handleChange={handleChange} tasks={tasks} projectId={1} />
+        <MultipleTaskHistoriesAccordion tasks={tasks} projectId={1} />
       </ReduxIntlProviders>,
     );
 
@@ -68,7 +65,6 @@ describe('MultipleTaskHistories Accordion', () => {
       fireEvent.click(taskBtn);
     });
 
-    expect(handleChange).toHaveBeenCalledTimes(2);
     expect(screen.getAllByText(/Comments/i)).toHaveLength(2);
     expect(screen.getAllByText(/Activities/i)).toHaveLength(2);
   });

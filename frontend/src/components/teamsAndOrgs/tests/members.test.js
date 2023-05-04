@@ -15,6 +15,7 @@ import {
 import { JoinRequests, Members } from '../members';
 import { UserAvatar } from '../../user/avatar';
 import { Button } from '../../button';
+import { MemoryRouter } from 'react-router-dom';
 
 describe('test JoinRequest list', () => {
   const requests = [
@@ -27,9 +28,11 @@ describe('test JoinRequest list', () => {
     { username: 'test_2', function: 'MEMBER', active: false, pictureUrl: null },
   ];
   const element = createComponentWithIntl(
-    <Provider store={store}>
-      <JoinRequests requests={requests} managers={[]} />
-    </Provider>,
+    <MemoryRouter>
+      <Provider store={store}>
+        <JoinRequests requests={requests} managers={[]} />
+      </Provider>
+    </MemoryRouter>,
   );
   const testInstance = element.root;
   it('initial div has the correct classes', () => {
@@ -61,9 +64,11 @@ describe('test JoinRequest list', () => {
 
 describe('test JoinRequest list without requests', () => {
   const element = createComponentWithIntl(
-    <Provider store={store}>
-      <JoinRequests requests={[]} managers={[]} />
-    </Provider>,
+    <MemoryRouter>
+      <Provider store={store}>
+        <JoinRequests requests={[]} managers={[]} />
+      </Provider>
+    </MemoryRouter>,
   );
   const testInstance = element.root;
   it('initial div has the correct classes', () => {

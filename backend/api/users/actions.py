@@ -32,6 +32,9 @@ class UsersActionsSetUsersAPI(Resource):
               description: JSON object to update a user
               schema:
                   properties:
+                      id:
+                        type: integer
+                        example: 1
                       name:
                           type: string
                           example: Your Name
@@ -304,6 +307,8 @@ class UsersActionsVerifyEmailAPI(Resource):
         try:
             MessageService.resend_email_validation(token_auth.current_user())
             return {"Success": "Verification email resent"}, 200
+        except ValueError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -413,7 +418,7 @@ class UsersActionsSetInterestsAPI(Resource):
                 token_auth.current_user(), data["interests"]
             )
             return user_interests.to_primitive(), 200
-        except ValueError as e:
+        except (ValueError, KeyError) as e:
             return {"Error": str(e)}, 400
         except NotFound:
             return {"Error": "Interest not Found", "SubCode": "NotFound"}, 404

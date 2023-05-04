@@ -87,6 +87,8 @@ class Message(db.Model):
         dto.task_id = self.task_id
         if self.message_type is not None:
             dto.message_type = MessageType(self.message_type).name
+        else:
+            dto.message_type = MessageType.SYSTEM.name
 
         if self.from_user_id:
             dto.from_username = self.from_user.username

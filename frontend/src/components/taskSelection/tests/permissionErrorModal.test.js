@@ -1,10 +1,20 @@
+import '@testing-library/jest-dom';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { MemoryRouter } from 'react-router-dom';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import { createComponentWithIntl } from '../../../utils/testWithIntl';
+import {
+  createComponentWithIntl,
+  createComponentWithMemoryRouter,
+  IntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 import { UserPermissionErrorContent } from '../permissionErrorModal';
 import { CloseIcon } from '../../svgIcons';
 import { Button } from '../../button';
+import messages from '../messages';
 
 describe('test if UserPermissionErrorContent', () => {
   const project = {
@@ -16,11 +26,13 @@ describe('test if UserPermissionErrorContent', () => {
   let value = false;
   const closeTestFn = (v) => (value = v);
   const element = createComponentWithIntl(
-    <UserPermissionErrorContent
-      project={project}
-      userLevel="BEGINNER"
-      close={() => closeTestFn(true)}
-    />,
+    <MemoryRouter>
+      <UserPermissionErrorContent
+        project={project}
+        userLevel="BEGINNER"
+        close={() => closeTestFn(true)}
+      />
+    </MemoryRouter>,
   );
   const testInstance = element.root;
   it('has a span with a CloseIcon as children', () => {
@@ -53,5 +65,94 @@ describe('test if UserPermissionErrorContent', () => {
     expect(testInstance.findByType('h3').props.children.props.id).toBe(
       'project.permissions.error.title',
     );
+  });
+});
+
+describe('UserPermissionErrorContent', () => {
+  it('should display message for user is not a mapping team member', () => {
+    const project = {
+      mappingPermission: 'TEAMS',
+      percentMapped: 11,
+      percentValidated: 1,
+      percentBadImagery: 0,
+      teams: [
+        {
+          teamId: 6,
+          name: 'Team Mapper',
+          role: 'MAPPER',
+        },
+      ],
+    };
+    renderWithRouter(
+      <IntlProviders>
+        <UserPermissionErrorContent project={project} userLevel="BEGINNER" />
+      </IntlProviders>,
+    );
+    expect(
+      screen.getByText(messages.permissionError_userIsNotMappingTeamMember.defaultMessage),
+    ).toBeInTheDocument();
+  });
+
+  it('should display message for user is not a validation team member', () => {
+    const project = {
+      mappingPermission: 'TEAMS',
+      percentMapped: 100,
+      percentValidated: 1,
+      percentBadImagery: 0,
+      validationPermission: 'TEAMS',
+      teams: [
+        {
+          teamId: 11,
+          name: 'Team Validators',
+          role: 'VALIDATOR',
+        },
+      ],
+    };
+    renderWithRouter(
+      <IntlProviders>
+        <UserPermissionErrorContent project={project} userLevel="BEGINNER" />
+      </IntlProviders>,
+    );
+    expect(
+      screen.getByText(messages.permissionError_userIsNotValidationTeamMember.defaultMessage),
+    ).toBeInTheDocument();
+  });
+
+  it('should navigate to explore', async () => {
+    const project = {
+      mappingPermission: 'TEAMS',
+      percentMapped: 100,
+      percentValidated: 1,
+      percentBadImagery: 0,
+      validationPermission: 'TEAMS',
+      teams: [
+        {
+          teamId: 8,
+          name: 'Team Managers',
+          role: 'PROJECT_MANAGER',
+        },
+        {
+          teamId: 11,
+          name: 'Team Validators',
+          role: 'VALIDATOR',
+        },
+        {
+          teamId: 6,
+          name: 'Team Mapper',
+          role: 'MAPPER',
+        },
+      ],
+    };
+    const { router } = createComponentWithMemoryRouter(
+      <IntlProviders>
+        <UserPermissionErrorContent project={project} userLevel="BEGINNER" />
+      </IntlProviders>,
+    );
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /select another project/i,
+      }),
+    );
+    expect(router.state.location.pathname).toBe('/explore');
   });
 });

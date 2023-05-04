@@ -15,12 +15,14 @@ import { getTaskContributors } from '../../utils/getTaskContributors';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
+import { UserAvatar } from '../user/avatar';
 import { CloseIcon } from '../svgIcons';
 import { ID_EDITOR_URL } from '../../config';
 import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { CommentInputField } from '../comments/commentInput';
+
+import './styles.scss';
 
 const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => {
   const token = useSelector((state) => state.auth.token);
@@ -44,20 +46,17 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
   };
 
   return (
-    <div className="w-100 pt3 ph3-ns ph1">
-      <div className="fl w-10">
-        <CurrentUserAvatar className="h2 w2 fr mr2 br-100" />
-      </div>
-      <div className="fl w-70 f6">
-        <CommentInputField
-          comment={comment}
-          setComment={setComment}
-          enableHashtagPaste
-          contributors={contributors}
-          enableContributorsHashtag
-        />
-      </div>
-      <div className="w-20 fr pt3 tr">
+    <div className="w-100 pt3 ph3-ns ph1 flex flex-column">
+      <CommentInputField
+        comment={comment}
+        setComment={setComment}
+        enableHashtagPaste
+        contributors={contributors}
+        enableContributorsHashtag
+        isShowUserPicture
+        isShowTabNavs
+      />
+      <div className="ml-auto mb5">
         <Button onClick={() => saveComment()} className="bg-red white f6">
           <FormattedMessage {...messages.comment} />
         </Button>
@@ -171,6 +170,22 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
     { value: 'All', label: 'All' },
   ];
 
+  const groupBySession = () => {
+    if (shownHistory.length === 0) return;
+    let res = [];
+    let username = shownHistory[0].actionBy;
+
+    shownHistory.forEach((history) => {
+      if (history.actionBy === username) {
+        res.length === 0 ? res.push([history]) : res[res.length - 1].push(history);
+      } else {
+        username = history.actionBy;
+        res.push([history]);
+      }
+    });
+    return res;
+  };
+
   if (!history) {
     return null;
   } else {
@@ -193,32 +208,55 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
             </label>
           ))}
         </div>
-        {shownHistory.map((t, n) => (
-          <div className="w-90 mh3 pv3 bt b--grey-light f6 cf blue-dark" key={n}>
-            <div className="fl w-10-ns w-100 mr2 tr">
-              <UserAvatar
-                username={t.actionBy}
-                picture={t.pictureUrl}
-                colorClasses="white bg-blue-grey"
-              />
+        <div className="timeline-container">
+          {groupBySession()?.map((grouped, n) => (
+            <div
+              key={grouped[0].historyId}
+              className={`grouped-ctr session ph3 mt4 bb b--grey-light`}
+            >
+              {grouped.map((history, n) => (
+                <div className="flex activity relative" key={history.historyId}>
+                  <div className="flex justify-center">
+                    {n === 0 ? (
+                      <UserAvatar
+                        username={grouped[0].actionBy}
+                        picture={grouped[0].pictureUrl}
+                        colorClasses="white bg-blue-grey z-1 relative"
+                      />
+                    ) : (
+                      <div className="oval z-1" />
+                    )}
+                  </div>
+                  <div className="mh2 f6 blue-dark" style={{ marginTop: '-2px' }}>
+                    <p className="ma0 blue-grey">
+                      {n === 0 && (
+                        <div className="mt2 dib">
+                          <a
+                            href={'/users/' + history.actionBy}
+                            className="blue-dark b no-underline underline-hover"
+                          >
+                            {history.actionBy}
+                          </a>
+                          &nbsp;
+                        </div>
+                      )}
+                      {getTaskActionMessage(history.action, history.actionText)}{' '}
+                      <RelativeTimeWithUnit date={history.actionDate} />
+                    </p>
+                    {history.action === 'COMMENT' && (
+                      <div
+                        className="ma0 comment"
+                        dangerouslySetInnerHTML={htmlFromMarkdown(
+                          formatUserNamesToLink(history.actionText),
+                        )}
+                      />
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="w-80-ns w-100 fl">
-              <p className="ma0 pt2">
-                <a href={'/users/' + t.actionBy} className="blue-dark b underline">
-                  {t.actionBy}
-                </a>{' '}
-                {getTaskActionMessage(t.action, t.actionText)}{' '}
-                <RelativeTimeWithUnit date={t.actionDate} />
-              </p>
-              {t.action === 'COMMENT' ? (
-                <p
-                  className="ma0 mt2 blue-grey markdown-content"
-                  dangerouslySetInnerHTML={htmlFromMarkdown(formatUserNamesToLink(t.actionText))}
-                ></p>
-              ) : null}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </>
     );
   }

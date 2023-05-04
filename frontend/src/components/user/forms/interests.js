@@ -80,7 +80,9 @@ export function UserInterestsForm() {
       )}
       <Button
         onClick={updateInterests}
-        className={`${enableSaveButton ? 'bg-blue-dark' : 'bg-grey-light'} white mv3 dib settings-width`}
+        className={`${
+          enableSaveButton ? 'bg-blue-dark' : 'bg-grey-light'
+        } white mv3 dib settings-width`}
         disabled={!enableSaveButton}
       >
         <FormattedMessage {...messages.save} />

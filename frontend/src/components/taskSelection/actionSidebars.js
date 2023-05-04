@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { navigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import ReactTooltip from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
@@ -44,6 +44,7 @@ export function CompletionTabForMapping({
   selectedStatus,
   setSelectedStatus,
 }: Object) {
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
   const [showHelp, setShowHelp] = useState(false);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
@@ -63,12 +64,15 @@ export function CompletionTabForMapping({
       )
         .then((res) => {
           clearLockedTasks();
-          navigate((redirectToPreviousProject && directedFrom) || `../tasks/`, {
-            state: {
-              lastLockedTasksIds: res.tasks.map((task) => task.taskId),
-              lastLockedProjectId: project.projectId,
+          navigate(
+            (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+            {
+              state: {
+                lastLockedTasksIds: res.tasks.map((task) => task.taskId),
+                lastLockedProjectId: project.projectId,
+              },
             },
-          });
+          );
         })
         .catch((e) => {
           setSplitTaskError(true);
@@ -168,6 +172,7 @@ export function CompletionTabForMapping({
       {showReadCommentsAlert && (
         <div
           className="tc pa2 mb1 bg-grey-light blue-dark pointer"
+          role="button"
           onClick={() => historyTabSwitch()}
         >
           <InfoIcon className="v-mid h1 w1" />
@@ -178,11 +183,13 @@ export function CompletionTabForMapping({
       )}
       <div className="cf">
         {taskInstructions && <TaskSpecificInstructions instructions={taskInstructions} />}
-        <h4 className="ttu blue-grey f5">
+        <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.editStatus} />
           <QuestionCircleIcon
             className="pointer dib v-mid pl2 pb1 blue-light"
             height="1.25rem"
+            role="button"
+            aria-label="toggle help"
             onClick={() => setShowHelp(!showHelp)}
           />
         </h4>
@@ -237,7 +244,7 @@ export function CompletionTabForMapping({
         )}
       </div>
       <div className="cf">
-        <h4 className="ttu blue-grey f5">
+        <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.comment} />
         </h4>
         <p>
@@ -247,6 +254,7 @@ export function CompletionTabForMapping({
             contributors={contributors}
             enableHashtagPaste={true}
             enableContributorsHashtag
+            isShowTabNavs
           />
         </p>
       </div>
@@ -319,6 +327,7 @@ export function CompletionTabForValidation({
   validationComments,
   setValidationComments,
 }: Object) {
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const [redirectToPreviousProject, setRedirectToPreviousProject] = useState(true);
@@ -355,12 +364,15 @@ export function CompletionTabForValidation({
         token,
       ).then((r) => {
         clearLockedTasks();
-        navigate((redirectToPreviousProject && directedFrom) || `../tasks/`, {
-          state: {
-            lastLockedTasksIds: tasksIds,
-            lastLockedProjectId: project.projectId,
+        navigate(
+          (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+          {
+            state: {
+              lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
+            },
           },
-        });
+        );
       });
     } else {
       return new Promise((resolve, reject) => {
@@ -383,17 +395,16 @@ export function CompletionTabForValidation({
       };
       return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
-        navigate((redirectToPreviousProject && directedFrom) || `../tasks/?filter=MAPPED`, {
-          state: {
-            lastLockedTasksIds: tasksIds,
-            lastLockedProjectId: project.projectId,
+        navigate(
+          (redirectToPreviousProject && directedFrom) ||
+            `/projects/${project.projectId}/tasks/?filter=MAPPED`,
+          {
+            state: {
+              lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
+            },
           },
-        });
-      });
-    } else if (disabled) {
-      return new Promise((resolve, reject) => {
-        setShowMapChangesModal('unlock');
-        resolve();
+        );
       });
     }
   };
@@ -562,21 +573,23 @@ const TaskValidationSelector = ({
           <input
             type="radio"
             value="VALIDATED"
+            id={`#${id}-VALIDATED`}
             className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
             checked={currentStatus === 'VALIDATED'}
             onChange={() => updateStatus(id, 'VALIDATED')}
           />
-          <label htmlFor="VALIDATED">
+          <label htmlFor={`#${id}-VALIDATED`}>
             <FormattedMessage {...messages.complete} />
           </label>
           <input
             type="radio"
             value="INVALIDATED"
+            id={`#${id}-INVALIDATED`}
             className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
             checked={currentStatus === 'INVALIDATED'}
             onChange={() => updateStatus(id, 'INVALIDATED')}
           />
-          <label htmlFor="INVALIDATED">
+          <label htmlFor={`#${id}-INVALIDATED`}>
             <FormattedMessage {...messages.incomplete} />
           </label>
           <CustomButton
@@ -604,8 +617,8 @@ const TaskValidationSelector = ({
               setComment={setComment}
               contributors={contributors.length ? contributors : contributorsList}
               enableHashtagPaste
-              autoFocus
               enableContributorsHashtag
+              isShowTabNavs
             />
           </div>
           {isValidatingMultipleTasks && comment && (
@@ -664,7 +677,7 @@ function CompletionInstructions({ setVisibility }: Object) {
         className="br-100 bg-grey-light white h1 w1 fr pointer tc v-mid di"
         onClick={() => setVisibility(false)}
       >
-        <CloseIcon className="pv1" />
+        <CloseIcon className="pv1" aria-label="hide instructions" />
       </span>
       <div className="blue-grey">
         <p>
@@ -711,17 +724,22 @@ export function ReopenEditor({ project, action, editor, callEditor }: Object) {
   );
 }
 
-export function SidebarToggle({ setShowSidebar }: Object) {
+export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
   const iDContext = useSelector((state) => state.editor.context);
+  const rapidContext = useSelector((state) => state.editor.rapidContext);
+
   return (
     <div>
       <FormattedMessage {...messages.hideSidebar}>
         {(msg) => (
           <div className="fr pointer" title={msg}>
             <SidebarIcon
+              role="button"
+              aria-label="Hide sidebar"
               onClick={() => {
                 setShowSidebar(false);
-                iDContext.ui().restart();
+                activeEditor === 'ID' && iDContext.ui().restart();
+                activeEditor === 'RAPID' && rapidContext.ui().restart();
               }}
             />
           </div>
@@ -777,7 +795,11 @@ function TaskSpecificInstructions({ instructions, open = true }: Object) {
   const [isOpen, setIsOpen] = useState(open);
   return (
     <>
-      <h4 className="ttu blue-grey mt1 mb0 pointer" onClick={() => setIsOpen(!isOpen)}>
+      <h4
+        className="ttu blue-grey mt1 mb0 pointer"
+        role="button"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {isOpen ? (
           <ChevronDownIcon style={{ height: '14px' }} className="pr1 pb1 v-mid" />
         ) : (

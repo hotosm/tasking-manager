@@ -2,11 +2,11 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { BarListChart, BarChartItem } from '../barListChart';
 
 test('BarChartItem with link address', () => {
-  const { container } = render(
+  const { container } = renderWithRouter(
     <ReduxIntlProviders>
       <BarChartItem
         name={'Test project'}
@@ -49,7 +49,7 @@ test('BarListChart renders correct elements', () => {
     { id: 10, name: 'Madagascar Buildings', mapped: 182, validated: 4, total: 186, percent: 0.11 },
     { id: 6, name: 'Disaster response', mapped: 91, validated: 93, total: 184, percent: 0.09 },
   ];
-  const { container } = render(
+  const { container } = renderWithRouter(
     <ReduxIntlProviders>
       <BarListChart
         data={data}

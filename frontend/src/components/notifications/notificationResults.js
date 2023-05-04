@@ -58,13 +58,7 @@ export const NotificationResults = ({
 
       {error && (
         <div className="bg-tan pa4 mt3">
-          <FormattedMessage
-            {...messages.errorLoadingTheXForY}
-            values={{
-              xWord: <FormattedMessage {...messages.projects} />,
-              yWord: 'Notifications',
-            }}
-          />
+          <FormattedMessage {...messages.errorLoadingNotifications} />
           <div className="pa2">
             <button className="pa1" onClick={() => retryFn()}>
               <FormattedMessage {...messages.notificationsRetry} />
@@ -103,7 +97,7 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn, setPopoutFocus }
 
   if (pageOfCards.length === 0) {
     return (
-      <div className="mb3 blue-grey">
+      <div className={`mb3 ${useMiniCard ? 'ph3 ml2' : ''} blue-grey`}>
         <FormattedMessage {...messages[useMiniCard ? 'noUnreadMessages' : 'noMessages']} />
       </div>
     );

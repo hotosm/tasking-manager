@@ -54,7 +54,7 @@ class CommentsProjectsRestAPI(Resource):
         """
         authenticated_user_id = token_auth.current_user()
         if UserService.is_user_blocked(authenticated_user_id):
-            return {"Error": "User is on read only mode.", "SubCode": "ReadOnly"}, 403
+            return {"Error": "User is on read only mode", "SubCode": "ReadOnly"}, 403
 
         try:
             chat_dto = ChatMessageDTO(request.get_json())
@@ -196,7 +196,7 @@ class CommentsTasksRestAPI(Resource):
         """
         authenticated_user_id = token_auth.current_user()
         if UserService.is_user_blocked(authenticated_user_id):
-            return {"Error": "User is on read only mode.", "SubCode": "ReadOnly"}, 403
+            return {"Error": "User is on read only mode", "SubCode": "ReadOnly"}, 403
 
         try:
             task_comment = TaskCommentDTO(request.get_json())
@@ -267,10 +267,6 @@ class CommentsTasksRestAPI(Resource):
                 description: Comment retrieved
             400:
                 description: Client Error
-            401:
-                description: Unauthorized - Invalid credentials
-            403:
-                description: Forbidden
             404:
                 description: Task not found
             500:

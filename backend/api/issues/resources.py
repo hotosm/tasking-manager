@@ -6,6 +6,8 @@ from backend.models.postgis.utils import NotFound
 from backend.services.mapping_issues_service import MappingIssueCategoryService
 from backend.services.users.authentication_service import token_auth, tm
 
+ISSUE_NOT_FOUND = "Mapping-issue category not found"
+
 
 class IssuesRestAPI(Resource):
     def get(self, category_id):
@@ -32,15 +34,19 @@ class IssuesRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            category_dto = MappingIssueCategoryService.get_category_as_dto(category_id)
+            category_dto = (
+                MappingIssueCategoryService.get_mapping_issue_category_as_dto(
+                    category_id
+                )
+            )
             return category_dto.to_primitive(), 200
         except NotFound:
             return {
-                "Error": "Mapping-issue category Not Found",
+                "Error": ISSUE_NOT_FOUND,
                 "SubCode": "NotFound",
             }, 404
         except Exception as e:
-            error_msg = f"Mapping-issue category PUT - unhandled error: {str(e)}"
+            error_msg = f"Mapping-issue category GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {
                 "Error": "Unable to fetch mapping issue category",
@@ -87,6 +93,8 @@ class IssuesRestAPI(Resource):
                 description: Invalid Request
             401:
                 description: Unauthorized - Invalid credentials
+            404:
+                description: Mapping-issue category not found
             500:
                 description: Internal Server Error
         """
@@ -108,7 +116,7 @@ class IssuesRestAPI(Resource):
             return updated_category.to_primitive(), 200
         except NotFound:
             return {
-                "Error": "Mapping-issue category Not Found",
+                "Error": ISSUE_NOT_FOUND,
                 "SubCode": "NotFound",
             }, 404
         except Exception as e:
@@ -123,10 +131,10 @@ class IssuesRestAPI(Resource):
     @token_auth.login_required
     def delete(self, category_id):
         """
-        Delete the specified mapping-issue category. Note that categories can
-        be deleted only if they have never been associated with a task. To
-        instead archive a used category that is no longer needed, update the
-        category with its archived flag set to true.
+        Delete the specified mapping-issue category.
+        Note that categories can be deleted only if they have never been associated with a task.\
+        To instead archive a used category that is no longer needed, \
+        update the category with its archived flag set to true.
         ---
         tags:
             - issues
@@ -160,7 +168,7 @@ class IssuesRestAPI(Resource):
             return {"Success": "Mapping-issue category deleted"}, 200
         except NotFound:
             return {
-                "Error": "Mapping-issue category Not Found",
+                "Error": ISSUE_NOT_FOUND,
                 "SubCode": "NotFound",
             }, 404
         except Exception as e:

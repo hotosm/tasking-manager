@@ -41,7 +41,7 @@ class LicensesRestAPI(Resource):
                           type: string
                           default: This imagery is in the public domain.
         responses:
-            200:
+            201:
                 description: New license created
             400:
                 description: Invalid Request
@@ -62,7 +62,7 @@ class LicensesRestAPI(Resource):
 
         try:
             new_license_id = LicenseService.create_licence(license_dto)
-            return {"licenseId": new_license_id}, 200
+            return {"licenseId": new_license_id}, 201
         except Exception as e:
             error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

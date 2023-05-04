@@ -1,12 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
 import { Login } from '../login';
 
 test('Login component renders the elements correctly formatted', () => {
-  render(
+  renderWithRouter(
     <ReduxIntlProviders>
       <Login redirectTo={'/welcome'} />
     </ReduxIntlProviders>,

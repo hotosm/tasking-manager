@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -40,29 +40,37 @@ export function ManagementPageIndex() {
 }
 
 export const ManagementSection = (props) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const isOrgManager = useSelector(
     (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
 
+  useEffect(() => {
+    if (!token) {
+      navigate('/login', {
+        state: {
+          from: location.pathname,
+        },
+      });
+    }
+  }, [location.pathname, navigate, token]);
+
   return (
-    <ReactPlaceholder
-      type="media"
-      rows={10}
-      showLoadingAnimation={true}
-      style={{ padding: '2rem' }}
-      ready={typeof token !== undefined}
-    >
+    <>
       {isOrgManager ||
       userDetails.role === 'ADMIN' ||
-      props.location.pathname.startsWith('/manage/teams/') ||
-      props.location.pathname.startsWith('/manage/projects/') ? (
+      location.pathname.startsWith('/manage/teams/') ||
+      location.pathname.startsWith('/manage/projects/') ? (
         <div className="w-100 ph5-l pb5-l pb2-m ph2-m cf bg-tan blue-dark">
           {(isOrgManager || userDetails.role === 'ADMIN') && (
             <ManagementMenu isAdmin={userDetails && userDetails.role === 'ADMIN'} />
           )}
-          <div className="ph0-ns ph2">{props.children}</div>
+          <div className="ph0-ns ph2">
+            <Outlet />
+          </div>
         </div>
       ) : (
         <div className="cf w-100 pv5">
@@ -73,6 +81,6 @@ export const ManagementSection = (props) => {
           </div>
         </div>
       )}
-    </ReactPlaceholder>
+    </>
   );
 };

@@ -1,15 +1,15 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { store } from '../../../store';
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { ProjectsActionFilter } from '../projectsActionFilter';
 
 describe('ProjectsActionFilter', () => {
   const myMock = jest.fn();
   it('test initialization and state changes', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectsActionFilter fullProjectsQuery={{ action: undefined }} setQuery={myMock} />
       </ReduxIntlProviders>,
@@ -41,7 +41,7 @@ describe('ProjectsActionFilter', () => {
   });
 
   it('initialize it with validate action set', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectsActionFilter fullProjectsQuery={{ action: 'validate' }} setQuery={myMock} />
       </ReduxIntlProviders>,
@@ -60,7 +60,7 @@ describe('ProjectsActionFilter', () => {
         userDetails: { username: 'abc', mappingLevel: 'ADVANCED' },
       });
     });
-    render(
+    renderWithRouter(
       <ReduxIntlProviders localStore={store}>
         <ProjectsActionFilter fullProjectsQuery={{ action: undefined }} setQuery={myMock} />
       </ReduxIntlProviders>,

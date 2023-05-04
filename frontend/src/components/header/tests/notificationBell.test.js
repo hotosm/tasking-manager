@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import '../../../utils/mockMatchMedia';
@@ -31,7 +31,7 @@ describe('Notification Bell', () => {
   });
 
   it('should clear unread notification count when bell icon is clicked', async () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <NotificationBell />
       </ReduxIntlProviders>,

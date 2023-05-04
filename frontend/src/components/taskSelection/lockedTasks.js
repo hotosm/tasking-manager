@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, navigate, useLocation } from '@reach/router';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -44,6 +44,7 @@ export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Obj
 }
 
 export function SameProjectLock({ lockedTasks, action }: Object) {
+  const navigate = useNavigate();
   return (
     <>
       <h3 className="barlow-condensed f3 fw6 mv0">
@@ -75,6 +76,7 @@ export function SameProjectLock({ lockedTasks, action }: Object) {
 export const LicenseError = ({ id, close, lockTasks }) => {
   const token = useSelector((state) => state.auth.token);
   const [license, setLicense] = useState(null);
+
   useEffect(() => {
     const fetchLicense = async (id) => {
       const res = await fetchLocalJSONAPI(`licenses/${id}/`);
@@ -83,7 +85,7 @@ export const LicenseError = ({ id, close, lockTasks }) => {
     fetchLicense(id);
   }, [id]);
 
-  const AcceptLicense = () => {
+  const acceptLicense = () => {
     pushToLocalJSONAPI(`licenses/${id}/actions/accept-for-me/`, null, token).then(() =>
       lockTasks(),
     );
@@ -106,7 +108,7 @@ export const LicenseError = ({ id, close, lockTasks }) => {
             <Button onClick={() => close()} className="blue-dark bg-white mr2">
               <FormattedMessage {...messages.cancel} />
             </Button>
-            <Button onClick={() => AcceptLicense()} className="white bg-red">
+            <Button onClick={() => acceptLicense()} className="white bg-red">
               <FormattedMessage {...messages.acceptLicense} />
             </Button>
           </div>

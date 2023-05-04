@@ -209,7 +209,7 @@ class TestMappingService(BaseTestCase):
         task.mapped_by = 1
 
         # Act
-        mock_project.return_value = True
+        mock_project.return_value = True, None
         is_undoable = MappingService._is_task_undoable(1, task)
 
         # Assert
@@ -230,7 +230,7 @@ class TestMappingService(BaseTestCase):
         task.mapped_by = 1
 
         # Act
-        mock_project.return_value = False
+        mock_project.return_value = (False, None)
         is_undoable = MappingService._is_task_undoable(1, task)
 
         # Assert

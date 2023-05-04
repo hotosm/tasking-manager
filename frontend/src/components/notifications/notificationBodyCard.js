@@ -11,6 +11,7 @@ import { useFetch } from '../../hooks/UseFetch';
 import { CloseIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { DeleteButton } from '../teamsAndOrgs/management';
+import { ORG_NAME } from '../../config';
 import './styles.scss';
 
 export const NotificationBodyModal = (props) => {
@@ -42,7 +43,12 @@ export const NotificationBodyModal = (props) => {
         style={{ letterSpacing: '0.114546px' }}
       >
         <FormattedMessage {...messages.message} />
-        <CloseIcon className={`fr ml4 blue-dark h1 w1 blue-dark pointer`} onClick={props.close} />
+        <CloseIcon
+          role="button"
+          className={`fr ml4 blue-dark h1 w1 blue-dark pointer`}
+          onClick={props.close}
+          aria-label="Close"
+        />
       </div>
       {!thisNotificationError && (
         <NotificationBodyCard
@@ -85,7 +91,7 @@ export function NotificationBodyCard({
   const token = useSelector((state) => state.auth.token);
   const { value, unit } = selectUnit(new Date((sentDate && new Date(sentDate)) || new Date()));
   const showASendingUser =
-    fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && 'System');
+    fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && ORG_NAME);
 
   let replacedSubject;
   let replacedMessage;

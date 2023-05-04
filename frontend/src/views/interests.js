@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
-import { Link, useNavigate } from '@reach/router';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
 
@@ -85,19 +85,20 @@ export const ListInterests = () => {
   );
 };
 
-export const EditInterest = (props) => {
+export const EditInterest = () => {
+  const { id } = useParams();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const [error, loading, interest] = useFetch(`interests/${props.id}/`);
+  const [error, loading, interest] = useFetch(`interests/${id}/`);
   useSetTitleTag(`Edit ${interest.name}`);
 
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?interests=${props.id}&omitMapResults=true`,
-    props.id,
+    `projects/?interests=${id}&omitMapResults=true`,
+    id,
   );
 
   const updateInterest = (payload) => {
-    pushToLocalJSONAPI(`interests/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
+    pushToLocalJSONAPI(`interests/${id}/`, JSON.stringify(payload), token, 'PATCH');
   };
 
   return (
@@ -119,7 +120,7 @@ export const EditInterest = (props) => {
       <div className="w-60-l w-100 mt4 pl5-l pl0 fr">
         <Projects
           projects={!projectsLoading && !projectsError && projects}
-          viewAllEndpoint={`/manage/projects/?interests=${props.id}`}
+          viewAllEndpoint={`/manage/projects/?interests=${id}`}
           ownerEntity="category"
         />
       </div>

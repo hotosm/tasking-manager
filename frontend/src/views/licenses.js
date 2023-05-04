@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { Link, useNavigate } from '@reach/router';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
 
@@ -12,14 +12,15 @@ import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 
-export const EditLicense = (props) => {
+export const EditLicense = () => {
+  const { id } = useParams();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const [error, loading, license] = useFetch(`licenses/${props.id}/`);
+  const [error, loading, license] = useFetch(`licenses/${id}/`);
   useSetTitleTag(`Edit ${license.name}`);
 
   const updateLicense = (payload) => {
-    pushToLocalJSONAPI(`licenses/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
+    pushToLocalJSONAPI(`licenses/${id}/`, JSON.stringify(payload), token, 'PATCH');
   };
 
   return (

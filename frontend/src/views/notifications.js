@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { backendToQueryConversion, useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
 import { InboxNav, InboxNavMini, InboxNavMiniBottom } from '../components/notifications/inboxNav';
@@ -7,10 +8,9 @@ import {
   NotificationResultsMini,
 } from '../components/notifications/notificationResults';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { Login } from './login';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import Paginator from '../components/notifications/paginator';
-import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
+import { useFetchWithAbort } from '../hooks/UseFetch';
 
 function serializeParams(queryState) {
   const obj = remapParamsToAPI(queryState, backendToQueryConversion);
@@ -66,44 +66,36 @@ export const NotificationPopout = (props) => {
   );
 };
 
-export const NotificationsPage = (props) => {
+export const NotificationsPage = () => {
   useSetTitleTag('Notifications');
+  const navigate = useNavigate();
+  const location = useLocation();
   const userToken = useSelector((state) => state.auth.token);
   const [inboxQuery, setInboxQuery] = useInboxQueryParams();
-  const [notifications, setNotifications] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  console.log('inboxQuery', inboxQuery);
-
-  const fetchNotifications = () => {
-    return fetchLocalJSONAPI(`notifications/?${serializeParams(inboxQuery)}`, userToken)
-      .then((result) => setNotifications(result))
-      .catch((e) => setError(e));
-  };
+  const [error, loading, notifications, refetch] = useFetchWithAbort(
+    `notifications/?${serializeParams(inboxQuery)}`,
+  );
 
   useEffect(() => {
-    fetchNotifications().then(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inboxQuery]);
-
-  if (!userToken) {
-    return <Login redirectTo={window.location.pathname} />;
-  }
+    if (!userToken) {
+      navigate('/login', {
+        state: {
+          from: location.pathname,
+        },
+      });
+    }
+  }, [location.pathname, navigate, userToken]);
 
   return (
     <div className="pb5 ph6-l ph2 pt180 pull-center bg-washed-blue notifications-container">
-      {
-        props.children
-        /* This is where the full notification body component is rendered using the router, as a child route. */
-      }
       <section>
         <InboxNav />
         <NotificationResults
           error={error}
           loading={loading}
           notifications={notifications}
-          retryFn={fetchNotifications}
+          retryFn={refetch}
+          inboxQuery={inboxQuery}
         />
         <div className="flex justify-end mw8">
           <Paginator
@@ -115,8 +107,4 @@ export const NotificationsPage = (props) => {
       </section>
     </div>
   );
-};
-
-export const NotificationPageIndex = () => {
-  return null;
 };

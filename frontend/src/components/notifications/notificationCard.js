@@ -29,7 +29,7 @@ export const MessageAvatar = ({ messageType, fromUsername, displayPictureUrl, si
   const checkIsSystem = typesThatUseSystemAvatar.indexOf(messageType) !== -1;
 
   if (!fromUsername && !checkIsSystem) {
-    return <div>&nbsp;</div>;
+    return null;
   }
 
   return (
@@ -155,10 +155,12 @@ export function NotificationCard({
                   <FormattedMessage {...messages.markAsRead}>
                     {(msg) => (
                       <EyeIcon
+                        role="button"
                         onClick={() => setMessageAsRead()}
                         style={{ width: '20px', height: '20px' }}
                         className={`dn dib-ns h1 w1 pr1 nr4 mv1 pv1 hover-red blue-light ml3`}
                         data-tip={msg}
+                        aria-label="Mark notification as read"
                       />
                     )}
                   </FormattedMessage>
@@ -166,11 +168,11 @@ export function NotificationCard({
                 </>
               )}
             </div>
-            {messageType !== null ? (
+            {messageType !== null && (
               <div className={`di-l dn f7 truncate w4 lh-solid`} title={messageType}>
                 <FormattedMessage {...messages[messageType]} />
               </div>
-            ) : null}
+            )}
             <DeleteButton
               className={`bg-transparent bw0 w2 h2 lh-copy overflow-hidden blue-light p0 mb1 hover-red`}
               showText={false}
@@ -231,7 +233,7 @@ export function NotificationCardMini({
             </div>
             <div>
               <div
-                className="f7 messageSubjectLinks"
+                className="f7 messageSubjectLinks ws-normal"
                 style={{ lineHeight: 1.21 }}
                 dangerouslySetInnerHTML={rawHtmlNotification(subject)}
               />

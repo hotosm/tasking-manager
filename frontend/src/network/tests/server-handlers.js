@@ -4,10 +4,24 @@ import {
   getProjectSummary,
   getProjectStats,
   projects,
+  projectDetail,
   userTouchedProjects,
+  projectComments,
+  userFavorite,
+  favoritePost,
+  activities,
+  taskDetail,
+  stopMapping,
+  stopValidation,
 } from './mockData/projects';
 import { featuredProjects } from './mockData/featuredProjects';
-import { newUsersStats, osmStatsProd, userStats } from './mockData/userStats';
+import {
+  newUsersStats,
+  osmStatsProd,
+  osmStatsProject,
+  userLockedTasksDetails,
+  userStats,
+} from './mockData/userStats';
 import { projectContributions, projectContributionsByDay } from './mockData/contributions';
 import {
   usersList,
@@ -35,6 +49,7 @@ import {
   interestUpdationSuccess,
   interestDeletionSuccess,
   licenses,
+  licenseAccepted,
 } from './mockData/management';
 import {
   teams,
@@ -45,22 +60,51 @@ import {
 } from './mockData/teams';
 import { userTasks } from './mockData/tasksStats';
 import { homepageStats } from './mockData/homepageStats';
-import { banner, countries } from './mockData/miscellaneous';
+import { banner, countries, josmRemote } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 import { API_URL } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
 import { authLogin, setUser, userRegister } from './mockData/auth';
+import {
+  extendTask,
+  lockForMapping,
+  lockForValidation,
+  splitTask,
+  submitMappingTask,
+  submitValidationTask,
+  userLockedTasks,
+} from './mockData/taskHistory';
 
 const handlers = [
   rest.get(API_URL + 'projects/:id/queries/summary/', async (req, res, ctx) => {
-    const { id } = req.params;
-    return res(ctx.json(getProjectSummary(id)));
+    return res(ctx.json(getProjectSummary(Number(req.params.id))));
+  }),
+  rest.get(API_URL + 'projects/:id/activities/latest/', async (req, res, ctx) => {
+    return res(ctx.json(activities(Number(req.params.id))));
+  }),
+  rest.get(API_URL + 'projects/:id/queries/priority-areas/', async (req, res, ctx) => {
+    return res(ctx.json([]));
+  }),
+  rest.get(API_URL + 'projects/', async (req, res, ctx) => {
+    return res(ctx.json(projects));
   }),
   rest.get(API_URL + 'projects/', async (req, res, ctx) => {
     return res(ctx.json(projects));
   }),
   rest.get(API_URL + 'projects/:id/contributions/', async (req, res, ctx) => {
     return res(ctx.json(projectContributions));
+  }),
+  rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
+    return res(ctx.json(projectDetail));
+  }),
+  rest.get(API_URL + 'projects/:id/comments/', async (req, res, ctx) => {
+    return res(ctx.json(projectComments));
+  }),
+  rest.get(API_URL + 'projects/:id/favorite/', async (req, res, ctx) => {
+    return res(ctx.json(userFavorite));
+  }),
+  rest.post(API_URL + 'projects/:id/favorite/', async (req, res, ctx) => {
+    return res(ctx.json(favoritePost(req.params.id)));
   }),
   rest.get(API_URL + 'projects/:id/statistics/', async (req, res, ctx) => {
     const { id } = req.params;
@@ -78,6 +122,21 @@ const handlers = [
   rest.get(API_URL + 'projects/queries/:username/touched', async (req, res, ctx) => {
     return res(ctx.json(userTouchedProjects));
   }),
+  rest.get(API_URL + 'projects/:projectId/tasks/:taskId/', async (req, res, ctx) => {
+    return res(ctx.json(taskDetail(Number(req.params.taskId))));
+  }),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/stop-mapping/:taskId/',
+    async (req, res, ctx) => {
+      return res(ctx.json(stopMapping));
+    },
+  ),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/stop-validation/',
+    async (req, res, ctx) => {
+      return res(ctx.json(stopValidation));
+    },
+  ),
   // AUTHENTICATION
   rest.get(API_URL + 'system/authentication/login/', async (req, res, ctx) => {
     return res(ctx.json(authLogin));
@@ -92,8 +151,14 @@ const handlers = [
   rest.get(API_URL + 'notifications', async (req, res, ctx) => {
     return res(ctx.json(notifications));
   }),
+  rest.get(API_URL + 'notifications/:id', async (req, res, ctx) => {
+    return res(ctx.json(notifications.userMessages[0]));
+  }),
   rest.get(API_URL + 'notifications/queries/own/count-unread/', async (req, res, ctx) => {
     return res(ctx.json(ownCountUnread));
+  }),
+  rest.delete(API_URL + 'notifications/:id/', async (req, res, ctx) => {
+    return res(ctx.json({ Success: 'Message deleted' }));
   }),
   rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
     return res(ctx.json({ Success: 'Message deleted' }));
@@ -125,6 +190,9 @@ const handlers = [
   }),
   rest.get(API_URL + 'users/:username/statistics/', async (req, res, ctx) => {
     return res(ctx.json(userStats));
+  }),
+  rest.get(API_URL + 'users/queries/tasks/locked/details/', async (req, res, ctx) => {
+    return res(ctx.json(userLockedTasksDetails));
   }),
   // ORGANIZATIONS
   rest.get(API_URL + 'organisations', (req, res, ctx) => {
@@ -174,6 +242,9 @@ const handlers = [
   rest.post(API_URL + 'licenses', (req, res, ctx) => {
     return res(ctx.json(licenseCreationSuccess));
   }),
+  rest.post(API_URL + 'licenses/:id/actions/accept-for-me/', (req, res, ctx) => {
+    return res(ctx.json(licenseAccepted));
+  }),
   // CAMPAIGNS
   rest.get(API_URL + 'campaigns', (req, res, ctx) => {
     return res(ctx.json(campaigns));
@@ -212,6 +283,37 @@ const handlers = [
   rest.get(API_URL + 'system/banner/', (req, res, ctx) => {
     return res(ctx.json(banner));
   }),
+  //TASKS
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/lock-for-mapping/:taskId',
+    (req, res, ctx) => {
+      return res(ctx.json(lockForMapping));
+    },
+  ),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation/', (req, res, ctx) => {
+    return res(ctx.json(lockForValidation));
+  }),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/unlock-after-mapping/:taskId',
+    (req, res, ctx) => {
+      return res(ctx.json(submitMappingTask));
+    },
+  ),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/unlock-after-validation/',
+    (req, res, ctx) => {
+      return res(ctx.json(submitValidationTask));
+    },
+  ),
+  rest.get(API_URL + 'users/queries/tasks/locked/', (req, res, ctx) => {
+    return res(ctx.json(userLockedTasks));
+  }),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', (req, res, ctx) => {
+    return res(ctx.json(splitTask));
+  }),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', (req, res, ctx) => {
+    return res(ctx.json(extendTask));
+  }),
   // EXTERNAL API
   rest.get('https://osmstats-api.hotosm.org/wildcard', (req, res, ctx) => {
     return res(ctx.json(homepageStats));
@@ -222,6 +324,53 @@ const handlers = [
       return res(ctx.json(osmStatsProd));
     },
   ),
+  rest.get(
+    'https://osm-stats-production-api.azurewebsites.net/stats/:projectId',
+    (req, res, ctx) => {
+      return res(ctx.json(osmStatsProject));
+    },
+  ),
+  rest.get('http://127.0.0.1:8111/version', (req, res, ctx) => {
+    return res(ctx.json(josmRemote));
+  }),
 ];
 
-export { handlers };
+const faultyHandlers = [
+  rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
+    return res.once(
+      ctx.status(403),
+      ctx.json({
+        SubCode: `PrivateProject`,
+      }),
+    );
+  }),
+  rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.get('http://127.0.0.1:8111/version', async (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.post(
+    API_URL + 'projects/:projectId/tasks/actions/lock-for-mapping/:taskId',
+    (req, res, ctx) => {
+      return res.networkError('Failed to connect');
+    },
+  ),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+  rest.delete(API_URL + 'notifications/:id/', async (req, res, ctx) => {
+    return res.networkError('Failed to connect');
+  }),
+];
+
+export { handlers, faultyHandlers };

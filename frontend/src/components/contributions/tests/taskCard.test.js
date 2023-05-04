@@ -1,14 +1,14 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { TaskCard } from '../taskCard';
 
 describe('TaskCard', () => {
   it('on MAPPED state with comments', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <TaskCard
           taskId={987}
@@ -33,7 +33,7 @@ describe('TaskCard', () => {
   });
 
   it('on VALIDATED state without comments', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <TaskCard
           taskId={987}
@@ -56,7 +56,7 @@ describe('TaskCard', () => {
   });
 
   it('on BADIMAGERY state', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <TaskCard
           taskId={987}
@@ -76,7 +76,7 @@ describe('TaskCard', () => {
   });
 
   it('on LOCKED_FOR_VALIDATION state', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <TaskCard
           taskId={987}
@@ -98,7 +98,7 @@ describe('TaskCard', () => {
   });
 
   it('on INVALIDATED state', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <TaskCard
           taskId={987}
@@ -117,7 +117,7 @@ describe('TaskCard', () => {
   });
 
   it('on READY state', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <TaskCard
           taskId={543}

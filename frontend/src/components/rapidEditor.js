@@ -116,5 +116,5 @@ export default function RapidEditor({
     }
   }, [session, RapiDContext, setDisable, presets, locale, gpxUrl, powerUser]);
 
-  return <div className="w-100 vh-minus-77-ns" id="rapid-container"></div>;
+  return <div className="w-100 vh-minus-69-ns" id="rapid-container"></div>;
 }

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Redirect } from '@reach/router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { startOfYear, format } from 'date-fns';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
@@ -17,7 +17,9 @@ import { OrganisationUsageLevel, OrganisationTier } from '../components/teamsAnd
 import { TasksStats } from '../components/teamsAndOrgs/tasksStats';
 import { OrganisationProjectStats } from '../components/teamsAndOrgs/organisationProjectStats';
 
-export const OrganisationStats = ({ id }) => {
+export const OrganisationStats = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
   const token = useSelector((state) => state.auth.token);
   const isOrgManager = useSelector(
     (state) =>
@@ -50,6 +52,12 @@ export const OrganisationStats = ({ id }) => {
     organisation.subscriptionTier &&
     isOrgManager;
   useSetTitleTag(`${organisation.name || 'Organization'} stats`);
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+    }
+  });
 
   if (token) {
     return (
@@ -128,6 +136,6 @@ export const OrganisationStats = ({ id }) => {
       </ReactPlaceholder>
     );
   } else {
-    return <Redirect from={`organisations/${id}/stats/`} to={'/login'} noThrow />;
+    return null;
   }
 };

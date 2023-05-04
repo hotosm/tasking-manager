@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { TopBar } from '../components/header/topBar';
+import osiStandardLogo from '../assets/img/osi_standard_logo_0.png';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export function AboutPage() {
@@ -59,11 +60,7 @@ export function AboutPage() {
           <FormattedMessage {...messages.floss} />
         </h1>
         <div className="w-60-l cf flex items-center">
-          <img
-            className="mw3 mr2"
-            src="https://opensource.org/files/OSIApproved_1.png"
-            alt="OSI aproved license"
-          />
+          <img className="mw3 mr2" src={osiStandardLogo} alt="OSI aproved license" />
           <div className="v-mid pl3">
             <p className="ma0">
               <FormattedMessage

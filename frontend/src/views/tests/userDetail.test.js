@@ -1,8 +1,14 @@
 import '@testing-library/jest-dom';
 import { render, screen, act, waitFor } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+
 import { UserDetail } from '../userDetail';
 import { store } from '../../store';
-import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../utils/testWithIntl';
 
 describe('User Detail Component', () => {
   jest.mock('react-chartjs-2', () => ({
@@ -14,13 +20,13 @@ describe('User Detail Component', () => {
       store.dispatch({ type: 'SET_TOKEN', token: null });
     });
 
-    const { history } = renderWithRouter(
+    const { router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <UserDetail username="test_user" />
       </ReduxIntlProviders>,
     );
 
-    await waitFor(() => expect(history.location.pathname).toBe('/login'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/login'));
   });
 
   it('should render details for the child components', async () => {
@@ -33,9 +39,18 @@ describe('User Detail Component', () => {
     });
 
     render(
-      <ReduxIntlProviders>
-        <UserDetail username="somebodyUsername" />
-      </ReduxIntlProviders>,
+      <MemoryRouter initialEntries={['/users/:friendUsername']}>
+        <Routes>
+          <Route
+            path="users/:username"
+            element={
+              <ReduxIntlProviders>
+                <UserDetail />
+              </ReduxIntlProviders>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
     );
 
     expect(await screen.findByText('Somebody')).toBeInTheDocument();
@@ -83,7 +98,7 @@ describe('User Detail Component', () => {
       });
     });
 
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <UserDetail username="somebodyUsername" />
       </ReduxIntlProviders>,
@@ -97,7 +112,7 @@ describe('User Detail Component', () => {
   });
 
   it('should not display header when the prop is falsy', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <UserDetail username="somebodyUsername" withHeader={false} />
       </ReduxIntlProviders>,

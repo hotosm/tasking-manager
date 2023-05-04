@@ -1,5 +1,5 @@
 import React from 'react';
-import { navigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -14,7 +14,8 @@ const organizations = [
   { url: 'https://www.bing.com/', code: 'bing', name: 'Bing' },
 ];
 
-function contactCard() {
+function ContactCard() {
+  const navigate = useNavigate();
   return (
     <div className="blue-dark bg-white contact-card br1">
       <h4 className="f3 fw5 ttu barlow-condensed ma0">
@@ -55,7 +56,7 @@ export function WhoIsMapping() {
             ))}
           </div>
         </div>
-        {contactCard()}
+        <ContactCard />
       </div>
     </div>
   );

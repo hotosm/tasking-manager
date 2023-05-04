@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense } from 'react';
-import { Redirect } from '@reach/router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
@@ -24,7 +24,11 @@ const EditsByNumbers = React.lazy(() =>
   import('../components/userDetail/editsByNumbers' /* webpackChunkName: "editsByNumbers" */),
 );
 
-export const UserDetail = ({ username, withHeader = true }) => {
+export const UserDetail = ({ withHeader = true }) => {
+  const navigate = useNavigate();
+  const loggedInUsername = useSelector((state) => state.auth.userDetails.username);
+  const { username: usernameParam } = useParams();
+  const username = usernameParam || loggedInUsername;
   useSetTitleTag(username);
   const token = useSelector((state) => state.auth.token);
   const currentUser = useSelector((state) => state.auth.userDetails);
@@ -43,16 +47,18 @@ export const UserDetail = ({ username, withHeader = true }) => {
   );
 
   useEffect(() => {
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate, token]);
+
+  useEffect(() => {
     if (token && username) {
       fetchExternalJSONAPI(`${USER_STATS_API_URL}${username}`)
         .then((res) => setOsmStats(res))
         .catch((e) => console.log(e));
     }
   }, [token, username]);
-
-  if (!token) {
-    return <Redirect to={'/login'} noThrow />;
-  }
 
   const titleClass = 'contributions-titles fw5 ttu barlow-condensed blue-dark mt0';
 

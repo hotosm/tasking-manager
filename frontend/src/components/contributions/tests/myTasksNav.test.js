@@ -1,15 +1,15 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
-import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { screen } from '@testing-library/react';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 
 import { MyTasksNav, isActiveButton } from '../myTasksNav';
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 
 describe('MyTasksNav Component', () => {
   it('should display details', async () => {
-    render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <MyTasksNav />
         </ReduxIntlProviders>
@@ -46,7 +46,7 @@ describe('MyTasksNav Component', () => {
   //   // with the updated values in the test, which would have caused
   //   // the 'Clear filters' button to appear. Uncomment to try
   //   renderWithRouter(
-  //     <QueryParamProvider adapter={ReachAdapter}>
+  //     <QueryParamProvider adapter={ReactRouter6Adapter}>
   //       <ReduxIntlProviders>
   //         <MyTasksNav />
   //       </ReduxIntlProviders>

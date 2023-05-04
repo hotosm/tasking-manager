@@ -21,6 +21,6 @@ class CountriesRestAPI(Resource):
             tags = TagsService.get_all_countries()
             return tags.to_primitive(), 200
         except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
+            error_msg = f"Country Tags GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

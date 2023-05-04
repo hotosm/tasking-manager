@@ -45,23 +45,29 @@ export function HorizontalScroll({
 
   return (
     <div className={`relative overflow-hidden ${className || ''}`} style={style}>
-      <ChevronRightIcon
-        role="button"
-        className={`bg-white absolute left-0 rotate-180 z-1 pointer pa2 translate-icon-btm ${
-          scrollLeft > 0 ? 'db' : 'dn'
+      <div
+        className={`bg-white left-icon absolute h-100 left-0 top-0 rotate-180 z-1 h-100 pointer pa2 translate-icon-btm ${
+          scrollLeft > 0 ? 'flex items-center' : 'dn'
         }`}
-        onClick={() => handleScroll('left')}
-      />
-      <ChevronRightIcon
         role="button"
-        className={`translate-icon bg-white absolute right-0 z-1 pointer pa2 translate-icon ${
+        onClick={() => handleScroll('left')}
+      >
+        <ChevronRightIcon />
+      </div>
+      <div
+        role="button"
+        className={`translate-icon bg-white absolute h-100 right-0 top-0 z-1 pointer pa2 translate-icon ${
           scrollLeft <
-          menuItemsContainerRef.current?.scrollWidth - menuItemsContainerRef.current?.clientWidth
-            ? 'db'
+          menuItemsContainerRef.current?.scrollWidth -
+            menuItemsContainerRef.current?.clientWidth -
+            1
+            ? 'flex items-center'
             : 'dn'
         }`}
         onClick={() => handleScroll('right')}
-      />
+      >
+        <ChevronRightIcon />
+      </div>
       {children}
     </div>
   );

@@ -18,18 +18,7 @@ class TestProjectsContributionsAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_returns_200_if_project_exists(self):
-        # Arrange
-        task = Task.get(2, self.test_project.id)
-        # Lock the task for mapping
-        task.lock_task_for_mapping(self.test_author.id)
-        # Unlock the task
-        task.unlock_task(self.test_author.id, new_state=TaskStatus.MAPPED)
-        task_2 = Task.get(1, self.test_project.id)
-        # Lock the task for mapping
-        task_2.lock_task_for_validating(self.test_author.id)
-        # Unlock the task
-        task_2.unlock_task(self.test_author.id, new_state=TaskStatus.VALIDATED)
-        # Actt
+        # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 200)
@@ -50,17 +39,14 @@ class TestProjectsContributionsAPI(BaseTestCase):
                     "validatedTasks",
                     "name",
                     "dateRegistered",
-                    "invalidated",
-                    "split",
-                    "marked_bad_imagery",
                 ]
             ),
         )
         self.assertEqual(test_user_contribution["username"], self.test_author.username)
-        self.assertEqual(test_user_contribution["mapped"], 1)
+        self.assertEqual(test_user_contribution["mapped"], 3)
         self.assertEqual(test_user_contribution["validated"], 1)
-        self.assertEqual(test_user_contribution["mappedTasks"], [2])
-        self.assertEqual(test_user_contribution["validatedTasks"], [1])
+        self.assertEqual(test_user_contribution["mappedTasks"], [1, 3, 4])
+        self.assertEqual(test_user_contribution["validatedTasks"], [4])
 
 
 class TestProjectsContributionsQueriesDayAPI(BaseTestCase):

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, navigate, useParams } from '@reach/router';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
@@ -25,6 +25,7 @@ import QuickstartLogo from '../assets/img/info-logo.svg';
 
 const LearnNav = ({ sections, section, setSection, urlParamToSection }) => {
   useSetTitleTag('Learn');
+  const navigate = useNavigate();
 
   const handleClick = (s) => {
     const typeInUrl = Object.keys(urlParamToSection).find((key) => urlParamToSection[key] === s);

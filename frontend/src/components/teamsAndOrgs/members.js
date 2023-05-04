@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Link } from '@reach/router';
+import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import AsyncSelect from 'react-select/async';

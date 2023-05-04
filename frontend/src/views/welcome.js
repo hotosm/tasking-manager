@@ -1,14 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Redirect } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 
 import { UserTopBar } from '../components/user/topBar';
-import { HelpCard, FirstProjectBanner } from '../components/user/content';
+import { HelpCard, FirstProjectBanner, WelcomeCard } from '../components/user/content';
 import { calculateCompleteness } from '../components/user/completeness';
 import { PersonalInformationForm } from '../components/user/forms/personalInformation';
-import { WelcomeCard } from '../components/user/content';
 import { ProjectCard } from '../components/projectCard/projectCard';
 import { nCardPlaceholders } from '../components/projectCard/nCardPlaceholder';
 import { useFetch } from '../hooks/UseFetch';
@@ -42,16 +41,14 @@ const RecommendedProjects = ({ username, userIsloggedIn }) => {
     `users/${username}/recommended-projects/`,
     username !== undefined,
   );
-  const cardWidthClass = 'w-third-l';
 
   return (
     <div className="pv4 w-100">
-      <ReactPlaceholder
-        customPlaceholder={nCardPlaceholders(5, cardWidthClass)}
-        ready={!error && !loading}
-      >
-        <RecommendedProjectsCards projects={projects.results} />
-      </ReactPlaceholder>
+      <div className="cards-container">
+        <ReactPlaceholder customPlaceholder={nCardPlaceholders(5)} ready={!error && !loading}>
+          <RecommendedProjectsCards projects={projects.results} />
+        </ReactPlaceholder>
+      </div>
     </div>
   );
 };
@@ -69,22 +66,30 @@ function NewContributor({ username, userIsloggedIn }) {
 
 export function Welcome() {
   useSetTitleTag('Welcome');
+  const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const userIsloggedIn = useSelector((state) => state.auth.token);
-  if (userIsloggedIn) {
-    const completeness = calculateCompleteness(userDetails);
-    return (
-      <div className="pull-center">
-        {completeness <= 0.5 ? (
-          <IncompleteProfile />
-        ) : userDetails.projectsMapped ? (
-          <Redirect to={'/contributions/projects/?mappedByMe=1&action=any'} noThrow />
-        ) : (
-          <NewContributor username={userDetails.username} userIsloggedIn={userIsloggedIn} />
-        )}
-      </div>
-    );
-  } else {
-    return <Redirect to={'/login'} noThrow />;
-  }
+  const completeness = calculateCompleteness(userDetails);
+
+  useEffect(() => {
+    if (!userIsloggedIn) {
+      navigate('/login');
+    }
+  }, [navigate, userIsloggedIn]);
+
+  useEffect(() => {
+    if (completeness >= 0.5 && userDetails.projectsMapped) {
+      navigate('/contributions/projects/?mappedByMe=1&action=any');
+    }
+  }, [completeness, navigate, userDetails.projectsMapped]);
+
+  return (
+    <div className="pull-center">
+      {completeness <= 0.5 ? (
+        <IncompleteProfile />
+      ) : (
+        <NewContributor username={userDetails.username} userIsloggedIn={userIsloggedIn} />
+      )}
+    </div>
+  );
 }

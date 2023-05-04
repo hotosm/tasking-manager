@@ -1,9 +1,9 @@
 import React from 'react';
 import { setDayOfYear, format } from 'date-fns';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { IntlProviders } from '../../../utils/testWithIntl';
+import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { OrganisationProjectStats } from '../organisationProjectStats';
 
 describe('OrganisationProjectStats', () => {
@@ -16,7 +16,7 @@ describe('OrganisationProjectStats', () => {
       recent: 9,
       stale: 12,
     };
-    render(
+    renderWithRouter(
       <IntlProviders>
         <OrganisationProjectStats projects={projects} orgName="HOT" />
       </IntlProviders>,
@@ -46,7 +46,7 @@ describe('OrganisationProjectStats', () => {
       recent: 10,
       stale: 0,
     };
-    render(
+    renderWithRouter(
       <IntlProviders>
         <OrganisationProjectStats projects={projects} orgName="Another Org" />
       </IntlProviders>,

@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { screen, waitFor, act } from '@testing-library/react';
 import { QueryParamProvider } from 'use-query-params';
-import { ReachAdapter } from 'use-query-params/adapters/reach';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 
-import { ReduxIntlProviders } from '../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
 import { store } from '../../store';
 
 import { Stats } from '../stats';
@@ -13,8 +13,8 @@ describe('Overall styats page', () => {
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
-    render(
-      <QueryParamProvider adapter={ReachAdapter}>
+    renderWithRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <Stats />
         </ReduxIntlProviders>

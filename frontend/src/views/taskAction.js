@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { navigate } from '@reach/router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryParam, StringParam } from 'use-query-params';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
@@ -13,15 +13,18 @@ import { TaskMapAction } from '../components/taskSelection/action';
 import { AnotherProjectLock } from '../components/taskSelection/lockedTasks';
 import { Login } from './login';
 
-export function MapTask({ id }: Object) {
+export function MapTask() {
+  const { id } = useParams();
   return <TaskAction project={id} action="MAPPING" />;
 }
 
-export function ValidateTask({ id }: Object) {
+export function ValidateTask() {
+  const { id } = useParams();
   return <TaskAction project={id} action="VALIDATION" />;
 }
 
 export function TaskAction({ project, action }: Object) {
+  const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences.locale);

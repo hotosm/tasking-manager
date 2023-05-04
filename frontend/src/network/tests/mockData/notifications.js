@@ -18,9 +18,9 @@ export const notifications = {
     {
       messageId: 759710,
       subject:
-        '<a href="https://tasks-stage.hotosm.org/users/Hel Nershing Thapa">Hel Nershing Thapa</a> requested to join <a href="https://tasks-stage.hotosm.org/manage/teams/19/">asdsa</a>',
+        '<a href="https://tasks-stage.hotosm.org/users/Hel Nershing Thapa">Hel Nershing Thapa</a> requested to join <a href="https://tasks-stage.hotosm.org/manage/teams/19/">Sample Team</a>',
       message:
-        '<a href="https://tasks-stage.hotosm.org/users/Hel Nershing Thapa">Hel Nershing Thapa</a> has requested to join the <a href="https://tasks-stage.hotosm.org/manage/teams/19/">asdsa</a> team.            Access the team management page to accept or reject that request.',
+        '<a href="https://tasks-stage.hotosm.org/users/Hel Nershing Thapa">Hel Nershing Thapa</a> has requested to join the <a href="https://tasks-stage.hotosm.org/manage/teams/19/">Sample Team</a> team.            Access the team management page to accept or reject that request.',
       fromUsername: 'Hel Nershing Thapa',
       displayPictureUrl:
         'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBeFJheFE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--a765e2377a288bccae85da6604300251d9de6d39/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJYW5CbkJqb0dSVlE2RkhKbGMybDZaVjkwYjE5c2FXMXBkRnNIYVdscGFRPT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--1d22b8d446683a272d1a9ff04340453ca7c374b4/bitmoji.jpg',
@@ -29,7 +29,7 @@ export const notifications = {
       taskId: null,
       messageType: 'REQUEST_TEAM_NOTIFICATION',
       sentDate: '2023-01-09T16:42:16.168030Z',
-      read: true,
+      read: false,
     },
     {
       messageId: 759703,

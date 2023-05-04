@@ -3,7 +3,11 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 
-import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  createComponentWithMemoryRouter,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../utils/testWithIntl';
 import { UsersList } from '../users';
 
 describe('List Users', () => {
@@ -36,13 +40,17 @@ describe('List Users', () => {
   });
 
   it('should navigate to user detail page when clicked on the display picture', async () => {
-    const { container, history } = setup();
+    const { container, router } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <UsersList />
+      </ReduxIntlProviders>,
+    );
     const user = userEvent.setup();
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
     await user.click(screen.getAllByRole('link', { name: /ram/i })[0]);
-    await waitFor(() => expect(history.location.pathname).toBe('/users/Ram'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/users/Ram'));
   });
 });
 

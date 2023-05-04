@@ -1,9 +1,9 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import selectEvent from 'react-select-event';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { tasks } from '../../../network/tests/mockData/taskGrid';
 import { projectContributions } from '../../../network/tests/mockData/contributions';
 import Contributions from '../contributions';
@@ -12,7 +12,7 @@ describe('Contributions', () => {
   const selectTask = jest.fn();
 
   it('render users, links and ', async () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <Contributions
           project={{ projectId: 1, osmchaFilterId: 'abc1234' }}
@@ -37,7 +37,7 @@ describe('Contributions', () => {
     expect(screen.getAllByRole('link')[1].href).toBe('https://osmcha.org/?aoi=abc1234');
     // clicking on the number of tasks trigger selectTask
     fireEvent.click(screen.getAllByText('5')[0]);
-    expect(selectTask).toHaveBeenLastCalledWith([1, 2, 3, 5, 7], 'ALL', 'test');
+    expect(selectTask).toHaveBeenLastCalledWith([1, 3, 5, 7], 'ALL', 'test');
     fireEvent.click(screen.getAllByText('5')[1]);
     expect(selectTask).toHaveBeenLastCalledWith([5, 36, 99, 115, 142], 'MAPPED', 'test_1');
     // filter ADVANCED users
@@ -67,7 +67,7 @@ describe('Contributions', () => {
     expect(screen.queryByText('test_1')).not.toBeInTheDocument();
   });
   it('clean user selection if we click on the selected tasks of the user', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <Contributions
           project={{ projectId: 1, osmchaFilterId: 'abc1234' }}

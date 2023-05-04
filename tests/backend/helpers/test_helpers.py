@@ -22,7 +22,13 @@ from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.user import User
 from backend.models.postgis.organisation import Organisation
 from backend.services.users.authentication_service import AuthenticationService
-from backend.services.interests_service import InterestService, Interest
+from backend.services.interests_service import Interest
+from backend.services.license_service import LicenseService, LicenseDTO
+from backend.services.mapping_issues_service import (
+    MappingIssueCategoryService,
+    MappingIssueCategoryDTO,
+)
+
 
 TEST_USER_ID = 777777
 TEST_USERNAME = "Thinkwhere Test"
@@ -329,6 +335,32 @@ def create_canned_campaign(
 
 
 def create_canned_interest(name="test_interest") -> Interest:
-    """Returns test interest without writing to db"""
-    test_interest = InterestService.create(name=name)
+    """Returns test interest without writing to db
+    param name: name of interest
+    return: Interest object
+    """
+    test_interest = Interest()
+    test_interest.name = name
+    test_interest.create()
     return test_interest
+
+
+def create_canned_license(name="test_license") -> int:
+    """Returns test license without writing to db
+    param name: name of license
+    return: license id
+    """
+    license_dto = LicenseDTO()
+    license_dto.name = name
+    license_dto.description = "test license"
+    license_dto.plain_text = "test license"
+    test_license = LicenseService.create_licence(license_dto)
+    return test_license
+
+
+def create_canned_mapping_issue(name="Test Issue") -> int:
+    """"""
+    issue_dto = MappingIssueCategoryDTO()
+    issue_dto.name = name
+    test_issue_id = MappingIssueCategoryService.create_mapping_issue_category(issue_dto)
+    return test_issue_id

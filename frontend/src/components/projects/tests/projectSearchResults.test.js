@@ -1,23 +1,34 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, screen, act } from '@testing-library/react';
+import { screen, act } from '@testing-library/react';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
-import { ProjectSearchResults } from '../projectSearchResults';
+import { ReduxIntlProviders, IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+import {
+  ExploreProjectCards,
+  ExploreProjectList,
+  ProjectSearchResults,
+} from '../projectSearchResults';
 import { projects } from '../../../network/tests/mockData/projects';
 import { store } from '../../../store';
 
 describe('Project Search Results', () => {
   it('should display project cards', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults
-          state={{ isLoading: false, isError: false, projects: projects.results }}
+          state={{
+            isLoading: false,
+            isError: false,
+            projects: projects.results,
+            pagination: {
+              total: 11,
+            },
+          }}
         />
       </ReduxIntlProviders>,
     );
-    
-    expect(screen.getByText('Showing 2 of 0 projects')).toBeInTheDocument();
+
+    expect(screen.getByText('Showing 2 of 11 projects')).toBeInTheDocument();
     expect(screen.getAllByRole('article').length).toBe(2);
     expect(screen.getByRole('heading', { name: 'NRCS_Duduwa Mapping' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'NRCS_Khajura Mapping' })).toBeInTheDocument();
@@ -29,13 +40,13 @@ describe('Project Search Results', () => {
         type: 'TOGGLE_LIST_VIEW',
       });
     });
-    
-    render(
+
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults management state={{ isLoading: false, projects: projects.results }} />
       </ReduxIntlProviders>,
     );
-    
+
     expect(screen.queryAllByRole('article').length).toBe(0);
     expect(
       screen.getAllByRole('link', {
@@ -46,12 +57,12 @@ describe('Project Search Results', () => {
 
   it('should display error and provide actionable to retry', async () => {
     const retryFn = jest.fn();
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults state={{ isError: true, projects: [] }} retryFn={retryFn} />
       </ReduxIntlProviders>,
     );
-    
+
     expect(screen.getByText('Error loading the Projects for Explore Projects')).toBeInTheDocument();
     const retryBtn = screen.getByRole('button', { name: /retry/i });
     expect(retryBtn).toBeInTheDocument();
@@ -59,4 +70,46 @@ describe('Project Search Results', () => {
     await user.click(retryBtn);
     expect(retryFn).toHaveBeenCalled();
   });
+
+  it('should display loading indicators', async () => {
+    const { container } = renderWithRouter(
+      <ReduxIntlProviders>
+        <ProjectSearchResults state={{ isLoading: true, isError: false, projects: [] }} />
+      </ReduxIntlProviders>,
+    );
+    expect(container.getElementsByClassName('show-loading-animation').length).toBeGreaterThan(0);
+  });
+
+  it('should display 0 projects if the pagination total is absent', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <ProjectSearchResults
+          state={{
+            isLoading: false,
+            isError: false,
+            projects: projects.results,
+          }}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText('Showing 2 of 0 projects')).toBeInTheDocument();
+  });
+});
+
+test('ExploreProjectCards should display empty DOM element when no project is passed as props', () => {
+  const { container } = renderWithRouter(
+    <IntlProviders>
+      <ExploreProjectCards pageOfCards={[]} />
+    </IntlProviders>,
+  );
+  expect(container).toBeEmptyDOMElement();
+});
+
+test('ExploreProjectList should display empty DOM element when no project is passed as props', () => {
+  const { container } = renderWithRouter(
+    <IntlProviders>
+      <ExploreProjectList pageOfCards={[]} />
+    </IntlProviders>,
+  );
+  expect(container).toBeEmptyDOMElement();
 });

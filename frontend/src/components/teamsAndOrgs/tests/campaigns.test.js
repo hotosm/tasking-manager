@@ -1,6 +1,6 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { IntlProviders } from '../../../utils/testWithIntl';
+import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { CampaignsManagement } from '../campaigns';
 
 const dummyCampaigns = [
@@ -16,7 +16,7 @@ const dummyCampaigns = [
 
 describe('CampaignsManagement component', () => {
   it('renders loading placeholder when API is being fetched', () => {
-    const { container, getByRole } = render(
+    const { container, getByRole } = renderWithRouter(
       <IntlProviders>
         <CampaignsManagement userDetails={{ role: 'ADMIN' }} isCampaignsFetched={false} />
       </IntlProviders>,
@@ -35,7 +35,7 @@ describe('CampaignsManagement component', () => {
   });
 
   it('does not render loading placeholder after API is fetched', () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <IntlProviders>
         <CampaignsManagement userDetails={{ role: 'ADMIN' }} isCampaignsFetched={true} />
       </IntlProviders>,
@@ -44,7 +44,7 @@ describe('CampaignsManagement component', () => {
   });
 
   it('renders campaigns list card after API is fetched', async () => {
-    const { container, getByText } = render(
+    const { container, getByText } = renderWithRouter(
       <IntlProviders>
         <CampaignsManagement
           campaigns={dummyCampaigns}
@@ -66,7 +66,7 @@ describe('CampaignsManagement component', () => {
   });
 
   it('filters campaigns list by the search query', () => {
-    render(
+    renderWithRouter(
       <IntlProviders>
         <CampaignsManagement
           campaigns={dummyCampaigns}

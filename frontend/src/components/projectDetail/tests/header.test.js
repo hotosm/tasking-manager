@@ -1,15 +1,15 @@
 import React from 'react';
-import { render, screen, act } from '@testing-library/react';
+import { screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { HeaderLine, ProjectHeader } from '../header';
-import { ReduxIntlProviders, IntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { getProjectSummary } from '../../../network/tests/mockData/projects';
 import { store } from '../../../store';
 
 describe('test if HeaderLine component', () => {
   it('shows id 2 and HIGH priority status for a HOT project to a user with edit rights', () => {
-    render(
+    renderWithRouter(
       <IntlProviders>
         <HeaderLine projectId={2} priority={'HIGH'} showEditLink={true} organisation={'HOT'} />
       </IntlProviders>,
@@ -24,7 +24,7 @@ describe('test if HeaderLine component', () => {
   });
 
   it('shows id 1 for a LOW priority HOT project to a user with no edit rights', () => {
-    render(
+    renderWithRouter(
       <IntlProviders>
         <HeaderLine projectId={1} priority={'LOW'} showEditLink={false} organisation={'HOT'} />
       </IntlProviders>,
@@ -48,7 +48,7 @@ describe('test if ProjectHeader component', () => {
         userDetails: { username: 'test_user' },
       });
     });
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectHeader project={project} showEditLink={true} />
       </ReduxIntlProviders>,
@@ -71,7 +71,7 @@ describe('test if ProjectHeader component', () => {
     act(() => {
       store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
     });
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectHeader project={project} showEditLink={false} />
       </ReduxIntlProviders>,
@@ -97,7 +97,7 @@ describe('test if ProjectHeader component', () => {
         userDetails: { username: 'user123' },
       });
     });
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectHeader
           project={{ ...project, projectPriority: 'LOW', status: 'DRAFT' }}

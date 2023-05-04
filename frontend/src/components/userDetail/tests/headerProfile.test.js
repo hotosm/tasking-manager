@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen, act } from '@testing-library/react';
 
 import { HeaderProfile, SocialMedia, MyContributionsNav } from '../headerProfile';
-import { IntlProviders, ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { IntlProviders, ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { userQueryDetails } from '../../../network/tests/mockData/userList';
 import { store } from '../../../store';
 
@@ -85,7 +85,7 @@ describe('Social Media component', () => {
 });
 
 test('section menu should render display menus for contributions tab', () => {
-  render(
+  renderWithRouter(
     <IntlProviders>
       <MyContributionsNav />
     </IntlProviders>,
@@ -99,7 +99,7 @@ test('section menu should render display menus for contributions tab', () => {
     screen.getByRole('link', {
       name: 'My projects',
     }),
-  ).toHaveAttribute('href', '/contributions/projects?mappedByMe=1&action=any');
+  ).toHaveAttribute('href', '/contributions/projects/?mappedByMe=1&action=any');
   expect(
     screen.getByRole('link', {
       name: 'My tasks',
@@ -114,7 +114,7 @@ test('section menu should render display menus for contributions tab', () => {
 
 describe('Header Profile Component', () => {
   it('should render details of the components', async () => {
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <HeaderProfile userDetails={userQueryDetails} changesets={120} selfProfile={false} />
       </ReduxIntlProviders>,
@@ -140,7 +140,7 @@ describe('Header Profile Component', () => {
 
   it('should display profile icon when no user display picture is present', async () => {
     const moddeduserQueryDetails = { ...userQueryDetails, pictureUrl: null };
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <HeaderProfile userDetails={moddeduserQueryDetails} changesets={120} selfProfile={false} />
       </ReduxIntlProviders>,
@@ -155,7 +155,7 @@ describe('Header Profile Component', () => {
         userDetails: { id: 123, username: userQueryDetails.username },
       });
     });
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <HeaderProfile userDetails={userQueryDetails} changesets={120} selfProfile={false} />
       </ReduxIntlProviders>,

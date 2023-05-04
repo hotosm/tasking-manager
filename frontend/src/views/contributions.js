@@ -1,5 +1,5 @@
-import React from 'react';
-import { useLocation } from '@reach/router';
+import React, { useEffect } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import useForceUpdate from '../hooks/UseForceUpdate';
@@ -14,8 +14,9 @@ import { HeaderProfile } from '../components/userDetail/headerProfile';
 import { UserDetail } from './userDetail';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
-export const ContributionsPage = (props) => {
+export const ContributionsPage = () => {
   useSetTitleTag('My tasks');
+  const navigate = useNavigate();
   const initialData = {
     mapResults: {
       features: [],
@@ -32,12 +33,14 @@ export const ContributionsPage = (props) => {
   const [forceUpdated, forceUpdate] = useForceUpdate();
   const [state] = useTaskContributionAPI(initialData, contributionsQuery, forceUpdated);
 
-  if (!userToken) {
-    props.navigate('/login', {
-      replace: true,
-      state: { from: location.pathname },
-    });
-  }
+  useEffect(() => {
+    if (!userToken) {
+      navigate('/login', {
+        replace: true,
+        state: { from: location.pathname },
+      });
+    }
+  }, [location.pathname, navigate, userToken]);
 
   return (
     <section className="pb5 pt180 pull-center">
@@ -54,7 +57,9 @@ export const ContributionsPageIndex = (props) => {
       <div className="w-100 cf">
         <HeaderProfile selfProfile={true} />
       </div>
-      <div className="w-100 ph5-l ph2 cf pb6">{props.children}</div>
+      <div className="w-100 ph5-l ph2 cf pb6">
+        <Outlet />
+      </div>
     </div>
   );
 };

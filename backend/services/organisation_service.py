@@ -21,6 +21,7 @@ from backend.models.postgis.campaign import campaign_organisations
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.task import Task
+from backend.models.postgis.team import TeamVisibility
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.models.postgis.utils import NotFound
 from backend.services.users.user_service import UserService
@@ -72,7 +73,14 @@ class OrganisationService:
         if abbreviated:
             return organisation_dto
 
-        organisation_dto.teams = [team.as_dto_inside_org() for team in org.teams]
+        if organisation_dto.is_manager:
+            organisation_dto.teams = [team.as_dto_inside_org() for team in org.teams]
+        else:
+            organisation_dto.teams = [
+                team.as_dto_inside_org()
+                for team in org.teams
+                if team.visibility == TeamVisibility.PUBLIC.value
+            ]
 
         return organisation_dto
 
@@ -189,7 +197,9 @@ class OrganisationService:
         return projects
 
     @staticmethod
-    def get_organisation_stats(organisation_id: int, year: int) -> OrganizationStatsDTO:
+    def get_organisation_stats(
+        organisation_id: int, year: int = None
+    ) -> OrganizationStatsDTO:
         projects = db.session.query(
             Project.id, Project.status, Project.last_updated, Project.created
         ).filter(Project.organisation_id == organisation_id)

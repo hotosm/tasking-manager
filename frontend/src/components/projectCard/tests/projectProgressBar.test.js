@@ -10,7 +10,7 @@ describe('test if projectProgressBar', () => {
   const testInstance = element.root;
   it('mapped bar has the correct width', () => {
     expect(
-      testInstance.findByProps({ className: 'absolute bg-mask br-pill hhalf hide-child' })
+      testInstance.findByProps({ className: 'absolute bg-blue-grey br-pill hhalf hide-child' })
         .props.style,
     ).toEqual({ width: '40%' });
   });
@@ -49,7 +49,7 @@ describe('test if projectProgressBar with value higher than 100%', () => {
   const testInstance = element.root;
   it('to mapped returns 100% width', () => {
     expect(
-      testInstance.findByProps({ className: 'absolute bg-mask br-pill hhalf hide-child' })
+      testInstance.findByProps({ className: 'absolute bg-blue-grey br-pill hhalf hide-child' })
         .props.style,
     ).toEqual({ width: '100%' });
   });

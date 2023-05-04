@@ -1,13 +1,13 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { ManagementMenu } from '../menu';
 
 describe('ManagementMenu items for', () => {
   it('ADMIN users can see all items', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ManagementMenu isAdmin={true} />
       </ReduxIntlProviders>,
@@ -24,7 +24,7 @@ describe('ManagementMenu items for', () => {
   });
 
   it('non ADMIN users can see only Statistics and other 4 items', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ManagementMenu isAdmin={false} />
       </ReduxIntlProviders>,

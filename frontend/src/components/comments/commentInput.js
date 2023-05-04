@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import MDEditor from '@uiw/react-md-editor';
 import Tribute from 'tributejs';
@@ -16,20 +16,24 @@ import { DROPZONE_SETTINGS } from '../../config';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { iconConfig } from './editorIconConfig';
 import messages from './messages';
+import { CurrentUserAvatar } from '../user/avatar';
 
 export const CommentInputField = ({
   comment,
   setComment,
   contributors,
   enableHashtagPaste = false,
-  autoFocus,
-  isShowPreview = false,
-  isProjectDetailCommentSection = false,
+  isShowTabNavs = false,
+  isShowFooter = false,
   enableContributorsHashtag = false,
+  isShowUserPicture = false,
+  placeholderMsg = messages.leaveAComment,
+  markdownTextareaProps = {},
 }: Object) => {
   const token = useSelector((state) => state.auth.token);
   const textareaRef = useRef();
   const isBundle = useRef(false);
+  const [isShowPreview, setIsShowPreview] = useState(false);
 
   const appendImgToComment = (url) => setComment(`${comment}\n![image](${url})\n`);
   const [uploadError, uploading, onDrop] = useOnDrop(appendImgToComment);
@@ -79,8 +83,33 @@ export const CommentInputField = ({
 
   return (
     <div {...getRootProps()}>
-      <div className={`${isShowPreview ? 'dn' : ''}`} data-color-mode="light">
-        <FormattedMessage {...messages.leaveAComment}>
+      {isShowTabNavs && (
+        <div className={`flex items-center gap-1 ${isShowUserPicture ? 'mb3' : ''}`}>
+          {isShowUserPicture && <CurrentUserAvatar className="w3 h3" />}
+          <div className="pv3-ns ph3 ph3-m bg-grey-light dib">
+            <span
+              role="button"
+              className={`pointer db dib-ns pb1 bb bw1 ${
+                !isShowPreview ? 'b--blue-dark' : 'b--grey-light'
+              }`}
+              onClick={() => setIsShowPreview(false)}
+            >
+              <FormattedMessage {...messages.write} />
+            </span>
+            <span
+              role="button"
+              className={`pointer ml3 db dib-ns pb1 bb bw1 ${
+                isShowPreview ? 'b--blue-dark' : 'b--grey-light'
+              }`}
+              onClick={() => setIsShowPreview(true)}
+            >
+              <FormattedMessage {...messages.preview} />
+            </span>
+          </div>
+        </div>
+      )}
+      <div className={`${isShowPreview ? 'dn' : ''} bg-white`} data-color-mode="light">
+        <FormattedMessage {...placeholderMsg}>
           {(val) => (
             <MDEditor
               ref={textareaRef}
@@ -94,6 +123,7 @@ export const CommentInputField = ({
                 ...getInputProps(),
                 spellCheck: 'true',
                 placeholder: val,
+                ...markdownTextareaProps,
               }}
               defaultTabEnable
             />
@@ -106,7 +136,7 @@ export const CommentInputField = ({
           accept="image/*"
           onChange={handleImagePick}
         />
-        {isProjectDetailCommentSection && (
+        {isShowFooter && (
           <div className="dn flex-ns justify-between ba bt-0 w-100 ph2 pv1 relative b--blue-grey textareaDetail">
             <span className="f7 lh-copy gray">
               <FormattedMessage {...messages.attachImage} />
@@ -118,7 +148,7 @@ export const CommentInputField = ({
         )}
       </div>
       {isShowPreview && (
-        <div className="cf db">
+        <div className="db ba ph3" style={{ minHeight: 200, borderColor: '#F0EEEE' }}>
           {comment && (
             <div
               style={{ wordWrap: 'break-word' }}
@@ -127,14 +157,14 @@ export const CommentInputField = ({
             />
           )}
           {!comment && (
-            <span className="mt5">
+            <span className="db mt3">
               <FormattedMessage {...messages.nothingToPreview} />
             </span>
           )}
         </div>
       )}
-      {comment && enableHashtagPaste && !isShowPreview && (
-        <span className="blue-grey f6 pt2">
+      {enableHashtagPaste && !isShowPreview && (
+        <span className="db blue-grey f6 pt2">
           <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
           <span>, </span>
           <HashtagPaste text={comment} setFn={setComment} hashtag="#author" />

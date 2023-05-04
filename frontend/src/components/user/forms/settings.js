@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Link } from '@reach/router';
+import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import Select from 'react-select';
 

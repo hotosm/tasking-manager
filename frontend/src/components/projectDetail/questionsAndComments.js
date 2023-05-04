@@ -10,7 +10,7 @@ import { Button } from '../button';
 import { Alert } from '../alert';
 import { CommentInputField } from '../comments/commentInput';
 import { MessageStatus } from '../comments/status';
-import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
+import { UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
@@ -19,7 +19,6 @@ import './styles.scss';
 export const PostProjectComment = ({ projectId, updateComments, contributors }) => {
   const token = useSelector((state) => state.auth.token);
   const [comment, setComment] = useState('');
-  const [isShowPreview, setIsShowPreview] = useState(false);
 
   const saveComment = () => {
     return pushToLocalJSONAPI(
@@ -35,36 +34,14 @@ export const PostProjectComment = ({ projectId, updateComments, contributors }) 
 
   return (
     <div className="w-100 cf mh4 pv4 bg-white center shadow-7 ba0 br1 post-comment-ctr">
-      <div className="cf w-100 flex mb3">
-        <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
-        <div className="pt3-ns ph3 ph3-m ml3 bg-grey-light dib">
-          <span
-            role="button"
-            className={`pointer db dib-ns pb1 bb bw1 ${
-              !isShowPreview ? 'b--blue-dark' : 'b--grey-light'
-            }`}
-            onClick={() => setIsShowPreview(false)}
-          >
-            <FormattedMessage {...messages.write} />
-          </span>
-          <span
-            role="button"
-            className={`pointer ml3 db dib-ns pb1 bb bw1 ${
-              isShowPreview ? 'b--blue-dark' : 'b--grey-light'
-            }`}
-            onClick={() => setIsShowPreview(true)}
-          >
-            <FormattedMessage {...messages.preview} />
-          </span>
-        </div>
-      </div>
       <div className={`w-100 h-100`} style={{ position: 'relative', display: 'block' }}>
         <CommentInputField
           comment={comment}
           setComment={setComment}
-          enableHashtagPaste={true}
-          isShowPreview={isShowPreview}
-          isProjectDetailCommentSection={true}
+          enableHashtagPaste
+          isShowUserPicture
+          isShowFooter
+          isShowTabNavs
           contributors={contributors?.userContributions?.map((user) => user.username)}
         />
       </div>

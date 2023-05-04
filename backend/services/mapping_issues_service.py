@@ -1,6 +1,6 @@
 from backend.models.postgis.mapping_issues import MappingIssueCategory
 from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
-from werkzeug.exceptions import NotFound
+from backend.models.postgis.utils import NotFound
 
 
 class MappingIssueCategoryService:
