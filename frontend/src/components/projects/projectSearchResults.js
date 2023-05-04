@@ -25,7 +25,7 @@ export const ProjectSearchResults = (props) => {
             <FormattedMessage
               {...messages.paginationCount}
               values={{
-                number: state.projects && state.projects.length,
+                number: state.projects?.length,
                 total: <FormattedNumber value={state.pagination ? state.pagination.total : 0} />,
               }}
             />
@@ -76,7 +76,7 @@ export const ProjectSearchResults = (props) => {
 };
 
 export const ExploreProjectCards = (props) => {
-  if (props.pageOfCards && props.pageOfCards.length === 0) {
+  if (props.pageOfCards?.length === 0) {
     return null;
   }
   /* cardWidthClass={props.cardWidthClass} as a parameter offers more variability in the size of the cards, set to 'cardWidthNone' disables */
@@ -91,7 +91,7 @@ export const ExploreProjectCards = (props) => {
 };
 
 export const ExploreProjectList = (props) => {
-  if (props.pageOfCards && props.pageOfCards.length === 0) {
+  if (props.pageOfCards?.length === 0) {
     return null;
   }
   /* cardWidthClass={props.cardWidthClass} as a parameter offers more variability in the size of the cards, set to 'cardWidthNone' disables */
