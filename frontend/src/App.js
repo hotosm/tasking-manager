@@ -36,7 +36,6 @@ const App = () => {
             <Suspense fallback={<ReactPlaceholder showLoadingAnimation rows={30} delay={300} />}>
               <RouterProvider router={router} fallbackElement={<Preloader />} />
             </Suspense>
-            <RouterProvider router={router} fallbackElement={<Preloader />} />
           </main>
           <ArchivalNotificationBanner />
           {MATOMO_ID && <Banner />}
