@@ -1,10 +1,5 @@
-import { useEffect, lazy } from 'react';
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
-  useNavigate,
-} from 'react-router-dom';
+import { lazy } from 'react';
+import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
 
 import { Root } from './views/root';
 import { Home } from './views/home';
@@ -48,6 +43,7 @@ import { ContactPage } from './views/contact';
 import { SwaggerView } from './views/swagger';
 import { ContributionsPage, ContributionsPageIndex, UserStats } from './views/contributions';
 import { NotificationsPage } from './views/notifications';
+import { Redirect } from './components/redirect';
 const ProjectEdit = lazy(() => import('./views/projectEdit' /* webpackChunkName: "projectEdit" */));
 
 export const router = createBrowserRouter(
@@ -113,12 +109,3 @@ export const router = createBrowserRouter(
     </Route>,
   ),
 );
-
-// Use this to Redirect to intended page
-function Redirect({ to }) {
-  let navigate = useNavigate();
-  useEffect(() => {
-    navigate(to);
-  });
-  return null;
-}
