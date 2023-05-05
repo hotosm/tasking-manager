@@ -425,9 +425,9 @@ function PaginatedList({
             <FormattedMessage {...messages.noTasksFound} />
           </div>
         )}
-        {items.slice(pageSize * ((page || 1) - 1), pageSize * (page || 1)).map((item, n) => (
+        {items.slice(pageSize * ((page || 1) - 1), pageSize * (page || 1)).map((item) => (
           <ItemComponent
-            key={n}
+            key={item.properties.taskId}
             data={item.properties}
             project={project}
             selectTask={selectTask}
