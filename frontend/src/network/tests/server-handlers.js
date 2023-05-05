@@ -60,7 +60,7 @@ import {
 } from './mockData/teams';
 import { userTasks } from './mockData/tasksStats';
 import { homepageStats } from './mockData/homepageStats';
-import { banner, countries, josmRemote } from './mockData/miscellaneous';
+import { banner, countries, josmRemote, systemStats } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 import { API_URL } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
@@ -313,6 +313,9 @@ const handlers = [
   }),
   rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', (req, res, ctx) => {
     return res(ctx.json(extendTask));
+  }),
+  rest.get(API_URL + 'system/statistics/', (req, res, ctx) => {
+    return res(ctx.json(systemStats));
   }),
   // EXTERNAL API
   rest.get('https://osmstats-api.hotosm.org/wildcard', (req, res, ctx) => {

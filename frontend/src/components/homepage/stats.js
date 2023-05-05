@@ -5,7 +5,7 @@ import shortNumber from 'short-number';
 
 import messages from './messages';
 import { HOMEPAGE_STATS_API_URL } from '../../config';
-import { useFetchWithAbort } from '../../hooks/UseFetch';
+import { fetchLocalJSONAPIWithAbort } from '../../network/genericJSONRequest';
 
 export const StatsNumber = (props) => {
   const value = shortNumber(props.value);
@@ -24,7 +24,7 @@ export const StatsColumn = ({ label, value }: Object) => {
   return (
     <div className={`tc`}>
       <div className="fw5 red barlow-condensed stat-number">
-        <StatsNumber value={value} />
+        {value !== undefined ? <StatsNumber value={value} /> : <>&#8211;</>}
       </div>
       <div className="db blue-grey f6 fw7">
         <FormattedMessage {...label} />
@@ -34,24 +34,29 @@ export const StatsColumn = ({ label, value }: Object) => {
 };
 
 export const StatsSection = () => {
-  /* eslint-disable-next-line */
-  const [_tmStatsError, _tmStatsLoading, tmStats] = useFetchWithAbort('system/statistics/');
-  const [stats, setStats] = useState({ edits: 0, buildings: 0, roads: 0 });
+  const [osmStats, setOsmStats] = useState({});
+  const [tmStats, setTmStats] = useState({});
 
   useEffect(() => {
-    // Using axios over the useFetch hook for external API endpoint
     const abortController = new AbortController();
-    axios
-      .get(HOMEPAGE_STATS_API_URL, {
+    // Using axios over the useFetch hook for external API endpoint
+    const fetchOsmStats = () =>
+      axios.get(HOMEPAGE_STATS_API_URL, {
         signal: abortController.signal,
-      })
-      .then((res) => {
-        const { edits, building_count_add: buildings, road_km_add: roads } = res.data;
-        setStats({
+      });
+
+    const fetchSystemStats = () =>
+      fetchLocalJSONAPIWithAbort('system/statistics/', null, abortController.signal);
+
+    Promise.all([fetchOsmStats(), fetchSystemStats()])
+      .then(([osmStats, tmStats]) => {
+        const { edits, building_count_add: buildings, road_km_add: roads } = osmStats.data;
+        setOsmStats({
           edits,
           buildings,
           roads,
         });
+        setTmStats(tmStats);
       })
       .catch((err) => console.error(err));
     return () => {
@@ -61,11 +66,11 @@ export const StatsSection = () => {
 
   return (
     <div className="pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container">
-      <StatsColumn label={messages.buildingsStats} value={stats.buildings} />
-      <StatsColumn label={messages.roadsStats} value={stats.roads} />
-      <StatsColumn label={messages.editsStats} value={stats.edits} />
-      <StatsColumn label={messages.communityStats} value={tmStats.totalMappers || 0} />
-      <StatsColumn label={messages.mappersStats} value={tmStats.mappersOnline || 0} />
+      <StatsColumn label={messages.buildingsStats} value={osmStats?.buildings} />
+      <StatsColumn label={messages.roadsStats} value={osmStats?.roads} />
+      <StatsColumn label={messages.editsStats} value={osmStats?.edits} />
+      <StatsColumn label={messages.communityStats} value={tmStats?.totalMappers} />
+      <StatsColumn label={messages.mappersStats} value={tmStats?.mappersOnline} />
     </div>
   );
 };

@@ -27,3 +27,10 @@ export const josmRemote = {
   application: 'JOSM RemoteControl',
   version: 18646,
 };
+
+export const systemStats = {
+  mappersOnline: 0,
+  tasksMapped: 14,
+  totalMappers: 3,
+  totalProjects: 10,
+};
