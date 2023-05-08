@@ -1,9 +1,9 @@
 import React, { Suspense, useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
-import ReactPlaceholder from 'react-placeholder';
 import { useMeta } from 'react-meta-elements';
 import { useSelector } from 'react-redux';
 import * as Sentry from '@sentry/react';
+import ReactPlaceholder from 'react-placeholder';
 
 import './assets/styles/index.scss';
 
@@ -33,10 +33,8 @@ const App = () => {
       ) : (
         <div className="w-100 base-font bg-white" lang={locale}>
           <main className="cf w-100 base-font">
-            <Suspense
-              fallback={<ReactPlaceholder showLoadingAnimation={true} rows={30} delay={300} />}
-            >
-              <RouterProvider router={router} />
+            <Suspense fallback={<ReactPlaceholder showLoadingAnimation rows={30} delay={300} />}>
+              <RouterProvider router={router} fallbackElement={<Preloader />} />
             </Suspense>
           </main>
           <ArchivalNotificationBanner />

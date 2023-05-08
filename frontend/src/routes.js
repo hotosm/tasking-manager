@@ -43,12 +43,13 @@ import { ContactPage } from './views/contact';
 import { SwaggerView } from './views/swagger';
 import { ContributionsPage, ContributionsPageIndex, UserStats } from './views/contributions';
 import { NotificationsPage } from './views/notifications';
+import { FallbackComponent } from './views/fallback';
 import { Redirect } from './components/redirect';
 const ProjectEdit = lazy(() => import('./views/projectEdit' /* webpackChunkName: "projectEdit" */));
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Root />}>
+    <Route path="/" element={<Root />} ErrorBoundary={FallbackComponent}>
       <Route index element={<Home />} />
       <Route path="explore" element={<ProjectsPage />}>
         <Route index element={<ProjectsPageIndex />} />
