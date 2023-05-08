@@ -388,7 +388,6 @@ class TestProjectAdminService(BaseTestCase):
             ProjectAdminService.update_project(dto, mock_user.id)
 
     def test_updating_a_project_with_valid_project_info(self):
-
         locales = []
         info = ProjectInfoDTO()
         info.locale = "en"

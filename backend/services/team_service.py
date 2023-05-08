@@ -207,7 +207,6 @@ class TeamService:
 
     @staticmethod
     def get_all_teams(search_dto: TeamSearchDTO) -> TeamsListDTO:
-
         query = db.session.query(Team)
 
         orgs_query = None
@@ -583,7 +582,8 @@ class TeamService:
         team_id: int, team_name: str, message_dto: MessageDTO
     ):
         """Sends supplied message to all contributors in a team.  Message all team members can take
-        over a minute to run, so this method is expected to be called on its own thread"""
+        over a minute to run, so this method is expected to be called on its own thread
+        """
         app = (
             create_app()
         )  # Because message-all run on background thread it needs it's own app context

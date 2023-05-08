@@ -49,7 +49,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "MissingDate")
 
     def test_returns_400_if_start_date_is_not_valid(self):
-        """ Test returns 400 if start date is not valid """
+        """Test returns 400 if start date is not valid"""
         # Act
         response = self.client.get(
             self.url,
@@ -61,7 +61,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "InvalidDateValue")
 
     def test_returns_400_if_end_date_is_not_valid(self):
-        """ Test returns 400 if end date is not valid """
+        """Test returns 400 if end date is not valid"""
         # Act
         response = self.client.get(
             self.url,
@@ -73,7 +73,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "InvalidDateValue")
 
     def test_returns_400_if_start_date_is_after_end_date(self):
-        """ Test returns 400 if start date is after end date """
+        """Test returns 400 if start date is after end date"""
         # Act
         response = self.client.get(
             self.url,
@@ -85,7 +85,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "InvalidDateRange")
 
     def test_returns_400_if_date_range_is_greater_than_1_year(self):
-        """ Test returns 400 if date range is greater than 1 year """
+        """Test returns 400 if date range is greater than 1 year"""
         # Act
         response = self.client.get(
             self.url,
@@ -100,7 +100,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "InvalidDateRange")
 
     def test_returns_200_if_valid_date_range(self):
-        """ Test returns 200 if date range is valid """
+        """Test returns 200 if date range is valid"""
         # Act
         response = self.client.get(
             self.url,
@@ -115,7 +115,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
 
     @staticmethod
     def create_task_history(task_id, project_id, user_id, action):
-        """ Create task history"""
+        """Create task history"""
         task = Task.get(task_id, project_id)
         if action in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY]:
             task.lock_task_for_mapping(user_id)
@@ -124,7 +124,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
         task.unlock_task(user_id, action)
 
     def test_filters_task_by_project(self):
-        """ Test filters task by project """
+        """Test filters task by project"""
         # Act
         response = self.client.get(
             self.url,
@@ -141,7 +141,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
         self.assertEqual(response.json["taskStats"][0]["badImagery"], 0)
 
     def test_filters_by_multiple_projects(self):
-        """ Test filters by multiple projects """
+        """Test filters by multiple projects"""
         # Arrange
         test_project_3, _ = create_canned_project()
         TestTasksStatisticsAPI.create_task_history(
@@ -163,7 +163,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
         self.assertEqual(response.json["taskStats"][0]["badImagery"], 0)
 
     def test_filters_by_organisation_id(self):
-        """ Test filters by organisation id """
+        """Test filters by organisation id"""
         # Arrange
         test_organisation = create_canned_organisation()
         self.test_project_1.organisation_id = test_organisation.id
@@ -184,7 +184,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
         self.assertEqual(response.json["taskStats"][0]["badImagery"], 0)
 
     def test_filters_by_organisation_name(self):
-        """ Test filters by organisation name """
+        """Test filters by organisation name"""
         # Arrange
         test_organisation = create_canned_organisation()
         self.test_project_1.organisation_id = test_organisation.id
@@ -205,7 +205,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
         self.assertEqual(response.json["taskStats"][0]["badImagery"], 0)
 
     def test_filters_by_campaign(self):
-        """ Test filters by campaign """
+        """Test filters by campaign"""
         # Arrange
         test_campaign = create_canned_campaign()
         campaign_dto = CampaignProjectDTO()
@@ -228,7 +228,7 @@ class TestTasksStatisticsAPI(BaseTestCase):
         self.assertEqual(response.json["taskStats"][0]["badImagery"], 0)
 
     def test_filters_by_country(self):
-        """ Test filters by country """
+        """Test filters by country"""
         # Arrange
         self.test_project_1.country = ["Nepal"]
         self.test_project_1.save()

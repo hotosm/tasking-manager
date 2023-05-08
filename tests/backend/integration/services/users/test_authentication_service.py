@@ -25,7 +25,6 @@ TEST_USER_EMAIL = "thinkwheretest@test.com"
 
 class TestAuthenticationService(BaseTestCase):
     def test_verify_token_verifies_user_session_token(self):
-
         # Arrange
         token = AuthenticationService.generate_session_token_for_user(12345678)
         token = base64.b64encode(token.encode("utf-8"))
@@ -163,7 +162,6 @@ class TestAuthenticationService(BaseTestCase):
 
         # Act/Assert
         with self.assertRaises(AuthServiceError):
-
             AuthenticationService().authenticate_email_token(
                 username=TEST_USERNAME,
                 token=serializer.dumps(TEST_USER_EMAIL),

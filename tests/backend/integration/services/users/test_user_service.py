@@ -33,7 +33,6 @@ class TestUserService(BaseTestCase):
         )  # We should find we've mapped the test project
 
     def test_set_level_adds_level_to_user(self):
-
         self.test_user = get_canned_user("Thinkwhere TEST")
         if self.test_user is None:
             self.test_user = create_canned_user()

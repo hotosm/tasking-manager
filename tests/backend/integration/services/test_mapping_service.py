@@ -8,7 +8,6 @@ from tests.backend.helpers.test_helpers import create_canned_project
 
 
 class TestMappingService(BaseTestCase):
-
     skip_tests = False
     test_project = None
     test_user = None

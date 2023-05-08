@@ -126,7 +126,6 @@ class TestStatsService(BaseTestCase):
         self.assertEqual(test_user.tasks_invalidated, 1)
 
     def test_tasks_state_representation(self):
-
         # Arrange
         test_project = Project()
         test_project.tasks_mapped = 0

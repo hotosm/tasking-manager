@@ -14,7 +14,6 @@ class TestAuthenticationService(BaseTestCase):
         self.assertIsNotNone(session_token)
 
     def test_is_valid_token_validates_user_token(self):
-
         # Arrange
         session_token = AuthenticationService.generate_session_token_for_user(12345678)
         invalid_session_token = session_token + "x"

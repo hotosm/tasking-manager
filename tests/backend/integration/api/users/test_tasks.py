@@ -15,14 +15,14 @@ class TetUsersTasksAPI(BaseTestCase):
         self.url = f"/api/v2/users/{self.test_author.id}/tasks/"
 
     def test_returns_401_if_no_token(self):
-        """ Test that the API returns a 401 if no token is provided """
+        """Test that the API returns a 401 if no token is provided"""
         # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def change_task_status(self, task_id, status, project_id):
-        """ Helper function to change the status of a task """
+        """Helper function to change the status of a task"""
         task = Task.get(task_id, project_id)
         if status == TaskStatus.MAPPED:
             task.lock_task_for_mapping(self.test_author.id)
@@ -31,7 +31,7 @@ class TetUsersTasksAPI(BaseTestCase):
         task.unlock_task(self.test_author.id, status)
 
     def test_returns_200_on_success(self):
-        """ Test that the API returns a 200 on success """
+        """Test that the API returns a 200 on success"""
         # Arrange
         self.change_task_status(1, TaskStatus.MAPPED, self.test_project.id)
         self.change_task_status(2, TaskStatus.VALIDATED, self.test_project.id)
@@ -47,7 +47,7 @@ class TetUsersTasksAPI(BaseTestCase):
         self.assertEqual(response.json["tasks"][0]["taskId"], 2)
 
     def test_returns_paginated_results(self):
-        """ Test that the API returns paginated results """
+        """Test that the API returns paginated results"""
         # Arrange
         self.change_task_status(1, TaskStatus.MAPPED, self.test_project.id)
         self.change_task_status(2, TaskStatus.VALIDATED, self.test_project.id)
@@ -66,7 +66,7 @@ class TetUsersTasksAPI(BaseTestCase):
         self.assertEqual(response.json["pagination"]["hasNext"], True)
 
     def test_filters_by_project_if_project_id_passed(self):
-        """ Test that the API filters by project if project_id is passed """
+        """Test that the API filters by project if project_id is passed"""
         # Arrange
         test_project_2, _ = create_canned_project()
         self.change_task_status(1, TaskStatus.MAPPED, self.test_project.id)
@@ -88,7 +88,7 @@ class TetUsersTasksAPI(BaseTestCase):
         )
 
     def test_filters_by_status_if_status_passed(self):
-        """ Test that the API filters by status if status is passed """
+        """Test that the API filters by status if status is passed"""
         # Arrange
         self.change_task_status(1, TaskStatus.MAPPED, self.test_project.id)
         self.change_task_status(2, TaskStatus.VALIDATED, self.test_project.id)
@@ -111,7 +111,7 @@ class TetUsersTasksAPI(BaseTestCase):
         )
 
     def test_filters_by_project_status_if_project_status_passed(self):
-        """ Test that the API filters by project status if passed """
+        """Test that the API filters by project status if passed"""
         # Arrange
         test_project_2, _ = create_canned_project()
         test_project_2.status = ProjectStatus.PUBLISHED.value
@@ -131,7 +131,7 @@ class TetUsersTasksAPI(BaseTestCase):
         self.assertEqual(response.json["tasks"][0]["projectId"], test_project_2.id)
 
     def test_sorts_results_by_project_id_in_defined_order(self):
-        """ Test that the API sorts results by project id in defined order """
+        """Test that the API sorts results by project id in defined order"""
         # Arrange
         test_project_2, _ = create_canned_project()
         self.change_task_status(1, TaskStatus.MAPPED, self.test_project.id)
@@ -164,7 +164,7 @@ class TetUsersTasksAPI(BaseTestCase):
         self.assertEqual(response.json["tasks"][2]["projectId"], self.test_project.id)
 
     def test_sorts_results_by_action_date_in_defined_order(self):
-        """ Test that the API sorts results by action date in defined order """
+        """Test that the API sorts results by action date in defined order"""
         # Arrange
         self.change_task_status(1, TaskStatus.MAPPED, self.test_project.id)
         self.change_task_status(2, TaskStatus.MAPPED, self.test_project.id)

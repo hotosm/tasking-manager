@@ -571,7 +571,7 @@ class ProjectService:
 
     @staticmethod
     def send_email_on_project_progress(project_id):
-        """ Send email to all contributors on project progress """
+        """Send email to all contributors on project progress"""
         if not current_app.config["SEND_PROJECT_EMAIL_UPDATES"]:
             return
         project = ProjectService.get_project_by_id(project_id)

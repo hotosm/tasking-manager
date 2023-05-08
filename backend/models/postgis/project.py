@@ -945,7 +945,6 @@ class Project(db.Model):
 
     @staticmethod
     def get_project_total_contributions(project_id: int) -> int:
-
         project_contributors_count = (
             TaskHistory.query.with_entities(TaskHistory.user_id)
             .filter(

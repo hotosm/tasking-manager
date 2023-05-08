@@ -6,7 +6,6 @@ from tests.backend.base import BaseTestCase
 
 class TestMappingDTO(BaseTestCase):
     def test_mapped_task_with_validated_status_is_invalid(self):
-
         mapped_task = MappedTaskDTO()
         mapped_task.task_id = 1
         mapped_task.project_id = 1

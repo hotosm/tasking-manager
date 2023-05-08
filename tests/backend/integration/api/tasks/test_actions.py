@@ -283,7 +283,7 @@ class TasksActionsResetAllAPI(BaseTestCase):
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_reset_all_tasks_is_allowed_for_user_with_pm_role(self, mock_pm_role):
-        """ Test returns 200 on request by user with PM role and resets all tasks to ready """
+        """Test returns 200 on request by user with PM role and resets all tasks to ready"""
         # Arrange
         init_non_ready_tasks = []
         for status in [
@@ -379,7 +379,7 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
     def test_mapping_lock_returns_403_if_task_in_invalid_state_for_mapping(
         self, mock_pm_role
     ):
-        """ Test returns 403 if task is in invalid state for mapping. i.e. not in READY or INVALIDATED state. """
+        """Test returns 403 if task is in invalid state for mapping. i.e. not in READY or INVALIDATED state."""
         # Arrange
         mock_pm_role.return_value = True
         # Act
@@ -408,7 +408,7 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
     def test_mapping_lock_returns_403_if_project_licence_not_accepted(
         self, mock_accepted
     ):
-        """ Test returns 403 if project licence is not accepted. """
+        """Test returns 403 if project licence is not accepted."""
         # Arrange
         mock_accepted.return_value = False
         self.test_project.status = ProjectStatus.PUBLISHED.value
@@ -429,7 +429,7 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
     def test_mapping_lock_is_allowed_for_user_with_mapping_permission(
         self, mock_permitted
     ):
-        """ Test returns 200 if user has mapping permission. """
+        """Test returns 200 if user has mapping permission."""
         # Arrange
         mock_permitted.return_value = True, "User allowed to map"
         task = Task.get(1, self.test_project.id)
@@ -1116,7 +1116,7 @@ class TestTasksActionsValidationStopAPI(BaseTestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_validation_stop_returns_400_if_invalid_data(self):
-        """Test returns 400 if invalid data passed """
+        """Test returns 400 if invalid data passed"""
         # Act
         response = self.client.post(
             self.url,
@@ -1291,7 +1291,7 @@ class TestTasksActionsSplitAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "SmallToSplit")
 
     def test_returns_403_if_task_not_locked_for_mapping(self):
-        """ Test returns 403 if task not locked for mapping."""
+        """Test returns 403 if task not locked for mapping."""
         # Since task should be locked for mapping to split, we should get a 403
         response = self.client.post(
             self.url,
@@ -1301,7 +1301,7 @@ class TestTasksActionsSplitAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "LockToSplit")
 
     def test_returns_403_if_task_locked_by_other_user(self):
-        """ Test returns 403 if task locked by other user."""
+        """Test returns 403 if task locked by other user."""
         # Arrange
         test_user = return_canned_user("test user", 1111111)
         test_user.create()
@@ -1437,7 +1437,7 @@ class TestTasksActionsMappingUndoAPI(BaseTestCase):
         assert comment_history["actionBy"] == username
 
     def test_returns_200_if_undo_by_user_with_last_action(self):
-        """ Test returns 200 if undo by user with last action. """
+        """Test returns 200 if undo by user with last action."""
         # Arrange
         TestTasksActionsMappingUndoAPI.validate_task(
             1, self.test_project.id, self.test_user.id
@@ -1459,7 +1459,7 @@ class TestTasksActionsMappingUndoAPI(BaseTestCase):
         )
 
     def test_returns_200_if_undo_by_user_with_validation_permission(self):
-        """ Test returns 200 if undo by user with validation permission. """
+        """Test returns 200 if undo by user with validation permission."""
         # Arrange
         TestTasksActionsMappingUndoAPI.validate_task(
             1, self.test_project.id, self.test_author.id

@@ -3,7 +3,7 @@ from datetime import date, datetime
 
 
 class TMAPIDecorators:
-    """ Class for Tasking Manager custom API decorators """
+    """Class for Tasking Manager custom API decorators"""
 
     is_pm_only_resource = None
     authenticated_user_id = (
