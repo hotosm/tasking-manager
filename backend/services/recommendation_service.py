@@ -119,9 +119,12 @@ class ProjectRecommendationService:
 
         # Since country is saved as array in the database
         table["country"] = table["country"].apply(lambda x: x[0] if x else None)
-        # Since some categories are set as [None] we need to replace it with []
+        # Since some categories and mapping_types are set as [None] we need to replace it with []
         table["categories"] = table["categories"].apply(
             lambda x: [] if x == [None] else x
+        )
+        table["mapping_types"] = table["mapping_types"].apply(
+            lambda x: [] if x is None else x
         )
 
         # One hot encoding for the columns
