@@ -5,7 +5,7 @@ from backend.models.postgis.utils import timestamp
 class TaskAnnotationsService:
     @staticmethod
     def add_or_update_annotation(annotation, project_id, annotation_type):
-        """ Takes a json of tasks and create annotations in the db """
+        """Takes a json of tasks and create annotations in the db"""
 
         task_id = annotation["taskId"]
         source = annotation.get("annotationSource", None)

@@ -39,7 +39,6 @@ def upgrade():
 
 
 def _set_project_counters_from_task_states(project_id: int):
-
     # Obtain and process information of the project's tasks' statuses
     conn = op.get_bind()
 

@@ -9,7 +9,7 @@ class SettingsService:
     @staticmethod
     @cached(settings_cache)
     def get_settings():
-        """ Gets all settings required by the client """
+        """Gets all settings required by the client"""
         settings_dto = SettingsDTO()
         settings_dto.mapper_level_advanced = current_app.config["MAPPER_LEVEL_ADVANCED"]
         settings_dto.mapper_level_intermediate = current_app.config[
@@ -20,7 +20,7 @@ class SettingsService:
 
     @staticmethod
     def get_supported_languages():
-        """ Gets all supported languages from the config """
+        """Gets all supported languages from the config"""
         app_languages = current_app.config["SUPPORTED_LANGUAGES"]
 
         codes = [x.strip() for x in app_languages["codes"].split(",")]

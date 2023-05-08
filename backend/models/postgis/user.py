@@ -101,7 +101,6 @@ class User(db.Model):
         db.session.commit()
 
     def update(self, user_dto: UserDTO):
-
         """Update the user details"""
         for attr, value in user_dto.items():
             if attr == "gender" and value is not None:

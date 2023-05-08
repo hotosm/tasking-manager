@@ -8,7 +8,7 @@ from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
 
 
 def is_valid_mapped_status(value):
-    """ Validates that Task Status is in correct range for after mapping """
+    """Validates that Task Status is in correct range for after mapping"""
     valid_values = f"{TaskStatus.MAPPED.name}, {TaskStatus.INVALIDATED.name}, {TaskStatus.BADIMAGERY.name}"
 
     try:
@@ -21,7 +21,7 @@ def is_valid_mapped_status(value):
 
 
 class LockTaskDTO(Model):
-    """ DTO used to lock a task for mapping """
+    """DTO used to lock a task for mapping"""
 
     user_id = IntType(required=True)
     task_id = IntType(required=True)
@@ -30,7 +30,7 @@ class LockTaskDTO(Model):
 
 
 class MappedTaskDTO(Model):
-    """ Describes the model used to update the status of one task after mapping """
+    """Describes the model used to update the status of one task after mapping"""
 
     user_id = IntType(required=True)
     status = StringType(required=True, validators=[is_valid_mapped_status])
@@ -41,7 +41,7 @@ class MappedTaskDTO(Model):
 
 
 class StopMappingTaskDTO(Model):
-    """ Describes the model used to stop mapping and reset the status of one task """
+    """Describes the model used to stop mapping and reset the status of one task"""
 
     user_id = IntType(required=True)
     comment = StringType()
@@ -51,7 +51,7 @@ class StopMappingTaskDTO(Model):
 
 
 class TaskHistoryDTO(Model):
-    """ Describes an individual action that was performed on a mapping task"""
+    """Describes an individual action that was performed on a mapping task"""
 
     history_id = IntType(serialized_name="historyId")
     task_id = StringType(serialized_name="taskId")
@@ -73,7 +73,7 @@ class TaskStatusDTO(Model):
 
 
 class TaskDTO(Model):
-    """ Describes a Task DTO """
+    """Describes a Task DTO"""
 
     task_id = IntType(serialized_name="taskId")
     project_id = IntType(serialized_name="projectId")
@@ -94,13 +94,13 @@ class TaskDTO(Model):
 
 
 class TaskDTOs(Model):
-    """ Describes an array of Task DTOs"""
+    """Describes an array of Task DTOs"""
 
     tasks = ListType(ModelType(TaskDTO))
 
 
 class TaskCommentDTO(Model):
-    """ Describes the model used to add a standalone comment to a task outside of mapping/validation """
+    """Describes the model used to add a standalone comment to a task outside of mapping/validation"""
 
     user_id = IntType(required=True)
     comment = StringType(required=True)
@@ -110,7 +110,7 @@ class TaskCommentDTO(Model):
 
 
 class ExtendLockTimeDTO(Model):
-    """ DTO used to extend expiry time of tasks """
+    """DTO used to extend expiry time of tasks"""
 
     project_id = IntType(required=True)
     task_ids = ListType(IntType, required=True, serialized_name="taskIds")

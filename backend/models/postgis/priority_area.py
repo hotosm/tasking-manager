@@ -14,7 +14,7 @@ project_priority_areas = db.Table(
 
 
 class PriorityArea(db.Model):
-    """ Describes an individual priority area """
+    """Describes an individual priority area"""
 
     __tablename__ = "priority_areas"
 
@@ -23,7 +23,7 @@ class PriorityArea(db.Model):
 
     @classmethod
     def from_dict(cls, area_poly: dict):
-        """ Create a new Priority Area from dictionary """
+        """Create a new Priority Area from dictionary"""
         pa_geojson = geojson.loads(json.dumps(area_poly))
 
         if type(pa_geojson) is not geojson.Polygon:
@@ -41,6 +41,6 @@ class PriorityArea(db.Model):
         return pa
 
     def get_as_geojson(self):
-        """ Helper to translate geometry back to a GEOJson Poly"""
+        """Helper to translate geometry back to a GEOJson Poly"""
         pa_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
         return geojson.loads(pa_geojson)

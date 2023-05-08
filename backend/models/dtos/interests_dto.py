@@ -4,7 +4,7 @@ from schematics.types.compound import ListType, ModelType
 
 
 class InterestDTO(Model):
-    """ DTO for a interest."""
+    """DTO for a interest."""
 
     id = IntType()
     name = StringType()
@@ -16,7 +16,7 @@ class InterestDTO(Model):
 
 
 class InterestsListDTO(Model):
-    """ DTO for a list of interests."""
+    """DTO for a list of interests."""
 
     def __init__(self):
         super().__init__()

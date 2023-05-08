@@ -119,7 +119,8 @@ class MessageService:
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
         """Sends supplied message to all contributors on specified project.  Message all contributors can take
-        over a minute to run, so this method is expected to be called on its own thread"""
+        over a minute to run, so this method is expected to be called on its own thread
+        """
 
         app = (
             create_app()

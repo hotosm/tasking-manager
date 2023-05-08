@@ -109,7 +109,6 @@ class TestGridService(BaseTestCase):
         self.assertEqual(str(expected), str(result))
 
     def test_raises_InvalidGeoJson_when_geometry_is_linestring(self):
-
         # arrange
         grid_json = get_canned_json("CHAI-Escuintla-West2.json")
         grid_dto = GridDTO(grid_json)

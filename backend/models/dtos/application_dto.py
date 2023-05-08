@@ -3,7 +3,7 @@ from schematics import Model
 
 
 class ApplicationDTO(Model):
-    """ Describes JSON model used for creating grids """
+    """Describes JSON model used for creating grids"""
 
     id = IntType(required=True, serialized_name="keyId")
     user = IntType(required=True, serialized_name="userId")
@@ -12,7 +12,7 @@ class ApplicationDTO(Model):
 
 
 class ApplicationsDTO(Model):
-    """ Describes an array of Application DTOs"""
+    """Describes an array of Application DTOs"""
 
     def __init__(self):
         super().__init__()

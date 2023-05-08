@@ -41,7 +41,6 @@ class TestValidationService(BaseTestCase):
         self.assertEqual(0, self.test_project.tasks_validated)
 
     def test_mapped_by_and_validated_by_are_null_after_invalidating_all(self):
-
         ValidatorService.validate_all_tasks(self.test_project.id, self.test_user.id)
         ValidatorService.invalidate_all_tasks(self.test_project.id, self.test_user.id)
 
