@@ -11,13 +11,13 @@ import { Footer } from '../components/footer';
 // Components common to all routes can be included in <App>
 export function Root() {
   return (
-    <>
+    <div className="flex flex-column">
       <TopBanner />
       <Header />
       <QueryParamProvider adapter={ReactRouter6Adapter}>
         <Outlet />
       </QueryParamProvider>
       <Footer />
-    </>
+    </div>
   );
 }

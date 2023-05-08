@@ -71,8 +71,6 @@ class ProjectAdminService:
             org = OrganisationService.get_organisation_by_id(
                 draft_project_dto.organisation
             )
-            if org is None:
-                raise NotFound("Organisation does not exist")
             draft_project_dto.organisation = org
             draft_project.create_draft_project(draft_project_dto)
 
