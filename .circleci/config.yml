@@ -2,8 +2,131 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@3.1
+  opsgenie: opsgenie/opsgenie@1.0.8
 
 jobs:
+  frontend-code-test:
+    resource_class: large
+    docker:
+      - image: cimg/node:16.20
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - yarn-deps-{{ checksum "frontend/yarn.lock" }}
+      - run:
+          name: Install node dependencies
+          command: |
+            yarn --version
+            cd ${CIRCLE_WORKING_DIRECTORY}/frontend
+            yarn install
+      - save_cache:
+          key: yarn-deps-{{ checksum "frontend/yarn.lock" }}
+          paths:
+            - frontend/node_modules
+            - env
+      - run:
+          name: Run yarn test
+          command: |
+            cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
+            CI=true yarn test -w 1
+            CI=true GENERATE_SOURCEMAP=false yarn build
+
+  backend-code-check-PEP8:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: flake8 tests
+          command: | 
+            pip install flake8
+            flake8 manage.py backend tests migrations
+
+  backend-code-check-Black:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: black tests
+          command: | 
+            pip install black
+            black --check manage.py backend tests migrations
+
+  backend-functional-tests:
+    resource_class: large
+    docker:
+      - image: cimg/python:3.10
+        environment:
+          SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
+      - image: cimg/postgres:14.2-postgis
+        environment:
+          POSTGRES_USER: taskingmanager
+          POSTGRES_DB: test_tm
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install packages
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libgeos-dev # Required for shapely
+      - run:
+          name: Configure Postgresql Test database
+          command: |
+            sudo apt-get install postgresql-client
+            psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
+      - run:
+          name: Run backend functional tests
+          command: |
+            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
+            chmod -x tests/backend/test*.py
+            nosetests ./tests/backend --with-xunit \
+              --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
+              --with-coverage --cover-erase --cover-package=./backend
+            coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
+
+  database-backup:
+    resource_class: large
+    docker:
+      - image: cimg/postgres:15.1-postgis
+    steps:
+      - setup_remote_docker
+      - run:
+          name: Find database to backup
+          command: |
+            # Given instance ID, find the timestamp of the latest snapshot
+            SNAPSHOT_TIMESTAMP=$(aws rds describe-db-snapshots \
+              --db-instance-identifier=tt1bf7fs3843m6k \
+              --query="max_by(DBSnapshots, &SnapshotCreateTime).OriginalSnapshotCreateTime" \
+              --output text)
+      - run:
+          name: Make Backup
+          no_output_timeout: 15m
+          command: |
+            # Find out how much time has elapsed between given timestamp and now
+            #
+            # create new aws rds snapshot
+            aws rds create-db-snapshot \
+                        --db-snapshot-identifier tm4-<< parameters.stack_name >>-${RDS_ID}-latest \
+                        --db-instance-identifier ${RDS_ID}
+            aws rds wait db-snapshot-completed \
+                        --db-snapshot-identifier tm4-<< parameters.stack_name >>-${RDS_ID}-latest \
+                        --db-instance-identifier ${RDS_ID}
+            if [[ $? -eq 255 ]]; then
+              echo "Production snapshot creation failed. Exiting with exit-code 125"
+              exit 125
+            fi
+            something here
+      - run:
+          name: Check / validate backup
+          command: |
+            echo "something here"
+
   build:
     working_directory: /home/circleci/app
     docker:
@@ -82,6 +205,7 @@ jobs:
             - env
     # The resource_class feature allows configuring CPU and RAM resources for each job. Different resource classes are available for different executors. https://circleci.com/docs/2.0/configuration-reference/#resourceclass
     resource_class: large
+
   backend_deploy:
     parameters:
       stack_name:
@@ -108,6 +232,13 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y libgeos-dev jq # Required for shapely
             sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
+
+      - aws-cli/setup:
+          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile-name: "OIDC-Profile"
+          role-session-name: "frontend-modern"
+          session-duration: "1800"
+
       - run:
           name: Get RDS Instance ID
           command: |
@@ -178,6 +309,7 @@ jobs:
             then
               aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest
             fi
+
   frontend_deploy:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
@@ -209,6 +341,60 @@ jobs:
 
 workflows:
   version: 2
+
+  the-modern-flow:
+    jobs:
+      - frontend-code-test:
+          context: 
+            - org-global
+            - tasking-manager-frontend
+          filters:
+            branches:
+              only:
+                - enhance/terraform-container-infrastructure
+                - enhance/circleci-oidc
+          post-steps:
+            - opsgenie/notify
+
+      - backend-code-check-PEP8:
+          context:
+            - org-global
+            - tasking-manager-frontend
+          filters:
+            branches:
+              only:
+                - enhance/terraform-container-infrastructure
+                - enhance/circleci-oidc
+          post-steps:
+            - opsgenie/notify
+
+      - backend-code-check-Black:
+          context:
+            - org-global
+            - tasking-manager-frontend
+          filters:
+            branches:
+              only:
+                - enhance/terraform-container-infrastructure
+                - enhance/circleci-oidc
+          post-steps:
+            - opsgenie/notify
+
+      - backend-functional-tests:
+          context:
+            - org-global
+            - tasking-manager-frontend
+          filters:
+            branches:
+              only:
+                - enhance/terraform-container-infrastructure
+                - enhance/circleci-oidc
+          requires:
+            - backend-code-check-PEP8
+            - backend-code-check-Black
+          post-steps:
+            - opsgenie/notify
+
   build-deploy:
     jobs:
       - build:
@@ -217,6 +403,8 @@ workflows:
             branches:
               ignore:
                 - /^deployment\/.*/
+                - enhance/circleci-oidc
+                - enhance/terraform-container-infrastructure
       - backend_deploy:
           name: backend-staging
           filters:
