@@ -1,8 +1,8 @@
 import React from 'react';
-import { screen, act } from '@testing-library/react';
+import { screen, act, render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { HeaderLine, ProjectHeader } from '../header';
+import { HeaderLine, ProjectHeader, TagLine } from '../header';
 import { ReduxIntlProviders, IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { getProjectSummary } from '../../../network/tests/mockData/projects';
 import { store } from '../../../store';
@@ -61,8 +61,8 @@ describe('test if ProjectHeader component', () => {
     expect(screen.getByText('Urgent')).toBeInTheDocument();
     expect(screen.getByText('La Paz Buildings')).toBeInTheDocument();
     expect(screen.getByText('La Paz Buildings').closest('h3').lang).toBe('en');
-    expect(screen.getByText('Environment Conservation')).toBeInTheDocument();
-    expect(screen.getByText('Women security')).toBeInTheDocument();
+    expect(screen.getByText(/Environment Conservation/i)).toBeInTheDocument();
+    expect(screen.getByText(/Women security/i)).toBeInTheDocument();
     expect(screen.getByText('Bolivia')).toBeInTheDocument();
     expect(screen.queryByText(/private/i)).not.toBeInTheDocument();
   });
@@ -83,8 +83,8 @@ describe('test if ProjectHeader component', () => {
     expect(screen.getByText('Urgent')).toBeInTheDocument();
     expect(screen.getByText('La Paz Buildings')).toBeInTheDocument();
     expect(screen.getByText('La Paz Buildings').closest('h3').lang).toBe('en');
-    expect(screen.getByText('Environment Conservation')).toBeInTheDocument();
-    expect(screen.getByText('Women security')).toBeInTheDocument();
+    expect(screen.getByText(/Environment Conservation/i)).toBeInTheDocument();
+    expect(screen.getByText(/Women security/i)).toBeInTheDocument();
     expect(screen.getByText('Bolivia')).toBeInTheDocument();
     expect(screen.queryByText(/private/i)).not.toBeInTheDocument();
   });
@@ -113,8 +113,62 @@ describe('test if ProjectHeader component', () => {
     expect(screen.queryByText('Draft')).toBeInTheDocument();
     expect(screen.getByText('La Paz Buildings')).toBeInTheDocument();
     expect(screen.getByText('La Paz Buildings').closest('h3').lang).toBe('en');
-    expect(screen.getByText('Environment Conservation')).toBeInTheDocument();
+    expect(screen.getByText(/Environment Conservation/i)).toBeInTheDocument();
     expect(screen.getByText('Bolivia')).toBeInTheDocument();
     expect(screen.queryByText(/private/i)).not.toBeInTheDocument();
+  });
+});
+
+describe('TagLine', () => {
+  it('renders tags with proper formatting', () => {
+    const campaigns = [{ name: 'Campaign 1' }, { name: 'Campaign 2' }];
+    const countries = ['Country 1'];
+    const interests = [{ name: 'Interest 1' }, { name: 'Interest 2' }];
+
+    const { container } = render(
+      <ReduxIntlProviders>
+        <TagLine campaigns={campaigns} countries={countries} interests={interests} />
+      </ReduxIntlProviders>,
+    );
+
+    const tagLineElement = container.querySelector('.blue-light');
+    const tagElements = tagLineElement.querySelectorAll('span');
+    expect(tagElements.length).toBe(5);
+    expect(tagElements[0].textContent).toBe('Campaign 1, Campaign 2');
+    expect(tagElements[1].textContent).toBe('·Country 1');
+    expect(tagElements[2].textContent).toBe('·');
+    expect(tagElements[3].textContent).toBe('·Interest 1, Interest 2');
+    expect(tagElements[4].textContent).toBe('·');
+  });
+
+  it('renders tags without bullet separators if there is only one tag', () => {
+    const campaigns = [{ name: 'Campaign 1' }];
+    const countries = [];
+    const interests = [];
+
+    const { container } = render(
+      <ReduxIntlProviders>
+        <TagLine campaigns={campaigns} countries={countries} interests={interests} />
+      </ReduxIntlProviders>,
+    );
+    const tagLineElement = container.querySelector('.blue-light');
+    const tagElements = tagLineElement.querySelectorAll('span');
+    expect(tagElements.length).toBe(1);
+    expect(tagElements[0].textContent).toBe('Campaign 1');
+  });
+
+  it('renders an empty tag line if no tags are provided', () => {
+    const campaigns = [];
+    const countries = [];
+    const interests = [];
+
+    const { container } = render(
+      <ReduxIntlProviders>
+        <TagLine campaigns={campaigns} countries={countries} interests={interests} />
+      </ReduxIntlProviders>,
+    );
+    const tagLineElement = container.querySelector('.blue-light');
+    const tagElements = tagLineElement.querySelectorAll('span');
+    expect(tagElements.length).toBe(0);
   });
 });
