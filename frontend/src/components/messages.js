@@ -104,4 +104,8 @@ export default defineMessages({
     defaultMessage:
       'Your browser does not support WebGL, which is required to render map components. Please try using a different browser or check that <a>WebGL is enabled</a>.',
   },
+  loading: {
+    id: 'common.loading',
+    defaultMessage: 'Loading...',
+  },
 });

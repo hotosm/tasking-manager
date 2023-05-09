@@ -32,14 +32,14 @@ class TestProjectActionsIntersectingTilesAPI(BaseTestCase):
         self.test_user_access_token = generate_encoded_token(self.test_user.id)
 
     def test_returns_401_if_not_authenticated(self):
-        """ Test that the endpoint returns 401 if the user is not authenticated """
+        """Test that the endpoint returns 401 if the user is not authenticated"""
         # Act
         response = self.client.post(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_400_if_invalid_data(self):
-        """ Test that the endpoint returns 400 if the data is invalid """
+        """Test that the endpoint returns 400 if the data is invalid"""
         # Act
         response = self.client.post(
             self.url,
@@ -50,7 +50,7 @@ class TestProjectActionsIntersectingTilesAPI(BaseTestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_returns_clipped_grid_if_clip_to_aoi_set_true(self):
-        """ Test that the endpoint returns a clipped grid if clipToAoi is set to true """
+        """Test that the endpoint returns a clipped grid if clipToAoi is set to true"""
         # Arrange
         payload = get_canned_json("test_grid.json")
         payload["clipToAoi"] = True
@@ -68,7 +68,7 @@ class TestProjectActionsIntersectingTilesAPI(BaseTestCase):
         self.assertDictEqual(response.json, expected_response)
 
     def test_returns_not_clipped_grid_if_clip_to_aoi_set_false(self):
-        """ Test that the endpoint returns a not clipped grid if clipToAoi is set to false """
+        """Test that the endpoint returns a not clipped grid if clipToAoi is set to false"""
         # Arrange
         payload = get_canned_json("test_grid.json")
         payload["clipToAoi"] = False
@@ -86,7 +86,7 @@ class TestProjectActionsIntersectingTilesAPI(BaseTestCase):
         self.assertDictEqual(response.json, expected_response)
 
     def test_raises_invalid_geojson_exception_if_invalid_aoi(self):
-        """ Test that the endpoint raises an InvalidGeoJson exception if the grid is invalid """
+        """Test that the endpoint raises an InvalidGeoJson exception if the grid is invalid"""
         # Arrange
         payload = get_canned_json("test_grid.json")
         payload["areaOfInterest"]["features"] = []
@@ -101,7 +101,7 @@ class TestProjectActionsIntersectingTilesAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "MustHaveFeatures")
 
     def test_raises_invalid_geojson_exception_if_self_intersecting_aoi(self):
-        """ Test that the endpoint raises an InvalidGeoJson exception if the aoi is self intersecting """
+        """Test that the endpoint raises an InvalidGeoJson exception if the aoi is self intersecting"""
         # Arrange
         payload = get_canned_json("self_intersecting_aoi.json")
         # Act
@@ -130,14 +130,14 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         self.test_author_access_token = generate_encoded_token(self.test_author.id)
 
     def test_returns_401_if_not_authenticated(self):
-        """ Test that the endpoint returns 401 if the user is not authenticated """
+        """Test that the endpoint returns 401 if the user is not authenticated"""
         # Act
         response = self.client.post(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_404_if_project_not_found(self):
-        """ Test that the endpoint returns 404 if the project is not found """
+        """Test that the endpoint returns 404 if the project is not found"""
         # Act
         response = self.client.post(
             "/api/v2/projects/999/actions/message-contributors/",
@@ -148,7 +148,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_returns_403_if_user_dont_have_PM_permissions(self):
-        """ Test that the endpoint returns 403 if the user is not the project author """
+        """Test that the endpoint returns 403 if the user is not the project author"""
         # Act
         response = self.client.post(
             self.url,
@@ -159,7 +159,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_returns_400_if_invalid_data(self):
-        """ Test that the endpoint returns 400 if the data is invalid """
+        """Test that the endpoint returns 400 if the data is invalid"""
         # Act
         response = self.client.post(
             self.url,
@@ -173,7 +173,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
     def test_sends_message_to_contributors_is_allowed_to_project_author(
         self, mock_thread
     ):
-        """ Test that the endpoint sends a message to the project contributors """
+        """Test that the endpoint sends a message to the project contributors"""
         # Arrange
         # Add a contributor to the project
         task = Task.get(2, self.test_project.id)
@@ -195,7 +195,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
     def test_sends_message_to_contributors_is_allowed_to_organisation_manager(
         self, mock_thread
     ):
-        """ Test that the endpoint sends a message to the project contributors """
+        """Test that the endpoint sends a message to the project contributors"""
         # Arrange
         test_organisation = create_canned_organisation()
         self.test_project.organisation = test_organisation
@@ -218,7 +218,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
 
     @patch("threading.Thread.start")
     def test_sends_message_to_contributors_is_allowed_to_admin(self, mock_thread):
-        """ Test that the endpoint sends a message to the project contributors """
+        """Test that the endpoint sends a message to the project contributors"""
         # Arrange
         self.test_user.role = UserRole.ADMIN.value
         # Add a contributor to the project
@@ -241,7 +241,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
     def test_sends_message_to_contributors_is_allowed_to_project_team_members_with_PM_permission(
         self, mock_thread
     ):
-        """ Test that the endpoint sends a message to the project contributors """
+        """Test that the endpoint sends a message to the project contributors"""
         # Arrange
         test_organisation = create_canned_organisation()
         self.test_project.organisation = test_organisation
@@ -270,7 +270,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
 
 
 class TestProjectsActionsTransferAPI(BaseTestCase):
-    """ Tests for the transfer project endpoint """
+    """Tests for the transfer project endpoint"""
 
     def setUp(self):
         super().setUp()
@@ -287,14 +287,14 @@ class TestProjectsActionsTransferAPI(BaseTestCase):
         self.test_project.save()
 
     def test_returns_401_if_unauthorized(self):
-        """ Test that the endpoint returns 401 if the user is not logged in """
+        """Test that the endpoint returns 401 if the user is not logged in"""
         # Act
         response = self.client.post(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_404_if_project_does_not_exist(self):
-        """ Test that the endpoint returns 404 if the project does not exist """
+        """Test that the endpoint returns 404 if the project does not exist"""
         # Act
         response = self.client.post(
             "/api/v2/projects/999/transfer",
@@ -305,7 +305,7 @@ class TestProjectsActionsTransferAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_returns_403_if_user_is_not_project_admin_org_manager_project_author(self):
-        """ Test that the endpoint returns 403 if the user is not the project owner """
+        """Test that the endpoint returns 403 if the user is not the project owner"""
         # Arrange
         # Act
         response = self.client.post(
@@ -319,7 +319,7 @@ class TestProjectsActionsTransferAPI(BaseTestCase):
     def test_returns_403_if_new_owner_is_not_admin_or_manager_of_org_project_is_in_(
         self,
     ):
-        """ Test returns 403 if the new owner is not admin or a manager of the organisation the project is in """
+        """Test returns 403 if the new owner is not admin or a manager of the organisation the project is in"""
         # Act
         response = self.client.post(
             self.url,
@@ -330,7 +330,7 @@ class TestProjectsActionsTransferAPI(BaseTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_returns_404_if_new_owner_does_not_exist(self):
-        """ Test that the endpoint returns 404 if the new owner does not exist """
+        """Test that the endpoint returns 404 if the new owner does not exist"""
         # Arrange
         self.test_user.role = UserRole.ADMIN.value
         # Act
@@ -347,7 +347,7 @@ class TestProjectsActionsTransferAPI(BaseTestCase):
     def test_returns_200_if_new_owner_is_admin_or_manager_of_org_project_is_in(
         self, mock_thread
     ):
-        """ Test that the endpoint returns 200 if the new owner is an admin of the organisation the project is in """
+        """Test that the endpoint returns 200 if the new owner is an admin of the organisation the project is in"""
         # Test new owner is admin
         # Arrange
         self.test_user.role = UserRole.ADMIN.value
@@ -381,7 +381,7 @@ class TestProjectsActionsTransferAPI(BaseTestCase):
 
     @patch("threading.Thread.start")
     def test_returns_200_if_requesting_user_is_project_author(self, mock_thread):
-        """ Test that the endpoint returns 200 if the requesting user is the project author """
+        """Test that the endpoint returns 200 if the requesting user is the project author"""
         # Arrange
         self.test_user.role = UserRole.ADMIN.value
         self.test_user.save()
@@ -397,7 +397,7 @@ class TestProjectsActionsTransferAPI(BaseTestCase):
 
     @patch("threading.Thread.start")
     def test_returns_200_if_requesting_user_is_org_manager(self, mock_thread):
-        """ Test that the endpoint returns 200 if the requesting user is an org manager """
+        """Test that the endpoint returns 200 if the requesting user is an org manager"""
         # Test org manager
         # Arrange
         test_user_2 = return_canned_user("test_user_2", 222222)
@@ -416,7 +416,7 @@ class TestProjectsActionsTransferAPI(BaseTestCase):
 
     @patch("threading.Thread.start")
     def test_returns_200_if_requesting_user_is_admin(self, mock_thread):
-        """ Test that the endpoint returns 200 if the requesting user is an admin """
+        """Test that the endpoint returns 200 if the requesting user is an admin"""
         # Arrange
         self.test_user.role = UserRole.ADMIN.value
         self.test_user.save()

@@ -14,7 +14,7 @@ from backend.models.postgis.statuses import OrganisationType
 
 
 def is_known_organisation_type(value):
-    """ Validates organisation subscription type string """
+    """Validates organisation subscription type string"""
     try:
         OrganisationType[value.upper()]
     except (AttributeError, KeyError):
@@ -25,14 +25,14 @@ def is_known_organisation_type(value):
 
 
 class OrganisationManagerDTO(Model):
-    """ Describes JSON model for a organisation manager """
+    """Describes JSON model for a organisation manager"""
 
     username = StringType(required=True)
     picture_url = StringType(serialized_name="pictureUrl")
 
 
 class OrganisationTeamsDTO(Model):
-    """ Describes JSON model for a team. To be used in the Organisations endpoints."""
+    """Describes JSON model for a team. To be used in the Organisations endpoints."""
 
     team_id = IntType(serialized_name="teamId")
     name = StringType(required=True)
@@ -43,7 +43,7 @@ class OrganisationTeamsDTO(Model):
 
 
 class OrganisationDTO(Model):
-    """ Describes JSON model for an organisation """
+    """Describes JSON model for an organisation"""
 
     organisation_id = IntType(serialized_name="organisationId")
     managers = ListType(ModelType(OrganisationManagerDTO), min_size=1, required=True)
@@ -70,7 +70,7 @@ class ListOrganisationsDTO(Model):
 
 
 class NewOrganisationDTO(Model):
-    """ Describes a JSON model to create a new organisation """
+    """Describes a JSON model to create a new organisation"""
 
     organisation_id = IntType(serialized_name="organisationId", required=False)
     managers = ListType(StringType(), required=True)
@@ -84,7 +84,6 @@ class NewOrganisationDTO(Model):
 
 
 class UpdateOrganisationDTO(OrganisationDTO):
-
     organisation_id = IntType(serialized_name="organisationId", required=False)
     managers = ListType(StringType())
     name = StringType()

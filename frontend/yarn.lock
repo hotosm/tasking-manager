@@ -2787,11 +2787,6 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@lokibai/react-use-copy-clipboard@^1.0.4":
-  version "1.0.5"
-  resolved "https://registry.npmjs.org/@lokibai/react-use-copy-clipboard/-/react-use-copy-clipboard-1.0.5.tgz"
-  integrity sha512-S7vVvXmJSHpCorFG/zxMJh/1Mht6VbBMWw/sNvrJod/1nDsvpnXQAzqDejh6z0h8x5mth/TWcx4ej2rm8bRJNw==
-
 "@mapbox/extent@0.4.0":
   version "0.4.0"
   resolved "https://registry.npmjs.org/@mapbox/extent/-/extent-0.4.0.tgz"

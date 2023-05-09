@@ -5,7 +5,7 @@ from backend.models.dtos.project_dto import ProjectTaskAnnotationsDTO
 
 
 class TaskAnnotation(db.Model):
-    """ Describes Task annotaions like derived ML attributes """
+    """Describes Task annotaions like derived ML attributes"""
 
     __tablename__ = "task_annotations"
 
@@ -45,22 +45,22 @@ class TaskAnnotation(db.Model):
         self.properties = properties
 
     def create(self):
-        """ Creates and saves the current model to the DB """
+        """Creates and saves the current model to the DB"""
         db.session.add(self)
         db.session.commit()
 
     def update(self):
-        """ Updates the DB with the current state of the Task Annotations """
+        """Updates the DB with the current state of the Task Annotations"""
         db.session.commit()
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
     @staticmethod
     def get_task_annotation(task_id, project_id, annotation_type):
-        """ Get annotations for a task with supplied type """
+        """Get annotations for a task with supplied type"""
         return TaskAnnotation.query.filter_by(
             project_id=project_id, task_id=task_id, annotation_type=annotation_type
         ).one_or_none()
@@ -76,7 +76,7 @@ class TaskAnnotation(db.Model):
 
     @staticmethod
     def get_task_annotations_by_project_id_type(project_id, annotation_type):
-        """ Get annotatiols for a project with the supplied type """
+        """Get annotatiols for a project with the supplied type"""
         project_task_annotations = TaskAnnotation.query.filter_by(
             project_id=project_id, annotation_type=annotation_type
         ).all()
@@ -99,7 +99,7 @@ class TaskAnnotation(db.Model):
 
     @staticmethod
     def get_task_annotations_by_project_id(project_id):
-        """ Get annotatiols for a project with the supplied type """
+        """Get annotatiols for a project with the supplied type"""
         project_task_annotations = TaskAnnotation.query.filter_by(
             project_id=project_id
         ).all()

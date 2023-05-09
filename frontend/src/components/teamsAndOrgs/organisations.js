@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
-import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 import Select from 'react-select';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -197,10 +196,8 @@ export function OrgInformation({ hasSlug, formState }) {
   const token = useSelector((state) => state.auth.token);
   const userDetails = useSelector((state) => state.auth.userDetails);
   const [uploadError, uploading, uploadImg] = useUploadImage();
-  const location = useLocation();
   const intl = useIntl();
   //eslint-disable-next-line
-  const [isCopied, setCopied] = useCopyClipboard();
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
 
@@ -216,6 +213,8 @@ export function OrgInformation({ hasSlug, formState }) {
 
   const validateRequired = (value) =>
     value ? undefined : <FormattedMessage {...messages.requiredField} />;
+
+  const handleCopyToClipboard = (text) => navigator.clipboard.writeText(text);
 
   return (
     <>
@@ -245,9 +244,12 @@ export function OrgInformation({ hasSlug, formState }) {
                   title={intl.formatMessage(messages.copyPublicUrl)}
                 >
                   <ClipboardIcon
+                    role="button"
                     className="h1 w1 ph1 v-mid"
                     onClick={() =>
-                      setCopied(`${location.origin}/organisations/${props.input.value}/`)
+                      handleCopyToClipboard(
+                        `${window.location.origin}/organisations/${props.input.value}/`,
+                      )
                     }
                   />
                 </span>

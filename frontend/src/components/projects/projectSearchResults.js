@@ -13,6 +13,7 @@ export const ProjectSearchResults = (props) => {
   const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
   const state = props.state;
   const cardWidthClass = 'w-100';
+  const isShowListView = props.management && listViewIsActive;
 
   return (
     <div className={`${props.className}`}>
@@ -24,7 +25,7 @@ export const ProjectSearchResults = (props) => {
             <FormattedMessage
               {...messages.paginationCount}
               values={{
-                number: state.projects && state.projects.length,
+                number: state.projects?.length,
                 total: <FormattedNumber value={state.pagination ? state.pagination.total : 0} />,
               }}
             />
@@ -47,8 +48,8 @@ export const ProjectSearchResults = (props) => {
           </div>
         </div>
       ) : null}
-      <div className={`${!listViewIsActive ? 'cards-container' : ''}`}>
-        {props.management && listViewIsActive ? (
+      <div className={`${!isShowListView ? 'cards-container' : ''}`}>
+        {isShowListView ? (
           <ReactPlaceholder
             showLoadingAnimation={true}
             rows={15}
@@ -75,7 +76,7 @@ export const ProjectSearchResults = (props) => {
 };
 
 export const ExploreProjectCards = (props) => {
-  if (props.pageOfCards && props.pageOfCards.length === 0) {
+  if (props.pageOfCards?.length === 0) {
     return null;
   }
   /* cardWidthClass={props.cardWidthClass} as a parameter offers more variability in the size of the cards, set to 'cardWidthNone' disables */
@@ -90,7 +91,7 @@ export const ExploreProjectCards = (props) => {
 };
 
 export const ExploreProjectList = (props) => {
-  if (props.pageOfCards && props.pageOfCards.length === 0) {
+  if (props.pageOfCards?.length === 0) {
     return null;
   }
   /* cardWidthClass={props.cardWidthClass} as a parameter offers more variability in the size of the cards, set to 'cardWidthNone' disables */

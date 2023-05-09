@@ -111,18 +111,16 @@ class TestProjectAdminService(BaseTestCase):
             draft_project_dto.cloneFromProjectId, draft_project_dto.user_id
         )
 
-    @patch.object(OrganisationService, "get_organisation_by_id")
     @patch.object(UserService, "get_user_by_id")
     @patch.object(UserService, "is_user_an_admin")
     def test_create_draft_project_raises_error_if_org_not_found(
-        self, mock_admin_test, mock_user_get, mock_org_get
+        self, mock_admin_test, mock_user_get
     ):
         # Arrange
         mock_user_get.return_value = return_canned_user()
         draft_project_dto = DraftProjectDTO(return_canned_draft_project_json())
         draft_project_dto.user_id = 777777
         mock_admin_test.return_value = True
-        mock_org_get.return_value = None
         # Act/Assert
         with self.assertRaises(NotFound):
             ProjectAdminService.create_draft_project(draft_project_dto)
@@ -390,7 +388,6 @@ class TestProjectAdminService(BaseTestCase):
             ProjectAdminService.update_project(dto, mock_user.id)
 
     def test_updating_a_project_with_valid_project_info(self):
-
         locales = []
         info = ProjectInfoDTO()
         info.locale = "en"

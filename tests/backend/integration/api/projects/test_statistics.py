@@ -17,14 +17,14 @@ class TestProjectStatisticsAPI(BaseTestCase):
         self.url = f"/api/v2/projects/{self.test_project.id}/statistics/"
 
     def test_returns_404_if_project_not_found(self):
-        """ Test that 404 is returned if project not found"""
+        """Test that 404 is returned if project not found"""
         # Act
         response = self.client.get("/api/v2/projects/9999999999/statistics/")
         # Assert
         self.assertEqual(response.status_code, 404)
 
     def test_returns_200_if_project_found(self):
-        """ Test that 200 is returned if project found """
+        """Test that 200 is returned if project found"""
         # Arrange
         # Let's reset all tasks to Ready state
         ProjectAdminService.reset_all_tasks(self.test_project.id, self.test_author.id)
@@ -59,7 +59,7 @@ class TestProjectsStatisticsQueriesUsernameAPI(BaseTestCase):
         self.url = f"/api/v2/projects/{self.test_project.id}/statistics/queries/{self.test_author.username}/"
 
     def test_returns_404_if_project_not_found(self):
-        """ Test that 404 is returned if project not found """
+        """Test that 404 is returned if project not found"""
         # Act
         response = self.client.get(
             f"/api/v2/projects/9999999999/statistics/queries/{self.test_author.username}/"
@@ -68,7 +68,7 @@ class TestProjectsStatisticsQueriesUsernameAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_returns_404_if_username_not_found(self):
-        """ Test that 404 is returned if username not found """
+        """Test that 404 is returned if username not found"""
         # Act
         response = self.client.get(
             f"/api/v2/projects/{self.test_project.id}/statistics/queries/username/"
@@ -77,7 +77,7 @@ class TestProjectsStatisticsQueriesUsernameAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_returns_200_if_project_found(self):
-        """ Test that 200 is returned if project and username found"""
+        """Test that 200 is returned if project and username found"""
         # Arrange
         task = Task.get(1, self.test_project.id)
         task.lock_task_for_mapping(self.test_author.id)

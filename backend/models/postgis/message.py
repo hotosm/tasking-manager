@@ -11,7 +11,7 @@ from backend.models.postgis.utils import timestamp, NotFound
 
 
 class MessageType(Enum):
-    """ Describes the various kinds of messages a user might receive """
+    """Describes the various kinds of messages a user might receive"""
 
     SYSTEM = 1  # Generic system-generated message
     BROADCAST = 2  # Broadcast message from a project manager
@@ -29,7 +29,7 @@ class MessageType(Enum):
 
 
 class Message(db.Model):
-    """ Describes an individual Message a user can send """
+    """Describes an individual Message a user can send"""
 
     __tablename__ = "messages"
 
@@ -62,7 +62,7 @@ class Message(db.Model):
 
     @classmethod
     def from_dto(cls, to_user_id: int, dto: MessageDTO):
-        """ Creates new message from DTO """
+        """Creates new message from DTO"""
         message = cls()
         message.subject = dto.subject
         message.message = dto.message
@@ -76,7 +76,7 @@ class Message(db.Model):
         return message
 
     def as_dto(self) -> MessageDTO:
-        """ Casts message object to DTO """
+        """Casts message object to DTO"""
         dto = MessageDTO()
         dto.message_id = self.id
         dto.message = self.message
@@ -97,18 +97,18 @@ class Message(db.Model):
         return dto
 
     def add_message(self):
-        """ Add message into current transaction - DO NOT COMMIT HERE AS MESSAGES ARE PART OF LARGER TRANSACTIONS"""
+        """Add message into current transaction - DO NOT COMMIT HERE AS MESSAGES ARE PART OF LARGER TRANSACTIONS"""
         current_app.logger.debug("Adding message to session")
         db.session.add(self)
 
     def save(self):
-        """ Save """
+        """Save"""
         db.session.add(self)
         db.session.commit()
 
     @staticmethod
     def get_all_contributors(project_id: int):
-        """ Get all contributors to a project """
+        """Get all contributors to a project"""
 
         contributors = (
             db.session.query(Task.mapped_by)
@@ -124,7 +124,7 @@ class Message(db.Model):
 
     @staticmethod
     def get_all_tasks_contributors(project_id: int, task_id: int):
-        """ Get all contributors of a task """
+        """Get all contributors of a task"""
         contributors = (
             TaskHistory.query.distinct(TaskHistory.user_id)
             .filter(TaskHistory.project_id == project_id)
@@ -138,20 +138,20 @@ class Message(db.Model):
         return contributors
 
     def mark_as_read(self):
-        """ Mark the message in scope as Read """
+        """Mark the message in scope as Read"""
         self.read = True
         db.session.commit()
 
     @staticmethod
     def get_unread_message_count(user_id: int):
-        """ Get count of unread messages for user """
+        """Get count of unread messages for user"""
         return Message.query.filter(
             Message.to_user_id == user_id, Message.read == false()
         ).count()
 
     @staticmethod
     def get_all_messages(user_id: int) -> MessagesDTO:
-        """ Gets all messages to the user """
+        """Gets all messages to the user"""
         user_messages = Message.query.filter(Message.to_user_id == user_id).all()
 
         if len(user_messages) == 0:
@@ -165,13 +165,13 @@ class Message(db.Model):
 
     @staticmethod
     def delete_multiple_messages(message_ids: list, user_id: int):
-        """ Deletes the specified messages to the user """
+        """Deletes the specified messages to the user"""
         Message.query.filter(
             Message.to_user_id == user_id, Message.id.in_(message_ids)
         ).delete(synchronize_session=False)
         db.session.commit()
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()

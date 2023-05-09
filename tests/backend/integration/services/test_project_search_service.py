@@ -68,7 +68,6 @@ class TestProjectSearchService(BaseTestCase):
         self.assertEqual(str(expected), str(expected))
 
     def test_make_polygon_from_3857_bbox(self):
-
         # arrange
         expected = (
             32.50198296132938,

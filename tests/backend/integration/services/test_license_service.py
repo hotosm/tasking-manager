@@ -5,7 +5,6 @@ from tests.backend.base import BaseTestCase
 
 class TestLicenseService(BaseTestCase):
     def test_license_crud_works_as_expected(self):
-
         # Arrange
         license_dto = LicenseDTO()
         license_dto.name = "thinkWhere"

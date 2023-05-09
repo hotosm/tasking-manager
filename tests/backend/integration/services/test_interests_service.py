@@ -5,7 +5,6 @@ from backend.models.postgis.utils import NotFound
 
 
 class TestInterestService(BaseTestCase):
-
     test_project = None
     test_user = None
 

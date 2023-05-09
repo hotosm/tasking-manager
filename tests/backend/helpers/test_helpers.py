@@ -42,7 +42,7 @@ TEST_CAMPAIGN_ID = 1
 
 
 def get_canned_osm_user_details():
-    """ Helper method to find test file, dependent on where tests are being run from """
+    """Helper method to find test file, dependent on where tests are being run from"""
 
     location = os.path.join(
         os.path.dirname(__file__), "test_files", "osm_user_details.json"
@@ -55,7 +55,7 @@ def get_canned_osm_user_details():
 
 
 def get_canned_osm_user_json_details():
-    """ Helper method to find test file, dependent on where tests are being run from """
+    """Helper method to find test file, dependent on where tests are being run from"""
 
     location = os.path.join(
         os.path.dirname(__file__), "test_files", "osm_user_details.json"
@@ -68,7 +68,7 @@ def get_canned_osm_user_json_details():
 
 
 def get_canned_osm_user_details_changed_name():
-    """ Helper method to find test file, dependent on where tests are being run from """
+    """Helper method to find test file, dependent on where tests are being run from"""
 
     location = os.path.join(
         os.path.dirname(__file__), "test_files", "osm_user_details_changed_name.xml"
@@ -82,7 +82,7 @@ def get_canned_osm_user_details_changed_name():
 
 
 def get_canned_json(name_of_file):
-    """ Read canned Grid request from file """
+    """Read canned Grid request from file"""
 
     location = os.path.join(os.path.dirname(__file__), "test_files", name_of_file)
 
@@ -96,7 +96,7 @@ def get_canned_json(name_of_file):
 
 
 def get_canned_simplified_osm_user_details():
-    """ Helper that reads file and returns it as a string """
+    """Helper that reads file and returns it as a string"""
     location = os.path.join(
         os.path.dirname(__file__), "test_files", "osm_user_details_simple.xml"
     )
@@ -127,7 +127,7 @@ def generate_encoded_token(user_id: int):
 
 
 def create_canned_user() -> User:
-    """ Generate a canned user in the DB """
+    """Generate a canned user in the DB"""
     test_user = return_canned_user()
     test_user.create()
 
@@ -140,7 +140,7 @@ def get_canned_user(username: str) -> User:
 
 
 def create_canned_project(name=TEST_PROJECT_NAME) -> Tuple[Project, User]:
-    """ Generates a canned project in the DB to help with integration tests """
+    """Generates a canned project in the DB to help with integration tests"""
     test_aoi_geojson = geojson.loads(json.dumps(get_canned_json("test_aoi.json")))
 
     task_feature = geojson.loads(json.dumps(get_canned_json("splittable_task.json")))
@@ -199,7 +199,7 @@ def create_canned_project(name=TEST_PROJECT_NAME) -> Tuple[Project, User]:
 
 
 def return_canned_draft_project_json():
-    """ Helper method to find test file, dependent on where tests are being run from """
+    """Helper method to find test file, dependent on where tests are being run from"""
 
     location = os.path.join(
         os.path.dirname(__file__), "test_files", "canned_draft_project.json"

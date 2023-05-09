@@ -34,10 +34,8 @@ const App = () => {
       ) : (
         <div className="w-100 base-font bg-white" lang={locale}>
           <main className="cf w-100 base-font">
-            <Suspense
-              fallback={<ReactPlaceholder showLoadingAnimation={true} rows={30} delay={300} />}
-            >
-              <RouterProvider router={router} />
+            <Suspense fallback={<ReactPlaceholder showLoadingAnimation rows={30} delay={300} />}>
+              <RouterProvider router={router} fallbackElement={<Preloader />} />
             </Suspense>
           </main>
           <ArchivalNotificationBanner />

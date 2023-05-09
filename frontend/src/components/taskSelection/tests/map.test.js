@@ -1,7 +1,7 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
-import { TasksMap } from "../map";
+import { TasksMap } from '../map';
 
 jest.mock('mapbox-gl/dist/mapbox-gl', () => ({
   supported: jest.fn(),

@@ -23,7 +23,6 @@ class TestSplitService(BaseTestCase):
         self.test_project, self.test_user = create_canned_project()
 
     def test_split_geom_returns_split_geometries(self):
-
         # arrange
         x = 1010
         y = 1399
@@ -63,7 +62,6 @@ class TestSplitService(BaseTestCase):
         mock_project_tasks,
         mock_instructions,
     ):
-
         # arrange
         task_stub = Task()
         task_stub.id = 1
@@ -103,7 +101,6 @@ class TestSplitService(BaseTestCase):
 
     @patch.object(Task, "get_tasks")
     def test_split_non_square_task(self, mock_task):
-
         # Lock task for mapping
         task = Task.get(2, self.test_project.id)
         task.lock_task_for_mapping(self.test_user.id)
