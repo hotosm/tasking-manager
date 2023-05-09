@@ -15,8 +15,8 @@ export const updateEntity = (endpoint, entity, payload, token, onSuccess, onFail
           }}
         />,
       );
-      onSuccess && onSuccess();
+      onSuccess?.();
     })
     .catch((error) => {
-      onFailure && onFailure(error);
+      onFailure?.(error);
     });
