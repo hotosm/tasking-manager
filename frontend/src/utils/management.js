@@ -18,13 +18,5 @@ export const updateEntity = (endpoint, entity, payload, token, onSuccess, onFail
       onSuccess && onSuccess();
     })
     .catch((error) => {
-      toast.error(
-        <FormattedMessage
-          {...messages.entityInfoUpdationFailure}
-          values={{
-            entity,
-          }}
-        />,
-      );
       onFailure && onFailure(error);
     });

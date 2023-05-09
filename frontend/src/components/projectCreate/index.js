@@ -226,14 +226,6 @@ const ProjectCreate = () => {
           navigate(`/manage/projects/${res.projectId}`);
         })
         .catch((e) => {
-          toast.error(
-            <FormattedMessage
-              {...viewsMessages.entityCreationFailure}
-              values={{
-                entity: 'project',
-              }}
-            />,
-          );
           setErr({
             error: true,
             message: <FormattedMessage {...messages.creationFailed} values={{ error: e }} />,

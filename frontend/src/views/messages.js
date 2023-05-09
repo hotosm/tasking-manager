@@ -114,7 +114,7 @@ export default defineMessages({
   entityInfoUpdationFailure: {
     id: 'management.entity.updation.failure',
     defaultMessage:
-      'Failed to update {entity, select, organization {Organization} license {License} project {Project} category {Category} campaign {Campaign} team {Team} other {}} information. Please try again',
+      'Failed to update {entity, select, organization {organization} license {license} project {project} category {category} campaign {campaign} team {team} other {}} information. Please try again',
   },
   createTeam: {
     id: 'teamsAndOrgs.management.team.button.create',

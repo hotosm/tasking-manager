@@ -91,14 +91,6 @@ export function CreateOrganisation() {
         navigate(`/manage/organisations/${result.organisationId}`);
       })
       .catch((err) => {
-        toast.error(
-          <FormattedMessage
-            {...messages.entityCreationFailure}
-            values={{
-              entity: 'organization',
-            }}
-          />,
-        );
         setError(err.message);
       });
   };
@@ -115,6 +107,22 @@ export function CreateOrganisation() {
               </h3>
               <div className="w-40-l w-100">
                 <CreateOrgInfo formState={values} />
+                <div className="cf pv2 ml2">
+                  {error && (
+                    <Alert type="error" compact>
+                      {messages[`orgCreation${error}Error`] ? (
+                        <FormattedMessage {...messages[`orgCreation${error}Error`]} />
+                      ) : (
+                        <FormattedMessage
+                          {...messages.entityCreationFailure}
+                          values={{
+                            entity: 'organization',
+                          }}
+                        />
+                      )}
+                    </Alert>
+                  )}
+                </div>
                 <Members
                   addMembers={addManagers}
                   removeMembers={removeManagers}
@@ -125,18 +133,7 @@ export function CreateOrganisation() {
               </div>
             </div>
             <div className="bottom-0 right-0 left-0 cf bg-white h3 fixed">
-              <div className="w-80-ns w-60-m w-50 h-100 fl tr flex justify-between items-center">
-                <div className="cf pv2 ml2">
-                  {error && (
-                    <Alert type="error" compact>
-                      {messages[`orgCreation${error}Error`] ? (
-                        <FormattedMessage {...messages[`orgCreation${error}Error`]} />
-                      ) : (
-                        <FormattedMessage {...messages[`errorFallback`]} />
-                      )}
-                    </Alert>
-                  )}
-                </div>
+              <div className="w-80-ns w-60-m w-50 h-100 fl tr">
                 <Link to={'../'}>
                   <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
                     <FormattedMessage {...messages.cancel} />

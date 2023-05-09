@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import Popup from 'reactjs-popup';
-import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
@@ -25,12 +24,10 @@ export function DeleteModal({ id, name, type, className }: Object) {
         if (type === 'notifications') {
           setTimeout(() => navigate(`/inbox`), 750);
         } else {
-          toast.success(<FormattedMessage {...messages[`success_${type}`]} />);
           setTimeout(() => navigate(`/manage/${type}`), 750);
         }
       })
       .catch((e) => {
-        toast.error(<FormattedMessage {...messages[`failure_${type}`]} />);
         setDeleteStatus('failure');
         setErrorMessage(e.message);
       });

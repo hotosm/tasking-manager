@@ -17,7 +17,7 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { Alert } from '../components/alert';
+import { Alert, EntityError } from '../components/alert';
 import { useAsync } from '../hooks/UseAsync';
 import { updateEntity } from '../utils/management';
 
@@ -55,9 +55,10 @@ export function CreateCampaign() {
   useSetTitleTag('Create new campaign');
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
-  const [error, setError] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const createCampaign = (payload) => {
+    setIsError(false);
     return pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
         toast.success(
@@ -68,20 +69,9 @@ export function CreateCampaign() {
             }}
           />,
         );
-        setError(false);
         navigate(`/manage/campaigns/${result.campaignId}`);
       })
-      .catch((e) => {
-        toast.error(
-          <FormattedMessage
-            {...messages.entityCreationFailure}
-            values={{
-              entity: 'campaign',
-            }}
-          />,
-        );
-        setError(true);
-      });
+      .catch(() => setIsError(true));
   };
 
   const createCampaignAsync = useAsync(createCampaign);
@@ -102,8 +92,8 @@ export function CreateCampaign() {
                     <FormattedMessage {...messages.campaignInfo} />
                   </h3>
                   <CampaignInformation />
-                  <CampaignError error={error} />
                 </div>
+                {isError && <EntityError entity="campaign" />}
               </div>
             </div>
             <div className="fixed left-0 bottom-0 cf bg-white h3 w-100">

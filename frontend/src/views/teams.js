@@ -42,6 +42,7 @@ import { DeleteModal } from '../components/deleteModal';
 import { NotFound } from './notFound';
 import { PaginatorLine } from '../components/paginator';
 import { updateEntity } from '../utils/management';
+import { EntityError } from '../components/alert';
 
 export function ManageTeams() {
   useSetTitleTag('Manage teams');
@@ -161,9 +162,11 @@ export function CreateTeam() {
     removeMember: removeManager,
   } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
   const { members, setMembers, addMember, removeMember } = useModifyMembers([]);
+  const [isError, setIsError] = useState(false);
 
   const createTeam = (payload) => {
     delete payload['organisation'];
+    setIsError(false);
     pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
         managers
@@ -180,16 +183,7 @@ export function CreateTeam() {
         );
         navigate(`/manage/teams/${result.teamId}`);
       })
-      .catch(() =>
-        toast.error(
-          <FormattedMessage
-            {...messages.entityCreationFailure}
-            values={{
-              entity: 'team',
-            }}
-          />,
-        ),
-      );
+      .catch(() => setIsError(true));
   };
 
   return (
@@ -210,6 +204,7 @@ export function CreateTeam() {
                   </h3>
                   <TeamInformation />
                 </div>
+                {isError && <EntityError entity="team" />}
               </div>
               <div className="w-40-l w-100 fl pl5-l pl0 ">
                 <div className="mb3">
@@ -271,6 +266,7 @@ export function EditTeam(props) {
   const [canUserEditTeam] = useEditTeamAllowed(team);
   const [memberJoinTeamError, setMemberJoinTeamError] = useState(null);
   const [managerJoinTeamError, setManagerJoinTeamError] = useState(null);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (!initManagers && team && team.members) {
@@ -362,11 +358,13 @@ export function EditTeam(props) {
     updateAffiliation('members');
   };
 
+  const onUpdateTeamFailure = () => setIsError(true);
+
   const updateTeam = (payload) => {
     if (payload.joinMethod !== 'BY_INVITE') {
       payload.visibility = 'PUBLIC';
     }
-    updateEntity(`teams/${id}/`, 'team', payload, token, forceUpdate);
+    updateEntity(`teams/${id}/`, 'team', payload, token, forceUpdate, onUpdateTeamFailure);
   };
 
   if (team && team.teamId && !canUserEditTeam) {
@@ -402,6 +400,7 @@ export function EditTeam(props) {
           updateTeam={updateTeam}
           disabledForm={error || loading}
         />
+        {isError && <EntityError entity="team" action="updation" />}
       </div>
       <div className="w-40-l w-100 mt4 pl5-l pl0 fl">
         <Members
