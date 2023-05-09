@@ -67,6 +67,7 @@ jobs:
         environment:
           POSTGRES_USER: taskingmanager
           POSTGRES_DB: test_tm
+          POSTGRES_TEST_DB: test_tm
     steps:
       - checkout
       - setup_remote_docker
@@ -79,7 +80,7 @@ jobs:
           name: Configure Postgresql Test database
           command: |
             sudo apt-get install postgresql-client
-            psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
+            psql -h localhost -U $POSTGRES_USER $POSTGRES_TEST_DB -c "CREATE EXTENSION postgis;"
       - run:
           name: Run backend functional tests
           command: |
