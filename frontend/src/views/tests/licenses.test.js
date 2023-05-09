@@ -13,7 +13,6 @@ import { setupFaultyHandlers } from '../../network/tests/server';
 
 jest.mock('react-hot-toast', () => ({
   success: jest.fn(),
-  error: jest.fn(),
 }));
 
 describe('List Licenses', () => {
@@ -132,7 +131,7 @@ describe('Create License', () => {
     const plainTextInput = screen.getAllByRole('textbox')[2];
     fireEvent.change(plainTextInput, { target: { value: 'New license plain text' } });
     fireEvent.click(createButton);
-    await waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(screen.getByText(/Failed to create license. Please try again./i)).toBeInTheDocument());
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
@@ -221,7 +220,7 @@ describe('Edit License', () => {
       name: /cancel/i,
     });
     fireEvent.click(saveButton);
-    await waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(screen.getByText(/Failed to update license information. Please try again/i)).toBeInTheDocument());
     expect(saveButton).not.toBeInTheDocument();
     expect(cancelButton).not.toBeInTheDocument();
   });

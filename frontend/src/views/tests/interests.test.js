@@ -13,7 +13,6 @@ import { setupFaultyHandlers } from '../../network/tests/server';
 
 jest.mock('react-hot-toast', () => ({
   success: jest.fn(),
-  error: jest.fn(),
 }));
 
 describe('List Interests', () => {
@@ -113,7 +112,7 @@ describe('Create Interest', () => {
     });
   });
 
-  it('should display toast with error has occured message', async () => {
+  it('should display callout alert with error has occured message', async () => {
     setupFaultyHandlers();
     createComponentWithMemoryRouter(
       <ReduxIntlProviders>
@@ -125,7 +124,7 @@ describe('Create Interest', () => {
     fireEvent.change(nameInput, { target: { value: 'New interest Name' } });
     fireEvent.click(createButton);
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledTimes(1);
+      expect(screen.getByText(/Failed to create category. Please try again./i)).toBeInTheDocument();
     });
   });
 

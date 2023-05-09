@@ -123,7 +123,11 @@ describe('Create Organization', () => {
     fireEvent.mouseDown(subscriptionType);
     user.click(screen.getByText('Free'));
     user.click(createButton);
-    await waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Failed to create organization. Please try again./i),
+      ).toBeInTheDocument(),
+    );
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
@@ -270,7 +274,6 @@ describe('Delete Organisation', () => {
     await waitFor(() =>
       expect(screen.getByText('Organisation deleted successfully.')).toBeInTheDocument(),
     );
-    await waitFor(() => expect(toast.success).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(router.state.location.pathname).toEqual('/manage/organisations'));
   });
 });

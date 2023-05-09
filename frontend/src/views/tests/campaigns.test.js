@@ -14,7 +14,6 @@ import { setupFaultyHandlers } from '../../network/tests/server';
 
 jest.mock('react-hot-toast', () => ({
   success: jest.fn(),
-  error: jest.fn(),
 }));
 
 describe('ListCampaigns', () => {
@@ -121,7 +120,9 @@ describe('CreateCampaign', () => {
     expect(inputText.value).toBe('New Campaign Name');
     expect(createButton).toBeEnabled();
     fireEvent.click(createButton);
-    await waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(screen.getByText(/Failed to create campaign. Please try again./i)).toBeInTheDocument(),
+    );
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
@@ -223,7 +224,7 @@ describe('EditCampaign', () => {
     const saveButton = screen.getByRole('button', { name: /save/i });
     fireEvent.click(saveButton);
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledTimes(1);
+      expect(screen.getByText(/There was an error saving this campaign./i)).toBeInTheDocument();
     });
   });
 });
@@ -286,7 +287,6 @@ describe('Delete Campaign', () => {
     fireEvent.click(deleteConfirmationButton);
     expect(await screen.findByText('Campaign deleted successfully.')).toBeInTheDocument();
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalled();
       expect(router.state.location.pathname).toBe('/manage/campaigns');
     });
   });
@@ -309,7 +309,9 @@ describe('Delete Campaign', () => {
     });
     fireEvent.click(deleteConfirmationButton);
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalled();
+      expect(
+        screen.getByText(/An error occurred when trying to delete this campaign/i),
+      ).toBeInTheDocument();
     });
   });
 });

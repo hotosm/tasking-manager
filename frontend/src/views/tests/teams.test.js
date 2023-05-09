@@ -174,7 +174,7 @@ describe('Edit Team', () => {
     expect(saveButton).not.toBeInTheDocument();
   });
 
-  it('should display toast message error when team info cannot be updated', async () => {
+  it('should display callout alert error when team info cannot be updated', async () => {
     setupFaultyHandlers();
     renderWithRouter(
       <ReduxIntlProviders>
@@ -189,7 +189,11 @@ describe('Edit Team', () => {
       name: /save/i,
     });
     await user.click(saveButton);
-    await waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Failed to update team information. Please try again/i),
+      ).toBeInTheDocument(),
+    );
   });
 });
 
@@ -276,7 +280,11 @@ describe('Delete Team', () => {
       name: /delete/i,
     });
     fireEvent.click(deleteConfirmationButton);
-    await waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(
+        screen.getByText(/An error occurred when trying to delete this team./i),
+      ).toBeInTheDocument(),
+    );
   });
 });
 
