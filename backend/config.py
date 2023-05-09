@@ -142,16 +142,13 @@ class EnvironmentConfig:
 
 
 class TestEnvironmentConfig(EnvironmentConfig):
-    POSTGRES_USER = os.getenv("POSTGRES_USER", None)
-    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", None)
-    POSTGRES_ENDPOINT = os.getenv("POSTGRES_ENDPOINT", "localhost")
-    POSTGRES_DB = os.getenv("POSTGRES_DB", None)
-    POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+    POSTGRES_TEST_DB = os.getenv("POSTGRES_TEST_DB", None)
+
     SQLALCHEMY_DATABASE_URI = (
-        f"postgresql://{POSTGRES_USER}"
-        + f":{POSTGRES_PASSWORD}"
-        + f"@{POSTGRES_ENDPOINT}:"
-        + f"{POSTGRES_PORT}"
-        + f"/test_{POSTGRES_DB}"
+        f"postgresql://{EnvironmentConfig.POSTGRES_USER}"
+        + f":{EnvironmentConfig.POSTGRES_PASSWORD}"
+        + f"@{EnvironmentConfig.POSTGRES_ENDPOINT}:"
+        + f"{EnvironmentConfig.POSTGRES_PORT}"
+        + f"/{POSTGRES_TEST_DB}"
     )
     LOG_LEVEL = "DEBUG"
