@@ -47,7 +47,30 @@ describe('Delete Interest', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should direct to interests list page on successful deletion of an interest', async () => {
+  it('should direct to passed type list page on successful deletion of an interest', async () => {
+    const { router } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <DeleteModal id={interest.id} name={interest.name} type="campaigns" />
+      </ReduxIntlProviders>,
+    );
+
+    const deleteButton = screen.getByRole('button', {
+      name: 'Delete',
+    });
+
+    fireEvent.click(deleteButton);
+    const dialog = screen.getByRole('dialog');
+    const deleteConfirmationButton = within(dialog).getByRole('button', {
+      name: /delete/i,
+    });
+    fireEvent.click(deleteConfirmationButton);
+    expect(
+      await screen.findByRole('heading', { name: /campaign deleted successfully./i }),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/campaigns'));
+  });
+
+  it('should direct to categories list page on successful deletion of an interest', async () => {
     const { router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <DeleteModal id={interest.id} name={interest.name} type="interests" />
@@ -67,6 +90,6 @@ describe('Delete Interest', () => {
     expect(
       await screen.findByRole('heading', { name: /interest deleted successfully./i }),
     ).toBeInTheDocument();
-    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/interests'));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/categories'));
   });
 });
