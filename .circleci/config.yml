@@ -60,27 +60,30 @@ jobs:
   backend-functional-tests:
     resource_class: large
     docker:
+
       - image: cimg/python:3.9
         environment:
           SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
+          POSTGRES_TEST_DB: test_tm
+          POSTGRES_USER: taskingmanager
+          POSTGRES_ENDPOINT: localhost
+
       - image: cimg/postgres:14.2-postgis
         environment:
           POSTGRES_USER: taskingmanager
           POSTGRES_DB: test_tm
-          POSTGRES_TEST_DB: test_tm
+
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install packages
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y libgeos-dev # Required for shapely
+      - run: sudo apt-get update
+      - run: sudo apt-get -y install libgeos-dev # Required for shapely
       - run:
           name: Configure Postgresql Test database
           command: |
-            sudo apt-get install postgresql-client
-            psql -h localhost -U $POSTGRES_USER $POSTGRES_TEST_DB -c "CREATE EXTENSION postgis;"
+            psql \
+            -d $SQLALCHEMY_DATABASE_URI \
+            -c "CREATE EXTENSION postgis;"
       - run:
           name: Run backend functional tests
           command: |
@@ -113,7 +116,9 @@ jobs:
       - run:
           name: Find the instance ID of the database in the stack to backup
           command: |
-            RDS_ID=$(aws rds describe-db-instances --query 'DBInstances[?contains(TagList[].Key, `aws:cloudformation:stack-name`) && contains(Taglist[].Value, `tasking-manager-<< parameters.stack_name >>`)].[DBInstanceIdentifier]' --output text)
+            RDS_ID=$(aws rds describe-db-instances \
+              --query 'DBInstances[?contains(TagList[].Key, `aws:cloudformation:stack-name`) && contains(Taglist[].Value, `tasking-manager-<< parameters.stack_name >>`)].[DBInstanceIdentifier]' \
+              --output text)
             echo "export RDS_ID=$RDS_ID" >> $BASH_ENV
       - run:
           name: Find Snapshot creation timestamp
@@ -140,11 +145,10 @@ jobs:
               echo "Production snapshot creation failed. Exiting with exit-code 125"
               exit 125
             fi
-            something here
       - run:
           name: Check / validate backup
           command: |
-            echo "something here"
+            echo "TODO: BACKUP VALIDATION NOT IMPLEMENTED"
 
   build:
     working_directory: /home/circleci/app
@@ -232,13 +236,9 @@ jobs:
           profile-name: "OIDC-Profile"
           role-session-name: "backend-deploy"
           session-duration: "2700"
-      - run:
-          name: Install modules
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y libgeos-dev jq # Required for shapely
-            sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-
+      - run: sudo apt-get update
+      - run: sudo apt-get -y install libgeos-dev jq
+      - run: sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
       - run:
           name: Download config file
           command: |
@@ -444,35 +444,6 @@ workflows:
       - backend-code-check-PEP8
       - backend-code-check-Black
       - backend-functional-tests
-
-  the-modern-flow:
-    when:
-      or:
-        - equal: [ enhance/terraform-container-infrastructure, << pipeline.git.branch >> ]
-        - equal: [ enhance/circleci-syntactic-sugar, << pipeline.git.branch >> ]
-    jobs:
-      - frontend-code-test:
-          context:
-            - org-global
-            - tasking-manager-frontend
-
-      - backend-code-check-PEP8:
-          context:
-            - org-global
-            - tasking-manager-frontend
-
-      - backend-code-check-Black:
-          context:
-            - org-global
-            - tasking-manager-frontend
-
-      - backend-functional-tests:
-          context:
-            - org-global
-            - tasking-manager-frontend
-          requires:
-            - backend-code-check-PEP8
-            - backend-code-check-Black
 
 notify:
   webhooks:
