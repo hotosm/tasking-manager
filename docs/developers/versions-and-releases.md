@@ -1,13 +1,13 @@
 # Versions and Releases
 
-We recently switched to a [trunk-based development model](https://trunkbaseddevelopment.com/) for managing development. 
+We recently switched to a [trunk-based development model](https://trunkbaseddevelopment.com/) for managing development.
 
 * `master` branch has recently been depreciated in favor of using `develop` as the trunk branch.
 * `develop` branch contains the consistent and mostly stable development version of the Tasking Manager. It is the branch where all reviewed features are combined and tested together. This branch is automatically going to be deployed on tasks-stage.hotosm.org.
 * `feature/` branches are applied to `develop` after one teammate has reviewed the pull request as approved.
 * `hotfix/` branches are applied to `develop` after two teammates have reviewed the pull request as approved.
-* `bugfix/` branches are applied to `develop` after two teammates have reviewed the pull request as approved. This convention applies to non-critical fixes that can be deployed in the next scheduled release. 
-* `deployment/` branches contain the codebase for deployed code. See [Deployment](../sysadmins/deployment.md) for more info. 
+* `bugfix/` branches are applied to `develop` after two teammates have reviewed the pull request as approved. This convention applies to non-critical fixes that can be deployed in the next scheduled release.
+* `deployment/` branches contain the codebase for deployed code. See [Deployment](../sysadmins/deployment.md) for more info.
 
 *Outside collaborations from the wider community most likely will not always apply the trunk branching model and the conventions for naming the branches. This doesn’t have to be a requirement in this case.*
 

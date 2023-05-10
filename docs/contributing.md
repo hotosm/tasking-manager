@@ -42,5 +42,3 @@ Review or submit [language translations](https://github.com/hotosm/tasking-manag
 Thank you very much in advance for your contributions!! Please ensure you refer to our [Code of Conduct](https://github.com/hotosm/tasking-manager/blob/develop/docs/code_of_conduct.md) when you contribute!
 
 If you've read the guidelines, but you are still not sure how to contribute on Github, please reach out to us via our [ HOT Tech Support page]([https://hotosm.atlassian.net/servicedesk/customer/portal/4](https://hotosm.atlassian.net/servicedesk/customer/portal/4/group/5/create/51) and we will be happy to help!
-
-
