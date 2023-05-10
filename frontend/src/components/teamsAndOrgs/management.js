@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FormattedMessage } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
+import ReactTooltip from 'react-tooltip';
 
 import messages from './messages';
 import { CustomButton } from '../button';
@@ -23,19 +24,22 @@ export const AddButton = () => (
   </CustomButton>
 );
 
-export const DeleteButton = ({ className, onClick, showText = true }: Object) => (
-  <CustomButton
-    className={`red bg-transparent ba b--red barlow-condensed pv1 ${className}`}
-    onClick={onClick}
-  >
-    <WasteIcon className="v-mid h1 w1" />
-    {showText && (
-      <span className="v-mid f4 fw6 ttu pl2">
-        <FormattedMessage {...messages.delete} />
-      </span>
-    )}
-  </CustomButton>
-);
+export const DeleteButton = ({ className, onClick, showText = true }: Object) => {
+  const intl = useIntl();
+  return (
+    <CustomButton className={`red bg-transparent ba b--red pv1 ${className}`} onClick={onClick}>
+      <div data-for="Delete" data-tip={!showText ? intl.formatMessage(messages.delete) : ''}>
+        <WasteIcon className="v-mid h1 w1" />
+        {showText && (
+          <span className="v-mid f4 fw6 ttu barlow-condensed pl2">
+            <FormattedMessage {...messages.delete} />
+          </span>
+        )}
+      </div>
+      <ReactTooltip effect="solid" id="Delete" />
+    </CustomButton>
+  );
+};
 
 export function VisibilityBox({ visibility, extraClasses }: Object) {
   let color = visibility === 'PUBLIC' ? 'blue-grey' : 'red';

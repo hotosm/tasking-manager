@@ -100,6 +100,12 @@ const handlers = [
   rest.get(API_URL + 'projects/:id/comments/', async (req, res, ctx) => {
     return res(ctx.json(projectComments));
   }),
+  rest.post(API_URL + 'projects/:id/comments/', async (req, res, ctx) => {
+    return res(ctx.json({ message: 'Comment posted' }));
+  }),
+  rest.delete(API_URL + 'projects/:projectId/comments/:commentId/', async (req, res, ctx) => {
+    return res(ctx.json({ message: 'Message deleted' }));
+  }),
   rest.get(API_URL + 'projects/:id/favorite/', async (req, res, ctx) => {
     return res(ctx.json(userFavorite));
   }),

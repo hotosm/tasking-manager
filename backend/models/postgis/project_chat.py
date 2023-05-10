@@ -83,6 +83,7 @@ class ProjectChat(db.Model):
             chat_dto.username = message.posted_by.username
             chat_dto.picture_url = message.posted_by.picture_url
             chat_dto.timestamp = message.time_stamp
+            chat_dto.id = message.id
 
             dto.chat.append(chat_dto)
 

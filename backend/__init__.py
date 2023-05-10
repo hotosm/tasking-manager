@@ -202,6 +202,7 @@ def add_api_endpoints(app):
     # Comments API impor
     from backend.api.comments.resources import (
         CommentsProjectsRestAPI,
+        CommentsProjectsAllAPI,
         CommentsTasksRestAPI,
     )
 
@@ -566,9 +567,14 @@ def add_api_endpoints(app):
 
     # Comments REST endoints
     api.add_resource(
-        CommentsProjectsRestAPI,
+        CommentsProjectsAllAPI,
         format_url("projects/<int:project_id>/comments/"),
         methods=["GET", "POST"],
+    )
+    api.add_resource(
+        CommentsProjectsRestAPI,
+        format_url("projects/<int:project_id>/comments/<int:comment_id>/"),
+        methods=["DELETE"],
     )
     api.add_resource(
         CommentsTasksRestAPI,

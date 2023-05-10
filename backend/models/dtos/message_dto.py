@@ -46,6 +46,7 @@ class MessagesDTO(Model):
 class ChatMessageDTO(Model):
     """DTO describing an individual project chat message"""
 
+    id = IntType(required=False, serialize_when_none=False)
     message = StringType(required=True)
     user_id = IntType(required=True, serialize_when_none=False)
     project_id = IntType(required=True, serialize_when_none=False)
