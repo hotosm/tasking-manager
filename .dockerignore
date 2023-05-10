@@ -1,6 +1,7 @@
 .*
 *.yml
 **/*.pyc
+**/__pypackages__
 **/node_modules
 **/npm-debug.log
 logs/

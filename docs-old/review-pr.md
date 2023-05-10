@@ -52,7 +52,18 @@ and ask the person to check on the error.
 
 1. Test behaviour and edge cases
   Install the PR on your local setup, make sure you run
-  a. backend dependency installation: `pip install -r requirements.txt`
+  a. backend dependency installation:
+    * Linux/Mac (Option 1: pep582):
+        * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
+        * ```pip install --upgrade pdm```
+        * ```pdm config --global python.use_venv False```
+        * ```pdm --pep582 >> ~/.bash_profile```
+        * ```source ~/.bash_profile```
+        * ```pdm install```
+    * Linux/Mac (Option 2: pip (system/venv)):
+        * ```pip install --upgrade pdm```
+        * ```pdm export --without-hashes > requirements.txt```
+        * ```pip install requirements.txt```
   b. introduced database migrations: `python manage.py db upgrade`
   c. frontend dependency installation: `cd frontend && yarn && cd ..`
   d. rebuild the frontend: `cd frontend && yarn build && cd ..`
@@ -100,7 +111,11 @@ git pull https://github.com/author/tasking-manager.git branchname
 
 Make sure that python dependencies are up to date:
 
-`pip install -r requirements.txt`
+* Option 1:
+    * ```pdm install```
+* Option 2:
+    * ```pdm export --without-hashes > requirements.txt```
+    * ```pip install requirements.txt```
 
 ### Frontend
 
@@ -127,7 +142,7 @@ If you get an error, you may have an upgraded database from a prior PR. Try down
 
 I have found it better to run tests on a separate database from the live version, but the choice is up to you. Again, it is probably wise to back up your database first if you choose to run it on your main database.
 
-`venv/bin/  ./tests --with-xunit --xunit-file unitresults.xml --with-coverage --cover-erase --cover-package=./backend`
+`python3 -m unittest discover ./tests --with-xunit --xunit-file unitresults.xml --with-coverage --cover-erase --cover-package=./backend`
 
 ### Check changes
 

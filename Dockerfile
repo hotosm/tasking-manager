@@ -1,12 +1,34 @@
-FROM quay.io/hotosm/base-python-image as base
-LABEL version=0.1
-LABEL maintainer="HOT Sysadmin <sysadmin@hotosm.org>"
-LABEL description="Builds backend docker image"
+ARG ALPINE_IMG_TAG=3.17
+ARG PYTHON_IMG_TAG=3.9
 
-WORKDIR /usr/src/app
+FROM docker.io/python:${PYTHON_IMG_TAG}-alpine${ALPINE_IMG_TAG} as base
+ARG APP_VERSION=0.1.0
+ARG DOCKERFILE_VERSION=0.4.0
+ARG ALPINE_IMG_TAG
+ARG PYTHON_IMG_TAG
+ARG MAINTAINER=sysadmin@hotosm.org
+LABEL org.hotosm.tasks.app-version="${APP_VERSION}" \
+      org.hotosm.tasks.alpine-img-tag="${ALPINE_IMG_TAG}" \
+      org.hotosm.tasks.python-img-tag="${PYTHON_IMG_TAG}" \
+      org.hotosm.tasks.dockerfile-version="${DOCKERFILE_VERSION}" \
+      org.hotosm.tasks.maintainer="${MAINTAINER}" \
+      org.hotosm.tasks.api-port="5000"
+# Fix timezone (do not change - see issue #3638)
+ENV TZ UTC
 
-FROM base as builder
 
+
+FROM base as extract-deps
+WORKDIR /opt/python
+COPY pyproject.toml pdm.lock README.md /opt/python/
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir pdm==2.5.3
+RUN pdm export --prod --without-hashes > requirements.txt
+
+
+
+FROM base as build
+WORKDIR /opt/python
 # Setup backend build-time dependencies
 RUN apk update && \
     apk add \
@@ -20,29 +42,55 @@ RUN apk update && \
         proj-util \
         proj-dev \
         make
+# Setup backend Python dependencies
+COPY --from=extract-deps \
+    /opt/python/requirements.txt /opt/python/
+RUN pip install --user --no-warn-script-location \
+    --no-cache-dir -r /opt/python/requirements.txt
 
-COPY requirements.txt .
 
-RUN pip install \
-    --prefix=/install \
-    --no-cache-dir \
-    --no-warn-script-location \
-    -r requirements.txt
 
+FROM base as runtime
+ARG PYTHON_IMG_TAG
+WORKDIR /usr/src/app
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONFAULTHANDLER=1 \
+    PATH="/home/appuser/.local/bin:$PATH" \
+    PYTHON_LIB="/home/appuser/.local/lib/python$PYTHON_IMG_TAG/site-packages" \
+    SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
+    REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 # Setup backend runtime dependencies
-FROM base
-
 RUN apk update && \
-    apk add \
+    apk add --no-cache \
         postgresql-libs geos proj-util
-
-COPY --from=builder /install /usr/local
+COPY --from=build \
+    /root/.local \
+    /home/appuser/.local
 COPY backend backend/
 COPY migrations migrations/
 COPY scripts/world scripts/world/
 COPY scripts/database scripts/database/
 COPY manage.py .
+# Add non-root user, permissions, init log dir
+RUN adduser -D -u 900 -h /home/appuser -s /bin/false appuser \
+    && chown -R appuser:appuser /usr/src /home/appuser
 
-ENV TZ UTC # Fix timezone (do not change - see issue #3638)
-EXPOSE 5000
-CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application"]
+
+
+FROM runtime as debug
+RUN pip install --no-warn-script-location \
+    --no-cache-dir debugpy==1.6.7
+USER appuser
+CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678", \
+    "-m", "gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
+    "--reload", "--log-level", "error"]
+
+
+
+FROM runtime as prod
+# Pre-compile packages to .pyc (init speed gains)
+RUN python -c "import compileall; compileall.compile_path(maxlevels=10, quiet=1)"
+USER appuser
+CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
+    "--workers", "1", "--log-level", "error"]

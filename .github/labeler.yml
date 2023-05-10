@@ -5,7 +5,7 @@
   - tests/**/*
   - migrations/**/*
   - ./manage.py
-  - ./requirements.txt
+  - ./pyproject.toml
 "Component: Infrastructure":
   - .circleci/*
   - .github/**/*
@@ -15,10 +15,10 @@
   - docker-*.yml
 "dependencies":
   - frontend/yarn.lock
-  - ./requirements.txt
+  - ./pyproject.toml
 "javascript":
   - frontend/yarn.lock
 "python":
-  - ./requirements.txt
+  - ./pyproject.toml
 "Type: Translations":
   - frontend/src/locales/*

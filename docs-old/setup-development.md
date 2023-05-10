@@ -90,12 +90,18 @@ There are two ways to configure Tasking Manager. You can set some environment va
 
 #### Build
 
-* Create a Python Virtual Environment, using Python 3.6+:
-    * ```python3 -m venv ./venv```
-* Activate your virtual environment and install dependencies:
-    * Linux/Mac:
-        * ```. ./venv/bin/activate```
-        * ```pip install -r requirements.txt```
+* Install project dependencies:
+    * Linux/Mac (Option 1: pep582):
+        * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
+        * ```pip install --upgrade pdm```
+        * ```pdm config --global python.use_venv False```
+        * ```pdm --pep582 >> ~/.bash_profile```
+        * ```source ~/.bash_profile```
+        * ```pdm install```
+    * Linux/Mac (Option 2: pip (system/venv)):
+        * ```pip install --upgrade pdm```
+        * ```pdm export --without-hashes > requirements.txt```
+        * ```pip install requirements.txt```
 
 #### Tests
 
@@ -149,7 +155,7 @@ In order to authenticate on the API, you need to have an Authorization Token.
 1. Run the command line `manage.py` with the `gen_token` option and `-u <OSM_User_ID_number>`. The command line can be run in any shell session as long as you are in the tasking-manager directory.
 
 ```
-venv/bin/python manage.py gen_token -u 99999999
+python manage.py gen_token -u 99999999
 ```
 
 This will generate a line that looks like this:

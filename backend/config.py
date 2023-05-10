@@ -83,7 +83,7 @@ class EnvironmentConfig:
 
     # Logging settings
     LOG_LEVEL = os.getenv("TM_LOG_LEVEL", logging.DEBUG)
-    LOG_DIR = os.getenv("TM_LOG_DIR", "logs")
+    LOG_DIR = os.getenv("TM_LOG_DIR", "/home/appuser/logs")
 
     # Mapper Level values represent number of OSM changesets
     MAPPER_LEVEL_INTERMEDIATE = int(os.getenv("TM_MAPPER_LEVEL_INTERMEDIATE", 250))
