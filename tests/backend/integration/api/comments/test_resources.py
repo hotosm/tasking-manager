@@ -156,7 +156,7 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_delete_non_existent_comment_fails(self):
-        """ Test that endpoint returns 404 when deleting a non-existent comment """
+        """Test that endpoint returns 404 when deleting a non-existent comment"""
         # Act
         response = self.client.delete(
             self.non_existent_url, headers={"Authorization": self.test_author_token}
@@ -183,7 +183,7 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
         self.assertEqual(response_body["SubCode"], "DeletePermissionError")
 
     def test_comment_can_be_deleted_by_author(self):
-        """ Test that endpoint returns 200 when deleting a comment of a project by the comment author """
+        """Test that endpoint returns 200 when deleting a comment of a project by the comment author"""
         # Arrange
         # Let's create a comment by the test user and delete it using the test user
         test_comment = self.create_project_chat(self.test_user)
@@ -202,7 +202,7 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
             ChatService.get_project_chat_by_id(self.test_project.id, test_comment.id)
 
     def test_pm_can_delete_any_comment(self):
-        """ Test that endpoint returns 200 when deleting a comment of a project by the PM """
+        """Test that endpoint returns 200 when deleting a comment of a project by the PM"""
         # Arrange
         # Let's create a comment by the test user and delete it using the test author
         test_comment = self.create_project_chat(self.test_user)
