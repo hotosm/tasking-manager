@@ -78,6 +78,7 @@ jobs:
       - setup_remote_docker
       - run: sudo apt-get update
       - run: sudo apt-get -y install libgeos-dev # Required for shapely
+      - run: sudo apt-get -y install proj-bin
       - run:
           name: Configure Postgresql Test database
           command: |
