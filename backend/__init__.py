@@ -1,4 +1,18 @@
 import logging
+
+# gevent.monkey.patch_ssl is required. gevent message as follows:
+# MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may
+# lead to errors, including RecursionError on Python 3.6. It may also silently
+# lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier.
+# See https://github.com/gevent/gevent/issues/1016.
+try:
+    from gevent import monkey
+
+    monkey.patch_ssl()
+except ImportError as e:
+    logging.warning("Not using gevent")
+    logging.info(e)
+
 import os
 from logging.handlers import RotatingFileHandler
 
