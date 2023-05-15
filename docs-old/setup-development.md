@@ -107,8 +107,12 @@ There are two ways to configure Tasking Manager. You can set some environment va
 
 The project includes a suite of Unit and Integration tests that you should run after any changes
 
-```
+```bash
 python3 -m unittest discover tests/backend
+```
+or 
+```bash
+pdm run tests
 ```
 
 #### Export translatable strings to en.json source file
@@ -127,6 +131,10 @@ We use [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to creat
 ```
 python3 manage.py db upgrade
 ```
+or
+```
+pdm run db upgrade
+```
 
 #### Migrating your data from TM2
 
@@ -142,9 +150,7 @@ To be able to create projects and have full permissions as an admin user inside 
 
 If you plan to only work on the API you only have to build the backend architecture. Install the backend dependencies, and run the server:
 
-`
-python3 manage.py runserver -d -r
-`
+`python3 manage.py runserver -d -r` or `pdm run start`
 
 You can access the API documentation on [http://localhost:5000/api-docs](http://localhost:5000/api-docs), it also allows you to execute requests on your local TM instance. The API docs is also available on our [production](https://tasks.hotosm.org/api-docs) and [staging](https://tasks-stage.hotosm.org/api-docs/) instances.
 

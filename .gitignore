@@ -27,6 +27,7 @@ logs/
 venv/
 *pyc
 .pdm.toml
+.pdm-python
 __pypackages__/
 
 # Editor generated files #
