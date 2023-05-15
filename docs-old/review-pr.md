@@ -134,7 +134,7 @@ This is important to do even if there are no frontend changes because you may ha
 
 Upgrade the database (it may be wise to back up your database first):
 
-`python manage.py db upgrade`
+`python manage.py db upgrade` or `pdm run upgrade`
 
 If you get an error, you may have an upgraded database from a prior PR. Try downgrading to develop (`python manage.py db downgrade`).
 
@@ -142,7 +142,11 @@ If you get an error, you may have an upgraded database from a prior PR. Try down
 
 I have found it better to run tests on a separate database from the live version, but the choice is up to you. Again, it is probably wise to back up your database first if you choose to run it on your main database.
 
-`python3 -m unittest discover ./tests --with-xunit --xunit-file unitresults.xml --with-coverage --cover-erase --cover-package=./backend`
+```bash
+python3 -m unittest discover ./tests --with-xunit --xunit-file unitresults.xml --with-coverage --cover-erase --cover-package=./backend
+``` 
+or 
+`pdm run test` and `pdm run coverage`
 
 ### Check changes
 
@@ -165,7 +169,7 @@ After reviewing, you'll want to downgrade your database, return to develop, and 
 #   so if a PR contains multiple revisions,
 #   you may have to run this command more than once
 
-python manage.py db downgrade
+python manage.py db downgrade or pdm run downgrade
 
 # _now_ you can return to develop.
 # if you do before downgrading, flask_migrate will not

@@ -98,12 +98,18 @@ In order to send email correctly, set these variables as well:
 
 #### Build
 
-* Create a Python Virtual Environment, using Python 3.6+:
-    * ```python3 -m venv ./venv```
-* Activate your virtual environment and install dependencies:
-    * Linux/Mac:
-        * ```. ./venv/bin/activate```
-        * ```pip install -r requirements.txt```
+* Install project dependencies:
+    * Linux/Mac (Option 1: pep582):
+        * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
+        * ```pip install --upgrade pdm```
+        * ```pdm config --global python.use_venv False```
+        * ```pdm --pep582 >> ~/.bash_profile```
+        * ```source ~/.bash_profile```
+        * ```pdm install```
+    * Linux/Mac (Option 2: pip (system/venv)):
+        * ```pip install --upgrade pdm```
+        * ```pdm export --without-hashes > requirements.txt```
+        * ```pip install requirements.txt```
 
 #### Tests
 
@@ -111,6 +117,10 @@ The project includes a suite of Unit and Integration tests that you should run a
 
 ```
 python3 -m unittest discover tests/backend
+```
+or 
+```
+pdm run test
 ```
 
 #### Export translatable strings to en.json source file
@@ -129,6 +139,10 @@ We use [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to creat
 ```
 python3 manage.py db upgrade
 ```
+or 
+```
+pdm run upgrade
+```
 
 #### Set permissions to create projects
 
@@ -140,9 +154,7 @@ To be able to create projects and have full permissions as an admin user inside 
 
 If you plan to only work on the API you only have to build the backend architecture. Install the backend dependencies, and run the server:
 
-`
-python3 manage.py runserver -d -r
-`
+`python3 manage.py runserver -d -r ` or  `pdm run start`
 
 You can access the API documentation on [http://localhost:5000/api-docs](http://localhost:5000/api-docs), it also allows you to execute requests on your local TM instance. The API docs is also available on our [production](https://tasks.hotosm.org/api-docs) and [staging](https://tasks-stage.hotosm.org/api-docs/) instances.
 
@@ -153,7 +165,7 @@ In order to authenticate on the API, you need to have an Authorization Token.
 1. Run the command line `manage.py` with the `gen_token` option and `-u <OSM_User_ID_number>`. The command line can be run in any shell session as long as you are in the tasking-manager directory.
 
 ```
-venv/bin/python manage.py gen_token -u 99999999
+python manage.py gen_token -u 99999999
 ```
 
 This will generate a line that looks like this:
