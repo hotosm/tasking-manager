@@ -168,6 +168,7 @@ jobs:
             cd ${CIRCLE_WORKING_DIRECTORY}
             # Install Python dependencies
             pip install --upgrade pip pdm
+            pdm config --global python.use_venv False
             pdm export --prod --without-hashes > requirements.txt
             pip install -r requirements.txt
       - run:
