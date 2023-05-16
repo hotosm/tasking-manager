@@ -7,7 +7,7 @@ black==23.3.0
 bleach==5.0.1
 blinker==1.5
 cachetools==4.1.1
-certifi==2020.6.20
+certifi==2023.5.7
 chardet==3.0.4
 charset-normalizer==2.0.12
 click==8.1.3
