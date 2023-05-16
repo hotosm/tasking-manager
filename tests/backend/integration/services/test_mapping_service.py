@@ -9,6 +9,7 @@ from tests.backend.helpers.test_helpers import create_canned_project
 
 ORG_NAME = "HOT Tasking Manager"
 
+
 class TestMappingService(BaseTestCase):
     skip_tests = False
     test_project = None
