@@ -23,6 +23,8 @@ import { TaskMapAction } from '../action';
 import { getProjectSummary } from '../../../network/tests/mockData/projects';
 import tasksGeojson from '../../../utils/tests/snippets/tasksGeometry';
 import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/userStats';
+// This is a late import in a React.lazy call; it takes awhile for commentInput to load
+import '../../comments/commentInput';
 
 jest.mock('react-hot-toast', () => ({
   error: jest.fn(),

@@ -11,6 +11,8 @@ import {
 } from '../../../utils/testWithIntl';
 import { getProjectSummary, projectComments } from '../../../network/tests/mockData/projects';
 import { QuestionsAndComments, PostProjectComment, CommentList } from '../questionsAndComments';
+// This is a late import in a React.lazy call; it takes awhile for commentInput to load
+import '../../comments/commentInput';
 
 describe('test if QuestionsAndComments component', () => {
   const project = getProjectSummary(1);
@@ -34,9 +36,10 @@ describe('test if QuestionsAndComments component', () => {
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
-    const previewBtn = screen.getByRole('button', { name: /preview/i });
+    const previewBtn = await screen.findByRole('button', { name: /preview/i });
     expect(screen.getAllByRole('button').length).toBe(11);
     expect(screen.getByRole('button', { name: /write/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('button')).toHaveLength(11);
     expect(previewBtn).toBeInTheDocument();
     expect(screen.getByRole('textbox')).toBeInTheDocument();
     await user.click(previewBtn);

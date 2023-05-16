@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -83,6 +83,7 @@ describe('Task Selection Page', () => {
       });
     });
     setup();
+    await waitFor(() => expect(screen.getByRole('link')).toBeInTheDocument());
     const taskItems = await screen.findAllByText(/last updated by/i);
     expect(taskItems.length).toBe(6);
     expect(screen.queryByText(/Project Specific Mapping Notes/i)).not.toBeInTheDocument();

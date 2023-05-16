@@ -11,10 +11,12 @@ import { generateSampleNotifications } from '../../../network/tests/mockData/not
 describe('Action Buttons', () => {
   const retryFnMock = jest.fn();
   const setSelectedMock = jest.fn();
-  it('should return nothing if no notification is selected', () => {
+  beforeEach(() => {
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
+  });
+  it('should return nothing if no notification is selected', () => {
     const { container } = render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -122,6 +124,7 @@ describe('Action Buttons', () => {
 
   // Error are consoled in all cases of POST error
   it('should catch error when marking multiple selected notifications as read', async () => {
+    global.console = { ...global.console, log: jest.fn() };
     const user = userEvent.setup();
     setupFaultyHandlers();
     render(
@@ -142,9 +145,11 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
+    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
   });
 
   it('should catch error when marking all notifications in a category as read', async () => {
+    global.console = { ...global.console, log: jest.fn() };
     const user = userEvent.setup();
     setupFaultyHandlers();
     render(
@@ -164,11 +169,12 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
+    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
   });
 
   it('should catch error when deleting multiple selected notifications', async () => {
+    global.console = { ...global.console, log: jest.fn() };
     const user = userEvent.setup();
-    act(() => {});
     setupFaultyHandlers();
     render(
       <ReduxIntlProviders>
@@ -188,9 +194,11 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
+    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
   });
 
   it('should catch error when deleting all notifications in a category', async () => {
+    global.console = { ...global.console, log: jest.fn() };
     const user = userEvent.setup();
     setupFaultyHandlers();
     render(
@@ -210,6 +218,7 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
+    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
   });
 
   it('should decrement the page query by 1 if the user deletes all notifications on the last page', async () => {
@@ -217,7 +226,7 @@ describe('Action Buttons', () => {
     // all the six notifications in the last page
     const setInboxQueryMock = jest.fn();
     const user = userEvent.setup();
-    render(
+    const { getByRole } = render(
       <ReduxIntlProviders>
         <ActionButtons
           inboxQuery={{ types: undefined, page: 3 }}
@@ -232,7 +241,7 @@ describe('Action Buttons', () => {
       </ReduxIntlProviders>,
     );
     await user.click(
-      screen.getByRole('button', {
+      getByRole('button', {
         name: /delete/i,
       }),
     );
