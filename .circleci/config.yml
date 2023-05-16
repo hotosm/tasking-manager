@@ -85,17 +85,19 @@ jobs:
             psql \
             -d $SQLALCHEMY_DATABASE_URI \
             -c "CREATE EXTENSION postgis;"
-      - run: pip install --upgrade pip
+      - run: pip install --upgrade pip pdm
+      - run: pdm config --global python.use_venv False
+      - run: pdm export --prod --without-hashes > requirements.txt
       - run: pip install -r requirements.txt
+      - run: mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
+      - run: find ./tests/backend -name "test*.py" -exec chmod -x {} \;
       - run:
           name: Run backend functional tests
           command: |
-            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
-            find ./tests/backend -name "test*.py" -exec chmod -x {} \;
             nosetests ./tests/backend --with-xunit \
               --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
               --with-coverage --cover-erase --cover-package=./backend
-            coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
+      - run: coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
       - store_test_results:
           path: tests/backend/results/unitresults.xml
       - store_artifacts:
@@ -156,7 +158,7 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-      - image: cimg/python:3.7.14-node
+      - image: cimg/python:3.9.14-node
         environment:
           SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
       - image: cimg/postgres:14.2-postgis
@@ -166,47 +168,31 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install modules
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y libgeos-dev # Required for shapely
-      - run:
-          name: Configure Postgresql Test database
-          command: |
-            sudo apt-get install postgresql-client
-            psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
-      - run:
-          name: Set folder permissions
-          command: |
-            chown -R circleci:circleci ${CIRCLE_WORKING_DIRECTORY}
-            chmod -R 755 ${CIRCLE_WORKING_DIRECTORY}
+      - run: sudo apt-get -y update
+      - run: sudo apt-get -y install libgeos-dev # Required for shapely
+      - run: sudo apt-get install postgresql-client
+      - run: psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
+      - run: chown -R circleci:circleci ${CIRCLE_WORKING_DIRECTORY}
+      - run: chmod -R 755 ${CIRCLE_WORKING_DIRECTORY}
       - restore_cache:
           keys:
             - node-{{ .Environment.CACHEVERSION }}-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
-      - run:
-          name: Install requirements
-          command: |
-            # Install NPM packages and build frontend
-            cd ${CIRCLE_WORKING_DIRECTORY}/frontend
-            yarn
-            cd ${CIRCLE_WORKING_DIRECTORY}
-            # Install Python dependencies
-            pip install --upgrade pip pdm
-            pdm config --global python.use_venv False
-            pdm export --prod --without-hashes > requirements.txt
-            pip install -r requirements.txt
+      - run: cd ${CIRCLE_WORKING_DIRECTORY}/frontend && yarn 
+      - run: cd ${CIRCLE_WORKING_DIRECTORY}
+      - run: pip install --upgrade pip pdm
+      - run: pdm config --global python.use_venv False
+      - run: pdm export --prod --without-hashes > requirements.txt
+      - run: pip install -r requirements.txt
+      - run: mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
+      - run: find ./tests/backend -name "test*.py" -exec chmod -x {} \;
+      - run: coverage erase
       - run:
           name: Run backend tests
           command: |
-            # Run Python tests
-            cd ${CIRCLE_WORKING_DIRECTORY}
-            mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
-            find ./tests/backend -name "test*.py" -exec chmod -x {} \;
             nosetests ./tests/backend --with-xunit \
               --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
               --with-coverage --cover-erase --cover-package=./backend
-            coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
+      - run: coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
       - store_test_results:
           path: tests/backend/results/unitresults.xml
       - store_artifacts:
@@ -216,7 +202,7 @@ jobs:
           paths:
             - frontend/node_modules
             - env
-    # The resource_class feature allows configuring CPU and RAM resources for each job. Different resource classes are available for different executors. https://circleci.com/docs/2.0/configuration-reference/#resourceclass
+    # https://circleci.com/docs/2.0/configuration-reference/#resourceclass
     resource_class: large
 
   backend_deploy:
@@ -230,7 +216,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
-      - image: cimg/python:3.7.14-node
+      - image: cimg/python:3.9.14-node
     steps:
       - checkout
       - setup_remote_docker
@@ -259,7 +245,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
     docker:
-      - image: cimg/python:3.7.14-node
+      - image: cimg/python:3.9.14-node
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"
