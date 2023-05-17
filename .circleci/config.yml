@@ -124,7 +124,7 @@ jobs:
           name: Find the instance ID of the database in the stack to backup
           command: |
             RDS_ID=$(aws rds describe-db-instances \
-              --query 'DBInstances[?contains(TagList[].Key, `aws:cloudformation:stack-name`) && contains(Taglist[].Value, `tasking-manager-<< parameters.stack_name >>`)].[DBInstanceIdentifier]' \
+              --query 'DBInstances[?contains(TagList[].Key, `aws:cloudformation:stack-name`) && contains(TagList[].Value, `tasking-manager-<< parameters.stack_name >>`)].[DBInstanceIdentifier]' \
               --output text)
             echo "export RDS_ID=$RDS_ID" >> $BASH_ENV
       - run:
