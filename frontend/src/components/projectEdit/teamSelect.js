@@ -88,17 +88,17 @@ export const TeamSelect = () => {
     return t.teamId;
   });
 
-  let filteredTeams = teamsData.teams?.filter((t) => !teamsIds.includes(t.teamId));
+  let filteredTeams = teamsData?.teams?.filter((t) => !teamsIds.includes(t.teamId));
 
   if (org !== null) {
     filteredTeams = [
       {
         label: org.name,
-        options: filteredTeams.filter((t) => t.organisationId === org.organisationId),
+        options: filteredTeams?.filter((t) => t.organisationId === org.organisationId),
       },
       {
         label: 'Others',
-        options: filteredTeams.filter((t) => t.organisationId !== org.organisationId),
+        options: filteredTeams?.filter((t) => t.organisationId !== org.organisationId),
       },
     ];
   }
