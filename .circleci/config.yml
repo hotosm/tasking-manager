@@ -142,11 +142,12 @@ jobs:
             aws rds wait db-instance-available \
                 --db-instance-identifier ${RDS_ID}
             # create new aws rds snapshot
+            printf -v time_now '%(%Y-%m-%d-%H-%M)T' -1
             aws rds create-db-snapshot \
-                --db-snapshot-identifier tm4-<< parameters.stack_name >>-${RDS_ID}-$(date -I) \
+                --db-snapshot-identifier tm4-<< parameters.stack_name >>-${RDS_ID}-${time_now} \
                 --db-instance-identifier ${RDS_ID}
             aws rds wait db-snapshot-completed \
-                --db-snapshot-identifier tm4-<< parameters.stack_name >>-${RDS_ID}-$(date -I) \
+                --db-snapshot-identifier tm4-<< parameters.stack_name >>-${RDS_ID}-${time_now} \
                 --db-instance-identifier ${RDS_ID}
             if [[ $? -eq 255 ]]; then
               echo "Production snapshot creation failed. Exiting with exit-code 125"
