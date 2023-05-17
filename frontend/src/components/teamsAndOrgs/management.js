@@ -81,7 +81,6 @@ export function Management(props) {
               }`}
               onClick={() => {
                 props.setUserOnly(false);
-                props.setQuery({ ...props.query, page: 1, isUserTeamsOnly: undefined });
               }}
             >
               <FormattedMessage {...messages.all} />
@@ -92,7 +91,6 @@ export function Management(props) {
               }`}
               onClick={() => {
                 props.setUserOnly(true);
-                props.setQuery({ ...props.query, page: 1, isUserTeamsOnly: true });
               }}
             >
               {props.userOnlyLabel}

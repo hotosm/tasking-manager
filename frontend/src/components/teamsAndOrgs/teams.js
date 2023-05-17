@@ -51,8 +51,6 @@ export function TeamsManagement({
       managementView={managementView}
       userOnly={userTeamsOnly}
       setUserOnly={setUserTeamsOnly}
-      query={query}
-      setQuery={setQuery}
       userOnlyLabel={<FormattedMessage {...messages.myTeams} />}
     >
       <div className="w-20-l w-25-m">
