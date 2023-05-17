@@ -33,7 +33,7 @@
     "date-fns": "^2.29.3",
     "dompurify": "^2.4.3",
     "downshift-hooks": "^0.8.1",
-    "final-form": "^4.20.8",
+    "final-form": "^4.20.9",
     "fromentries": "^1.3.2",
     "humanize-duration": "^3.28.0",
     "mapbox-gl": "^1.13.3",
