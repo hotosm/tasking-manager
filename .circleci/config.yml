@@ -216,6 +216,9 @@ jobs:
       gitsha:
         description: "The 40 char hash of the git commit"
         type: string
+      host_ami:
+        description: "AMI of the host instance"
+        type: string
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
@@ -232,16 +235,21 @@ jobs:
       - run: sudo apt-get -y install libgeos-dev jq
       - run: sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
       - run:
-          name: Download config file
+          name: Download and patch Cloudformation parameter JSON file
           command: |
-            export GITSHA=<< parameters.gitsha >>
-            aws s3 cp s3://hot-cfn-config/tasking-manager/tasking-manager-<< parameters.stack_name >>-${AWS_REGION}.cfn.json - | jq -c --arg GITSHA "$GITSHA" '.GitSha = $GITSHA' > $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
+            tmpfile=$(mktemp)
+            aws s3 cp s3://hot-cfn-config/tasking-manager/tasking-manager-<< parameters.stack_name >>-${AWS_REGION}.cfn.json /tmp/tasking-manager.cfn.json
+            jq --compact-output \
+              --arg GITSHA "<< parameters.gitsha >>" \
+              --arg AMI "<< parameters.host_ami >>" \
+              '.GitSha = $GITSHA | .TaskingManagerBackendAMI = $AMI' \
+              /tmp/tasking-manager.cfn.json > "$tmpfile" && mv "$tmpfile" $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
       - deploy:
           name: Deploy to << parameters.stack_name >>
           command: |
             export NODE_PATH=/usr/local/share/.config/yarn/global/node_modules/
             validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
-            export JSON_CONFIG="$(cat $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json)"
+            export JSON_CONFIG="$(< $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json)"
             cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
 
   frontend_deploy:
@@ -290,11 +298,12 @@ workflows:
       - backend-functional-tests
       - backend_deploy:
           name: backend-production
+          gitsha: $CIRCLE_SHA1
           stack_name: "tm4-production"
+          host_ami: "ami-0aa2b7722dc1b5612"
           requires:
             - backend-functional-tests
             - database-backup
-          gitsha: $CIRCLE_SHA1
           context:
             - org-global
             - tasking-manager-tm4-production
@@ -326,8 +335,9 @@ workflows:
     jobs:
       - backend_deploy:
           name: backend-production
-          stack_name: "tm4-production"
           gitsha: $CIRCLE_SHA1
+          stack_name: "tm4-production"
+          host_ami: "ami-0aa2b7722dc1b5612"
           context:
             - org-global
             - tasking-manager-tm4-production
@@ -346,10 +356,11 @@ workflows:
       - backend-functional-tests
       - backend_deploy:
           name: Deploy TeachOSM Backend
+          gitsha: $CIRCLECI_SHA1
           stack_name: "teachosm"
+          host_ami: "ami-0aa2b7722dc1b5612"
           requires:
             - backend-functional-tests
-          gitsha: $CIRCLECI_SHA1
           context: tasking-manager-teachosm
       - frontend_deploy:
           name: Deploy TeachOSM Frontend
@@ -372,10 +383,11 @@ workflows:
       - backend-functional-tests
       - backend_deploy:
           name: Deploy TM Assisted Backend
+          gitsha: $CIRCLECI_SHA1
           stack_name: "assisted"
+          host_ami: "ami-0aa2b7722dc1b5612"
           requires:
             - backend-functional-tests
-          gitsha: $CIRCLECI_SHA1
           context: tasking-manager-assisted
       - frontend_deploy:
           name: Deploy TM Assisted Frontend
@@ -409,6 +421,7 @@ workflows:
           name: Deploy development/staging backend
           gitsha: $CIRCLE_SHA1
           stack_name: "staging"
+          host_ami: "ami-0fec2c2e2017f4e7b"
           requires:
             - backend-code-check-PEP8
             - backend-code-check-Black
