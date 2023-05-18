@@ -29,7 +29,7 @@ class License(db.Model):
     @staticmethod
     def get_by_id(license_id: int):
         """Get license by id"""
-        map_license = License.query.get(license_id)
+        map_license = db.session.get(License, license_id)
 
         if map_license is None:
             raise NotFound()

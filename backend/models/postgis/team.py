@@ -175,7 +175,7 @@ class Team(db.Model):
         :param team_id: team ID in scope
         :return: Team if found otherwise None
         """
-        return Team.query.get(team_id)
+        return db.session.get(Team, team_id)
 
     def get_team_by_name(team_name: str):
         """

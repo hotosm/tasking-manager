@@ -377,9 +377,11 @@ class ProjectSearchService:
         if not search_dto.omit_map_results:
             query_result = query
             query_result.column_descriptions.clear()
-            query_result.add_column(Project.id)
-            query_result.add_column(Project.centroid.ST_AsGeoJSON().label("centroid"))
-            query_result.add_column(Project.priority)
+            query_result.add_columns(
+                Project.id,
+                Project.centroid.ST_AsGeoJSON().label("centroid"),
+                Project.priority,
+            )
             all_results = query_result.all()
 
         paginated_results = query.paginate(

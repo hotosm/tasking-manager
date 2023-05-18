@@ -23,7 +23,7 @@ class CustomEditor(db.Model):
     @staticmethod
     def get_by_project_id(project_id: int):
         """Get custom editor by it's project id"""
-        return CustomEditor.query.get(project_id)
+        return db.session.get(CustomEditor, project_id)
 
     @classmethod
     def create_from_dto(cls, project_id: int, dto: CustomEditorDTO):

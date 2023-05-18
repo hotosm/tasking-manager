@@ -381,7 +381,7 @@ class MessageService:
         message.message = f"{user_link} has requested to join the {team_link} team.\
             Access the team management page to accept or reject that request."
         MessageService._push_messages(
-            [dict(message=message, user=User.query.get(to_user))]
+            [dict(message=message, user=db.session.get(User, to_user))]
         )
 
     @staticmethod
@@ -613,7 +613,7 @@ class MessageService:
         parsed = parser.findall(message)
 
         usernames = []
-        project = Project.query.get(project_id)
+        project = db.session.get(Project, project_id)
 
         if project is None:
             return usernames
@@ -740,7 +740,7 @@ class MessageService:
     @staticmethod
     def get_message(message_id: int, user_id: int) -> Message:
         """Gets the specified message"""
-        message = Message.query.get(message_id)
+        message = db.session.get(Message, message_id)
 
         if message is None:
             raise NotFound()

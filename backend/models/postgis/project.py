@@ -295,7 +295,7 @@ class Project(db.Model):
     def clone(project_id: int, author_id: int):
         """Clone project"""
 
-        orig = Project.query.get(project_id)
+        orig = db.session.get(Project, project_id)
         if orig is None:
             raise NotFound()
 
@@ -530,19 +530,19 @@ class Project(db.Model):
         return db.session.query(literal(True)).filter(query).scalar()
 
     def is_favorited(self, user_id: int) -> bool:
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if user not in self.favorited:
             return False
 
         return True
 
     def favorite(self, user_id: int):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         self.favorited.append(user)
         db.session.commit()
 
     def unfavorite(self, user_id: int):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if user not in self.favorited:
             raise ValueError("NotFeatured- Project not been favorited by user")
         self.favorited.remove(user)

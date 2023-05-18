@@ -30,7 +30,7 @@ class Interest(db.Model):
     @staticmethod
     def get_by_id(interest_id: int):
         """Get interest by id"""
-        interest = Interest.query.get(interest_id)
+        interest = db.session.get(Interest, interest_id)
         if interest is None:
             raise NotFound(f"Interest id {interest_id} not found")
 

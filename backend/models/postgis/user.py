@@ -85,7 +85,7 @@ class User(db.Model):
     @staticmethod
     def get_by_id(user_id: int):
         """Return the user for the specified id, or None if not found"""
-        return User.query.get(user_id)
+        return db.session.get(User, user_id)
 
     @staticmethod
     def get_by_username(username: str):

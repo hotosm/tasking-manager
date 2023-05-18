@@ -20,7 +20,7 @@ class MappingIssueCategory(db.Model):
     @staticmethod
     def get_by_id(category_id: int):
         """Get category by id"""
-        return MappingIssueCategory.query.get(category_id)
+        return db.session.get(MappingIssueCategory, category_id)
 
     @classmethod
     def create_from_dto(cls, dto: MappingIssueCategoryDTO) -> int:
