@@ -324,9 +324,9 @@ class ProjectSearchService:
             sq = Project.query.with_entities(
                 Project.id, func.unnest(Project.country).label("country")
             ).subquery()
-            query = query.filter(sq.c.country == search_dto.country).filter(
-                Project.id == sq.c.id
-            )
+            query = query.filter(
+                func.lower(sq.c.country) == search_dto.country.lower()
+            ).filter(Project.id == sq.c.id)
 
         if search_dto.last_updated_gte:
             last_updated_gte = validate_date_input(search_dto.last_updated_gte)
