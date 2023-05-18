@@ -321,7 +321,7 @@ const Resources = {
                 "[cfn-auto-reloader-hook]",
                 "triggers=post.update",
                 "path=Resources.EC2Instance.Metadata.AWS::CloudFormation::Init.02_config-amazon-cloudwatch-agent",
-                cf.sub("action=cfn-init -v --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region} --configsets UpdateEnvironment"),
+                cf.sub("action=/usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region} --configsets UpdateEnvironment"),
                 "runas=root"
               ]),
               "mode": "000400",
@@ -334,7 +334,7 @@ const Resources = {
                 "Description=cfn-hup daemon",
                 "[Service]",
                 "Type=simple",
-                "ExecStart=/opt/aws/bin/cfn-hup",
+                "ExecStart=/usr/local/bin/cfn-hup",
                 "Restart=always",
                 "[Install]",
                 "WantedBy=multi-user.target"
@@ -384,8 +384,8 @@ const Resources = {
         'export LC_ALL=C',
         'wget --quiet https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
         'dpkg -i /tmp/amazon-cloudwatch-agent.deb',
-        'wget --quiet https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz',
-        'python3 -m easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-py3-latest.tar.gz',
+        'wget --quiet https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz -O /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
+        'pip install /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
         'echo "Exporting environment variables:"',
         cf.sub('export NEW_RELIC_LICENSE=${NewRelicLicense}'),
         cf.join('', ['export POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address')]),
@@ -423,8 +423,8 @@ const Resources = {
         cf.sub('export TM_SENTRY_BACKEND_DSN="${SentryBackendDSN}"'),
         'export NEW_RELIC_ENVIRONMENT=$TM_ENVIRONMENT',
         cf.sub('NEW_RELIC_CONFIG_FILE=./scripts/aws/cloudformation/newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 5 --timeout 179 --access-logfile ${TaskingManagerLogDirectory}/gunicorn-access.log --access-logformat \'%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s %(T)s \"%(f)s\" \"%(a)s\"\' manage:application &'),
-        cf.sub('sudo /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
-        cf.sub('/opt/aws/bin/cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
+        cf.sub('sudo /usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
+        cf.sub('/usr/local/bin/cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
       ]),
       KeyName: 'mbtiles'
     }
