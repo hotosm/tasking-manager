@@ -261,11 +261,9 @@ jobs:
       - deploy:
           name: Deploy to << parameters.stack_name >>
           command: |
-            cat $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
             export NODE_PATH=/usr/local/share/.config/yarn/global/node_modules/
             validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
             export JSON_CONFIG="$(< $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json)"
-            echo "$JSON_CONFIG"
             cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
 
   frontend_deploy:
@@ -438,9 +436,9 @@ workflows:
           gitsha: $CIRCLE_SHA1
           stack_name: "staging"
           host_ami: "ami-0fec2c2e2017f4e7b"
-          pg_version: "13.10"
-          pg_param_group: "default.postgres13"
-          db_instance_type: "db.t4g.small"
+          pg_version: "11.19"
+          pg_param_group: "tm3-logging-postgres11"
+          db_instance_type: "db.t3.small"
           requires:
             - backend-code-check-PEP8
             - backend-code-check-Black
