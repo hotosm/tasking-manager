@@ -360,7 +360,7 @@ const Resources = {
       UserData: cf.userData([
         '#!/bin/bash',
         'set -x',
-        'sleep 60',
+        'sleep 10',
         'export DEBIAN_FRONTEND=noninteractive',
         'export LC_ALL="en_US.UTF-8"',
         'export LC_CTYPE="en_US.UTF-8"',
