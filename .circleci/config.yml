@@ -431,7 +431,7 @@ workflows:
           gitsha: $CIRCLE_SHA1
           stack_name: "staging"
           host_ami: "ami-0fec2c2e2017f4e7b"
-          pg_version: "13.7"
+          pg_version: "13.10"
           pg_param_group: "default.postgres13"
           requires:
             - backend-code-check-PEP8
