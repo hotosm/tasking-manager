@@ -255,7 +255,8 @@ jobs:
               --arg GITSHA "<< parameters.gitsha >>" \
               --arg AMI "<< parameters.host_ami >>" \
               --arg PGVERSION "<< parameters.pg_version >>" \
-              '.GitSha = $GITSHA | .TaskingManagerBackendAMI = $AMI | .DatabaseEngineVersion = $PGVERSION' \
+              --arg DBTYPE "<< parameters.db_instance_type >>" \
+              '.GitSha = $GITSHA | .TaskingManagerBackendAMI = $AMI | .DatabaseEngineVersion = $PGVERSION | .DatabaseInstanceType = $DBTYPE' \
               /tmp/tasking-manager.cfn.json > "$tmpfile" && mv "$tmpfile" $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
       - deploy:
           name: Deploy to << parameters.stack_name >>
