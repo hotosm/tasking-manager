@@ -227,6 +227,10 @@ jobs:
         description: "Parameter group for RDS PostgreSQL server"
         type: string
         default: "tm3-logging-postgres11"
+      db_instance_type:
+        description: "RDS DB Instance class for the backend database"
+        type: string
+        default: "db.t3.xlarge"
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
@@ -433,6 +437,7 @@ workflows:
           host_ami: "ami-0fec2c2e2017f4e7b"
           pg_version: "13.10"
           pg_param_group: "default.postgres13"
+          db_instance_type: "db.t4g.small"
           requires:
             - backend-code-check-PEP8
             - backend-code-check-Black
