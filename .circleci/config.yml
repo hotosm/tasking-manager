@@ -219,6 +219,10 @@ jobs:
       host_ami:
         description: "AMI of the host instance"
         type: string
+      pg_version:
+        description: "Engine version of PostgreSQL database"
+        type: string
+        default: "11.19"
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
@@ -242,7 +246,8 @@ jobs:
             jq --compact-output \
               --arg GITSHA "<< parameters.gitsha >>" \
               --arg AMI "<< parameters.host_ami >>" \
-              '.GitSha = $GITSHA | .TaskingManagerBackendAMI = $AMI' \
+              --arg PGVERSION "<< parameters.pg_version >>" \
+              '.GitSha = $GITSHA | .TaskingManagerBackendAMI = $AMI | .DatabaseEngineVersion = $PGVERSION' \
               /tmp/tasking-manager.cfn.json > "$tmpfile" && mv "$tmpfile" $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
       - deploy:
           name: Deploy to << parameters.stack_name >>
@@ -422,6 +427,7 @@ workflows:
           gitsha: $CIRCLE_SHA1
           stack_name: "staging"
           host_ami: "ami-0fec2c2e2017f4e7b"
+          pg_version: "13.7"
           requires:
             - backend-code-check-PEP8
             - backend-code-check-Black
