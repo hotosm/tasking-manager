@@ -217,7 +217,7 @@ const Resources = {
     },
     UpdatePolicy: {
       AutoScalingRollingUpdate: {
-        PauseTime: 'PT60M',
+        PauseTime: 'PT10M',
         MaxBatchSize: 2,
         WaitOnResourceSignals: true
       }
@@ -385,7 +385,7 @@ const Resources = {
         'wget --quiet https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
         'dpkg -i /tmp/amazon-cloudwatch-agent.deb',
         'wget --quiet https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz -O /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
-        'pip install --quiet /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
+        'pip install /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
         'echo "Exporting environment variables:"',
         cf.sub('export NEW_RELIC_LICENSE=${NewRelicLicense}'),
         cf.join('', ['export POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address')]),
