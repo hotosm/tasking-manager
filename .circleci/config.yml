@@ -223,6 +223,10 @@ jobs:
         description: "Engine version of PostgreSQL database"
         type: string
         default: "11.19"
+      pg_param_group:
+        description: "Parameter group for RDS PostgreSQL server"
+        type: string
+        default: "tm3-logging-postgres11"
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
@@ -428,6 +432,7 @@ workflows:
           stack_name: "staging"
           host_ami: "ami-0fec2c2e2017f4e7b"
           pg_version: "13.7"
+          pg_param_group: "default.postgres13"
           requires:
             - backend-code-check-PEP8
             - backend-code-check-Black

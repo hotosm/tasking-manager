@@ -638,6 +638,7 @@ const Resources = {
     },
     Properties: {
         Engine: 'postgres',
+	AllowMajorVersionUpgrade: true,
         DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresDB')),
         EngineVersion: cf.ref('DatabaseEngineVersion'),
         MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresUser')),
