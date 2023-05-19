@@ -261,9 +261,11 @@ jobs:
       - deploy:
           name: Deploy to << parameters.stack_name >>
           command: |
+            cat $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
             export NODE_PATH=/usr/local/share/.config/yarn/global/node_modules/
             validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
             export JSON_CONFIG="$(< $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json)"
+            echo "$JSON_CONFIG"
             cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
 
   frontend_deploy:
@@ -414,9 +416,9 @@ workflows:
     when:
       and:
         - not:
-          matches:
-            pattern: "^deployment/.*"
-            value: << pipeline.git.branch >>
+            matches:
+              pattern: "^deployment/.*"
+              value: << pipeline.git.branch >>
         - or:
           - equal: [ develop, << pipeline.git.branch >> ]
           - equal: [ staging-test, << pipeline.git.branch >> ]
