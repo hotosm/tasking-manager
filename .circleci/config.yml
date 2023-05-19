@@ -439,7 +439,7 @@ workflows:
           host_ami: "ami-0fec2c2e2017f4e7b"
           pg_version: "13.10"
           pg_param_group: "default.postgres13"
-          db_instance_type: "db.t3.small"
+          db_instance_type: "db.t4g.small"
           requires:
             - backend-code-check-PEP8
             - backend-code-check-Black
