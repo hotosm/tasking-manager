@@ -110,7 +110,7 @@ The Tasking Manager is using Angular Translate to display the translated strings
 
 ### Setting up Transifex locally
 
-To [set up the Transifex client](https://docs.transifex.com/client/init), you'll need a Transifex account and API key.
+To [set up the Transifex client](https://developers.transifex.com/docs/cli), you'll need a Transifex account and API key.
 In the project's top level directory, initialize Transifex service: `tx init`. The init process will ask for service URL
 (leave the default suggestion by hitting enter) and your Transifex username/password.
 
