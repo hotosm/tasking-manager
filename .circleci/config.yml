@@ -67,6 +67,8 @@ jobs:
           POSTGRES_TEST_DB: test_tm
           POSTGRES_USER: taskingmanager
           POSTGRES_ENDPOINT: localhost
+          TM_ORG_CODE: "CICode"
+          TM_ORG_NAME: "CircleCI Test Organisation"
 
       - image: cimg/postgres:14.2-postgis
         environment:
