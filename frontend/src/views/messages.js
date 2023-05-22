@@ -96,9 +96,38 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.organisation.button.create',
     defaultMessage: 'Create organization',
   },
+  entityCreationSuccess: {
+    id: 'management.entity.creation.success',
+    defaultMessage:
+      '{entity, select, organization {Organization} license {License} project {Project} category {Category} campaign {Campaign} team {Team} other {}} created successfully',
+  },
+  entityCreationFailure: {
+    id: 'management.entity.creation.failure',
+    defaultMessage:
+      'Failed to create {entity, select, organization {organization} license {license} project {project} category {category} campaign {campaign} team {team} other {}}. Please try again.',
+  },
+  entityInfoUpdationSuccess: {
+    id: 'management.entity.updation.success',
+    defaultMessage:
+      '{entity, select, organization {Organization} license {License} project {Project} category {Category} campaign {Campaign} team {Team} other {}} information updated',
+  },
+  entityInfoUpdationFailure: {
+    id: 'management.entity.updation.failure',
+    defaultMessage:
+      'Failed to update {entity, select, organization {organization} license {license} project {project} category {category} campaign {campaign} team {team} other {}} information. Please try again',
+  },
   createTeam: {
     id: 'teamsAndOrgs.management.team.button.create',
     defaultMessage: 'Create team',
+  },
+  affiliationUpdationSuccess: {
+    id: 'management.team.affiliationUpdationSuccess',
+    defaultMessage: '{affiliation, select, managers {Managers} other {Members}} updated',
+  },
+  affiliationUpdationFailure: {
+    id: 'management.team.affiliationUpdationFailure',
+    defaultMessage:
+      'Failed to updated {affiliation, select, managers {Managers} other {Members}}. Please try again',
   },
   createCampaign: {
     id: 'teamsAndOrgs.management.campaign.button.create',

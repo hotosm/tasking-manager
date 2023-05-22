@@ -4,9 +4,11 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
+import { useModifyMembers } from '../hooks/UseModifyMembers';
 import { useEditOrgAllowed } from '../hooks/UsePermissions';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { Members } from '../components/teamsAndOrgs/members';
@@ -22,6 +24,7 @@ import { ChartLineIcon } from '../components/svgIcons';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Alert } from '../components/alert';
+import { updateEntity } from '../utils/management';
 
 export function ListOrganisations() {
   useSetTitleTag('Manage organizations');
@@ -65,28 +68,26 @@ export function CreateOrganisation() {
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const [managers, setManagers] = useState([]);
+  const {
+    members: managers,
+    setMembers: setManagers,
+    addMember: addManagers,
+    removeMember: removeManagers,
+  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (userDetails && userDetails.username && managers.length === 0) {
-      setManagers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
-    }
-  }, [userDetails, managers]);
-
-  const addManagers = (values) => {
-    const newValues = values.filter(
-      (newUser) => !managers.map((i) => i.username).includes(newUser.username),
-    );
-    setManagers(managers.concat(newValues));
-  };
-  const removeManagers = (username) => {
-    setManagers(managers.filter((i) => i.username !== username));
-  };
   const createOrg = (payload) => {
     payload.managers = managers.map((user) => user.username);
     pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'organization',
+            }}
+          />,
+        );
         navigate(`/manage/organisations/${result.organisationId}`);
       })
       .catch((err) => {
@@ -106,6 +107,22 @@ export function CreateOrganisation() {
               </h3>
               <div className="w-40-l w-100">
                 <CreateOrgInfo formState={values} />
+                <div className="cf pv2 ml2">
+                  {error && (
+                    <Alert type="error" compact>
+                      {messages[`orgCreation${error}Error`] ? (
+                        <FormattedMessage {...messages[`orgCreation${error}Error`]} />
+                      ) : (
+                        <FormattedMessage
+                          {...messages.entityCreationFailure}
+                          values={{
+                            entity: 'organization',
+                          }}
+                        />
+                      )}
+                    </Alert>
+                  )}
+                </div>
                 <Members
                   addMembers={addManagers}
                   removeMembers={removeManagers}
@@ -116,18 +133,7 @@ export function CreateOrganisation() {
               </div>
             </div>
             <div className="bottom-0 right-0 left-0 cf bg-white h3 fixed">
-              <div className="w-80-ns w-60-m w-50 h-100 fl tr flex justify-between items-center">
-                <div className="cf pv2 ml2">
-                  {error && (
-                    <Alert type="error" compact>
-                      {messages[`orgCreation${error}Error`] ? (
-                        <FormattedMessage {...messages[`orgCreation${error}Error`]} />
-                      ) : (
-                        <FormattedMessage {...messages[`errorFallback`]} />
-                      )}
-                    </Alert>
-                  )}
-                </div>
+              <div className="w-80-ns w-60-m w-50 h-100 fl tr">
                 <Link to={'../'}>
                   <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
                     <FormattedMessage {...messages.cancel} />
@@ -156,7 +162,12 @@ export function EditOrganisation() {
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const [initManagers, setInitManagers] = useState(false);
-  const [managers, setManagers] = useState([]);
+  const {
+    members: managers,
+    setMembers: setManagers,
+    addMember: addManager,
+    removeMember: removeManager,
+  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
   const [error, loading, organisation] = useFetch(`organisations/${id}/`, id);
   const [isUserAllowed] = useEditOrgAllowed(organisation);
   const [projectsError, projectsLoading, projects] = useFetch(
@@ -171,27 +182,37 @@ export function EditOrganisation() {
       setManagers(organisation.managers);
       setInitManagers(true);
     }
-  }, [organisation, managers, initManagers]);
-
-  const addManagers = (values) => {
-    const newValues = values.filter(
-      (newUser) => !managers.map((i) => i.username).includes(newUser.username),
-    );
-    setManagers(managers.concat(newValues));
-  };
-  const removeManagers = (username) => {
-    setManagers(managers.filter((i) => i.username !== username));
-  };
+  }, [organisation, managers, initManagers, setManagers]);
 
   const updateManagers = () => {
     let payload = JSON.stringify({ managers: managers.map((i) => i.username) });
-    pushToLocalJSONAPI(`organisations/${id}/`, payload, token, 'PATCH');
+    pushToLocalJSONAPI(`organisations/${id}/`, payload, token, 'PATCH')
+      .then(() =>
+        toast.success(
+          <FormattedMessage
+            {...messages.affiliationUpdationSuccess}
+            values={{
+              affiliation: 'managers',
+            }}
+          />,
+        ),
+      )
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.affiliationUpdationFailure}
+            values={{
+              affiliation: 'managers',
+            }}
+          />,
+        ),
+      );
   };
 
   const updateOrg = (payload) => {
-    pushToLocalJSONAPI(`organisations/${id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then(() => setErrorMessage(null))
-      .catch((err) => setErrorMessage(err.message));
+    const onSuccess = () => setErrorMessage(null);
+    const onFailure = (error) => setErrorMessage(error.message);
+    updateEntity(`organisations/${id}/`, 'organization', payload, token, onSuccess, onFailure);
   };
 
   return (
@@ -243,8 +264,8 @@ export function EditOrganisation() {
               errorMessage={errorMessage}
             />
             <Members
-              addMembers={addManagers}
-              removeMembers={removeManagers}
+              addMembers={addManager}
+              removeMembers={removeManager}
               saveMembersFn={updateManagers}
               resetMembersFn={setManagers}
               members={managers}

@@ -3,6 +3,7 @@ import { screen, fireEvent, waitFor, within, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
+import toast from 'react-hot-toast';
 
 import {
   createComponentWithMemoryRouter,
@@ -11,6 +12,12 @@ import {
 } from '../../utils/testWithIntl';
 import { ManageTeams, EditTeam, CreateTeam, MyTeams } from '../teams';
 import { store } from '../../store';
+import { setupFaultyHandlers } from '../../network/tests/server';
+
+jest.mock('react-hot-toast', () => ({
+  success: jest.fn(),
+  error: jest.fn(),
+}));
 
 describe('List Teams', () => {
   it('should show loading placeholder when teams are being fetched', async () => {
@@ -108,7 +115,10 @@ describe('Create Team', () => {
     expect(createButton).toBeEnabled();
     await user.click(joinMethodOption);
     await user.click(createButton);
-    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/teams/123'));
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledTimes(1);
+      expect(router.state.location.pathname).toBe('/manage/teams/123');
+    });
   });
 });
 
@@ -160,7 +170,30 @@ describe('Edit Team', () => {
       name: /save/i,
     });
     await user.click(saveButton);
+    await waitFor(() => expect(toast.success).toHaveBeenCalledTimes(1));
     expect(saveButton).not.toBeInTheDocument();
+  });
+
+  it('should display callout alert error when team info cannot be updated', async () => {
+    setupFaultyHandlers();
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <EditTeam id={123} />
+      </ReduxIntlProviders>,
+    );
+    const user = userEvent.setup();
+    const nameInput = screen.getAllByRole('textbox')[0];
+    await waitFor(() => expect(nameInput.value).toBe('Team Test'));
+    fireEvent.change(nameInput, { target: { value: 'Changed Team Test' } });
+    const saveButton = screen.getByRole('button', {
+      name: /save/i,
+    });
+    await user.click(saveButton);
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Failed to update team information. Please try again/i),
+      ).toBeInTheDocument(),
+    );
   });
 });
 
@@ -225,6 +258,33 @@ describe('Delete Team', () => {
     fireEvent.click(deleteConfirmationButton);
     expect(await screen.findByText('Team deleted successfully.')).toBeInTheDocument();
     await waitFor(() => expect(router.state.location.pathname).toBe('/manage/teams'));
+  });
+
+  it('should display toast message if the team deletion fails', async () => {
+    setupFaultyHandlers();
+    createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <EditTeam id={123} />
+      </ReduxIntlProviders>,
+      {
+        route: '/manage/teams/123',
+      },
+    );
+
+    const deleteButton = screen.getByRole('button', {
+      name: /delete/i,
+    });
+    fireEvent.click(deleteButton);
+    const dialog = await screen.findByRole('dialog');
+    const deleteConfirmationButton = within(dialog).getByRole('button', {
+      name: /delete/i,
+    });
+    fireEvent.click(deleteConfirmationButton);
+    await waitFor(() =>
+      expect(
+        screen.getByText(/An error occurred when trying to delete this team./i),
+      ).toBeInTheDocument(),
+    );
   });
 });
 

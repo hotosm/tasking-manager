@@ -3,6 +3,7 @@ import React from 'react';
 import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
+import toast from 'react-hot-toast';
 
 import {
   createComponentWithMemoryRouter,
@@ -11,10 +12,16 @@ import {
 } from '../../utils/testWithIntl';
 import { ListOrganisations, CreateOrganisation, EditOrganisation } from '../organisationManagement';
 import { store } from '../../store/';
+import { setupFaultyHandlers } from '../../network/tests/server';
+
+jest.mock('react-hot-toast', () => ({
+  success: jest.fn(),
+  error: jest.fn(),
+}));
 
 describe('List Interests', () => {
   const setup = () => {
-    const userDetails = { id: 1, role: 'ADMIN' };
+    const userDetails = { id: 1, role: 'ADMIN', username: 'somebodysomewhere' };
     act(() => {
       store.dispatch({ type: 'SET_USER_DETAILS', userDetails: userDetails });
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
@@ -34,7 +41,7 @@ describe('List Interests', () => {
     expect(container.getElementsByClassName('show-loading-animation').length).toBe(4 * 5);
   });
 
-  it('should fetch and list campaigns', async () => {
+  it('should fetch and list organisations', async () => {
     const { container } = setup();
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
@@ -91,7 +98,7 @@ describe('Create Organization', () => {
     expect(createButton).toBeEnabled();
   });
 
-  it('should navigate to the newly created campaign detail page on creation success', async () => {
+  it('should navigate to the newly created organisation detail page on creation success', async () => {
     const { router, createButton } = setup();
     const nameInput = screen.getAllByRole('textbox')[0];
     const user = userEvent.setup();
@@ -100,13 +107,33 @@ describe('Create Organization', () => {
     fireEvent.mouseDown(subscriptionType);
     user.click(screen.getByText('Free'));
     user.click(createButton);
-    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/organisations/123'));
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledTimes(1);
+      expect(router.state.location.pathname).toBe('/manage/organisations/123');
+    });
+  });
+
+  it('should display toast error message when organization creation fails', async () => {
+    setupFaultyHandlers();
+    const { createButton } = setup();
+    const nameInput = screen.getAllByRole('textbox')[0];
+    const user = userEvent.setup();
+    await user.type(nameInput, 'New Organization Name');
+    const subscriptionType = screen.getByRole('combobox');
+    fireEvent.mouseDown(subscriptionType);
+    user.click(screen.getByText('Free'));
+    user.click(createButton);
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Failed to create organization. Please try again./i),
+      ).toBeInTheDocument(),
+    );
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
 });
 
-describe('EditCampaign', () => {
+describe('Edit Organisation', () => {
   const setup = () => {
     const { container, history } = renderWithRouter(
       <ReduxIntlProviders>
@@ -120,7 +147,7 @@ describe('EditCampaign', () => {
     };
   };
 
-  it('should display the campaign name by default', async () => {
+  it('should display the organisation name by default', async () => {
     setup();
     await waitFor(() => expect(screen.getByText('Manage organization')).toBeInTheDocument());
     const nameInput = screen.getAllByRole('textbox')[0];
@@ -200,12 +227,13 @@ describe('EditCampaign', () => {
       name: /cancel/i,
     });
     fireEvent.click(saveButton);
+    await waitFor(() => expect(toast.success).toHaveBeenCalledTimes(1));
     expect(saveButton).not.toBeInTheDocument();
     expect(cancelButton).not.toBeInTheDocument();
   });
 });
 
-describe('Delete Campaign', () => {
+describe('Delete Organisation', () => {
   const setup = () => {
     const { router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>

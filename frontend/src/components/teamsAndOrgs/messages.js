@@ -68,6 +68,14 @@ export default defineMessages({
     id: 'management.teams.members.send_message',
     defaultMessage: 'Team messaging',
   },
+  sendMessageSuccess: {
+    id: 'management.teams.members.send_message.success',
+    defaultMessage: 'Message sent',
+  },
+  sendMessageFailure: {
+    id: 'management.teams.members.send_message.failure',
+    defaultMessage: 'Failed to send message. Please try again.',
+  },
   send: {
     id: 'management.teams.members.send_message.button',
     defaultMessage: 'Send',
