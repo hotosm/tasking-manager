@@ -11,7 +11,6 @@ jobs:
       - image: cimg/node:16.20
     steps:
       - checkout
-      - setup_remote_docker
       - restore_cache:
           keys:
             - yarn-deps-{{ checksum "frontend/yarn.lock" }}
@@ -38,7 +37,6 @@ jobs:
       - image: cimg/python:3.10
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           name: flake8 tests
           command: | 
@@ -50,7 +48,6 @@ jobs:
       - image: cimg/python:3.10
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           name: black tests
           command: | 
@@ -77,7 +74,6 @@ jobs:
 
     steps:
       - checkout
-      - setup_remote_docker
       - run: sudo apt-get update
       - run: sudo apt-get -y install libgeos-dev # Required for shapely
       - run: sudo apt-get -y install proj-bin libproj-dev
@@ -117,7 +113,6 @@ jobs:
     docker:
       - image: cimg/postgres:15.1-postgis
     steps:
-      - setup_remote_docker
       - aws-cli/setup:
           role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
           profile-name: "OIDC-Profile"
@@ -240,7 +235,6 @@ jobs:
       - image: cimg/python:3.10.7-node
     steps:
       - checkout
-      - setup_remote_docker
       - aws-cli/setup:
           role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
           profile-name: "OIDC-Profile"
@@ -281,7 +275,6 @@ jobs:
         type: string
     steps:
       - checkout
-      - setup_remote_docker
       - aws-cli/setup:
           role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
           profile-name: "OIDC-Profile"
