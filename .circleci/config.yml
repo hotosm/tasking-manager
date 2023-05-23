@@ -428,6 +428,10 @@ workflows:
       - database-backup:
           name: Backup staging database
           stack_name: "staging"
+          requires:
+            - backend-code-check-PEP8
+            - backend-code-check-Black
+            - backend-functional-tests
           context:
             - org-global
             - tasking-manager-staging
@@ -444,9 +448,7 @@ workflows:
           pg_param_group: "default.postgres13"
           db_instance_type: "db.t4g.small"
           requires:
-            - backend-code-check-PEP8
-            - backend-code-check-Black
-            - backend-functional-tests
+            - Backup staging database
           context:
             - org-global
             - tasking-manager-staging
