@@ -39,7 +39,10 @@ dependencies = [
     "gevent==22.10.2",
     "greenlet==2.0.2",
     "gunicorn[gevent]==20.1.0",
-    "importlib-metadata==6.6.0" # See https://github.com/hotosm/tasking-manager/issues/5395
+    # For importlib-metadata, see https://github.com/hotosm/tasking-manager/issues/5395
+    "importlib-metadata==6.6.0",
+    # Dependencies used by hotosm.org for production deployments
+    "newrelic==8.8.0",
 ]
 requires-python = ">=3.9,<=3.11"
 readme = "README.md"
