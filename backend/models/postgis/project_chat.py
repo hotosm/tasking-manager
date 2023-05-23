@@ -69,7 +69,7 @@ class ProjectChat(db.Model):
         project_messages = (
             ProjectChat.query.filter_by(project_id=project_id)
             .order_by(ProjectChat.time_stamp.desc())
-            .paginate(page, per_page, True)
+            .paginate(page=page, per_page=per_page, error_out=True)
         )
 
         dto = ProjectChatDTO()

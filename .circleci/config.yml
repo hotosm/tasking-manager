@@ -35,7 +35,7 @@ jobs:
 
   backend-code-check-PEP8:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
     steps:
       - checkout
       - setup_remote_docker
@@ -47,7 +47,7 @@ jobs:
 
   backend-code-check-Black:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
     steps:
       - checkout
       - setup_remote_docker
@@ -61,12 +61,14 @@ jobs:
     resource_class: large
     docker:
 
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
         environment:
           SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
           POSTGRES_TEST_DB: test_tm
           POSTGRES_USER: taskingmanager
           POSTGRES_ENDPOINT: localhost
+          TM_ORG_CODE: "CICode"
+          TM_ORG_NAME: "CircleCI Test Organisation"
 
       - image: cimg/postgres:14.2-postgis
         environment:
@@ -87,18 +89,19 @@ jobs:
             -c "CREATE EXTENSION postgis;"
       - run: pip install --upgrade pip pdm
       - run: pdm config --global python.use_venv False
-      - run: pdm export --prod --without-hashes > requirements.txt
+      - run: pdm export --dev --without-hashes > requirements.txt
       - run: pip install -r requirements.txt
       - run: mkdir --mode 766 -p /tmp/logs
       - run: mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
       - run: find ./tests/backend -name "test*.py" -exec chmod -x {} \;
       - run: echo "export TM_LOG_DIR=/tmp/logs" >> $BASH_ENV
+      - run: coverage erase
       - run:
           name: Run backend functional tests
           command: |
-            nosetests ./tests/backend --with-xunit \
-              --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
-              --with-coverage --cover-erase --cover-package=./backend
+            coverage run --source ./backend -m pytest \
+              --rootdir ./tests/backend \
+              --junit-xml ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml
       - run: coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
       - store_test_results:
           path: tests/backend/results/unitresults.xml
@@ -161,10 +164,10 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-      - image: cimg/python:3.9.14-node
+      - image: cimg/python:3.10.7-node
         environment:
           SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
-      - image: cimg/postgres:14.2-postgis
+      - image: cimg/postgres:14.7-postgis
         environment:
           POSTGRES_USER: taskingmanager
           POSTGRES_DB: test_tm
@@ -184,7 +187,7 @@ jobs:
       - run: cd ${CIRCLE_WORKING_DIRECTORY}
       - run: pip install --upgrade pip pdm
       - run: pdm config --global python.use_venv False
-      - run: pdm export --prod --without-hashes > requirements.txt
+      - run: pdm export --dev --without-hashes > requirements.txt
       - run: pip install -r requirements.txt
       - run: mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
       - run: find ./tests/backend -name "test*.py" -exec chmod -x {} \;
@@ -192,9 +195,9 @@ jobs:
       - run:
           name: Run backend tests
           command: |
-            nosetests ./tests/backend --with-xunit \
-              --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
-              --with-coverage --cover-erase --cover-package=./backend
+            coverage run --source ./backend -m pytest \
+              --rootdir ./tests/backend \
+              --junit-xml ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml
       - run: coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
       - store_test_results:
           path: tests/backend/results/unitresults.xml
@@ -234,7 +237,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
-      - image: cimg/python:3.9.14-node
+      - image: cimg/python:3.10.7-node
     steps:
       - checkout
       - setup_remote_docker
@@ -271,7 +274,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
     docker:
-      - image: cimg/python:3.9.14-node
+      - image: cimg/python:3.10.7-node
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"

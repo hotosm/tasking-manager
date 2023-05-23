@@ -67,7 +67,7 @@ do  sudo -u postgres psql -c "alter table \"$tbl\" owner to $POSTGRES_USER" $POS
 cd ../../ &&
 
 # Upgrade database
-python3 manage.py db upgrade &&
+pdm run flask db upgrade &&
 
 # Assamble the tasking manager interface
 cd frontend/ &&
@@ -78,4 +78,4 @@ cd ../ &&
 ## Please edit the tasking-manager.env as indicated in the README.md ##
 
 # Start the tasking manager
-python3 manage.py runserver -d
+pdm run flask run -d

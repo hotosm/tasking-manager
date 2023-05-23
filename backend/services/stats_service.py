@@ -1,6 +1,6 @@
 from cachetools import TTLCache, cached
 from datetime import date, timedelta
-from sqlalchemy import func, desc, cast, extract, or_, tuple_
+from sqlalchemy import func, desc, cast, extract, or_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
 
@@ -136,7 +136,7 @@ class StatsService:
                 TaskHistory.action != TaskAction.COMMENT.name,
             )
             .order_by(TaskHistory.action_date.desc())
-            .paginate(page, 10, True)
+            .paginate(page=page, per_page=10, error_out=True)
         )
 
         activity_dto = ProjectActivityDTO()
@@ -547,9 +547,7 @@ class StatsService:
                 func.DATE(TaskHistory.action_date).label("day"),
             )
             .distinct(
-                tuple_(
-                    TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text
-                )
+                TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text
             )
             .filter(
                 TaskHistory.action == "STATE_CHANGE",

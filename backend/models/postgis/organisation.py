@@ -131,7 +131,7 @@ class Organisation(db.Model):
         :param organisation_id: organisation ID in scope
         :return: Organisation if found otherwise None
         """
-        return Organisation.query.get(organisation_id)
+        return db.session.get(Organisation, organisation_id)
 
     @staticmethod
     def get_organisation_by_name(organisation_name: str):

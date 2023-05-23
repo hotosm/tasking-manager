@@ -462,8 +462,8 @@ class OrganisationsAllAPI(Resource):
             )
 
         # Validate abbreviated.
-        omit_managers = strtobool(request.args.get("omitManagerList", "false"))
-        omit_stats = strtobool(request.args.get("omitOrgStats", "true"))
+        omit_managers = bool(strtobool(request.args.get("omitManagerList", "false")))
+        omit_stats = bool(strtobool(request.args.get("omitOrgStats", "true")))
         # Obtain organisations
         try:
             results_dto = OrganisationService.get_organisations_as_dto(

@@ -205,9 +205,7 @@ class OrganisationService:
         ).filter(Project.organisation_id == organisation_id)
         if year:
             start_date = f"{year}/01/01"
-            projects = projects.filter(
-                Project.created.between(start_date, datetime.today())
-            )
+            projects = projects.filter(Project.created.between(start_date, func.now()))
 
         published_projects = projects.filter(
             Project.status == ProjectStatus.PUBLISHED.value

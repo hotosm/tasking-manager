@@ -8,7 +8,7 @@ from flask import current_app
 from sqlalchemy import text, func
 from markdown import markdown
 
-from backend import create_app, db
+from backend import db
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType, NotFound
@@ -122,9 +122,7 @@ class MessageService:
         over a minute to run, so this method is expected to be called on its own thread
         """
 
-        app = (
-            create_app()
-        )  # Because message-all run on background thread it needs it's own app context
+        app = current_app  # Because message-all run on background thread it needs it's own app context
 
         with app.app_context():
             contributors = Message.get_all_contributors(project_id)
@@ -318,9 +316,7 @@ class MessageService:
         transferred_by: str,
     ):
         """Will send a message to the manager of the organization after a project is transferred"""
-        app = (
-            create_app()
-        )  # Because message-all run on background thread it needs it's own app context
+        app = current_app  # Because message-all run on background thread it needs it's own app context
 
         with app.app_context():
             project = Project.get(project_id)
@@ -385,7 +381,7 @@ class MessageService:
         message.message = f"{user_link} has requested to join the {team_link} team.\
             Access the team management page to accept or reject that request."
         MessageService._push_messages(
-            [dict(message=message, user=User.query.get(to_user))]
+            [dict(message=message, user=db.session.get(User, to_user))]
         )
 
     @staticmethod
@@ -466,7 +462,7 @@ class MessageService:
     ):
         """Send alert to user if they were @'d in a chat message"""
         # Because message-all run on background thread it needs it's own app context
-        app = create_app()
+        app = current_app
         with app.app_context():
             usernames = MessageService._parse_message_for_username(chat, project_id)
             if len(usernames) != 0:
@@ -496,9 +492,10 @@ class MessageService:
                 MessageService._push_messages(messages)
 
             query = """ select user_id from project_favorites where project_id = :project_id"""
-            favorited_users_results = db.engine.execute(
-                text(query), project_id=project_id
-            )
+            with db.engine.connect() as conn:
+                favorited_users_results = conn.execute(
+                    text(query), project_id=project_id
+                )
             favorited_users = [r[0] for r in favorited_users_results]
 
             # Notify all contributors except the user that created the comment.
@@ -572,9 +569,10 @@ class MessageService:
             project_name = ProjectInfo.get_dto_for_locale(
                 project.id, project.default_locale
             ).name
-            last_active_users = db.engine.execute(
-                text(query_last_active_users), project_id=project.id
-            )
+            with db.engine.connect() as conn:
+                last_active_users = conn.execute(
+                    text(query_last_active_users), project_id=project.id
+                )
 
             for recent_user_id in last_active_users:
                 recent_user_details = UserService.get_user_by_id(recent_user_id)
@@ -615,7 +613,7 @@ class MessageService:
         parsed = parser.findall(message)
 
         usernames = []
-        project = Project.query.get(project_id)
+        project = db.session.get(Project, project_id)
 
         if project is None:
             return usernames
@@ -719,7 +717,7 @@ class MessageService:
         results = (
             query.filter(Message.to_user_id == user_id)
             .order_by(sort_column)
-            .paginate(page, page_size, True)
+            .paginate(page=page, per_page=page_size, error_out=True)
         )
         # if results.total == 0:
         #     raise NotFound()
@@ -742,7 +740,7 @@ class MessageService:
     @staticmethod
     def get_message(message_id: int, user_id: int) -> Message:
         """Gets the specified message"""
-        message = Message.query.get(message_id)
+        message = db.session.get(Message, message_id)
 
         if message is None:
             raise NotFound()

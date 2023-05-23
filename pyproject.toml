@@ -6,98 +6,55 @@ authors = [
     {name = "HOT Sysadmin", email = "sysadmin@hotosm.org"},
 ]
 dependencies = [
-    "alembic==1.4.3",
-    "aniso8601==8.0.0",
-    "appdirs==1.4.4",
-    "APScheduler==3.7.0",
-    "attrs==20.2.0",
-    "black==23.3.0",
-    "bleach==5.0.1",
-    "blinker==1.5",
-    "cachetools==4.1.1",
-    "certifi==2020.6.20",
-    "chardet==3.0.4",
-    "charset-normalizer==2.0.12",
-    "click==8.1.3",
-    "coverage==6.4",
-    "entrypoints==0.3",
-    "flake8==3.8.4",
-    "Flask==1.1.2",
-    "Flask-Cors==3.0.9",
-    "Flask-HTTPAuth==4.1.0",
+    # Direct dependencies (at least one import requires it)
+    "APScheduler==3.10.1",
+    "alembic==1.11.1",
+    "bleach==6.0.0",
+    "cachetools==5.3.0",
+    "Flask==2.3.2",
+    "Flask-Cors==3.0.10",
+    "Flask-HTTPAuth==4.8.0",
+    "Flask-Migrate==4.0.4",
     "Flask-Mail==0.9.1",
-    "Flask-Migrate==2.5.3",
-    "Flask-RESTful==0.3.8",
-    "Flask-Script==2.0.6",
-    "Flask-SQLAlchemy==2.4.4",
+    "Flask-RESTful==0.3.9",
+    "Flask-SQLAlchemy==3.0.3",
     "flask-swagger==0.2.14",
-    "GeoAlchemy2==0.8.4",
-    "geojson==1.3.4",
-    "gevent==21.12.0",
-    "glob2==0.7",
-    "greenlet==1.1.2",
-    "gunicorn==20.0.4",
-    "idna==2.10",
-    "importlib-metadata==4.13.0",
-    "itsdangerous==1.1.0",
-    "Jinja2==2.11.3",
-    "Mako==1.2.2",
-    "Markdown==3.3.3",
-    "MarkupSafe==1.1.1",
-    "mccabe==0.6.1",
-    "mypy-extensions==1.0.0",
-    "newrelic==8.8.0",
-    "nose==1.3.7",
-    "oauthlib==3.2.0",
-    "packaging==23.1",
-    "pathspec==0.11.1",
-    "platformdirs==3.5.0",
-    "psycopg2==2.8.6",
-    "pycodestyle==2.6.0",
-    "pyflakes==2.2.0",
-    "pyparsing==2.4.7",
-    "pyproj==3.5.0",
-    "python-dateutil==2.8.1",
-    "python-dotenv==0.14.0",
-    "python-editor==1.0.4",
-    "python-slugify==4.0.1",
-    "pytz==2020.1",
-    "PyYAML==5.4",
-    "regex==2022.10.31",
-    "requests==2.27.1",
+    "GeoAlchemy2==0.13.3",
+    "geojson==3.0.1",
+    "itsdangerous==2.1.2",
+    "Markdown==3.4.3",
+    "oauthlib==3.2.2",
+    "psycopg2==2.9.6",
+    "python-dateutil==2.8.2",
+    "python-dotenv==1.0.0",
+    "python-slugify==8.0.1",
+    "requests==2.30.0",
     "requests-oauthlib==1.3.1",
     "schematics==2.1.1",
-    "sentry-sdk[flask]==1.5.8",
-    "setuptools==67.7.2",
-    "Shapely==1.7.1",
-    "six==1.15.0",
-    "SQLAlchemy==1.3.20",
-    "text-unidecode==1.3",
-    "toml==0.10.1",
-    "tomli==2.0.1",
-    "typed-ast==1.5.4",
-    "typing-extensions==4.5.0",
-    "tzlocal==2.1",
-    "Unidecode==1.1.1",
-    "urllib3==1.26.9",
-    "webencodings==0.5.1",
-    "Werkzeug==0.16.1",
-    "zipp==3.15.0",
-    "zope-event==4.6",
-    "zope-interface==6.0",
+    "sentry-sdk[flask]==1.23.1",
+    "shapely==2.0.1",
+    "SQLAlchemy==2.0.13",
+    "Werkzeug==2.3.4",
+    # Indirect, but required dependencies (often required for efficient deployments)
+    "gevent==22.10.2",
+    "greenlet==2.0.2",
+    "gunicorn[gevent]==20.1.0",
+    "importlib-metadata==6.6.0" # See https://github.com/hotosm/tasking-manager/issues/5395
 ]
 requires-python = ">=3.9,<=3.11"
 readme = "README.md"
 license = {text = "BSD-2-Clause"}
 
 [tool]
-[tool.pdm]
+[tool.pdm.dev-dependencies]
+test = ["coverage==7.2.5", "pytest==7.3.1"]
+lint = ["black==23.3.0", "flake8==6.0.0"]
 
 [tool.pdm.scripts]
-start = "python manage.py runserver -d -r"
-migrate = "python manage.py db migrate"
-upgrade = "python manage.py db upgrade"
-downgrade = "python manage.py db downgrade"
+start = "flask run --debug --reload"
+migrate = "flask db migrate"
+upgrade = "flask db upgrade"
+downgrade = "flask db downgrade"
 test = "python -m unittest discover"
 lint = "black manage.py backend tests migrations"
 flake8 = "flake8 manage.py backend tests migrations"

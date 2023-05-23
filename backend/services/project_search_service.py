@@ -377,12 +377,16 @@ class ProjectSearchService:
         if not search_dto.omit_map_results:
             query_result = query
             query_result.column_descriptions.clear()
-            query_result.add_column(Project.id)
-            query_result.add_column(Project.centroid.ST_AsGeoJSON().label("centroid"))
-            query_result.add_column(Project.priority)
+            query_result.add_columns(
+                Project.id,
+                Project.centroid.ST_AsGeoJSON().label("centroid"),
+                Project.priority,
+            )
             all_results = query_result.all()
 
-        paginated_results = query.paginate(search_dto.page, 14, True)
+        paginated_results = query.paginate(
+            page=search_dto.page, per_page=14, error_out=True
+        )
 
         return all_results, paginated_results
 
@@ -546,7 +550,8 @@ class ProjectSearchService:
             polygon = box(bbox[0], bbox[1], bbox[2], bbox[3])
             if not srid == 4326:
                 geometry = shape.from_shape(polygon, srid)
-                geom_4326 = db.engine.execute(ST_Transform(geometry, 4326)).scalar()
+                with db.engine.connect() as conn:
+                    geom_4326 = conn.execute(ST_Transform(geometry, 4326)).scalar()
                 polygon = shape.to_shape(geom_4326)
         except Exception as e:
             current_app.logger.error(f"InvalidData- error making polygon: {e}")
@@ -556,9 +561,10 @@ class ProjectSearchService:
     @staticmethod
     def _get_area_sqm(polygon: Polygon) -> float:
         """get the area of the polygon in square metres"""
-        return db.engine.execute(
-            ST_Area(ST_Transform(shape.from_shape(polygon, 4326), 3857))
-        ).scalar()
+        with db.engine.connect() as conn:
+            return conn.execute(
+                ST_Area(ST_Transform(shape.from_shape(polygon, 4326), 3857))
+            ).scalar()
 
     @staticmethod
     def validate_bbox_area(polygon: Polygon) -> bool:

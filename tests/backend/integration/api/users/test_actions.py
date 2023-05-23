@@ -116,7 +116,7 @@ class TestUsersActionsRegisterEmailAPI(BaseTestCase):
     def test_returns_400_if_no_data(self):
         """Test that the API returns 400 if no data is provided"""
         # Act
-        response = self.client.post(self.url)
+        response = self.client.post(self.url, content_type="application/json")
         # Assert
         self.assertEqual(response.status_code, 400)
 
