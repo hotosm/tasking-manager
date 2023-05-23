@@ -9,6 +9,7 @@ jobs:
     resource_class: large
     docker:
       - image: cimg/node:16.20
+    working_directory: /home/circleci/tasking-manager
     steps:
       - checkout
       - restore_cache:
@@ -72,6 +73,7 @@ jobs:
           POSTGRES_USER: taskingmanager
           POSTGRES_DB: test_tm
 
+    working_directory: /home/circleci/tasking_manager
     steps:
       - checkout
       - run: sudo apt-get update
