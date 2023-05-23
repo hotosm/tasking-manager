@@ -42,7 +42,7 @@ dependencies = [
     # For importlib-metadata, see https://github.com/hotosm/tasking-manager/issues/5395
     "importlib-metadata==6.6.0",
     # Dependencies used by hotosm.org for production deployments
-    "newrelic==8.8.0"
+    "newrelic==8.8.0",
 ]
 requires-python = ">=3.9,<=3.11"
 readme = "README.md"

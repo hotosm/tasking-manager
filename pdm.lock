@@ -333,6 +333,12 @@ requires_python = ">=3.5"
 summary = "Type system extensions for programs checked with the mypy type checker."
 
 [[package]]
+name = "newrelic"
+version = "8.8.0"
+requires_python = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*"
+summary = "New Relic Python Agent"
+
+[[package]]
 name = "numpy"
 version = "1.24.3"
 requires_python = ">=3.8"
@@ -600,7 +606,7 @@ dependencies = [
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "lint", "test"]
-content_hash = "sha256:5ba64926de94b3b5a7fd4204cb4925a0b72a7b364f9bcf7bc89db774f1525d56"
+content_hash = "sha256:61f3ec7f075aae93dfc9d4acf143762569ce7ff35cf2f6682a56449354f3f8e5"
 
 [metadata.files]
 "alembic 1.11.1" = [
@@ -1116,6 +1122,23 @@ content_hash = "sha256:5ba64926de94b3b5a7fd4204cb4925a0b72a7b364f9bcf7bc89db774f
 "mypy-extensions 1.0.0" = [
     {url = "https://files.pythonhosted.org/packages/2a/e2/5d3f6ada4297caebe1a2add3b126fe800c96f56dbe5d1988a2cbe0b267aa/mypy_extensions-1.0.0-py3-none-any.whl", hash = "sha256:4392f6c0eb8a5668a69e23d168ffa70f0be9ccfd32b5cc2d26a34ae5b844552d"},
     {url = "https://files.pythonhosted.org/packages/98/a4/1ab47638b92648243faf97a5aeb6ea83059cc3624972ab6b8d2316078d3f/mypy_extensions-1.0.0.tar.gz", hash = "sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782"},
+]
+"newrelic 8.8.0" = [
+    {url = "https://files.pythonhosted.org/packages/06/eb/9226b7d12a768ba6e8f2372733c66b4146b3bcfa30f2a75a699b9997934e/newrelic-8.8.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:caccdf201735df80b470ddf772f60a154f2c07c0c1b2b3f6e999d55e79ce601e"},
+    {url = "https://files.pythonhosted.org/packages/0b/73/9c78820ecf2da85b30beca9f926a29cfd05c6cac7df2d9e05991b9c85734/newrelic-8.8.0.tar.gz", hash = "sha256:84d1f71284efa5f1cae696161e0c3cb65eaa2f53116fe5e7c5a62be7d15d9536"},
+    {url = "https://files.pythonhosted.org/packages/20/7c/ae3ebc3bc71a9d2780b23673010d0d36f31b0421d768eaaca75cbc46abe9/newrelic-8.8.0-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:9c0d5153b7363d5cb5cac7f8d1a4e03669b074afee2dda201851a67c7bed1e32"},
+    {url = "https://files.pythonhosted.org/packages/22/85/8a4e83e88686eed019708d604246dc73abae223378d882c8022bd2c16938/newrelic-8.8.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ef9c178329f8c04f0574908c1f04ff1f18b9eba55b869744583fee3eac48e571"},
+    {url = "https://files.pythonhosted.org/packages/3d/f8/f70e87096f6a219c9f0b59f418ad0353c6969b73a56e1f7a2286678fa082/newrelic-8.8.0-cp27-cp27mu-manylinux2010_x86_64.whl", hash = "sha256:6662ec79493f23f9d0995a015177c87508bea4c541f7c9f17a61b503b82e1367"},
+    {url = "https://files.pythonhosted.org/packages/44/3f/8a5cd001ab5a2dc0f6416afbdeabfb988912f2c345661ec737be256b757b/newrelic-8.8.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9355f209ba8d82fd0f9d78d7cc1d9bef0ae4677b3cfed7b7aaec521adbe87559"},
+    {url = "https://files.pythonhosted.org/packages/46/08/85dff494ef49185cd39363294c613b7aef62aa3ee2175b3a3df0e71307cd/newrelic-8.8.0-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:435ac9e3791f78e05c9da8107a6ef49c13e62ac302696858fa2411198fe201ff"},
+    {url = "https://files.pythonhosted.org/packages/57/47/3f79edeae09ee5b53eb6d215102ba84764ba3af5afc5acd7d74984169d0b/newrelic-8.8.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:796ed5ff44b04b41e051dc0112e5016e53a37e39e95023c45ff7ecd34c254a7d"},
+    {url = "https://files.pythonhosted.org/packages/7e/47/515de1ee4f706188b7ee376bdeac96d4358bff976b97842d98ffe80f2ff4/newrelic-8.8.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c4a0556c6ece49132ab1c32bfe398047a8311f9a8b6862b482495d132fcb0ad4"},
+    {url = "https://files.pythonhosted.org/packages/80/3a/faa4137e8ce946ac75a9b27cad2d7dd09306fdf6a656f8c8d06e49db7688/newrelic-8.8.0-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bcd3219e1e816a0fdb51ac993cac6744e6a835c13ee72e21d86bcbc2d16628ce"},
+    {url = "https://files.pythonhosted.org/packages/96/14/ec5af84deda6d565a67ca54c0bb0620c0f62104fda193586b2ef7b907620/newrelic-8.8.0-cp27-cp27m-manylinux2010_x86_64.whl", hash = "sha256:d21af16cee1e0caf4c73c4c1b2d7ba9f33fe6a870d93135dc8b23ac592f49b38"},
+    {url = "https://files.pythonhosted.org/packages/b2/69/994eefdc4759f45a98dab654227b013344f6e69b5590144071476cf99286/newrelic-8.8.0-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:da8f2dc31e182768fe314d8ceb6f42acd09956708846f8ae71f07f044a3aa05e"},
+    {url = "https://files.pythonhosted.org/packages/c1/6b/30e09d683d57d02827c36090cdcc5390646fb4a8915cb6cf465cf8b42fda/newrelic-8.8.0-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1bc307d06e2033637e7b484af22f540ca041fb23a54b311bcd5968ca1a64e4ef"},
+    {url = "https://files.pythonhosted.org/packages/ee/aa/208f4eedd3d5e750bbbd1a6e50848104be440db6d115f8a9d883c117aca1/newrelic-8.8.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6b4db0e7544232d4e6e835a02ee28637970576f8dce82ffcaa3d675246e822d5"},
+    {url = "https://files.pythonhosted.org/packages/f7/06/ae14351252d47260a17e7fca8527c8352efa707f8f3ba24ae4ce0aab5362/newrelic-8.8.0-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:67902b3c53fa497dba887068166261d114ac2347c8a4908d735d7594cca163dc"},
 ]
 "numpy 1.24.3" = [
     {url = "https://files.pythonhosted.org/packages/0d/43/643629a4a278b4815541c7d69856c07ddb0e99bdc62b43538d3751eae2d8/numpy-1.24.3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:4719d5aefb5189f50887773699eaf94e7d1e02bf36c1a9d353d9f46703758ca4"},
