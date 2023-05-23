@@ -181,6 +181,10 @@ jobs:
         description: "RDS DB Instance class for the backend database"
         type: string
         default: "db.t3.xlarge"
+      backend_instance_type:
+        description: "Backend EC2 Instance type"
+        type: string
+        default: "c6a.large"
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
@@ -205,8 +209,9 @@ jobs:
               --arg AMI "<< parameters.host_ami >>" \
               --arg PGVERSION "<< parameters.pg_version >>" \
               --arg DBTYPE "<< parameters.db_instance_type >>" \
+              --arg EC2TYPE "<< parameters.backend_instance_type >>" \
               --arg DBPARAMG "<< parameters.pg_param_group >>" \
-              '.GitSha = $GITSHA | .TaskingManagerBackendAMI = $AMI | .DatabaseEngineVersion = $PGVERSION | .DatabaseInstanceType = $DBTYPE | .DatabaseParameterGroupName = $DBPARAMG' \
+              '.GitSha = $GITSHA | .TaskingManagerBackendAMI = $AMI | .DatabaseEngineVersion = $PGVERSION | .DatabaseInstanceType = $DBTYPE | .DatabaseParameterGroupName = $DBPARAMG | .TaskingManagerBackendInstanceType = $EC2TYPE' \
               /tmp/tasking-manager.cfn.json > "$tmpfile" && mv "$tmpfile" $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
       - deploy:
           name: Deploy to << parameters.stack_name >>
@@ -381,9 +386,17 @@ workflows:
             - org-global
             - tasking-manager-staging
       - frontend-code-test
+      - hold_frontend:
+          type: approval
+          requires:
+            - frontend-code-test
       - backend-code-check-PEP8
       - backend-code-check-Black
       - backend-functional-tests
+      - hold_backend:
+          type: approval
+          requires:
+            - Backup staging database
       - backend_deploy:
           name: Deploy development/staging backend
           gitsha: $CIRCLE_SHA1
@@ -392,8 +405,9 @@ workflows:
           pg_version: "13.10"
           pg_param_group: "default.postgres13"
           db_instance_type: "db.t4g.small"
+          backend_instance_type: "t3.medium"
           requires:
-            - Backup staging database
+            - hold_backend
           context:
             - org-global
             - tasking-manager-staging
@@ -401,7 +415,7 @@ workflows:
           name: Deploy development/staging frontend
           stack_name: "staging"
           requires:
-            - frontend-code-test
+            - hold_frontend
           context:
             - org-global
             - tasking-manager-staging
