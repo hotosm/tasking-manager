@@ -432,7 +432,4 @@ workflows:
       - backend-code-check-Black
       - backend-functional-tests
 
-notify:
-  webhooks:
-    - url: https://api.opsgenie.com/v1/json/circleci?apiKey=${OPSGENIE_API}
 
