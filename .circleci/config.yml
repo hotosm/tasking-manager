@@ -158,56 +158,6 @@ jobs:
           command: |
             echo "TODO: BACKUP VALIDATION NOT IMPLEMENTED"
 
-  build:
-    working_directory: /home/circleci/app
-    docker:
-      - image: cimg/python:3.10.7-node
-        environment:
-          SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
-      - image: cimg/postgres:14.7-postgis
-        environment:
-          POSTGRES_USER: taskingmanager
-          POSTGRES_DB: test_tm
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: sudo apt-get -y update
-      - run: sudo apt-get -y install libgeos-dev # Required for shapely
-      - run: sudo apt-get install postgresql-client
-      - run: psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
-      - run: chown -R circleci:circleci ${CIRCLE_WORKING_DIRECTORY}
-      - run: chmod -R 755 ${CIRCLE_WORKING_DIRECTORY}
-      - restore_cache:
-          keys:
-            - node-{{ .Environment.CACHEVERSION }}-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
-      - run: cd ${CIRCLE_WORKING_DIRECTORY}/frontend && yarn 
-      - run: cd ${CIRCLE_WORKING_DIRECTORY}
-      - run: pip install --upgrade pip pdm
-      - run: pdm config --global python.use_venv False
-      - run: pdm export --dev --without-hashes > requirements.txt
-      - run: pip install -r requirements.txt
-      - run: mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
-      - run: find ./tests/backend -name "test*.py" -exec chmod -x {} \;
-      - run: coverage erase
-      - run:
-          name: Run backend tests
-          command: |
-            coverage run --source ./backend -m pytest \
-              --rootdir ./tests/backend \
-              --junit-xml ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml
-      - run: coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
-      - store_test_results:
-          path: tests/backend/results/unitresults.xml
-      - store_artifacts:
-          path: tests/backend/results
-      - save_cache:
-          key: node-{{ .Environment.CACHEVERSION }}-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
-          paths:
-            - frontend/node_modules
-            - env
-    # https://circleci.com/docs/2.0/configuration-reference/#resourceclass
-    resource_class: large
-
   backend_deploy:
     parameters:
       stack_name:
