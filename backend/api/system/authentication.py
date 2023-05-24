@@ -80,7 +80,7 @@ class SystemAuthenticationCallbackAPI(Resource):
         token_url = f"{EnvironmentConfig.OSM_SERVER_URL}/oauth2/token"
         authorization_code = request.args.get("code", None)
         if authorization_code is None:
-            return {"Subcode": "InvalidData", "Error": "Missing code parameter"}, 500
+            return {"SubCode": "InvalidData", "Error": "Missing code parameter"}, 400
 
         email = request.args.get("email_address", None)
         redirect_uri = request.args.get(
@@ -101,7 +101,7 @@ class SystemAuthenticationCallbackAPI(Resource):
         if osm_resp is None:
             current_app.logger.critical("Couldn't obtain token from OSM.")
             return {
-                "Subcode": "TokenFetchError",
+                "SubCode": "TokenFetchError",
                 "Error": "Couldn't fetch token from OSM.",
             }, 502
 
@@ -111,7 +111,7 @@ class SystemAuthenticationCallbackAPI(Resource):
         if osm_response.status_code != 200:
             current_app.logger.critical("Error response from OSM")
             return {
-                "Subcode": "OSMServiceError",
+                "SubCode": "OSMServiceError",
                 "Error": "Couldn't fetch user details from OSM.",
             }, 502
 
