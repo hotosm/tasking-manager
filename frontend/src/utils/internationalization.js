@@ -72,10 +72,14 @@ let ConnectedIntl = (props) => {
     if (props.locale === null) {
       props.setLocale(getSupportedLocale(navigator.language).value);
     }
-    getTranslatedMessages(props.locale).then((messages) => setI18nMessages(messages));
+    getTranslatedMessages(props.locale)
+      .then((messages) => setI18nMessages(messages))
+      .catch((err) => console.error(err));
   }, [props]);
 
-  polyfill(props.locale ? props.locale.substring(0, 3) : DEFAULT_LOCALE);
+  polyfill(props.locale ? props.locale.substring(0, 3) : DEFAULT_LOCALE).catch((err) =>
+    console.error(err),
+  );
 
   if (i18nMessages === undefined || i18nMessages === null) {
     return <div />;
