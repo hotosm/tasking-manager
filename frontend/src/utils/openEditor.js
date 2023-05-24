@@ -135,19 +135,16 @@ function loadTasksBoundaries(project, selectedTasks) {
   const layerName = `Boundary for task${selectedTasks.length > 1 ? 's:' : ':'} ${selectedTasks.join(
     ',',
   )} of TM Project #${project.projectId} - Do not edit or upload`;
-  const emptyTaskLayerParams = {
+  const tmTaskLayerParams = {
     new_layer: true,
     layer_name: layerName,
-    data: '<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>',
-  };
-  const tmTaskLayerParams = {
-    new_layer: false,
+    layer_locked: true,
+    download_policy: "never",
+    upload_policy: "never",
     url: getTaskXmlUrl(project.projectId, selectedTasks).href,
   };
 
-  return callJosmRemoteControl(formatJosmUrl('load_data', emptyTaskLayerParams)).then((result) =>
-    callJosmRemoteControl(formatJosmUrl('import', tmTaskLayerParams)),
-  );
+  return callJosmRemoteControl(formatJosmUrl('import', tmTaskLayerParams));
 }
 
 export function getImageryInfo(url) {
@@ -185,11 +182,6 @@ function loadImageryonJosm(project) {
 }
 
 function loadOsmDataToTasks(project, bbox, newLayer) {
-  const emptyOSMLayerParams = {
-    new_layer: newLayer,
-    layer_name: 'OSM Data',
-    data: '<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>',
-  };
   const loadAndZoomParams = {
     left: bbox[0],
     bottom: bbox[1],
@@ -197,12 +189,11 @@ function loadOsmDataToTasks(project, bbox, newLayer) {
     top: bbox[3],
     changeset_comment: project.changesetComment,
     changeset_source: project.imagery ? project.imagery : '',
-    new_layer: false,
+    new_layer: newLayer,
+    layer_name: 'OSM Data',
   };
 
-  return callJosmRemoteControl(formatJosmUrl('load_data', emptyOSMLayerParams)).then((result) => {
-    return callJosmRemoteControl(formatJosmUrl('load_and_zoom', loadAndZoomParams));
-  });
+  return callJosmRemoteControl(formatJosmUrl('load_and_zoom', loadAndZoomParams));
 }
 
 export function formatJosmUrl(endpoint, params) {
