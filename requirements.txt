@@ -39,7 +39,7 @@ SQLAlchemy==2.0.13
 Werkzeug==2.3.4
 # Dev dependencies (stuff useful for development)
 black==23.3.0
-coverage==7.2.5
+coverage==7.2.6
 flake8==6.0.0
 pytest==7.3.1
 # Indirect, but required dependencies (often required for efficient deployments)
