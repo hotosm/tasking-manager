@@ -180,4 +180,7 @@ export const DROPZONE_SETTINGS = {
   },
   multiple: false,
   maxSize: 256000,
+  // noClick is needed to avoid file picker dialogs when switching between `Write` and `Preview` in `CommentInputField`
+  // At time of writing, this workaround is only needed on Chromium based browsers.
+  noClick: true,
 };
