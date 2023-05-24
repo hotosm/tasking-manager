@@ -8,6 +8,7 @@ from backend.models.postgis.utils import NotFound
 from backend.models.postgis.statuses import UserRole
 from backend.services.messaging.chat_service import ChatService, ChatMessageDTO
 
+
 TEST_MESSAGE = "Test comment"
 
 
