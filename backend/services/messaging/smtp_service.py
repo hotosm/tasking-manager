@@ -46,7 +46,9 @@ class SMTPService:
     def send_contact_admin_email(data):
         email_to = current_app.config["EMAIL_CONTACT_ADDRESS"]
         if email_to is None:
-            raise ValueError("variable TM_EMAIL_CONTACT_ADDRESS not set")
+            raise ValueError(
+                "This feature is not implemented due to missing variable TM_EMAIL_CONTACT_ADDRESS."
+            )
 
         message = """New contact from {name} - {email}.
             <p>{content}</p>

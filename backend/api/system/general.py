@@ -228,8 +228,10 @@ class SystemContactAdminRestAPI(Resource):
             data = request.get_json()
             SMTPService.send_contact_admin_email(data)
             return {"Success": "Email sent"}, 201
+        except ValueError as e:
+            return {"Error": str(e), "SubCode": "NotImplemented"}, 501
         except Exception as e:
-            error_msg = f"Application GET API - unhandled error: {str(e)}"
+            error_msg = f"Contact Admin POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {
                 "Error": "Unable to fetch application keys",
