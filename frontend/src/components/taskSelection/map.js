@@ -386,14 +386,21 @@ export const TasksMap = ({
       });
 
       if (taskBordersOnly && navigate) {
+        let navigateInProgress = false;
+        const navigateToTasks = () => {
+          if (!navigateInProgress) {
+            navigateInProgress = true;
+            navigate('./tasks');
+          }
+        };
         map.on('mouseenter', 'point-tasks-centroid', function (e) {
           map.getCanvas().style.cursor = 'pointer';
         });
         map.on('mouseleave', 'point-tasks-centroid', function (e) {
           map.getCanvas().style.cursor = '';
         });
-        map.on('click', 'point-tasks-centroid', () => navigate('./tasks'));
-        map.on('click', 'point-tasks-centroid-inner', () => navigate('./tasks'));
+        map.on('click', 'point-tasks-centroid', navigateToTasks);
+        map.on('click', 'point-tasks-centroid-inner', navigateToTasks);
       }
 
       map.on('click', 'tasks-fill', onSelectTaskClick);
