@@ -11,6 +11,7 @@ import messages from './messages';
 import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import lock from '../../assets/img/lock.png';
 import redlock from '../../assets/img/red-lock.png';
+import { useDebouncedCallback } from '../../hooks/UseThrottle';
 
 let lockIcon = new Image(17, 20);
 lockIcon.src = lock;
@@ -47,6 +48,8 @@ export const TasksMap = ({
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
 
   const [map, setMapObj] = useState(null);
+
+  const [debouncedNavigateToTasks] = useDebouncedCallback(() => navigate('./tasks'), 100);
 
   useLayoutEffect(() => {
     /* May be able to refactor this to just take
@@ -392,8 +395,8 @@ export const TasksMap = ({
         map.on('mouseleave', 'point-tasks-centroid', function (e) {
           map.getCanvas().style.cursor = '';
         });
-        map.on('click', 'point-tasks-centroid', () => navigate('./tasks'));
-        map.on('click', 'point-tasks-centroid-inner', () => navigate('./tasks'));
+        map.on('click', 'point-tasks-centroid', debouncedNavigateToTasks);
+        map.on('click', 'point-tasks-centroid-inner', debouncedNavigateToTasks);
       }
 
       map.on('click', 'tasks-fill', onSelectTaskClick);
@@ -487,6 +490,7 @@ export const TasksMap = ({
     zoomedTaskId,
     authDetails.username,
     intl,
+    debouncedNavigateToTasks,
   ]);
 
   if (!mapboxgl.supported()) {
