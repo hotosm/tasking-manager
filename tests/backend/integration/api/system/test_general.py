@@ -21,3 +21,18 @@ class TestSystemReleaseAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json["release_version"], release["tag_name"])
+
+
+class TestSystemLanguagesAPI(BaseTestCase):
+    def test_get_system_languages(self):
+        url = "/api/v2/system/languages/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertListEqual(
+            list(response.json.keys()),
+            [
+                "mapperLevelIntermediate",
+                "mapperLevelAdvanced",
+                "supportedLanguages",
+            ],
+        )
