@@ -7,12 +7,15 @@ from tests.backend.base import BaseTestCase
 from backend.config import EnvironmentConfig
 from backend.services.users.user_service import UserService, NotFound
 from backend.services.messaging.message_service import MessageService
+from backend.services.messaging.smtp_service import SMTPService
+from backend.services.users.authentication_service import AuthenticationService
 from tests.backend.helpers.test_helpers import return_canned_user
 
 
 USERNAME = "test_user"
 USER_ID = 1234
 USER_PICTURE = "test_href"
+USER_EMAIL = "test_email"
 
 USER_JSON = {
     "user": {
@@ -176,3 +179,96 @@ class TestSystemAuthenticationCallbackAPI(BaseTestCase):
             UserService.get_user_by_username(USERNAME).email_address, "test_email"
         )
         mock_send_welcome_message.assert_called_once()
+
+
+class TestSystemAuthenticationEmailAPI(BaseTestCase):
+    def setUp(self):
+        self.url = "/api/v2/system/authentication/email/"
+        return super().setUp()
+
+    def test_returns_404_if_user_does_not_exist(self):
+        # Act
+        response = self.client.get(
+            self.url, query_string={"username": "non_existent_user"}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "UserNotFound")
+        self.assertEqual(response.json["Error"], "User not found")
+
+    def test_returns_403_if_invalid_email_token(self):
+        # Arrange
+        user = return_canned_user(USERNAME, USER_ID)
+        user.create()
+        # Act
+        response = self.client.get(
+            self.url, query_string={"token": "1234", "username": USERNAME}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "BadSignature")
+        self.assertEqual(response.json["Error"], " Bad Token Signature")
+
+    @patch.object(AuthenticationService, "is_valid_token")
+    def test_returns_403_if_expired_email_token(self, mock_is_valid_token):
+        # Arrange
+        # Since the token is only expired if it's older than 1 day, we need to mock the function to return False
+        mock_is_valid_token.return_value = (False, "ExpiredToken- Token has expired")
+        user = return_canned_user(USERNAME, USER_ID)
+        user.create()
+        verification_url = SMTPService._generate_email_verification_url(
+            USER_EMAIL, USERNAME
+        )
+        token = verification_url.split("token=")[1].split("&")[0]
+        # Act
+        response = self.client.get(
+            self.url, query_string={"token": token, "username": USERNAME}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "ExpiredToken")
+        self.assertEqual(response.json["Error"], " Token has expired")
+
+    def test_returns_403_if_token_and_email_mismatch(self):
+        # Arrange
+        user = return_canned_user(USERNAME, USER_ID)
+        user.email_address = "test_email_2"
+        user.create()
+        verification_url = SMTPService._generate_email_verification_url(
+            USER_EMAIL, USERNAME
+        )
+        token = verification_url.split("token=")[1].split("&")[0]
+        # Act
+        response = self.client.get(
+            self.url, query_string={"token": token, "username": USERNAME}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "InvalidEmail")
+        self.assertEqual(response.json["Error"], " Email address does not match token")
+
+    def test_returns_200_if_valid_token(self):
+        # Arrange
+        user = return_canned_user(USERNAME, USER_ID)
+        user.email_address = USER_EMAIL
+        user.create()
+        verification_url = SMTPService._generate_email_verification_url(
+            USER_EMAIL, USERNAME
+        )
+        token = verification_url.split("token=")[1].split("&")[0]
+        # Assert - User should not have email verified
+        self.assertEqual(
+            UserService.get_user_by_username(USERNAME).is_email_verified, False
+        )
+        # Act
+        response = self.client.get(
+            self.url, query_string={"token": token, "username": USERNAME}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            UserService.get_user_by_username(USERNAME).email_address, USER_EMAIL
+        )
+        self.assertEqual(
+            UserService.get_user_by_username(USERNAME).is_email_verified, True
+        )
