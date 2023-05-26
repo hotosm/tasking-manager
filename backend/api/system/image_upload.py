@@ -55,7 +55,7 @@ class SystemImageUploadRestAPI(Resource):
             return {
                 "Error": "Image upload service not defined",
                 "SubCode": "UndefinedImageService",
-            }, 500
+            }, 501
 
         try:
             data = request.get_json()
@@ -84,6 +84,11 @@ class SystemImageUploadRestAPI(Resource):
                     return result.json(), 201
                 else:
                     return result.json(), 400
+            elif data.get("mime") is None:
+                return {
+                    "Error": "Missing mime parameter",
+                    "SubCode": "MissingMime",
+                }, 400
             else:
                 return (
                     {
