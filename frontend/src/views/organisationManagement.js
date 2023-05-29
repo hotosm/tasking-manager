@@ -5,6 +5,7 @@ import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
 import toast from 'react-hot-toast';
+import { useQueryParams, BooleanParam } from 'use-query-params';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -34,12 +35,20 @@ export function ListOrganisations() {
     (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
   const [organisations, setOrganisations] = useState(null);
-  const [userOrgsOnly, setUserOrgsOnly] = useState(userDetails.role === 'ADMIN' ? false : true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [query, setQuery] = useQueryParams({
+    showAll: BooleanParam,
+  });
+  const [userOrgsOnly, setUserOrgsOnly] = useState(Boolean(!query.showAll));
 
   useEffect(() => {
-    if (token && userDetails && userDetails.id) {
+    setQuery({ ...query, showAll: userOrgsOnly === false ? true : undefined });
+    //eslint-disable-next-line
+  }, [userOrgsOnly]);
+
+  useEffect(() => {
+    if (token && userDetails?.id) {
       setLoading(true);
       const queryParam = `${userOrgsOnly ? `?manager_user_id=${userDetails.id}` : ''}`;
       fetchLocalJSONAPI(`organisations/${queryParam}`, token)

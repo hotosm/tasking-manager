@@ -64,14 +64,17 @@ export function ListTeams({ managementView = false }: Object) {
   const [teams, setTeams] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // QUERY PARAMETERS
   const [query, setQuery] = useQueryParams({
     page: withDefault(NumberParam, 1),
-    isUserTeamsOnly: BooleanParam,
+    showAll: BooleanParam,
     searchQuery: withDefault(StringParam, undefined),
   });
-  const isUserTeamsOnly = query.isUserTeamsOnly === undefined ? true : query.isUserTeamsOnly;
-  const [userTeamsOnly, setUserTeamsOnly] = useState(isUserTeamsOnly);
+  const [userTeamsOnly, setUserTeamsOnly] = useState(Boolean(!query.showAll));
+
+  useEffect(() => {
+    setQuery({ ...query, page: 1, showAll: userTeamsOnly === false ? true : undefined });
+    //eslint-disable-next-line
+  }, [userTeamsOnly]);
 
   const encodedQuery = encodeQueryParams(
     { page: NumberParam, team_name: StringParam },
@@ -83,7 +86,7 @@ export function ListTeams({ managementView = false }: Object) {
   }`;
 
   useEffect(() => {
-    if (token && userDetails && userDetails.id) {
+    if (token && userDetails?.id) {
       const controller = new AbortController();
       const { signal } = controller;
       let queryParam;

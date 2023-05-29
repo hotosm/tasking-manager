@@ -27,12 +27,12 @@ export function OrgsManagement({
   setUserOrgsOnly,
   isOrganisationsFetched,
 }: Object) {
-  const [query, setQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const onSearchInputChange = (e) => setQuery(e.target.value);
+  const onSearchInputChange = (e) => setSearchQuery(e.target.value);
 
   const filteredOrganisations = organisations?.filter((organisation) =>
-    organisation.name.toLowerCase().includes(query.toLowerCase()),
+    organisation.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -58,10 +58,10 @@ export function OrgsManagement({
       >
         <div className="w-20-l w-25-m">
           <TextField
-            value={query}
+            value={searchQuery}
             placeholderMsg={messages.searchOrganisations}
             onChange={onSearchInputChange}
-            onCloseIconClick={() => setQuery('')}
+            onCloseIconClick={() => setSearchQuery('')}
           />
         </div>
         {isOrgManager ? (

@@ -2,6 +2,8 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { act } from '@testing-library/react-hooks';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
+import { QueryParamProvider } from 'use-query-params';
 import userEvent from '@testing-library/user-event';
 import toast from 'react-hot-toast';
 
@@ -27,9 +29,11 @@ describe('List Interests', () => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
     const { container } = createComponentWithMemoryRouter(
-      <ReduxIntlProviders>
-        <ListOrganisations />
-      </ReduxIntlProviders>,
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
+        <ReduxIntlProviders>
+          <ListOrganisations />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
     );
     return {
       container,
