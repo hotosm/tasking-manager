@@ -12,7 +12,7 @@
 APScheduler==3.10.1
 alembic==1.11.1
 bleach==6.0.0
-cachetools==5.3.0
+cachetools==5.3.1
 Flask==2.3.2
 Flask-Cors==3.0.10
 Flask-HTTPAuth==4.8.0
