@@ -80,19 +80,7 @@ export const CommentInputField = ({
         setComment(e.target.value);
       });
     }
-    // cleanup function
-    return () => {
-      mentionIcon.removeEventListener('mousedown', function (e) {
-        e.preventDefault();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        tribute.showMenuForCollection(textareaRef.current.textarea, 0);
-        // setComment((prev) => prev + e.target.value);
-      });
-      textareaRef.current.textarea.removeEventListener('tribute-replaced', (e) => {
-        setComment((prev) => prev + e.target.value);
-      });
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textareaRef.current, contributors]);
 
   const handleImagePick = async (event) =>

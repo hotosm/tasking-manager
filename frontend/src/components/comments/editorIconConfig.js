@@ -96,13 +96,11 @@ export const iconConfig = {
       </svg>
     ),
     execute: (state, api) => {
-      const newSelectionRange = selectWord({ text: state.text, selection: state.selection });
-      const state1 = api.setSelectionRange(newSelectionRange);
-      const state2 = api.replaceSelection(`@${state1.selectedText}`);
-      api.setSelectionRange({
-        start: state2.selection.end - state1.selectedText.length,
-        end: state2.selection.end,
-      });
+      let modifyText = `@${state.selectedText}\n`;
+      if (!state.selectedText) {
+        modifyText = `@`;
+      }
+      api.replaceSelection(modifyText);
     },
   },
   upload: {
