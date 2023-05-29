@@ -476,7 +476,7 @@ summary = "Python Data Structures for Humans"
 
 [[package]]
 name = "sentry-sdk"
-version = "1.23.1"
+version = "1.24.0"
 summary = "Python client for Sentry (https://sentry.io)"
 dependencies = [
     "certifi",
@@ -486,14 +486,14 @@ dependencies = [
 
 [[package]]
 name = "sentry-sdk"
-version = "1.23.1"
+version = "1.24.0"
 extras = ["flask"]
 summary = "Python client for Sentry (https://sentry.io)"
 dependencies = [
     "blinker>=1.1",
     "flask>=0.11",
     "markupsafe",
-    "sentry-sdk==1.23.1",
+    "sentry-sdk==1.24.0",
 ]
 
 [[package]]
@@ -606,7 +606,7 @@ dependencies = [
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "lint", "test"]
-content_hash = "sha256:61f3ec7f075aae93dfc9d4acf143762569ce7ff35cf2f6682a56449354f3f8e5"
+content_hash = "sha256:50ff182d0a2ffa2ee06af1ca74724ad4a08a72d58a6518fc0dde42e4982c6d09"
 
 [metadata.files]
 "alembic 1.11.1" = [
@@ -1291,9 +1291,9 @@ content_hash = "sha256:61f3ec7f075aae93dfc9d4acf143762569ce7ff35cf2f6682a5644935
     {url = "https://files.pythonhosted.org/packages/a5/e1/c9dca73caf001f82e8479e382a66820cbd29f461f465a12d4b3d7e0b929a/schematics-2.1.1-py2.py3-none-any.whl", hash = "sha256:be2d451bfb86789975e5ec0864aec569b63cea9010f0d24cbbd992a4e564c647"},
     {url = "https://files.pythonhosted.org/packages/d8/28/2c25f4c95bce21e37bc6dbe696dceeaa71c7c92665a12134b6c312390736/schematics-2.1.1.tar.gz", hash = "sha256:34c87f51a25063bb498ae1cc201891b134cfcb329baf9e9f4f3ae869b767560f"},
 ]
-"sentry-sdk 1.23.1" = [
-    {url = "https://files.pythonhosted.org/packages/19/3e/23af11049f2ff6242afbd428c4cf92e2996e151f4f5d46c2210e8204900e/sentry_sdk-1.23.1-py2.py3-none-any.whl", hash = "sha256:a884e2478e0b055776ea2b9234d5de9339b4bae0b3a5e74ae43d131db8ded27e"},
-    {url = "https://files.pythonhosted.org/packages/d8/e2/4ae46cb5098d93e258127c191f5e1f97f0e9f17f6871cfef864b92e5663f/sentry-sdk-1.23.1.tar.gz", hash = "sha256:0300fbe7a07b3865b3885929fb863a68ff01f59e3bcfb4e7953d0bf7fd19c67f"},
+"sentry-sdk 1.24.0" = [
+    {url = "https://files.pythonhosted.org/packages/19/88/54482c9c4f2cf65591fd18f10c2850345fa6daab313afcd5283c7411a81e/sentry-sdk-1.24.0.tar.gz", hash = "sha256:0bbcecda9f51936904c1030e7fef0fe693e633888f02a14d1cb68646a50e83b3"},
+    {url = "https://files.pythonhosted.org/packages/19/ce/d908d49b2e22d1830645fd39fb1a2a90bcb94fea7f1e4547b6817eb1af72/sentry_sdk-1.24.0-py2.py3-none-any.whl", hash = "sha256:56d6d9d194c898d853a7c1dd99bed92ce82334ee1282292c15bcc967ff1a49b5"},
 ]
 "setuptools 67.7.2" = [
     {url = "https://files.pythonhosted.org/packages/2f/8c/f336a966d4097c7cef6fc699b2ecb83b5fb63fd698198c1b5c7905a74f0f/setuptools-67.7.2-py3-none-any.whl", hash = "sha256:23aaf86b85ca52ceb801d32703f12d77517b2556af839621c641fca11287952b"},
