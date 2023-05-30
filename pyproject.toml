@@ -33,7 +33,7 @@ dependencies = [
     "schematics==2.1.1",
     "sentry-sdk[flask]==1.24.0",
     "shapely==2.0.1",
-    "SQLAlchemy==2.0.13",
+    "SQLAlchemy==2.0.15",
     "Werkzeug==2.3.4",
     # Indirect, but required dependencies (often required for efficient deployments)
     "gevent==22.10.2",
