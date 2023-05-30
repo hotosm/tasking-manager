@@ -177,7 +177,7 @@ dependencies = [
 
 [[package]]
 name = "flask-restful"
-version = "0.3.9"
+version = "0.3.10"
 summary = "Simple framework for creating REST APIs"
 dependencies = [
     "Flask>=0.8",
@@ -606,7 +606,7 @@ dependencies = [
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "lint", "test"]
-content_hash = "sha256:4ab1fc7056fedcc3e1c4351f0b0e927dd421c494995eb0b4c7209601c9955468"
+content_hash = "sha256:bbbbb11baf1827498c5fe6b5026d9fd7006cef421612fff08c27cf4542d0c727"
 
 [metadata.files]
 "alembic 1.11.1" = [
@@ -895,9 +895,9 @@ content_hash = "sha256:4ab1fc7056fedcc3e1c4351f0b0e927dd421c494995eb0b4c7209601c
     {url = "https://files.pythonhosted.org/packages/a9/70/1286459e3dac091dbe9d7101973ac97eec5c2e0508e276e21f492fb7edf8/Flask-Migrate-4.0.4.tar.gz", hash = "sha256:73293d40b10ac17736e715b377e7b7bde474cb8105165d77474df4c3619b10b3"},
     {url = "https://files.pythonhosted.org/packages/e4/65/9e0a6ce67e1776b0d8a4ebcd40ee519b6c8339a62b05dbc9b153c0d6a17b/Flask_Migrate-4.0.4-py3-none-any.whl", hash = "sha256:77580f27ab39bc68be4906a43c56d7674b45075bc4f883b1d0b985db5164d58f"},
 ]
-"flask-restful 0.3.9" = [
-    {url = "https://files.pythonhosted.org/packages/5c/50/4892719b13abd401f40a69359c3d859d0ea76bf78e66db058d6c06a95b01/Flask-RESTful-0.3.9.tar.gz", hash = "sha256:ccec650b835d48192138c85329ae03735e6ced58e9b2d9c2146d6c84c06fa53e"},
-    {url = "https://files.pythonhosted.org/packages/a9/02/7e21a73564fe0d9d1a3a4ff478dfc407815c4e2fa4e5121bcfc646ba5d15/Flask_RESTful-0.3.9-py2.py3-none-any.whl", hash = "sha256:4970c49b6488e46c520b325f54833374dc2b98e211f1b272bd4b0c516232afe2"},
+"flask-restful 0.3.10" = [
+    {url = "https://files.pythonhosted.org/packages/c0/ce/a0a133db616ea47f78a41e15c4c68b9f08cab3df31eb960f61899200a119/Flask-RESTful-0.3.10.tar.gz", hash = "sha256:fe4af2ef0027df8f9b4f797aba20c5566801b6ade995ac63b588abf1a59cec37"},
+    {url = "https://files.pythonhosted.org/packages/d7/7b/f0b45f0df7d2978e5ae51804bb5939b7897b2ace24306009da0cc34d8d1f/Flask_RESTful-0.3.10-py2.py3-none-any.whl", hash = "sha256:1cf93c535172f112e080b0d4503a8d15f93a48c88bdd36dd87269bdaf405051b"},
 ]
 "flask-sqlalchemy 3.0.3" = [
     {url = "https://files.pythonhosted.org/packages/7a/33/b0418aaeb6b122fccfdea1bf3c06843225ba29159b65c0acf9bd4285ee01/Flask-SQLAlchemy-3.0.3.tar.gz", hash = "sha256:2764335f3c9d7ebdc9ed6044afaf98aae9fa50d7a074cef55dde307ec95903ec"},
