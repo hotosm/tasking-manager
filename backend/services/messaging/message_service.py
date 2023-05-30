@@ -500,11 +500,9 @@ class MessageService:
 
                 MessageService._push_messages(messages)
 
-            query = """ select user_id from project_favorites where project_id = :project_id"""
+            query = f""" select user_id from project_favorites where project_id ={project_id}"""
             with db.engine.connect() as conn:
-                favorited_users_results = conn.execute(
-                    text(query), project_id=project_id
-                )
+                favorited_users_results = conn.execute(text(query))
             favorited_users = [r[0] for r in favorited_users_results]
 
             # Notify all contributors except the user that created the comment.
