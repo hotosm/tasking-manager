@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_project,
@@ -7,6 +9,8 @@ from tests.backend.helpers.test_helpers import (
 from backend.models.postgis.utils import NotFound
 from backend.models.postgis.statuses import UserRole
 from backend.services.messaging.chat_service import ChatService, ChatMessageDTO
+from backend.services.messaging.message_service import MessageService
+
 
 TEST_MESSAGE = "Test comment"
 
@@ -76,7 +80,8 @@ class TestCommentsProjectsAllAPI(BaseTestCase):
         self.assertEqual(response_body["Error"], "Unable to add chat message")
         self.assertEqual(response_body["SubCode"], "InvalidData")
 
-    def test_post_comment_to_project_chat_passes(self):
+    @patch.object(MessageService, "send_message_after_chat")
+    def test_post_comment_to_project_chat_passes(self, mock_send_message):
         """
         Test that endpoint returns 201 when user successfully posts a comment to the project chat
         """
@@ -90,6 +95,7 @@ class TestCommentsProjectsAllAPI(BaseTestCase):
         self.assertEqual(len(response_body["chat"]), 1)
         chat_details = response_body["chat"][0]
         self.assertEqual(chat_details["message"], "<p>Test comment</p>")
+        mock_send_message.assert_called_once()
 
     # get
     def test_get_chat_messages_of_non_existent_project_fails(self):
