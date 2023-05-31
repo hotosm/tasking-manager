@@ -47,6 +47,8 @@ class SystemImageUploadRestAPI(Resource):
             description: User is not authorized to upload images
           500:
             description: A problem occurred
+          501:
+            description: Image upload service not defined
         """
         if (
             current_app.config["IMAGE_UPLOAD_API_URL"] is None
@@ -55,7 +57,7 @@ class SystemImageUploadRestAPI(Resource):
             return {
                 "Error": "Image upload service not defined",
                 "SubCode": "UndefinedImageService",
-            }, 500
+            }, 501
 
         try:
             data = request.get_json()
@@ -84,6 +86,11 @@ class SystemImageUploadRestAPI(Resource):
                     return result.json(), 201
                 else:
                     return result.json(), 400
+            elif data.get("mime") is None:
+                return {
+                    "Error": "Missing mime parameter",
+                    "SubCode": "MissingMime",
+                }, 400
             else:
                 return (
                     {
