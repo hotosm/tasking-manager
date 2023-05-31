@@ -29,7 +29,7 @@ USER_JSON = {
 
 class TestSystemAuthenticationLoginAPI(BaseTestCase):
     def test_get_login_url(self):
-        """ Test correct login url is returned """
+        """Test correct login url is returned"""
         url = "/api/v2/system/authentication/login/"
         # Act
         response = self.client.get(url)
