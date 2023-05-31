@@ -42,6 +42,13 @@ test('CreateProject renders ProjectCreate', async () => {
     </QueryParamProvider>,
   );
   expect(screen.getByText('Loading...')).toBeInTheDocument();
+  await waitFor(() => expect(screen.queryByText('Loading...')).not.toBeInTheDocument());
+  // Since WebGL is not supported by Node, we'll assume that the map context will be loaded
+  // If WebGL was supported by Node, we could look for `Step 1: define area` instead.
+  expect(
+    await screen.findByRole('heading', { name: 'WebGL Context Not Found' }),
+  ).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'WebGL is enabled' })).toBeInTheDocument();
 });
 
 describe('UserProjectsPage Component', () => {
