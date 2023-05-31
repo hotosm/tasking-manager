@@ -2,9 +2,7 @@
 name = "HOTOSM Tasking Manager"
 version = "0.1.0"
 description = "The tool to team up for mapping in OpenStreetMap"
-authors = [
-    {name = "HOT Sysadmin", email = "sysadmin@hotosm.org"},
-]
+authors = [{ name = "HOT Sysadmin", email = "sysadmin@hotosm.org" }]
 dependencies = [
     # Direct dependencies (at least one import requires it)
     "APScheduler==3.10.1",
@@ -46,12 +44,13 @@ dependencies = [
 ]
 requires-python = ">=3.9,<=3.11"
 readme = "README.md"
-license = {text = "BSD-2-Clause"}
+license = { text = "BSD-2-Clause" }
 
 [tool]
 [tool.pdm.dev-dependencies]
 test = ["coverage==7.2.6", "pytest==7.3.1"]
 lint = ["black==23.3.0", "flake8==6.0.0"]
+dev = ["psycopg2-binary>=2.9.6"]
 
 [tool.pdm.scripts]
 start = "flask run --debug --reload"
