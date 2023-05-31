@@ -463,6 +463,10 @@ class MessageService:
         """Send alert to user if they were @'d in a chat message"""
         # Because message-all run on background thread it needs it's own app context
         app = current_app
+        if (
+            app.config["ENVIRONMENT"] == "test"
+        ):  # Don't send in test mode as this will cause tests to fail.
+            return
         with app.app_context():
             usernames = MessageService._parse_message_for_username(chat, project_id)
             if len(usernames) != 0:

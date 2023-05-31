@@ -12,6 +12,7 @@ from backend.services.messaging.chat_service import ChatService, ChatMessageDTO
 from backend.services.messaging.message_service import MessageService
 
 
+
 TEST_MESSAGE = "Test comment"
 
 

@@ -73,6 +73,9 @@ def create_app(env="backend.config.EnvironmentConfig"):
     app = Flask(__name__, template_folder="services/messaging/templates/")
 
     # Load configuration options from environment
+    # Set env to TestEnvironmentConfig if TM_ENVIRONMENT is test
+    if os.getenv("TM_ENVIRONMENT") == "test":
+        env = "backend.config.TestEnvironmentConfig"
     app.config.from_object(env)
     # Enable logging to files
     initialise_logger(app)

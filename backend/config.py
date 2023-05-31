@@ -241,6 +241,8 @@ class EnvironmentConfig:
 class TestEnvironmentConfig(EnvironmentConfig):
     POSTGRES_TEST_DB = os.getenv("POSTGRES_TEST_DB", None)
 
+    ENVIRONMENT = "test"
+
     SQLALCHEMY_DATABASE_URI = (
         f"postgresql://{EnvironmentConfig.POSTGRES_USER}"
         + f":{EnvironmentConfig.POSTGRES_PASSWORD}"

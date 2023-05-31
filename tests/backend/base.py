@@ -1,4 +1,5 @@
 import unittest
+import os
 
 from typing import Optional
 from shapely.geometry import shape
@@ -27,6 +28,9 @@ class BaseTestCase(unittest.TestCase):
         # ±5.56595 cm at the equator. This is the default, and realistically
         # is probably more than enough for the TM.
         geojson.geometry.DEFAULT_PRECISION = 7
+
+        # Set the "TM_ENVIRONMENT" environment variable to "test" to use the test configuration
+        os.environ["TM_ENVIRONMENT"] = "test"
         cls.app = create_app("backend.config.TestEnvironmentConfig")
         cls.app.config.update({"TESTING": True})
         cls.db = db
