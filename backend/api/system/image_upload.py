@@ -47,6 +47,8 @@ class SystemImageUploadRestAPI(Resource):
             description: User is not authorized to upload images
           500:
             description: A problem occurred
+          501:
+            description: Image upload service not defined
         """
         if (
             current_app.config["IMAGE_UPLOAD_API_URL"] is None

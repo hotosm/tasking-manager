@@ -221,6 +221,8 @@ class SystemContactAdminRestAPI(Resource):
             description: Email sent successfully
           400:
               description: Invalid Request
+          501:
+            description: Not Implemented
           500:
             description: A problem occurred
         """

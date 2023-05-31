@@ -72,6 +72,8 @@ class SystemAuthenticationCallbackAPI(Resource):
         responses:
           302:
             description: Redirects to login page, or login failed page
+          400:
+            description: Missing/Invalid code parameter
           500:
             description: A problem occurred authenticating the user
           502:
@@ -145,6 +147,10 @@ class SystemAuthenticationEmailAPI(Resource):
         responses:
             301:
                 description: Will redirect to email validation page
+            403:
+                description: Forbidden
+            404:
+                description: User not found
             500:
                 description: Internal Server Error
         """
