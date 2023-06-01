@@ -95,8 +95,8 @@ class EnvironmentConfig:
     # Configuration for sending emails
     MAIL_SERVER = os.getenv("TM_SMTP_HOST", None)
     MAIL_PORT = os.getenv("TM_SMTP_PORT", "587")
-    MAIL_USE_TLS = bool(os.getenv("TM_SMTP_USE_TLS", True))
-    MAIL_USE_SSL = bool(os.getenv("TM_SMTP_USE_SSL", False))
+    MAIL_USE_TLS = bool(int(os.getenv("TM_SMTP_USE_TLS", True)))
+    MAIL_USE_SSL = bool(int(os.getenv("TM_SMTP_USE_SSL", False)))
     MAIL_USERNAME = os.getenv("TM_SMTP_USER", None)
     MAIL_PASSWORD = os.getenv("TM_SMTP_PASSWORD", None)
     MAIL_DEFAULT_SENDER = os.getenv("TM_EMAIL_FROM_ADDRESS", "noreply@hotosmmail.org")
@@ -112,8 +112,8 @@ class EnvironmentConfig:
         _params = json.loads(os.getenv("SMTP_CREDENTIALS", None))
         MAIL_SERVER = _params.get("SMTP_HOST", None)
         MAIL_PORT = _params.get("SMTP_PORT", "587")
-        MAIL_USE_TLS = bool(_params.get("SMTP_USE_TLS", True))
-        MAIL_USE_SSL = bool(_params.get("SMTP_USE_SSL", False))
+        MAIL_USE_TLS = bool(int(_params.get("SMTP_USE_TLS", True)))
+        MAIL_USE_SSL = bool(int(_params.get("SMTP_USE_SSL", False)))
         MAIL_USERNAME = _params.get("SMTP_USER", None)
         MAIL_PASSWORD = _params.get("SMTP_PASSWORD", None)
 
