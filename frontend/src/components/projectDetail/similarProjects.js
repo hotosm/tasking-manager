@@ -14,7 +14,7 @@ export const SimilarProjects = ({ projectId }) => {
 
   return (
     <div className="bg-white mb3">
-      { !loading && (error || similarProjects.results.length === 0) ? (
+      {!loading && (error || similarProjects.results.length === 0) ? (
         <p className="blue-light mv3 mh4">
           <FormattedMessage {...messages.noSimilarProjectsFound} />
         </p>
