@@ -166,10 +166,25 @@ const handlers = [
   rest.delete(API_URL + 'notifications/:id/', async (req, res, ctx) => {
     return res(ctx.json({ Success: 'Message deleted' }));
   }),
+  rest.delete(API_URL + 'notifications/delete-all/', async (req, res, ctx) => {
+    return res(ctx.json({ Success: 'Message deleted' }));
+  }),
+  rest.delete(API_URL + 'notifications/delete-all/:types', async (req, res, ctx) => {
+    return res(ctx.json({ Success: 'Message deleted' }));
+  }),
   rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
     return res(ctx.json({ Success: 'Message deleted' }));
   }),
   rest.post(API_URL + 'notifications/queries/own/post-unread/', async (req, res, ctx) => {
+    return res(ctx.json(null));
+  }),
+  rest.post(API_URL + 'notifications/mark-as-read-all/', async (req, res, ctx) => {
+    return res(ctx.json(null));
+  }),
+  rest.post(API_URL + 'notifications/mark-as-read-all/:types', async (req, res, ctx) => {
+    return res(ctx.json(null));
+  }),
+  rest.post(API_URL + 'notifications/mark-as-read-multiple/', async (req, res, ctx) => {
     return res(ctx.json(null));
   }),
   // USER
@@ -380,6 +395,11 @@ const faultyHandlers = [
   rest.delete(API_URL + 'teams/:id', failedToConnectError),
   rest.post(API_URL + 'organisations', failedToConnectError),
   rest.delete(API_URL + 'notifications/delete-multiple/', failedToConnectError),
+  rest.delete(API_URL + 'notifications/delete-all/', failedToConnectError),
+  rest.delete(API_URL + 'notifications/delete-all/:types', failedToConnectError),
+  rest.post(API_URL + 'notifications/mark-as-read-all/', failedToConnectError),
+  rest.post(API_URL + 'notifications/mark-as-read-all/:types', failedToConnectError),
+  rest.post(API_URL + 'notifications/mark-as-read-multiple/', failedToConnectError),
   rest.delete(API_URL + 'notifications/:id/', failedToConnectError),
   rest.patch(API_URL + 'users/:username/actions/set-level/:level', failedToConnectError),
   rest.patch(API_URL + 'users/:username/actions/set-role/:role', failedToConnectError),

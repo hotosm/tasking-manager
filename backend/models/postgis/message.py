@@ -171,7 +171,49 @@ class Message(db.Model):
         ).delete(synchronize_session=False)
         db.session.commit()
 
+    @staticmethod
+    def delete_all_messages(user_id: int, message_type_filters: list = None):
+        """Deletes all messages to the user
+        -----------------------------------
+        :param user_id: user id of the user whose messages are to be deleted
+        :param message_type_filters: list of message types to filter by
+        returns: None
+        """
+        query = Message.query.filter(Message.to_user_id == user_id)
+        if message_type_filters:
+            query = query.filter(Message.message_type.in_(message_type_filters))
+        query.delete(synchronize_session=False)
+        db.session.commit()
+
     def delete(self):
         """Deletes the current model from the DB"""
         db.session.delete(self)
+        db.session.commit()
+
+    @staticmethod
+    def mark_multiple_messages_read(message_ids: list, user_id: int):
+        """Marks the specified messages as read
+        ----------------------------------------
+        :param message_ids: list of message ids to mark as read
+        :param user_id: user id of the user who is marking the messages as read
+        """
+        Message.query.filter(
+            Message.to_user_id == user_id, Message.id.in_(message_ids)
+        ).update({Message.read: True}, synchronize_session=False)
+        db.session.commit()
+
+    @staticmethod
+    def mark_all_messages_read(user_id: int, message_type_filters: list = None):
+        """Marks all messages as read
+        ----------------------------------------
+        :param user_id: user id of the user who is marking the messages as read
+        :param message_type_filters: list of message types to filter by
+        """
+        # https://docs.sqlalchemy.org/en/13/orm/query.html#sqlalchemy.orm.query.Query.update
+        query = Message.query.filter(
+            Message.to_user_id == user_id, Message.read == false()
+        )
+        if message_type_filters:
+            query = query.filter(Message.message_type.in_(message_type_filters))
+        query.update({Message.read: True}, synchronize_session=False)
         db.session.commit()

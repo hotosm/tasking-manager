@@ -56,7 +56,7 @@ class Notification(db.Model):
 
         # Count messages that the user has received after last check.
         count = (
-            Message.query.filter(Message.to_user_id == user_id)
+            Message.query.filter_by(to_user_id=user_id, read=False)
             .filter(Message.date > notifications.date)
             .count()
         )

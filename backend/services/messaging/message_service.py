@@ -761,6 +761,29 @@ class MessageService:
         return message
 
     @staticmethod
+    def mark_all_messages_read(user_id: int, message_type: str = None):
+        """Marks all messages as read for the user
+        -----------------------------------------
+        :param user_id: The user id
+        :param message_type: The message types to mark as read
+        returns: None
+        """
+        if message_type is not None:
+            # Wrap in list for unit tests to work
+            message_type = list(map(int, message_type.split(",")))
+        Message.mark_all_messages_read(user_id, message_type)
+
+    @staticmethod
+    def mark_multiple_messages_read(message_ids: list, user_id: int):
+        """Marks the specified messages as read for the user
+        ---------------------------------------------------
+        :param message_ids: List of message ids to mark as read
+        :param user_id: The user id
+        returns: None
+        """
+        Message.mark_multiple_messages_read(message_ids, user_id)
+
+    @staticmethod
     def get_message_as_dto(message_id: int, user_id: int):
         """Gets the selected message and marks it as read"""
         message = MessageService.get_message(message_id, user_id)
@@ -777,6 +800,19 @@ class MessageService:
     def delete_multiple_messages(message_ids: list, user_id: int):
         """Deletes the specified messages to the user"""
         Message.delete_multiple_messages(message_ids, user_id)
+
+    @staticmethod
+    def delete_all_messages(user_id: int, message_type: str = None):
+        """Deletes all messages to the user
+        ----------------------------------
+        :param user_id: The user id
+        :param message_type: The message types to delete (comma separated)
+        returns: None
+        """
+        if message_type is not None:
+            # Wrap in list for unit tests to work
+            message_type = list(map(int, message_type.split(",")))
+        Message.delete_all_messages(user_id, message_type)
 
     @staticmethod
     def get_task_link(

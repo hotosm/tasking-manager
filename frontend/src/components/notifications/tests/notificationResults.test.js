@@ -36,7 +36,7 @@ describe('Notifications Results', () => {
   it('should display error message for fetching notifications', () => {
     createComponentWithMemoryRouter(
       <ReduxIntlProviders>
-        <NotificationResults notifications={notifications} error />
+        <NotificationResults notifications={notifications} error inboxQuery={{}} />
       </ReduxIntlProviders>,
     );
     expect(screen.getByText(messages.errorLoadingNotifications.defaultMessage)).toBeInTheDocument();
@@ -46,7 +46,12 @@ describe('Notifications Results', () => {
     const retryFnMock = jest.fn();
     createComponentWithMemoryRouter(
       <ReduxIntlProviders>
-        <NotificationResults notifications={notifications} error retryFn={retryFnMock} />
+        <NotificationResults
+          notifications={notifications}
+          error
+          inboxQuery={{}}
+          retryFn={retryFnMock}
+        />
       </ReduxIntlProviders>,
     );
     const retryBtn = screen.getByRole('button', {

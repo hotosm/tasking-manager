@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { fetchLocalJSONAPI, fetchLocalJSONAPIWithAbort } from '../network/genericJSONRequest';
@@ -43,7 +43,11 @@ export const useFetchWithAbort = (url, trigger = true) => {
   const [data, setData] = useState({});
   const [refetchIndex, setRefetchIndex] = useState(0);
 
-  const refetch = () => setRefetchIndex((prevRefetchIndex) => prevRefetchIndex + 1);
+  // Component using refetch would infinitely make requests
+  // without the useCallback
+  const refetch = useCallback(() => {
+    setRefetchIndex((prevRefetchIndex) => prevRefetchIndex + 1);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
