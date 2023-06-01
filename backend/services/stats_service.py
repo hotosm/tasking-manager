@@ -267,6 +267,15 @@ class StatsService:
             .subquery()
         )
 
+        project_contributions = (
+            TaskHistory.query.with_entities(TaskHistory.user_id)
+            .filter(
+                TaskHistory.project_id == project_id, TaskHistory.action != "COMMENT"
+            )
+            .distinct(TaskHistory.user_id)
+            .subquery()
+        )
+
         results = (
             db.session.query(
                 User.id,
@@ -284,17 +293,20 @@ class StatsService:
                 mapped_stmt.c.task_ids.label("mapped_tasks"),
                 validated_stmt.c.task_ids.label("validated_tasks"),
             )
-            .outerjoin(
-                validated_stmt,
-                mapped_stmt.c.mapped_by == validated_stmt.c.validated_by,
-                full=True,
-            )
-            .join(
-                User,
-                or_(
-                    User.id == mapped_stmt.c.mapped_by,
-                    User.id == validated_stmt.c.validated_by,
-                ),
+            .join(project_contributions, User.id == project_contributions.c.user_id)
+            .outerjoin(mapped_stmt, User.id == mapped_stmt.c.mapped_by)
+            .outerjoin(validated_stmt, User.id == validated_stmt.c.validated_by)
+            .group_by(
+                User.id,
+                User.username,
+                User.name,
+                User.mapping_level,
+                User.picture_url,
+                User.date_registered,
+                mapped_stmt.c.count,
+                mapped_stmt.c.task_ids,
+                validated_stmt.c.count,
+                validated_stmt.c.task_ids,
             )
             .order_by(desc("total"))
             .all()
