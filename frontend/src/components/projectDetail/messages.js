@@ -231,9 +231,9 @@ export default defineMessages({
     id: 'project.detail.sections.contributors',
     defaultMessage: 'Contributors',
   },
-  relatedProjects: {
-    id: 'project.detail.sections.relatedProjects',
-    defaultMessage: 'Related projects',
+  similarProjects: {
+    id: 'project.detail.sections.similarProjects',
+    defaultMessage: 'Similar projects',
   },
   timelineNotAvailable: {
     id: 'project.detail.sections.contributions.timelineError',
@@ -311,8 +311,8 @@ export default defineMessages({
     id: 'project.inaccessible.exploreOtherProjects',
     defaultMessage: 'Explore other projects',
   },
-  noRelatedProjectsFound: {
-    id: 'project.noRelatedProjectsFound',
-    defaultMessage: 'Could not find any related projects for this project',
+  noSimilarProjectsFound: {
+    id: 'project.noSimilarProjectsFound',
+    defaultMessage: 'Could not find any similar projects for this project',
   },
 });

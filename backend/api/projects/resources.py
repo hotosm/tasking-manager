@@ -1244,11 +1244,11 @@ class ProjectsQueriesFeaturedAPI(Resource):
             return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
-class ProjectQueriesRelatedProjectsAPI(Resource):
+class ProjectQueriesSimilarProjectsAPI(Resource):
     @token_auth.login_required(optional=True)
     def get(self, project_id):
         """
-        Get related projects
+        Get similar projects
         ---
         tags:
             - projects
@@ -1263,18 +1263,18 @@ class ProjectQueriesRelatedProjectsAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: Project ID to get related projects for
+              description: Project ID to get similar projects for
               required: true
               type: integer
               default: 1
             - in: query
               name: limit
               type: integer
-              description: Number of related projects to return
+              description: Number of similar projects to return
               default: 4
         responses:
             200:
-                description: Related projects
+                description: Similar projects
             404:
                 description: Project not found or project is not published
             500:
@@ -1286,7 +1286,7 @@ class ProjectQueriesRelatedProjectsAPI(Resource):
             )
             limit = int(request.args.get("limit", 4))
             preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE", "en")
-            projects_dto = ProjectRecommendationService.get_related_projects(
+            projects_dto = ProjectRecommendationService.get_similar_projects(
                 project_id, authenticated_user_id, preferred_locale, limit
             )
             return projects_dto.to_primitive(), 200
@@ -1296,6 +1296,6 @@ class ProjectQueriesRelatedProjectsAPI(Resource):
                 "SubCode": "NotFound",
             }, 404
         except Exception as e:
-            error_msg = f"RelatedProjects GET - unhandled error: {str(e)}"
+            error_msg = f"SimilarProjects GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

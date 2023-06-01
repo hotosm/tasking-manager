@@ -37,8 +37,8 @@ const menuItems = [
     label: <FormattedMessage {...messages.contributions} />,
   },
   {
-    href: '#relatedProjects',
-    label: <FormattedMessage {...messages.relatedProjects} />,
+    href: '#similarProjects',
+    label: <FormattedMessage {...messages.similarProjects} />,
   },
 ];
 

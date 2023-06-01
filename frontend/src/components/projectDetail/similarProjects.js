@@ -7,16 +7,16 @@ import { ProjectCard } from '../projectCard/projectCard';
 import { nCardPlaceholders } from '../projectCard/nCardPlaceholder';
 import messages from './messages';
 
-export const RelatedProjects = ({ projectId }) => {
-  const [error, loading, relatedProjects] = useFetch(
-    `projects/queries/${projectId}/related-projects/?limit=4`,
+export const SimilarProjects = ({ projectId }) => {
+  const [error, loading, similarProjects] = useFetch(
+    `projects/queries/${projectId}/similar-projects/?limit=4`,
   );
 
   return (
     <div className="bg-white mb3">
-      { !loading && (error || relatedProjects.results.length === 0) ? (
+      { !loading && (error || similarProjects.results.length === 0) ? (
         <p className="blue-light mv3 mh4">
-          <FormattedMessage {...messages.noRelatedProjectsFound} />
+          <FormattedMessage {...messages.noSimilarProjectsFound} />
         </p>
       ) : (
         <div className="ph4 cards-container">
@@ -26,7 +26,7 @@ export const RelatedProjects = ({ projectId }) => {
             delay={10}
             ready={!loading}
           >
-            {relatedProjects.results?.map((project) => (
+            {similarProjects.results?.map((project) => (
               <ProjectCard key={project.id} showBottomButtons={false} {...project} />
             ))}
           </ReactPlaceholder>

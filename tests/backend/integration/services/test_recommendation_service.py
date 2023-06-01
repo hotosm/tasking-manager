@@ -147,10 +147,10 @@ class TestProjectRecommendationService(BaseTestCase):
         self.assertEqual(project_matrix["categories_2"].tolist(), [1, 1])
 
     @patch.object(ProjectRecommendationService, "get_similar_project_ids")
-    def test_get_related_projects_returns_related_projects(
+    def test_get_similar_projects_returns_similar_projects(
         self, mock_get_similar_project_ids
     ):
-        """Test that get_related_projects returns related projects"""
+        """Test that get_similar_projects returns similar projects"""
         # Arrange
         # Create test interests
         test_interest_1 = create_canned_interest("test-interest-1")
@@ -159,7 +159,7 @@ class TestProjectRecommendationService(BaseTestCase):
         project_1 = self.create_project()
         project_2 = self.create_project()
         project_3 = self.create_project()
-        # Create draft project so that it is not included in the related projects
+        # Create draft project so that it is not included in the similar projects
         self.create_project(is_published=False)
 
         # Since project_info is required to retrun project summary in the response
@@ -197,10 +197,10 @@ class TestProjectRecommendationService(BaseTestCase):
         )
 
         # Act
-        related_projects = self.service.get_related_projects(project_1.id)
+        similar_projects = self.service.get_similar_projects(project_1.id)
         # Assert
-        self.assertEqual(len(related_projects.results), 2)
+        self.assertEqual(len(similar_projects.results), 2)
         self.assertEqual(
-            related_projects.results[0].project_id, project_2.id
+            similar_projects.results[0].project_id, project_2.id
         )  # project_2 is the most similar to project_1
-        self.assertEqual(related_projects.results[1].project_id, project_3.id)
+        self.assertEqual(similar_projects.results[1].project_id, project_3.id)

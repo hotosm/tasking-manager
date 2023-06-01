@@ -14,7 +14,7 @@ import { TeamsBoxList } from '../teamsAndOrgs/teams';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { ProjectDetailFooter } from './footer';
 import { QuestionsAndComments } from './questionsAndComments';
-import { RelatedProjects } from './relatedProjects';
+import { SimilarProjects } from './similarProjects';
 import { PermissionBox } from './permissionBox';
 import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
@@ -336,14 +336,14 @@ export const ProjectDetail = (props) => {
           </div>
         </ReactPlaceholder>
       </div>
-      <a href="#relatedProjects" style={{ visibility: 'hidden' }} name="relatedProjects">
-        <FormattedMessage {...messages.relatedProjects} />
+      <a href="#similarProjects" style={{ visibility: 'hidden' }} name="similarProjects">
+        <FormattedMessage {...messages.similarProjects} />
       </a>
       <h3 className={`${h2Classes} mv0 pt5`}>
-        <FormattedMessage {...messages.relatedProjects} />
+        <FormattedMessage {...messages.similarProjects} />
       </h3>
       <div className="mb5 w-100 w-60-l">
-        <RelatedProjects projectId={props.project.projectId} />
+        <SimilarProjects projectId={props.project.projectId} />
       </div>
       <ProjectDetailFooter projectId={props.project.projectId} />
     </div>

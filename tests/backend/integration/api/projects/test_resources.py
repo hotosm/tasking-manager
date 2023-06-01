@@ -2222,7 +2222,7 @@ class TestProjectsQueriesNoTasksAPI(BaseTestCase):
         )
 
 
-class TestProjectQueriesRelatedProjectsAPI(BaseTestCase):
+class TestProjectQueriesSimilarProjectsAPI(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.test_project, self.test_author = create_canned_project()
@@ -2230,7 +2230,7 @@ class TestProjectQueriesRelatedProjectsAPI(BaseTestCase):
         self.test_project.save()
         # Since project_info is required to retrun project summary in the response
         update_project_with_info(self.test_project)
-        self.url = f"/api/v2/projects/queries/{self.test_project.id}/related-projects/"
+        self.url = f"/api/v2/projects/queries/{self.test_project.id}/similar-projects/"
         self.user_session_token = generate_encoded_token(self.test_author.id)
 
     def create_project(self, status=ProjectStatus.PUBLISHED.value):
@@ -2274,7 +2274,7 @@ class TestProjectQueriesRelatedProjectsAPI(BaseTestCase):
         """
         # Act
         response = self.client.get(
-            "/api/v2/projects/queries/999/related-projects/",
+            "/api/v2/projects/queries/999/similar-projects/",
             headers={"Authorization": self.user_session_token},
         )
         self.assertEqual(response.status_code, 404)

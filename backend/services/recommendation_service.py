@@ -13,7 +13,7 @@ from backend.services.project_search_service import ProjectSearchService
 from backend.models.postgis.utils import NotFound
 from backend.services.users.user_service import UserService
 
-related_projects_cache = TTLCache(maxsize=1000, ttl=60 * 60 * 24)  # 24 hours
+similar_projects_cache = TTLCache(maxsize=1000, ttl=60 * 60 * 24)  # 24 hours
 
 project_columns = [
     "id",
@@ -168,7 +168,7 @@ class ProjectRecommendationService:
     # This function is cached so that the matrix is not calculated every time
     # as it is expensive and not changing often
     @staticmethod
-    @cached(cache=related_projects_cache)
+    @cached(cache=similar_projects_cache)
     def create_project_matrix(target_project=None):
         """Creates project matrix that is required to calculate the similarity
         :param target_project: target project id (not used).
@@ -185,14 +185,14 @@ class ProjectRecommendationService:
         return all_projects_df
 
     @staticmethod
-    def get_related_projects(
+    def get_similar_projects(
         project_id, user_id=None, preferred_locale="en", limit=4
     ) -> ProjectSearchResultsDTO:
-        """Get related projects based on the given project ID.
+        """Get similar projects based on the given project ID.
         ----------------------------------------
         :param project_id: project id
         :param preferred_locale: preferred locale
-        :return: list of related projects in the order of similarity
+        :return: list of similar projects in the order of similarity
         """
         target_project = Project.query.get(project_id)
         # Check if the project exists and is published
@@ -217,7 +217,7 @@ class ProjectRecommendationService:
         if projects_df.shape[0] < 2:
             return dto
 
-        related_projects = ProjectRecommendationService.get_similar_project_ids(
+        similar_projects = ProjectRecommendationService.get_similar_project_ids(
             projects_df, target_project_df
         )
 
@@ -229,15 +229,15 @@ class ProjectRecommendationService:
             Project.total_tasks != Project.tasks_validated + Project.tasks_bad_imagery
         )
 
-        # Set the limit to the number of related projects if it is less than the limit
-        limit = min(limit, len(related_projects)) if related_projects else 0
+        # Set the limit to the number of similar projects if it is less than the limit
+        limit = min(limit, len(similar_projects)) if similar_projects else 0
 
         count = 0
         while len(dto.results) < limit:
-            # In case the user is not authorized to view the project and related projects are less than the limit
+            # In case the user is not authorized to view the project and similar projects are less than the limit
             # then we need to break the loop and return the results
             try:
-                project_id = related_projects[count]
+                project_id = similar_projects[count]
             except IndexError:
                 break
             project = query.filter(Project.id == project_id).all()
