@@ -28,9 +28,19 @@ USER_JSON = {
 
 
 class TestSystemAuthenticationLoginAPI(BaseTestCase):
+    # Define environment variables for testing so that tests don't fail due to missing env variables
+    EnvironmentConfig.OAUTH_CLIENT_ID = "test_client_id"
+    EnvironmentConfig.OAUTH_REDIRECT_URI = "test_redirect_uri"
+    EnvironmentConfig.OAUTH_SCOPE = "read_prefs write_api"
+
     def test_get_login_url(self):
         """Test correct login url is returned"""
+        # Arrange
         url = "/api/v2/system/authentication/login/"
+        # Set osm params to test values so that we can assert them later
+        osm.client_id = EnvironmentConfig.OAUTH_CLIENT_ID
+        osm.redirect_uri = EnvironmentConfig.OAUTH_REDIRECT_URI
+        osm.scope = EnvironmentConfig.OAUTH_SCOPE
         # Act
         response = self.client.get(url)
         # Assert
