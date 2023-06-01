@@ -15,7 +15,7 @@ class TestMessage(BaseTestCase):
         self.test_user.create()
 
     def send_multiple_welcome_messages(self, number_of_messages: int):
-        """ Sends multiple welcome messages """
+        """Sends multiple welcome messages"""
         message_ids = []
         for _ in range(number_of_messages):
             message_id = MessageService.send_welcome_message(self.test_user)
@@ -23,7 +23,7 @@ class TestMessage(BaseTestCase):
         return message_ids
 
     def test_delete_multiple_messages(self):
-        """ Tests that multiple messages can be deleted """
+        """Tests that multiple messages can be deleted"""
         # Arrange
         message_ids = self.send_multiple_welcome_messages(3)
         # Act
@@ -34,7 +34,7 @@ class TestMessage(BaseTestCase):
         self.assertEqual(messages.user_messages[0].message_id, message_ids[2])
 
     def test_delete_all_messages(self):
-        """ Tests that all messages can be deleted """
+        """Tests that all messages can be deleted"""
         # Arrange
         self.send_multiple_welcome_messages(3)
         # Act
@@ -44,7 +44,7 @@ class TestMessage(BaseTestCase):
             Message.get_all_messages(self.test_user.id)
 
     def test_delete_all_message_filters_by_type(self):
-        """ Tests that all messages can be deleted by type """
+        """Tests that all messages can be deleted by type"""
         # Arrange
         self.send_multiple_welcome_messages(3)
         test_user_2 = return_canned_user("test_user_2", 222222222)
@@ -69,7 +69,7 @@ class TestMessage(BaseTestCase):
         )
 
     def test_mark_multiple_messages_read(self):
-        """ Tests that multiple messages can be marked as read """
+        """Tests that multiple messages can be marked as read"""
         # Arrange
         message_ids = self.send_multiple_welcome_messages(3)
         # Act
@@ -83,7 +83,7 @@ class TestMessage(BaseTestCase):
         self.assertFalse(messages.user_messages[2].read)
 
     def test_mark_all_messages_read(self):
-        """ Tests that all messages can be marked as read """
+        """Tests that all messages can be marked as read"""
         # Arrange
         self.send_multiple_welcome_messages(3)
         # Act
@@ -93,7 +93,7 @@ class TestMessage(BaseTestCase):
         self.assertEqual(unread_count, 0)
 
     def test_mark_all_message_filters_by_type(self):
-        """ Test that all message of a certain type can be marked as read """
+        """Test that all message of a certain type can be marked as read"""
         # Arrange
         self.send_multiple_welcome_messages(3)
         test_user_2 = return_canned_user("test_user_2", 222222222)

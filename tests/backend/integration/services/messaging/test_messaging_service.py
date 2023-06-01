@@ -111,7 +111,7 @@ class TestMessageService(BaseTestCase):
         mock_send_message.assert_called()
 
     def send_multiple_welcome_messages(self, number_of_messages: int):
-        """ Sends multiple welcome messages """
+        """Sends multiple welcome messages"""
         message_ids = []
         for _ in range(number_of_messages):
             message_id = MessageService.send_welcome_message(self.test_user)

@@ -64,7 +64,7 @@ class TestMessagingService(BaseTestCase):
 
     @patch.object(Message, "delete_multiple_messages")
     def test_delete_multiple_messages(self, mock_delete_multiple_messages):
-        """ Test that the delete_multiple_messages method calls the model method """
+        """Test that the delete_multiple_messages method calls the model method"""
         # Act
         MessageService.delete_multiple_messages([1, 2, 3], 1)
         # Assert
@@ -72,7 +72,7 @@ class TestMessagingService(BaseTestCase):
 
     @patch.object(Message, "delete_all_messages")
     def test_delete_all_messages(self, mock_delete_all_messages):
-        """ Test that the delete_all_messages method calls the model method """
+        """Test that the delete_all_messages method calls the model method"""
         # Act
         MessageService.delete_all_messages(1, MESSAGE_TYPES)
         message_type = list(map(int, list(MESSAGE_TYPES.split(","))))
@@ -81,7 +81,7 @@ class TestMessagingService(BaseTestCase):
 
     @patch.object(Message, "mark_multiple_messages_read")
     def test_mark_multiple_messaes_read(self, mock_mark_multiple_messages_read):
-        """ Test that the mark_multiple_messages_read method calls the model method """
+        """Test that the mark_multiple_messages_read method calls the model method"""
         # Act
         MessageService.mark_multiple_messages_read([1, 2, 3], 1)
         # Assert
@@ -89,7 +89,7 @@ class TestMessagingService(BaseTestCase):
 
     @patch.object(Message, "mark_all_messages_read")
     def test_mark_all_messages_read(self, mock_mark_all_messages_read):
-        """ Test that the mark_all_messages_read method calls the model method """
+        """Test that the mark_all_messages_read method calls the model method"""
         # Act
         MessageService.mark_all_messages_read(1, MESSAGE_TYPES)
         message_type = list(map(int, list(MESSAGE_TYPES.split(","))))
