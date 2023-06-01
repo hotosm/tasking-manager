@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useOnClickOutside } from '../hooks/UseOnClickOutside';
 import { ChevronDownIcon, CheckIcon } from './svgIcons';
 import { CustomButton } from './button';
 
-const DropdownContent = React.forwardRef((props, ref) => {
+const DropdownContent = (props, ref) => {
   const navigate = useNavigate();
   const isActive = (obj) => {
     return props.value === obj.value;
@@ -51,7 +51,6 @@ const DropdownContent = React.forwardRef((props, ref) => {
 
   return (
     <div
-      ref={ref}
       className={`db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column${
         props.toTop ? ' bottom-3' : ''
       }${props.options.length > 9 ? ' h5 overflow-y-scroll' : ''}`}
@@ -116,13 +115,15 @@ const DropdownContent = React.forwardRef((props, ref) => {
       ))}
     </div>
   );
-});
+};
 
 export function Dropdown(props) {
   const [display, setDisplay] = useState(false);
+
   const contentRef = React.createRef();
 
   const toggleDropdown = () => {
+    console.log('toggle');
     setDisplay(!display);
   };
 
@@ -135,18 +136,24 @@ export function Dropdown(props) {
       : activeItems[0].label;
   };
 
-  useOnClickOutside(contentRef, () => setDisplay(false));
+  useOnClickOutside(contentRef, () => {
+    setDisplay(false);
+  });
 
   return (
     <div className="dib pointer relative">
-      <CustomButton onClick={toggleDropdown} className={`blue-dark ${props.className || ''}`}>
+      <CustomButton
+        onClick={toggleDropdown}
+        ref={contentRef}
+        className={`blue-dark ${props.className || ''}`}
+      >
         <div className="lh-title dib ma0 f6">{getActiveOrDisplay()}</div>
+
         <ChevronDownIcon style={{ width: '11px', height: '11px' }} className="pl3 v-mid pr1" />
       </CustomButton>
       {display && (
         <DropdownContent
           {...props}
-          ref={contentRef}
           eventTypes={['click', 'touchend']}
           toggleDropdown={toggleDropdown}
           toTop={props.toTop}
