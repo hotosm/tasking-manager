@@ -12,7 +12,7 @@ user_licenses_table = db.Table(
 
 
 class License(db.Model):
-    """ Describes an individual license"""
+    """Describes an individual license"""
 
     __tablename__ = "licenses"
 
@@ -28,8 +28,8 @@ class License(db.Model):
 
     @staticmethod
     def get_by_id(license_id: int):
-        """ Get license by id """
-        map_license = License.query.get(license_id)
+        """Get license by id"""
+        map_license = db.session.get(License, license_id)
 
         if map_license is None:
             raise NotFound()
@@ -38,7 +38,7 @@ class License(db.Model):
 
     @classmethod
     def create_from_dto(cls, dto: LicenseDTO) -> int:
-        """ Creates a new License class from dto """
+        """Creates a new License class from dto"""
         new_license = cls()
         new_license.name = dto.name
         new_license.description = dto.description
@@ -50,20 +50,20 @@ class License(db.Model):
         return new_license.id
 
     def update_license(self, dto: LicenseDTO):
-        """ Update existing license """
+        """Update existing license"""
         self.name = dto.name
         self.description = dto.description
         self.plain_text = dto.plain_text
         db.session.commit()
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
     @staticmethod
     def get_all() -> LicenseListDTO:
-        """ Gets all licenses currently stored """
+        """Gets all licenses currently stored"""
         results = License.query.all()
 
         dto = LicenseListDTO()
@@ -78,7 +78,7 @@ class License(db.Model):
         return dto
 
     def as_dto(self) -> LicenseDTO:
-        """ Get the license from the DB """
+        """Get the license from the DB"""
         dto = LicenseDTO()
         dto.license_id = self.id
         dto.name = self.name

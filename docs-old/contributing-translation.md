@@ -9,7 +9,7 @@ Everybody is welcome to support translations through the Transifex website.
 ## Developers
 
 For developers, Transifex offers a [CLI client](https://docs.transifex.com/client/introduction/) and the Tasking
-Manager offers commands to interact with it. The client is already included in `requirements.txt` so you should have the Transifex commands installed once you have set up your backend side code.
+Manager offers commands to interact with it. The client is already included in the Python requirements so you should have the Transifex commands installed once you have set up your backend side code.
 
 The Tasking Manager is using Angular Translate to display the translated strings. It works with key/value pairs in .json format, which is also the format used to store the translations in Transifex.
 

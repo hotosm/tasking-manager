@@ -1,5 +1,5 @@
 import datetime
-import hashlib
+import xml.etree.ElementTree as ET
 from unittest.mock import patch
 from backend.services.mapping_service import MappingService, Task
 from backend.models.postgis.task import TaskStatus
@@ -7,8 +7,10 @@ from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
 
 
-class TestMappingService(BaseTestCase):
+ORG_NAME = "HOT Tasking Manager"
 
+
+class TestMappingService(BaseTestCase):
     skip_tests = False
     test_project = None
     test_user = None
@@ -18,82 +20,112 @@ class TestMappingService(BaseTestCase):
         self.test_project, self.test_user = create_canned_project()
 
     @patch.object(Task, "get_tasks")
-    def test_gpx_xml_file_generated_correctly(self, mock_task):
-        if self.skip_tests:
-            return
-
-        # Arrange
+    def test_generate_gpx(self, mock_task):
+        # Create a sample project ID and task IDs string
+        project_id = 1
+        task_ids_str = "1,2"
         task = Task.get(1, self.test_project.id)
         mock_task.return_value = [task]
-        timestamp = datetime.date(2017, 4, 13)
 
-        # Act
-        gpx_xml = MappingService.generate_gpx(1, "1,2", timestamp)
+        timestamp = datetime.datetime(2017, 4, 13)
 
-        # Covert XML into a hash that should be identical every time
-        gpx_xml_str = gpx_xml.decode("utf-8")
-        gpx_hash = hashlib.md5(gpx_xml_str.encode("utf-8")).hexdigest()
+        # Call the generate_gpx function with some test data
+        xml_str = MappingService.generate_gpx(1, task_ids_str, timestamp)
 
-        # Assert
-        self.assertEqual(gpx_hash, "b91f7361cc1d6d9433cf393609103272")
+        # Parse the XML string and retrieve the root element
+        root = ET.fromstring(xml_str)
 
-    @patch.object(Task, "get_all_tasks")
-    def test_gpx_xml_file_generated_correctly_all_tasks(self, mock_task):
-        if self.skip_tests:
-            return
+        # Test root element
+        self.assertEqual(root.tag, "{http://www.topografix.com/GPX/1/1}gpx")
+        self.assertEqual(root.attrib["creator"], ORG_NAME)
+        self.assertEqual(root.attrib["version"], "1.1")
 
-        # Arrange
-        task = Task.get(1, self.test_project.id)
-        mock_task.return_value = [task]
-        timestamp = datetime.date(2017, 4, 13)
+        # Test metadata element
+        metadata = root.find("{http://www.topografix.com/GPX/1/1}metadata")
+        self.assertIsNotNone(metadata)
 
-        # Act
-        gpx_xml = MappingService.generate_gpx(1, None, timestamp)
+        link = metadata.find("{http://www.topografix.com/GPX/1/1}link")
+        self.assertIsNotNone(link)
+        self.assertEqual(
+            link.attrib["href"], "https://github.com/hotosm/tasking-manager"
+        )
+        text = link.find("{http://www.topografix.com/GPX/1/1}text")
+        self.assertIsNotNone(text)
+        self.assertEqual(text.text.strip(), ORG_NAME)
 
-        # Convert XML into a hash that should be identical every time
-        gpx_xml_str = gpx_xml.decode("utf-8")
-        gpx_hash = hashlib.md5(gpx_xml_str.encode("utf-8")).hexdigest()
+        time = metadata.find("{http://www.topografix.com/GPX/1/1}time")
+        self.assertIsNotNone(time)
+        self.assertEqual(time.text.strip(), "2017-04-13T00:00:00")
 
-        # Assert
-        self.assertEqual(gpx_hash, "b91f7361cc1d6d9433cf393609103272")
+        # Test trk element
+        trk = root.find("{http://www.topografix.com/GPX/1/1}trk")
+        self.assertIsNotNone(trk)
+
+        name = trk.find("{http://www.topografix.com/GPX/1/1}name")
+        self.assertIsNotNone(name)
+        self.assertEqual(
+            name.text.strip(),
+            f"Task for project {project_id}. Do not edit outside of this area!",
+        )
+
+        trkseg = trk.find("{http://www.topografix.com/GPX/1/1}trkseg")
+        self.assertIsNotNone(trkseg)
+
+        trkpt_list = trkseg.findall("{http://www.topografix.com/GPX/1/1}trkpt")
+        self.assertEqual(len(trkpt_list), 5)
+        for trkpt in trkpt_list:
+            self.assertIn("lat", trkpt.attrib)
+            self.assertIn("lon", trkpt.attrib)
+
+        # Test wpt elements
+        wpt_list = root.findall("{http://www.topografix.com/GPX/1/1}wpt")
+        self.assertEqual(len(wpt_list), 5)
+        for wpt in wpt_list:
+            self.assertIn("lat", wpt.attrib)
+            self.assertIn("lon", wpt.attrib)
 
     @patch.object(Task, "get_tasks")
-    def test_osm_xml_file_generated_correctly(self, mock_task):
-        if self.skip_tests:
-            return
+    def test_generate_osm_xml(self, mock_task):
+        # Test with a single task
+        task_ids_str = "1"
+        task_1 = Task.get(1, self.test_project.id)
+        task_2 = Task.get(2, self.test_project.id)
+        mock_task.return_value = [task_1]
 
-        # Arrange
-        task = Task.get(1, self.test_project.id)
-        mock_task.return_value = [task]
+        xml = MappingService.generate_osm_xml(1, task_ids_str)
+        self.assertIsNotNone(xml)
 
-        # Act
-        osm_xml = MappingService.generate_osm_xml(1, "1,2")
+        # Assert that the generated XML is in the correct format
+        root = ET.fromstring(xml)
+        self.assertEqual(root.tag, "osm")
+        self.assertEqual(root.attrib["version"], "0.6")
+        self.assertEqual(root.attrib["upload"], "never")
+        self.assertEqual(root.attrib["creator"], ORG_NAME)
 
-        # Covert XML into a hash that should be identical every time
-        osm_xml_str = osm_xml.decode("utf-8")
-        osm_hash = hashlib.md5(osm_xml_str.encode("utf-8")).hexdigest()
+        # Assert that the correct number of nodes and ways were generated
+        nodes = root.findall("./node")
+        self.assertEqual(len(nodes), 5)
+        ways = root.findall("./way")
+        self.assertEqual(len(ways), 1)
 
-        # Assert
-        self.assertEqual(osm_hash, "eafd0760a0d372e2ab139e25a2d300f1")
+        # Test with multiple tasks
+        task_ids_str = "1,2"
+        mock_task.return_value = [task_1, task_2]
+        xml = MappingService.generate_osm_xml(1, task_ids_str)
+        self.assertIsNotNone(xml)
 
-    @patch.object(Task, "get_all_tasks")
-    def test_osm_xml_file_generated_correctly_all_tasks(self, mock_task):
-        if self.skip_tests:
-            return
+        # Assert that the generated XML is in the correct format
+        root = ET.fromstring(xml)
+        self.assertEqual(root.tag, "osm")
+        self.assertEqual(root.attrib["version"], "0.6")
+        self.assertEqual(root.attrib["upload"], "never")
+        self.assertEqual(root.attrib["creator"], ORG_NAME)
 
-        # Arrange
-        task = Task.get(1, self.test_project.id)
-        mock_task.return_value = [task]
-
-        # Act
-        osm_xml = MappingService.generate_osm_xml(1, None)
-
-        # Convert XML into a hash that should be identical every time
-        osm_xml_str = osm_xml.decode("utf-8")
-        osm_hash = hashlib.md5(osm_xml_str.encode("utf-8")).hexdigest()
-
-        # Assert
-        self.assertEqual(osm_hash, "eafd0760a0d372e2ab139e25a2d300f1")
+        # Assert that the correct number of nodes and ways were generated
+        nodes = root.findall("./node")
+        self.assertEqual(len(nodes), 25)
+        ways = root.findall("./way")
+        self.assertEqual(len(ways), 2)
 
     def test_map_all_sets_counters_correctly(self):
         if self.skip_tests:

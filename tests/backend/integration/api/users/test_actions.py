@@ -21,14 +21,14 @@ class TestUsersActionsSetUsersAPI(BaseTestCase):
         self.user_session_token = generate_encoded_token(self.test_user.id)
 
     def test_returns_401_if_no_token(self):
-        """ Test that the API returns 401 if no token is provided """
+        """Test that the API returns 401 if no token is provided"""
         # Act
         response = self.client.patch(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_401_if_other_user_requested(self):
-        """ Test that the API returns 401 if another user is requested """
+        """Test that the API returns 401 if another user is requested"""
         # Act
         response = self.client.patch(
             self.url,
@@ -39,7 +39,7 @@ class TestUsersActionsSetUsersAPI(BaseTestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_returns_400_if_invalid_data(self):
-        """ Test that the API returns 400 if invalid data is provided """
+        """Test that the API returns 400 if invalid data is provided"""
         # Act
         response = self.client.patch(
             self.url,
@@ -50,7 +50,7 @@ class TestUsersActionsSetUsersAPI(BaseTestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_returns_404_if_user_not_found(self):
-        """ Test that the API returns 404 if user is not found """
+        """Test that the API returns 404 if user is not found"""
         # Act
         response = self.client.patch(
             self.url,
@@ -61,7 +61,7 @@ class TestUsersActionsSetUsersAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_returns_200_if_user_updated(self):
-        """ Test that the API returns 200 if user is updated """
+        """Test that the API returns 200 if user is updated"""
         # Arrange
         sample_payload = {
             "id": self.test_user.id,
@@ -94,7 +94,7 @@ class TestUsersActionsSetUsersAPI(BaseTestCase):
 
     @patch.object(SMTPService, "send_verification_email")
     def test_returns_200_if_user_updated_with_email(self, mock_send_verification_email):
-        """ Test that the API returns 200 if user is updated """
+        """Test that the API returns 200 if user is updated"""
         # Arrange
         mock_send_verification_email.return_value = True
         # Act
@@ -114,14 +114,14 @@ class TestUsersActionsRegisterEmailAPI(BaseTestCase):
         self.url = "/api/v2/users/actions/register/"
 
     def test_returns_400_if_no_data(self):
-        """ Test that the API returns 400 if no data is provided """
+        """Test that the API returns 400 if no data is provided"""
         # Act
-        response = self.client.post(self.url)
+        response = self.client.post(self.url, content_type="application/json")
         # Assert
         self.assertEqual(response.status_code, 400)
 
     def test_returns_200_if_email_registered(self):
-        """ Test that the API returns 200 if email is registered """
+        """Test that the API returns 200 if email is registered"""
         # Arrange
         sample_payload = {"email": TEST_EMAIL}
         # Act
@@ -141,14 +141,14 @@ class TestUsersActionsSetInterestsAPI(BaseTestCase):
         self.user_session_token = generate_encoded_token(self.test_user.id)
 
     def test_returns_401_if_no_token(self):
-        """ Test that the API returns 401 if no token is provided """
+        """Test that the API returns 401 if no token is provided"""
         # Act
         response = self.client.post(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_404_if_interests_not_found(self):
-        """ Test that the API returns 404 if interests are not found """
+        """Test that the API returns 404 if interests are not found"""
         # Act
         response = self.client.post(
             self.url,
@@ -159,7 +159,7 @@ class TestUsersActionsSetInterestsAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_returns_400_if_invalid_data(self):
-        """ Test that the API returns 400 if invalid data is provided """
+        """Test that the API returns 400 if invalid data is provided"""
         # Act
         response = self.client.post(
             self.url,
@@ -170,7 +170,7 @@ class TestUsersActionsSetInterestsAPI(BaseTestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_returns_200_if_interests_set(self):
-        """ Test that the API returns 200 if interests are set """
+        """Test that the API returns 200 if interests are set"""
         # Arrange
         interest_1 = create_canned_interest("test_interest_1")
         interest_2 = create_canned_interest("test_interest_2")
@@ -197,14 +197,14 @@ class TestUsersActionsVerifyEmailAPI(BaseTestCase):
         self.user_session_token = generate_encoded_token(self.test_user.id)
 
     def test_returns_401_if_no_token(self):
-        """ Test that the API returns 401 if no token is provided """
+        """Test that the API returns 401 if no token is provided"""
         # Act
         response = self.client.patch(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_400_if_user_has_not_set_email(self):
-        """ Test that the API returns 400 if user has not set email """
+        """Test that the API returns 400 if user has not set email"""
         # Act
         response = self.client.patch(
             self.url,
@@ -215,7 +215,7 @@ class TestUsersActionsVerifyEmailAPI(BaseTestCase):
 
     @patch.object(SMTPService, "_send_message")
     def test_returns_200_if_verification_email_resent(self, mock_send_message):
-        """ Test that the API returns 200 if verification email is resent """
+        """Test that the API returns 200 if verification email is resent"""
         # Arrange
         self.test_user.email_address = TEST_EMAIL
         self.test_user.save()
@@ -242,14 +242,14 @@ class TestUsersActionsSetRoleAPI(BaseTestCase):
         self.admin_session_token = generate_encoded_token(self.admin_user.id)
 
     def test_returns_401_if_no_token(self):
-        """ Test that the API returns 401 if no token is provided """
+        """Test that the API returns 401 if no token is provided"""
         # Act
         response = self.client.patch(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_403_if_user_not_admin(self):
-        """ Test that the API returns 403 if user is not admin """
+        """Test that the API returns 403 if user is not admin"""
         # Act
         response = self.client.patch(
             self.url,
@@ -271,7 +271,7 @@ class TestUsersActionsSetRoleAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "UnknownAddRole")
 
     def test_returns_404_if_user_not_found(self):
-        """ Test that the API returns 404 if user is not found """
+        """Test that the API returns 404 if user is not found"""
         # Act
         response = self.client.patch(
             "/api/v2/users/unknown/actions/set-role/ADMIN/",
@@ -282,7 +282,7 @@ class TestUsersActionsSetRoleAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "NotFound")
 
     def test_returns_200_if_user_role_set(self):
-        """ Test that the API returns 200 if user role is set """
+        """Test that the API returns 200 if user role is set"""
         # Act
         response = self.client.patch(
             self.url,
@@ -294,7 +294,7 @@ class TestUsersActionsSetRoleAPI(BaseTestCase):
         self.assertEqual(self.test_user.role, UserRole.ADMIN.value)
 
     def test_returns_200_if_user_role_removed(self):
-        """ Test that the API returns 200 if user role is removed """
+        """Test that the API returns 200 if user role is removed"""
         # Arrange
         self.test_user.role = UserRole.ADMIN.value
         self.test_user.save()

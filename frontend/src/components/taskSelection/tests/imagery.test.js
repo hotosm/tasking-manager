@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import { IntlProviders } from '../../../utils/testWithIntl';
@@ -175,5 +176,23 @@ describe('Imagery', () => {
     );
     expect(screen.getByText('Digital Globe')).toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+
+  it('should copy value to the clipboard', async () => {
+    const originalClipboard = { ...global.navigator.clipboard };
+    const mockClipboard = {
+      writeText: jest.fn().mockImplementation(() => Promise.resolve()),
+    };
+    global.navigator.clipboard = mockClipboard;
+    render(
+      <IntlProviders>
+        <Imagery value={'wms'} />
+      </IntlProviders>,
+    );
+    await userEvent.click(screen.getByRole('img'));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('wms');
+    jest.resetAllMocks();
+    global.navigator.clipboard = originalClipboard;
   });
 });

@@ -71,8 +71,6 @@ class ProjectAdminService:
             org = OrganisationService.get_organisation_by_id(
                 draft_project_dto.organisation
             )
-            if org is None:
-                raise NotFound("Organisation does not exist")
             draft_project_dto.organisation = org
             draft_project.create_draft_project(draft_project_dto)
 
@@ -224,10 +222,9 @@ class ProjectAdminService:
                 "MustBeFeatureCollection- Invalid: GeoJson must be FeatureCollection"
             )
 
-        is_valid_geojson = geojson.is_valid(tasks)
-        if is_valid_geojson["valid"] == "no":
+        if not tasks.is_valid:
             raise InvalidGeoJson(
-                f"InvalidFeatureCollection- {is_valid_geojson['message']}"
+                "InvalidFeatureCollection - " + ", ".join(tasks.errors())
             )
 
         task_count = 1

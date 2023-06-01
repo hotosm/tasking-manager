@@ -6,7 +6,7 @@ from schematics.types import (
 
 
 class BannerDTO(Model):
-    """ Describes a JSON model for a banner """
+    """Describes a JSON model for a banner"""
 
     message = StringType(required=True, max_length=255)
     visible = BooleanType()

@@ -1,7 +1,11 @@
 .*
 *.yml
 **/*.pyc
+**/__pypackages__
 **/node_modules
 **/npm-debug.log
-logs/
+**/venv
+docs-old/
 docs/
+frontend/
+logs/

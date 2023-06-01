@@ -182,7 +182,7 @@ class TestDeleteCampaignProjectAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_returns_404_if_campaign_not_assigned_to_project(self):
-        """ Test cannot remove a campaign from a project that it is not assigned to"""
+        """Test cannot remove a campaign from a project that it is not assigned to"""
         # Act
         response = self.client.delete(
             self.url,

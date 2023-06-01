@@ -207,7 +207,6 @@ class TeamService:
 
     @staticmethod
     def get_all_teams(search_dto: TeamSearchDTO) -> TeamsListDTO:
-
         query = db.session.query(Team)
 
         orgs_query = None
@@ -289,7 +288,9 @@ class TeamService:
         teams_list_dto = TeamsListDTO()
 
         if search_dto.paginate:
-            paginated = query.paginate(search_dto.page, search_dto.per_page, True)
+            paginated = query.paginate(
+                page=search_dto.page, per_page=search_dto.per_page, error_out=True
+            )
             teams_list_dto.pagination = Pagination(paginated)
             teams_list = paginated.items
         else:
@@ -583,7 +584,8 @@ class TeamService:
         team_id: int, team_name: str, message_dto: MessageDTO
     ):
         """Sends supplied message to all contributors in a team.  Message all team members can take
-        over a minute to run, so this method is expected to be called on its own thread"""
+        over a minute to run, so this method is expected to be called on its own thread
+        """
         app = (
             create_app()
         )  # Because message-all run on background thread it needs it's own app context

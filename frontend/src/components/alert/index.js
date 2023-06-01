@@ -1,4 +1,7 @@
+import { FormattedMessage } from 'react-intl';
+
 import { BanIcon, CheckIcon, InfoIcon, AlertIcon } from '../svgIcons';
+import messages from '../../views/messages';
 
 export const Alert = ({
   type = 'info',
@@ -39,3 +42,18 @@ export const Alert = ({
     </div>
   );
 };
+
+export function EntityError({ entity, action = 'creation' }) {
+  const messageType = action === 'updation' ? 'entityInfoUpdationFailure' : 'entityCreationFailure';
+
+  return (
+    <Alert type="error">
+      <FormattedMessage
+        {...messages[messageType]}
+        values={{
+          entity: entity,
+        }}
+      />
+    </Alert>
+  );
+}

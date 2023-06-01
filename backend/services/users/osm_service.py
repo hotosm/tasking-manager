@@ -5,7 +5,7 @@ from backend.models.dtos.user_dto import UserOSMDTO
 
 
 class OSMServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when in the User Service """
+    """Custom Exception to notify callers an error occurred when in the User Service"""
 
     def __init__(self, message):
         if current_app:
@@ -34,7 +34,7 @@ class OSMService:
     def _parse_osm_user_details_response(
         osm_response: dict, user_element="user"
     ) -> UserOSMDTO:
-        """ Parses the OSM user details response and extracts user info """
+        """Parses the OSM user details response and extracts user info"""
         osm_user = osm_response.get(user_element, None)
 
         if osm_user is None:

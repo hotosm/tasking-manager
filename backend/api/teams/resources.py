@@ -2,7 +2,6 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
 from backend.models.dtos.team_dto import (
-    TeamDTO,
     NewTeamDTO,
     UpdateTeamDTO,
     TeamSearchDTO,
@@ -15,102 +14,6 @@ from distutils.util import strtobool
 
 
 class TeamsRestAPI(Resource):
-    @token_auth.login_required
-    def post(self, team_id):
-        """
-        Updates a team information
-        ---
-        tags:
-            - teams
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: team_id
-              in: path
-              description: Unique team ID
-              required: true
-              type: integer
-              default: 1
-            - in: body
-              name: body
-              required: true
-              description: JSON object for updating a team
-              schema:
-                properties:
-                    name:
-                        type: string
-                        default: HOT - Mappers
-                    logo:
-                        type: string
-                        default: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
-                    members:
-                        type: array
-                        items:
-                            schema:
-                                $ref: "#/definitions/TeamMembers"
-                    organisation:
-                        type: string
-                        default: HOT
-                    description:
-                        type: string
-                        default: HOT's mapping editors
-                    inviteOnly:
-                        type: boolean
-                        default: false
-        responses:
-            201:
-                description: Team updated successfully
-            400:
-                description: Client Error - Invalid Request
-            401:
-                description: Unauthorized - Invalid credentials
-            500:
-                description: Internal Server Error
-        """
-        try:
-            team_dto = TeamDTO(request.get_json())
-            team_dto.team_id = team_id
-            team_dto.validate()
-
-            authenticated_user_id = token_auth.current_user()
-            team_details_dto = TeamService.get_team_as_dto(
-                team_id, authenticated_user_id
-            )
-
-            org = TeamService.assert_validate_organisation(team_dto.organisation_id)
-            TeamService.assert_validate_members(team_details_dto)
-
-            if not TeamService.is_user_team_manager(
-                team_id, authenticated_user_id
-            ) and not OrganisationService.can_user_manage_organisation(
-                org.id, authenticated_user_id
-            ):
-                return {
-                    "Error": "User is not a admin or a manager for the team",
-                    "SubCode": "UserNotTeamManager",
-                }, 401
-        except DataError as e:
-            current_app.logger.error(f"error validating request: {str(e)}")
-            return {"Error": str(e), "SubCode": "InvalidData"}, 400
-
-        try:
-            TeamService.update_team(team_dto)
-            return {"Status": "Updated"}, 200
-        except NotFound as e:
-            return {"Error": str(e), "SubCode": "NotFound"}, 404
-        except TeamServiceError as e:
-            return str(e), 402
-        except Exception as e:
-            error_msg = f"Team POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
-
     @token_auth.login_required
     def patch(self, team_id):
         """

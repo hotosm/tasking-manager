@@ -1,7 +1,11 @@
-FROM python:3.7-buster
+ARG PYTHON_IMG_TAG=3.10
+FROM python:${PYTHON_IMG_TAG}-bullseye
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
+
+ENV PATH="/usr/src/app/__pypackages__/${PYTHON_IMG_TAG}/bin:$PATH" \
+    PYTHONPATH="/usr/src/app/__pypackages__/${PYTHON_IMG_TAG}/lib"
 
 # INSTALLATION
 
@@ -25,7 +29,10 @@ RUN git clone --depth=1 git://github.com/hotosm/tasking-manager.git \
 ## SETUP
 
 # Setup backend dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml pdm.lock README.md ./
+RUN pip install --no-cache-dir pdm \
+    && pdm config python.use_venv false \
+    && pdm install --prod --no-lock --no-editable
 
 # Setup and build frontend
 RUN cd frontend && npm install && npm run build
@@ -33,4 +40,4 @@ RUN cd frontend && npm install && npm run build
 # INITIALIZATION
 
 EXPOSE 5000
-CMD ["python", "manage.py", "runserver", "-h", "0.0.0.0"]
+CMD ["pdm", "run", "flask", "run", "-h", "0.0.0.0"]

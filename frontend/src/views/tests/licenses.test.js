@@ -1,6 +1,7 @@
 import React from 'react';
 import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import toast from 'react-hot-toast';
 
 import {
   createComponentWithMemoryRouter,
@@ -8,6 +9,11 @@ import {
   renderWithRouter,
 } from '../../utils/testWithIntl';
 import { ListLicenses, CreateLicense, EditLicense } from '../licenses';
+import { setupFaultyHandlers } from '../../network/tests/server';
+
+jest.mock('react-hot-toast', () => ({
+  success: jest.fn(),
+}));
 
 describe('List Licenses', () => {
   const setup = () => {
@@ -104,7 +110,28 @@ describe('Create License', () => {
     const plainTextInput = screen.getAllByRole('textbox')[2];
     fireEvent.change(plainTextInput, { target: { value: 'New license plain text' } });
     fireEvent.click(createButton);
-    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/licenses/123'));
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledTimes(1);
+      expect(router.state.location.pathname).toBe('/manage/licenses/123');
+    });
+  });
+
+  it('should display toast with error has occured message', async () => {
+    setupFaultyHandlers();
+    createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <CreateLicense />
+      </ReduxIntlProviders>,
+    );
+    const createButton = screen.getByRole('button', { name: /create license/i });
+    const nameInput = screen.getAllByRole('textbox')[0];
+    fireEvent.change(nameInput, { target: { value: 'New license Name' } });
+    const descriptionInput = screen.getAllByRole('textbox')[1];
+    fireEvent.change(descriptionInput, { target: { value: 'New license description' } });
+    const plainTextInput = screen.getAllByRole('textbox')[2];
+    fireEvent.change(plainTextInput, { target: { value: 'New license plain text' } });
+    fireEvent.click(createButton);
+    await waitFor(() => expect(screen.getByText(/Failed to create license. Please try again./i)).toBeInTheDocument());
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
@@ -178,6 +205,22 @@ describe('Edit License', () => {
       name: /cancel/i,
     });
     fireEvent.click(saveButton);
+    await waitFor(() => expect(toast.success).toHaveBeenCalledTimes(1));
+    expect(saveButton).not.toBeInTheDocument();
+    expect(cancelButton).not.toBeInTheDocument();
+  });
+
+  it('should display toast with error has occured message', async () => {
+    setupFaultyHandlers();
+    const { nameInput } = setup();
+    await waitFor(() => expect(nameInput.value).toBe('Sample License'));
+    fireEvent.change(nameInput, { target: { value: 'Changed License Name' } });
+    const saveButton = screen.getByRole('button', { name: /save/i });
+    const cancelButton = screen.getByRole('button', {
+      name: /cancel/i,
+    });
+    fireEvent.click(saveButton);
+    await waitFor(() => expect(screen.getByText(/Failed to update license information. Please try again/i)).toBeInTheDocument());
     expect(saveButton).not.toBeInTheDocument();
     expect(cancelButton).not.toBeInTheDocument();
   });

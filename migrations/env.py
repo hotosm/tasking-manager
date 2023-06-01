@@ -1,6 +1,7 @@
 from __future__ import with_statement
 from alembic import context
 from sqlalchemy import engine_from_config, pool
+from geoalchemy2 import alembic_helpers
 from logging.config import fileConfig
 from flask import current_app
 import logging
@@ -29,6 +30,7 @@ target_metadata = current_app.extensions["migrate"].db.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 exclude_tables = config.get_section("alembic:exclude").get("tables", "").split(",")
+exclude_index = config.get_section("alembic:exclude").get("index", "").split(",")
 
 
 def include_object(object, name, type_, reflected, compare_to):
@@ -37,8 +39,12 @@ def include_object(object, name, type_, reflected, compare_to):
     """
     if type_ == "table" and name in exclude_tables:
         return False
+    elif type_ == "index" and name in exclude_index:
+        return False
     else:
-        return True
+        return alembic_helpers.include_object(
+            object, name, type_, reflected, compare_to
+        )
 
 
 def run_migrations_offline():
@@ -54,7 +60,12 @@ def run_migrations_offline():
 
     """
     url = config.get_main_option("sqlalchemy.url")
-    context.configure(url=url, include_object=include_object)
+    context.configure(
+        url=url,
+        include_object=include_object,
+        process_revision_directives=alembic_helpers.writer,
+        render_item=alembic_helpers.render_item,
+    )
 
     with context.begin_transaction():
         context.run_migrations()
@@ -72,6 +83,7 @@ def run_migrations_online():
     # when there are no changes to the schema
     # reference: http://alembic.readthedocs.org/en/latest/cookbook.html
     def process_revision_directives(context, revision, directives):
+        alembic_helpers.writer(context, revision, directives)
         if getattr(config.cmd_opts, "autogenerate", False):
             script = directives[0]
             if script.upgrade_ops.is_empty():
@@ -90,7 +102,8 @@ def run_migrations_online():
         target_metadata=target_metadata,
         process_revision_directives=process_revision_directives,
         include_object=include_object,
-        **current_app.extensions["migrate"].configure_args
+        render_item=alembic_helpers.render_item,
+        **current_app.extensions["migrate"].configure_args,
     )
 
     try:

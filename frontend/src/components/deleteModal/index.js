@@ -24,7 +24,7 @@ export function DeleteModal({ id, name, type, className }: Object) {
         if (type === 'notifications') {
           setTimeout(() => navigate(`/inbox`), 750);
         } else {
-          setTimeout(() => navigate(`/manage/${type}`), 750);
+          setTimeout(() => navigate(`/manage/${type !== 'interests' ? type : 'categories'}`), 750);
         }
       })
       .catch((e) => {

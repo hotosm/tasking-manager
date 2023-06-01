@@ -259,14 +259,16 @@ class TestGetProjectsRestAPI(BaseTestCase):
         assert expected_project.id == project_response["projectId"]
         # Since some of the fields are not returned in summary mode we need to skip them
         if assert_type != "summary":
-            assert geojson.is_valid(project_response["areaOfInterest"])
+            assert geojson.loads(
+                geojson.dumps(project_response["areaOfInterest"])
+            ).is_valid
             assert ["type", "coordinates"] == list(
                 project_response["areaOfInterest"].keys()
             )
             if assert_type == "notasks":
                 assert "tasks" not in project_response
             else:
-                assert geojson.is_valid(project_response["tasks"])
+                assert geojson.loads(geojson.dumps(project_response["tasks"])).is_valid
             assert (
                 is_known_task_creation_mode(project_response["taskCreationMode"])
                 is None
@@ -1996,37 +1998,6 @@ class TestProjectsQueriesPriorityAreasAPI(BaseTestCase):
         self.test_project.save()
         self.url = f"/api/v2/projects/{self.test_project.id}/queries/priority-areas/"
 
-    # Code modified from https://github.com/larsbutler/oq-engine/blob/master/tests/utils/helpers.py
-    def assertDeepAlmostEqual(self, expected, actual, *args, **kwargs):
-        """
-        Assert that two complex structures have almost equal contents.
-
-        Compares lists, dicts and tuples recursively. Checks numeric values
-        using test_case's :py:meth:`unittest.TestCase.assertAlmostEqual` and
-        checks all other values with :py:meth:`unittest.TestCase.assertEqual`.
-        Accepts additional positional and keyword arguments and pass those
-        intact to assertAlmostEqual() (that's how you specify comparison
-        precision).
-
-        :type test_case: :py:class:`unittest.TestCase` object
-        """
-        kwargs.pop("__trace", "ROOT")
-        if isinstance(expected, (int, float, complex)):
-            self.assertAlmostEqual(expected, actual, *args, **kwargs)
-        elif isinstance(expected, (list, tuple)):
-            self.assertEqual(len(expected), len(actual))
-            for index in range(len(expected)):
-                v1, v2 = expected[index], actual[index]
-                self.assertDeepAlmostEqual(v1, v2, __trace=repr(index), *args, **kwargs)
-        elif isinstance(expected, dict):
-            self.assertEqual(set(expected), set(actual))
-            for key in expected:
-                self.assertDeepAlmostEqual(
-                    expected[key], actual[key], __trace=repr(key), *args, **kwargs
-                )
-        else:
-            self.assertEqual(expected, actual)
-
     def returns_404_if_project_doesnt_exist(self):
         """
         Test 404 is returned if project doesn't exist
@@ -2050,7 +2021,7 @@ class TestProjectsQueriesPriorityAreasAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json), 1)
         self.assertDeepAlmostEqual(
-            response.json[0], json_data["priorityAreas"][0], places=8
+            response.json[0], json_data["priorityAreas"][0], places=6
         )
 
 

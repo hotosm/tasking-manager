@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import toast from 'react-hot-toast';
 
 import {
   createComponentWithMemoryRouter,
@@ -9,6 +10,11 @@ import {
   renderWithRouter,
 } from '../../utils/testWithIntl';
 import { ListCampaigns, CampaignError, CreateCampaign, EditCampaign } from '../campaigns';
+import { setupFaultyHandlers } from '../../network/tests/server';
+
+jest.mock('react-hot-toast', () => ({
+  success: jest.fn(),
+}));
 
 describe('ListCampaigns', () => {
   it('should show loading placeholder when licenses are being fetched', () => {
@@ -93,7 +99,30 @@ describe('CreateCampaign', () => {
     expect(inputText.value).toBe('New Campaign Name');
     expect(createButton).toBeEnabled();
     fireEvent.click(createButton);
-    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/campaigns/123'));
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledTimes(1);
+      expect(router.state.location.pathname).toBe('/manage/campaigns/123');
+    });
+  });
+
+  it('should display toast with error has occured message', async () => {
+    setupFaultyHandlers();
+    createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <CreateCampaign />
+      </ReduxIntlProviders>,
+    );
+    const createButton = screen.getByRole('button', {
+      name: /create campaign/i,
+    });
+    const inputText = screen.getByRole('textbox');
+    fireEvent.change(inputText, { target: { value: 'New Campaign Name' } });
+    expect(inputText.value).toBe('New Campaign Name');
+    expect(createButton).toBeEnabled();
+    fireEvent.click(createButton);
+    await waitFor(() =>
+      expect(screen.getByText(/Failed to create campaign. Please try again./i)).toBeInTheDocument(),
+    );
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
@@ -181,9 +210,22 @@ describe('EditCampaign', () => {
     });
     await waitFor(() => {
       expect(savingLoder).not.toBeInTheDocument();
+      expect(toast.success).toHaveBeenCalledTimes(1);
     });
     expect(saveButton).not.toBeInTheDocument();
     expect(cancelButton).not.toBeInTheDocument();
+  });
+
+  it('should display toast with error has occured message', async () => {
+    setupFaultyHandlers();
+    const { inputText } = setup();
+    await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
+    fireEvent.change(inputText, { target: { value: 'Changed Campaign Name' } });
+    const saveButton = screen.getByRole('button', { name: /save/i });
+    fireEvent.click(saveButton);
+    await waitFor(() => {
+      expect(screen.getByText(/There was an error saving this campaign./i)).toBeInTheDocument();
+    });
   });
 });
 
@@ -244,6 +286,32 @@ describe('Delete Campaign', () => {
     });
     fireEvent.click(deleteConfirmationButton);
     expect(await screen.findByText('Campaign deleted successfully.')).toBeInTheDocument();
-    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/campaigns'));
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/manage/campaigns');
+    });
+  });
+
+  it('should direct to campaigns list page on successful deletion of a campaign', async () => {
+    setupFaultyHandlers();
+    createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <EditCampaign id={123} />
+      </ReduxIntlProviders>,
+    );
+    expect(await screen.findByText('NRCS_Duduwa Mapping')).toBeInTheDocument();
+    const deleteButton = screen.getByRole('button', {
+      name: /delete/i,
+    });
+    fireEvent.click(deleteButton);
+    const dialog = screen.getByRole('dialog');
+    const deleteConfirmationButton = within(dialog).getByRole('button', {
+      name: /delete/i,
+    });
+    fireEvent.click(deleteConfirmationButton);
+    await waitFor(() => {
+      expect(
+        screen.getByText(/An error occurred when trying to delete this campaign/i),
+      ).toBeInTheDocument();
+    });
   });
 });

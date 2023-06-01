@@ -19,13 +19,13 @@ class MappingIssueCategoryService:
 
     @staticmethod
     def get_mapping_issue_category_as_dto(category_id: int) -> MappingIssueCategoryDTO:
-        """ Get MappingIssueCategory from DB """
+        """Get MappingIssueCategory from DB"""
         category = MappingIssueCategoryService.get_mapping_issue_category(category_id)
         return category.as_dto()
 
     @staticmethod
     def create_mapping_issue_category(category_dto: MappingIssueCategoryDTO) -> int:
-        """ Create MappingIssueCategory in DB """
+        """Create MappingIssueCategory in DB"""
         new_mapping_issue_category_id = MappingIssueCategory.create_from_dto(
             category_dto
         )
@@ -35,7 +35,7 @@ class MappingIssueCategoryService:
     def update_mapping_issue_category(
         category_dto: MappingIssueCategoryDTO,
     ) -> MappingIssueCategoryDTO:
-        """ Create MappingIssueCategory in DB """
+        """Create MappingIssueCategory in DB"""
         category = MappingIssueCategoryService.get_mapping_issue_category(
             category_dto.category_id
         )
@@ -44,11 +44,11 @@ class MappingIssueCategoryService:
 
     @staticmethod
     def delete_mapping_issue_category(category_id: int):
-        """ Delete specified license"""
+        """Delete specified license"""
         category = MappingIssueCategoryService.get_mapping_issue_category(category_id)
         category.delete()
 
     @staticmethod
     def get_all_mapping_issue_categories(include_archived):
-        """ Get all mapping issue categories"""
+        """Get all mapping issue categories"""
         return MappingIssueCategory.get_all_categories(include_archived)

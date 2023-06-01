@@ -171,7 +171,9 @@ class TasksActionsMappingStopAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            stop_task = StopMappingTaskDTO(request.get_json())
+            stop_task = StopMappingTaskDTO(
+                request.get_json() if request.is_json else {}
+            )
             stop_task.user_id = token_auth.current_user()
             stop_task.task_id = task_id
             stop_task.project_id = project_id

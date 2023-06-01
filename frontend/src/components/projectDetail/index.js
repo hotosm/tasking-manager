@@ -128,12 +128,12 @@ export const ProjectDetail = (props) => {
   /* eslint-disable-next-line */
   const [visualError, visualLoading, visualData] = useFetch(
     `projects/${props.project.projectId}/contributions/queries/day/`,
-    props.project && props.project.projectId,
+    props.project?.projectId,
   );
   /* eslint-disable-next-line */
   const [contributorsError, contributorsLoading, contributors] = useFetch(
     `projects/${props.project.projectId}/contributions/`,
-    props.project && props.project.projectId,
+    props.project?.projectId,
   );
 
   const htmlDescription =
@@ -260,7 +260,7 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.questionsAndComments} />
       </a>
       <QuestionsAndComments
-        projectId={props.project.projectId}
+        project={props.project}
         contributors={contributors}
         titleClass={`${h2Classes} mv0 pt5`}
       />
@@ -276,7 +276,7 @@ export const ProjectDetail = (props) => {
           type={'media'}
           rows={1}
           delay={200}
-          ready={contributors && contributors.userContributions}
+          ready={contributors?.userContributions}
         >
           {contributors && (
             <UserAvatarList

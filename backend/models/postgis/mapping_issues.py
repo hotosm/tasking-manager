@@ -6,7 +6,7 @@ from backend.models.dtos.mapping_issues_dto import (
 
 
 class MappingIssueCategory(db.Model):
-    """ Represents a category of task mapping issues identified during validaton """
+    """Represents a category of task mapping issues identified during validaton"""
 
     __tablename__ = "mapping_issue_categories"
     id = db.Column(db.Integer, primary_key=True)
@@ -19,12 +19,12 @@ class MappingIssueCategory(db.Model):
 
     @staticmethod
     def get_by_id(category_id: int):
-        """ Get category by id """
-        return MappingIssueCategory.query.get(category_id)
+        """Get category by id"""
+        return db.session.get(MappingIssueCategory, category_id)
 
     @classmethod
     def create_from_dto(cls, dto: MappingIssueCategoryDTO) -> int:
-        """ Creates a new MappingIssueCategory class from dto """
+        """Creates a new MappingIssueCategory class from dto"""
         new_category = cls(dto.name)
         new_category.description = dto.description
 
@@ -34,7 +34,7 @@ class MappingIssueCategory(db.Model):
         return new_category.id
 
     def update_category(self, dto: MappingIssueCategoryDTO):
-        """ Update existing category """
+        """Update existing category"""
         self.name = dto.name
         self.description = dto.description
         if dto.archived is not None:
@@ -42,7 +42,7 @@ class MappingIssueCategory(db.Model):
         db.session.commit()
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
@@ -66,7 +66,7 @@ class MappingIssueCategory(db.Model):
         return dto
 
     def as_dto(self) -> MappingIssueCategoryDTO:
-        """ Convert the category to its DTO representation """
+        """Convert the category to its DTO representation"""
         dto = MappingIssueCategoryDTO()
         dto.category_id = self.id
         dto.name = self.name

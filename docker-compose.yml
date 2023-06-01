@@ -25,7 +25,7 @@ services:
     <<: *backend
     container_name: migration
     restart: on-failure
-    command: python manage.py db upgrade
+    command: flask db upgrade
 
   frontend:
     image: hotosm-tasking-manager:frontend

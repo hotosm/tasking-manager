@@ -15,6 +15,8 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.users.authentication_service import token_auth, tm
 from backend.services.interests_service import InterestService
 from backend.models.postgis.utils import InvalidGeoJson
+
+from shapely import GEOSException
 from shapely.errors import TopologicalError
 
 
@@ -432,6 +434,16 @@ class ProjectActionsIntersectingTilesAPI(Resource):
                 "error": "Invalid geometry. Polygon is self intersecting",
                 "SubCode": "SelfIntersectingAOI",
             }, 400
+        except GEOSException as wrapped:
+            if (
+                isinstance(wrapped.args[0], str)
+                and "Self-intersection" in wrapped.args[0]
+            ):
+                return {
+                    "error": "Invalid geometry. Polygon is self intersecting",
+                    "SubCode": "SelfIntersectingAOI",
+                }, 400
+            return {"error": str(wrapped), "SubCode": "InternalServerError"}
         except Exception as e:
             error_msg = f"IntersectingTiles GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

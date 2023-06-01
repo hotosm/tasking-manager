@@ -103,18 +103,17 @@ class AuthenticationService:
     @staticmethod
     def authenticate_email_token(username: str, token: str):
         """Validate that the email token is valid"""
-        try:
-            user = UserService.get_user_by_username(username)
-        except NotFound:
-            raise AuthServiceError("Unable to authenticate")
+        user = UserService.get_user_by_username(username)
 
         is_valid, tokenised_email = AuthenticationService.is_valid_token(token, 86400)
 
         if not is_valid:
-            raise AuthServiceError("Unable to authenticate")
+            raise AuthServiceError(
+                tokenised_email
+            )  # Since token is invalid, tokenised_email is the error message
 
         if user.email_address != tokenised_email:
-            raise AuthServiceError("Unable to authenticate")
+            raise AuthServiceError("InvalidEmail- Email address does not match token")
 
         # Token is valid so update DB and return
         user.set_email_verified_status(is_verified=True)
@@ -177,9 +176,9 @@ class AuthenticationService:
             tokenised_user_id = serializer.loads(token, max_age=token_expiry)
         except SignatureExpired:
             current_app.logger.debug("Token has expired")
-            return False, None
+            return False, "ExpiredToken- Token has expired"
         except BadSignature:
             current_app.logger.debug("Bad Token Signature")
-            return False, None
+            return False, "BadSignature- Bad Token Signature"
 
         return True, tokenised_user_id

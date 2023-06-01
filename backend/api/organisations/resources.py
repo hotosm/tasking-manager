@@ -17,6 +17,7 @@ from backend.services.users.authentication_service import token_auth
 
 
 class OrganisationsBySlugRestAPI(Resource):
+    @token_auth.login_required(optional=True)
     def get(self, slug):
         """
         Retrieves an organisation
@@ -209,6 +210,7 @@ class OrganisationsRestAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
+    @token_auth.login_required(optional=True)
     def get(self, organisation_id):
         """
         Retrieves an organisation
@@ -460,8 +462,8 @@ class OrganisationsAllAPI(Resource):
             )
 
         # Validate abbreviated.
-        omit_managers = strtobool(request.args.get("omitManagerList", "false"))
-        omit_stats = strtobool(request.args.get("omitOrgStats", "true"))
+        omit_managers = bool(strtobool(request.args.get("omitManagerList", "false")))
+        omit_stats = bool(strtobool(request.args.get("omitOrgStats", "true")))
         # Obtain organisations
         try:
             results_dto = OrganisationService.get_organisations_as_dto(

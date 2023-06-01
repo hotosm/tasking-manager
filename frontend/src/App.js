@@ -1,5 +1,6 @@
 import React, { Suspense, useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import ReactPlaceholder from 'react-placeholder';
 import { useMeta } from 'react-meta-elements';
 import { useSelector } from 'react-redux';
@@ -33,14 +34,23 @@ const App = () => {
       ) : (
         <div className="w-100 base-font bg-white" lang={locale}>
           <main className="cf w-100 base-font">
-            <Suspense
-              fallback={<ReactPlaceholder showLoadingAnimation={true} rows={30} delay={300} />}
-            >
-              <RouterProvider router={router} />
+            <Suspense fallback={<ReactPlaceholder showLoadingAnimation rows={30} delay={300} />}>
+              <RouterProvider router={router} fallbackElement={<Preloader />} />
             </Suspense>
           </main>
           <ArchivalNotificationBanner />
           {MATOMO_ID && <Banner />}
+          <Toaster
+            position="bottom-left"
+            toastOptions={{
+              style: {
+                padding: '1rem',
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+              },
+            }}
+          />
         </div>
       )}
     </Sentry.ErrorBoundary>

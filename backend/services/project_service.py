@@ -479,12 +479,28 @@ class ProjectService:
 
     @staticmethod
     @cached(summary_cache)
+    def get_cached_project_summary(
+        project_id: int, preferred_locale: str = "en"
+    ) -> ProjectSummary:
+        """Gets the project summary DTO"""
+        project = ProjectService.get_project_by_id(project_id)
+        # We don't want to cache the project stats, so we set calculate_completion to False
+        return project.get_project_summary(preferred_locale, calculate_completion=False)
+
+    @staticmethod
     def get_project_summary(
         project_id: int, preferred_locale: str = "en"
     ) -> ProjectSummary:
         """Gets the project summary DTO"""
         project = ProjectService.get_project_by_id(project_id)
-        return project.get_project_summary(preferred_locale)
+        summary = ProjectService.get_cached_project_summary(
+            project_id, preferred_locale
+        )
+        # Since we don't want to cache the project stats, we need to update them
+        summary.percent_mapped = project.calculate_tasks_percent("mapped")
+        summary.percent_validated = project.calculate_tasks_percent("validated")
+        summary.percent_bad_imagery = project.calculate_tasks_percent("bad_imagery")
+        return summary
 
     @staticmethod
     def set_project_as_featured(project_id: int):
@@ -571,18 +587,12 @@ class ProjectService:
 
     @staticmethod
     def send_email_on_project_progress(project_id):
-        """ Send email to all contributors on project progress """
+        """Send email to all contributors on project progress"""
         if not current_app.config["SEND_PROJECT_EMAIL_UPDATES"]:
             return
         project = ProjectService.get_project_by_id(project_id)
 
-        project_completion = Project.calculate_tasks_percent(
-            "project_completion",
-            project.total_tasks,
-            project.tasks_mapped,
-            project.tasks_validated,
-            project.tasks_bad_imagery,
-        )
+        project_completion = project.calculate_tasks_percent("project_completion")
         if project_completion == 50 and project.progress_email_sent:
             return  # Don't send progress email if it's already sent
         if project_completion in [50, 100]:

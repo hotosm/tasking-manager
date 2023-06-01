@@ -23,7 +23,7 @@ class CampaignService:
     @staticmethod
     def get_campaign(campaign_id: int) -> Campaign:
         """Gets the specified campaign"""
-        campaign = Campaign.query.get(campaign_id)
+        campaign = db.session.get(Campaign, campaign_id)
 
         if campaign is None:
             raise NotFound()
@@ -42,7 +42,7 @@ class CampaignService:
     @staticmethod
     def delete_campaign(campaign_id: int):
         """Delete campaign for a project"""
-        campaign = Campaign.query.get(campaign_id)
+        campaign = db.session.get(Campaign, campaign_id)
         campaign.delete()
         campaign.save()
 
@@ -162,8 +162,8 @@ class CampaignService:
     @staticmethod
     def delete_organisation_campaign(organisation_id: int, campaign_id: int):
         """Delete campaign for a organisation"""
-        campaign = Campaign.query.get(campaign_id)
-        org = Organisation.query.get(organisation_id)
+        campaign = db.session.get(Campaign, campaign_id)
+        org = db.session.get(Organisation, organisation_id)
         try:
             org.campaign.remove(campaign)
         except ValueError:
@@ -176,7 +176,7 @@ class CampaignService:
 
     @staticmethod
     def update_campaign(campaign_dto: CampaignDTO, campaign_id: int):
-        campaign = Campaign.query.get(campaign_id)
+        campaign = db.session.get(Campaign, campaign_id)
         if not campaign:
             raise NotFound(f"Campaign id {campaign_id} not found")
         try:

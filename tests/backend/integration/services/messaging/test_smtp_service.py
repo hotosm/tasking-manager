@@ -28,7 +28,6 @@ class TestSMTPService(BaseTestCase):
         self.message_type = "test"
 
     def test_send_verification_mail(self):
-
         if os.getenv("TM_SMTP_HOST") is None:
             return  # If SMTP not setup there's no value attempting the integration tests
 
@@ -37,7 +36,6 @@ class TestSMTPService(BaseTestCase):
         )
 
     def test_send_alert(self):
-
         if os.getenv("TM_SMTP_HOST") is None:
             return  # If SMTP not setup there's no value attempting the integration tests
 
@@ -57,7 +55,6 @@ class TestSMTPService(BaseTestCase):
         self.assertTrue(sent_alert)
 
     def test_send_alert_message_limits(self):
-
         if os.getenv("TM_SMTP_HOST") is None:
             return  # If SMTP not setup there's no value attempting the integration tests
 

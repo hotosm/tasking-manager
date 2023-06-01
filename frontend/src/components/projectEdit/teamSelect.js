@@ -1,16 +1,16 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useContext } from 'react';
 import Select from 'react-select';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
+import commonMessages from '../messages';
 import { Button } from '../../components/button';
 import { StateContext } from '../../views/projectEdit';
 import { PencilIcon, WasteIcon, ExternalLinkIcon } from '../svgIcons';
-import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { useFetchWithAbort } from '../../hooks/UseFetch';
 
 export const TeamSelect = () => {
-  const token = useSelector((state) => state.auth.token);
+  const intl = useIntl();
   const nullState = {
     team: { name: null, teamId: null },
     role: { value: null, label: null },
@@ -18,17 +18,13 @@ export const TeamSelect = () => {
   };
 
   const { projectInfo, setProjectInfo } = useContext(StateContext);
-  const [orgs, setOrgs] = useState([]);
-  const [teams, setTeams] = useState([]);
   const [teamSelect, setTeamSelect] = useState(nullState);
   const [org, setOrg] = useState(null);
 
-  useEffect(() => {
-    fetchLocalJSONAPI('organisations/?omitManagerList=true', token).then((r) =>
-      setOrgs(r.organisations),
-    );
-    fetchLocalJSONAPI('teams/?omitMemberList=true', token).then((t) => setTeams(t.teams));
-  }, [token]);
+  const [, isOrganisationsLoading, organisationsData] = useFetchWithAbort(
+    'organisations/?omitManagerList=true',
+  );
+  const [, isTeamsLoading, teamsData] = useFetchWithAbort('teams/?omitMemberList=true');
 
   const teamRoles = [
     { value: 'MAPPER', label: 'Mapper' },
@@ -92,17 +88,17 @@ export const TeamSelect = () => {
     return t.teamId;
   });
 
-  let filteredTeams = teams.filter((t) => !teamsIds.includes(t.teamId));
+  let filteredTeams = teamsData?.teams?.filter((t) => !teamsIds.includes(t.teamId));
 
   if (org !== null) {
     filteredTeams = [
       {
         label: org.name,
-        options: filteredTeams.filter((t) => t.organisationId === org.organisationId),
+        options: filteredTeams?.filter((t) => t.organisationId === org.organisationId),
       },
       {
         label: 'Others',
-        options: filteredTeams.filter((t) => t.organisationId !== org.organisationId),
+        options: filteredTeams?.filter((t) => t.organisationId !== org.organisationId),
       },
     ];
   }
@@ -110,38 +106,33 @@ export const TeamSelect = () => {
   return (
     <div className="w-80">
       <div className="mb4">
-        {projectInfo.teams.map((t) => {
-          return (
-            <div className="w-100 cf pa2 bg-white blue-dark mb2">
-              <div className="w-50 fl fw5">
-                <span className="pr1">{t.name}</span>
-                <a
-                  className="link blue-light"
-                  href={`/teams/${t.teamId}/membership/`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  <ExternalLinkIcon />
-                </a>
-              </div>
-              <div className="w-30 fl">{getLabel(t.role)}</div>
-              <div className="w-20 fl pl3 tr">
-                <span
-                  className="pa2 br-100 pointer bg-grey-light"
-                  onClick={() => editTeam(t.teamId)}
-                >
-                  <PencilIcon className="h1 w1 blue-dark" />
-                </span>
-                <span
-                  className=" ml1 pa2 br-100 pointer bg-grey-light red"
-                  onClick={() => removeTeam(t.teamId)}
-                >
-                  <WasteIcon className="h1 w1" />
-                </span>
-              </div>
+        {projectInfo.teams.map((t) => (
+          <div key={t.teamId} className="w-100 cf pa2 bg-white blue-dark mb2">
+            <div className="w-50 fl fw5">
+              <span className="pr1">{t.name}</span>
+              <a
+                className="link blue-light"
+                href={`/teams/${t.teamId}/membership/`}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <ExternalLinkIcon />
+              </a>
             </div>
-          );
-        })}
+            <div className="w-30 fl">{getLabel(t.role)}</div>
+            <div className="w-20 fl pl3 tr">
+              <span className="pa2 br-100 pointer bg-grey-light" onClick={() => editTeam(t.teamId)}>
+                <PencilIcon className="h1 w1 blue-dark" />
+              </span>
+              <span
+                className=" ml1 pa2 br-100 pointer bg-grey-light red"
+                onClick={() => removeTeam(t.teamId)}
+              >
+                <WasteIcon className="h1 w1" />
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
       <Select
         classNamePrefix="react-select"
@@ -149,22 +140,26 @@ export const TeamSelect = () => {
         getOptionLabel={(option) => option.name}
         getOptionValue={(option) => option.organisationId}
         placeholder={<FormattedMessage {...messages.filterByOrg} />}
-        options={orgs}
+        options={isOrganisationsLoading ? [] : organisationsData.organisations}
         value={org}
         onChange={(value) => setOrg(value)}
         className="mb2 z-4"
+        isLoading={isOrganisationsLoading}
+        loadingMessage={() => intl.formatMessage(commonMessages['loading'])}
       />
       <div className="cf pb3 flex justify-between">
         <Select
           classNamePrefix="react-select"
           getOptionLabel={(option) => option.name}
           getOptionValue={(option) => option.teamId}
-          options={filteredTeams}
+          options={isTeamsLoading ? [] : filteredTeams}
           onChange={(value) => handleSelect(value, 'team')}
           className="w-40 fl pr2 z-3"
           value={teamSelect.team.name !== null ? teamSelect.team : null}
           placeholder={<FormattedMessage {...messages.selectTeam} />}
           isDisabled={teamSelect.edit}
+          isLoading={isTeamsLoading}
+          loadingMessage={() => intl.formatMessage(commonMessages['loading'])}
         />
         <Select
           classNamePrefix="react-select"

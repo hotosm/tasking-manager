@@ -9,7 +9,7 @@ from flask import current_app
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
 from sqlalchemy.sql.expression import cast, or_
-from sqlalchemy import text, desc, func, Time, orm, literal
+from sqlalchemy import desc, func, Time, orm, literal
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 import requests
@@ -267,11 +267,18 @@ class Project(db.Model):
             current_app.config["OSM_NOMINATIM_SERVER_URL"], lat, lng
         )
         try:
-            country_info = requests.get(url).json()  # returns a dict
+            response = requests.get(url)
+            response.raise_for_status()
+            country_info = response.json()  # returns a dict
             if country_info["address"].get("country") is not None:
                 self.country = [country_info["address"]["country"]]
-        except (KeyError, AttributeError, requests.exceptions.ConnectionError):
-            pass
+        except (
+            KeyError,
+            AttributeError,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.HTTPError,
+        ) as e:
+            current_app.logger.debug(e, exc_info=True)
 
         self.save()
 
@@ -288,7 +295,7 @@ class Project(db.Model):
     def clone(project_id: int, author_id: int):
         """Clone project"""
 
-        orig = Project.query.get(project_id)
+        orig = db.session.get(Project, project_id)
         if orig is None:
             raise NotFound()
 
@@ -354,15 +361,21 @@ class Project(db.Model):
         return new_proj
 
     @staticmethod
-    def get(project_id: int):
+    def get(project_id: int) -> Optional["Project"]:
         """
         Gets specified project
         :param project_id: project ID in scope
         :return: Project if found otherwise None
         """
-        return Project.query.options(
-            orm.noload("tasks"), orm.noload("messages"), orm.noload("project_chat")
-        ).get(project_id)
+        return db.session.get(
+            Project,
+            project_id,
+            options=[
+                orm.noload(Project.tasks),
+                orm.noload(Project.messages),
+                orm.noload(Project.project_chat),
+            ],
+        )
 
     def update(self, project_dto: ProjectDTO):
         """Updates project from DTO"""
@@ -517,19 +530,19 @@ class Project(db.Model):
         return db.session.query(literal(True)).filter(query).scalar()
 
     def is_favorited(self, user_id: int) -> bool:
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if user not in self.favorited:
             return False
 
         return True
 
     def favorite(self, user_id: int):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         self.favorited.append(user)
         db.session.commit()
 
     def unfavorite(self, user_id: int):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if user not in self.favorited:
             raise ValueError("NotFeatured- Project not been favorited by user")
         self.favorited.remove(user)
@@ -647,10 +660,13 @@ class Project(db.Model):
         """Create Project Stats model for postgis project object"""
         project_stats = ProjectStatsDTO()
         project_stats.project_id = self.id
-        project_area_sql = "select ST_Area(geometry, true)/1000000 as area from public.projects where id = :id"
-        project_area_result = db.engine.execute(text(project_area_sql), id=self.id)
+        project_stats.area = (
+            db.session.query(func.ST_Area(Project.geometry, True))
+            .where(Project.id == self.id)
+            .first()[0]
+            / 1000000
+        )
 
-        project_stats.area = project_area_result.fetchone()["area"]
         project_stats.total_mappers = (
             db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
         )
@@ -660,27 +676,9 @@ class Project(db.Model):
             .filter(ProjectChat.project_id == self.id)
             .count()
         )
-        project_stats.percent_mapped = Project.calculate_tasks_percent(
-            "mapped",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        project_stats.percent_validated = Project.calculate_tasks_percent(
-            "validated",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        project_stats.percent_bad_imagery = Project.calculate_tasks_percent(
-            "bad_imagery",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
+        project_stats.percent_mapped = self.calculate_tasks_percent("mapped")
+        project_stats.percent_validated = self.calculate_tasks_percent("validated")
+        project_stats.percent_bad_imagery = self.calculate_tasks_percent("bad_imagery")
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         project_stats.aoi_centroid = geojson.loads(centroid_geojson)
         project_stats.total_time_spent = 0
@@ -821,7 +819,9 @@ class Project(db.Model):
 
         return project_stats
 
-    def get_project_summary(self, preferred_locale) -> ProjectSummary:
+    def get_project_summary(
+        self, preferred_locale, calculate_completion=True
+    ) -> ProjectSummary:
         """Create Project Summary model for postgis project object"""
         summary = ProjectSummary()
         summary.project_id = self.id
@@ -898,27 +898,11 @@ class Project(db.Model):
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
-        summary.percent_mapped = Project.calculate_tasks_percent(
-            "mapped",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        summary.percent_validated = Project.calculate_tasks_percent(
-            "validated",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        summary.percent_bad_imagery = Project.calculate_tasks_percent(
-            "bad_imagery",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
+        if calculate_completion:
+            summary.percent_mapped = self.calculate_tasks_percent("mapped")
+            summary.percent_validated = self.calculate_tasks_percent("validated")
+            summary.percent_bad_imagery = self.calculate_tasks_percent("bad_imagery")
+
         summary.project_teams = [
             ProjectTeamDTO(
                 dict(
@@ -945,7 +929,6 @@ class Project(db.Model):
 
     @staticmethod
     def get_project_total_contributions(project_id: int) -> int:
-
         project_contributors_count = (
             TaskHistory.query.with_entities(TaskHistory.user_id)
             .filter(
@@ -959,7 +942,8 @@ class Project(db.Model):
 
     def get_aoi_geometry_as_geojson(self):
         """Helper which returns the AOI geometry as a geojson object"""
-        aoi_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
+        with db.engine.connect() as conn:
+            aoi_geojson = conn.execute(self.geometry.ST_AsGeoJSON()).scalar()
         return geojson.loads(aoi_geojson)
 
     def get_project_teams(self):
@@ -1027,27 +1011,10 @@ class Project(db.Model):
         base_dto.author = User.get_by_id(self.author_id).username
         base_dto.active_mappers = Project.get_active_mappers(self.id)
         base_dto.task_creation_mode = TaskCreationMode(self.task_creation_mode).name
-        base_dto.percent_mapped = Project.calculate_tasks_percent(
-            "mapped",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        base_dto.percent_validated = Project.calculate_tasks_percent(
-            "validated",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
-        base_dto.percent_bad_imagery = Project.calculate_tasks_percent(
-            "bad_imagery",
-            self.total_tasks,
-            self.tasks_mapped,
-            self.tasks_validated,
-            self.tasks_bad_imagery,
-        )
+
+        base_dto.percent_mapped = self.calculate_tasks_percent("mapped")
+        base_dto.percent_validated = self.calculate_tasks_percent("validated")
+        base_dto.percent_bad_imagery = self.calculate_tasks_percent("bad_imagery")
 
         base_dto.project_teams = [
             ProjectTeamDTO(
@@ -1154,28 +1121,29 @@ class Project(db.Model):
         tags_dto.tags = [r[0] for r in query]
         return tags_dto
 
-    @staticmethod
-    def calculate_tasks_percent(
-        target, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery
-    ):
+    def calculate_tasks_percent(self, target):
         """Calculates percentages of contributions"""
         try:
             if target == "mapped":
                 return int(
-                    (tasks_mapped + tasks_validated)
-                    / (total_tasks - tasks_bad_imagery)
+                    (self.tasks_mapped + self.tasks_validated)
+                    / (self.total_tasks - self.tasks_bad_imagery)
                     * 100
                 )
             elif target == "validated":
-                return int(tasks_validated / (total_tasks - tasks_bad_imagery) * 100)
+                return int(
+                    self.tasks_validated
+                    / (self.total_tasks - self.tasks_bad_imagery)
+                    * 100
+                )
             elif target == "bad_imagery":
-                return int((tasks_bad_imagery / total_tasks) * 100)
+                return int((self.tasks_bad_imagery / self.total_tasks) * 100)
             elif target == "project_completion":
                 # To calculate project completion we assign 2 points to each task
                 # one for mapping and one for validation
                 return int(
-                    (tasks_mapped + (tasks_validated * 2))
-                    / ((total_tasks - tasks_bad_imagery) * 2)
+                    (self.tasks_mapped + (self.tasks_validated * 2))
+                    / ((self.total_tasks - self.tasks_bad_imagery) * 2)
                     * 100
                 )
         except ZeroDivisionError:

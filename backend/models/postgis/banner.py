@@ -6,7 +6,7 @@ from backend.models.dtos.banner_dto import BannerDTO
 
 
 class Banner(db.Model):
-    """ Model for Banners"""
+    """Model for Banners"""
 
     __tablename__ = "banner"
 
@@ -16,22 +16,22 @@ class Banner(db.Model):
     visible = db.Column(db.Boolean, default=False, nullable=False)
 
     def create(self):
-        """ Creates and saves the current model to the DB """
+        """Creates and saves the current model to the DB"""
         db.session.add(self)
         db.session.commit()
 
     def update(self):
-        """ Updates the current model in the DB """
+        """Updates the current model in the DB"""
         db.session.commit()
 
     def update_from_dto(self, dto: BannerDTO):
-        """ Updates the current model in the DB """
+        """Updates the current model in the DB"""
         self.message = dto.message
         self.visible = dto.visible
         db.session.commit()
 
     def as_dto(self):
-        """ Returns a dto for the banner """
+        """Returns a dto for the banner"""
         banner_dto = BannerDTO()
         banner_dto.message = self.message
         banner_dto.visible = self.visible
@@ -39,7 +39,7 @@ class Banner(db.Model):
 
     @staticmethod
     def get():
-        """ Returns a banner and creates one if it doesn't exist """
+        """Returns a banner and creates one if it doesn't exist"""
         banner = Banner.query.first()
         if banner is None:
             banner = Banner()
