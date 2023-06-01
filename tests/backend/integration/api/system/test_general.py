@@ -61,7 +61,7 @@ class TestSystemContactAdminRestAPI(BaseTestCase):
         }
         self.app.config["EMAIL_CONTACT_ADDRESS"] = None
         response = self.client.post(url, json=data)
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 501)
         self.assertEqual(
             response.json["Error"],
             "This feature is not implemented due to missing variable TM_EMAIL_CONTACT_ADDRESS.",

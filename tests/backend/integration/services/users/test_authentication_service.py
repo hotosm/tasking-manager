@@ -117,13 +117,16 @@ class TestAuthenticationService(BaseTestCase):
         parsed_url = urlparse(email_auth_url)
         token = parse_qs(parsed_url.query)["token"][0]
         # Act/Assert
-        with self.assertRaises(AuthServiceError):
+        with self.assertRaises(NotFound):
             AuthenticationService().authenticate_email_token(
                 username=TEST_USERNAME,
                 token=token,
             )
 
     def test_authenticate_email_token_raises_error_when_invalid_token_supplied(self):
+        # Arrange
+        test_user = return_canned_user(TEST_USERNAME)
+        test_user.create()
         # Act/Assert
         with self.assertRaises(AuthServiceError):
             AuthenticationService().authenticate_email_token(

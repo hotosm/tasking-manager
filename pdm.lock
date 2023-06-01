@@ -611,8 +611,8 @@ dependencies = [
 [metadata]
 lock_version = "4.2"
 cross_platform = true
-groups = ["default", "lint", "test"]
-content_hash = "sha256:3ec544075017015d9d6cc63a0062112187e0cf39a452df3908bca45677a8e78c"
+groups = ["default", "dev", "lint", "test"]
+content_hash = "sha256:19fb836fb57c7a408a8854ad7203c03d06a24c4ccd92fe41b6189b7479127ca7"
 
 [metadata.files]
 "alembic 1.11.1" = [

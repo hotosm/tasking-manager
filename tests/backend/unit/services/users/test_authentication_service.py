@@ -30,7 +30,8 @@ class TestAuthenticationService(BaseTestCase):
         self.assertEqual(user_id, 12345678)
         self.assertTrue(is_valid_token)
         self.assertFalse(is_invalid_token)
-        self.assertIsNone(_user_id)
+        # Since token is invalid it should return the error message instead of the user id
+        self.assertEqual(_user_id, "BadSignature- Bad Token Signature")
 
     def test_get_authentication_failed_url_returns_expected_url(self):
         # Act
