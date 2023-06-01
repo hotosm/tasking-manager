@@ -17,6 +17,7 @@ from tests.backend.helpers.test_helpers import (
     get_canned_json,
     return_canned_campaign,
     create_canned_interest,
+    update_project_with_info,
 )
 from backend.models.postgis.utils import NotFound
 from backend.models.postgis.project import Project, ProjectDTO
@@ -2219,3 +2220,98 @@ class TestProjectsQueriesNoTasksAPI(BaseTestCase):
         TestGetProjectsRestAPI.assert_project_response(
             response.json, self.test_project, assert_type="notasks"
         )
+
+
+class TestProjectQueriesSimilarProjectsAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.test_project.save()
+        # Since project_info is required to retrun project summary in the response
+        update_project_with_info(self.test_project)
+        self.url = f"/api/v2/projects/queries/{self.test_project.id}/similar-projects/"
+        self.user_session_token = generate_encoded_token(self.test_author.id)
+
+    def create_project(self, status=ProjectStatus.PUBLISHED.value):
+        project, _ = create_canned_project()
+        project.status = status
+        project.save()
+        return project
+
+    def arrange_projects(self):
+        # Create test projects
+        project_1 = self.create_project()
+        project_2 = self.create_project()
+        project_3 = self.create_project()
+        self.create_project(ProjectStatus.DRAFT.value)
+        # Since project_info is required to retrun project summary in the response
+        update_project_with_info(project_1)
+        update_project_with_info(project_2)
+        update_project_with_info(project_3)
+        return project_1, project_2, project_3
+
+    def test_private_projects_are_not_returned_if_user_not_logged_in(self):
+        """
+        Test private projects are not returned if user is not logged in
+        """
+        # Arrange
+        # Create and arrange test projects
+        project_1, project_2, project_3 = self.arrange_projects()
+        project_3.private = True
+        project_3.save()
+        # Act
+        response = self.client.get(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json["results"]), 2)
+        self.assertEqual(response.json["results"][0]["projectId"], project_2.id)
+        self.assertEqual(response.json["results"][1]["projectId"], project_1.id)
+
+    def test_returns_404_if_project_doesnt_exist(self):
+        """
+        Test 404 is returned if project doesn't exist
+        """
+        # Act
+        response = self.client.get(
+            "/api/v2/projects/queries/999/similar-projects/",
+            headers={"Authorization": self.user_session_token},
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_returns_private_projects_if_user_is_allowed(self):
+        """
+        Test private projects are returned if user is author of project
+        """
+        # Arrange
+        # Create and arrange test projects
+        project_1, project_2, project_3 = self.arrange_projects()
+        project_3.private = True
+        project_3.save()
+        self.test_author.role = UserRole.ADMIN.value
+        self.test_author.save()
+        # Act
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json["results"]), 3)
+        self.assertEqual(response.json["results"][0]["projectId"], project_3.id)
+        self.assertEqual(response.json["results"][1]["projectId"], project_2.id)
+        self.assertEqual(response.json["results"][2]["projectId"], project_1.id)
+
+    def test_returns_limit_projects(self):
+        """
+        Test limit is applied to projects returned
+        """
+        # Arrange
+        # Create and arrange test projects
+        self.arrange_projects()
+        # Act
+        response = self.client.get(
+            f"{self.url}?limit=1", headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json["results"]), 1)

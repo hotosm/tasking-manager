@@ -29,6 +29,7 @@ from backend.services.project_admin_service import (
     InvalidGeoJson,
     InvalidData,
 )
+from backend.services.recommendation_service import ProjectRecommendationService
 
 
 class ProjectsRestAPI(Resource):
@@ -1239,5 +1240,62 @@ class ProjectsQueriesFeaturedAPI(Resource):
             return projects_dto.to_primitive(), 200
         except Exception as e:
             error_msg = f"FeaturedProjects GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+
+
+class ProjectQueriesSimilarProjectsAPI(Resource):
+    @token_auth.login_required(optional=True)
+    def get(self, project_id):
+        """
+        Get similar projects
+        ---
+        tags:
+            - projects
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: false
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: Project ID to get similar projects for
+              required: true
+              type: integer
+              default: 1
+            - in: query
+              name: limit
+              type: integer
+              description: Number of similar projects to return
+              default: 4
+        responses:
+            200:
+                description: Similar projects
+            404:
+                description: Project not found or project is not published
+            500:
+                description: Internal Server Error
+        """
+        try:
+            authenticated_user_id = (
+                token_auth.current_user() if token_auth.current_user() else None
+            )
+            limit = int(request.args.get("limit", 4))
+            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE", "en")
+            projects_dto = ProjectRecommendationService.get_similar_projects(
+                project_id, authenticated_user_id, preferred_locale, limit
+            )
+            return projects_dto.to_primitive(), 200
+        except NotFound:
+            return {
+                "Error": "Project Not Found or Project is not published",
+                "SubCode": "NotFound",
+            }, 404
+        except Exception as e:
+            error_msg = f"SimilarProjects GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

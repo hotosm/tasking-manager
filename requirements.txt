@@ -26,6 +26,8 @@ geojson==3.0.1
 itsdangerous==2.1.2
 Markdown==3.4.3
 oauthlib==3.2.2
+pandas>=2.0.2
+scikit-learn>=1.2.2
 psycopg2==2.9.6
 python-dateutil==2.8.2
 python-dotenv==1.0.0

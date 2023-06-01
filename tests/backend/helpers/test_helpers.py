@@ -300,6 +300,7 @@ def update_project_with_info(test_project: Project) -> Project:
     test_dto.mapping_editors = ["JOSM", "ID"]
     test_dto.validation_editors = ["JOSM"]
     test_dto.changeset_comment = "hot-project"
+    test_dto.private = False
     test_project.update(test_dto)
 
     return test_project
