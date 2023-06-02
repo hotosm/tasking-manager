@@ -55,7 +55,7 @@ describe('MoreFiltersForm', () => {
           },
           parse(router.state.location.search),
         ),
-      ).toEqual({ basedOnMyInterests: 1 }),
+      ).toEqual({ basedOnMyInterests: true }),
     );
   });
 
