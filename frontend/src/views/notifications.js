@@ -96,6 +96,7 @@ export const NotificationsPage = () => {
           notifications={notifications}
           inboxQuery={inboxQuery}
           retryFn={refetch}
+          setInboxQuery={setInboxQuery}
         />
         <div className="flex justify-end mw8">
           <Paginator

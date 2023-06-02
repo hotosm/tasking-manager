@@ -27,6 +27,7 @@ export const NotificationResults = ({
   liveUnreadCount,
   setPopoutFocus,
   inboxQuery,
+  setInboxQuery,
 }) => {
   const stateNotifications = notifications.userMessages;
 
@@ -82,7 +83,9 @@ export const NotificationResults = ({
             retryFn={retryFn}
             setPopoutFocus={setPopoutFocus}
             totalNotifications={notifications.pagination?.total}
+            totalPages={notifications.pagination?.pages}
             inboxQuery={inboxQuery}
+            setInboxQuery={setInboxQuery}
           />
         </ReactPlaceholder>
       </div>
@@ -103,7 +106,9 @@ const NotificationCards = ({
   retryFn,
   setPopoutFocus,
   totalNotifications,
+  totalPages,
   inboxQuery,
+  setInboxQuery,
 }) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
@@ -159,7 +164,10 @@ const NotificationCards = ({
               unreadCountInSelected={unreadCountInSelected}
               isAllSelected={isAllSelected}
               inboxQuery={inboxQuery}
+              setInboxQuery={setInboxQuery}
               updateUnreadCount={updateUnreadCount}
+              pageOfCards={pageOfCards}
+              totalPages={totalPages}
             />
           </div>
           {selected.length === 10 && totalNotifications > 10 && !inboxQuery.project && (

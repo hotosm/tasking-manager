@@ -15,7 +15,10 @@ export const ActionButtons = ({
   unreadCountInSelected,
   isAllSelected,
   inboxQuery,
+  setInboxQuery,
   updateUnreadCount,
+  pageOfCards,
+  totalPages,
 }) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
@@ -31,7 +34,21 @@ export const ActionButtons = ({
         });
     } else {
       pushToLocalJSONAPI(`/api/v2/notifications/delete-multiple/`, payload, token, 'DELETE')
-        .then(() => handleSuccess())
+        .then(() => {
+          // Decrement the page query if the user deleted all notifications in the last page
+          if (inboxQuery.page === totalPages && selected.length === pageOfCards.length) {
+            setInboxQuery(
+              {
+                ...inboxQuery,
+                page: inboxQuery.page - 1 || undefined,
+              },
+              'pushIn',
+            );
+            handleSuccess(false);
+            return;
+          }
+          handleSuccess();
+        })
         .catch((e) => {
           console.log(e.message);
         });
@@ -54,9 +71,9 @@ export const ActionButtons = ({
     }
   };
 
-  function handleSuccess() {
+  function handleSuccess(shouldRetry = true) {
     setSelected([]);
-    retryFn();
+    shouldRetry && retryFn();
     isAllSelected
       ? updateUnreadCount()
       : // The decrement count is readily available; deducting count from selected
