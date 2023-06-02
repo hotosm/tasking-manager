@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, screen, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 
 import { getProjectSummary } from '../../../network/tests/mockData/projects';
 import { store } from '../../../store';
@@ -48,11 +48,6 @@ describe('Task Item', () => {
   });
 
   it('should copy task URL to the clipboard', async () => {
-    const originalClipboard = { ...global.navigator.clipboard };
-    const mockClipboard = {
-      writeText: jest.fn().mockImplementation(() => Promise.resolve()),
-    };
-    global.navigator.clipboard = mockClipboard;
     const { user } = createComponentWithMemoryRouter(
       <IntlProviders>
         <TaskItem data={task} selectTask={jest.fn()} />
@@ -62,12 +57,11 @@ describe('Task Item', () => {
       },
     );
     await user.click(screen.getAllByRole('button')[2]);
-    expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      `${window.location.origin}/projects/6/tasks?search=8`,
+    await waitFor(async () =>
+      expect(await navigator.clipboard.readText()).toBe(
+        `${window.location.origin}/projects/6/tasks?search=8`,
+      ),
     );
-    jest.resetAllMocks();
-    global.navigator.clipboard = originalClipboard;
   });
 
   it('should display task detail modal', async () => {

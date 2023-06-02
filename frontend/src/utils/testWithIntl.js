@@ -20,7 +20,7 @@ export const renderWithRouter = (ui, { route = '/' } = {}) => {
   act(() => window.history.pushState({}, 'Test page', route));
 
   return {
-    user: userEvent.setup(),
+    user: userEvent.setup({ copyToClipboard: true }),
     ...render(ui, { wrapper: BrowserRouter }),
   };
 };

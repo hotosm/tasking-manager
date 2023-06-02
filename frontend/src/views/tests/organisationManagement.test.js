@@ -216,9 +216,10 @@ describe('Edit Organisation', () => {
     const { user } = setup();
     await waitFor(() => expect(screen.getByText('Manage organization')).toBeInTheDocument());
     await user.click(screen.getAllByRole('button')[2]);
-    expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      `${window.location.origin}/organisations/organisation-name-123/`,
+    await waitFor(async () =>
+      expect(await navigator.clipboard.readText()).toBe(
+        `${window.location.origin}/organisations/organisation-name-123/`,
+      ),
     );
   });
 
