@@ -37,6 +37,7 @@ class InvalidData(Exception):
 class ST_SetSRID(GenericFunction):
     """Exposes PostGIS ST_SetSRID function"""
 
+    inherit_cache = False
     name = "ST_SetSRID"
     type = Geometry
 
@@ -44,6 +45,7 @@ class ST_SetSRID(GenericFunction):
 class ST_GeomFromGeoJSON(GenericFunction):
     """Exposes PostGIS ST_GeomFromGeoJSON function"""
 
+    inherit_cache = False
     name = "ST_GeomFromGeoJSON"
     type = Geometry
 
@@ -51,6 +53,7 @@ class ST_GeomFromGeoJSON(GenericFunction):
 class ST_AsGeoJSON(GenericFunction):
     """Exposes PostGIS ST_AsGeoJSON function"""
 
+    inherit_cache = False
     name = "ST_GeomFromGeoJSON"
     type = Geometry
 
@@ -58,6 +61,7 @@ class ST_AsGeoJSON(GenericFunction):
 class ST_Centroid(GenericFunction):
     """Exposes PostGIS ST_Centroid function"""
 
+    inherit_cache = False
     name = "ST_Centroid"
     type = Geometry
 
@@ -65,6 +69,7 @@ class ST_Centroid(GenericFunction):
 class ST_Transform(GenericFunction):
     """Exposes PostGIS ST_Transform function"""
 
+    inherit_cache = False
     name = "ST_Transform"
     type = Geometry
 
@@ -72,6 +77,7 @@ class ST_Transform(GenericFunction):
 class ST_Area(GenericFunction):
     """Exposes PostGIS ST_Area function"""
 
+    inherit_cache = False
     name = "ST_Area"
     type = None
 
@@ -79,6 +85,7 @@ class ST_Area(GenericFunction):
 class ST_GeogFromWKB(GenericFunction):
     """Exposes PostGIS ST_GeogFromWKB function"""
 
+    inherit_cache = False
     name = "ST_GeogFromWKB"
     type = None
 
@@ -86,6 +93,7 @@ class ST_GeogFromWKB(GenericFunction):
 class ST_Buffer(GenericFunction):
     """Exposes PostGIS ST_Buffer function"""
 
+    inherit_cache = False
     name = "ST_Buffer"
     type = Geometry
 
@@ -93,6 +101,7 @@ class ST_Buffer(GenericFunction):
 class ST_Intersects(GenericFunction):
     """Exposes PostGIS ST_Intersects function"""
 
+    inherit_cache = False
     name = "ST_Intersects"
     type = Geometry
 
@@ -100,6 +109,7 @@ class ST_Intersects(GenericFunction):
 class ST_MakeEnvelope(GenericFunction):
     """Exposes PostGIS ST_MakeEnvelope function"""
 
+    inherit_cache = False
     name = "ST_MakeEnvelope"
     type = Geometry
 
@@ -107,6 +117,7 @@ class ST_MakeEnvelope(GenericFunction):
 class ST_X(GenericFunction):
     """Exposes PostGIS ST_X function"""
 
+    inherit_cache = False
     name = "ST_X"
     type = Geometry
 
@@ -114,6 +125,7 @@ class ST_X(GenericFunction):
 class ST_Y(GenericFunction):
     """Exposes PostGIS ST_Y function"""
 
+    inherit_cache = False
     name = "ST_Y"
     type = Geometry
 
