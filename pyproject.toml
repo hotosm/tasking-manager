@@ -62,7 +62,7 @@ downgrade = "flask db downgrade"
 test = "python -m unittest discover"
 lint = "black manage.py backend tests migrations"
 flake8 = "flake8 manage.py backend tests migrations"
-coverage = "coverage run -m unittest discover"
+coverage-discover = "coverage run -m unittest discover"
 
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
