@@ -30,7 +30,6 @@ describe('Notification Card', () => {
         />
       </ReduxIntlProviders>,
     );
-
     await user.click(
       screen.getByRole('button', {
         name: /Mark notification as read/i,
@@ -51,7 +50,6 @@ describe('Notification Card', () => {
         />
       </ReduxIntlProviders>,
     );
-
     await user.click(screen.getAllByRole('button')[1]);
     await waitFor(() => {
       expect(fetchNotificationsMock).toHaveBeenCalledTimes(1);
@@ -100,7 +98,6 @@ describe('Notification Card', () => {
 
   it('should open notification modal', async () => {
     global.open = jest.fn();
-
     const setSelectedMock = jest.fn();
     const { user } = renderWithRouter(
       <ReduxIntlProviders>

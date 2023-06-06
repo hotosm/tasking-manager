@@ -70,12 +70,11 @@ describe('Notifications Results', () => {
   });
 
   it('should display select all notifications button', async () => {
-    createComponentWithMemoryRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <NotificationResults notifications={notifications} inboxQuery={{}} />
       </ReduxIntlProviders>,
     );
-    const user = userEvent.setup();
     await user.click(screen.getAllByRole('checkbox')[0]);
     expect(
       screen.getByRole('button', {

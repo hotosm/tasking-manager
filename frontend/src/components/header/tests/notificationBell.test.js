@@ -51,12 +51,11 @@ describe('Notification Bell', () => {
   });
 
   it('should navigate to the notifications page', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { router, user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <NotificationBell />
       </ReduxIntlProviders>,
     );
-    const user = userEvent.setup();
     await user.click(await screen.findByText(/208 unread/i));
     await waitFor(() => expect(router.state.location.pathname).toBe('/inbox'));
   });
