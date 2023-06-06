@@ -13,6 +13,7 @@ import {
 } from 'use-query-params';
 import { stringify } from 'query-string';
 import toast from 'react-hot-toast';
+import Popup from 'reactjs-popup';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -37,6 +38,7 @@ import {
 } from '../components/teamsAndOrgs/teams';
 import { MessageMembers } from '../components/teamsAndOrgs/messageMembers';
 import { Projects } from '../components/teamsAndOrgs/projects';
+import { LeaveTeamConfirmationAlert } from '../components/teamsAndOrgs/leaveTeamConfirmationAlert';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { NotFound } from './notFound';
@@ -533,15 +535,28 @@ export function TeamDetail() {
           </div>
           <div className="w-20-l w-40-m w-50 h-100 fr">
             {isMember ? (
-              <CustomButton
-                className="w-100 h-100 bg-red white"
-                disabledClassName="bg-red o-50 white w-100 h-100"
-                onClick={() => leaveTeam()}
+              <Popup
+                trigger={
+                  <CustomButton
+                    className="w-100 h-100 bg-red white"
+                    disabledClassName="bg-red o-50 white w-100 h-100"
+                  >
+                    <FormattedMessage
+                      {...messages[isMember === 'requested' ? 'cancelRequest' : 'leaveTeam']}
+                    />
+                  </CustomButton>
+                }
+                modal
+                closeOnEscape
               >
-                <FormattedMessage
-                  {...messages[isMember === 'requested' ? 'cancelRequest' : 'leaveTeam']}
-                />
-              </CustomButton>
+                {(close) => (
+                  <LeaveTeamConfirmationAlert
+                    teamName={team.name}
+                    close={close}
+                    leaveTeam={leaveTeam}
+                  />
+                )}
+              </Popup>
             ) : (
               team.joinMethod !== 'BY_INVITE' && (
                 <CustomButton

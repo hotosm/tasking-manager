@@ -100,6 +100,18 @@ export default defineMessages({
     id: 'management.team',
     defaultMessage: 'Team',
   },
+  leaveTheTeam: {
+    id: 'user.team.leaveTeam',
+    defaultMessage: 'Leave the team',
+  },
+  leaveTheTeamDescription: {
+    id: 'user.team.leaveTeam.description',
+    defaultMessage: 'Are you sure you want to leave <b>{name}</b>?',
+  },
+  leave: {
+    id: 'user.team.leaveTeam.button.leave',
+    defaultMessage: 'Leave',
+  },
   projects: {
     id: 'management.projects',
     defaultMessage: 'Projects',
