@@ -611,3 +611,8 @@ a[href="https://www.mapbox.com/map-feedback/"]
 .blue-dark-abbey {
   color: #4c4f56;
 }
+
+// Remove tachyons outline
+.link:focus {
+  outline: revert;
+}
