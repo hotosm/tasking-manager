@@ -400,6 +400,7 @@ const faultyHandlers = [
   rest.post(API_URL + 'notifications/mark-as-read-all/', failedToConnectError),
   rest.post(API_URL + 'notifications/mark-as-read-all/:types', failedToConnectError),
   rest.post(API_URL + 'notifications/mark-as-read-multiple/', failedToConnectError),
+  rest.get(API_URL + 'notifications/:id/', failedToConnectError),
   rest.delete(API_URL + 'notifications/:id/', failedToConnectError),
   rest.patch(API_URL + 'users/:username/actions/set-level/:level', failedToConnectError),
   rest.patch(API_URL + 'users/:username/actions/set-role/:role', failedToConnectError),

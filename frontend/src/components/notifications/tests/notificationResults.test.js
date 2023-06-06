@@ -68,4 +68,19 @@ describe('Notifications Results', () => {
     );
     expect(screen.getByText(messages.noMessages.defaultMessage)).toBeInTheDocument();
   });
+
+  it('should display select all notifications button', async () => {
+    createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <NotificationResults notifications={notifications} inboxQuery={{}} />
+      </ReduxIntlProviders>,
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getAllByRole('checkbox')[0]);
+    expect(
+      screen.getByRole('button', {
+        name: /Select all 208 notifications/i,
+      }),
+    ).toBeInTheDocument();
+  });
 });
