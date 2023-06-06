@@ -8,6 +8,10 @@ export default defineMessages({
     id: 'notifications.mainSection.title',
     defaultMessage: 'Notifications',
   },
+  notification: {
+    id: 'notifications.singular.notification',
+    defaultMessage: 'notification',
+  },
   all: {
     id: 'notifications.filter.all',
     defaultMessage: 'All',
