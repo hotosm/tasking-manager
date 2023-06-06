@@ -10,7 +10,6 @@ import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 describe('Action Buttons', () => {
   const retryFnMock = jest.fn();
   const setSelectedMock = jest.fn();
-  const updateUnreadCountMock = jest.fn();
   it('should return nothing if no notification is selected', () => {
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
@@ -22,7 +21,6 @@ describe('Action Buttons', () => {
           selected={[]}
           retryFn={retryFnMock}
           setSelected={setSelectedMock}
-          updateUnreadCount={updateUnreadCountMock}
         />
       </ReduxIntlProviders>,
     );
@@ -40,7 +38,6 @@ describe('Action Buttons', () => {
           retryFn={retryFnMock}
           isAllSelected={false}
           setSelected={setSelectedMock}
-          updateUnreadCount={updateUnreadCountMock}
           unreadCountInSelected={1}
         />
       </ReduxIntlProviders>,
@@ -52,7 +49,6 @@ describe('Action Buttons', () => {
     );
     await waitFor(() => expect(setSelectedMock).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(retryFnMock).toHaveBeenCalledTimes(1));
-    expect(updateUnreadCountMock).not.toHaveBeenCalled();
   });
 
   it('should fetch unread count if all notifications are selected upon marking notifications as read', async () => {
@@ -65,7 +61,6 @@ describe('Action Buttons', () => {
           retryFn={retryFnMock}
           isAllSelected={true}
           setSelected={setSelectedMock}
-          updateUnreadCount={updateUnreadCountMock}
         />
       </ReduxIntlProviders>,
     );
@@ -76,7 +71,6 @@ describe('Action Buttons', () => {
     );
     await waitFor(() => expect(setSelectedMock).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(retryFnMock).toHaveBeenCalledTimes(1));
-    expect(updateUnreadCountMock).toHaveBeenCalled();
   });
 
   it('should decrement unread count in redux store if all notifications are not selected upon deleting notifications', async () => {
@@ -89,7 +83,6 @@ describe('Action Buttons', () => {
           retryFn={retryFnMock}
           isAllSelected={false}
           setSelected={setSelectedMock}
-          updateUnreadCount={updateUnreadCountMock}
           unreadCountInSelected={1}
           pageOfCards={6}
         />
@@ -102,7 +95,6 @@ describe('Action Buttons', () => {
     );
     await waitFor(() => expect(setSelectedMock).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(retryFnMock).toHaveBeenCalledTimes(1));
-    expect(updateUnreadCountMock).not.toHaveBeenCalled();
   });
 
   it('should fetch unread count if all notifications are selected upon deleting notifications', async () => {
@@ -115,7 +107,6 @@ describe('Action Buttons', () => {
           retryFn={retryFnMock}
           isAllSelected={true}
           setSelected={setSelectedMock}
-          updateUnreadCount={updateUnreadCountMock}
         />
       </ReduxIntlProviders>,
     );
@@ -126,7 +117,6 @@ describe('Action Buttons', () => {
     );
     await waitFor(() => expect(setSelectedMock).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(retryFnMock).toHaveBeenCalledTimes(1));
-    expect(updateUnreadCountMock).toHaveBeenCalled();
   });
 
   // Error are consoled in all cases of POST error
@@ -141,7 +131,6 @@ describe('Action Buttons', () => {
           retryFn={retryFnMock}
           isAllSelected={false}
           setSelected={setSelectedMock}
-          updateUnreadCount={updateUnreadCountMock}
           unreadCountInSelected={1}
         />
       </ReduxIntlProviders>,
@@ -165,7 +154,6 @@ describe('Action Buttons', () => {
           retryFn={retryFnMock}
           isAllSelected={true}
           setSelected={setSelectedMock}
-          updateUnreadCount={updateUnreadCountMock}
         />
       </ReduxIntlProviders>,
     );
@@ -189,7 +177,6 @@ describe('Action Buttons', () => {
           retryFn={retryFnMock}
           isAllSelected={false}
           setSelected={setSelectedMock}
-          updateUnreadCount={updateUnreadCountMock}
           unreadCountInSelected={1}
         />
       </ReduxIntlProviders>,
@@ -213,7 +200,6 @@ describe('Action Buttons', () => {
           retryFn={retryFnMock}
           isAllSelected={true}
           setSelected={setSelectedMock}
-          updateUnreadCount={updateUnreadCountMock}
         />
       </ReduxIntlProviders>,
     );
