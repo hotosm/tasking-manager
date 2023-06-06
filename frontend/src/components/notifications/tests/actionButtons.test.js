@@ -6,6 +6,7 @@ import { setupFaultyHandlers } from '../../../network/tests/server';
 import { store } from '../../../store';
 import { ActionButtons } from '../actionButtons';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { generateSampleNotifications } from '../../../network/tests/mockData/notifications';
 
 describe('Action Buttons', () => {
   const retryFnMock = jest.fn();
@@ -209,5 +210,36 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
+  });
+
+  it('should decrement the page query by 1 if the user deletes all notifications on the last page', async () => {
+    // ACT: there are 3 notifications pages in total, and we're trying to delete
+    // all the six notifications in the last page
+    const setInboxQueryMock = jest.fn();
+    render(
+      <ReduxIntlProviders>
+        <ActionButtons
+          inboxQuery={{ types: undefined, page: 3 }}
+          selected={[1, 2, 3, 4, 5, 6]}
+          retryFn={retryFnMock}
+          isAllSelected={false}
+          setSelected={setSelectedMock}
+          pageOfCards={generateSampleNotifications(6)}
+          totalPages={3}
+          setInboxQuery={setInboxQueryMock}
+        />
+      </ReduxIntlProviders>,
+    );
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByRole('button', {
+        name: /delete/i,
+      }),
+    );
+    await waitFor(() =>
+      expect(setInboxQueryMock).toHaveBeenCalledWith({ page: 2, types: undefined }, 'pushIn'),
+    );
+    await waitFor(() => expect(setSelectedMock).toHaveBeenCalledWith([]));
+    expect(retryFnMock).not.toBeCalled();
   });
 });
