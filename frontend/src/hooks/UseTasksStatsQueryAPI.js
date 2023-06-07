@@ -82,11 +82,11 @@ const dataFetchReducer = (state, action) => {
 export const useTasksStatsQueryAPI = (
   initialData = defaultInitialData,
   ExternalQueryParamsState,
-  forceUpdate = null,
   extraQuery = '',
 ) => {
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
   const token = useSelector((state) => state.auth.token);
+  const controller = new AbortController();
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
@@ -95,90 +95,58 @@ export const useTasksStatsQueryAPI = (
     queryParamsState: ExternalQueryParamsState[0],
   });
 
-  useEffect(() => {
-    let didCancel = false;
-    let cancel;
-    const fetchData = async () => {
-      const CancelToken = axios.CancelToken;
+  const fetchData = async () => {
+    dispatch({
+      type: 'FETCH_INIT',
+    });
 
-      dispatch({
-        type: 'FETCH_INIT',
-      });
-
-      let headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
-      };
-      const paramsRemapped = remapParamsToAPI(
-        throttledExternalQueryParamsState,
-        backendToQueryConversion,
-      );
-      extraQuery.split(',').forEach((query) => {
-        const [key, value] = query.trim().split('=');
-        paramsRemapped[key] = value;
-      });
-
-      try {
-        const result = await axios({
-          url: `${API_URL}tasks/statistics/`,
-          method: 'GET',
-          headers: headers,
-          params: paramsRemapped,
-          cancelToken: new CancelToken(function executor(c) {
-            // An executor function receives a cancel function as a parameter
-            cancel = { end: c, params: throttledExternalQueryParamsState };
-          }),
-        });
-
-        if (!didCancel) {
-          if (result && result.headers && result.headers['content-type'].indexOf('json') !== -1) {
-            dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
-          } else {
-            dispatch({ type: 'FETCH_FAILURE' });
-          }
-        } else {
-          cancel && cancel.end();
-        }
-      } catch (error) {
-        /* if cancelled, this setting state of unmounted
-         * component with dispatch would be a memory leak */
-        if (
-          !didCancel &&
-          error &&
-          error.response &&
-          error.response.data &&
-          error.response.data.Error === 'No statistics found'
-        ) {
-          const zeroPayload = Object.assign(defaultInitialData, { pagination: { total: 0 } });
-          /* TODO(tdk): when 404 and page > 1, re-request page 1 */
-          dispatch({ type: 'FETCH_SUCCESS', payload: zeroPayload });
-        } else if (!didCancel && error.response) {
-          const errorResPayload = Object.assign(defaultInitialData, { error: error.response });
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          dispatch({ type: 'FETCH_FAILURE', payload: errorResPayload });
-        } else if (!didCancel && error.request) {
-          const errorReqPayload = Object.assign(defaultInitialData, { error: error.request });
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          dispatch({ type: 'FETCH_FAILURE', payload: errorReqPayload });
-        } else if (!didCancel) {
-          dispatch({ type: 'FETCH_FAILURE' });
-        } else {
-          cancel && cancel.end();
-        }
-      }
+    let headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${token}`,
     };
+    const paramsRemapped = remapParamsToAPI(
+      throttledExternalQueryParamsState,
+      backendToQueryConversion,
+    );
+    extraQuery.split(',').forEach((query) => {
+      const [key, value] = query.trim().split('=');
+      paramsRemapped[key] = value;
+    });
 
+    await axios({
+      url: `${API_URL}tasks/statistics/`,
+      method: 'GET',
+      headers: headers,
+      params: paramsRemapped,
+      signal: controller.signal,
+    })
+      .then((result) => {
+        if (result?.headers && result.headers['content-type'].indexOf('json') !== -1) {
+          dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+        } else {
+          dispatch({ type: 'FETCH_FAILURE' });
+        }
+      })
+      .catch((error) => {
+        if (!axios.isCancel(error)) {
+          dispatch({ type: 'FETCH_FAILURE' });
+        }
+        if (error.response?.data?.Error === 'No statistics found') {
+          const zeroPayload = Object.assign(defaultInitialData, { pagination: { total: 0 } });
+          dispatch({ type: 'FETCH_SUCCESS', payload: zeroPayload });
+        }
+      });
+  };
+
+  useEffect(() => {
     fetchData();
     return () => {
-      didCancel = true;
-      cancel && cancel.end();
+      controller.abort();
     };
-  }, [throttledExternalQueryParamsState, forceUpdate, token, extraQuery]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [throttledExternalQueryParamsState, token, extraQuery]);
 
-  return [state, dispatch];
+  return [state, fetchData];
 };
 
 export const stringify = (obj) => {
