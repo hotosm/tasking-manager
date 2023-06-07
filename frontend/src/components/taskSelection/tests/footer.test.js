@@ -149,7 +149,7 @@ describe('Footer Lock Tasks', () => {
     });
 
   it('should display task cannot be locked for mapping message', async () => {
-    clearReduxStore();
+    await clearReduxStore();
     setupFaultyHandlers();
     createComponentWithMemoryRouter(
       <ReduxIntlProviders>
@@ -172,7 +172,7 @@ describe('Footer Lock Tasks', () => {
   });
 
   it('should display no mapped tasks selected message', async () => {
-    clearReduxStore();
+    await clearReduxStore();
     setupFaultyHandlers();
     createComponentWithMemoryRouter(
       <ReduxIntlProviders>
@@ -198,7 +198,7 @@ describe('Footer Lock Tasks', () => {
   });
 
   it('should display task cannot be locked for validation message', async () => {
-    clearReduxStore();
+    await clearReduxStore();
     setupFaultyHandlers();
     createComponentWithMemoryRouter(
       <ReduxIntlProviders>
@@ -295,7 +295,7 @@ describe('Footer Lock Tasks', () => {
   });
 
   it('should navigate to task action page on validating a task', async () => {
-    clearReduxStore();
+    await clearReduxStore();
     const { router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
@@ -319,7 +319,7 @@ describe('Footer Lock Tasks', () => {
   });
 
   it('should resume mapping', async () => {
-    clearReduxStore();
+    await clearReduxStore();
     const { router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
@@ -343,7 +343,7 @@ describe('Footer Lock Tasks', () => {
   });
 
   it('should resume validation', async () => {
-    clearReduxStore();
+    await clearReduxStore();
     const { router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
@@ -367,7 +367,7 @@ describe('Footer Lock Tasks', () => {
   });
 
   it('should fallback editor when user default is not in the list for validation', async () => {
-    clearReduxStore();
+    await clearReduxStore();
     const { router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
@@ -391,7 +391,7 @@ describe('Footer Lock Tasks', () => {
   });
 
   it('should fallback editor when user default is not in the list for mapping', async () => {
-    clearReduxStore();
+    await clearReduxStore();
     const { router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter

@@ -47,7 +47,7 @@ describe('MoreFiltersForm', () => {
 
     expect(switchControl).toBeInTheDocument();
     await userEvent.click(switchControl);
-    waitFor(() =>
+    await waitFor(() =>
       expect(
         decodeQueryParams(
           {
@@ -55,7 +55,7 @@ describe('MoreFiltersForm', () => {
           },
           parse(router.state.location.search),
         ),
-      ).toEqual({ basedOnMyInterests: 1 }),
+      ).toEqual({ basedOnMyInterests: true }),
     );
   });
 
