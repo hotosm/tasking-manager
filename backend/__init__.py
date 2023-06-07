@@ -14,6 +14,7 @@ except ImportError as e:
     logging.info(e)
 
 import os
+import json
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask, redirect
@@ -25,6 +26,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 
 from backend.config import EnvironmentConfig
+
+
+# Storing error messages in a json file so that it is loaded only once at startup (Used in exceptions.py)
+ERROR_MESSAGES = json.load(open("backend/error_messages.json"))
 
 
 def sentry_init():
