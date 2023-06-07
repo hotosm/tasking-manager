@@ -1,8 +1,15 @@
 import { useEffect, useReducer } from 'react';
 import { useSelector } from 'react-redux';
-import { useQueryParams, encodeQueryParams, StringParam, NumberParam } from 'use-query-params';
+import {
+  useQueryParams,
+  encodeQueryParams,
+  StringParam,
+  NumberParam,
+  withDefault,
+} from 'use-query-params';
 import { stringify as stringifyUQP } from 'query-string';
 import axios from 'axios';
+import { format, startOfYear } from 'date-fns';
 
 import { CommaArrayParam } from '../utils/CommaArrayParam';
 import { useThrottle } from '../hooks/UseThrottle';
@@ -13,7 +20,7 @@ import { API_URL } from '../config';
 /* This one is e.g. used for updating the URL when returning to /contribute
  *  and directly submitting the query to the API */
 const statsQueryAllSpecification = {
-  startDate: StringParam,
+  startDate: withDefault(StringParam, format(startOfYear(Date.now()), 'yyyy-MM-dd')),
   endDate: StringParam,
   campaign: StringParam,
   location: StringParam,
