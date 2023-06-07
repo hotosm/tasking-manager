@@ -139,26 +139,28 @@ export const DateFilterPicker = ({
       <legend className={titleStyle}>
         <FormattedMessage {...messages[fieldsetName]} />
       </legend>
-      <CalendarIcon className="blue-grey dib w1 pr2 v-mid" />
-      <DatePicker
-        selected={selectedValue ? parse(selectedValue, dateFormat, new Date()) : null}
-        onChange={(date) => {
-          setQueryForChild(
-            {
-              ...allQueryParamsForChild,
-              page: undefined,
-              [fieldsetName]: date ? format(date, dateFormat) : null,
-            },
-            'pushIn',
-          );
-          setIsCustomDateRange(true);
-        }}
-        dateFormat={dateFormat}
-        className="w-auto pv2 ph1 ba b--grey-light"
-        placeholderText={intl.formatMessage(messages[`${fieldsetName}Placeholder`])}
-        showYearDropdown
-        scrollableYearDropdown
-      />
+      <div className="flex">
+        <CalendarIcon className="blue-grey dib w1 pr2 v-mid" />
+        <DatePicker
+          selected={selectedValue ? parse(selectedValue, dateFormat, new Date()) : null}
+          onChange={(date) => {
+            setQueryForChild(
+              {
+                ...allQueryParamsForChild,
+                page: undefined,
+                [fieldsetName]: date ? format(date, dateFormat) : null,
+              },
+              'pushIn',
+            );
+            setIsCustomDateRange(true);
+          }}
+          dateFormat={dateFormat}
+          className="w-auto pv2 ph1 ba b--grey-light"
+          placeholderText={intl.formatMessage(messages[`${fieldsetName}Placeholder`])}
+          showYearDropdown
+          scrollableYearDropdown
+        />
+      </div>
     </fieldset>
   );
 };
