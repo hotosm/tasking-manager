@@ -36,12 +36,26 @@ def sentry_init():
     """Initialize sentry.io event tracking"""
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
+    from backend.exceptions import (
+        BadRequest,
+        NotFound,
+        Unauthorized,
+        Forbidden,
+        Conflict,
+    )
 
     sentry_sdk.init(
         dsn=EnvironmentConfig.SENTRY_BACKEND_DSN,
         environment=EnvironmentConfig.ENVIRONMENT,
         integrations=[FlaskIntegration()],
         traces_sample_rate=0.1,
+        ignore_errors=[
+            BadRequest,
+            NotFound,
+            Unauthorized,
+            Forbidden,
+            Conflict,
+        ],  # Ignore these errors as they are handled by the API
     )
 
 
