@@ -129,7 +129,11 @@ class NotificationsAllAPI(Resource):
             - in: query
               name: messageType
               type: string
-              description: Optional message-type filter; leave blank to retrieve all
+              description: Optional message-type filter; leave blank to retrieve all\n
+                Accepted values are 1 (System), 2 (Broadcast), 3 (Mention), 4 (Validation),
+                5 (Invalidation), 6 (Request team), \n
+                7 (Invitation), 8 (Task comment), 9 (Project chat),
+                10 (Project Activity), and 11 (Team broadcast)
             - in: query
               name: from
               description: Optional from username filter
