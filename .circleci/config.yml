@@ -263,23 +263,40 @@ workflows:
           context:
             - org-global
             - tasking-manager-tm4-production
+      - frontend-code-test
+      - frontend_wait_for_approval:
+          type: approval
+          requires:
+            - frontend-code-test
       - backend-functional-tests
+      - backend-code-check-PEP8
+      - backend-code-check-Black
+      - backend_wait_for_approval:
+          type: approval
+          requires:
+            - Backup production database
+            - backend-functional-tests
+            - backend-code-check-PEP8
+            - backend-code-check-Black
       - backend_deploy:
-          name: backend-production
+          name: Deploy backend production
           gitsha: $CIRCLE_SHA1
           stack_name: "tm4-production"
-          host_ami: "ami-0aa2b7722dc1b5612"
+          host_ami: "ami-01e5ff16fd6e8c542"
+          backend_instance_type: c6a.large
+          pg_version: "13.10"
+          pg_param_group: "default.postgres13"
+          db_instance_type: "db.t4g.2xlarge"
           requires:
-            - backend-functional-tests
-            - database-backup
+            - backend_wait_for_approval
           context:
             - org-global
             - tasking-manager-tm4-production
       - frontend_deploy:
-          name: frontend-production
+          name: Deploy frontend production
           stack_name: "tm4-production"
           requires:
-            - backend-functional-tests
+            - frontend_wait_for_approval
           context:
             - org-global
             - tasking-manager-tm4-production
@@ -305,7 +322,10 @@ workflows:
           name: backend-production
           gitsha: $CIRCLE_SHA1
           stack_name: "tm4-production"
-          host_ami: "ami-0aa2b7722dc1b5612"
+          host_ami: "ami-01e5ff16fd6e8c542"
+          pg_version: "13.10"
+          pg_param_group: "default.postgres13"
+          db_instance_type: "db.t4g.2xlarge"
           context:
             - org-global
             - tasking-manager-tm4-production
@@ -326,7 +346,7 @@ workflows:
           name: Deploy TeachOSM Backend
           gitsha: $CIRCLECI_SHA1
           stack_name: "teachosm"
-          host_ami: "ami-0aa2b7722dc1b5612"
+          host_ami: "ami-01e5ff16fd6e8c542"
           requires:
             - backend-functional-tests
           context: tasking-manager-teachosm
@@ -336,33 +356,6 @@ workflows:
           requires:
             - backend-functional-tests
           context: tasking-manager-teachosm
-
-  tm-assisted-all:
-    when:
-      and:
-        - equal: [ deployment/assisted-tasking-manager, << pipeline.git.branch >> ]
-    jobs:
-      - database-backup:
-          name: Backup TM Assisted database
-          stack_name: "assisted"
-          context:
-            - org-global
-            - tasking-manager-assisted
-      - backend-functional-tests
-      - backend_deploy:
-          name: Deploy TM Assisted Backend
-          gitsha: $CIRCLECI_SHA1
-          stack_name: "assisted"
-          host_ami: "ami-0aa2b7722dc1b5612"
-          requires:
-            - backend-functional-tests
-          context: tasking-manager-assisted
-      - frontend_deploy:
-          name: Deploy TM Assisted Frontend
-          stack_name: "assisted"
-          requires:
-            - backend-functional-tests
-          context: tasking-manager-assisted
 
   development-staging-all:
     when:
@@ -401,7 +394,7 @@ workflows:
           name: Deploy development/staging backend
           gitsha: $CIRCLE_SHA1
           stack_name: "staging"
-          host_ami: "ami-0fec2c2e2017f4e7b"
+          host_ami: "ami-01e5ff16fd6e8c542"
           pg_version: "13.10"
           pg_param_group: "default.postgres13"
           db_instance_type: "db.t4g.small"
