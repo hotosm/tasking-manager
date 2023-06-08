@@ -395,8 +395,8 @@ workflows:
           gitsha: $CIRCLE_SHA1
           stack_name: "staging"
           host_ami: "ami-01e5ff16fd6e8c542"
-          pg_version: "13.10"
-          pg_param_group: "default.postgres13"
+          pg_version: "14.8"
+          pg_param_group: "default.postgres14"
           db_instance_type: "db.t4g.small"
           backend_instance_type: "t3.medium"
           requires:
