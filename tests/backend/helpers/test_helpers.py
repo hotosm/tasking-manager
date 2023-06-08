@@ -17,6 +17,8 @@ from backend.models.dtos.project_dto import (
 from backend.models.postgis.project import Project, ProjectTeams
 from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.statuses import MappingLevel, TaskStatus
+from backend.models.postgis.message import Message, MessageType
+from backend.models.postgis.notification import Notification
 from backend.models.postgis.task import Task
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.user import User
@@ -39,6 +41,8 @@ TEST_PROJECT_NAME = "Test"
 TEST_TEAM_NAME = "Test Team"
 TEST_CAMPAIGN_NAME = "Test Campaign"
 TEST_CAMPAIGN_ID = 1
+TEST_MESSAGE_SUBJECT = "Test subject"
+TEST_MESSAGE_DETAILS = "This is a test message"
 
 
 def get_canned_osm_user_details():
@@ -360,8 +364,29 @@ def create_canned_license(name="test_license") -> int:
 
 
 def create_canned_mapping_issue(name="Test Issue") -> int:
-    """"""
     issue_dto = MappingIssueCategoryDTO()
     issue_dto.name = name
     test_issue_id = MappingIssueCategoryService.create_mapping_issue_category(issue_dto)
     return test_issue_id
+
+
+def create_canned_message(
+    subject=TEST_MESSAGE_SUBJECT,
+    message=TEST_MESSAGE_DETAILS,
+    message_type=MessageType.SYSTEM.value,
+) -> Message:
+    test_message = Message()
+    test_message.subject = subject
+    test_message.message = message
+    test_message.message_type = message_type
+    test_message.save()
+    return test_message
+
+
+def create_canned_notification(user_id, unread_count, date) -> Notification:
+    test_notification = Notification()
+    test_notification.user_id = user_id
+    test_notification.unread_count = unread_count
+    test_notification.date = date
+    test_notification.save()
+    return test_notification
