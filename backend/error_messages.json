@@ -3,5 +3,6 @@
     "BAD_REQUEST": "The request was invalid or cannot be otherwise served.",
     "UNAUTHORIZED": "Authentication credentials were missing or incorrect.",
     "FORBIDDEN": "The request is understood, but it has been refused or access is not allowed.",
-    "CONFLICT": "The request could not be completed due to a conflict with the current state of the resource."
+    "CONFLICT": "The request could not be completed due to a conflict with the current state of the resource.",
+    "INTERNAL_SERVER_ERROR": "An unexpected error occurred while processing the request. Please contact the system administrator."
 }

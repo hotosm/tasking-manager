@@ -17,7 +17,7 @@ import os
 import json
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, redirect
+from flask import Flask, redirect, request
 from flask_cors import CORS
 from flask_migrate import Migrate
 from requests_oauthlib import OAuth2Session
@@ -107,6 +107,39 @@ def create_app(env="backend.config.EnvironmentConfig"):
     mail.init_app(app)
 
     app.logger.debug("Add root redirect route")
+
+    @app.errorhandler(Exception)
+    def handle_generic_error(error):
+        """Generic error handler for all exceptions"""
+        from backend.exceptions import format_sub_code
+
+        app.logger.exception(error)
+
+        error_message = (
+            str(error)
+            if len(str(error)) > 0
+            else ERROR_MESSAGES["INTERNAL_SERVER_ERROR"]
+        )
+        error_code = error.code if hasattr(error, "code") else 500
+        error_sub_code = (
+            format_sub_code(error.name)
+            if hasattr(error, "name")
+            else "INTERNAL_SERVER_ERROR"
+        )
+        return (
+            {
+                "error": {
+                    "code": error_code,
+                    "sub_code": error_sub_code,
+                    "message": error_message,
+                    "details": {
+                        "url": request.url,
+                        "method": request.method,
+                    },
+                }
+            },
+            error_code,
+        )
 
     @app.route("/")
     def index_redirect():

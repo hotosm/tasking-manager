@@ -3,6 +3,20 @@ from werkzeug.exceptions import HTTPException
 from backend import ERROR_MESSAGES
 
 
+def format_sub_code(sub_code: str) -> str:
+    """Formats the sub_code to be used in the error message
+    ------------------------
+    Parameters:
+        sub_code: str
+            The sub_code of the error
+    ------------------------
+    Returns:
+        formatted_sub_code: str
+            The formatted sub_code
+    """
+    return sub_code.replace(" ", "_").upper()
+
+
 def get_message_from_sub_code(sub_code: str) -> str:
     """Returns the message for the given sub_code
     ------------------------
