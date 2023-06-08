@@ -59,7 +59,7 @@ export const ProjectDetailFooter = ({ className, projectId }) => {
         menuItemsContainerRef={menuItemsContainerRef}
         containerClass={'.menu-items-container'}
       >
-        <div ref={menuItemsContainerRef} className="menu-items-container nowrap overflow-x-auto" style={{ overflow-x: 'hidden' }}>
+        <div ref={menuItemsContainerRef} className="menu-items-container nowrap overflow-x-auto" style={{ overflowX: 'hidden' }}>
           {menuItems.map((menuItem, index) => (
             <Fragment key={menuItem.href}>
               <a className="link blue-dark" href={menuItem.href}>
