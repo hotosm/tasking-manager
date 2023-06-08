@@ -1762,17 +1762,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@ideditor/country-coder@^5.0.3":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@ideditor/country-coder/-/country-coder-5.1.0.tgz#5bab755330ced58ebe0333a703101704debf06a1"
-  integrity sha512-fiWZRn0HMNfo73lNBOiiG2gwAlHUUDvRSLOUIb/XHMQTDgq98OpmYzymZFUZUDOtVIh3psLa/Q0DoXZNgOva+Q==
-  dependencies:
-    which-polygon "^2.2.0"
-
-"@ideditor/country-coder@~5.0.3":
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/@ideditor/country-coder/-/country-coder-5.0.4.tgz#837cbfd1940fcdf6af3ba63c25253a11fbde60f9"
-  integrity sha512-MkmFGKWksVzRLjpthO8NLQYrUOdda1itR0VrzSN3eFYcBOzA1fvTVEUqt0it3cDQQtyGbNx6TloQZz8FFC4L9A==
+"@ideditor/country-coder@^5.0.3", "@ideditor/country-coder@~5.0.3":
+  version "5.0.3"
+  resolved "https://registry.npmjs.org/@ideditor/country-coder/-/country-coder-5.0.3.tgz"
+  integrity sha512-HHJtvEp2h/EyOKX+iCkOLBaFt1iRupF+zJcgEX5TO+o51CceempZYIf9o7pBo/u8BBM+ntsAeLauFvHIPqHBKw==
   dependencies:
     which-polygon "^2.2.0"
 
@@ -3098,9 +3091,9 @@
   integrity sha512-edAPymgIEIY/jrEmATYe56a46XHvPVm7SXhf29h7jSAUrRhLOIFIlbHPCsic/gGDSvWODTSioRFpXgou47ZLYg==
 
 "@tmcw/togeojson@^5.6.0":
-  version "5.7.0"
-  resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-5.7.0.tgz#1ce51da1924a493ce43fbe64a46a497485336a9a"
-  integrity sha512-nW5o0MFtsMh24KA5rnnbSp/IJpLxBrR82udP+926uHMnMp01e6eOWQJiUtxsl7f+Y/fvcWhwjdMCgCiYeonDeA==
+  version "5.8.1"
+  resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-5.8.1.tgz#6cbcc9b1484ed28e71bdd4b5f96ceae540a4533f"
+  integrity sha512-2YNrbis3l5kS0XrYwiHEZcGwiRp0MJ5CvwGwtMWp2z2tsVlskeec2qgvKHnF0RCwI5GnjrrBOoKsWfndEnd3LA==
 
 "@tootallnate/once@1":
   version "1.1.2"
@@ -11693,10 +11686,17 @@ os-tmpdir@~1.0.2:
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
   integrity sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==
 
-osm-auth@2.0.1, osm-auth@~2.0.0:
+osm-auth@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-2.0.1.tgz#fb932d3e5999d52e88e94a5e5b216e2ad4333d57"
   integrity sha512-Uw0hpw7IVlFMqd6hW9kTS1Qah9xh85hwn1xqLgCONGKRtHZ3ZaUzg/obm7WOwheJSmSmkwfiDnPN0imZyNOSbw==
+  dependencies:
+    store "~2.0.12"
+
+osm-auth@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-2.0.0.tgz#c8e9c2de60c179d1fa8ad34da3a029c6eb5e9f38"
+  integrity sha512-6ZBOGAMe8Q/rkhpflmclXFmtnXJmgvX9ScNskrD5by8320nz2KOsyRRtwfNSOL2YNFToM2ZF47YJCY3aiEsS+w==
   dependencies:
     store "~2.0.12"
 
