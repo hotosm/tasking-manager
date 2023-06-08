@@ -219,7 +219,7 @@ describe('Edit License', () => {
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    user.click(saveButton);
+    await user.click(saveButton);
     await waitFor(() => expect(toast.success).toHaveBeenCalledTimes(1));
     expect(saveButton).not.toBeInTheDocument();
     expect(cancelButton).not.toBeInTheDocument();
@@ -235,7 +235,7 @@ describe('Edit License', () => {
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    user.click(saveButton);
+    await user.click(saveButton);
     await waitFor(() =>
       expect(
         screen.getByText(/Failed to update license information. Please try again/i),

@@ -6,7 +6,7 @@ import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithInt
 import { TaskCard } from '../taskCard';
 
 describe('TaskCard', () => {
-  it('on MAPPED state with comments', () => {
+  it('on MAPPED state with comments', async () => {
     const { user, container } = renderWithRouter(
       <ReduxIntlProviders>
         <TaskCard
@@ -27,11 +27,11 @@ describe('TaskCard', () => {
     expect(container.querySelectorAll('svg').length).toBe(2);
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
     // hovering on the card should not change anything
-    user.hover(screen.getByText('Ready for validation'));
+    await user.hover(screen.getByText('Ready for validation'));
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
   });
 
-  it('on VALIDATED state without comments', () => {
+  it('on VALIDATED state without comments', async () => {
     const { user, container } = renderWithRouter(
       <ReduxIntlProviders>
         <TaskCard
@@ -50,11 +50,11 @@ describe('TaskCard', () => {
     expect(screen.queryByText('0')).not.toBeInTheDocument();
     expect(container.querySelectorAll('svg').length).toBe(1);
     // hovering on the card should not change anything
-    user.hover(screen.getByText('Finished'));
+    await user.hover(screen.getByText('Finished'));
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
   });
 
-  it('on BADIMAGERY state', () => {
+  it('on BADIMAGERY state', async () => {
     const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <TaskCard
@@ -70,7 +70,7 @@ describe('TaskCard', () => {
     expect(screen.getByText('Unavailable')).toBeInTheDocument();
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
     // hovering on the card should not change anything
-    user.hover(screen.getByText('Unavailable'));
+    await user.hover(screen.getByText('Unavailable'));
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
   });
 
