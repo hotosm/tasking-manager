@@ -310,19 +310,13 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
           return member.username.toLowerCase().includes(searchQuery.toLowerCase());
         })
       : members;
-  const organisations = useSelector((state) => state.auth.organisations);
-  const pmTeams = useSelector((state) => state.auth.pmTeams);
 
   return (
     <ReactPlaceholder
       showLoadingAnimation={true}
       type="media"
       rows={20}
-      ready={
-        typeof team.teamId === 'number' &&
-        typeof organisations !== 'undefined' &&
-        typeof pmTeams !== 'undefined'
-      }
+      ready={typeof team.teamId === 'number'}
     >
       <div className="cf pb2">
         <div className="w-20 pv2 dib fl">
