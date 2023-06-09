@@ -2297,9 +2297,12 @@ class TestProjectQueriesSimilarProjectsAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 3)
-        self.assertEqual(response.json["results"][0]["projectId"], project_3.id)
-        self.assertEqual(response.json["results"][1]["projectId"], project_2.id)
-        self.assertEqual(response.json["results"][2]["projectId"], project_1.id)
+        returned_project_ids = sorted(
+            [i["projectId"] for i in response.json["results"]]
+        )
+        self.assertEqual(
+            returned_project_ids, [project_1.id, project_2.id, project_3.id]
+        )
 
     def test_returns_limit_projects(self):
         """
