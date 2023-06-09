@@ -5,7 +5,7 @@ import { useOnClickOutside } from '../hooks/UseOnClickOutside';
 import { ChevronDownIcon, CheckIcon } from './svgIcons';
 import { CustomButton } from './button';
 
-const DropdownContent = (props, ref) => {
+const DropdownContent = React.forwardRef((props, ref) => {
   const navigate = useNavigate();
   const isActive = (obj) => {
     return props.value === obj.value;
@@ -51,7 +51,8 @@ const DropdownContent = (props, ref) => {
 
   return (
     <div
-      className={`dropdown-content db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column${
+      ref={ref}
+      className={`db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column${
         props.toTop ? ' bottom-3' : ''
       }${props.options.length > 9 ? ' h5 overflow-y-scroll' : ''}`}
     >
@@ -115,15 +116,35 @@ const DropdownContent = (props, ref) => {
       ))}
     </div>
   );
-};
+});
 
 export function Dropdown(props) {
   const [display, setDisplay] = useState(false);
 
   const contentRef = React.createRef();
+  const buttonRef = React.createRef();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        !contentRef.current ||
+        contentRef.current.contains(event.target) ||
+        !buttonRef.current ||
+        buttonRef.current.contains(event.target)
+      ) {
+        return;
+      }
+      setDisplay(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [contentRef, buttonRef]);
 
   const toggleDropdown = () => {
-    console.log('toggle');
     setDisplay(!display);
   };
 
@@ -136,15 +157,11 @@ export function Dropdown(props) {
       : activeItems[0].label;
   };
 
-  useOnClickOutside(contentRef, () => {
-    setDisplay(false);
-  });
-
   return (
     <div className="dib pointer relative">
       <CustomButton
-        onClick={toggleDropdown}
         ref={contentRef}
+        onClick={toggleDropdown}
         className={`blue-dark ${props.className || ''}`}
       >
         <div className="lh-title dib ma0 f6">{getActiveOrDisplay()}</div>
@@ -153,6 +170,7 @@ export function Dropdown(props) {
       </CustomButton>
       {display && (
         <DropdownContent
+          ref={buttonRef}
           {...props}
           eventTypes={['click', 'touchend']}
           toggleDropdown={toggleDropdown}
