@@ -634,15 +634,17 @@ const TaskValidationSelector = ({
                   >
                     <FormattedMessage {...messages.copyCommentToAll} />
                   </CustomButton>
-                  <CustomButton
-                    className="bg-white ba b--grey-light blue-dark br1 ml1 pv2 ph2 mb1"
-                    onClick={() => {
-                      copyCommentToTasks(id, currentStatus);
-                      setEnableCopy(false);
-                    }}
-                  >
-                    <FormattedMessage {...messages[`copyCommentTo${currentStatus}`]} />
-                  </CustomButton>
+                  {currentStatus && (
+                    <CustomButton
+                      className="bg-white ba b--grey-light blue-dark br1 ml1 pv2 ph2 mb1"
+                      onClick={() => {
+                        copyCommentToTasks(id, currentStatus);
+                        setEnableCopy(false);
+                      }}
+                    >
+                      <FormattedMessage {...messages[`copyCommentTo${currentStatus}`]} />
+                    </CustomButton>
+                  )}
                   <CustomButton
                     className="red bn bg-white br1 ml2 ph2 pv2"
                     onClick={() => setEnableCopy(false)}

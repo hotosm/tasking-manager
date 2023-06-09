@@ -78,7 +78,6 @@ describe('Action Buttons', () => {
   });
 
   it('should decrement unread count in redux store if all notifications are not selected upon deleting notifications', async () => {
-    act(() => {});
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -89,6 +88,7 @@ describe('Action Buttons', () => {
           setSelected={setSelectedMock}
           updateUnreadCount={updateUnreadCountMock}
           unreadCountInSelected={1}
+          pageOfCards={6}
         />
       </ReduxIntlProviders>,
     );

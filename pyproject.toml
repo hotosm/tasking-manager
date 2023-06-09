@@ -22,6 +22,7 @@ dependencies = [
     "itsdangerous==2.1.2",
     "Markdown==3.4.3",
     "oauthlib==3.2.2",
+    "pandas>=2.0.2",
     "psycopg2==2.9.6",
     "python-dateutil==2.8.2",
     "python-dotenv==1.0.0",
@@ -29,7 +30,8 @@ dependencies = [
     "requests==2.31.0",
     "requests-oauthlib==1.3.1",
     "schematics==2.1.1",
-    "sentry-sdk[flask]==1.24.0",
+    "scikit-learn>=1.2.2",
+    "sentry-sdk[flask]==1.25.0",
     "shapely==2.0.1",
     "SQLAlchemy==2.0.15",
     "Werkzeug==2.3.4",
@@ -41,8 +43,6 @@ dependencies = [
     "importlib-metadata==6.6.0",
     # Dependencies used by hotosm.org for production deployments
     "newrelic==8.8.0",
-    "pandas>=2.0.2",
-    "scikit-learn>=1.2.2",
 ]
 requires-python = ">=3.9,<=3.11"
 readme = "README.md"
@@ -62,7 +62,7 @@ downgrade = "flask db downgrade"
 test = "python -m unittest discover"
 lint = "black manage.py backend tests migrations"
 flake8 = "flake8 manage.py backend tests migrations"
-coverage = "coverage run -m unittest discover"
+coverage-discover = "coverage run -m unittest discover"
 
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]

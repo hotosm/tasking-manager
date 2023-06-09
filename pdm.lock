@@ -523,24 +523,23 @@ dependencies = [
 
 [[package]]
 name = "sentry-sdk"
-version = "1.24.0"
+version = "1.25.0"
 summary = "Python client for Sentry (https://sentry.io)"
 dependencies = [
     "certifi",
-    "urllib3<2.0.0",
     "urllib3>=1.26.11; python_version >= \"3.6\"",
 ]
 
 [[package]]
 name = "sentry-sdk"
-version = "1.24.0"
+version = "1.25.0"
 extras = ["flask"]
 summary = "Python client for Sentry (https://sentry.io)"
 dependencies = [
     "blinker>=1.1",
     "flask>=0.11",
     "markupsafe",
-    "sentry-sdk==1.24.0",
+    "sentry-sdk==1.25.0",
 ]
 
 [[package]]
@@ -659,7 +658,7 @@ dependencies = [
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "dev", "lint", "test"]
-content_hash = "sha256:4435861eaba6ca8b03d9d1d619b48c6e221ce79a8c59596b3d3e3660b0e94b61"
+content_hash = "sha256:3cb52943acf63d153e0ea25291a4c1a669361379b938e1431c41b4ef8abbae9f"
 
 [metadata.files]
 "alembic 1.11.1" = [
@@ -1485,9 +1484,9 @@ content_hash = "sha256:4435861eaba6ca8b03d9d1d619b48c6e221ce79a8c59596b3d3e3660b
     {url = "https://files.pythonhosted.org/packages/ea/e5/452086ebed676ce4000ceb5eeeb0ee4f8c6f67c7e70fb9323a370ff95c1f/scipy-1.10.1-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:4b3f429188c66603a1a5c549fb414e4d3bdc2a24792e061ffbd607d3d75fd84e"},
     {url = "https://files.pythonhosted.org/packages/ec/e3/b06ac3738bf365e89710205a471abe7dceec672a51c244b469bc5d1291c7/scipy-1.10.1-cp310-cp310-win_amd64.whl", hash = "sha256:fae8a7b898c42dffe3f7361c40d5952b6bf32d10c4569098d276b4c547905ee1"},
 ]
-"sentry-sdk 1.24.0" = [
-    {url = "https://files.pythonhosted.org/packages/19/88/54482c9c4f2cf65591fd18f10c2850345fa6daab313afcd5283c7411a81e/sentry-sdk-1.24.0.tar.gz", hash = "sha256:0bbcecda9f51936904c1030e7fef0fe693e633888f02a14d1cb68646a50e83b3"},
-    {url = "https://files.pythonhosted.org/packages/19/ce/d908d49b2e22d1830645fd39fb1a2a90bcb94fea7f1e4547b6817eb1af72/sentry_sdk-1.24.0-py2.py3-none-any.whl", hash = "sha256:56d6d9d194c898d853a7c1dd99bed92ce82334ee1282292c15bcc967ff1a49b5"},
+"sentry-sdk 1.25.0" = [
+    {url = "https://files.pythonhosted.org/packages/09/c1/aec0d3b04405f3bd958b45b196e5988581af1431c50331cf2efec6d70669/sentry_sdk-1.25.0-py2.py3-none-any.whl", hash = "sha256:fe85cf5d0b3d0aa3480df689f9f6dc487de783defb0a95043368375dc893645e"},
+    {url = "https://files.pythonhosted.org/packages/ee/7e/ce2c8ee00515d466dd012c0add2e8de9b6072feb4d403a796788beac44de/sentry-sdk-1.25.0.tar.gz", hash = "sha256:5be3296fc574fa8a4d9b213b4dcf8c8d0246c08f8bd78315c6286f386c37555a"},
 ]
 "setuptools 67.7.2" = [
     {url = "https://files.pythonhosted.org/packages/2f/8c/f336a966d4097c7cef6fc699b2ecb83b5fb63fd698198c1b5c7905a74f0f/setuptools-67.7.2-py3-none-any.whl", hash = "sha256:23aaf86b85ca52ceb801d32703f12d77517b2556af839621c641fca11287952b"},
