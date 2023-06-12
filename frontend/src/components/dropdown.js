@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { useOnClickOutside } from '../hooks/UseOnClickOutside';
 import { ChevronDownIcon, CheckIcon } from './svgIcons';
 import { CustomButton } from './button';
 
@@ -160,7 +158,7 @@ export function Dropdown(props) {
   return (
     <div className="dib pointer relative">
       <CustomButton
-        ref={contentRef}
+        ref={buttonRef}
         onClick={toggleDropdown}
         className={`blue-dark ${props.className || ''}`}
       >
@@ -170,7 +168,7 @@ export function Dropdown(props) {
       </CustomButton>
       {display && (
         <DropdownContent
-          ref={buttonRef}
+          ref={contentRef}
           {...props}
           eventTypes={['click', 'touchend']}
           toggleDropdown={toggleDropdown}
