@@ -115,7 +115,7 @@
     "combine-react-intl-messages": "^4.0.0",
     "jest-canvas-mock": "^2.3.1",
     "msw": "0.49.2",
-    "prettier": "^2.8.1",
+    "prettier": "^2.8.8",
     "react-select-event": "^5.5.1",
     "react-test-renderer": "^17.0.2",
     "source-map-explorer": "^2.5.3"
