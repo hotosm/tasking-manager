@@ -14,9 +14,10 @@ except ImportError as e:
     logging.info(e)
 
 import os
+import json
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, redirect
+from flask import Flask, redirect, request
 from flask_cors import CORS
 from flask_migrate import Migrate
 from requests_oauthlib import OAuth2Session
@@ -27,16 +28,39 @@ from flask_mail import Mail
 from backend.config import EnvironmentConfig
 
 
+# Load error_messages.json and store it so that it is loaded only once at startup (Used in exceptions.py)
+# Construct the path to the JSON file
+module_dir = os.path.dirname(__file__)
+error_message_path = os.path.join(module_dir, "error_messages.json")
+
+with open(error_message_path) as jsonfile:
+    ERROR_MESSAGES = json.load(jsonfile)
+
+
 def sentry_init():
     """Initialize sentry.io event tracking"""
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
+    from backend.exceptions import (
+        BadRequest,
+        NotFound,
+        Unauthorized,
+        Forbidden,
+        Conflict,
+    )
 
     sentry_sdk.init(
         dsn=EnvironmentConfig.SENTRY_BACKEND_DSN,
         environment=EnvironmentConfig.ENVIRONMENT,
         integrations=[FlaskIntegration()],
         traces_sample_rate=0.1,
+        ignore_errors=[
+            BadRequest,
+            NotFound,
+            Unauthorized,
+            Forbidden,
+            Conflict,
+        ],  # Ignore these errors as they are handled by the API
     )
 
 
@@ -88,6 +112,39 @@ def create_app(env="backend.config.EnvironmentConfig"):
     mail.init_app(app)
 
     app.logger.debug("Add root redirect route")
+
+    @app.errorhandler(Exception)
+    def handle_generic_error(error):
+        """Generic error handler for all exceptions"""
+        from backend.exceptions import format_sub_code
+
+        app.logger.exception(error)
+
+        error_message = (
+            str(error)
+            if len(str(error)) > 0
+            else ERROR_MESSAGES["INTERNAL_SERVER_ERROR"]
+        )
+        error_code = error.code if hasattr(error, "code") else 500
+        error_sub_code = (
+            format_sub_code(error.name)
+            if hasattr(error, "name")
+            else "INTERNAL_SERVER_ERROR"
+        )
+        return (
+            {
+                "error": {
+                    "code": error_code,
+                    "sub_code": error_sub_code,
+                    "message": error_message,
+                    "details": {
+                        "url": request.url,
+                        "method": request.method,
+                    },
+                }
+            },
+            error_code,
+        )
 
     @app.route("/")
     def index_redirect():
