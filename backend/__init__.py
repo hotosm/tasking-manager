@@ -28,8 +28,13 @@ from flask_mail import Mail
 from backend.config import EnvironmentConfig
 
 
-# Storing error messages in a json file so that it is loaded only once at startup (Used in exceptions.py)
-ERROR_MESSAGES = json.load(open("backend/error_messages.json"))
+# Load error_messages.json and store it so that it is loaded only once at startup (Used in exceptions.py)
+# Construct the path to the JSON file
+module_dir = os.path.dirname(__file__)
+error_message_path = os.path.join(module_dir, "error_messages.json")
+
+with open(error_message_path) as jsonfile:
+    ERROR_MESSAGES = json.load(jsonfile)
 
 
 def sentry_init():
