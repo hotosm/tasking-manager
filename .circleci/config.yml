@@ -306,9 +306,16 @@ workflows:
       and:
         - equal: [ deployment/hot-tasking-manager-frontend, << pipeline.git.branch >> ]
     jobs:
-      - backend-functional-tests
+      - frontend-code-test
+      - frontend_wait_for_approval:
+          type: approval
+          requires:
+            - frontend-code-test
       - frontend_deploy:
+          name: Deploy frontend production
           stack_name: "tm4-production"
+          requires:
+            - frontend_wait_for_approval
           context:
             - org-global
             - tasking-manager-tm4-production
@@ -318,14 +325,33 @@ workflows:
       and:
         - equal: [ deployment/hot-tasking-manager-backend, << pipeline.git.branch >> ]
     jobs:
+      - database-backup:
+          name: Backup production database
+          stack_name: "tm4-production"
+          context:
+            - org-global
+            - tasking-manager-tm4-production
+      - backend-functional-tests
+      - backend-code-check-PEP8
+      - backend-code-check-Black
+      - backend_wait_for_approval:
+          type: approval
+          requires:
+            - Backup production database
+            - backend-functional-tests
+            - backend-code-check-PEP8
+            - backend-code-check-Black
       - backend_deploy:
-          name: backend-production
+          name: Deploy backend production
           gitsha: $CIRCLE_SHA1
           stack_name: "tm4-production"
           host_ami: "ami-01e5ff16fd6e8c542"
+          backend_instance_type: c6a.large
           pg_version: "13.10"
           pg_param_group: "default.postgres13"
           db_instance_type: "db.t4g.2xlarge"
+          requires:
+            - backend_wait_for_approval
           context:
             - org-global
             - tasking-manager-tm4-production
@@ -379,17 +405,9 @@ workflows:
             - org-global
             - tasking-manager-staging
       - frontend-code-test
-      - hold_frontend:
-          type: approval
-          requires:
-            - frontend-code-test
       - backend-code-check-PEP8
       - backend-code-check-Black
       - backend-functional-tests
-      - hold_backend:
-          type: approval
-          requires:
-            - Backup staging database
       - backend_deploy:
           name: Deploy development/staging backend
           gitsha: $CIRCLE_SHA1
@@ -400,7 +418,10 @@ workflows:
           db_instance_type: "db.t4g.small"
           backend_instance_type: "t3.medium"
           requires:
-            - hold_backend
+            - Backup staging database
+            - backend-code-check-PEP8
+            - backend-code-check-Black
+            - backend-functional-tests
           context:
             - org-global
             - tasking-manager-staging
@@ -408,7 +429,7 @@ workflows:
           name: Deploy development/staging frontend
           stack_name: "staging"
           requires:
-            - hold_frontend
+            - frontend-code-test
           context:
             - org-global
             - tasking-manager-staging
