@@ -449,7 +449,8 @@ class Project(db.Model):
                     raise NotFound("Team not found")
 
                 role = TeamRoles[team_dto.role].value
-                ProjectTeams(project=self, team=team, role=role)
+                project_team = ProjectTeams(project=self, team=team, role=role)
+                db.session.add(project_team)
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
