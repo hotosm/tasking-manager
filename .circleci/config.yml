@@ -127,6 +127,7 @@ jobs:
               --query 'DBInstances[?contains(TagList[].Key, `aws:cloudformation:stack-name`) && contains(TagList[].Value, `tasking-manager-<< parameters.stack_name >>`)].[DBInstanceIdentifier]' \
               --output text)
             echo "export RDS_ID=$RDS_ID" >> $BASH_ENV
+            echo "RDS ID is: $RDS_ID"
       - run:
           name: Find Snapshot creation timestamp
           command: |
