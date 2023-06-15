@@ -29,7 +29,7 @@
     "RapiD": "facebookincubator/rapid#rapid-v1.1.9-tm.1",
     "axios": "^0.27.2",
     "chart.js": "^3.7.1",
-    "chartjs-adapter-date-fns": "^2.0.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^2.30.0",
     "dompurify": "^2.4.3",
     "downshift-hooks": "^0.8.1",
