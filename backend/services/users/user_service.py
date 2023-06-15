@@ -822,14 +822,17 @@ class UserService:
     @staticmethod
     def register_user_with_email(user_dto: UserRegisterEmailDTO):
         # Validate that user is not within the general users table.
-        user = User.query.filter(User.email_address == user_dto.email).one_or_none()
+        user_email = user_dto.email.lower()
+        user = User.query.filter(func.lower(User.email_address) == user_email).first()
         if user is not None:
-            details_msg = f"Email address {user_dto.email} already exists"
+            details_msg = f"Email address {user_email} already exists"
             raise ValueError(details_msg)
 
-        user = UserEmail.query.filter(UserEmail.email == user_dto.email).one_or_none()
+        user = UserEmail.query.filter(
+            func.lower(UserEmail.email) == user_email
+        ).one_or_none()
         if user is None:
-            user = UserEmail(email=user_dto.email)
+            user = UserEmail(email=user_email)
             user.create()
 
         return user
