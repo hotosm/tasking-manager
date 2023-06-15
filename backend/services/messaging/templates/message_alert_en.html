@@ -2,7 +2,11 @@
 {% block content %}
   <div style="padding: 0 2.357rem; margin: 4rem 0;">
     {% if values['MESSAGE_TYPE'] == 3 %}
-      <p style="font-size: 14px; font-weight: 600"><a style="color: #d73f3f" href="{{values['FROM_USER_LINK']}}">@{{values['FROM_USERNAME']}}</a> mentioned you in a comment on <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_NAME']}} #{{values['PROJECT_ID']}}</a>:</p>
+      <p style="font-size: 14px; font-weight: 600"><a style="color: #d73f3f" href="{{values['FROM_USER_LINK']}}">@{{values['FROM_USERNAME']}}</a> mentioned you in a comment on
+      {% if values['TASK_ID'] %}
+        <a style="color: #d73f3f" href="{{values['TASK_LINK']}}">Task {{values['TASK_ID']}}</a> in
+      {% endif %}
+      <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_NAME']}} #{{values['PROJECT_ID']}}</a>:</p>
     {% endif %}
     {% if values['MESSAGE_TYPE'] == 4 %}
       <p style="font-size: 14px; font-weight: 600">Task validated on <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_NAME']}} #{{values['PROJECT_ID']}}</a>:</p>
