@@ -1,5 +1,5 @@
 from backend.models.postgis.notification import Notification
-from backend.models.postgis.utils import NotFound
+from backend.exceptions import NotFound
 
 
 class NotificationService:
@@ -10,7 +10,7 @@ class NotificationService:
         ).first()
 
         if notifications is None:
-            raise NotFound()
+            raise NotFound(sub_code="NOTIFICATIONS_NOT_FOUND", user_id=user_id)
 
         notifications.update()
         return notifications.unread_count

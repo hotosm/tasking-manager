@@ -2,6 +2,8 @@ from backend import db
 from flask import current_app
 from sqlalchemy.exc import IntegrityError
 from psycopg2.errors import UniqueViolation, NotNullViolation
+
+from backend.exceptions import NotFound
 from backend.models.dtos.campaign_dto import (
     CampaignDTO,
     NewCampaignDTO,
@@ -13,7 +15,6 @@ from backend.models.postgis.campaign import (
     campaign_projects,
     campaign_organisations,
 )
-from backend.models.postgis.utils import NotFound
 from backend.models.postgis.organisation import Organisation
 from backend.services.organisation_service import OrganisationService
 from backend.services.project_service import ProjectService
@@ -26,7 +27,7 @@ class CampaignService:
         campaign = db.session.get(Campaign, campaign_id)
 
         if campaign is None:
-            raise NotFound()
+            raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
 
         return campaign
 
@@ -35,7 +36,7 @@ class CampaignService:
         campaign = Campaign.query.filter_by(name=campaign_name).first()
 
         if campaign is None:
-            raise NotFound()
+            raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_name=campaign_name)
 
         return campaign
 
@@ -80,7 +81,11 @@ class CampaignService:
         project = ProjectService.get_project_by_id(project_id)
         project_campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
         if campaign.id not in [i["id"] for i in project_campaigns["campaigns"]]:
-            raise NotFound()
+            raise NotFound(
+                sub_code="PROJECT_CAMPAIGN_NOT_FOUND",
+                campaign_id=campaign_id,
+                project_id=project_id,
+            )
         project.campaign.remove(campaign)
         db.session.commit()
         new_campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
@@ -163,11 +168,15 @@ class CampaignService:
     def delete_organisation_campaign(organisation_id: int, campaign_id: int):
         """Delete campaign for a organisation"""
         campaign = db.session.get(Campaign, campaign_id)
+        if not campaign:
+            raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
         org = db.session.get(Organisation, organisation_id)
-        try:
-            org.campaign.remove(campaign)
-        except ValueError:
-            raise NotFound()
+        if not org:
+            raise NotFound(
+                sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
+            )
+
+        org.campaign.remove(campaign)
         db.session.commit()
         new_campaigns = CampaignService.get_organisation_campaigns_as_dto(
             organisation_id
@@ -178,7 +187,7 @@ class CampaignService:
     def update_campaign(campaign_dto: CampaignDTO, campaign_id: int):
         campaign = db.session.get(Campaign, campaign_id)
         if not campaign:
-            raise NotFound(f"Campaign id {campaign_id} not found")
+            raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
         try:
             campaign.update(campaign_dto)
         except IntegrityError as e:

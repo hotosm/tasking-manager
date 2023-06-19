@@ -1,8 +1,9 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
+from backend.exceptions import NotFound
 from backend.models.dtos.grid_dto import SplitTaskDTO
-from backend.models.postgis.utils import NotFound, InvalidGeoJson
+from backend.models.postgis.utils import InvalidGeoJson
 from backend.services.grid.split_service import SplitService, SplitServiceError
 from backend.services.users.user_service import UserService
 from backend.services.project_admin_service import ProjectAdminService

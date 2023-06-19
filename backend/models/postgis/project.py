@@ -15,6 +15,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 import requests
 
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.campaign_dto import CampaignDTO
 from backend.models.dtos.project_dto import (
     ProjectDTO,
@@ -57,7 +58,6 @@ from backend.models.postgis.utils import (
     ST_GeomFromGeoJSON,
     timestamp,
     ST_Centroid,
-    NotFound,
 )
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.interests import Interest, project_interests
@@ -297,7 +297,7 @@ class Project(db.Model):
 
         orig = db.session.get(Project, project_id)
         if orig is None:
-            raise NotFound()
+            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
         # Transform into dictionary.
         orig_metadata = orig.__dict__.copy()
@@ -412,7 +412,10 @@ class Project(db.Model):
         if project_dto.organisation:
             org = Organisation.get(project_dto.organisation)
             if org is None:
-                raise NotFound("Organisation does not exist")
+                raise NotFound(
+                    sub_code="ORGANISATION_NOT_FOUND",
+                    organisation_id=project_dto.organisation,
+                )
             self.organisation = org
 
         # Cast MappingType strings to int array
@@ -446,7 +449,7 @@ class Project(db.Model):
                 team = Team.get(team_dto.team_id)
 
                 if team is None:
-                    raise NotFound("Team not found")
+                    raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_dto.team_id)
 
                 role = TeamRoles[team_dto.role].value
                 project_team = ProjectTeams(project=self, team=team, role=role)
@@ -588,7 +591,7 @@ class Project(db.Model):
         admins_projects = query.all()
 
         if admins_projects is None:
-            raise NotFound("No projects found for admin")
+            raise NotFound(sub_code="PROJECTS_NOT_FOUND")
 
         admin_projects_dto = PMDashboardDTO()
         for project in admins_projects:

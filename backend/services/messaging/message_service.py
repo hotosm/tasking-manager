@@ -9,9 +9,10 @@ from sqlalchemy import text, func
 from markdown import markdown
 
 from backend import db, create_app
+from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.dtos.stats_dto import Pagination
-from backend.models.postgis.message import Message, MessageType, NotFound
+from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.notification import Notification
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
@@ -750,7 +751,7 @@ class MessageService:
         message = db.session.get(Message, message_id)
 
         if message is None:
-            raise NotFound()
+            raise NotFound(sub_code="MESSAGE_NOT_FOUND", message_id=message_id)
 
         if message.to_user_id != int(user_id):
             raise MessageServiceError(

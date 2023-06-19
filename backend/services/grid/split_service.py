@@ -4,12 +4,14 @@ from shapely.ops import split
 from backend import db
 from flask import current_app
 from geoalchemy2 import shape
+
+from backend.exceptions import NotFound
 from backend.models.dtos.grid_dto import SplitTaskDTO
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.postgis.utils import ST_Transform, ST_Area, ST_GeogFromWKB
 from backend.models.postgis.task import Task, TaskStatus, TaskAction
 from backend.models.postgis.project import Project
-from backend.models.postgis.utils import NotFound, InvalidGeoJson
+from backend.models.postgis.utils import InvalidGeoJson
 
 
 class SplitServiceError(Exception):
@@ -171,7 +173,7 @@ class SplitService:
         # get the task to be split
         original_task = Task.get(split_task_dto.task_id, split_task_dto.project_id)
         if original_task is None:
-            raise NotFound()
+            raise NotFound(sub_code="TASK_NOT_FOUND", task_id=split_task_dto.task_id)
 
         original_geometry = shape.to_shape(original_task.geometry)
 

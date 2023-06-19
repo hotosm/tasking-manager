@@ -1,9 +1,9 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
+from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import ChatMessageDTO
 from backend.models.dtos.mapping_dto import TaskCommentDTO
-from backend.models.postgis.utils import NotFound
 from backend.services.messaging.chat_service import ChatService
 from backend.services.users.user_service import UserService
 from backend.services.project_service import ProjectService

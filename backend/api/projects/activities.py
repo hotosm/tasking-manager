@@ -1,7 +1,8 @@
 from flask_restful import Resource, current_app, request
+
+from backend.exceptions import NotFound
 from backend.services.stats_service import StatsService
 from backend.services.project_service import ProjectService
-from backend.models.postgis.utils import NotFound
 
 
 class ProjectsActivitiesAPI(Resource):

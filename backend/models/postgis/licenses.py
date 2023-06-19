@@ -1,6 +1,6 @@
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
-from backend.models.postgis.utils import NotFound
 
 # Secondary table defining the many-to-many join
 user_licenses_table = db.Table(
@@ -32,7 +32,7 @@ class License(db.Model):
         map_license = db.session.get(License, license_id)
 
         if map_license is None:
-            raise NotFound()
+            raise NotFound(sub_code="LICENSE_NOT_FOUND", license_id=license_id)
 
         return map_license
 

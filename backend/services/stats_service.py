@@ -5,6 +5,7 @@ from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
 
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.stats_dto import (
     ProjectContributionsDTO,
     UserContribution,
@@ -28,7 +29,7 @@ from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import TaskStatus, MappingLevel, UserGender
 from backend.models.postgis.task import TaskHistory, User, Task, TaskAction
-from backend.models.postgis.utils import timestamp, NotFound  # noqa: F401
+from backend.models.postgis.utils import timestamp  # noqa: F401
 from backend.services.project_service import ProjectService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
@@ -119,7 +120,7 @@ class StatsService:
         """Gets all the activity on a project"""
 
         if not ProjectService.exists(project_id):
-            raise NotFound
+            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
         results = (
             db.session.query(

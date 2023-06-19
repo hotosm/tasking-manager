@@ -1,8 +1,8 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
+from backend.exceptions import NotFound
 from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
-from backend.models.postgis.utils import NotFound
 from backend.services.mapping_issues_service import MappingIssueCategoryService
 from backend.services.users.authentication_service import token_auth, tm
 

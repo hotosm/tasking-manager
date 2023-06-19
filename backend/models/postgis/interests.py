@@ -1,6 +1,6 @@
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.interests_dto import InterestDTO, InterestsListDTO
-from backend.models.postgis.utils import NotFound
 
 # Secondary table defining many-to-many join for interests of a user.
 user_interests = db.Table(
@@ -32,7 +32,7 @@ class Interest(db.Model):
         """Get interest by id"""
         interest = db.session.get(Interest, interest_id)
         if interest is None:
-            raise NotFound(f"Interest id {interest_id} not found")
+            raise NotFound(sub_code="INTEREST_NOT_FOUND", interest_id=interest_id)
 
         return interest
 
@@ -41,7 +41,7 @@ class Interest(db.Model):
         """Get interest by name"""
         interest = Interest.query.filter(Interest.name == name).first()
         if interest is None:
-            raise NotFound(f"Interest name {name} not found")
+            raise NotFound(sub_code="INTEREST_NOT_FOUND", interest_name=name)
 
         return interest
 

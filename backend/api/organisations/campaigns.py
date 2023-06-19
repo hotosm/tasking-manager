@@ -1,8 +1,8 @@
 from flask_restful import Resource
 
+from backend.exceptions import NotFound
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
-from backend.models.postgis.utils import NotFound
 from backend.services.users.authentication_service import token_auth
 
 

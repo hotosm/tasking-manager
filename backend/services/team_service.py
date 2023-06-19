@@ -3,6 +3,7 @@ from sqlalchemy import and_, or_
 from markdown import markdown
 
 from backend import create_app, db
+from backend.exceptions import NotFound
 from backend.models.dtos.team_dto import (
     TeamDTO,
     NewTeamDTO,
@@ -18,7 +19,6 @@ from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.project import ProjectTeams
 from backend.models.postgis.project_info import ProjectInfo
-from backend.models.postgis.utils import NotFound
 from backend.models.postgis.statuses import (
     TeamJoinMethod,
     TeamMemberFunctions,
@@ -145,7 +145,7 @@ class TeamService:
         team = TeamService.get_team_by_id(team_id)
 
         if not TeamService.is_user_team_member(team_id, to_user_id):
-            raise NotFound("Join request not found")
+            raise NotFound(sub_code="JOIN_REQUEST_NOT_FOUND", username=username)
 
         if action not in ["accept", "reject"]:
             raise TeamServiceError("Invalid action type")
@@ -333,7 +333,7 @@ class TeamService:
         team = TeamService.get_team_by_id(team_id)
 
         if team is None:
-            raise NotFound()
+            raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_id)
 
         team_dto = TeamDetailsDTO()
         team_dto.team_id = team.id
@@ -383,7 +383,7 @@ class TeamService:
         )
 
         if projects is None:
-            raise NotFound()
+            raise NotFound(sub_code="PROJECTS_NOT_FOUND", team_id=team_id)
 
         return projects
 
@@ -425,7 +425,7 @@ class TeamService:
         team = Team.get(team_id)
 
         if team is None:
-            raise NotFound()
+            raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_id)
 
         return team
 
@@ -434,7 +434,7 @@ class TeamService:
         team = Team.get_team_by_name(team_name)
 
         if team is None:
-            raise NotFound()
+            raise NotFound(sub_code="TEAM_NOT_FOUND", team_name=team_name)
 
         return team
 
@@ -482,7 +482,7 @@ class TeamService:
                 try:
                     UserService.get_user_by_username(member["name"])
                 except NotFound:
-                    raise NotFound(f'User {member["name"]} does not exist')
+                    raise NotFound(sub_code="USER_NOT_FOUND", username=member["name"])
                 if member["function"] == TeamMemberFunctions.MANAGER.name:
                     managers += 1
 

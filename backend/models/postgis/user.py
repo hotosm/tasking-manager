@@ -2,6 +2,8 @@ import geojson
 from backend import db
 from sqlalchemy import desc, func
 from geoalchemy2 import functions
+
+from backend.exceptions import NotFound
 from backend.models.dtos.user_dto import (
     UserDTO,
     UserMappedProjectsDTO,
@@ -21,7 +23,7 @@ from backend.models.postgis.statuses import (
     UserRole,
     UserGender,
 )
-from backend.models.postgis.utils import NotFound, timestamp
+from backend.models.postgis.utils import timestamp
 from backend.models.postgis.interests import Interest, user_interests
 
 
@@ -203,7 +205,7 @@ class User(db.Model):
         results = query.paginate(page=page, per_page=20, error_out=True)
 
         if results.total == 0:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND", username=user_filter)
 
         dto = UserFilterDTO()
         for result in results.items:

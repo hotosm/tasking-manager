@@ -9,8 +9,10 @@ from sqlalchemy import desc, cast, func, distinct
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
-from backend import db
 from typing import List
+
+from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from backend.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
 from backend.models.dtos.project_dto import (
@@ -28,7 +30,6 @@ from backend.models.postgis.utils import (
     ST_SetSRID,
     timestamp,
     parse_duration,
-    NotFound,
 )
 from backend.models.postgis.task_annotation import TaskAnnotation
 
@@ -892,17 +893,19 @@ class Task(db.Model):
         filters = [Task.project_id == project_id]
 
         if task_ids_str:
-            task_ids = map(int, task_ids_str.split(","))
+            task_ids = list(map(int, task_ids_str.split(",")))
             tasks = Task.get_tasks(project_id, task_ids)
             if not tasks or len(tasks) == 0:
-                raise NotFound()
+                raise NotFound(
+                    sub_code="TASKS_NOT_FOUND", tasks=task_ids, project_id=project_id
+                )
             else:
                 tasks_filters = [task.id for task in tasks]
             filters = [Task.project_id == project_id, Task.id.in_(tasks_filters)]
         else:
             tasks = Task.get_all_tasks(project_id)
             if not tasks or len(tasks) == 0:
-                raise NotFound()
+                raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
 
         if status:
             filters.append(Task.task_status == status)
@@ -1038,7 +1041,7 @@ class Task(db.Model):
             .group_by(Task.project_id)
         )
         if result.count() == 0:
-            raise NotFound()
+            raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
         for row in result:
             return row[0]
 

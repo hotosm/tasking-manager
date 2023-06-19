@@ -1,10 +1,10 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
+from backend.exceptions import NotFound
 from backend.models.dtos.campaign_dto import CampaignDTO, NewCampaignDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
-from backend.models.postgis.utils import NotFound
 from backend.services.users.authentication_service import token_auth
 
 

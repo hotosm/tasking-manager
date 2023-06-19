@@ -6,7 +6,7 @@ from tests.backend.helpers.test_helpers import (
     generate_encoded_token,
     return_canned_user,
 )
-from backend.models.postgis.utils import NotFound
+from backend.exceptions import NotFound
 from backend.models.postgis.statuses import UserRole
 from backend.services.messaging.chat_service import ChatService, ChatMessageDTO
 from backend.services.messaging.message_service import MessageService

@@ -120,13 +120,6 @@ class ProjectsRestAPI(Resource):
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project",
-                "SubCode": "InternalServerError",
-            }, 500
         finally:
             # this will try to unlock tasks that have been locked too long
             try:
@@ -981,13 +974,6 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project",
-                "SubCode": "InternalServerError",
-            }, 500
         finally:
             # this will try to unlock tasks that have been locked too long
             try:

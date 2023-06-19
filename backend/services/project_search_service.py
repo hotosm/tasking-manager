@@ -7,6 +7,7 @@ from shapely.geometry import Polygon, box
 from cachetools import TTLCache, cached
 
 from backend import db
+from backend.exceptions import NotFound
 from backend.api.utils import validate_date_input
 from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
@@ -31,7 +32,6 @@ from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.task import TaskHistory
 from backend.models.postgis.utils import (
-    NotFound,
     ST_Intersects,
     ST_MakeEnvelope,
     ST_Transform,
@@ -177,7 +177,7 @@ class ProjectSearchService:
             search_dto, user
         )
         if paginated_results.total == 0:
-            raise NotFound()
+            raise NotFound(sub_code="PROJECTS_NOT_FOUND")
 
         dto = ProjectSearchResultsDTO()
         dto.results = [

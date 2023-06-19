@@ -1,6 +1,6 @@
 from flask_restful import Resource
 
-from backend.models.postgis.utils import NotFound
+from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import ProjectFavoriteDTO
 from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import token_auth
