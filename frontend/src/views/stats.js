@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react';
-import { format, startOfYear } from 'date-fns';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { useTasksStatsQueryParams, useTasksStatsQueryAPI } from '../hooks/UseTasksStatsQueryAPI';
-import { useForceUpdate } from '../hooks/UseForceUpdate';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { TasksStats } from '../components/teamsAndOrgs/tasksStats';
 import { NewUsersStats } from '../components/teamsAndOrgs/newUsersStats';
@@ -13,17 +11,7 @@ import { FeatureStats } from '../components/teamsAndOrgs/featureStats';
 export const Stats = () => {
   useSetTitleTag('Stats');
   const [query, setQuery] = useTasksStatsQueryParams();
-  const [forceUpdated, forceUpdate] = useForceUpdate();
-  useEffect(() => {
-    if (!query.startDate) {
-      setQuery({ ...query, startDate: format(startOfYear(Date.now()), 'yyyy-MM-dd') }, 'replaceIn');
-    }
-  });
-  const [apiState] = useTasksStatsQueryAPI(
-    { taskStats: [] },
-    query,
-    query.startDate ? forceUpdated : false,
-  );
+  const [apiState, fetchTasksStatistics] = useTasksStatsQueryAPI({ taskStats: [] }, query);
 
   return (
     <div className="w-100 cf pv4">
@@ -41,7 +29,7 @@ export const Stats = () => {
             stats={apiState.stats}
             error={apiState.isError}
             loading={apiState.isLoading}
-            retryFn={forceUpdate}
+            retryFn={fetchTasksStatistics}
           />
         </div>
       </div>
