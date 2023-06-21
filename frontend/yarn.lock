@@ -1738,7 +1738,7 @@
 
 "@hotosm/iso-countries-languages@^1.1.2":
   version "1.1.2"
-  resolved "https://registry.npmjs.org/@hotosm/iso-countries-languages/-/iso-countries-languages-1.1.2.tgz"
+  resolved "https://registry.yarnpkg.com/@hotosm/iso-countries-languages/-/iso-countries-languages-1.1.2.tgz#06d751c36f787dae2e172650657e9bcea3cf6f0f"
   integrity sha512-BmjgzRGwKt0eaUNTNo3LghX5gaa0jVJUbcA4t8iKesvOotoWJiioGvIcWnFTiNBKeEh+0TibFWqUuJx1kmIo3g==
   dependencies:
     prettier "^2.0.5"
@@ -12210,12 +12210,7 @@ prepend-http@^1.0.0:
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-1.0.4.tgz#d4f4562b0ce3696e41ac52d0e002e57a635dc6dc"
   integrity sha512-PhmXi5XmoyKw1Un4E+opM2KcsJInDvKyuOumcjjw3waw86ZNjHwVUOOWLc4bCzLdcKNaWBH9e99sbWzDQsVaYg==
 
-prettier@^2.0.5:
-  version "2.8.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.1.tgz#4e1fd11c34e2421bc1da9aea9bd8127cd0a35efc"
-  integrity sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==
-
-prettier@^2.8.8:
+prettier@^2.0.5, prettier@^2.8.8:
   version "2.8.8"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.8.tgz#e8c5d7e98a4305ffe3de2e1fc4aca1a71c28b1da"
   integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
