@@ -9,7 +9,7 @@ export function TopBanner() {
   const [, error, data] = useFetchWithAbort(`system/banner/`);
 
   return (
-    <>
+    <div>
       {location.pathname === '/' && data.visible && !error && (
         <div className="ph3 b--grey-light bb bg-tan top-banner-container">
           <div
@@ -18,6 +18,6 @@ export function TopBanner() {
           />
         </div>
       )}
-    </>
+    </div>
   );
 }
