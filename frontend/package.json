@@ -13,7 +13,7 @@
     "@mapbox/mapbox-gl-draw": "^1.4.1",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mapbox/mapbox-gl-language": "^0.10.1",
-    "@placemarkio/geo-viewport": "^1.0.0",
+    "@placemarkio/geo-viewport": "^1.0.1",
     "@sentry/react": "^7.56.0",
     "@sentry/tracing": "^7.56.0",
     "@tmcw/togeojson": "^4.7.0",
