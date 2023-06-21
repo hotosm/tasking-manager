@@ -21,6 +21,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { NotFound } from './notFound';
 import { ProjectDetailPlaceholder } from '../components/projectDetail/projectDetailPlaceholder';
+import './project.css';
 
 const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
 
@@ -152,6 +153,18 @@ export const MoreFilters = () => {
   const navigate = useNavigate();
   const [fullProjectsQuery] = useExploreProjectsQueryParams();
 
+  useEffect(() => {
+    // Disable scrolling outside the component when it appears
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      // Restore scrolling when the component is closed
+      document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
+    };
+  }, []);
+
   const currentUrl = `/explore${
     stringify(fullProjectsQuery) ? ['?', stringify(fullProjectsQuery)].join('') : ''
   }`;
@@ -159,7 +172,18 @@ export const MoreFilters = () => {
   return (
     <>
       <div className="absolute left-0 z-4 mt1 w-40-l w-100 h-100 bg-white h4 ph1 ph5-l">
-        <MoreFiltersForm currentUrl={currentUrl} />
+        <div
+          className="scrollable-container"
+          style={{
+            height: '100%',
+            overflow: 'auto',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
+          <MoreFiltersForm currentUrl={currentUrl} />
+          <MoreFiltersForm currentUrl={currentUrl} />
+        </div>
       </div>
       <div
         onClick={() => navigate(currentUrl)}
