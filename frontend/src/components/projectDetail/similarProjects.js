@@ -27,7 +27,7 @@ export const SimilarProjects = ({ projectId }) => {
             ready={!loading}
           >
             {similarProjects.results?.map((project) => (
-              <ProjectCard key={project.id} showBottomButtons={false} {...project} />
+              <ProjectCard key={project.projectId} showBottomButtons={false} {...project} />
             ))}
           </ReactPlaceholder>
         </div>
