@@ -3593,9 +3593,9 @@ abab@^2.0.3, abab@^2.0.5:
   integrity sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==
 
 abortcontroller-polyfill@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/abortcontroller-polyfill/-/abortcontroller-polyfill-1.4.0.tgz#0d5eb58e522a461774af8086414f68e1dda7a6c4"
-  integrity sha512-3ZFfCRfDzx3GFjO6RAkYx81lPGpUS20ISxux9gLxuKnqafNcFQo59+IoZqpO2WvQlyc287B62HDnDdNYRmlvWA==
+  version "1.7.5"
+  resolved "https://registry.yarnpkg.com/abortcontroller-polyfill/-/abortcontroller-polyfill-1.7.5.tgz#6738495f4e901fbb57b6c0611d0c75f76c485bed"
+  integrity sha512-JMJ5soJWP18htbbxJjG7bG6yuI6pRhgJ0scHHTfkUjf6wjP912xZWvM+A4sJK3gqd9E8fcPbDnOefbA9Th/FIQ==
 
 accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.8:
   version "1.3.8"
@@ -5258,9 +5258,9 @@ copy-descriptor@^0.1.0:
   integrity sha512-XgZ0pFcakEUlbwQEVNg3+QAis1FyTL3Qel9FYy8pSkQqoG3PNoT0bOCQtOXcOkur21r2Eq2kI+IE+gsmAEVlYw==
 
 core-js-bundle@^3.19.0:
-  version "3.23.4"
-  resolved "https://registry.yarnpkg.com/core-js-bundle/-/core-js-bundle-3.23.4.tgz#fb4ea6b4d5a0ba3166da1c8936bc18b9328a292b"
-  integrity sha512-E5kP515mQPnHj0LL0Z4UyQ8VHrhugJaq3GOropUnR/fU3QA3Xxs3vRgt6CwNDpgHYiruDa0jqHwNHwk5FbcwFg==
+  version "3.31.0"
+  resolved "https://registry.yarnpkg.com/core-js-bundle/-/core-js-bundle-3.31.0.tgz#4e1a85e96ffe03691d40fb57754cfc15656c9950"
+  integrity sha512-MIfemYRT6s0Fly7JN/EuYKaR9zv4h769XHEiel/x2/Z+QOh/zOrWVyD9p9QyVY+CTSZgsWtspBC2cxyYVLwnqg==
 
 core-js-compat@^3.30.1, core-js-compat@^3.30.2:
   version "3.31.0"
@@ -11114,10 +11114,17 @@ os-tmpdir@~1.0.2:
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
   integrity sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==
 
-osm-auth@2.0.0, osm-auth@~2.0.0:
+osm-auth@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-2.0.0.tgz#c8e9c2de60c179d1fa8ad34da3a029c6eb5e9f38"
   integrity sha512-6ZBOGAMe8Q/rkhpflmclXFmtnXJmgvX9ScNskrD5by8320nz2KOsyRRtwfNSOL2YNFToM2ZF47YJCY3aiEsS+w==
+  dependencies:
+    store "~2.0.12"
+
+osm-auth@~2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-2.0.1.tgz#fb932d3e5999d52e88e94a5e5b216e2ad4333d57"
+  integrity sha512-Uw0hpw7IVlFMqd6hW9kTS1Qah9xh85hwn1xqLgCONGKRtHZ3ZaUzg/obm7WOwheJSmSmkwfiDnPN0imZyNOSbw==
   dependencies:
     store "~2.0.12"
 
