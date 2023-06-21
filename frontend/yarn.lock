@@ -2196,7 +2196,7 @@
 
 "@mapbox/mapbox-gl-language@^0.10.1":
   version "0.10.1"
-  resolved "https://registry.npmjs.org/@mapbox/mapbox-gl-language/-/mapbox-gl-language-0.10.1.tgz"
+  resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-language/-/mapbox-gl-language-0.10.1.tgz#44d19d24205a10a9f27ddd78c55446fe48b94705"
   integrity sha512-i5+N+FrgR5v8NY4+B+uzFl1Q4gR2OaGoKWgKiayL1bE5715svnx4r4ADTczbZSemI9o426tDKfjAtc3HC2GMCw==
 
 "@mapbox/mapbox-gl-supported@^1.5.0":
