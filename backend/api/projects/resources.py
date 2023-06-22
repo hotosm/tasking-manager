@@ -116,8 +116,6 @@ class ProjectsRestAPI(Resource):
                     "Error": "User not permitted: Private Project",
                     "SubCode": "PrivateProject",
                 }, 403
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         finally:
@@ -255,11 +253,8 @@ class ProjectsRestAPI(Resource):
                 "SubCode": "UserPermissionError",
             }, 403
 
-        try:
-            project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
-            return project_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
+        project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
+        return project_dto.to_primitive(), 200
 
     @token_auth.login_required
     def patch(self, project_id):
@@ -385,16 +380,13 @@ class ProjectsRestAPI(Resource):
                 description: Internal Server Error
         """
         authenticated_user_id = token_auth.current_user()
-        try:
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                return {
-                    "Error": "User is not a manager of the project",
-                    "SubCode": "UserPermissionError",
-                }, 403
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
         try:
             project_dto = ProjectDTO(request.get_json())
             project_dto.project_id = project_id
@@ -408,8 +400,6 @@ class ProjectsRestAPI(Resource):
             return {"Status": "Updated"}, 200
         except InvalidGeoJson as e:
             return {"Invalid GeoJson": str(e)}, 400
-        except NotFound as e:
-            return {"Error": str(e) or "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectAdminServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
@@ -464,8 +454,6 @@ class ProjectsRestAPI(Resource):
             return {"Success": "Project deleted"}, 200
         except ProjectAdminServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
 
 
 class ProjectSearchBase(Resource):
@@ -862,16 +850,13 @@ class ProjectsQueriesTouchedAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            locale = (
-                request.environ.get("HTTP_ACCEPT_LANGUAGE")
-                if request.environ.get("HTTP_ACCEPT_LANGUAGE")
-                else "en"
-            )
-            user_dto = UserService.get_mapped_projects(username, locale)
-            return user_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
+        locale = (
+            request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            if request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            else "en"
+        )
+        user_dto = UserService.get_mapped_projects(username, locale)
+        return user_dto.to_primitive(), 200
 
 
 class ProjectsQueriesSummaryAPI(Resource):
@@ -904,12 +889,9 @@ class ProjectsQueriesSummaryAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            summary = ProjectService.get_project_summary(project_id, preferred_locale)
-            return summary.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
+        preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+        summary = ProjectService.get_project_summary(project_id, preferred_locale)
+        return summary.to_primitive(), 200
 
 
 class ProjectsQueriesNoGeometriesAPI(Resource):
@@ -970,8 +952,6 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
                 )
 
             return project_dto, 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         finally:
@@ -1017,16 +997,13 @@ class ProjectsQueriesNoTasksAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            ):
-                return {
-                    "Error": "User is not a manager of the project",
-                    "SubCode": "UserPermissionError",
-                }, 403
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            token_auth.current_user(), project_id
+        ):
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
 
         project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
         return project_dto.to_primitive(), 200
@@ -1063,26 +1040,23 @@ class ProjectsQueriesAoiAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            as_file = (
-                strtobool(request.args.get("as_file"))
-                if request.args.get("as_file")
-                else True
+        as_file = (
+            strtobool(request.args.get("as_file"))
+            if request.args.get("as_file")
+            else True
+        )
+
+        project_aoi = ProjectService.get_project_aoi(project_id)
+
+        if as_file:
+            return send_file(
+                io.BytesIO(geojson.dumps(project_aoi).encode("utf-8")),
+                mimetype="application/json",
+                as_attachment=True,
+                download_name=f"{str(project_id)}.geojson",
             )
 
-            project_aoi = ProjectService.get_project_aoi(project_id)
-
-            if as_file:
-                return send_file(
-                    io.BytesIO(geojson.dumps(project_aoi).encode("utf-8")),
-                    mimetype="application/json",
-                    as_attachment=True,
-                    download_name=f"{str(project_id)}.geojson",
-                )
-
-            return project_aoi, 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
+        return project_aoi, 200
 
 
 class ProjectsQueriesPriorityAreasAPI(Resource):
@@ -1114,8 +1088,6 @@ class ProjectsQueriesPriorityAreasAPI(Resource):
         try:
             priority_areas = ProjectService.get_project_priority_areas(project_id)
             return priority_areas, 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError:
             return {"Error": "Unable to fetch project"}, 403
 
@@ -1183,18 +1155,12 @@ class ProjectQueriesSimilarProjectsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = (
-                token_auth.current_user() if token_auth.current_user() else None
-            )
-            limit = int(request.args.get("limit", 4))
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE", "en")
-            projects_dto = ProjectRecommendationService.get_similar_projects(
-                project_id, authenticated_user_id, preferred_locale, limit
-            )
-            return projects_dto.to_primitive(), 200
-        except NotFound:
-            return {
-                "Error": "Project Not Found or Project is not published",
-                "SubCode": "NotFound",
-            }, 404
+        authenticated_user_id = (
+            token_auth.current_user() if token_auth.current_user() else None
+        )
+        limit = int(request.args.get("limit", 4))
+        preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE", "en")
+        projects_dto = ProjectRecommendationService.get_similar_projects(
+            project_id, authenticated_user_id, preferred_locale, limit
+        )
+        return projects_dto.to_primitive(), 200

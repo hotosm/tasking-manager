@@ -1,7 +1,6 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from backend.exceptions import NotFound
 from backend.models.dtos.grid_dto import SplitTaskDTO
 from backend.models.postgis.utils import InvalidGeoJson
 from backend.services.grid.split_service import SplitService, SplitServiceError
@@ -93,8 +92,6 @@ class TasksActionsMappingLockAPI(Resource):
         try:
             task = MappingService.lock_task_for_mapping(lock_task_dto)
             return task.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except UserLicenseError:
@@ -180,8 +177,6 @@ class TasksActionsMappingStopAPI(Resource):
         try:
             task = MappingService.stop_mapping_task(stop_task)
             return task.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
@@ -260,8 +255,6 @@ class TasksActionsMappingUnlockAPI(Resource):
         try:
             task = MappingService.unlock_task_after_mapping(mapped_task)
             return task.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
@@ -327,8 +320,6 @@ class TasksActionsMappingUndoAPI(Resource):
                 project_id, task_id, token_auth.current_user(), preferred_locale
             )
             return task.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
@@ -405,8 +396,6 @@ class TasksActionsValidationLockAPI(Resource):
             return tasks.to_primitive(), 200
         except ValidatorServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Task not found", "SubCode": "NotFound"}, 404
         except UserLicenseError:
             return {
                 "Error": "User not accepted license terms",
@@ -484,8 +473,6 @@ class TasksActionsValidationStopAPI(Resource):
             return tasks.to_primitive(), 200
         except ValidatorServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Task unlock failed", "SubCode": "NotFound"}, 404
 
 
 class TasksActionsValidationUnlockAPI(Resource):
@@ -557,8 +544,6 @@ class TasksActionsValidationUnlockAPI(Resource):
             return tasks.to_primitive(), 200
         except ValidatorServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Task unlock failed", "SubCode": "NotFound"}, 404
 
 
 class TasksActionsMapAllAPI(Resource):
@@ -871,8 +856,6 @@ class TasksActionsSplitAPI(Resource):
         try:
             tasks = SplitService.split_task(split_task_dto)
             return tasks.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except SplitServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except InvalidGeoJson as e:
@@ -951,8 +934,6 @@ class TasksActionsExtendAPI(Resource):
             return {"Success": "Successfully extended task expiry"}, 200
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Task not found", "SubCode": "NotFound"}, 404
 
 
 class TasksActionsReverUserTaskstAPI(Resource):
@@ -1017,8 +998,6 @@ class TasksActionsReverUserTaskstAPI(Resource):
             revert_dto.user_id = user.id
             revert_dto.action_by = token_auth.current_user()
             revert_dto.validate()
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {
@@ -1030,5 +1009,3 @@ class TasksActionsReverUserTaskstAPI(Resource):
             return {"Success": "Successfully reverted tasks"}, 200
         except ValidatorServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Task not found", "SubCode": "NotFound"}, 404

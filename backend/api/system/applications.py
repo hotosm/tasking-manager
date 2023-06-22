@@ -1,6 +1,6 @@
 from flask_restful import Resource
 
-from backend.services.application_service import ApplicationService, NotFound
+from backend.services.application_service import ApplicationService
 from backend.services.users.authentication_service import token_auth
 
 
@@ -124,12 +124,9 @@ class SystemApplicationsRestAPI(Resource):
           500:
             description: A problem occurred
         """
-        try:
-            token = ApplicationService.get_token(application_key)
-            if token.user == token_auth.current_user():
-                token.delete()
-                return 200
-            else:
-                return 302
-        except NotFound:
-            return {"Error": "Key does not exist for user", "SubCode": "NotFound"}, 404
+        token = ApplicationService.get_token(application_key)
+        if token.user == token_auth.current_user():
+            token.delete()
+            return 200
+        else:
+            return 302

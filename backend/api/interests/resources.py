@@ -1,7 +1,6 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from backend.exceptions import NotFound
 from backend.models.dtos.interests_dto import InterestDTO
 from backend.services.interests_service import InterestService
 from backend.services.organisation_service import OrganisationService
@@ -144,11 +143,8 @@ class InterestsRestAPI(Resource):
             error_msg = f"InterestsRestAPI GET: {str(e)}"
             return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
-        try:
-            interest = InterestService.get(interest_id)
-            return interest.to_primitive(), 200
-        except NotFound:
-            return {"Error": INTEREST_NOT_FOUND, "SubCode": "NotFound"}, 404
+        interest = InterestService.get(interest_id)
+        return interest.to_primitive(), 200
 
     @token_auth.login_required
     def patch(self, interest_id):
@@ -212,11 +208,8 @@ class InterestsRestAPI(Resource):
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
-        try:
-            update_interest = InterestService.update(interest_id, interest_dto)
-            return update_interest.to_primitive(), 200
-        except NotFound:
-            return {"Error": INTEREST_NOT_FOUND, "SubCode": "NotFound"}, 404
+        update_interest = InterestService.update(interest_id, interest_dto)
+        return update_interest.to_primitive(), 200
 
     @token_auth.login_required
     def delete(self, interest_id):
@@ -262,8 +255,5 @@ class InterestsRestAPI(Resource):
             error_msg = f"InterestsRestAPI DELETE: {str(e)}"
             return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
-        try:
-            InterestService.delete(interest_id)
-            return {"Success": "Interest deleted"}, 200
-        except NotFound:
-            return {"Error": INTEREST_NOT_FOUND, "SubCode": "NotFound"}, 404
+        InterestService.delete(interest_id)
+        return {"Success": "Interest deleted"}, 200

@@ -4,7 +4,7 @@ from schematics.exceptions import DataError
 
 from backend.models.dtos.user_dto import UserSearchQuery
 from backend.services.users.authentication_service import token_auth
-from backend.services.users.user_service import UserService, NotFound
+from backend.services.users.user_service import UserService
 from backend.services.project_service import ProjectService
 
 
@@ -41,13 +41,8 @@ class UsersRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            user_dto = UserService.get_user_dto_by_id(
-                user_id, token_auth.current_user()
-            )
-            return user_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
+        user_dto = UserService.get_user_dto_by_id(user_id, token_auth.current_user())
+        return user_dto.to_primitive(), 200
 
 
 class UsersAllAPI(Resource):
@@ -154,13 +149,10 @@ class UsersQueriesUsernameAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            user_dto = UserService.get_user_dto_by_username(
-                username, token_auth.current_user()
-            )
-            return user_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
+        user_dto = UserService.get_user_dto_by_username(
+            username, token_auth.current_user()
+        )
+        return user_dto.to_primitive(), 200
 
 
 class UsersQueriesUsernameFilterAPI(Resource):
@@ -203,13 +195,10 @@ class UsersQueriesUsernameFilterAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            page = int(request.args.get("page")) if request.args.get("page") else 1
-            project_id = request.args.get("projectId", None, int)
-            users_dto = UserService.filter_users(username, project_id, page)
-            return users_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
+        page = int(request.args.get("page")) if request.args.get("page") else 1
+        project_id = request.args.get("projectId", None, int)
+        users_dto = UserService.filter_users(username, project_id, page)
+        return users_dto.to_primitive(), 200
 
 
 class UsersQueriesOwnLockedAPI(Resource):
@@ -278,14 +267,11 @@ class UsersQueriesOwnLockedDetailsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            locked_tasks = ProjectService.get_task_details_for_logged_in_user(
-                token_auth.current_user(), preferred_locale
-            )
-            return locked_tasks.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User has no locked tasks", "SubCode": "NotFound"}, 404
+        preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+        locked_tasks = ProjectService.get_task_details_for_logged_in_user(
+            token_auth.current_user(), preferred_locale
+        )
+        return locked_tasks.to_primitive(), 200
 
 
 class UsersQueriesFavoritesAPI(Resource):
@@ -313,11 +299,8 @@ class UsersQueriesFavoritesAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            favs_dto = UserService.get_projects_favorited(token_auth.current_user())
-            return favs_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
+        favs_dto = UserService.get_projects_favorited(token_auth.current_user())
+        return favs_dto.to_primitive(), 200
 
 
 class UsersQueriesInterestsAPI(Resource):
@@ -350,12 +333,9 @@ class UsersQueriesInterestsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            user = UserService.get_user_by_username(username)
-            interests_dto = UserService.get_interests(user)
-            return interests_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
+        user = UserService.get_user_by_username(username)
+        interests_dto = UserService.get_interests(user)
+        return interests_dto.to_primitive(), 200
 
 
 class UsersRecommendedProjectsAPI(Resource):
@@ -399,13 +379,10 @@ class UsersRecommendedProjectsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            locale = (
-                request.environ.get("HTTP_ACCEPT_LANGUAGE")
-                if request.environ.get("HTTP_ACCEPT_LANGUAGE")
-                else "en"
-            )
-            user_dto = UserService.get_recommended_projects(username, locale)
-            return user_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User or mapping not found", "SubCode": "NotFound"}, 404
+        locale = (
+            request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            if request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            else "en"
+        )
+        user_dto = UserService.get_recommended_projects(username, locale)
+        return user_dto.to_primitive(), 200

@@ -1,7 +1,6 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
-from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import ChatMessageDTO
 from backend.models.dtos.mapping_dto import TaskCommentDTO
 from backend.services.messaging.chat_service import ChatService
@@ -109,19 +108,11 @@ class CommentsProjectsAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            ProjectService.exists(project_id)
-        except NotFound as e:
-            current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-
-        try:
-            page = int(request.args.get("page")) if request.args.get("page") else 1
-            per_page = int(request.args.get("perPage", 20))
-            project_messages = ChatService.get_messages(project_id, page, per_page)
-            return project_messages.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
+        ProjectService.exists(project_id)
+        page = int(request.args.get("page")) if request.args.get("page") else 1
+        per_page = int(request.args.get("perPage", 20))
+        project_messages = ChatService.get_messages(project_id, page, per_page)
+        return project_messages.to_primitive(), 200
 
 
 class CommentsProjectsRestAPI(Resource):
@@ -169,8 +160,6 @@ class CommentsProjectsRestAPI(Resource):
                 project_id, comment_id, authenticated_user_id
             )
             return {"Success": "Comment deleted"}, 200
-        except NotFound:
-            return {"Error": "Comment not found", "SubCode": "NotFound"}, 404
         except ValueError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
@@ -248,8 +237,6 @@ class CommentsTasksRestAPI(Resource):
         try:
             task = MappingService.add_task_comment(task_comment)
             return task.to_primitive(), 201
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError:
             return {"Error": "Task update failed"}, 403
 
@@ -320,7 +307,5 @@ class CommentsTasksRestAPI(Resource):
             # task = MappingService.add_task_comment(task_comment)
             # return task.to_primitive(), 200
             return
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e)}, 403

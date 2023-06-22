@@ -1,7 +1,7 @@
 from flask_restful import Resource
 
 from backend.services.users.authentication_service import token_auth
-from backend.services.users.user_service import UserService, NotFound
+from backend.services.users.user_service import UserService
 
 
 class LicensesActionsAcceptAPI(Resource):
@@ -37,8 +37,5 @@ class LicensesActionsAcceptAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            UserService.accept_license_terms(token_auth.current_user(), license_id)
-            return {"Success": "Terms Accepted"}, 200
-        except NotFound:
-            return {"Error": "User or License not found", "SubCode": "NotFound"}, 404
+        UserService.accept_license_terms(token_auth.current_user(), license_id)
+        return {"Success": "Terms Accepted"}, 200

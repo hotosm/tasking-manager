@@ -1,6 +1,5 @@
-from flask_restful import Resource, current_app, request
+from flask_restful import Resource, request
 
-from backend.exceptions import NotFound
 from backend.services.stats_service import StatsService
 from backend.services.project_service import ProjectService
 
@@ -33,12 +32,7 @@ class ProjectsActivitiesAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            ProjectService.exists(project_id)
-        except NotFound as e:
-            current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-
+        ProjectService.exists(project_id)
         page = int(request.args.get("page")) if request.args.get("page") else 1
         activity = StatsService.get_latest_activity(project_id, page)
         return activity.to_primitive(), 200
@@ -67,11 +61,6 @@ class ProjectsLastActivitiesAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            ProjectService.exists(project_id)
-        except NotFound as e:
-            current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-
+        ProjectService.exists(project_id)
         activity = StatsService.get_last_activity(project_id)
         return activity.to_primitive(), 200

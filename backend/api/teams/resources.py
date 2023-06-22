@@ -6,7 +6,7 @@ from backend.models.dtos.team_dto import (
     UpdateTeamDTO,
     TeamSearchDTO,
 )
-from backend.services.team_service import TeamService, TeamServiceError, NotFound
+from backend.services.team_service import TeamService, TeamServiceError
 from backend.services.users.authentication_service import token_auth
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
@@ -97,8 +97,6 @@ class TeamsRestAPI(Resource):
         try:
             TeamService.update_team(team_dto)
             return {"Status": "Updated"}, 200
-        except NotFound as e:
-            return {"Error": str(e), "SubCode": "NotFound"}, 404
         except TeamServiceError as e:
             return str(e), 402
 
@@ -132,17 +130,14 @@ class TeamsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            omit_members = strtobool(request.args.get("omitMemberList", "false"))
-            if authenticated_user_id is None:
-                user_id = 0
-            else:
-                user_id = authenticated_user_id
-            team_dto = TeamService.get_team_as_dto(team_id, user_id, omit_members)
-            return team_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Team Not Found", "SubCode": "NotFound"}, 404
+        authenticated_user_id = token_auth.current_user()
+        omit_members = strtobool(request.args.get("omitMemberList", "false"))
+        if authenticated_user_id is None:
+            user_id = 0
+        else:
+            user_id = authenticated_user_id
+        team_dto = TeamService.get_team_as_dto(team_id, user_id, omit_members)
+        return team_dto.to_primitive(), 200
 
     # TODO: Add delete API then do front end services and ui work
 
@@ -180,17 +175,14 @@ class TeamsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
-                return {
-                    "Error": "User is not a manager for the team",
-                    "SubCode": "UserNotTeamManager",
-                }, 401
+        if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
+            return {
+                "Error": "User is not a manager for the team",
+                "SubCode": "UserNotTeamManager",
+            }, 401
 
-            TeamService.delete_team(team_id)
-            return {"Success": "Team deleted"}, 200
-        except NotFound:
-            return {"Error": "Team Not Found", "SubCode": "NotFound"}, 404
+        TeamService.delete_team(team_id)
+        return {"Success": "Team deleted"}, 200
 
 
 class TeamsAllAPI(Resource):
@@ -377,6 +369,3 @@ class TeamsAllAPI(Resource):
                 return {"Error": error_msg, "SubCode": "CreateTeamNotPermitted"}, 403
         except TeamServiceError as e:
             return str(e), 400
-        except NotFound:
-            error_msg = "Team POST - Organisation does not exist"
-            return {"Error": error_msg, "SubCode": "NotFound"}, 404

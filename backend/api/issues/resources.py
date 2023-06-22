@@ -1,7 +1,6 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from backend.exceptions import NotFound
 from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
 from backend.services.mapping_issues_service import MappingIssueCategoryService
 from backend.services.users.authentication_service import token_auth, tm
@@ -33,18 +32,10 @@ class IssuesRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            category_dto = (
-                MappingIssueCategoryService.get_mapping_issue_category_as_dto(
-                    category_id
-                )
-            )
-            return category_dto.to_primitive(), 200
-        except NotFound:
-            return {
-                "Error": ISSUE_NOT_FOUND,
-                "SubCode": "NotFound",
-            }, 404
+        category_dto = MappingIssueCategoryService.get_mapping_issue_category_as_dto(
+            category_id
+        )
+        return category_dto.to_primitive(), 200
 
     @tm.pm_only()
     @token_auth.login_required
@@ -102,16 +93,10 @@ class IssuesRestAPI(Resource):
                 "SubCode": "InvalidData",
             }, 400
 
-        try:
-            updated_category = (
-                MappingIssueCategoryService.update_mapping_issue_category(category_dto)
-            )
-            return updated_category.to_primitive(), 200
-        except NotFound:
-            return {
-                "Error": ISSUE_NOT_FOUND,
-                "SubCode": "NotFound",
-            }, 404
+        updated_category = MappingIssueCategoryService.update_mapping_issue_category(
+            category_dto
+        )
+        return updated_category.to_primitive(), 200
 
     @tm.pm_only()
     @token_auth.login_required
@@ -149,14 +134,8 @@ class IssuesRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            MappingIssueCategoryService.delete_mapping_issue_category(category_id)
-            return {"Success": "Mapping-issue category deleted"}, 200
-        except NotFound:
-            return {
-                "Error": ISSUE_NOT_FOUND,
-                "SubCode": "NotFound",
-            }, 404
+        MappingIssueCategoryService.delete_mapping_issue_category(category_id)
+        return {"Success": "Mapping-issue category deleted"}, 200
 
 
 class IssuesAllAPI(Resource):

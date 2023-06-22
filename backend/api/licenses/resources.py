@@ -1,7 +1,6 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from backend.exceptions import NotFound
 from backend.models.dtos.licenses_dto import LicenseDTO
 from backend.services.license_service import LicenseService
 from backend.services.users.authentication_service import token_auth, tm
@@ -86,11 +85,8 @@ class LicensesRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            license_dto = LicenseService.get_license_as_dto(license_id)
-            return license_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
+        license_dto = LicenseService.get_license_as_dto(license_id)
+        return license_dto.to_primitive(), 200
 
     @tm.pm_only()
     @token_auth.login_required
@@ -148,11 +144,8 @@ class LicensesRestAPI(Resource):
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
-        try:
-            updated_license = LicenseService.update_licence(license_dto)
-            return updated_license.to_primitive(), 200
-        except NotFound:
-            return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
+        updated_license = LicenseService.update_licence(license_dto)
+        return updated_license.to_primitive(), 200
 
     @tm.pm_only()
     @token_auth.login_required
@@ -187,11 +180,8 @@ class LicensesRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            LicenseService.delete_license(license_id)
-            return {"Success": "License deleted"}, 200
-        except NotFound:
-            return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
+        LicenseService.delete_license(license_id)
+        return {"Success": "License deleted"}, 200
 
 
 class LicensesAllAPI(Resource):
@@ -211,8 +201,5 @@ class LicensesAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            licenses_dto = LicenseService.get_all_licenses()
-            return licenses_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
+        licenses_dto = LicenseService.get_all_licenses()
+        return licenses_dto.to_primitive(), 200
