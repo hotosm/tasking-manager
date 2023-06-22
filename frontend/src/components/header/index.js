@@ -89,7 +89,7 @@ export const Header = () => {
     ) : null;
 
   return (
-    <header className="w-100 bb b--grey-light">
+    <header id="top-header" className="w-100 bb b--grey-light">
       <UpdateDialog />
       {checkUserEmail()}
       {showOrgBar && (
