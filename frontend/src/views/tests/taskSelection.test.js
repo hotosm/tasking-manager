@@ -10,23 +10,27 @@ import { ReduxIntlProviders } from '../../utils/testWithIntl';
 import { SelectTask } from '../taskSelection';
 
 describe('Task Selection Page', () => {
-  const setup = () =>
-    render(
-      <MemoryRouter initialEntries={['/projects/123/tasks']}>
-        <Routes>
-          <Route
-            path="projects/:id/tasks"
-            element={
-              <QueryParamProvider adapter={ReactRouter6Adapter}>
-                <ReduxIntlProviders>
-                  <SelectTask />
-                </ReduxIntlProviders>
-              </QueryParamProvider>
-            }
-          />
-        </Routes>
-      </MemoryRouter>,
-    );
+  const setup = () => {
+    return {
+      user: userEvent.setup(),
+      ...render(
+        <MemoryRouter initialEntries={['/projects/123/tasks']}>
+          <Routes>
+            <Route
+              path="projects/:id/tasks"
+              element={
+                <QueryParamProvider adapter={ReactRouter6Adapter}>
+                  <ReduxIntlProviders>
+                    <SelectTask />
+                  </ReduxIntlProviders>
+                </QueryParamProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>,
+      ),
+    };
+  };
 
   it('should redirect to login page if the user is not logged in', () => {
     act(() => {
@@ -86,7 +90,7 @@ describe('Task Selection Page', () => {
   });
 
   it('should change the button text to map selected task when user selects a task', async () => {
-    setup();
+    const { user } = setup();
     await screen.findAllByText(/last updated by/i);
     expect(
       screen.getByRole('button', {
@@ -94,7 +98,7 @@ describe('Task Selection Page', () => {
       }),
     ).toBeInTheDocument();
     // Selecting a task that is available for mapping
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /Task #1 Patrik_B/i,
       }),
@@ -110,7 +114,7 @@ describe('Task Selection Page', () => {
       }),
     ).toBeInTheDocument();
     // Unselecting selected tasks
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /Task #1 Patrik_B/i,
       }),
@@ -123,10 +127,10 @@ describe('Task Selection Page', () => {
   });
 
   it('should change the button text to map another task when user selects a task for validation but the user level is not met', async () => {
-    setup();
+    const { user } = setup();
     await screen.findAllByText(/last updated by/i);
     // Selecting a task that is available for validation
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /Task #5 Aadesh Baral/i,
       }),
@@ -145,8 +149,7 @@ describe('Task Selection Page', () => {
         userDetails: { id: 69, username: 'user_3', isExpert: true, role: 'ADMIN' },
       });
     });
-    setup();
-    const user = userEvent.setup();
+    const { user } = setup();
     await screen.findAllByText(/last updated by/i);
     // Selecting a single task that is available for validation
     await user.click(
@@ -194,14 +197,14 @@ describe('Task Selection Page', () => {
   });
 
   it('should filter the task list by search query', async () => {
-    setup();
+    const { user } = setup();
     await screen.findAllByText(/last updated by/i);
     expect(
       screen.getByRole('button', {
         name: /Task #5 Aadesh Baral/i,
       }),
     ).toBeInTheDocument();
-    await userEvent.type(
+    await user.type(
       screen.getByPlaceholderText(/filter tasks by id or username/i),
       'helnershingthapa',
     );
@@ -213,9 +216,9 @@ describe('Task Selection Page', () => {
   });
 
   it('should navigate to the contributions tab', async () => {
-    setup();
+    const { user } = setup();
     await screen.findAllByText(/last updated by/i);
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /contributions/i,
       }),
@@ -229,23 +232,27 @@ describe('Task Selection Page', () => {
 });
 
 describe('Random Task Selection', () => {
-  const setup = () =>
-    render(
-      <MemoryRouter initialEntries={['/projects/963/tasks']}>
-        <Routes>
-          <Route
-            path="projects/:id/tasks"
-            element={
-              <QueryParamProvider adapter={ReactRouter6Adapter}>
-                <ReduxIntlProviders>
-                  <SelectTask />
-                </ReduxIntlProviders>
-              </QueryParamProvider>
-            }
-          />
-        </Routes>
-      </MemoryRouter>,
-    );
+  const setup = () => {
+    return {
+      user: userEvent.setup(),
+      ...render(
+        <MemoryRouter initialEntries={['/projects/963/tasks']}>
+          <Routes>
+            <Route
+              path="projects/:id/tasks"
+              element={
+                <QueryParamProvider adapter={ReactRouter6Adapter}>
+                  <ReduxIntlProviders>
+                    <SelectTask />
+                  </ReduxIntlProviders>
+                </QueryParamProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>,
+      ),
+    };
+  };
 
   it('should not change the button text to map selected task when user selects a task for mapping', async () => {
     act(() => {
@@ -254,7 +261,7 @@ describe('Random Task Selection', () => {
         userDetails: { id: 69, username: 'user_3', isExpert: true },
       });
     });
-    setup();
+    const { user } = setup();
     await screen.findAllByText(/last updated by/i);
     expect(
       screen.getByRole('button', {
@@ -262,7 +269,7 @@ describe('Random Task Selection', () => {
       }),
     ).toBeInTheDocument();
     // Selecting a task that is available for mapping
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /Task #1 Patrik_B/i,
       }),

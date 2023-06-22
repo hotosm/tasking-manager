@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { IntlProviders, renderWithRouter } from '../../utils/testWithIntl';
 import { FallbackComponent } from '../fallback';
@@ -62,7 +61,7 @@ describe('Fallback component', () => {
   });
 
   it('should trigger navigate on return button click', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <IntlProviders>
         <FallbackComponent />
       </IntlProviders>,
@@ -71,7 +70,7 @@ describe('Fallback component', () => {
     const returnBtn = screen.getByRole('button', {
       name: messages.return.defaultMessage,
     });
-    await userEvent.click(returnBtn);
+    await user.click(returnBtn);
     await waitFor(() => expect(mockedUsedNavigate).toHaveBeenCalledTimes(1));
   });
 });

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { startOfWeek, startOfYear, format } from 'date-fns';
 
 import { createComponentWithReduxAndIntl, IntlProviders } from '../../../utils/testWithIntl';
@@ -36,6 +36,7 @@ describe('tests for selecting date range filters for not custom date ranges', ()
 
 describe('DateRangeFilterSelect', () => {
   it('should set query when an option is selected', async () => {
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <DateRangeFilterSelect
@@ -45,8 +46,8 @@ describe('DateRangeFilterSelect', () => {
         />
       </IntlProviders>,
     );
-    await userEvent.click(screen.getByRole('combobox'));
-    await userEvent.click(screen.getByText(/this week/i));
+    await user.click(screen.getByRole('combobox'));
+    await user.click(screen.getByText(/this week/i));
     expect(screen.getByText('This week')).toBeInTheDocument();
   });
 
@@ -82,6 +83,7 @@ describe('DateRangeFilterSelect', () => {
 
 test('DateFilterPicker', async () => {
   const setQueryForChildMock = jest.fn();
+  const user = userEvent.setup();
   render(
     <IntlProviders>
       <DateFilterPicker
@@ -91,10 +93,8 @@ test('DateFilterPicker', async () => {
       />
     </IntlProviders>,
   );
-  fireEvent.change(screen.getByRole('textbox'), {
-    target: {
-      value: '2022-02-22',
-    },
-  });
+  const textbox = screen.getByRole('textbox');
+  await user.clear(textbox);
+  await user.type(textbox, '2022-02-22');
   expect(setQueryForChildMock).toHaveBeenCalled();
 });

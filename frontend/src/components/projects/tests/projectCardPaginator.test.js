@@ -26,6 +26,7 @@ describe('ProjectCardPaginator Component', () => {
   });
 
   it('should set query on the button click', async () => {
+    const user = userEvent.setup();
     render(
       <ProjectCardPaginator
         setQueryParam={setQueryParamMock}
@@ -42,7 +43,7 @@ describe('ProjectCardPaginator Component', () => {
         }}
       />,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: '2',
       }),

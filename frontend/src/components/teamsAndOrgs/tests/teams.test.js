@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import TestRenderer from 'react-test-renderer';
-import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { FormattedMessage } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
@@ -295,12 +294,11 @@ describe('Teams component', () => {
   });
 
   it('should navigate to project creation page on new button click', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <IntlProviders>
         <Teams isReady teams={dummyTeams} viewAllQuery="/view/all" showAddButton />
       </IntlProviders>,
     );
-    const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: /new/i }));
     await waitFor(() => expect(router.state.location.pathname).toBe('/manage/teams/new/'));
   });
@@ -315,12 +313,11 @@ describe('Teams component', () => {
   });
 
   it('should navigate to manage projects page when view all is clicked ', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <IntlProviders>
         <Teams isReady teams={[]} viewAllQuery="view/all" />
       </IntlProviders>,
     );
-    const user = userEvent.setup();
     await user.click(
       screen.getByRole('link', {
         name: /view all/i,
@@ -385,7 +382,7 @@ describe('Team Card', () => {
 
 describe('TeamSideBar component', () => {
   it('should search for users by search query', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders>
         <TeamSideBar team={team} managers={[]} members={team.members} />
       </ReduxIntlProviders>,
@@ -397,7 +394,7 @@ describe('TeamSideBar component', () => {
         name: team.members[0].username,
       }),
     ).toBeInTheDocument();
-    await userEvent.type(inputField, 'not_sample_user');
+    await user.type(inputField, 'not_sample_user');
     expect(
       screen.queryByRole('link', {
         name: team.members[0].username,

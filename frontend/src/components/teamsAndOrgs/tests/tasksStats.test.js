@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { tasksStats } from '../../../network/tests/mockData/tasksStats';
 import { TasksStats } from '../tasksStats';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('react-chartjs-2', () => ({
   Bar: () => null,
@@ -112,6 +113,7 @@ describe('TasksStats', () => {
   });
 
   it('render "Try again" button case the error is not on the dates', async () => {
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <TasksStats
@@ -130,7 +132,7 @@ describe('TasksStats', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('An error occurred while loading stats.')).toBeInTheDocument();
     expect(screen.getByText('Try again')).toBeInTheDocument();
-    fireEvent.click(screen.getByText('Try again'));
+    await user.click(screen.getByText('Try again'));
     expect(retryFn).toHaveBeenCalled();
   });
 });

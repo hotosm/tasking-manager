@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import messages from '../messages';
 import { UpdateDialog } from '../updateDialog';
@@ -57,7 +56,7 @@ describe('Update Dialog', () => {
   });
 
   it('should update the service worker', async () => {
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <IntlProviders>
         <UpdateDialog />
       </IntlProviders>,
@@ -75,7 +74,7 @@ describe('Update Dialog', () => {
         addEventListener: jest.fn(),
       },
     });
-    await userEvent.click(screen.getByRole('button', { name: /refresh/i }));
+    await user.click(screen.getByRole('button', { name: /refresh/i }));
     expect(postMessageMock).toHaveBeenCalled();
   });
 });

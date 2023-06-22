@@ -10,12 +10,13 @@ import { ORG_PRIVACY_POLICY_URL } from '../../../config';
 describe('Sign Up Form', () => {
   it('should close the sign up popup when close icon is clicked', async () => {
     const closeModalMock = jest.fn();
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <SignUp closeModal={closeModalMock} />
       </IntlProviders>,
     );
-    await userEvent.click(screen.getByLabelText(/close popup/i));
+    await user.click(screen.getByLabelText(/close popup/i));
     expect(closeModalMock).toHaveBeenCalled();
   });
 
@@ -62,12 +63,12 @@ describe('Sign Up Form', () => {
   });
 
   it('should proceed to step two when expected inputs are fulfilled', async () => {
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <SignUp />
       </IntlProviders>,
     );
-    const user = userEvent.setup();
     await user.type(
       screen.getByPlaceholderText(messages.namePlaceHolder.defaultMessage),
       'My Name',
@@ -107,12 +108,12 @@ describe('Sign Up Form', () => {
 
 describe('Proceed OSM form', () => {
   const setup = async () => {
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <SignUp />
       </IntlProviders>,
     );
-    const user = userEvent.setup();
     await user.type(
       screen.getByPlaceholderText(messages.namePlaceHolder.defaultMessage),
       'My Name',
@@ -127,6 +128,7 @@ describe('Proceed OSM form', () => {
       }),
     );
     expect(await screen.findByText('Do you have an OpenStreetMap account?')).toBeInTheDocument();
+    return { user };
   };
 
   it('should render component details', async () => {
@@ -148,8 +150,8 @@ describe('Proceed OSM form', () => {
 
   it('should open OSM login window', async () => {
     global.open = jest.fn();
-    await setup();
-    await userEvent.click(
+    const { user } = await setup();
+    await user.click(
       screen.getByRole('button', {
         name: messages.submitProceedOSM.defaultMessage,
       }),
@@ -160,6 +162,7 @@ describe('Proceed OSM form', () => {
   it('should execute login prop when user already has an account', async () => {
     const setStepMock = jest.fn();
     const loginMock = jest.fn();
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <ProceedOSM
@@ -170,7 +173,7 @@ describe('Proceed OSM form', () => {
         />
       </IntlProviders>,
     );
-    await userEvent.click(screen.getByText(messages.proceedOSMLogin.defaultMessage));
+    await user.click(screen.getByText(messages.proceedOSMLogin.defaultMessage));
     expect(loginMock).toHaveBeenCalled();
   });
 });
@@ -202,12 +205,13 @@ describe('LoginModal component', () => {
   });
 
   it('should execute the login prop', async () => {
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <LoginModal step={{ number: 3 }} login={loginMock} />
       </IntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /log in/i,
       }),

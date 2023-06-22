@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import {
@@ -12,7 +12,7 @@ import { DeleteModal } from '../index';
 
 describe('Delete Interest', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    const { user, history } = renderWithRouter(
       <ReduxIntlProviders>
         <DeleteModal id={interest.id} name={interest.name} type="interests" />
       </ReduxIntlProviders>,
@@ -22,24 +22,25 @@ describe('Delete Interest', () => {
     });
 
     return {
+      user,
       deleteButton,
       history,
     };
   };
 
-  it('should ask for confirmation when user tries to delete an interest', () => {
-    const { deleteButton } = setup();
-    fireEvent.click(deleteButton);
+  it('should ask for confirmation when user tries to delete an interest', async () => {
+    const { user, deleteButton } = setup();
+    await user.click(deleteButton);
     expect(screen.getByText('Are you sure you want to delete this category?')).toBeInTheDocument();
   });
 
-  it('should close the confirmation popup when cancel is clicked', () => {
-    const { deleteButton } = setup();
-    fireEvent.click(deleteButton);
+  it('should close the confirmation popup when cancel is clicked', async () => {
+    const { user, deleteButton } = setup();
+    await user.click(deleteButton);
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    fireEvent.click(cancelButton);
+    await user.click(cancelButton);
     expect(
       screen.queryByRole('heading', {
         name: 'Are you sure you want to delete this category?',
@@ -48,7 +49,7 @@ describe('Delete Interest', () => {
   });
 
   it('should direct to passed type list page on successful deletion of an interest', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <DeleteModal id={interest.id} name={interest.name} type="campaigns" />
       </ReduxIntlProviders>,
@@ -58,12 +59,12 @@ describe('Delete Interest', () => {
       name: 'Delete',
     });
 
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     const dialog = screen.getByRole('dialog');
     const deleteConfirmationButton = within(dialog).getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteConfirmationButton);
+    await user.click(deleteConfirmationButton);
     expect(
       await screen.findByRole('heading', { name: /campaign deleted successfully./i }),
     ).toBeInTheDocument();
@@ -71,7 +72,7 @@ describe('Delete Interest', () => {
   });
 
   it('should direct to categories list page on successful deletion of an interest', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <DeleteModal id={interest.id} name={interest.name} type="interests" />
       </ReduxIntlProviders>,
@@ -81,12 +82,12 @@ describe('Delete Interest', () => {
       name: 'Delete',
     });
 
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     const dialog = screen.getByRole('dialog');
     const deleteConfirmationButton = within(dialog).getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteConfirmationButton);
+    await user.click(deleteConfirmationButton);
     expect(
       await screen.findByRole('heading', { name: /interest deleted successfully./i }),
     ).toBeInTheDocument();

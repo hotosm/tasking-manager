@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { getProjectSummary } from '../../../network/tests/mockData/projects';
 import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/userStats';
@@ -11,24 +10,25 @@ import { TaskMapAction } from '../action';
 import messages from '../messages';
 
 const setup = () => {
-  renderWithRouter(
-    <ReduxIntlProviders>
-      <TaskMapAction
-        project={getProjectSummary(123)}
-        projectIsReady
-        tasks={tasksGeojson}
-        activeTasks={userMultipleLockedTasksDetails.tasks}
-        action="VALIDATION"
-      />
-    </ReduxIntlProviders>,
-  );
+  return {
+    ...renderWithRouter(
+      <ReduxIntlProviders>
+        <TaskMapAction
+          project={getProjectSummary(123)}
+          projectIsReady
+          tasks={tasksGeojson}
+          activeTasks={userMultipleLockedTasksDetails.tasks}
+          action="VALIDATION"
+        />
+      </ReduxIntlProviders>,
+    ),
+  };
 };
 
 describe('Task Map Action', () => {
   it('should display JOSM error', async () => {
     setupFaultyHandlers();
-    setup();
-    const user = userEvent.setup();
+    const { user } = setup();
     await user.click(
       screen.getByRole('button', {
         name: /iD Editor/i,
@@ -42,7 +42,7 @@ describe('Task Map Action', () => {
         }),
       ).toBeInTheDocument(),
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /close/i,
       }),
@@ -55,8 +55,7 @@ describe('Task Map Action', () => {
   });
 
   it('should expand accordition to view task details', async () => {
-    setup();
-    const user = userEvent.setup();
+    const { user } = setup();
     await user.click(
       screen.getByRole('button', {
         name: /history/i,

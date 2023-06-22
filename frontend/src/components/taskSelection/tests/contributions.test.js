@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import selectEvent from 'react-select-event';
 
 import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
@@ -12,7 +12,7 @@ describe('Contributions', () => {
   const selectTask = jest.fn();
 
   it('render users, links and ', async () => {
-    const { container } = renderWithRouter(
+    const { user, container } = renderWithRouter(
       <ReduxIntlProviders>
         <Contributions
           project={{ projectId: 1, osmchaFilterId: 'abc1234' }}
@@ -36,9 +36,9 @@ describe('Contributions', () => {
     expect(screen.getByText('Changesets')).toBeInTheDocument();
     expect(screen.getAllByRole('link')[1].href).toBe('https://osmcha.org/?aoi=abc1234');
     // clicking on the number of tasks trigger selectTask
-    fireEvent.click(screen.getAllByText('5')[0]);
+    await user.click(screen.getAllByText('5')[0]);
     expect(selectTask).toHaveBeenLastCalledWith([1, 3, 5, 7], 'ALL', 'test');
-    fireEvent.click(screen.getAllByText('5')[1]);
+    await user.click(screen.getAllByText('5')[1]);
     expect(selectTask).toHaveBeenLastCalledWith([5, 36, 99, 115, 142], 'MAPPED', 'test_1');
     // filter ADVANCED users
     await selectEvent.select(container.querySelectorAll('input')[0], 'Advanced');
@@ -66,8 +66,8 @@ describe('Contributions', () => {
     expect(screen.queryByText('user_5')).not.toBeInTheDocument();
     expect(screen.queryByText('test_1')).not.toBeInTheDocument();
   });
-  it('clean user selection if we click on the selected tasks of the user', () => {
-    const { container } = renderWithRouter(
+  it('clean user selection if we click on the selected tasks of the user', async () => {
+    const { user, container } = renderWithRouter(
       <ReduxIntlProviders>
         <Contributions
           project={{ projectId: 1, osmchaFilterId: 'abc1234' }}
@@ -80,7 +80,7 @@ describe('Contributions', () => {
       </ReduxIntlProviders>,
     );
     expect(container.querySelector('div.b--blue-dark')).toBeInTheDocument();
-    fireEvent.click(screen.getAllByText('5')[1]);
+    await user.click(screen.getAllByText('5')[1]);
     expect(selectTask).toHaveBeenLastCalledWith([]);
   });
 });

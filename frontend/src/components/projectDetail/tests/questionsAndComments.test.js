@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 
 import { store } from '../../../store';
 
@@ -19,7 +19,8 @@ describe('test if QuestionsAndComments component', () => {
     expect(screen.getByText('Log in to be able to post comments.')).toBeInTheDocument();
   });
 
-  it('renders tabs for writing and previewing comments', () => {
+  it('renders tabs for writing and previewing comments', async () => {
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders store={store}>
         <PostProjectComment projectId={1} />
@@ -30,7 +31,7 @@ describe('test if QuestionsAndComments component', () => {
     expect(screen.getByRole('button', { name: /write/i })).toBeInTheDocument();
     expect(previewBtn).toBeInTheDocument();
     expect(screen.getByRole('textbox')).toBeInTheDocument();
-    fireEvent.click(previewBtn);
+    await user.click(previewBtn);
     expect(screen.queryByRole('textbox', { hidden: true })).toBeInTheDocument();
     expect(screen.getByText(/nothing to preview/i)).toBeInTheDocument();
   });
@@ -39,12 +40,11 @@ describe('test if QuestionsAndComments component', () => {
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: '123456', role: 'ADMIN' });
     });
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders store={store}>
         <QuestionsAndComments project={project} />
       </ReduxIntlProviders>,
     );
-    const user = userEvent.setup();
     await waitFor(() => expect(screen.getByText('hello world')).toBeInTheDocument());
     const textarea = screen.getByRole('textbox');
     const postBtn = screen.getByRole('button', { name: /post/i });
@@ -60,7 +60,7 @@ describe('test if QuestionsAndComments component', () => {
       type: 'SET_USER_DETAILS',
       userDetails: { role: 'ADMIN' },
     });
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <ReduxIntlProviders store={store}>
         <CommentList
           userCanEditProject
@@ -71,7 +71,6 @@ describe('test if QuestionsAndComments component', () => {
       </ReduxIntlProviders>,
     );
 
-    const user = userEvent.setup();
     await waitFor(() => expect(screen.getByText('hello world')).toBeInTheDocument());
     await user.click(screen.getAllByRole('button')[0]);
     await waitFor(() => expect(retryFnMock).toHaveBeenCalledTimes(1));

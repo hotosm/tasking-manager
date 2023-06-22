@@ -1,15 +1,17 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { ActionTabsNav } from '../actionTabsNav';
+import userEvent from '@testing-library/user-event';
 
 describe('ActionTabsNav', () => {
   const setActiveSection = jest.fn();
   const historyTabSwitch = jest.fn();
 
   it('for mapping does not show the Resouces tab', async () => {
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <ActionTabsNav
@@ -35,7 +37,7 @@ describe('ActionTabsNav', () => {
       'bg-red white br-100 f6 ml1 flex items-center justify-center',
     );
     expect(screen.queryByText('Resources')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByText('Instructions'));
+    await user.click(screen.getByText('Instructions'));
     expect(setActiveSection).toHaveBeenLastCalledWith('instructions');
   });
 
@@ -72,6 +74,7 @@ describe('ActionTabsNav', () => {
   });
 
   it('for validation show the Resouces tab', async () => {
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <ActionTabsNav
@@ -91,11 +94,11 @@ describe('ActionTabsNav', () => {
     expect(screen.getByText('Resources').className).toContain(
       'dib mr4-l mr3 pb2 pointer bb b--red bw1',
     );
-    fireEvent.click(screen.getByText('History'));
+    await user.click(screen.getByText('History'));
     expect(historyTabSwitch).toHaveBeenCalled();
-    fireEvent.click(screen.getByText('Completion'));
+    await user.click(screen.getByText('Completion'));
     expect(setActiveSection).toHaveBeenLastCalledWith('completion');
-    fireEvent.click(screen.getByText('Resources'));
+    await user.click(screen.getByText('Resources'));
     expect(setActiveSection).toHaveBeenLastCalledWith('resources');
   });
 });

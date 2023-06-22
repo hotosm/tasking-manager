@@ -1,11 +1,13 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { TasksMapLegend } from '../legend';
+import userEvent from '@testing-library/user-event';
 
-test('Legend collapse / expand when clicking', () => {
+test('Legend collapse / expand when clicking', async () => {
+  const user = userEvent.setup();
   render(
     <ReduxIntlProviders>
       <TasksMapLegend />
@@ -20,8 +22,8 @@ test('Legend collapse / expand when clicking', () => {
   expect(screen.getByText('More mapping needed')).toBeInTheDocument();
   expect(screen.getByText('Finished')).toBeInTheDocument();
   expect(screen.getByText('Locked')).toBeInTheDocument();
-  fireEvent.click(screen.getByText('Legend'));
+  await user.click(screen.getByText('Legend'));
   expect(screen.queryByText('Available for mapping')).not.toBeInTheDocument();
-  fireEvent.click(screen.getByText('Legend'));
+  await user.click(screen.getByText('Legend'));
   expect(screen.getByText('Available for mapping')).toBeInTheDocument();
 });

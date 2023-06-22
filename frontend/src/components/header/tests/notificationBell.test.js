@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { act, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import '../../../utils/mockMatchMedia';
 import { store } from '../../../store';
@@ -31,7 +30,7 @@ describe('Notification Bell', () => {
   });
 
   it('should clear unread notification count when bell icon is clicked', async () => {
-    const { container } = renderWithRouter(
+    const { user, container } = renderWithRouter(
       <ReduxIntlProviders>
         <NotificationBell />
       </ReduxIntlProviders>,
@@ -41,7 +40,7 @@ describe('Notification Bell', () => {
     await waitFor(() => {
       expect(container.getElementsByClassName('redicon')[0]).toBeInTheDocument();
     });
-    await userEvent.click(within(screen.getAllByRole('link')[0]).getByLabelText(/notifications/i));
+    await user.click(within(screen.getAllByRole('link')[0]).getByLabelText(/notifications/i));
     await waitFor(() => {
       expect(container.querySelector('redicon')).not.toBeInTheDocument();
     });
