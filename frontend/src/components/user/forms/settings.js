@@ -61,7 +61,7 @@ function _UserSettingsForm(props) {
       </h3>
       <div className="blue-grey">
         <CustomField labelId="expertMode" descriptionId="expertModeDescription">
-          <SwitchToggleField fieldName="isExpert" removeVerticalPadding />
+          <SwitchToggleField fieldName="isExpert" default={false} removeVerticalPadding />
         </CustomField>
         <CustomField labelId="defaultEditor" descriptionId="defaultEditorDescription" isDropdown>
           <EditorDropdown />
