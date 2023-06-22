@@ -183,8 +183,6 @@ export const MoreFilters = () => {
     };
   });
 
-  console.log(componentHeight);
-
   const currentUrl = `/explore${
     stringify(fullProjectsQuery) ? ['?', stringify(fullProjectsQuery)].join('') : ''
   }`;
@@ -196,7 +194,6 @@ export const MoreFilters = () => {
         style={{ height: `${componentHeight}px` }}
       >
         <div className="scrollable-container h-100 overflow-auto">
-          <MoreFiltersForm currentUrl={currentUrl} />
           <MoreFiltersForm currentUrl={currentUrl} />
         </div>
       </div>
