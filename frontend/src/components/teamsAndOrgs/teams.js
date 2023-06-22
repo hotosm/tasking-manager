@@ -316,11 +316,7 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
       showLoadingAnimation={true}
       type="media"
       rows={20}
-      ready={
-        typeof team.teamId === 'number' &&
-        typeof organisations !== undefined &&
-        typeof pmTeams !== undefined
-      }
+      ready={typeof team.teamId === 'number'}
     >
       <div className="cf pb2">
         <div className="w-20 pv2 dib fl">

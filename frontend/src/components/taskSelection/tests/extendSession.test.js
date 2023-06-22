@@ -10,12 +10,13 @@ import messages from '../messages';
 describe('Session About To Expire Dialog', () => {
   it('should display error when session could not be extended', async () => {
     setupFaultyHandlers();
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <SessionAboutToExpire showSessionExpiringDialog projectId={123} />
       </IntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /extend session/i,
       }),
@@ -27,6 +28,7 @@ describe('Session About To Expire Dialog', () => {
 
   it('should close the modal', async () => {
     const setShowSessionExpiryDialogMock = jest.fn();
+    const user = userEvent.setup();
     const { container } = render(
       <IntlProviders>
         <SessionAboutToExpire
@@ -36,7 +38,7 @@ describe('Session About To Expire Dialog', () => {
         />
       </IntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /close/i,
       }),
@@ -49,12 +51,13 @@ describe('Session About To Expire Dialog', () => {
 describe('Session Expired Dialog', () => {
   it('should display error when task cannot be relocked', async () => {
     setupFaultyHandlers();
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <SessionExpired showSessionExpiredDialog projectId={123} tasksIds={[12, 13]} />
       </IntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /relock tasks/i,
       }),
@@ -66,6 +69,7 @@ describe('Session Expired Dialog', () => {
 
   it('should close the modal', async () => {
     const setShowSessionExpiredDialogMock = jest.fn();
+    const user = userEvent.setup();
     const { container } = render(
       <IntlProviders>
         <SessionAboutToExpire
@@ -75,7 +79,7 @@ describe('Session Expired Dialog', () => {
         />
       </IntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /close/i,
       }),

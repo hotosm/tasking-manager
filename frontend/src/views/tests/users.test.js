@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom';
 import React from 'react';
-import userEvent from '@testing-library/user-event';
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 
 import {
   createComponentWithMemoryRouter,
@@ -40,12 +39,11 @@ describe('List Users', () => {
   });
 
   it('should navigate to user detail page when clicked on the display picture', async () => {
-    const { container, router } = createComponentWithMemoryRouter(
+    const { user, container, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <UsersList />
       </ReduxIntlProviders>,
     );
-    const user = userEvent.setup();
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
@@ -56,19 +54,19 @@ describe('List Users', () => {
 
 describe('Change of role and mapper level', () => {
   const setup = () => {
-    const { container } = renderWithRouter(
+    const { user, container } = renderWithRouter(
       <ReduxIntlProviders>
         <UsersList />
       </ReduxIntlProviders>,
     );
     return {
+      user,
       container,
     };
   };
 
   it('should call endpoint to update role', async () => {
-    const { container } = setup();
-    const user = userEvent.setup();
+    const { user, container } = setup();
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
@@ -83,8 +81,7 @@ describe('Change of role and mapper level', () => {
   });
 
   it('should call endpoint to update level', async () => {
-    const { container } = setup();
-    const user = userEvent.setup();
+    const { user, container } = setup();
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
@@ -101,27 +98,25 @@ describe('Change of role and mapper level', () => {
 
 describe('Search and Filters', () => {
   const setup = () => {
-    const { container } = renderWithRouter(
+    const { user, container } = renderWithRouter(
       <ReduxIntlProviders>
         <UsersList />
       </ReduxIntlProviders>,
     );
     return {
+      user,
       container,
     };
   };
 
   it('should call endpoint to search users', async () => {
-    const { container } = setup();
+    const { user, container } = setup();
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
     const searchInput = screen.getByRole('textbox');
-    fireEvent.change(searchInput, {
-      target: {
-        value: 'search query',
-      },
-    });
+    await user.clear(searchInput);
+    await user.type(searchInput, 'search query');
     expect(searchInput.value).toBe('search query');
     await waitFor(
       async () =>
@@ -131,16 +126,16 @@ describe('Search and Filters', () => {
   });
 
   it('should call endpoint to update level', async () => {
-    const { container } = setup();
+    const { user, container } = setup();
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
-    fireEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /all levels/i,
       }),
     );
-    fireEvent.click(screen.getAllByText(/beginner/i)[0]);
+    await user.click(screen.getAllByText(/beginner/i)[0]);
     await waitFor(
       async () =>
         expect(await screen.findByText(/clear filters/i)).toBeInTheDocument() &&

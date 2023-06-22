@@ -11,31 +11,37 @@ export function UserNotificationsForm(props) {
       labelId: 'mentions',
       descriptionId: 'mentionsDescription',
       fieldName: 'mentionsNotifications',
+      default: true,
     },
     {
       labelId: 'teamUpdates',
       descriptionId: 'teamUpdatesDescription',
       fieldName: 'teamsAnnouncementNotifications',
+      default: false,
     },
     {
       labelId: 'taskUpdates',
       descriptionId: 'taskUpdatesDescription',
       fieldName: 'tasksNotifications',
+      default: true,
     },
     {
       labelId: 'projectUpdates',
       descriptionId: 'projectUpdatesDescription',
       fieldName: 'projectsNotifications',
+      default: true,
     },
     {
       labelId: 'questionsAndComments',
       descriptionId: 'questionsAndCommentsDescription',
       fieldName: 'questionsAndCommentsNotifications',
+      default: false,
     },
     {
       labelId: 'taskComments',
       descriptionId: 'taskCommentsDescription',
       fieldName: 'taskCommentsNotifications',
+      default: false,
     },
   ];
 
@@ -51,7 +57,11 @@ export function UserNotificationsForm(props) {
             labelId={field.labelId}
             descriptionId={field.descriptionId}
           >
-            <SwitchToggleField fieldName={field.fieldName} removeVerticalPadding />
+            <SwitchToggleField
+              fieldName={field.fieldName}
+              default={field.default}
+              removeVerticalPadding
+            />
           </CustomField>
         ))}
       </div>

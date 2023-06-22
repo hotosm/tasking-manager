@@ -2,7 +2,6 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { act, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
 import { Imagery } from '../imagery';
@@ -151,7 +150,7 @@ describe('Footer Lock Tasks', () => {
   it('should display task cannot be locked for mapping message', async () => {
     await clearReduxStore();
     setupFaultyHandlers();
-    createComponentWithMemoryRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
           defaultUserEditor="ID"
@@ -161,7 +160,7 @@ describe('Footer Lock Tasks', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /map a task/i,
       }),
@@ -174,7 +173,7 @@ describe('Footer Lock Tasks', () => {
   it('should display no mapped tasks selected message', async () => {
     await clearReduxStore();
     setupFaultyHandlers();
-    createComponentWithMemoryRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
           defaultUserEditor="ID"
@@ -185,7 +184,7 @@ describe('Footer Lock Tasks', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /validate a task/i,
       }),
@@ -200,7 +199,7 @@ describe('Footer Lock Tasks', () => {
   it('should display task cannot be locked for validation message', async () => {
     await clearReduxStore();
     setupFaultyHandlers();
-    createComponentWithMemoryRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
           defaultUserEditor="ID"
@@ -211,7 +210,7 @@ describe('Footer Lock Tasks', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /validate a task/i,
       }),
@@ -223,7 +222,7 @@ describe('Footer Lock Tasks', () => {
 
   it('should display JOSM error', async () => {
     setupFaultyHandlers();
-    createComponentWithMemoryRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
           defaultUserEditor="JOSM"
@@ -233,7 +232,7 @@ describe('Footer Lock Tasks', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /map a task/i,
       }),
@@ -245,7 +244,7 @@ describe('Footer Lock Tasks', () => {
         }),
       ).toBeInTheDocument(),
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /close/i,
       }),
@@ -258,12 +257,12 @@ describe('Footer Lock Tasks', () => {
   });
 
   it('should navigate to explore page for a complete project', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter project={getProjectSummary(222)} taskAction="selectAnotherProject" />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /select another project/i,
       }),
@@ -272,7 +271,7 @@ describe('Footer Lock Tasks', () => {
   });
 
   it('should navigate to task action page on mapping a task', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
           defaultUserEditor="ID"
@@ -283,7 +282,7 @@ describe('Footer Lock Tasks', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /map a task/i,
       }),
@@ -296,7 +295,7 @@ describe('Footer Lock Tasks', () => {
 
   it('should navigate to task action page on validating a task', async () => {
     await clearReduxStore();
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
           defaultUserEditor="ID"
@@ -307,7 +306,7 @@ describe('Footer Lock Tasks', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /validate a task/i,
       }),
@@ -320,7 +319,7 @@ describe('Footer Lock Tasks', () => {
 
   it('should resume mapping', async () => {
     await clearReduxStore();
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
           defaultUserEditor="ID"
@@ -331,7 +330,7 @@ describe('Footer Lock Tasks', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /resume mapping/i,
       }),
@@ -344,7 +343,7 @@ describe('Footer Lock Tasks', () => {
 
   it('should resume validation', async () => {
     await clearReduxStore();
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
           defaultUserEditor="ID"
@@ -355,7 +354,7 @@ describe('Footer Lock Tasks', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /resume validation/i,
       }),
@@ -368,7 +367,7 @@ describe('Footer Lock Tasks', () => {
 
   it('should fallback editor when user default is not in the list for validation', async () => {
     await clearReduxStore();
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
           defaultUserEditor="someRandomEditor"
@@ -379,7 +378,7 @@ describe('Footer Lock Tasks', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /resume validation/i,
       }),
@@ -392,7 +391,7 @@ describe('Footer Lock Tasks', () => {
 
   it('should fallback editor when user default is not in the list for mapping', async () => {
     await clearReduxStore();
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <TaskSelectionFooter
           defaultUserEditor="someRandomEditor"
@@ -403,7 +402,7 @@ describe('Footer Lock Tasks', () => {
         />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /resume mapping/i,
       }),

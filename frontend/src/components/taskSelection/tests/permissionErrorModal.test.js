@@ -3,7 +3,6 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import {
   createComponentWithIntl,
@@ -143,12 +142,12 @@ describe('UserPermissionErrorContent', () => {
         },
       ],
     };
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <IntlProviders>
         <UserPermissionErrorContent project={project} userLevel="BEGINNER" />
       </IntlProviders>,
     );
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /select another project/i,
       }),

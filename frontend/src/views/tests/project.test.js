@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 import { act, render, screen, waitFor } from '@testing-library/react';
@@ -100,7 +99,7 @@ describe('UserProjectsPage Component', () => {
 });
 
 test('More Filters should close the more filters container when clicked outside the container', async () => {
-  const { router } = createComponentWithMemoryRouter(
+  const { user, router } = createComponentWithMemoryRouter(
     <QueryParamProvider adapter={ReactRouter6Adapter}>
       <ReduxIntlProviders>
         <MoreFilters />
@@ -113,7 +112,7 @@ test('More Filters should close the more filters container when clicked outside 
     }),
   ).toBeInTheDocument();
 
-  await userEvent.click(screen.getAllByRole('button')[2]);
+  await user.click(screen.getAllByRole('button')[2]);
   await waitFor(() => expect(router.state.location.pathname).toBe('/explore'));
 });
 
@@ -144,7 +143,7 @@ describe('ManageProjectsPage', () => {
     act(() => {
       store.dispatch({ type: 'TOGGLE_MAP' });
     });
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ManageProjectsPage />
@@ -152,7 +151,6 @@ describe('ManageProjectsPage', () => {
       </QueryParamProvider>,
     );
 
-    const user = userEvent.setup();
     await user.click(screen.getByRole('checkbox'));
     // Since WebGL is not supported by Node, we'll assume that the map context will be loaded
     expect(screen.getByRole('heading', { name: 'WebGL Context Not Found' })).toBeInTheDocument();

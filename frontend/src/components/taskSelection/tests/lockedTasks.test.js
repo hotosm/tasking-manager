@@ -138,13 +138,14 @@ describe('test LockedTaskModalContent', () => {
 describe('License Modal', () => {
   it('should accept the license', async () => {
     const lockTasksMock = jest.fn();
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <LicenseError id="456" lockTasks={lockTasksMock} />
       </ReduxIntlProviders>,
     );
     await screen.findByText('Sample License');
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /accept/i,
       }),
@@ -154,13 +155,14 @@ describe('License Modal', () => {
 
   it('should decline request to accept the license', async () => {
     const closeMock = jest.fn();
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <LicenseError id="456" close={closeMock} />
       </ReduxIntlProviders>,
     );
     await screen.findByText('Sample License');
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /cancel/i,
       }),
@@ -175,7 +177,7 @@ test('SameProjectLock should display relevant message when user has multiple tas
     tasks: [1811, 1222],
     status: 'LOCKED_FOR_VALIDATION',
   };
-  const { router } = createComponentWithMemoryRouter(
+  const { user, router } = createComponentWithMemoryRouter(
     <IntlProviders>
       <SameProjectLock lockedTasks={lockedTasksSample} action="validate" />
     </IntlProviders>,
@@ -183,7 +185,7 @@ test('SameProjectLock should display relevant message when user has multiple tas
   expect(
     screen.getByText(messages.currentProjectLockTextPlural.defaultMessage),
   ).toBeInTheDocument();
-  await userEvent.click(
+  await user.click(
     screen.getByRole('button', {
       name: 'Validate those tasks',
     }),

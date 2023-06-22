@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
@@ -179,20 +179,13 @@ describe('Imagery', () => {
   });
 
   it('should copy value to the clipboard', async () => {
-    const originalClipboard = { ...global.navigator.clipboard };
-    const mockClipboard = {
-      writeText: jest.fn().mockImplementation(() => Promise.resolve()),
-    };
-    global.navigator.clipboard = mockClipboard;
+    const user = userEvent.setup({ writeToClipboard: true });
     render(
       <IntlProviders>
         <Imagery value={'wms'} />
       </IntlProviders>,
     );
-    await userEvent.click(screen.getByRole('img'));
-    expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('wms');
-    jest.resetAllMocks();
-    global.navigator.clipboard = originalClipboard;
+    await user.click(screen.getByRole('img'));
+    await waitFor(async () => expect(await navigator.clipboard.readText()).toBe('wms'));
   });
 });

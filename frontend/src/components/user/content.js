@@ -57,7 +57,7 @@ export function OSMCard({ username }: Object) {
               showLoadingAnimation={true}
               rows={1}
               delay={100}
-              ready={typeof osmUserInfo !== undefined}
+              ready={typeof osmUserInfo !== 'undefined'}
             >
               <FormattedRelativeTime value={value} unit={unit} />
             </ReactPlaceholder>
@@ -72,7 +72,7 @@ export function OSMCard({ username }: Object) {
               showLoadingAnimation={true}
               rows={1}
               delay={100}
-              ready={typeof osmUserInfo !== undefined}
+              ready={typeof osmUserInfo !== 'undefined'}
             >
               <FormattedNumber value={osmUserInfo ? osmUserInfo.changesetCount : 0} />
             </ReactPlaceholder>

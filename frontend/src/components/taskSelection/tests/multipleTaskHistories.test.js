@@ -1,9 +1,10 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { MultipleTaskHistoriesAccordion } from '../multipleTaskHistories';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import userEvent from '@testing-library/user-event';
 
 describe('MultipleTaskHistories Accordion', () => {
   it('does not render accordion with task history items if there are no tasks', () => {
@@ -18,7 +19,7 @@ describe('MultipleTaskHistories Accordion', () => {
     expect(screen.queryByText(/Activities/i)).not.toBeInTheDocument();
   });
 
-  it('renders accordion correctly with task history items for 2 tasks', () => {
+  it('renders accordion correctly with task history items for 2 tasks', async () => {
     const tasks = [
       {
         taskId: 1,
@@ -51,6 +52,7 @@ describe('MultipleTaskHistories Accordion', () => {
         ],
       },
     ];
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <MultipleTaskHistoriesAccordion tasks={tasks} projectId={1} />
@@ -61,9 +63,9 @@ describe('MultipleTaskHistories Accordion', () => {
     expect(screen.getByText(/Task 2/i)).toBeInTheDocument();
 
     const taskAccordionItems = screen.getAllByRole('button');
-    taskAccordionItems.forEach((taskBtn) => {
-      fireEvent.click(taskBtn);
-    });
+    for (const taskBtn of taskAccordionItems) {
+      await user.click(taskBtn);
+    }
 
     expect(screen.getAllByText(/Comments/i)).toHaveLength(2);
     expect(screen.getAllByText(/Activities/i)).toHaveLength(2);

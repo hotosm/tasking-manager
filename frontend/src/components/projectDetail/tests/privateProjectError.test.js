@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import PrivateProjectError from '../privateProjectError';
 import {
@@ -31,13 +30,13 @@ describe('PrivateProjectError component', () => {
   });
 
   it('should navigate to explore projects page', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <IntlProviders>
         <PrivateProjectError />
       </IntlProviders>,
     );
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: /explore other projects/i,
       }),

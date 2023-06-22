@@ -18,7 +18,7 @@ export default function RapidEditor({
   const RapiDContext = useSelector((state) => state.editor.rapidContext);
   const locale = useSelector((state) => state.preferences.locale);
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
-  const windowInit = typeof window !== undefined;
+  const windowInit = typeof window !== 'undefined';
   const customSource =
     RapiDContext && RapiDContext.background() && RapiDContext.background().findSource('custom');
 

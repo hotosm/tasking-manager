@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { userTasks } from '../../../network/tests/mockData/tasksStats';
@@ -19,7 +18,7 @@ describe('Task Results Component', () => {
 
   it('should prompt user to retry on failure to fetch tasks', async () => {
     const retryFnMock = jest.fn();
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <IntlProviders>
         <TaskResults state={{ isError: true, isLoading: false, tasks: [] }} retryFn={retryFnMock} />
       </IntlProviders>,
@@ -29,7 +28,7 @@ describe('Task Results Component', () => {
       name: messages.retry.defaultMessage,
     });
     expect(retryBtn).toBeInTheDocument();
-    await userEvent.click(retryBtn);
+    await user.click(retryBtn);
     expect(retryFnMock).toHaveBeenCalled();
   });
 
