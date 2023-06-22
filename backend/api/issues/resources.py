@@ -45,13 +45,6 @@ class IssuesRestAPI(Resource):
                 "Error": ISSUE_NOT_FOUND,
                 "SubCode": "NotFound",
             }, 404
-        except Exception as e:
-            error_msg = f"Mapping-issue category GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch mapping issue category",
-                "SubCode": "InternalServerError",
-            }, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -119,13 +112,6 @@ class IssuesRestAPI(Resource):
                 "Error": ISSUE_NOT_FOUND,
                 "SubCode": "NotFound",
             }, 404
-        except Exception as e:
-            error_msg = f"Mapping-issue category PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to update mapping issue category",
-                "SubCode": "InternalServerError",
-            }, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -171,13 +157,6 @@ class IssuesRestAPI(Resource):
                 "Error": ISSUE_NOT_FOUND,
                 "SubCode": "NotFound",
             }, 404
-        except Exception as e:
-            error_msg = f"Mapping-issue category DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to delete mapping issue category",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class IssuesAllAPI(Resource):
@@ -201,19 +180,11 @@ class IssuesAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            include_archived = request.args.get("includeArchived") == "true"
-            categories = MappingIssueCategoryService.get_all_mapping_issue_categories(
-                include_archived
-            )
-            return categories.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch mapping issue categories",
-                "SubCode": "InternalServerError",
-            }, 500
+        include_archived = request.args.get("includeArchived") == "true"
+        categories = MappingIssueCategoryService.get_all_mapping_issue_categories(
+            include_archived
+        )
+        return categories.to_primitive(), 200
 
     @tm.pm_only()
     @token_auth.login_required
@@ -263,15 +234,7 @@ class IssuesAllAPI(Resource):
                 "SubCode": "InvalidData",
             }, 400
 
-        try:
-            new_category_id = MappingIssueCategoryService.create_mapping_issue_category(
-                category_dto
-            )
-            return {"categoryId": new_category_id}, 200
-        except Exception as e:
-            error_msg = f"Mapping-issue category POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to create a new mapping issue category",
-                "SubCode": "InternalServerError",
-            }, 500
+        new_category_id = MappingIssueCategoryService.create_mapping_issue_category(
+            category_dto
+        )
+        return {"categoryId": new_category_id}, 200

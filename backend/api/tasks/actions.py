@@ -101,13 +101,6 @@ class TasksActionsMappingLockAPI(Resource):
                 "Error": "User not accepted license terms",
                 "SubCode": "UserLicenseError",
             }, 409
-        except Exception as e:
-            error_msg = f"Task Lock API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to lock task",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class TasksActionsMappingStopAPI(Resource):
@@ -190,13 +183,6 @@ class TasksActionsMappingStopAPI(Resource):
             return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"Task Lock API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Task unlock failed",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class TasksActionsMappingUnlockAPI(Resource):
@@ -344,13 +330,6 @@ class TasksActionsMappingUndoAPI(Resource):
             return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"Task GET API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to lock task",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class TasksActionsValidationLockAPI(Resource):
@@ -432,13 +411,6 @@ class TasksActionsValidationLockAPI(Resource):
                 "Error": "User not accepted license terms",
                 "SubCode": "UserLicenseError",
             }, 409
-        except Exception as e:
-            error_msg = f"Validator Lock API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to lock task",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class TasksActionsValidationStopAPI(Resource):
@@ -513,13 +485,6 @@ class TasksActionsValidationStopAPI(Resource):
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
             return {"Error": "Task unlock failed", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Stop Validating API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Task unlock failed",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class TasksActionsValidationUnlockAPI(Resource):
@@ -593,13 +558,6 @@ class TasksActionsValidationUnlockAPI(Resource):
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
             return {"Error": "Task unlock failed", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Validator Lock API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Task unlock failed",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class TasksActionsMapAllAPI(Resource):
@@ -647,16 +605,8 @@ class TasksActionsMapAllAPI(Resource):
                 "SubCode": "UserPermissionError",
             }, 403
 
-        try:
-            MappingService.map_all_tasks(project_id, authenticated_user_id)
-            return {"Success": "All tasks mapped"}, 200
-        except Exception as e:
-            error_msg = f"TasksActionsMapAllAPI POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to map all the tasks",
-                "SubCode": "InternalServerError",
-            }, 500
+        MappingService.map_all_tasks(project_id, authenticated_user_id)
+        return {"Success": "All tasks mapped"}, 200
 
 
 class TasksActionsValidateAllAPI(Resource):
@@ -704,16 +654,8 @@ class TasksActionsValidateAllAPI(Resource):
                 "SubCode": "UserPermissionError",
             }, 403
 
-        try:
-            ValidatorService.validate_all_tasks(project_id, authenticated_user_id)
-            return {"Success": "All tasks validated"}, 200
-        except Exception as e:
-            error_msg = f"TasksActionsValidateAllAPI POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to validate all tasks",
-                "SubCode": "InternalServerError",
-            }, 500
+        ValidatorService.validate_all_tasks(project_id, authenticated_user_id)
+        return {"Success": "All tasks validated"}, 200
 
 
 class TasksActionsInvalidateAllAPI(Resource):
@@ -761,16 +703,8 @@ class TasksActionsInvalidateAllAPI(Resource):
                 "SubCode": "UserPermissionError",
             }, 403
 
-        try:
-            ValidatorService.invalidate_all_tasks(project_id, authenticated_user_id)
-            return {"Success": "All tasks invalidated"}, 200
-        except Exception as e:
-            error_msg = f"TasksActionsInvalidateAllAPI POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to invalidate all tasks",
-                "SubCode": "InternalServerError",
-            }, 500
+        ValidatorService.invalidate_all_tasks(project_id, authenticated_user_id)
+        return {"Success": "All tasks invalidated"}, 200
 
 
 class TasksActionsResetBadImageryAllAPI(Resource):
@@ -818,18 +752,8 @@ class TasksActionsResetBadImageryAllAPI(Resource):
                 "SubCode": "UserPermissionError",
             }, 403
 
-        try:
-            MappingService.reset_all_badimagery(project_id, authenticated_user_id)
-            return {"Success": "All bad imagery tasks marked ready for mapping"}, 200
-        except Exception as e:
-            error_msg = (
-                f"TasksActionsResetBadImageryAllAPI POST - unhandled error: {str(e)}"
-            )
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to reset tasks",
-                "SubCode": "InternalServerError",
-            }, 500
+        MappingService.reset_all_badimagery(project_id, authenticated_user_id)
+        return {"Success": "All bad imagery tasks marked ready for mapping"}, 200
 
 
 class TasksActionsResetAllAPI(Resource):
@@ -878,16 +802,8 @@ class TasksActionsResetAllAPI(Resource):
                 "SubCode": "UserPermissionError",
             }, 403
 
-        try:
-            ProjectAdminService.reset_all_tasks(project_id, authenticated_user_id)
-            return {"Success": "All tasks reset"}, 200
-        except Exception as e:
-            error_msg = f"TasksActionsResetAllAPI POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to reset tasks",
-                "SubCode": "InternalServerError",
-            }, 500
+        ProjectAdminService.reset_all_tasks(project_id, authenticated_user_id)
+        return {"Success": "All tasks reset"}, 200
 
 
 class TasksActionsSplitAPI(Resource):
@@ -960,13 +876,6 @@ class TasksActionsSplitAPI(Resource):
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except InvalidGeoJson as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"TasksActionsSplitAPI POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to split task",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class TasksActionsExtendAPI(Resource):
@@ -1043,13 +952,6 @@ class TasksActionsExtendAPI(Resource):
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
             return {"Error": "Task not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Validator Lock API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to lock task",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class TasksActionsReverUserTaskstAPI(Resource):
@@ -1129,10 +1031,3 @@ class TasksActionsReverUserTaskstAPI(Resource):
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
             return {"Error": "Task not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"RevertUserTasksAPI - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to revert tasks",
-                "SubCode": "InternalServerError",
-            }, 500

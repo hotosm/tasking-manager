@@ -80,10 +80,6 @@ class ProjectsCampaignsAPI(Resource):
                 "Error": "Campaign or Project not found",
                 "SubCode": "NotFound",
             }, 404
-        except Exception as e:
-            error_msg = f"ProjectsCampaignsAPI POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     def get(self, project_id):
         """
@@ -115,10 +111,6 @@ class ProjectsCampaignsAPI(Resource):
             return campaigns.to_primitive(), 200
         except NotFound:
             return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Messages GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def delete(self, project_id, campaign_id):
@@ -174,7 +166,3 @@ class ProjectsCampaignsAPI(Resource):
             return {"Success": "Campaigns Deleted"}, 200
         except NotFound:
             return {"Error": "Campaign Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"ProjectsCampaignsAPI DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

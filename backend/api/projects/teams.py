@@ -38,13 +38,8 @@ class ProjectsTeamsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            teams_dto = TeamService.get_project_teams_as_dto(project_id)
-            return teams_dto.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Team GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        teams_dto = TeamService.get_project_teams_as_dto(project_id)
+        return teams_dto.to_primitive(), 200
 
     @token_auth.login_required
     def post(self, team_id, project_id):
@@ -124,10 +119,6 @@ class ProjectsTeamsAPI(Resource):
                 "Error": "User is not a manager of the project",
                 "SubCode": "UserPermissionError",
             }, 403
-        except Exception as e:
-            error_msg = f"Project Team POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def patch(self, team_id, project_id):
@@ -198,10 +189,6 @@ class ProjectsTeamsAPI(Resource):
             }, 403
         except TeamServiceError as e:
             return str(e), 402
-        except Exception as e:
-            error_msg = f"Team-Project PATCH - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def delete(self, team_id, project_id):
@@ -251,7 +238,3 @@ class ProjectsTeamsAPI(Resource):
             }, 403
         except NotFound:
             return {"Error": "No team found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"TeamMembers DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

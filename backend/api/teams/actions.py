@@ -56,8 +56,6 @@ class TeamsActionsJoinAPI(Resource):
             return {"Error": str(e), "SubCode": "InvalidRequest"}, 400
         except NotFound:
             return {"Error": TEAM_NOT_FOUND, "SubCode": "NotFound"}, 404
-        except Exception as e:
-            return {"Error": str(e), "SubCode": "InternalServerError"}, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -149,13 +147,6 @@ class TeamsActionsJoinAPI(Resource):
                 return {"Success": "True"}, 200
         except NotFound:
             return {"Error": TEAM_NOT_FOUND, "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Team Join PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": error_msg,
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class TeamsActionsAddAPI(Resource):
@@ -220,10 +211,6 @@ class TeamsActionsAddAPI(Resource):
             return {"Success": "User added to the team"}, 200
         except TeamJoinNotAllowed as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"User POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class TeamsActionsLeaveAPI(Resource):
@@ -292,13 +279,6 @@ class TeamsActionsLeaveAPI(Resource):
                 )
         except NotFound:
             return {"Error": "No team member found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"TeamMembers DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": error_msg,
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class TeamsActionsMessageMembersAPI(Resource):
@@ -392,10 +372,3 @@ class TeamsActionsMessageMembersAPI(Resource):
             return {"Success": "Message sent successfully"}, 200
         except ValueError as e:
             return {"Error": str(e)}, 403
-        except Exception as e:
-            error_msg = f"Send message all - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to send messages to team members",
-                "SubCode": "InternalServerError",
-            }, 500

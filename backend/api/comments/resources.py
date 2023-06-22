@@ -75,13 +75,6 @@ class CommentsProjectsAllAPI(Resource):
             return project_messages.to_primitive(), 201
         except ValueError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"Chat POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to add chat message",
-                "SubCode": "InternalServerError",
-            }, 500
 
     def get(self, project_id):
         """
@@ -129,13 +122,6 @@ class CommentsProjectsAllAPI(Resource):
             return project_messages.to_primitive(), 200
         except NotFound:
             return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Chat GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch chat messages",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class CommentsProjectsRestAPI(Resource):
@@ -187,13 +173,6 @@ class CommentsProjectsRestAPI(Resource):
             return {"Error": "Comment not found", "SubCode": "NotFound"}, 404
         except ValueError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"Chat DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to delete chat message",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class CommentsTasksRestAPI(Resource):
@@ -273,13 +252,6 @@ class CommentsTasksRestAPI(Resource):
             return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError:
             return {"Error": "Task update failed"}, 403
-        except Exception as e:
-            error_msg = f"Task Comment API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Task update failed",
-                "SubCode": "InternalServerError",
-            }, 500
 
     def get(self, project_id, task_id):
         """
@@ -352,7 +324,3 @@ class CommentsTasksRestAPI(Resource):
             return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
-        except Exception as e:
-            error_msg = f"Task Comment API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

@@ -1,4 +1,4 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource
 
 from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService, NotFound
@@ -42,10 +42,3 @@ class LicensesActionsAcceptAPI(Resource):
             return {"Success": "Terms Accepted"}, 200
         except NotFound:
             return {"Error": "User or License not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"License Accept - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to accept license terms",
-                "SubCode": "InternalServerError",
-            }, 500
