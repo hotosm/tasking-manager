@@ -11,7 +11,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
   const iDContext = useSelector((state) => state.editor.context);
   const locale = useSelector((state) => state.preferences.locale);
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
-  const windowInit = typeof window !== undefined;
+  const windowInit = typeof window !== 'undefined';
   const customSource =
     iDContext && iDContext.background() && iDContext.background().findSource('custom');
 
