@@ -60,16 +60,8 @@ class LicensesRestAPI(Resource):
                 "SubCode": "InvalidData",
             }, 400
 
-        try:
-            new_license_id = LicenseService.create_licence(license_dto)
-            return {"licenseId": new_license_id}, 201
-        except Exception as e:
-            error_msg = f"License PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to create new mapping license",
-                "SubCode": "InternalServerError",
-            }, 500
+        new_license_id = LicenseService.create_licence(license_dto)
+        return {"licenseId": new_license_id}, 201
 
     def get(self, license_id):
         """
@@ -99,13 +91,6 @@ class LicensesRestAPI(Resource):
             return license_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"License PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch license",
-                "SubCode": "InternalServerError",
-            }, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -168,13 +153,6 @@ class LicensesRestAPI(Resource):
             return updated_license.to_primitive(), 200
         except NotFound:
             return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"License POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to update license",
-                "SubCode": "InternalServerError",
-            }, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -214,13 +192,6 @@ class LicensesRestAPI(Resource):
             return {"Success": "License deleted"}, 200
         except NotFound:
             return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"License DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to delete license",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class LicensesAllAPI(Resource):
@@ -245,10 +216,3 @@ class LicensesAllAPI(Resource):
             return licenses_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"License PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch all licenses",
-                "SubCode": "InternalServerError",
-            }, 500

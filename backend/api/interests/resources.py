@@ -78,10 +78,6 @@ class InterestsAllAPI(Resource):
                 },
                 400,
             )
-        except Exception as e:
-            error_msg = f"Interest POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     def get(self):
         """
@@ -97,13 +93,8 @@ class InterestsAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            interests = InterestService.get_all_interests()
-            return interests.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Interest GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        interests = InterestService.get_all_interests()
+        return interests.to_primitive(), 200
 
 
 class InterestsRestAPI(Resource):
@@ -158,10 +149,6 @@ class InterestsRestAPI(Resource):
             return interest.to_primitive(), 200
         except NotFound:
             return {"Error": INTEREST_NOT_FOUND, "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Interest GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def patch(self, interest_id):
@@ -230,10 +217,6 @@ class InterestsRestAPI(Resource):
             return update_interest.to_primitive(), 200
         except NotFound:
             return {"Error": INTEREST_NOT_FOUND, "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Interest PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def delete(self, interest_id):
@@ -284,7 +267,3 @@ class InterestsRestAPI(Resource):
             return {"Success": "Interest deleted"}, 200
         except NotFound:
             return {"Error": INTEREST_NOT_FOUND, "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Interests DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

@@ -217,13 +217,6 @@ class ProjectsRestAPI(Resource):
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except (InvalidGeoJson, InvalidData) as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-        except Exception as e:
-            error_msg = f"Project PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to create project",
-                "SubCode": "InternalServerError",
-            }, 500
 
     @token_auth.login_required
     def head(self, project_id):
@@ -274,13 +267,6 @@ class ProjectsRestAPI(Resource):
             return project_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"ProjectsRestAPI HEAD - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project",
-                "SubCode": "InternalServerError",
-            }, 500
 
     @token_auth.login_required
     def patch(self, project_id):
@@ -433,13 +419,6 @@ class ProjectsRestAPI(Resource):
             return {"Error": str(e) or "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectAdminServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"ProjectsRestAPI PATCH - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to update project",
-                "SubCode": "InternalServerError",
-            }, 500
 
     @token_auth.login_required
     def delete(self, project_id):
@@ -494,13 +473,6 @@ class ProjectsRestAPI(Resource):
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"ProjectsRestAPI DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to delete project",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectSearchBase(Resource):
@@ -723,13 +695,6 @@ class ProjectsAllAPI(ProjectSearchBase):
         except (KeyError, ValueError) as e:
             error_msg = f"Projects GET - {str(e)}"
             return {"Error": error_msg}, 400
-        except Exception as e:
-            error_msg = f"Projects GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch projects",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsQueriesBboxAPI(Resource):
@@ -818,13 +783,6 @@ class ProjectsQueriesBboxAPI(Resource):
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except ProjectSearchServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-        except Exception as e:
-            error_msg = f"ProjectsQueriesBboxAPI GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch projects",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsQueriesOwnerAPI(ProjectSearchBase):
@@ -871,18 +829,14 @@ class ProjectsQueriesOwnerAPI(ProjectSearchBase):
                 "Error": "User is not a manager of the project",
                 "SubCode": "UserPermissionError",
             }, 403
-        try:
-            search_dto = self.setup_search_dto()
-            admin_projects = ProjectAdminService.get_projects_for_admin(
-                authenticated_user_id,
-                request.environ.get("HTTP_ACCEPT_LANGUAGE"),
-                search_dto,
-            )
-            return admin_projects.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+
+        search_dto = self.setup_search_dto()
+        admin_projects = ProjectAdminService.get_projects_for_admin(
+            authenticated_user_id,
+            request.environ.get("HTTP_ACCEPT_LANGUAGE"),
+            search_dto,
+        )
+        return admin_projects.to_primitive(), 200
 
 
 class ProjectsQueriesTouchedAPI(Resource):
@@ -925,13 +879,6 @@ class ProjectsQueriesTouchedAPI(Resource):
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch projects",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsQueriesSummaryAPI(Resource):
@@ -970,13 +917,6 @@ class ProjectsQueriesSummaryAPI(Resource):
             return summary.to_primitive(), 200
         except NotFound:
             return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Project Summary GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project summary",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsQueriesNoGeometriesAPI(Resource):
@@ -1101,13 +1041,9 @@ class ProjectsQueriesNoTasksAPI(Resource):
                 }, 403
         except NotFound:
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        try:
-            project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
-            return project_dto.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+
+        project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
+        return project_dto.to_primitive(), 200
 
 
 class ProjectsQueriesAoiAPI(Resource):
@@ -1161,13 +1097,6 @@ class ProjectsQueriesAoiAPI(Resource):
             return project_aoi, 200
         except NotFound:
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsQueriesPriorityAreasAPI(Resource):
@@ -1203,13 +1132,6 @@ class ProjectsQueriesPriorityAreasAPI(Resource):
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError:
             return {"Error": "Unable to fetch project"}, 403
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsQueriesFeaturedAPI(Resource):
@@ -1234,14 +1156,9 @@ class ProjectsQueriesFeaturedAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            projects_dto = ProjectService.get_featured_projects(preferred_locale)
-            return projects_dto.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"FeaturedProjects GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+        projects_dto = ProjectService.get_featured_projects(preferred_locale)
+        return projects_dto.to_primitive(), 200
 
 
 class ProjectQueriesSimilarProjectsAPI(Resource):
@@ -1295,7 +1212,3 @@ class ProjectQueriesSimilarProjectsAPI(Resource):
                 "Error": "Project Not Found or Project is not published",
                 "SubCode": "NotFound",
             }, 404
-        except Exception as e:
-            error_msg = f"SimilarProjects GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

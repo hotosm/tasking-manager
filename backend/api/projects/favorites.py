@@ -1,4 +1,4 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource
 
 from backend.models.postgis.utils import NotFound
 from backend.models.dtos.project_dto import ProjectFavoriteDTO
@@ -47,10 +47,6 @@ class ProjectsFavoritesAPI(Resource):
             return {"favorited": False}, 200
         except NotFound:
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Favorite GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def post(self, project_id: int):
@@ -91,10 +87,6 @@ class ProjectsFavoritesAPI(Resource):
             ProjectService.favorite(project_id, authenticated_user_id)
         except NotFound:
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Favorite PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
         return {"project_id": project_id}, 200
 
@@ -135,9 +127,5 @@ class ProjectsFavoritesAPI(Resource):
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-        except Exception as e:
-            error_msg = f"Favorite PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
         return {"project_id": project_id}, 200
