@@ -2,6 +2,7 @@
 *.yml
 **/*.pyc
 **/__pypackages__
+**/__pycache__
 **/node_modules
 **/npm-debug.log
 **/venv
