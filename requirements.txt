@@ -47,7 +47,7 @@ black==23.3.0
 coverage==7.2.6
 flake8==6.0.0
 psycopg2-binary>=2.9.6
-pytest==7.3.2
+pytest==7.4.0
 # Indirect, but required dependencies (often required for efficient deployments)
 gevent==22.10.2
 greenlet==2.0.2
