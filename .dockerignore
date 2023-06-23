@@ -6,7 +6,18 @@
 **/node_modules
 **/npm-debug.log
 **/venv
+**/.venv
 docs-old/
 docs/
-frontend/
 logs/
+
+# Generated frontend #
+frontend/node_modules/
+frontend/build/
+frontend/public/static/
+frontend/assets/styles/
+frontend/package-lock.json
+frontend/.env
+frontend/.eslintcache
+frontend/coverage/
+

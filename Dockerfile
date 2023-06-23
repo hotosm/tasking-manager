@@ -35,14 +35,14 @@ RUN pip install --no-cache-dir --upgrade pip
 WORKDIR /opt/python
 # Setup backend build-time dependencies
 RUN apt-get update
-RUN apt-get install -y build-essential
-RUN apt-get install -y \
+RUN apt-get install --no-install-recommends -y build-essential
+RUN apt-get install --no-install-recommends -y \
         postgresql-server-dev-15 \
         python3-dev \
         libffi-dev \
         libgeos-dev
 # Setup backend Python dependencies
-COPY --chown=appuser:appuser --from=extract-deps \
+COPY --from=extract-deps \
     /opt/python/requirements.txt /opt/python/
 USER appuser:appuser
 RUN pip install --user --no-warn-script-location \
@@ -65,7 +65,7 @@ RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         postgresql-client libgeos3.11.1 proj-bin && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
-COPY --chown=appuser:appuser --from=build \
+COPY --from=build \
     /home/appuser/.local \
     /home/appuser/.local
 USER appuser:appuser
@@ -80,6 +80,7 @@ COPY manage.py .
 FROM runtime as debug
 RUN pip install --user --no-warn-script-location \
     --no-cache-dir debugpy==1.6.7
+EXPOSE 5678/tcp
 CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678", \
     "-m", "gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
     "--reload", "--log-level", "error"]
@@ -87,10 +88,17 @@ CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678",
 
 
 FROM runtime as prod
-# Pre-compile packages to .pyc (init speed gains)
 USER root
+# Get the necessary bits for the health check
+RUN apt-get update && \
+	apt-get install -y curl && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/*
+# Pre-compile packages to .pyc (init speed gains)
 RUN python -c "import compileall; compileall.compile_path(maxlevels=10, quiet=1)"
-USER appuser:appuser
 RUN python -m compileall .
+EXPOSE 8000/tcp
+HEALTHCHECK --interval=60s --start-period=15s CMD ["curl", "-f", "http://localhost:8000/api/v2/system/heartbeat/", "||", "exit", "1"]
+USER appuser:appuser
 CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
     "--workers", "1", "--log-level", "error"]
