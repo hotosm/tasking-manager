@@ -24,7 +24,7 @@ class TestGetTasksQueriesJsonAPI(BaseTestCase):
     def test_returns_404_if_project_does_not_exist(self):
         """Test that a 404 is returned if the project does not exist."""
         # Act
-        response = self.client.get("/api/projects/999/tasks")
+        response = self.client.get("/api/v2/projects/11111/tasks/")
         # Assert
         self.assertEqual(response.status_code, 404)
 
@@ -168,14 +168,16 @@ class TestTaskRestAPI(BaseTestCase):
     def test_returrns_404_if_project_does_not_exist(self):
         """Test that a 404 is returned if the project does not exist."""
         # Act
-        response = self.client.get("/api/projects/999/tasks/1")
+        response = self.client.get("/api/v2/projects/11111/tasks/1/")
         # Assert
         self.assertEqual(response.status_code, 404)
 
     def test_returns_404_if_task_does_not_exist(self):
         """Test that a 404 is returned if the task does not exist."""
         # Act
-        response = self.client.get(f"/api/projects/{self.test_project.id}/tasks/999")
+        response = self.client.get(
+            f"/api/v2/projects/{self.test_project.id}/tasks/999/"
+        )
         # Assert
         self.assertEqual(response.status_code, 404)
 
@@ -226,7 +228,7 @@ class TestTasksQueriesGpxAPI(BaseTestCase):
     def test_returns_404_if_project_does_not_exist(self):
         """Test that a 404 is returned if the project does not exist."""
         # Act
-        response = self.client.get("/api/projects/999/tasks/queries/gpx")
+        response = self.client.get("/api/v2/projects/11111/tasks/queries/gpx/")
         # Assert
         self.assertEqual(response.status_code, 404)
 
@@ -293,7 +295,7 @@ class TestTasksQueriesXmlAPI(BaseTestCase):
     def test_returns_404_if_project_does_not_exist(self):
         """Test that a 404 is returned if the project does not exist."""
         # Act
-        response = self.client.get("/api/projects/999/tasks/queries/xml")
+        response = self.client.get("/api/v2/projects/11111/tasks/queries/xml/")
         # Assert
         self.assertEqual(response.status_code, 404)
 
@@ -382,7 +384,7 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         """Test that a 404 is returned if the user does not exist."""
         # Act
         response = self.client.get(
-            "/api/projects/hello/tasks/queries/own/invalidated/",
+            "/api/v2/projects/non_existent/tasks/queries/own/invalidated/",
             headers={"Authorization": self.test_user_access_token},
         )
         # Assert

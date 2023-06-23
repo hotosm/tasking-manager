@@ -1986,7 +1986,7 @@ class TestProjectsQueriesTouchedAPI(BaseTestCase):
         Test 404 is returned if project doesn't exist
         """
         # Act
-        response = self.client.get("/api/v2/projects/test_user_123/queries/touched/")
+        response = self.client.get("/api/v2/projects/queries/non_existent/touched/")
         self.assertEqual(response.status_code, 404)
 
 

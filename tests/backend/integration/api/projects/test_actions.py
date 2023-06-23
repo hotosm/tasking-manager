@@ -297,7 +297,7 @@ class TestProjectsActionsTransferAPI(BaseTestCase):
         """Test that the endpoint returns 404 if the project does not exist"""
         # Act
         response = self.client.post(
-            "/api/v2/projects/999/transfer",
+            "/api/v2/projects/1111111/actions/transfer-ownership/",
             headers={"Authorization": self.test_user_access_token},
             json={"username": "test_user"},
         )
