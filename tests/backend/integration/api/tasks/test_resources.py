@@ -95,8 +95,16 @@ class TestDeleteTasksJsonAPI(BaseTestCase):
 
     def test_returns_404_if_project_does_not_exist(self):
         """Test that a 404 is returned if the project does not exist."""
+        # Arrange
+        self.test_user.role = UserRole.ADMIN.value  # Since only admins can delete tasks
+        self.test_user.save()
+        body = {"tasks": [1, 2]}
         # Act
-        response = self.client.delete("/api/projects/999/tasks")
+        response = self.client.delete(
+            "/api/v2/projects/11111/tasks/",
+            headers={"Authorization": self.test_user_access_token},
+            json=body,
+        )
         # Assert
         self.assertEqual(response.status_code, 404)
 
