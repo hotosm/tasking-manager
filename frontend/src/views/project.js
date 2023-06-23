@@ -181,7 +181,7 @@ export const MoreFilters = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  });
+  }, []);
 
   const currentUrl = `/explore${
     stringify(fullProjectsQuery) ? ['?', stringify(fullProjectsQuery)].join('') : ''
