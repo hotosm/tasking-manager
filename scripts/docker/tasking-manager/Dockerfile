@@ -1,5 +1,5 @@
 ARG PYTHON_IMG_TAG=3.10
-FROM python:${PYTHON_IMG_TAG}-bullseye
+FROM python:${PYTHON_IMG_TAG}-bookworm
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -10,7 +10,7 @@ ENV PATH="/usr/src/app/__pypackages__/${PYTHON_IMG_TAG}/bin:$PATH" \
 # INSTALLATION
 
 # Add repository for node
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 
 # Install dependencies
 RUN apt-get update \
