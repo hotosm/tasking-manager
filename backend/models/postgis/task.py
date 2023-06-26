@@ -1132,7 +1132,10 @@ class Task(db.Model):
 
         try:
             instructions = instructions.format(**properties)
-        except KeyError:
+        except (KeyError, ValueError, IndexError):
+            # KeyError is raised if a format string contains a key that is not in the dictionary, e.g. {foo}
+            # ValueError is raised if a format string contains a single { or }
+            # IndexError is raised if a format string contains empty braces, e.g. {}
             pass
         return instructions
 
