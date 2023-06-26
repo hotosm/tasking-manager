@@ -158,7 +158,7 @@ export function TeamCard({ team }: Object) {
   );
 }
 
-export function TeamInformation(props) {
+export function TeamInformation({ disableJoinMethodField }) {
   const intl = useIntl();
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
@@ -195,7 +195,12 @@ export function TeamInformation(props) {
         </label>
         {Object.keys(joinMethods).map((method) => (
           <div className="pv2" key={method}>
-            <RadioField name="joinMethod" value={method} required />
+            <RadioField
+              name="joinMethod"
+              value={method}
+              required
+              disabled={disableJoinMethodField}
+            />
             <span className="f5">
               <FormattedMessage {...messages[joinMethods[method]]} />
             </span>
@@ -271,7 +276,7 @@ export function TeamForm(props) {
               </h3>
               <form id="team-form" onSubmit={handleSubmit}>
                 <fieldset className="bn pa0" disabled={submitting}>
-                  <TeamInformation joinMethod={props.team.joinMethod} />
+                  <TeamInformation disableJoinMethodField={Boolean(props.team.osm_teams_id)} />
                 </fieldset>
               </form>
             </div>

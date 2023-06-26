@@ -54,3 +54,30 @@ export const createLoginWindow = (redirectTo) => {
     };
   });
 };
+
+export const createOSMTeamsLoginWindow = (redirectTo) => {
+  const popup = createPopup('OSM auth', '');
+  let url = `system/osm-teams-authentication/login/`;
+  fetchLocalJSONAPI(url).then((resp) => {
+    popup.location = resp.auth_url;
+    // Perform token exchange.
+
+    window.authComplete = (authCode, state) => {
+      let callback_url = `system/osm-teams-authentication/callback/?code=${authCode}`;
+
+      if (resp.state === state) {
+        fetchLocalJSONAPI(callback_url).then((res) => {
+          const params = new URLSearchParams({
+            access_token: res.access_token,
+            refresh_token: res.refresh_token,
+            redirect_to: redirectTo,
+          }).toString();
+          let redirectUrl = `/osmteams-authorized/?${params}`;
+          window.location.href = redirectUrl;
+        });
+      } else {
+        throw new Error('States do not match');
+      }
+    };
+  });
+};

@@ -1,13 +1,14 @@
 import { handleErrors } from '../utils/promise';
 import { API_URL } from '../config';
 
-export function fetchExternalJSONAPI(url): Promise<*> {
-  return fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+export function fetchExternalJSONAPI(url, token): Promise<*> {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = token;
+  }
+  return fetch(url, { method: 'GET', headers })
     .then(handleErrors)
     .then((res) => {
       return res.json();

@@ -237,6 +237,17 @@ class EnvironmentConfig:
     # Sentry backend DSN
     SENTRY_BACKEND_DSN = os.getenv("TM_SENTRY_BACKEND_DSN", None)
 
+    # OSM Teams
+    OSM_TEAMS_CLIENT_ID = os.getenv("OSM_TEAMS_CLIENT_ID", None)
+    OSM_TEAMS_CLIENT_SECRET = os.getenv("OSM_TEAMS_CLIENT_SECRET", None)
+    OSM_TEAMS_AUTH_DOMAIN = os.getenv("OSM_TEAMS_AUTH_DOMAIN", None)
+    OSM_TEAMS_TOKEN_DOMAIN = os.getenv("OSM_TEAMS_TOKEN_DOMAIN", OSM_TEAMS_AUTH_DOMAIN)
+    OSM_TEAMS_AUTH_PATH = os.getenv("OSM_TEAMS_AUTH_PATH", "/hyauth/oauth2/auth")
+    OSM_TEAMS_TOKEN_PATH = os.getenv("OSM_TEAMS_TOKEN_PATH", "/hyauth/oauth2/token")
+    OSM_TEAMS_AUTH_URL = f"{OSM_TEAMS_AUTH_DOMAIN}{OSM_TEAMS_AUTH_PATH}"
+    OSM_TEAMS_TOKEN_URL = f"{OSM_TEAMS_TOKEN_DOMAIN}{OSM_TEAMS_TOKEN_PATH}"
+    OSM_TEAMS_API_URL = os.getenv("OSM_TEAMS_API_URL", None)
+
 
 class TestEnvironmentConfig(EnvironmentConfig):
     POSTGRES_TEST_DB = os.getenv("POSTGRES_TEST_DB", None)
