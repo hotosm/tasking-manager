@@ -48,7 +48,10 @@ export const NotificationPopout = (props) => {
         }}
         className={`fr ${props.isPopoutFocus ? '' : 'dn '}br2 absolute bg-white`}
       >
-        <InboxNavMini unreadNotificationCount={props.notifications.pagination?.total} />
+        <InboxNavMini
+          unreadNotificationCount={props.notifications.pagination?.total}
+          setPopoutFocus={props.setPopoutFocus}
+        />
         <NotificationResultsMini {...props} className="tl" />
         <InboxNavMiniBottom
           className="tl"

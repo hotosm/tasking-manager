@@ -38,21 +38,16 @@ export function NotificationOrderBySelector(props) {
     },
   ];
 
-  const onSortSelect = (arr) => {
-    if (arr.length === 1) {
-      props.setQuery(
-        {
-          ...props.allQueryParams,
-          page: undefined,
-          orderBy: arr[0].sort,
-          orderByType: arr[0].type,
-        },
-        'pushIn',
-      );
-    } else if (arr.length > 1) {
-      throw new Error('filter select array is bigger.');
-    }
-  };
+  const onSortSelect = (arr) =>
+    props.setQuery(
+      {
+        ...props.allQueryParams,
+        page: undefined,
+        orderBy: arr[0].sort,
+        orderByType: arr[0].type,
+      },
+      'pushIn',
+    );
 
   return (
     <Dropdown

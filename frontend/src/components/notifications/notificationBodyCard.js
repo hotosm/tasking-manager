@@ -63,7 +63,7 @@ export const NotificationBodyModal = (props) => {
           <FormattedMessage
             {...messages.errorLoadingTheX}
             values={{
-              xWord: <FormattedMessage {...messages.message} />,
+              xWord: <FormattedMessage {...messages.notification} />,
             }}
           />
         </div>
