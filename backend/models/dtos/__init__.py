@@ -33,20 +33,24 @@ def validate_request(dto_class):
             try:
                 dto = dto_class()
 
-                # Set attribute values from request body, query parameters, and path parameters
                 for attr in dto.__class__._fields:
-                    if request.is_json and attr in request.json:
-                        setattr(dto, attr, request.json[attr])
-                    elif attr in request.args:
-                        setattr(dto, attr, request.args.get(attr))
-                    elif attr in kwargs:
-                        setattr(dto, attr, kwargs[attr])
+                    # Get serialized name of attr if exists otherwise use attr name
+                    field = dto.__class__._fields[attr]
+                    attr_name = field.serialized_name if field.serialized_name else attr
+
+                    # Set attribute value from request body, query parameters, or path parameters
+                    if request.is_json and attr_name in request.json:
+                        setattr(dto, attr, request.json[attr_name])
+                    elif attr_name in request.args:
+                        setattr(dto, attr, request.args.get(attr_name))
+                    elif attr_name in kwargs:
+                        setattr(dto, attr, kwargs[attr_name])
 
                 #  Set authenticated user id if user_id is a field in the DTO
                 if "user_id" in dto.__class__._fields:
                     dto.user_id = token_auth.current_user()
 
-                # Get accepted languages from request header
+                # Get accepted language from request header
                 if "preferred_locale" in dto.__class__._fields:
                     dto.preferred_locale = request.environ.get(
                         "HTTP_ACCEPT_LANGUAGE", "en"
