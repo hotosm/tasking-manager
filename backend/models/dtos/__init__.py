@@ -46,6 +46,12 @@ def validate_request(dto_class):
                 if "user_id" in dto.__class__._fields:
                     dto.user_id = token_auth.current_user()
 
+                # Get accepted languages from request header
+                if "preferred_locale" in dto.__class__._fields:
+                    dto.preferred_locale = request.environ.get(
+                        "HTTP_ACCEPT_LANGUAGE", "en"
+                    )
+
                 dto.validate()
                 request.validated_dto = (
                     dto  # Set validated DTO on request object for use in view function
