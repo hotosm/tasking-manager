@@ -30,7 +30,7 @@ export default defineMessages({
   },
   cantValidateMappedTask: {
     id: 'project.tasks.select.cantValidateMappedTask',
-    defaultMessage: 'You cannot validate tasks that you mapped',
+    defaultMessage: 'This task was mapped by you',
   },
   noMappedTasksSelectedError: {
     id: 'project.tasks.no_mapped_tasks_selected',
