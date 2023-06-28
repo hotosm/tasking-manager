@@ -5,6 +5,8 @@ import ReactPlaceholder from 'react-placeholder';
 import { useMeta } from 'react-meta-elements';
 import { useSelector } from 'react-redux';
 import * as Sentry from '@sentry/react';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import './assets/styles/index.scss';
 
@@ -15,6 +17,14 @@ import { Preloader } from './components/preloader';
 import { FallbackComponent } from './views/fallback';
 import { Banner, ArchivalNotificationBanner } from './components/banner/index';
 import { router } from './routes';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => {
   useMeta({ property: 'og:url', content: process.env.REACT_APP_BASE_URL });
@@ -34,9 +44,12 @@ const App = () => {
       ) : (
         <div className="w-100 base-font bg-white" lang={locale}>
           <main className="cf w-100 base-font">
-            <Suspense fallback={<ReactPlaceholder showLoadingAnimation rows={30} delay={300} />}>
-              <RouterProvider router={router} fallbackElement={<Preloader />} />
-            </Suspense>
+            <QueryClientProvider client={queryClient}>
+              <Suspense fallback={<ReactPlaceholder showLoadingAnimation rows={30} delay={300} />}>
+                <RouterProvider router={router} fallbackElement={<Preloader />} />
+              </Suspense>
+              <ReactQueryDevtools />
+            </QueryClientProvider>
           </main>
           <ArchivalNotificationBanner />
           {MATOMO_ID && <Banner />}
