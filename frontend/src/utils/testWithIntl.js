@@ -4,6 +4,7 @@ import { act, render } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, createMemoryRouter, RouterProvider } from 'react-router-dom';
 import TestRenderer from 'react-test-renderer';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 import { store } from '../store';
 import userEvent from '@testing-library/user-event';
@@ -38,6 +39,23 @@ export const ReduxIntlProviders = ({
 export const IntlProviders = ({ children, props = { locale: 'en' } }: Object) => (
   <IntlProvider {...props}>{children}</IntlProvider>
 );
+
+export const QueryClientProviders = ({ children }) => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+    logger: {
+      log: console.log,
+      warn: console.warn,
+      // ✅ no more errors on the console for tests
+      error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
+    },
+  });
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+};
 
 export const createComponentWithMemoryRouter = (
   component,

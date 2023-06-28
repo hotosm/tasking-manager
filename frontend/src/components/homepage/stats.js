@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
-import axios from 'axios';
 import shortNumber from 'short-number';
 
 import messages from './messages';
-import { HOMEPAGE_STATS_API_URL } from '../../config';
-import { fetchLocalJSONAPIWithAbort } from '../../network/genericJSONRequest';
+import { useOsmStatsQuery, useSystemStatisticsQuery } from '../../api/stats';
 
 export const StatsNumber = (props) => {
   const value = shortNumber(props.value);
@@ -34,43 +31,36 @@ export const StatsColumn = ({ label, value }: Object) => {
 };
 
 export const StatsSection = () => {
-  const [osmStats, setOsmStats] = useState({});
-  const [tmStats, setTmStats] = useState({});
+  const { data: tmStatsData, isSuccess: hasTmStatsLoaded } = useSystemStatisticsQuery();
+  const { data: osmStatsData, isSuccess: hasOsmStatsLoaded } = useOsmStatsQuery();
 
-  useEffect(() => {
-    const abortController = new AbortController();
-    // Using axios over the useFetch hook for external API endpoint
-    const fetchOsmStats = () =>
-      axios.get(HOMEPAGE_STATS_API_URL, {
-        signal: abortController.signal,
-      });
-
-    const fetchSystemStats = () =>
-      fetchLocalJSONAPIWithAbort('system/statistics/', null, abortController.signal);
-
-    Promise.all([fetchOsmStats(), fetchSystemStats()])
-      .then(([osmStats, tmStats]) => {
-        const { edits, building_count_add: buildings, road_km_add: roads } = osmStats.data;
-        setOsmStats({
-          edits,
-          buildings,
-          roads,
-        });
-        setTmStats(tmStats);
-      })
-      .catch((err) => console.error(err));
-    return () => {
-      abortController.abort();
-    };
-  }, []);
+  // Mount all stats simultaneously
+  const hasStatsLoaded = hasTmStatsLoaded && hasOsmStatsLoaded;
 
   return (
-    <div className="pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container">
-      <StatsColumn label={messages.buildingsStats} value={osmStats?.buildings} />
-      <StatsColumn label={messages.roadsStats} value={osmStats?.roads} />
-      <StatsColumn label={messages.editsStats} value={osmStats?.edits} />
-      <StatsColumn label={messages.communityStats} value={tmStats?.totalMappers} />
-      <StatsColumn label={messages.mappersStats} value={tmStats?.mappersOnline} />
-    </div>
+    <>
+      <div className="pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container">
+        <StatsColumn
+          label={messages.buildingsStats}
+          value={hasStatsLoaded ? osmStatsData?.data.building_count_add : undefined}
+        />
+        <StatsColumn
+          label={messages.roadsStats}
+          value={hasStatsLoaded ? osmStatsData?.data.road_km_add : undefined}
+        />
+        <StatsColumn
+          label={messages.editsStats}
+          value={hasStatsLoaded ? osmStatsData?.data.edits : undefined}
+        />
+        <StatsColumn
+          label={messages.communityStats}
+          value={hasStatsLoaded ? tmStatsData?.data.totalMappers : undefined}
+        />
+        <StatsColumn
+          label={messages.mappersStats}
+          value={hasStatsLoaded ? tmStatsData.data.mappersOnline : undefined}
+        />
+      </div>
+    </>
   );
 };
