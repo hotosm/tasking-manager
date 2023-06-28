@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import request
 from schematics.exceptions import DataError
-
+from werkzeug.exceptions import BadRequest as WerkzeugBadRequest
 
 from backend.exceptions import BadRequest
 
@@ -32,6 +32,12 @@ def validate_request(dto_class):
 
             try:
                 dto = dto_class()
+                try:
+                    body = request.json if request.is_json else {}
+                except (
+                    WerkzeugBadRequest
+                ):  # If request body does not contain valid JSON then BadRequest is raised by Flask
+                    body = {}
 
                 for attr in dto.__class__._fields:
                     # Get serialized name of attr if exists otherwise use attr name
@@ -39,8 +45,8 @@ def validate_request(dto_class):
                     attr_name = field.serialized_name if field.serialized_name else attr
 
                     # Set attribute value from request body, query parameters, or path parameters
-                    if request.is_json and attr_name in request.json:
-                        setattr(dto, attr, request.json[attr_name])
+                    if attr_name in body:
+                        setattr(dto, attr, body[attr_name])
                     elif attr_name in request.args:
                         setattr(dto, attr, request.args.get(attr_name))
                     elif attr_name in kwargs:
