@@ -6,7 +6,7 @@ import deletionMessages from '../deleteModal/messages';
 import messages from './messages';
 import { EyeIcon, WasteIcon } from '../svgIcons';
 import { Button } from '../button';
-import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const ActionButtons = ({
   selected,
@@ -16,7 +16,6 @@ export const ActionButtons = ({
   isAllSelected,
   inboxQuery,
   setInboxQuery,
-  updateUnreadCount,
   pageOfCards,
   totalPages,
 }) => {
@@ -24,6 +23,14 @@ export const ActionButtons = ({
   const token = useSelector((state) => state.auth.token);
   const param = inboxQuery.types ? `?messageType=${inboxQuery.types?.join(',')}` : '';
   const payload = JSON.stringify({ messageIds: selected });
+
+  const updateUnreadCount = () => {
+    fetchLocalJSONAPI(`notifications/?status=unread`, token)
+      .then((notifications) =>
+        dispatch({ type: 'SET_UNREAD_COUNT', payload: notifications.pagination?.total }),
+      )
+      .catch((e) => console.log(e));
+  };
 
   const deleteMessages = () => {
     if (isAllSelected) {

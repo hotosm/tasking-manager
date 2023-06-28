@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import ReactPlaceholder from 'react-placeholder';
-import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import 'react-placeholder/lib/reactPlaceholder.css';
 
@@ -10,7 +9,6 @@ import NotificationPlaceholder from './notificationPlaceholder';
 import { RefreshIcon } from '../svgIcons';
 import { SelectAll } from '../formInputs';
 import { SelectAllNotifications } from './selectAllNotifications';
-import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { ActionButtons } from './actionButtons';
 
 export const NotificationResultsMini = (props) => {
@@ -110,8 +108,6 @@ const NotificationCards = ({
   inboxQuery,
   setInboxQuery,
 }) => {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
   const [selected, setSelected] = useState([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
 
@@ -138,14 +134,6 @@ const NotificationCards = ({
     return !msg.read && selected.includes(msg.messageId) ? acc + 1 : acc;
   }, 0);
 
-  const updateUnreadCount = () => {
-    fetchLocalJSONAPI(`notifications/?status=unread`, token)
-      .then((notifications) =>
-        dispatch({ type: 'SET_UNREAD_COUNT', payload: notifications.pagination?.total }),
-      )
-      .catch((e) => console.log(e));
-  };
-
   return (
     <>
       {!useMiniCard && (
@@ -165,7 +153,6 @@ const NotificationCards = ({
               isAllSelected={isAllSelected}
               inboxQuery={inboxQuery}
               setInboxQuery={setInboxQuery}
-              updateUnreadCount={updateUnreadCount}
               pageOfCards={pageOfCards}
               totalPages={totalPages}
             />

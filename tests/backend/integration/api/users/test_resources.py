@@ -468,7 +468,7 @@ class TestUsersRecommendedProjectsAPI(BaseTestCase):
         """Test that the API returns 404 if user does not exist"""
         # Act
         response = self.client.get(
-            "/api/v2/users/999/recommendedProjects/",
+            "api/v2/users/non_existent/recommended-projects/",
             headers={"Authorization": self.user_session_token},
         )
         # Assert

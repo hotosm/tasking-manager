@@ -32,6 +32,6 @@ describe('Notifications Page', () => {
     );
 
     await waitFor(() => expect(screen.getAllByText('Team announcement')[0]).toBeInTheDocument());
-    expect(screen.getAllByRole('article').length).toBe(4);
+    expect(screen.getAllByRole('article').length).toBe(10);
   });
 });

@@ -30,7 +30,6 @@ describe('Notification Card', () => {
         />
       </ReduxIntlProviders>,
     );
-
     await user.click(
       screen.getByRole('button', {
         name: /Mark notification as read/i,
@@ -51,7 +50,6 @@ describe('Notification Card', () => {
         />
       </ReduxIntlProviders>,
     );
-
     await user.click(screen.getAllByRole('button')[1]);
     await waitFor(() => {
       expect(fetchNotificationsMock).toHaveBeenCalledTimes(1);
@@ -100,7 +98,6 @@ describe('Notification Card', () => {
 
   it('should open notification modal', async () => {
     global.open = jest.fn();
-
     const setSelectedMock = jest.fn();
     const { user } = renderWithRouter(
       <ReduxIntlProviders>
@@ -112,13 +109,9 @@ describe('Notification Card', () => {
         />
       </ReduxIntlProviders>,
     );
-    await user.click(screen.getByText(/requested to join/i));
+    await user.click(screen.getByText(/sample subject/i));
     // Awaiting portion of the notification message inside the dialog
-    await waitFor(() =>
-      expect(
-        screen.getByText(/Access the team management page to accept or reject that request./i),
-      ).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText(/Sample message/i)).toBeInTheDocument());
   });
 });
 
@@ -131,11 +124,7 @@ describe('Notification Card Mini', () => {
       </ReduxIntlProviders>,
     );
     await user.click(screen.getByRole('article'));
-    await waitFor(() =>
-      expect(
-        screen.getByText(/Access the team management page to accept or reject that request./i),
-      ).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText(/Sample message/i)).toBeInTheDocument());
     await user.click(
       screen.getByRole('button', {
         name: /close/i,

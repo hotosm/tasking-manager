@@ -104,7 +104,7 @@ export const router = createBrowserRouter(
           return { Component: OrganisationDetail };
         }}
       />
-      <Route path="learn" element={<Redirect to="map" />} />
+      <Route path="learn" element={<Redirect to="/learn/map" />} />
       <Route
         path="learn/:type"
         lazy={async () => {
