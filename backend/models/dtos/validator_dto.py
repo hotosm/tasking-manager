@@ -23,6 +23,22 @@ def is_valid_validated_status(value):
         raise ValidationError(f"Invalid status.  Valid values are {valid_values}")
 
 
+def is_valid_revert_status(value):
+    """Validates that Task Status is in correct range for revert while reverting tasks for a user"""
+    valid_values = f"{TaskStatus.BADIMAGERY.name}, {TaskStatus.VALIDATED.name}"
+
+    try:
+        validated_status = TaskStatus[value.upper()]
+    except KeyError:
+        raise ValidationError(f"Unknown task status. Valid values are {valid_values}")
+
+    if validated_status not in [
+        TaskStatus.VALIDATED,
+        TaskStatus.BADIMAGERY,
+    ]:
+        raise ValidationError(f"Invalid status.  Valid values are {valid_values}")
+
+
 class LockForValidationDTO(Model):
     """DTO used to lock multiple tasks for validation"""
 
@@ -131,10 +147,11 @@ class MappedTasks(Model):
     mapped_tasks = ListType(ModelType(MappedTasksByUser), serialized_name="mappedTasks")
 
 
-class RevertUserValidatedTasksDTO(Model):
+class RevertUserTasksDTO(Model):
     """DTO used to revert all tasks to a given status"""
 
     preferred_locale = StringType(default="en")
     project_id = IntType(required=True)
     user_id = IntType(required=True)
     action_by = IntType(required=True)
+    action = StringType(required=True, validators=[is_valid_revert_status])
