@@ -226,9 +226,11 @@ describe('Project Detail Page', () => {
       store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
     });
     renderWithRouter(
-      <ReduxIntlProviders>
-        <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <ProjectDetailPage />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     await waitFor(() => {
       expect(screen.getByText(/sample project/i)).toBeInTheDocument();
@@ -244,9 +246,11 @@ describe('Project Detail Page', () => {
           <Route
             path="projects/:id"
             element={
-              <ReduxIntlProviders>
-                <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-              </ReduxIntlProviders>
+              <QueryClientProviders>
+                <ReduxIntlProviders>
+                  <ProjectDetailPage />
+                </ReduxIntlProviders>
+              </QueryClientProviders>
             }
           />
         </Routes>
@@ -268,9 +272,11 @@ describe('Project Detail Page', () => {
           <Route
             path="projects/:id"
             element={
-              <ReduxIntlProviders>
-                <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-              </ReduxIntlProviders>
+              <QueryClientProviders>
+                <ReduxIntlProviders>
+                  <ProjectDetailPage />
+                </ReduxIntlProviders>
+              </QueryClientProviders>
             }
           />
         </Routes>

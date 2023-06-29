@@ -36,6 +36,20 @@ export const useProjectsQuery = (fullProjectsQuery, action) => {
   });
 };
 
+export const useProjectQuery = (projectId) => {
+  const fetchProject = ({ signal, queryKey }) => {
+    const [, projectId] = queryKey;
+    return api().get(`projects/${projectId}/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['project', projectId],
+    queryFn: fetchProject,
+  });
+};
+
 const backendToQueryConversion = {
   difficulty: 'difficulty',
   campaign: 'campaign',

@@ -15,7 +15,7 @@ import { useExploreProjectsQueryParams, stringify } from '../hooks/UseProjectsQu
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { NotFound } from './notFound';
 import { ProjectDetailPlaceholder } from '../components/projectDetail/projectDetailPlaceholder';
-import { useProjectsQuery } from '../api/projects';
+import { useProjectsQuery, useProjectQuery } from '../api/projects';
 
 const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
 
@@ -163,39 +163,35 @@ export const MoreFilters = () => {
 export const ProjectDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [error, loading, data] = useFetch(`projects/${id}/`, id);
+  const { data: project, status, error } = useProjectQuery(id);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
 
-  return (
+  return status === 'loading' ? (
     <ReactPlaceholder
       showLoadingAnimation={true}
       customPlaceholder={<ProjectDetailPlaceholder />}
-      delay={1000}
-      ready={loading === false}
-    >
-      {!error && (
-        <ProjectDetail
-          project={data}
-          projectLoading={loading}
-          tasksError={error}
-          tasks={data.tasks}
-          navigate={navigate}
-          type="detail"
-        />
+      ready={false}
+    />
+  ) : status === 'error' ? (
+    <>
+      {error.response.data.SubCode === 'PrivateProject' ? (
+        <PrivateProjectError />
+      ) : (
+        <NotFound projectId={id} />
       )}
-      {error && (
-        <>
-          {error.message === 'PrivateProject' ? (
-            <PrivateProjectError />
-          ) : (
-            <NotFound projectId={id} />
-          )}
-        </>
-      )}
-    </ReactPlaceholder>
+    </>
+  ) : (
+    <ProjectDetail
+      project={project.data}
+      projectLoading={false}
+      tasksError={false}
+      tasks={project.data.tasks}
+      navigate={navigate}
+      type="detail"
+    />
   );
 };
 
