@@ -1114,6 +1114,8 @@ class TasksActionsReverUserTaskstAPI(Resource):
             revert_dto.user_id = user.id
             revert_dto.action_by = token_auth.current_user()
             revert_dto.validate()
+        except NotFound:
+            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {
@@ -1123,7 +1125,7 @@ class TasksActionsReverUserTaskstAPI(Resource):
         try:
             ValidatorService.revert_user_tasks(revert_dto)
             return {"Success": "Successfully reverted tasks"}, 200
-        except MappingServiceError as e:
+        except ValidatorServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
             return {"Error": "Task not found", "SubCode": "NotFound"}, 404
