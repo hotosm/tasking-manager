@@ -15,13 +15,10 @@ describe('Project Search Results', () => {
     renderWithRouter(
       <ReduxIntlProviders>
         <ProjectSearchResults
-          state={{
-            isLoading: false,
-            isError: false,
-            projects: projects.results,
-            pagination: {
-              total: 11,
-            },
+          status={'success'}
+          projects={projects.results}
+          pagination={{
+            total: 11,
           }}
         />
       </ReduxIntlProviders>,
@@ -42,7 +39,7 @@ describe('Project Search Results', () => {
 
     renderWithRouter(
       <ReduxIntlProviders>
-        <ProjectSearchResults management state={{ isLoading: false, projects: projects.results }} />
+        <ProjectSearchResults management status="success" projects={projects.results} />
       </ReduxIntlProviders>,
     );
 
@@ -58,7 +55,7 @@ describe('Project Search Results', () => {
     const retryFn = jest.fn();
     const { user } = renderWithRouter(
       <ReduxIntlProviders>
-        <ProjectSearchResults state={{ isError: true, projects: [] }} retryFn={retryFn} />
+        <ProjectSearchResults status="error" projects={[]} retryFn={retryFn} />
       </ReduxIntlProviders>,
     );
 
@@ -72,7 +69,7 @@ describe('Project Search Results', () => {
   it('should display loading indicators', async () => {
     const { container } = renderWithRouter(
       <ReduxIntlProviders>
-        <ProjectSearchResults state={{ isLoading: true, isError: false, projects: [] }} />
+        <ProjectSearchResults status="loading" projects={[]} />
       </ReduxIntlProviders>,
     );
     expect(container.getElementsByClassName('show-loading-animation').length).toBeGreaterThan(0);
@@ -81,13 +78,7 @@ describe('Project Search Results', () => {
   it('should display 0 projects if the pagination total is absent', async () => {
     renderWithRouter(
       <ReduxIntlProviders>
-        <ProjectSearchResults
-          state={{
-            isLoading: false,
-            isError: false,
-            projects: projects.results,
-          }}
-        />
+        <ProjectSearchResults status="success" projects={projects.results} />
       </ReduxIntlProviders>,
     );
     expect(screen.getByText('Showing 2 of 0 projects')).toBeInTheDocument();

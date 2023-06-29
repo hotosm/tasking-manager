@@ -1,0 +1,61 @@
+import { subMonths, format } from 'date-fns';
+import { useQuery } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
+
+import { remapParamsToAPI } from '../utils/remapParamsToAPI';
+import api from './apiClient';
+
+export const useProjectsQuery = (fullProjectsQuery, action) => {
+  const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences['locale']);
+
+  const fetchProjects = (signal, queryKey) => {
+    const [, fullProjectsQuery, action] = queryKey;
+    const paramsRemapped = remapParamsToAPI(fullProjectsQuery, backendToQueryConversion);
+    // it's needed in order to query by action when the user goes to /explore page
+    if (paramsRemapped.action === undefined && action) {
+      paramsRemapped.action = action;
+    }
+
+    if (paramsRemapped.lastUpdatedTo) {
+      paramsRemapped.lastUpdatedTo = format(subMonths(Date.now(), 6), 'yyyy-MM-dd');
+    }
+
+    return api(token, locale)
+      .get('projects/', {
+        signal,
+        params: paramsRemapped,
+      })
+      .then((res) => res.data);
+  };
+
+  return useQuery({
+    queryKey: ['projects', fullProjectsQuery, action],
+    queryFn: ({ signal, queryKey }) => fetchProjects(signal, queryKey),
+    keepPreviousData: true,
+  });
+};
+
+const backendToQueryConversion = {
+  difficulty: 'difficulty',
+  campaign: 'campaign',
+  team: 'teamId',
+  organisation: 'organisationName',
+  location: 'country',
+  types: 'mappingTypes',
+  exactTypes: 'mappingTypesExact',
+  interests: 'interests',
+  text: 'textSearch',
+  page: 'page',
+  orderBy: 'orderBy',
+  orderByType: 'orderByType',
+  createdByMe: 'createdByMe',
+  managedByMe: 'managedByMe',
+  favoritedByMe: 'favoritedByMe',
+  mappedByMe: 'mappedByMe',
+  status: 'projectStatuses',
+  action: 'action',
+  stale: 'lastUpdatedTo',
+  createdFrom: 'createdFrom',
+  basedOnMyInterests: 'basedOnMyInterests',
+};
