@@ -190,16 +190,14 @@ export function TaskSelection({ project, type, loading }: Object) {
         dispatch({ type: 'SET_PROJECT', project: project.projectId });
         dispatch({ type: 'SET_TASKS_STATUS', status: lockedByCurrentUser[0].taskStatus });
       } else {
-        // select task if the textSearch query param is a valid taskId
-        if (
-          textSearch &&
-          Number(textSearch) &&
-          activities.activity.map((i) => i.taskId).includes(Number(textSearch))
-        ) {
+        const isTextSearchValid = activities.activity
+          .map((i) => i.taskId)
+          .includes(Number(textSearch));
+        if (isTextSearchValid) {
           setSelectedTasks([Number(textSearch)]);
-          const currentStatus = activities.activity.filter(
+          const currentStatus = activities.activity.find(
             (i) => i.taskId === Number(textSearch),
-          )[0].taskStatus;
+          ).taskStatus;
           setTaskAction(getTaskAction(user, project, currentStatus, userTeams.teams, userOrgs));
         } else {
           // otherwise we check if the user can map or validate the project
@@ -231,6 +229,8 @@ export function TaskSelection({ project, type, loading }: Object) {
 
   function selectTask(selection, status = null, selectedUser = null) {
     // if selection is an array, just update the state
+    // Becomes truthy when user selects tasks worked on by a specific user
+    // from the Contributions tab
     if (typeof selection === 'object') {
       setSelectedTasks(selection);
       setTaskAction(getTaskAction(user, project, status, userTeams.teams, userOrgs));
@@ -307,11 +307,6 @@ export function TaskSelection({ project, type, loading }: Object) {
           )}
         <div className="w-100 w-50-ns fl pt3 overflow-y-auto-ns vh-minus-200-ns h-100">
           <div className="pl4-l pl2 pr4">
-            <ReactPlaceholder
-              showLoadingAnimation={true}
-              rows={3}
-              ready={typeof project.projectId === 'number' && project.projectId > 0}
-            >
               <ProjectHeader project={project} />
               <div className="mt3">
                 <TabSelector activeSection={activeSection} setActiveSection={setActiveSection} />
@@ -356,7 +351,6 @@ export function TaskSelection({ project, type, loading }: Object) {
                   ) : null}
                 </div>
               </div>
-            </ReactPlaceholder>
           </div>
         </div>
         <div className="w-100 w-50-ns fl h-100 relative">
@@ -365,12 +359,7 @@ export function TaskSelection({ project, type, loading }: Object) {
             type={'media'}
             rows={26}
             delay={200}
-            ready={
-              typeof project === 'object' &&
-              typeof tasks === 'object' &&
-              mapInit &&
-              !isPriorityAreasLoading
-            }
+            ready={typeof tasks === 'object' && mapInit && !isPriorityAreasLoading}
           >
             <TasksMap
               mapResults={tasks}
@@ -390,23 +379,16 @@ export function TaskSelection({ project, type, loading }: Object) {
         </div>
       </div>
       <div className="cf w-100 bt b--grey-light fixed bottom-0 left-0 z-4">
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          rows={3}
-          delay={500}
-          ready={typeof project.projectId === 'number' && project.projectId > 0}
-        >
-          <Suspense fallback={<div>Loading...</div>}>
-            <TaskSelectionFooter
-              defaultUserEditor={user ? user.defaultEditor : 'iD'}
-              project={project}
-              tasks={tasks}
-              taskAction={taskAction}
-              selectedTasks={curatedSelectedTasks}
-              setSelectedTasks={setSelectedTasks}
-            />
-          </Suspense>
-        </ReactPlaceholder>
+        <Suspense fallback={<div>Loading...</div>}>
+          <TaskSelectionFooter
+            defaultUserEditor={user ? user.defaultEditor : 'iD'}
+            project={project}
+            tasks={tasks}
+            taskAction={taskAction}
+            selectedTasks={curatedSelectedTasks}
+            setSelectedTasks={setSelectedTasks}
+          />
+        </Suspense>
       </div>
     </div>
   );
