@@ -37,8 +37,7 @@ export const useProjectsQuery = (fullProjectsQuery, action) => {
 };
 
 export const useProjectQuery = (projectId) => {
-  const fetchProject = ({ signal, queryKey }) => {
-    const [, projectId] = queryKey;
+  const fetchProject = ({ signal }) => {
     return api().get(`projects/${projectId}/`, {
       signal,
     });
@@ -63,10 +62,9 @@ export const useProjectSummaryQuery = (projectId) => {
   });
 };
 
-export const useProjectContributionsQuery = (projectId) => {
-  const fetchProjectContributions = ({ signal, queryKey }) => {
-    const [, id] = queryKey;
-    return api().get(`projects/${id}/contributions/`, {
+export const useProjectContributionsQuery = (projectId, otherOptions = {}) => {
+  const fetchProjectContributions = ({ signal }) => {
+    return api().get(`projects/${projectId}/contributions/`, {
       signal,
     });
   };
@@ -75,8 +73,44 @@ export const useProjectContributionsQuery = (projectId) => {
     queryKey: ['project-contributions', projectId],
     queryFn: fetchProjectContributions,
     select: (data) => data.data.userContributions,
+    ...otherOptions,
   });
 };
+
+export const useActivitiesQuery = (projectId) => {
+  const ACTIVITIES_REFETCH_INTERVAL = 1000 * 60;
+  const fetchProjectActivities = ({ signal }) => {
+    return api().get(`projects/${projectId}/activities/latest/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['project-activities', projectId],
+    queryFn: fetchProjectActivities,
+    select: (data) => data.data,
+    refetchIntervalInBackground: false,
+    refetchInterval: ACTIVITIES_REFETCH_INTERVAL,
+    refetchOnWindowFocus: true,
+    useErrorBoundary: true,
+  });
+};
+
+export const useTasksQuery = (projectId) => {
+  const fetchProjectTasks = ({ signal }) => {
+    return api().get(`projects/${projectId}/tasks/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['project-tasks', projectId],
+    queryFn: fetchProjectTasks,
+    select: (data) => data.data,
+    useErrorBoundary: true,
+  });
+};
+
 export const usePriorityAreasQuery = (projectId) => {
   const fetchProjectPriorityArea = (signal) => {
     return api().get(`projects/${projectId}/queries/priority-areas/`, {

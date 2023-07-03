@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useQueryParam, StringParam } from 'use-query-params';
@@ -7,15 +7,11 @@ import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import { toast } from 'react-hot-toast';
 
-import { useFetch } from '../../hooks/UseFetch';
-import { useInterval } from '../../hooks/UseInterval';
 import { useGetLockedTasks } from '../../hooks/UseLockedTasks';
-import { useMemoCompare } from '../../hooks/UseMemoCompare';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { getTaskAction, userCanValidate } from '../../utils/projectPermissions';
 import { getRandomArrayItem } from '../../utils/random';
 import { updateTasksStatus } from '../../utils/updateTasksStatus';
-import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { TasksMap } from './map.js';
 import { TabSelector } from './tabSelector.js';
 import { TaskList } from './taskList';
@@ -28,7 +24,13 @@ import { UserPermissionErrorContent } from './permissionErrorModal';
 import { Alert } from '../alert';
 import messages from './messages';
 
-import { usePriorityAreasQuery } from '../../api/projects';
+import {
+  usePriorityAreasQuery,
+  useActivitiesQuery,
+  useProjectContributionsQuery,
+  useTasksQuery,
+} from '../../api/projects';
+import { useUserTeamsQuery } from '../../api/teams';
 const TaskSelectionFooter = React.lazy(() => import('./footer'));
 
 const getRandomTaskByAction = (activities, taskAction) => {
@@ -48,43 +50,40 @@ const getRandomTaskByAction = (activities, taskAction) => {
   }
 };
 
-export function TaskSelection({ project, type, loading }: Object) {
+export function TaskSelection({ project }: Object) {
   useSetProjectPageTitleTag(project);
   const { projectId } = project;
   const location = useLocation();
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.userDetails);
   const userOrgs = useSelector((state) => state.auth.organisations);
   const lockedTasks = useGetLockedTasks();
-  const dispatch = useDispatch();
-  const [tasks, setTasks] = useState();
-  const [activities, setActivities] = useState();
-  const [contributions, setContributions] = useState();
-  const [isValidationAllowed, setIsValidationAllowed] = useState(undefined);
   const [zoomedTaskId, setZoomedTaskId] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
   const [selected, setSelectedTasks] = useState([]);
   const [mapInit, setMapInit] = useState(false);
-  const [randomTask, setRandomTask] = useState([]);
   const [taskAction, setTaskAction] = useState('mapATask');
   const [activeStatus, setActiveStatus] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
-  const defaultUpdateInterval = 60000;
-  const [updateInterval, setUpdateInterval] = useState(defaultUpdateInterval);
 
+  const { data: userTeams, isLoading: isUserTeamsLoading } = useUserTeamsQuery(user.id);
+  const { data: activities, refetch: getActivities } = useActivitiesQuery(projectId);
+  const { data: contributions } = useProjectContributionsQuery(projectId, {
+    useErrorBoundary: true,
+    refetchOnWindowFocus: true,
+    refetchInterval: activeSection === 'contributions' ? 1000 * 60 : false,
+  });
+  const { data: tasksData, refetch: refetchTasks } = useTasksQuery(projectId);
   const {
     data: priorityAreas,
     isLoading: isPriorityAreasLoading,
     isLoadingError: isPriorityAreasLoadingError,
   } = usePriorityAreasQuery(projectId);
 
-  const getActivities = useCallback((id) => {
-    if (id) {
-      fetchLocalJSONAPI(`projects/${id}/activities/latest/`)
-        .then((res) => setActivities(res))
-        .catch((e) => console.log(e));
-    }
-  }, []);
+  const tasks = tasksData && activities && updateTasksStatus(tasksData, activities);
+  const randomTask = activities && [getRandomTaskByAction(activities.activity, taskAction)];
+  const isValidationAllowed = user && userTeams && userCanValidate(user, project, userTeams.teams);
 
   useEffect(() => {
     isPriorityAreasLoadingError &&
@@ -99,59 +98,19 @@ export function TaskSelection({ project, type, loading }: Object) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project]);
 
-  // fetch activities and contributions when the component is started
-  useEffect(() => {
-    getActivities(project.projectId);
-    getContributions(project.projectId);
-  }, [getActivities, getContributions, project.projectId]);
-  // refresh activities each 60 seconds if page is visible to user
-  useInterval(() => {
-    if (document.visibilityState === 'visible') {
-      getActivities(project.projectId);
-      if (activeSection === 'contributions') {
-        getContributions(project.projectId);
-      }
-      if (updateInterval !== defaultUpdateInterval) setUpdateInterval(defaultUpdateInterval);
-    } else {
-      if (updateInterval !== 1000) setUpdateInterval(1000);
-    }
-  }, updateInterval);
-
-  const latestTasks = useRef(tasks);
-  // it's needed to avoid the following useEffect to be triggered every time the tasks change
-  useEffect(() => {
-    latestTasks.current = tasks;
-  });
-  // refresh the task status on the map each time the activities are updated
-  useEffect(() => {
-    if (latestTasks.current && activities) {
-      setTasks(updateTasksStatus(latestTasks.current, activities));
-    }
-  }, [latestTasks, activities]);
-
-  // we use this in order to only trigger the following useEffect if there are
-  // new tasks on activities endpoint data
-  const latestActivities = useMemoCompare(
-    activities,
-    (prev) => prev && prev.activity.length === activities.activity.length,
-  );
-
   // update tasks geometry if there are new tasks (caused by task splits)
+  // update tasks state (when activities have changed)
   useEffect(() => {
-    if (latestActivities && latestActivities.activity) {
-      fetchLocalJSONAPI(`projects/${project.projectId}/tasks/`).then((res) =>
-        setTasks(updateTasksStatus(res, latestActivities)),
-      );
+    if (tasksData?.features.length !== activities?.activity.length) {
+      refetchTasks();
     }
-  }, [latestActivities, project.projectId]);
+  }, [tasksData, activities, refetchTasks]);
 
   // show the tasks tab when the page loads if the user has already contributed
   // to the project. If no, show the instructions tab.
   useEffect(() => {
-    if (contributions && contributions.userContributions && activeSection === null) {
-      const currentUserContributions = contributions.userContributions.filter(
-        (u) => u.username === user.username,
-      );
+    if (contributions && activeSection === null) {
+      const currentUserContributions = contributions.filter((u) => u.username === user.username);
       if (textSearch || (user.isExpert && currentUserContributions.length > 0)) {
         setActiveSection('tasks');
       } else {
@@ -161,20 +120,9 @@ export function TaskSelection({ project, type, loading }: Object) {
   }, [contributions, user.username, user, activeSection, textSearch]);
 
   useEffect(() => {
-    if (
-      project.hasOwnProperty('teams') &&
-      !userTeamsError &&
-      !userTeamsLoading &&
-      userTeams !== undefined
-    ) {
-      setIsValidationAllowed(userCanValidate(user, project, userTeams.teams));
-    }
-  }, [userTeams, userTeamsError, userTeamsLoading, project, user]);
-
-  useEffect(() => {
     // run it only when the component is initialized
     // it checks if the user has tasks locked on the project and suggests to resume them
-    if (!mapInit && activities && activities.activity && user.username && !userTeamsLoading) {
+    if (!mapInit && activities && activities.activity && user.username && !isUserTeamsLoading) {
       const lockedByCurrentUser = activities.activity
         .filter((i) => i.taskStatus.startsWith('LOCKED_FOR_'))
         .filter((i) => i.actionBy === user.username);
@@ -210,22 +158,14 @@ export function TaskSelection({ project, type, loading }: Object) {
     lockedTasks,
     dispatch,
     activities,
-    user.username,
     mapInit,
     project,
     user,
-    userTeams.teams,
-    userTeamsLoading,
+    userTeams,
+    isUserTeamsLoading,
     userOrgs,
     textSearch,
   ]);
-
-  // chooses a random task to the user
-  useEffect(() => {
-    if (activities && activities.activity) {
-      setRandomTask([getRandomTaskByAction(activities.activity, taskAction)]);
-    }
-  }, [activities, taskAction]);
 
   function selectTask(selection, status = null, selectedUser = null) {
     // if selection is an array, just update the state
@@ -293,7 +233,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   return (
     <div>
       <div className="cf vh-minus-200-ns">
-        {!userTeamsLoading &&
+        {!isUserTeamsLoading &&
           ['mappingIsComplete', 'selectAnotherProject'].includes(taskAction) && (
             <Popup modal open closeOnEscape={true} closeOnDocumentClick={true}>
               {(close) => (
@@ -307,50 +247,50 @@ export function TaskSelection({ project, type, loading }: Object) {
           )}
         <div className="w-100 w-50-ns fl pt3 overflow-y-auto-ns vh-minus-200-ns h-100">
           <div className="pl4-l pl2 pr4">
-              <ProjectHeader project={project} />
-              <div className="mt3">
-                <TabSelector activeSection={activeSection} setActiveSection={setActiveSection} />
-                <div className="pt3">
-                  <div className={`${activeSection !== 'tasks' ? 'dn' : ''}`}>
-                    <TaskList
-                      project={project}
-                      tasks={tasks}
-                      userCanValidate={isValidationAllowed}
-                      updateActivities={getActivities}
-                      selectTask={selectTask}
-                      selected={selected}
-                      textSearch={textSearch}
-                      setTextSearch={setTextSearch}
-                      setZoomedTaskId={setZoomedTaskId}
-                      userContributions={contributions && contributions.userContributions}
-                    />
-                  </div>
-                  {activeSection === 'instructions' ? (
-                    <>
-                      {project.enforceRandomTaskSelection && (
-                        <Alert type="info">
-                          <FormattedMessage {...messages.enforcedRandomTaskSelection} />
-                        </Alert>
-                      )}
-                      <ProjectInstructions
-                        instructions={project.projectInfo && project.projectInfo.instructions}
-                        isProjectArchived={project.status === 'ARCHIVED'}
-                      />
-                      <ChangesetCommentTags tags={project.changesetComment} />
-                    </>
-                  ) : null}
-                  {activeSection === 'contributions' ? (
-                    <Contributions
-                      project={project}
-                      selectTask={selectTask}
-                      tasks={tasks}
-                      contribsData={contributions}
-                      activeUser={activeUser}
-                      activeStatus={activeStatus}
-                    />
-                  ) : null}
+            <ProjectHeader project={project} />
+            <div className="mt3">
+              <TabSelector activeSection={activeSection} setActiveSection={setActiveSection} />
+              <div className="pt3">
+                <div className={`${activeSection !== 'tasks' ? 'dn' : ''}`}>
+                  <TaskList
+                    project={project}
+                    tasks={tasks}
+                    userCanValidate={isValidationAllowed}
+                    updateActivities={getActivities}
+                    selectTask={selectTask}
+                    selected={selected}
+                    textSearch={textSearch}
+                    setTextSearch={setTextSearch}
+                    setZoomedTaskId={setZoomedTaskId}
+                    userContributions={contributions}
+                  />
                 </div>
+                {activeSection === 'instructions' ? (
+                  <>
+                    {project.enforceRandomTaskSelection && (
+                      <Alert type="info">
+                        <FormattedMessage {...messages.enforcedRandomTaskSelection} />
+                      </Alert>
+                    )}
+                    <ProjectInstructions
+                      instructions={project.projectInfo?.instructions}
+                      isProjectArchived={project.status === 'ARCHIVED'}
+                    />
+                    <ChangesetCommentTags tags={project.changesetComment} />
+                  </>
+                ) : null}
+                {activeSection === 'contributions' ? (
+                  <Contributions
+                    project={project}
+                    selectTask={selectTask}
+                    tasks={tasks}
+                    contribsData={contributions}
+                    activeUser={activeUser}
+                    activeStatus={activeStatus}
+                  />
+                ) : null}
               </div>
+            </div>
           </div>
         </div>
         <div className="w-100 w-50-ns fl h-100 relative">
