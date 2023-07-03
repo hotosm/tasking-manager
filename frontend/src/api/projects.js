@@ -64,6 +64,20 @@ export const useProjectContributionsQuery = (projectId) => {
     select: (data) => data.data.userContributions,
   });
 };
+export const usePriorityAreasQuery = (projectId) => {
+  const fetchProjectPriorityArea = (signal) => {
+    return api().get(`projects/${projectId}/queries/priority-areas/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['project-priority-area', projectId],
+    queryFn: ({ signal }) => fetchProjectPriorityArea(signal),
+    select: (data) => data.data,
+  });
+};
+
 export const useProjectTimelineQuery = (projectId) => {
   const fetchTimelineData = (signal) => {
     return api().get(`projects/${projectId}/contributions/queries/day/`, {

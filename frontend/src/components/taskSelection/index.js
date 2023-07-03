@@ -5,6 +5,7 @@ import { useQueryParam, StringParam } from 'use-query-params';
 import Popup from 'reactjs-popup';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
+import { toast } from 'react-hot-toast';
 
 import { useFetch } from '../../hooks/UseFetch';
 import { useInterval } from '../../hooks/UseInterval';
@@ -27,6 +28,7 @@ import { UserPermissionErrorContent } from './permissionErrorModal';
 import { Alert } from '../alert';
 import messages from './messages';
 
+import { usePriorityAreasQuery } from '../../api/projects';
 const TaskSelectionFooter = React.lazy(() => import('./footer'));
 
 const getRandomTaskByAction = (activities, taskAction) => {
@@ -48,6 +50,7 @@ const getRandomTaskByAction = (activities, taskAction) => {
 
 export function TaskSelection({ project, type, loading }: Object) {
   useSetProjectPageTitleTag(project);
+  const { projectId } = project;
   const location = useLocation();
   const user = useSelector((state) => state.auth.userDetails);
   const userOrgs = useSelector((state) => state.auth.organisations);
@@ -69,16 +72,11 @@ export function TaskSelection({ project, type, loading }: Object) {
   const defaultUpdateInterval = 60000;
   const [updateInterval, setUpdateInterval] = useState(defaultUpdateInterval);
 
-  // get teams the user is part of
-  const [userTeamsError, userTeamsLoading, userTeams] = useFetch(
-    `teams/?omitMemberList=true&member=${user.id}`,
-    user.id !== undefined,
-  );
-  //eslint-disable-next-line
-  const [priorityAreasError, priorityAreasLoading, priorityAreas] = useFetch(
-    `projects/${project.projectId}/queries/priority-areas/`,
-    project.projectId !== undefined,
-  );
+  const {
+    data: priorityAreas,
+    isLoading: isPriorityAreasLoading,
+    isLoadingError: isPriorityAreasLoadingError,
+  } = usePriorityAreasQuery(projectId);
 
   const getActivities = useCallback((id) => {
     if (id) {
@@ -88,13 +86,10 @@ export function TaskSelection({ project, type, loading }: Object) {
     }
   }, []);
 
-  const getContributions = useCallback((id) => {
-    if (id) {
-      fetchLocalJSONAPI(`projects/${id}/contributions/`)
-        .then((res) => setContributions(res))
-        .catch((e) => console.log(e));
-    }
-  }, []);
+  useEffect(() => {
+    isPriorityAreasLoadingError &&
+      toast.error(<FormattedMessage {...messages.priorityAreasLoadingError} />);
+  }, [isPriorityAreasLoadingError]);
 
   useEffect(() => {
     const { lastLockedTasksIds, lastLockedProjectId } = location.state || {};
@@ -374,7 +369,7 @@ export function TaskSelection({ project, type, loading }: Object) {
               typeof project === 'object' &&
               typeof tasks === 'object' &&
               mapInit &&
-              !priorityAreasLoading
+              !isPriorityAreasLoading
             }
           >
             <TasksMap

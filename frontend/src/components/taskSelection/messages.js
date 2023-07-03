@@ -36,6 +36,10 @@ export default defineMessages({
     id: 'project.tasks.select.cantValidateMappedTask',
     defaultMessage: 'This task was mapped by you',
   },
+  priorityAreasLoadingError: {
+    id: 'project.tasks.selection.map.priorityAreas.loading.error',
+    defaultMessage: 'An error occured while loading the priority areas for the project',
+  },
   noMappedTasksSelectedError: {
     id: 'project.tasks.no_mapped_tasks_selected',
     defaultMessage: 'No mapped tasks selected',
