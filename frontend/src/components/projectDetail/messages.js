@@ -239,9 +239,17 @@ export default defineMessages({
     id: 'project.detail.sections.similarProjects',
     defaultMessage: 'Similar projects',
   },
+  contributorsError: {
+    id: 'project.detail.sections.contributors.error',
+    defaultMessage: 'An error occured while loading contributors',
+  },
   timelineNotAvailable: {
     id: 'project.detail.sections.contributions.timelineError',
     defaultMessage: 'A timeline is going to be available after the first task has been mapped.',
+  },
+  timelineDataError: {
+    id: 'project.detail.sections.contributions.data.error',
+    defaultMessage: 'An error occured while loading contributions data',
   },
   status_DRAFT: {
     id: 'project.status.draft',

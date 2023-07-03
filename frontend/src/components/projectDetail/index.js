@@ -153,15 +153,7 @@ export const ProjectDetail = (props) => {
           type="detail"
         />
         <div className="w-100 w-40-l">
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            type={'media'}
-            rows={26}
-            delay={200}
-            ready={typeof props.project.projectId === 'number'}
-          >
-            <ProjectDetailMap {...props} />
-          </ReactPlaceholder>
+          <ProjectDetailMap {...props} />
         </div>
       </div>
 
@@ -296,6 +288,7 @@ export const ProjectDetail = (props) => {
       <h3 className={`${h2Classes}`}>
         <FormattedMessage {...messages.contributionsTimeline} />
       </h3>
+      <div className="mb5 ph4 w-100 w-60-l">
         <div className="pt2 pb4">
           {timelineDataStatus === 'success' ? (
             <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
@@ -309,46 +302,25 @@ export const ProjectDetail = (props) => {
             <ReactPlaceholder showLoadingAnimation rows={3} ready={false} />
           )}
         </div>
-      <div className="ph4 w-100 w-60-l">
-        <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            rows={3}
-            delay={500}
-            ready={typeof visualData === 'object' && visualData.stats !== undefined}
-          >
-            <div className="pt2 pb4">
-              <ProjectTimeline tasksByDay={visualData.stats} />
-            </div>
-          </ReactPlaceholder>
-        </React.Suspense>
-        <ReactPlaceholder
-          delay={100}
-          showLoadingAnimation={true}
-          type="rect"
-          style={{ width: 150, height: 30 }}
-          ready={typeof props.project === 'object'}
-        >
-          <div className="flex gap-1 nowrap flex-wrap">
-            <Link to={`/projects/${props.project.projectId}/stats`} className="link">
-              <CustomButton className="bg-red white bn pa3">
-                <FormattedMessage {...messages.moreStats} />
-              </CustomButton>
-            </Link>
-            <OSMChaButton
-              project={props.project}
-              className="bg-white blue-dark ba b--grey-light pa3"
-            />
-            <DownloadAOIButton
-              projectId={props.project.projectId}
-              className="bg-white blue-dark ba b--grey-light pa3"
-            />
-            <DownloadTaskGridButton
-              projectId={props.project.projectId}
-              className="bg-white blue-dark ba b--grey-light pa3"
-            />
-          </div>
-        </ReactPlaceholder>
+        <div className="flex gap-1 nowrap flex-wrap">
+          <Link to={`/projects/${props.project.projectId}/stats`} className="link">
+            <CustomButton className="bg-red white bn pa3">
+              <FormattedMessage {...messages.moreStats} />
+            </CustomButton>
+          </Link>
+          <OSMChaButton
+            project={props.project}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
+          <DownloadAOIButton
+            projectId={props.project.projectId}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
+          <DownloadTaskGridButton
+            projectId={props.project.projectId}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
+        </div>
       </div>
       <a href="#similarProjects" style={{ visibility: 'hidden' }} name="similarProjects">
         <FormattedMessage {...messages.similarProjects} />
