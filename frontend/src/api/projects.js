@@ -50,6 +50,20 @@ export const useProjectQuery = (projectId) => {
   });
 };
 
+export const useProjectContributionsQuery = (projectId) => {
+  const fetchProjectContributions = ({ signal, queryKey }) => {
+    const [, id] = queryKey;
+    return api().get(`projects/${id}/contributions/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['project-contributions', projectId],
+    queryFn: fetchProjectContributions,
+    select: (data) => data.data.userContributions,
+  });
+};
 const backendToQueryConversion = {
   difficulty: 'difficulty',
   campaign: 'campaign',

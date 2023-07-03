@@ -20,7 +20,8 @@ import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
-import { useFetch } from '../../hooks/UseFetch';
+import { useProjectContributionsQuery } from '../../api/projects';
+import { Alert } from '../alert';
 
 import './styles.scss';
 import { useWindowSize } from '../../hooks/UseWindowSize';
@@ -126,10 +127,8 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
 export const ProjectDetail = (props) => {
   useSetProjectPageTitleTag(props.project);
   const size = useWindowSize();
-  /* eslint-disable-next-line */
-  const [visualError, visualLoading, visualData] = useFetch(
-    `projects/${props.project.projectId}/contributions/queries/day/`,
-    props.project?.projectId,
+  const { data: contributors, status: contributorsStatus } = useProjectContributionsQuery(
+    props.project.projectId,
   );
   /* eslint-disable-next-line */
   const [contributorsError, contributorsLoading, contributors] = useFetch(
@@ -152,9 +151,7 @@ export const ProjectDetail = (props) => {
         <ProjectDetailLeft
           className="w-100 w-60-l ph4 ph2 pv3 blue-dark"
           project={props.project}
-          contributors={
-            contributors.hasOwnProperty('userContributions') ? contributors.userContributions : []
-          }
+          contributors={contributorsStatus === 'success' ? contributors : []}
           type="detail"
         />
         <div className="w-100 w-40-l">
@@ -272,22 +269,28 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.contributors} />
       </h3>
       <div className="cf db mb3 ph4">
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          type={'media'}
-          rows={1}
-          delay={200}
-          ready={contributors?.userContributions}
-        >
-          {contributors && (
-            <UserAvatarList
-              size={'large'}
-              textColor="white"
-              users={contributors.userContributions}
-              maxLength={parseInt(size[0] / 75) > 12 ? 12 : parseInt(size[0] / 75)}
-            />
-          )}
-        </ReactPlaceholder>
+        {contributorsStatus === 'loading' ? (
+          <ReactPlaceholder
+            showLoadingAnimation={true}
+            type={'media'}
+            rows={1}
+            delay={200}
+            ready={contributorsStatus === 'success'}
+          />
+        ) : contributorsStatus === 'error' ? (
+          <div className="w-100 w-60-l">
+            <Alert type="error">
+              <FormattedMessage {...messages.contributorsError} />
+            </Alert>
+          </div>
+        ) : (
+          <UserAvatarList
+            size={'large'}
+            textColor="white"
+            users={contributors}
+            maxLength={parseInt(size[0] / 75) > 12 ? 12 : parseInt(size[0] / 75)}
+          />
+        )}
       </div>
       <a href="#contributionTimeline" style={{ visibility: 'hidden' }} name="contributionTimeline">
         <FormattedMessage {...messages.contributionsTimeline} />
