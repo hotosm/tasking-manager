@@ -1,32 +1,42 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary';
 
-import { useFetch } from '../hooks/UseFetch';
 import { TaskSelection } from '../components/taskSelection';
 import { NotFound } from './notFound';
-import { Login } from './login';
-import { useParams } from 'react-router-dom';
+import { useProjectSummaryQuery } from '../api/projects';
+import { Preloader } from '../components/preloader';
+import { FallbackComponent } from './fallback';
 
-const Error = ({ error }) => <span>Error:{error.message}</span>;
+const ProjectError = ({ error }) => <span>Error:{error.message}</span>;
 
 export function SelectTask() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
-  const [error, loading, data] = useFetch(`projects/${id}/queries/summary/`, id);
+  const { data, status, error } = useProjectSummaryQuery(id);
 
-  if (error) {
-    if (error.message === 'NOT FOUND') {
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate, token]);
+
+  if (status === 'loading') {
+    return <Preloader />;
+  }
+
+  if (status === 'error') {
+    if (error.response.status === 404) {
       return <NotFound projectId={id} />;
     }
-    return <Error error={error} />;
+    return <ProjectError error={error} />;
   }
-  if (token) {
-    return (
-      <div className="cf">
-        <TaskSelection project={data} loading={loading} />
-      </div>
-    );
-  } else {
-    return <Login redirectTo={`/projects/${id}/tasks`} />;
-  }
+
+  return (
+    <ErrorBoundary FallbackComponent={FallbackComponent}>
+      <TaskSelection project={data} />
+    </ErrorBoundary>
+  );
 }

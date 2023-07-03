@@ -49,6 +49,19 @@ export const useProjectQuery = (projectId) => {
     queryFn: fetchProject,
   });
 };
+export const useProjectSummaryQuery = (projectId) => {
+  const fetchProjectSummary = ({ signal }) => {
+    return api().get(`projects/${projectId}/queries/summary/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['project-summary', projectId],
+    queryFn: fetchProjectSummary,
+    select: (data) => data.data,
+  });
+};
 
 export const useProjectContributionsQuery = (projectId) => {
   const fetchProjectContributions = ({ signal, queryKey }) => {
