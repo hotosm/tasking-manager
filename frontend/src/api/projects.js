@@ -64,6 +64,20 @@ export const useProjectContributionsQuery = (projectId) => {
     select: (data) => data.data.userContributions,
   });
 };
+export const useProjectTimelineQuery = (projectId) => {
+  const fetchTimelineData = (signal) => {
+    return api().get(`projects/${projectId}/contributions/queries/day/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['project-timeline', projectId],
+    queryFn: ({ signal }) => fetchTimelineData(signal),
+    select: (data) => data.data.stats,
+  });
+};
+
 const backendToQueryConversion = {
   difficulty: 'difficulty',
   campaign: 'campaign',

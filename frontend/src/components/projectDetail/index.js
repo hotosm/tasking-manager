@@ -20,7 +20,7 @@ import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
-import { useProjectContributionsQuery } from '../../api/projects';
+import { useProjectContributionsQuery, useProjectTimelineQuery } from '../../api/projects';
 import { Alert } from '../alert';
 
 import './styles.scss';
@@ -130,10 +130,8 @@ export const ProjectDetail = (props) => {
   const { data: contributors, status: contributorsStatus } = useProjectContributionsQuery(
     props.project.projectId,
   );
-  /* eslint-disable-next-line */
-  const [contributorsError, contributorsLoading, contributors] = useFetch(
-    `projects/${props.project.projectId}/contributions/`,
-    props.project?.projectId,
+  const { data: timelineData, status: timelineDataStatus } = useProjectTimelineQuery(
+    props.project.projectId,
   );
 
   const htmlDescription =
@@ -298,6 +296,19 @@ export const ProjectDetail = (props) => {
       <h3 className={`${h2Classes}`}>
         <FormattedMessage {...messages.contributionsTimeline} />
       </h3>
+        <div className="pt2 pb4">
+          {timelineDataStatus === 'success' ? (
+            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+              <ProjectTimeline tasksByDay={timelineData} />
+            </React.Suspense>
+          ) : timelineDataStatus === 'error' ? (
+            <Alert type="error">
+              <FormattedMessage {...messages.timelineDataError} />
+            </Alert>
+          ) : (
+            <ReactPlaceholder showLoadingAnimation rows={3} ready={false} />
+          )}
+        </div>
       <div className="ph4 w-100 w-60-l">
         <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
           <ReactPlaceholder
