@@ -106,7 +106,7 @@ def create_app(env="backend.config.EnvironmentConfig"):
         env = "backend.config.TestEnvironmentConfig"
     app.config.from_object(env)
     # Enable logging to files
-    initialise_logger(app)
+    # initialise_logger(app)
     app.logger.info("Starting up a new Tasking Manager application")
 
     # Connect to database

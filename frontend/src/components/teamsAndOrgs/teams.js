@@ -167,6 +167,7 @@ export function TeamInformation({ disableJoinMethodField }) {
     ANY: 'anyoneCanJoin',
     BY_REQUEST: 'byRequest',
     BY_INVITE: 'byInvite',
+    OSM_TEAMS: 'OSMTeams',
   };
 
   return (
@@ -199,7 +200,7 @@ export function TeamInformation({ disableJoinMethodField }) {
               name="joinMethod"
               value={method}
               required
-              disabled={disableJoinMethodField}
+              disabled={disableJoinMethodField || method === 'OSM_TEAMS'}
             />
             <span className="f5">
               <FormattedMessage {...messages[joinMethods[method]]} />
@@ -214,7 +215,7 @@ export function TeamInformation({ disableJoinMethodField }) {
           </div>
         ))}
       </div>
-      {formState.values.joinMethod === 'BY_INVITE' && (
+      {['BY_INVITE', 'OSM_TEAMS'].includes(formState.values.joinMethod) && (
         <div className="cf pt1">
           <label className={labelClasses}>
             <FormattedMessage {...messages.visibility} />

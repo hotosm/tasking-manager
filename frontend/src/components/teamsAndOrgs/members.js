@@ -83,15 +83,13 @@ export function Members({
       <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
         <div className="cf db">
           <h3 className="f3 blue-dark mv2 fw6 fl">{title}</h3>
-          {!disableEdit &&
-            <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
-          }
+          {!disableEdit && <EditModeControl editMode={editMode} switchModeFn={setEditMode} />}
         </div>
-        {disableEdit &&
+        {disableEdit && (
           <div className="blue-grey f6">
             <FormattedMessage {...messages.syncedWithOSMTeams} />
           </div>
-        }
+        )}
         <div className="cf mb1">
           {editMode && (
             <AsyncSelect

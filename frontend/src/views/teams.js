@@ -189,10 +189,10 @@ export function CreateTeam() {
         const errors = [];
         Promise.all([
           ...managers
-              .filter((user) => user.username !== userDetails.username)
-              .map((user) =>
+            .filter((user) => user.username !== userDetails.username)
+            .map((user) =>
               joinTeamRequest(result.teamId, user.username, 'MANAGER', token).catch((e) =>
-                  errors.push({ username: user.username, function: 'MANAGER' }),
+                errors.push({ username: user.username, function: 'MANAGER' }),
               ),
             ),
           ...members.map((user) =>
@@ -212,7 +212,7 @@ export function CreateTeam() {
           );
           navigate(`/manage/teams/${result.teamId}${additionalSearchParam}`);
         });
-    })
+      })
       .catch(() => setIsError(true));
   };
 
@@ -221,7 +221,7 @@ export function CreateTeam() {
       onSubmit={(values) => createTeam(values)}
       initialValues={{ visibility: 'PUBLIC' }}
       render={({ handleSubmit, pristine, submitting, values }) => {
-        if (osmTeamsId) values.joinMethod = 'BY_INVITE';
+        if (osmTeamsId) values.joinMethod = 'OSM_TEAMS';
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
             <div className="cf pb5">
@@ -403,12 +403,12 @@ export function EditTeam() {
   const onUpdateTeamFailure = () => setIsError(true);
 
   const updateTeam = (payload) => {
-    if (payload.joinMethod !== 'BY_INVITE') {
+    if (['ANY', 'BY_REQUEST'].includes(payload.joinMethod)) {
       payload.visibility = 'PUBLIC';
     }
     payload.osm_teams_id = osmTeamsId;
-    // force teams synced with OSM Teams to have BY_INVITE join method
-    if (osmTeamsId) payload.joinMethod = 'BY_INVITE';
+    // force teams synced with OSM Teams to have OSM_TEAMS join method
+    if (osmTeamsId) payload.joinMethod = 'OSM_TEAMS';
 
     updateEntity(`teams/${id}/`, 'team', payload, token, forceUpdate, onUpdateTeamFailure);
   };
@@ -490,7 +490,7 @@ export function EditTeam() {
                 updateTeam={(selectedTeamId) =>
                   pushToLocalJSONAPI(
                     `teams/${id}/`,
-                    JSON.stringify({ osm_teams_id: selectedTeamId, joinMethod: 'BY_INVITE' }),
+                    JSON.stringify({ osm_teams_id: selectedTeamId, joinMethod: 'OSM_TEAMS' }),
                     token,
                     'PATCH',
                   )

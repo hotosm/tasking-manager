@@ -490,6 +490,15 @@ export default defineMessages({
     id: 'management.teams.join_method.by_invite.description',
     defaultMessage: 'Users can only join this team if managers invite them.',
   },
+  OSMTeams: {
+    id: 'management.teams.join_method.osm_teams',
+    defaultMessage: 'OSM Teams',
+  },
+  OSMTeamsDescription: {
+    id: 'management.teams.join_method.osm_teams.description',
+    defaultMessage:
+      'The users of this team are managed in OSM Teams. This option is automatically selected when you enable the sync with OSM Teams.',
+  },
   public: {
     id: 'management.teams.visibility.public',
     defaultMessage: 'Public',
@@ -578,10 +587,6 @@ export default defineMessages({
     id: 'management.teams.sync.update',
     defaultMessage: 'Synchronize again',
   },
-  confirmResync: {
-    id: 'management.teams.sync.confirm_resync',
-    defaultMessage: 'Confirm sync',
-  },
   confirmSelection: {
     id: 'management.teams.sync.confirm',
     defaultMessage: 'Confirm selection',
@@ -598,6 +603,10 @@ export default defineMessages({
     id: 'management.teams.sync.users.error',
     defaultMessage:
       '{number, plural, one {It was not possible to add the user: {users}.} other {It was not possible to add the users: {users}.}}',
+  },
+  syncUsersGenericError: {
+    id: 'management.teams.sync.users.generic_error',
+    defaultMessage: 'It was not possible to add some users.',
   },
   syncUsersErrorExtra: {
     id: 'management.teams.sync.users.error.extra',

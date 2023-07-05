@@ -1,7 +1,7 @@
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
 
 import { Root } from './views/root';
-import { Authorized } from './views/authorized';
+import { Authorized, OSMTeamsAuthorized } from './views/authorized';
 import { NotFound } from './views/notFound';
 import { FallbackComponent } from './views/fallback';
 import { Redirect } from './components/redirect';
@@ -198,6 +198,7 @@ export const router = createBrowserRouter(
         }}
       />
       <Route path="authorized" element={<Authorized />} />
+      <Route path="osmteams-authorized" element={<OSMTeamsAuthorized />} />
       <Route
         path="login"
         lazy={async () => {

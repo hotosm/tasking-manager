@@ -130,6 +130,7 @@ class TeamJoinMethod(Enum):
     ANY = 0
     BY_REQUEST = 1
     BY_INVITE = 2
+    OSM_TEAMS = 3
 
 
 class TeamRoles(Enum):

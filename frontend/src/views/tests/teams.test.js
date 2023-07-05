@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom';
-import { screen, waitFor, within, act } from '@testing-library/react';
+import { screen, waitFor, within, act, render } from '@testing-library/react';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
+import userEvent from '@testing-library/user-event';
 import toast from 'react-hot-toast';
 
 import {
@@ -12,11 +13,19 @@ import {
 import { ManageTeams, EditTeam, CreateTeam, MyTeams } from '../teams';
 import { store } from '../../store';
 import { setupFaultyHandlers } from '../../network/tests/server';
+import * as config from '../../config';
+import { teamWithOSMTeams } from '../../network/tests/mockData/teams';
 
 jest.mock('react-hot-toast', () => ({
   success: jest.fn(),
   error: jest.fn(),
 }));
+
+// Set OSM_TEAMS_CLIENT_ID to be able to test OSM Teams integration components
+Object.defineProperty(config, 'OSM_TEAMS_CLIENT_ID', {
+  value: () => '123abc',
+  writable: true,
+});
 
 describe('List Teams', () => {
   it('should show loading placeholder when teams are being fetched', async () => {
@@ -119,6 +128,79 @@ describe('Create Team', () => {
   });
 });
 
+describe('Create Team with OSM Teams integration', () => {
+  it('Sync with OSM Teams section is present', () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <CreateTeam />
+      </ReduxIntlProviders>,
+    );
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 122, username: 'test_user', role: 'ADMIN' },
+      });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+    });
+    expect(screen.getByText('Sync with OSM Teams')).toBeInTheDocument();
+    expect(screen.getByText('Authenticate OSM Teams')).toBeInTheDocument();
+  });
+  it('Setting osmteams_token enables team selection', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <CreateTeam />
+      </ReduxIntlProviders>,
+    );
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 122, username: 'test_user', role: 'ADMIN' },
+      });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({
+        type: 'SET_OSM_TEAMS_TOKEN',
+        osmteams_token: 'abc123',
+      });
+    });
+    expect(screen.queryByText('Authenticate OSM Teams')).not.toBeInTheDocument();
+    expect(screen.getByText('Select a team from OSM Teams')).toBeInTheDocument();
+    // Open OSM Teams selection modal
+    await userEvent.click(screen.getByText('Select a team from OSM Teams'));
+    await waitFor(() => expect(screen.getByText('OSM Teams Developers')).toBeInTheDocument());
+    expect(screen.getByText('SOTMUS 2023')).toBeInTheDocument();
+    expect(screen.getByText('My Friends')).toBeInTheDocument();
+    expect(screen.getAllByText('Cancel').length).toBe(2);
+    // Select a team
+    await userEvent.click(screen.getByText('OSM Teams Developers'));
+    await waitFor(() => expect(screen.getByTitle('geohacker')).toBeInTheDocument());
+    expect(screen.getByText('Selected team')).toBeInTheDocument();
+    expect(screen.getByText('Back')).toBeInTheDocument();
+    expect(screen.getAllByText('Managers').length).toBe(2);
+    expect(screen.getAllByText('Members').length).toBe(2);
+    await userEvent.click(screen.getByText('Confirm selection'));
+    // Modal closes
+    await waitFor(() =>
+      expect(screen.getByTitle('Open on OSM Teams').href.endsWith('/teams/1')).toBeTruthy()
+    );
+    expect(screen.queryByText('Selected team')).not.toBeInTheDocument();
+    expect(screen.getByTitle('kamicut')).toBeInTheDocument();
+    expect(screen.getByTitle('geohacker')).toBeInTheDocument();
+    expect(screen.getByTitle('wille')).toBeInTheDocument();
+    expect(screen.getByTitle('sanjayb')).toBeInTheDocument();
+    expect(screen.getByText('OSM Teams Developers')).toBeInTheDocument();
+    const radios = screen.getAllByRole('radio');
+    expect(radios.length).toBe(6);
+    // OSM Teams join method is checked and disabled
+    expect(radios.slice(0, 2).filter((i) => i.checked)).toEqual([]);
+    expect(radios[3].checked).toBeTruthy();
+    expect(radios[3].disabled).toBeTruthy();
+    // Privacy options are enabled and public is selected
+    expect(radios[4].checked).toBeTruthy();
+    expect(radios[4].disabled).toBeFalsy();
+    expect(radios[5].disabled).toBeFalsy();
+  });
+});
+
 describe('Edit Team', () => {
   it('should display default details of the team before editing', async () => {
     renderWithRouter(
@@ -192,6 +274,49 @@ describe('Edit Team', () => {
         screen.getByText(/Failed to update team information. Please try again/i),
       ).toBeInTheDocument(),
     );
+  });
+
+  it('Enable OSM Teams sync', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <EditTeam id={123} />
+      </ReduxIntlProviders>,
+    );
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 122, username: 'test_user', role: 'ADMIN' },
+      });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({
+        type: 'SET_OSM_TEAMS_TOKEN',
+        osmteams_token: 'abc123',
+      });
+    });
+    // Open OSM Teams selection modal
+    await userEvent.click(screen.getByText('Select a team from OSM Teams'));
+    await waitFor(() => expect(screen.getByText('OSM Teams Developers')).toBeInTheDocument());
+    expect(screen.getByText('SOTMUS 2023')).toBeInTheDocument();
+    expect(screen.getByText('My Friends')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    // Select a team
+    await userEvent.click(screen.getByText('OSM Teams Developers'));
+    await waitFor(() => expect(screen.getByTitle('geohacker')).toBeInTheDocument());
+    expect(screen.getByText('Selected team')).toBeInTheDocument();
+    expect(screen.getByText('Back')).toBeInTheDocument();
+    expect(screen.getAllByText('Managers').length).toBe(2);
+    expect(screen.getAllByText('Members').length).toBe(2);
+    await userEvent.click(screen.getByText('Confirm selection'));
+    // Modal closes
+    await waitFor(() =>
+      expect(screen.getByTitle('Open on OSM Teams').href.endsWith('/teams/1')).toBeTruthy()
+    );
+    expect(screen.queryByText('Selected team')).not.toBeInTheDocument();
+    expect(screen.getByTitle('kamicut')).toBeInTheDocument();
+    expect(screen.getByTitle('geohacker')).toBeInTheDocument();
+    expect(screen.getByTitle('wille')).toBeInTheDocument();
+    expect(screen.getByTitle('sanjayb')).toBeInTheDocument();
+    expect(screen.getByText('OSM Teams Developers')).toBeInTheDocument();
   });
 });
 

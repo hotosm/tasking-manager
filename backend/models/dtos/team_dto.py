@@ -39,6 +39,7 @@ def validate_team_join_method(value):
             f"{TeamJoinMethod.ANY.name}, "
             f"{TeamJoinMethod.BY_INVITE.name}, "
             f"{TeamJoinMethod.BY_REQUEST.name}"
+            f"{TeamJoinMethod.OSM_TEAMS.name}"
         )
 
 

@@ -15,11 +15,7 @@ const useFetchExternal = (url, trigger = true, token) => {
         setLoading(true);
         try {
           // replace in locale is needed because the backend uses underscore instead of dash
-          const response = await fetchExternalJSONAPI(
-            url,
-            token,
-            'GET',
-          );
+          const response = await fetchExternalJSONAPI(url, token, 'GET');
           setData(response);
           setLoading(false);
         } catch (e) {

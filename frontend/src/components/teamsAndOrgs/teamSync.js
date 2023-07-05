@@ -105,6 +105,7 @@ export const TeamSync = ({
   const token = useSelector((state) => state.auth.token);
   const [errors, setErrors] = useState(searchParams?.get('syncUsersErrors'));
   const [showSelectionModal, setShowSelectionModal] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const reSyncParams = {
     tmTeamId,
     members,
@@ -141,11 +142,16 @@ export const TeamSync = ({
               <>
                 <Button
                   className="ba b--red white bg-red mh1"
-                  onClick={() => reSyncUsers(reSyncParams)}
+                  loading={isSyncing}
+                  onClick={() => {
+                    setIsSyncing(true);
+                    reSyncUsers(reSyncParams);
+                    setIsSyncing(false);
+                  }}
                 >
                   <FormattedMessage {...messages.updateUsers} />
                 </Button>
-                {errors?.length > 0 && (
+                {errors && (
                   <div
                     className="pt2 pointer"
                     role="button"
@@ -154,9 +160,14 @@ export const TeamSync = ({
                   >
                     <Alert type="error">
                       <FormattedMessage
-                        {...messages.syncUsersError}
+                        {...messages[
+                          typeof errors === 'object' ? 'syncUsersError' : 'syncUsersGenericError'
+                        ]}
                         values={{
-                          users: errors.map((u) => u.username).join(' ,'),
+                          users:
+                            typeof errors === 'object'
+                              ? errors.map((u) => u.username).join(', ')
+                              : [],
                           number: errors.length,
                         }}
                       />

@@ -54,6 +54,7 @@ export function JoinMethodBox(props) {
     ANY: 'anyoneCanJoin',
     BY_REQUEST: 'byRequest',
     BY_INVITE: 'byInvite',
+    OSM_TEAMS: 'OSMTeams',
   };
   return (
     <div className={`tc br1 f7 ttu ba red b--red ${props.className}`}>

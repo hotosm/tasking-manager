@@ -366,6 +366,7 @@ class TeamsAllAPI(Resource):
                         - "ANY"
                         - "BY_REQUEST"
                         - "BY_INVITE"
+                        - "OSM_TEAMS"
         responses:
             201:
                 description: Team created successfully
