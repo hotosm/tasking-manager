@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryParam, StringParam } from 'use-query-params';
 import { FormattedMessage } from 'react-intl';
@@ -25,6 +25,7 @@ export function ValidateTask() {
 
 export function TaskAction({ project, action }: Object) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences.locale);
@@ -33,14 +34,12 @@ export function TaskAction({ project, action }: Object) {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const getTasks = () => {
-    fetchLocalJSONAPI(`users/queries/tasks/locked/details/`, token, 'GET', locale)
-      .then((res) => {
-        setTasks(res.tasks);
-        setLoading(false);
-      })
-      .catch((e) => navigate(`/projects/${project}/tasks/`));
-  };
+  useEffect(() => {
+    dispatch({ type: 'SET_VISIBILITY', isVisible: false });
+    return () => {
+      dispatch({ type: 'SET_VISIBILITY', isVisible: true });
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     if (userDetails.id && token && action && project) {
