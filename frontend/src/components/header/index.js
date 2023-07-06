@@ -100,7 +100,7 @@ export const Header = () => {
             </span>
           </div>
           <div className="tr red">
-            <a className="link red f6 mr2" href={`${ORG_URL}`} target="_blank">
+            <a className="link red f6 mr2" href={`${ORG_URL}`} target="_blank" rel="noreferrer">
               {ORG_NAME} Website
               <ExternalLinkIcon
                 title="externalLink"
