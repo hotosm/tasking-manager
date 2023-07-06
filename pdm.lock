@@ -188,12 +188,12 @@ dependencies = [
 
 [[package]]
 name = "flask-sqlalchemy"
-version = "3.0.3"
+version = "3.0.5"
 requires_python = ">=3.7"
 summary = "Add SQLAlchemy support to your Flask application."
 dependencies = [
-    "Flask>=2.2",
-    "SQLAlchemy>=1.4.18",
+    "flask>=2.2.5",
+    "sqlalchemy>=1.4.18",
 ]
 
 [[package]]
@@ -658,7 +658,7 @@ dependencies = [
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "dev", "lint", "test"]
-content_hash = "sha256:edb1ecf7fe88b9cc23aa2433357317ef3482c62001baee0fe59d8e8e6892be48"
+content_hash = "sha256:2a7b7dc1f35addf3be888d0d472aea5885e9df41a709f092ceec10178b4fd28a"
 
 [metadata.files]
 "alembic 1.11.1" = [
@@ -951,9 +951,9 @@ content_hash = "sha256:edb1ecf7fe88b9cc23aa2433357317ef3482c62001baee0fe59d8e8e6
     {url = "https://files.pythonhosted.org/packages/c0/ce/a0a133db616ea47f78a41e15c4c68b9f08cab3df31eb960f61899200a119/Flask-RESTful-0.3.10.tar.gz", hash = "sha256:fe4af2ef0027df8f9b4f797aba20c5566801b6ade995ac63b588abf1a59cec37"},
     {url = "https://files.pythonhosted.org/packages/d7/7b/f0b45f0df7d2978e5ae51804bb5939b7897b2ace24306009da0cc34d8d1f/Flask_RESTful-0.3.10-py2.py3-none-any.whl", hash = "sha256:1cf93c535172f112e080b0d4503a8d15f93a48c88bdd36dd87269bdaf405051b"},
 ]
-"flask-sqlalchemy 3.0.3" = [
-    {url = "https://files.pythonhosted.org/packages/7a/33/b0418aaeb6b122fccfdea1bf3c06843225ba29159b65c0acf9bd4285ee01/Flask-SQLAlchemy-3.0.3.tar.gz", hash = "sha256:2764335f3c9d7ebdc9ed6044afaf98aae9fa50d7a074cef55dde307ec95903ec"},
-    {url = "https://files.pythonhosted.org/packages/cf/93/606d1967d6ef1c663ccccc739b361e7672ec057bf086ca7e4cd23eda18a9/Flask_SQLAlchemy-3.0.3-py3-none-any.whl", hash = "sha256:add5750b2f9cd10512995261ee2aa23fab85bd5626061aa3c564b33bb4aa780a"},
+"flask-sqlalchemy 3.0.5" = [
+    {url = "https://files.pythonhosted.org/packages/c6/4e/0991354600fe3e1223cd9f025dbde900b1c1fe231762e18cdaffbe55938e/flask_sqlalchemy-3.0.5.tar.gz", hash = "sha256:c5765e58ca145401b52106c0f46178569243c5da25556be2c231ecc60867c5b1"},
+    {url = "https://files.pythonhosted.org/packages/d8/1d/c3c5afdaebd5d5f82d2c25762f5356416bd7bc109a550c79247134e48ca3/flask_sqlalchemy-3.0.5-py3-none-any.whl", hash = "sha256:cabb6600ddd819a9f859f36515bb1bd8e7dbf30206cc679d2b081dff9e383283"},
 ]
 "flask-swagger 0.2.14" = [
     {url = "https://files.pythonhosted.org/packages/18/78/2da3bf35a978127085ae6aff85d601b8842a4204fe88a506e23d0c79acc7/flask_swagger-0.2.14-py2-none-any.whl", hash = "sha256:3caddb1311388eafc86f82f8e64ba386a5df6b84e5f16dfae19ca08173eba216"},
