@@ -100,8 +100,8 @@ export const Header = () => {
             </span>
           </div>
           <div className="tr red">
-            <a className="link red f6 mr2" href={`https://${ORG_URL}`}>
-              {ORG_URL}
+            <a className="link red f6 mr2" href={`${ORG_URL}`} target="_blank">
+              {ORG_NAME} Website
               <ExternalLinkIcon
                 title="externalLink"
                 className="pl2 v-btm"
