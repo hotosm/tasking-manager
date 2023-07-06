@@ -15,7 +15,7 @@ dependencies = [
     "Flask-Migrate==4.0.4",
     "Flask-Mail==0.9.1",
     "Flask-RESTful==0.3.10",
-    "Flask-SQLAlchemy==3.0.3",
+    "Flask-SQLAlchemy==3.0.5",
     "flask-swagger==0.2.14",
     "GeoAlchemy2==0.13.3",
     "geojson==3.0.1",
