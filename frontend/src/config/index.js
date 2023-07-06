@@ -175,7 +175,9 @@ export const MAPBOX_RTL_PLUGIN_URL =
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';
 
 export const DROPZONE_SETTINGS = {
-  accept: 'image/*',
+  accept: {
+    'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'],
+  },
   multiple: false,
   maxSize: 256000,
 };
