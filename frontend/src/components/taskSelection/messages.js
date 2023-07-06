@@ -659,6 +659,18 @@ export default defineMessages({
     id: 'project.tasks.history.comment',
     defaultMessage: 'commented',
   },
+  taskDetailFetchError: {
+    id: 'project.tasks.history.taskDetailFetchError',
+    defaultMessage: 'An error occured while fetching the task details.',
+  },
+  noCommentsYet: {
+    id: 'project.tasks.history.noCommentsYet',
+    defaultMessage: 'No comments have been made on the task yet.',
+  },
+  noActivitiesToDisplay: {
+    id: 'project.tasks.history.nothingToDisplay',
+    defaultMessage: 'No comments/activities have been made on this task yet.',
+  },
   taskHistoryLockedMapping: {
     id: 'project.tasks.history.lockedmapping',
     defaultMessage: 'locked for mapping',

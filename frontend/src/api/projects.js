@@ -139,6 +139,24 @@ export const useProjectTimelineQuery = (projectId) => {
   });
 };
 
+export const useTaskDetail = (projectId, taskId, shouldRefetch) => {
+  const token = useSelector((state) => state.auth.token);
+
+  const fetchTaskDetail = ({ signal }) => {
+    return api(token).get(`projects/${projectId}/tasks/${taskId}/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['task-detail', projectId, taskId],
+    queryFn: fetchTaskDetail,
+    select: (data) => data.data,
+    enabled: !!(projectId && taskId),
+    refetchInterval: shouldRefetch ? 1000 * 60 : false,
+  });
+};
+
 const backendToQueryConversion = {
   difficulty: 'difficulty',
   campaign: 'campaign',
