@@ -17,7 +17,6 @@ import { getTaskContributors } from '../../utils/getTaskContributors';
 import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
-import { useFetch } from '../../hooks/UseFetch';
 import { useReadTaskComments } from '../../hooks/UseReadTaskComments';
 import { useDisableBadImagery } from '../../hooks/UseDisableBadImagery';
 import { DueDateBox } from '../projectCard/dueDateBox';
@@ -34,25 +33,20 @@ import { ActionTabsNav } from './actionTabsNav';
 import { LockedTaskModalContent } from './lockedTasks';
 import { SessionAboutToExpire, SessionExpired } from './extendSession';
 import { MappingTypes } from '../mappingTypes';
+import { usePriorityAreasQuery, useTaskDetail } from '../../api/projects';
+
 const Editor = React.lazy(() => import('../editor'));
 const RapiDEditor = React.lazy(() => import('../rapidEditor'));
 
 const MINUTES_BEFORE_DIALOG = 5;
 
-export function TaskMapAction({
-  project,
-  projectIsReady,
-  tasks,
-  activeTasks,
-  getTasks,
-  action,
-  editor,
-}) {
+export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, editor }) {
+  useSetProjectPageTitleTag(project);
+  const intl = useIntl();
   const navigate = useNavigate();
   const location = useLocation();
   const aboutToExpireTimeoutRef = useRef();
   const expiredTimeoutRef = useRef();
-  useSetProjectPageTitleTag(project);
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const [activeSection, setActiveSection] = useState('completion');
@@ -80,28 +74,20 @@ export function TaskMapAction({
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const [showSessionExpiringDialog, setShowSessionExpiringDialog] = useState(false);
   const [showSessionExpiredDialog, setSessionTimeExpiredDialog] = useState(false);
-  const intl = useIntl();
 
-  const activeTask = activeTasks && activeTasks[0];
+  const activeTask = activeTasks?.[0];
   const timer = new Date(activeTask.lastUpdated);
   timer.setSeconds(timer.getSeconds() + activeTask.autoUnlockSeconds);
   //eslint-disable-next-line
-  const [taskHistoryError, taskHistoryLoading, taskHistory] = useFetch(
-    `projects/${project.projectId}/tasks/${tasksIds[0]}/`,
-    project.projectId && tasksIds && tasksIds.length === 1,
-  );
+  const { data: taskDetail } = useTaskDetail(project.projectId, tasksIds[0]);
+  const { data: priorityArea } = usePriorityAreasQuery(project.projectId);
 
-  const [, , priorityAreas] = useFetch(
-    `projects/${project.projectId}/queries/priority-areas/`,
-    project.projectId !== undefined,
-  );
-
-  const contributors = taskHistory?.taskHistory
-    ? getTaskContributors(taskHistory.taskHistory, userDetails.username)
+  const contributors = taskDetail?.taskHistory
+    ? getTaskContributors(taskDetail.taskHistory, userDetails.username)
     : [];
 
-  const readTaskComments = useReadTaskComments(taskHistory);
-  const disableBadImagery = useDisableBadImagery(taskHistory);
+  const readTaskComments = useReadTaskComments(taskDetail);
+  const disableBadImagery = useDisableBadImagery(taskDetail);
 
   const getTaskGpxUrlCallback = useCallback((project, tasks) => getTaskGpxUrl(project, tasks), []);
   const formatImageryUrlCallback = useCallback((imagery) => formatImageryUrl(imagery), []);
@@ -135,7 +121,7 @@ export function TaskMapAction({
   }, [activeTask.autoUnlockSeconds, activeTask.lastUpdated]);
 
   useEffect(() => {
-    if (!editor && projectIsReady && userDetails.defaultEditor && tasks && tasksIds) {
+    if (!editor && userDetails.defaultEditor && tasks && tasksIds) {
       let editorToUse;
       if (action === 'MAPPING') {
         editorToUse = project.mappingEditors.includes(userDetails.defaultEditor)
@@ -161,16 +147,7 @@ export function TaskMapAction({
         navigate(`./?editor=${editorToUse[0]}`);
       }
     }
-  }, [
-    editor,
-    project,
-    projectIsReady,
-    userDetails.defaultEditor,
-    action,
-    tasks,
-    tasksIds,
-    navigate,
-  ]);
+  }, [editor, project, userDetails.defaultEditor, action, tasks, tasksIds, navigate]);
 
   useEffect(() => {
     if (location.state?.directedFrom) {
@@ -258,7 +235,7 @@ export function TaskMapAction({
                 type="media"
                 rows={26}
                 delay={10}
-                ready={tasks !== undefined && tasks.features !== undefined}
+                ready={Boolean(tasks?.features !== undefined)}
               >
                 <TasksMap
                   mapResults={tasks}
@@ -267,6 +244,7 @@ export function TaskMapAction({
                   animateZoom={false}
                   selected={tasksIds}
                   showTaskIds={action === 'VALIDATION'}
+                  priorityAreas={priorityArea}
                 />
               </ReactPlaceholder>
             )}
@@ -315,9 +293,7 @@ export function TaskMapAction({
                     setActiveSection={setActiveSection}
                     activeTasks={activeTasks}
                     historyTabSwitch={historyTabSwitch}
-                    taskHistoryLength={
-                      taskHistory && taskHistory.taskHistory && taskHistory.taskHistory.length
-                    }
+                    taskHistoryLength={taskDetail?.taskHistory?.length}
                     action={action}
                   />
                 </div>
@@ -400,7 +376,7 @@ export function TaskMapAction({
                                   animateZoom={false}
                                   selected={tasksIds}
                                   showTaskIds={action === 'VALIDATION'}
-                                  priorityAreas={priorityAreas}
+                                  priorityAreas={priorityArea}
                                 />
                               </div>
                             )}
@@ -421,11 +397,7 @@ export function TaskMapAction({
                     <>
                       {activeTasks.length === 1 && (
                         <>
-                          <TaskHistory
-                            projectId={project.projectId}
-                            taskId={tasksIds[0]}
-                            commentPayload={taskHistory}
-                          />
+                          <TaskHistory projectId={project.projectId} taskId={tasksIds[0]} />
                         </>
                       )}
                       {action === 'VALIDATION' && activeTasks.length > 1 && (

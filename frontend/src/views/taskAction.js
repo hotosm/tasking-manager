@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryParam, StringParam } from 'use-query-params';
@@ -6,33 +6,30 @@ import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
-import { useFetch } from '../hooks/UseFetch';
-import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { Button } from '../components/button';
 import { TaskMapAction } from '../components/taskSelection/action';
 import { AnotherProjectLock } from '../components/taskSelection/lockedTasks';
-import { Login } from './login';
+import { useLockedTasksQuery } from '../api/user';
+import { useProjectSummaryQuery, useTasksQuery } from '../api/projects';
 
 export function MapTask() {
   const { id } = useParams();
-  return <TaskAction project={id} action="MAPPING" />;
+  return <TaskAction projectId={id} action="MAPPING" />;
 }
 
 export function ValidateTask() {
   const { id } = useParams();
-  return <TaskAction project={id} action="VALIDATION" />;
+  return <TaskAction projectId={id} action="VALIDATION" />;
 }
 
-export function TaskAction({ project, action }: Object) {
+export function TaskAction({ projectId, action }: Object) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences.locale);
   // eslint-disable-next-line
   const [editor, setEditor] = useQueryParam('editor', StringParam);
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  const { isLoading, data: lockedTasks, refetch: getTasks } = useLockedTasksQuery();
 
   useEffect(() => {
     dispatch({ type: 'SET_VISIBILITY', isVisible: false });
@@ -42,96 +39,82 @@ export function TaskAction({ project, action }: Object) {
   }, [dispatch]);
 
   useEffect(() => {
-    if (userDetails.id && token && action && project) {
-      getTasks();
+    if (!token) {
+      navigate('/login', {
+        state: {
+          from: `/projects/${projectId}/${action === 'VALIDATION' ? 'validate' : 'map'}/`,
+        },
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [action, userDetails.id, token, project, locale]);
+  }, [action, navigate, projectId, token]);
 
-  if (token) {
-    if (loading) {
-      return (
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          type="text"
-          rows={4}
-          delay={10}
-          ready={!loading}
-        >
-          Loading...
-        </ReactPlaceholder>
-      );
-    }
-    // if user has not locked tasks on the system, suggest him to go to the task selection page of the current project
-    if (tasks.length === 0) {
-      return (
-        <div className="cf pull-center pa4">
-          <p>
-            <FormattedMessage
-              {...messages.noLockedTasksMessage}
-              values={{ currentProject: project }}
-            />
-          </p>
-          <Button className="bg-red white" onClick={() => navigate(`/projects/${project}/tasks/`)}>
-            <FormattedMessage {...messages.goToProjectButton} values={{ project: project }} />
-          </Button>
-        </div>
-      );
-    }
-    // if user has locked tasks on another project, suggest him to go update it
-    if (tasks.length > 0 && tasks[0].projectId !== Number(project)) {
-      const action = tasks[0].taskStatus === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
-      return (
-        <div className="cf tc blue-dark pull-center pa4">
-          <AnotherProjectLock
-            projectId={tasks[0].projectId}
-            action={action}
-            lockedTasksLength={tasks.length}
-          />
-        </div>
-      );
-    }
-    if (tasks.length > 0 && tasks[0].projectId === Number(project)) {
-      return (
-        <TaskActionPossible
-          project={project}
-          tasks={tasks}
-          action={action}
-          editor={editor}
-          getTasks={getTasks}
-        />
-      );
-    }
-  } else {
+  if (isLoading) {
     return (
-      <Login redirectTo={`/projects/${project}/${action === 'VALIDATION' ? 'validate' : 'map'}/`} />
+      <ReactPlaceholder showLoadingAnimation={true} type="text" rows={4} delay={10}>
+        Loading...
+      </ReactPlaceholder>
+    );
+  }
+
+  // if user has not locked tasks on the system, suggest him to go to the task selection page of the current project
+  if (lockedTasks.length === 0) {
+    return (
+      <div className="cf pull-center pa4">
+        <p>
+          <FormattedMessage
+            {...messages.noLockedTasksMessage}
+            values={{ currentProject: projectId }}
+          />
+        </p>
+        <Button className="bg-red white" onClick={() => navigate(`/projects/${projectId}/tasks/`)}>
+          <FormattedMessage {...messages.goToProjectButton} values={{ project: projectId }} />
+        </Button>
+      </div>
+    );
+  }
+
+  // if user has locked tasks on another project, suggest him to go update it
+  if (lockedTasks.length > 0 && lockedTasks[0].projectId !== Number(projectId)) {
+    const action = lockedTasks[0].taskStatus === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
+    return (
+      <div className="cf tc blue-dark pull-center pa4">
+        <AnotherProjectLock
+          projectId={lockedTasks[0].projectId}
+          action={action}
+          lockedTasksLength={lockedTasks.length}
+        />
+      </div>
+    );
+  }
+
+  if (lockedTasks.length > 0 && lockedTasks[0].projectId === Number(projectId)) {
+    return (
+      <TaskActionPossible
+        projectId={projectId}
+        tasks={lockedTasks}
+        action={action}
+        editor={editor}
+        getTasks={getTasks}
+      />
     );
   }
 }
 
-export function TaskActionPossible({ project, tasks, action, editor, getTasks }) {
-  const [tasksGeojson, setTasksGeojson] = useState();
-  const [projectDataError, projectDataLoading, projectData] = useFetch(
-    `projects/${project}/queries/summary/`,
-    project,
-  );
-  useEffect(() => {
-    if (project && tasks) {
-      fetchLocalJSONAPI(`projects/${project}/tasks/`).then((res) => setTasksGeojson(res));
-    }
-  }, [project, tasks]);
+export function TaskActionPossible({ projectId, tasks, action, editor, getTasks }) {
+  const { data: project, status } = useProjectSummaryQuery(projectId);
+  const { data: tasksGeojson } = useTasksQuery(projectId);
+
   return (
     <div className="cf w-100">
       <ReactPlaceholder
-        showLoadingAnimation={true}
+        showLoadingAnimation
         type="media"
         rows={26}
         delay={10}
-        ready={!projectDataError && !projectDataLoading && tasksGeojson !== null}
+        ready={status === 'success' && tasksGeojson}
       >
         <TaskMapAction
-          project={projectData}
-          projectIsReady={!projectDataError && !projectDataLoading}
+          project={project}
           tasks={tasksGeojson}
           activeTasks={tasks}
           getTasks={getTasks}

@@ -6,6 +6,7 @@ import { QueryParamProvider } from 'use-query-params';
 import { MapTask, TaskAction, ValidateTask } from '../taskAction';
 import {
   createComponentWithMemoryRouter,
+  QueryClientProviders,
   ReduxIntlProviders,
   renderWithRouter,
 } from '../../utils/testWithIntl';
@@ -14,11 +15,13 @@ import { store } from '../../store';
 describe('Submitting Mapping Status for a Task', () => {
   const setup = () => {
     const { user, router } = createComponentWithMemoryRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <MapTask />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <MapTask />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
       {
         route: '/projects/:id/map/',
         entryRoute: '/projects/123/map/',
@@ -53,11 +56,13 @@ describe('Submitting Mapping Status for a Task', () => {
   it('should suggest the user to update status of previously locked task', async () => {
     // Not using the setup function here to have different result for project detail
     renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <TaskAction project={555} action="MAPPING" />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <TaskAction project={555} action="MAPPING" />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
 
     await waitFor(() =>
@@ -164,25 +169,21 @@ describe('Submitting Mapping Status for a Task', () => {
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: null });
     });
-    setup();
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', {
-          name: /log in/i,
-        }),
-      ).toBeInTheDocument(),
-    );
+    const { router } = setup();
+    await waitFor(() => expect(router.state.location.pathname).toBe('/login'));
   });
 });
 
 describe('Submitting Validation Status for Tasks', () => {
   const setup = () => {
     const { user, router } = createComponentWithMemoryRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <ValidateTask />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <ValidateTask />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
       {
         route: '/projects/:id/validate/',
         entryRoute: '/projects/123/validate',
@@ -243,11 +244,13 @@ describe('Submitting Validation Status for Tasks', () => {
 describe('Tabs in Task Action Page', () => {
   const setup = async () => {
     const { user, router } = createComponentWithMemoryRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <ValidateTask />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <ValidateTask />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
       {
         route: '/projects/:id/validate/',
         entryRoute: '/projects/123/validate',

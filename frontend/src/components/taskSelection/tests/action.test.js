@@ -5,22 +5,28 @@ import { getProjectSummary } from '../../../network/tests/mockData/projects';
 import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/userStats';
 import { setupFaultyHandlers } from '../../../network/tests/server';
 import tasksGeojson from '../../../utils/tests/snippets/tasksGeometry';
-import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+import {
+  QueryClientProviders,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 import { TaskMapAction } from '../action';
 import messages from '../messages';
 
 const setup = () => {
   return {
     ...renderWithRouter(
-      <ReduxIntlProviders>
-        <TaskMapAction
-          project={getProjectSummary(123)}
-          projectIsReady
-          tasks={tasksGeojson}
-          activeTasks={userMultipleLockedTasksDetails.tasks}
-          action="VALIDATION"
-        />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <TaskMapAction
+            project={getProjectSummary(123)}
+            projectIsReady
+            tasks={tasksGeojson}
+            activeTasks={userMultipleLockedTasksDetails.tasks}
+            action="VALIDATION"
+          />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     ),
   };
 };
