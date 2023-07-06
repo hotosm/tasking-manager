@@ -4,6 +4,7 @@ import { act, screen, waitFor, within } from '@testing-library/react';
 import '../../../utils/mockMatchMedia';
 import { store } from '../../../store';
 import {
+  QueryClientProviders,
   ReduxIntlProviders,
   createComponentWithMemoryRouter,
   renderWithRouter,
@@ -16,9 +17,11 @@ describe('Notification Bell', () => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
     const { container } = renderWithRouter(
-      <ReduxIntlProviders>
-        <NotificationBell />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <NotificationBell />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
       {
         route: '/inbox',
       },
@@ -35,9 +38,11 @@ describe('Notification Bell', () => {
 
   it('should clear unread notification count when bell icon is clicked', async () => {
     const { user, container } = renderWithRouter(
-      <ReduxIntlProviders>
-        <NotificationBell />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <NotificationBell />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     expect(screen.getAllByRole('link')[0]).not.toHaveClass('bb b--blue-dark bw1 pv2');
     expect(await screen.findByText(/Sample subject 1/i)).toBeInTheDocument();
@@ -52,9 +57,11 @@ describe('Notification Bell', () => {
 
   it('should navigate to the notifications page', async () => {
     const { router, user } = createComponentWithMemoryRouter(
-      <ReduxIntlProviders>
-        <NotificationBell />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <NotificationBell />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     await user.click(await screen.findByText(/208 unread/i));
     await waitFor(() => expect(router.state.location.pathname).toBe('/inbox'));

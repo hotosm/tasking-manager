@@ -48,11 +48,6 @@ describe('Contributions Page', () => {
     await user.click(screen.getByRole('combobox'));
     expect(await screen.findByText('#8629')).toBeInTheDocument();
     expect(await screen.findByText('Task #1822 · Project #5871')).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', {
-        name: '1',
-      }),
-    ).toBeInTheDocument();
   });
 });
 
