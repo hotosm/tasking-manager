@@ -13,7 +13,6 @@ import {
 } from 'use-query-params';
 import { stringify } from 'query-string';
 import toast from 'react-hot-toast';
-import Popup from 'reactjs-popup';
 
 import messages from './messages';
 import { OSM_TEAMS_CLIENT_ID } from '../config';
@@ -36,10 +35,10 @@ import {
   TeamForm,
   TeamsManagement,
   TeamSideBar,
+  TeamDetailPageFooter,
 } from '../components/teamsAndOrgs/teams';
 import { MessageMembers } from '../components/teamsAndOrgs/messageMembers';
 import { Projects } from '../components/teamsAndOrgs/projects';
-import { LeaveTeamConfirmationAlert } from '../components/teamsAndOrgs/leaveTeamConfirmationAlert';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { NotFound } from './notFound';
@@ -591,55 +590,12 @@ export function TeamDetail() {
             />
           </div>
         </div>
-        <div className="fixed bottom-0 cf bg-white h3 w-100">
-          <div
-            className={`${
-              team.joinMethod === 'BY_INVITE' && !isMember ? 'w-100-ns' : 'w-80-ns'
-            } w-60-m w-50 h-100 fl tr`}
-          >
-            <Link to={'/contributions/teams'}>
-              <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
-                <FormattedMessage {...messages.myTeams} />
-              </CustomButton>
-            </Link>
-          </div>
-          <div className="w-20-l w-40-m w-50 h-100 fr">
-            {isMember ? (
-              <Popup
-                trigger={
-                  <CustomButton
-                    className="w-100 h-100 bg-red white"
-                    disabledClassName="bg-red o-50 white w-100 h-100"
-                  >
-                    <FormattedMessage
-                      {...messages[isMember === 'requested' ? 'cancelRequest' : 'leaveTeam']}
-                    />
-                  </CustomButton>
-                }
-                modal
-                closeOnEscape
-              >
-                {(close) => (
-                  <LeaveTeamConfirmationAlert
-                    teamName={team.name}
-                    close={close}
-                    leaveTeam={leaveTeam}
-                  />
-                )}
-              </Popup>
-            ) : (
-              team.joinMethod !== 'BY_INVITE' && (
-                <CustomButton
-                  className="w-100 h-100 bg-red white"
-                  disabledClassName="bg-red o-50 white w-100 h-100"
-                  onClick={() => joinTeam()}
-                >
-                  <FormattedMessage {...messages.joinTeam} />
-                </CustomButton>
-              )
-            )}
-          </div>
-        </div>
+        <TeamDetailPageFooter
+          team={team}
+          isMember={isMember}
+          joinTeamFn={joinTeam}
+          leaveTeamFn={leaveTeam}
+        />
       </>
     );
   }

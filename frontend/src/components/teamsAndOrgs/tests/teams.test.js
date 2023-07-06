@@ -3,6 +3,7 @@ import TestRenderer from 'react-test-renderer';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { FormattedMessage } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
+import userEvent from '@testing-library/user-event';
 
 import {
   createComponentWithIntl,
@@ -11,7 +12,7 @@ import {
   renderWithRouter,
   createComponentWithMemoryRouter,
 } from '../../../utils/testWithIntl';
-import { TeamBox, TeamsBoxList, TeamsManagement, Teams, TeamCard, TeamSideBar } from '../teams';
+import { TeamBox, TeamsBoxList, TeamsManagement, Teams, TeamCard, TeamSideBar, TeamDetailPageFooter } from '../teams';
 import { store } from '../../../store';
 import { teams, team } from '../../../network/tests/mockData/teams';
 
@@ -400,5 +401,150 @@ describe('TeamSideBar component', () => {
         name: team.members[0].username,
       }),
     ).not.toBeInTheDocument();
+  });
+
+  it('when OSM Teams sync is enabled, it should show a message', () => {
+    const teamWithOSMTeams = {...team};
+    teamWithOSMTeams.osm_teams_id = 1234;
+    teamWithOSMTeams.joinMethod = 'OSM_TEAMS';
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <TeamSideBar team={teamWithOSMTeams} managers={[]} members={team.members} />
+      </ReduxIntlProviders>,
+    );
+
+    expect(
+      screen.getByText(
+        'The members and managers of this team are configured through the OSM Teams platform.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Open on OSM Teams').href.endsWith('/teams/1234')
+    ).toBeTruthy();
+  });
+});
+
+
+describe('TeamDetailPageFooter component', () => {
+  const joinTeamFn = jest.fn();
+  const leaveTeamFn = jest.fn();
+
+  it('has Join team button enabled for ANY joinMethod if user is not member', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <TeamDetailPageFooter
+          team={{joinMethod: 'ANY', name: 'The #1 Team'}}
+          isMember={false}
+          joinTeamFn={joinTeamFn}
+          leaveTeamFn={leaveTeamFn}
+        />
+      </ReduxIntlProviders>
+    );
+    expect(screen.getByText('Join team').disabled).toBeFalsy();
+    await userEvent.click(screen.getByText('Join team'));
+    expect(joinTeamFn).toHaveBeenCalledTimes(1);
+    expect(
+      screen.getByRole('link').href.endsWith('/contributions/teams')
+    ).toBeTruthy();
+  });
+
+  it('has Leave team button enabled for ANY joinMethod if user is a member', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <TeamDetailPageFooter
+          team={{joinMethod: 'ANY', name: 'The #1 Team'}}
+          isMember={true}
+          joinTeamFn={joinTeamFn}
+          leaveTeamFn={leaveTeamFn}
+        />
+      </ReduxIntlProviders>
+    );
+    expect(screen.getByText('Leave team').disabled).toBeFalsy();
+    await userEvent.click(screen.getByText('Leave team'));
+    await userEvent.click(screen.getByText('Leave'));
+    expect(leaveTeamFn).toHaveBeenCalledTimes(1);
+    expect(
+      screen.getByRole('link').href.endsWith('/contributions/teams')
+    ).toBeTruthy();
+  });
+
+  it('has Join team button enabled for BY_REQUEST joinMethod if user is not member', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <TeamDetailPageFooter
+          team={{joinMethod: 'BY_REQUEST', name: 'The #1 Team'}}
+          isMember={false}
+          joinTeamFn={joinTeamFn}
+          leaveTeamFn={leaveTeamFn}
+        />
+      </ReduxIntlProviders>
+    );
+    expect(screen.getByText('Join team').disabled).toBeFalsy();
+    await userEvent.click(screen.getByText('Join team'));
+    expect(joinTeamFn).toHaveBeenCalledTimes(1);
+  });
+
+  it('has Leave team button enabled for BY_REQUEST joinMethod if user is a member', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <TeamDetailPageFooter
+          team={{joinMethod: 'BY_REQUEST', name: 'The #1 Team'}}
+          isMember={true}
+          joinTeamFn={joinTeamFn}
+          leaveTeamFn={leaveTeamFn}
+        />
+      </ReduxIntlProviders>
+    );
+    expect(screen.getByText('Leave team').disabled).toBeFalsy();
+    await userEvent.click(screen.getByText('Leave team'));
+    await userEvent.click(screen.getByText('Leave'));
+    expect(leaveTeamFn).toHaveBeenCalledTimes(1);
+  });
+
+  it('has Leave team button enabled for BY_INVITE joinMethod if user is a member', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <TeamDetailPageFooter
+          team={{joinMethod: 'BY_INVITE', name: 'The #1 Team'}}
+          isMember={true}
+          joinTeamFn={joinTeamFn}
+          leaveTeamFn={leaveTeamFn}
+        />
+      </ReduxIntlProviders>
+    );
+    expect(screen.getByText('Leave team').disabled).toBeFalsy();
+    await userEvent.click(screen.getByText('Leave team'));
+    await userEvent.click(screen.getByText('Leave'));
+    expect(leaveTeamFn).toHaveBeenCalledTimes(1);
+  });
+
+  it('has Join team button disabled for OSM_TEAMS joinMethod if user is not a member', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <TeamDetailPageFooter
+          team={{joinMethod: 'OSM_TEAMS', name: 'The #1 Team'}}
+          isMember={false}
+          joinTeamFn={joinTeamFn}
+          leaveTeamFn={leaveTeamFn}
+        />
+      </ReduxIntlProviders>
+    );
+    expect(screen.getByText('Join team').disabled).toBeTruthy();
+    await userEvent.click(screen.getByText('Join team'));
+    expect(joinTeamFn).toHaveBeenCalledTimes(0);
+  });
+
+  it('has Leave team button disabled for OSM_TEAMS joinMethod if user is a member', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <TeamDetailPageFooter
+          team={{joinMethod: 'OSM_TEAMS', name: 'The #1 Team'}}
+          isMember={true}
+          joinTeamFn={joinTeamFn}
+          leaveTeamFn={leaveTeamFn}
+        />
+      </ReduxIntlProviders>
+    );
+    expect(screen.getByText('Leave team').disabled).toBeTruthy();
   });
 });

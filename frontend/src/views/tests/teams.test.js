@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { screen, waitFor, within, act, render } from '@testing-library/react';
+import { screen, waitFor, within, act } from '@testing-library/react';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
 import userEvent from '@testing-library/user-event';
@@ -14,7 +14,6 @@ import { ManageTeams, EditTeam, CreateTeam, MyTeams } from '../teams';
 import { store } from '../../store';
 import { setupFaultyHandlers } from '../../network/tests/server';
 import * as config from '../../config';
-import { teamWithOSMTeams } from '../../network/tests/mockData/teams';
 
 jest.mock('react-hot-toast', () => ({
   success: jest.fn(),

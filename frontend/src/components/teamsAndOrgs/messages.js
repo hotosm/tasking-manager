@@ -659,4 +659,16 @@ export default defineMessages({
     id: 'management.stats.overview',
     defaultMessage: 'Overview',
   },
+  joinTeam: {
+    id: 'teamsAndOrgs.management.button.join_team',
+    defaultMessage: 'Join team',
+  },
+  cancelRequest: {
+    id: 'teamsAndOrgs.management.button.cancel_request',
+    defaultMessage: 'Cancel request',
+  },
+  leaveTeam: {
+    id: 'teamsAndOrgs.management.button.leave_team',
+    defaultMessage: 'Leave team',
+  },
 });

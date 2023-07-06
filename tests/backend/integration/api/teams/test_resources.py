@@ -248,6 +248,7 @@ class TestTeamsAllPI(BaseTestCase):
                     "organisationId": 23,
                     "description": None,
                     "joinMethod": "ANY",
+                    "osm_teams_id": None,
                     "logo": None,
                     "managersCount": 0,
                     "members": [],

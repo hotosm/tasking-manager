@@ -65,8 +65,8 @@ class OSMTeamsAuthenticationAPI(Resource):
         state = AuthenticationService.generate_random_state()
         osm_teams.state = state
         login_url, state = osm_teams.authorization_url(
-          EnvironmentConfig.OSM_TEAMS_AUTH_URL
-          )
+            EnvironmentConfig.OSM_TEAMS_AUTH_URL
+        )
         return {"auth_url": login_url, "state": state}, 200
 
 

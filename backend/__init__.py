@@ -106,7 +106,7 @@ def create_app(env="backend.config.EnvironmentConfig"):
         env = "backend.config.TestEnvironmentConfig"
     app.config.from_object(env)
     # Enable logging to files
-    # initialise_logger(app)
+    initialise_logger(app)
     app.logger.info("Starting up a new Tasking Manager application")
 
     # Connect to database
@@ -380,7 +380,7 @@ def add_api_endpoints(app):
         SystemAuthenticationLoginAPI,
         SystemAuthenticationCallbackAPI,
         OSMTeamsAuthenticationCallbackAPI,
-        OSMTeamsAuthenticationAPI
+        OSMTeamsAuthenticationAPI,
     )
     from backend.api.system.applications import SystemApplicationsRestAPI
     from backend.api.system.image_upload import SystemImageUploadRestAPI
@@ -936,7 +936,8 @@ def add_api_endpoints(app):
         SystemAuthenticationCallbackAPI, format_url("system/authentication/callback/")
     )
     api.add_resource(
-        OSMTeamsAuthenticationCallbackAPI, format_url("system/osm-teams-authentication/callback/")
+        OSMTeamsAuthenticationCallbackAPI,
+        format_url("system/osm-teams-authentication/callback/"),
     )
     api.add_resource(
         SystemAuthenticationEmailAPI, format_url("system/authentication/email/")
