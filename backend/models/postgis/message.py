@@ -119,7 +119,8 @@ class Message(db.Model):
                 .filter(Task.project_id == project_id)
                 .filter(Task.validated_by.isnot(None))
             )
-        )
+            .distinct()
+        ).all()
         return contributors
 
     @staticmethod
