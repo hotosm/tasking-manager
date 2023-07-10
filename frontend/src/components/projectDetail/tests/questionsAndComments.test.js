@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, screen, act, waitFor } from '@testing-library/react';
+import { render, screen, act, waitFor, within } from '@testing-library/react';
 
 import { store } from '../../../store';
 
@@ -73,6 +73,7 @@ describe('test if QuestionsAndComments component', () => {
 
     await waitFor(() => expect(screen.getByText('hello world')).toBeInTheDocument());
     await user.click(screen.getAllByRole('button')[0]);
+    await user.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Delete' }));
     await waitFor(() => expect(retryFnMock).toHaveBeenCalledTimes(1));
   });
 });
