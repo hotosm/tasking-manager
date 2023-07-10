@@ -605,6 +605,7 @@ class ProjectService:
                 project_id, project.default_locale
             ).name
             project.progress_email_sent = True
+            project.save()
             threading.Thread(
                 target=SMTPService.send_email_to_contributors_on_project_progress,
                 args=(
