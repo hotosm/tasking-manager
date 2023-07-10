@@ -1,10 +1,9 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import TestRenderer from 'react-test-renderer';
+import TestRenderer, { act } from 'react-test-renderer';
 
 import { CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
-import { act } from '@testing-library/react';
 
 export const createTestDropdown = (options) => {
   const testElement = TestRenderer.create(
