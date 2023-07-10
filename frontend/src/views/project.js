@@ -156,12 +156,9 @@ export const MoreFilters = () => {
   useEffect(() => {
     // Disable scrolling outside the component when it appears
     document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-
     return () => {
       // Restore scrolling when the component is closed
       document.body.style.overflow = 'auto';
-      document.documentElement.style.overflow = 'auto';
     };
   }, []);
 
@@ -193,7 +190,7 @@ export const MoreFilters = () => {
         className="absolute left-0 z-4 mt1 w-40-l w-100 bg-white h4 ph1 ph5-l"
         style={{ height: `${componentHeight}px` }}
       >
-        <div className="scrollable-container h-100 overflow-auto">
+        <div className="scrollable-container h-100  overflow-x-hidden overflow-y-auto">
           <MoreFiltersForm currentUrl={currentUrl} />
         </div>
       </div>
