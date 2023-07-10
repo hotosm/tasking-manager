@@ -116,6 +116,9 @@ class SMTPService:
                     and contributor.is_email_verified
                     and contributor.projects_notifications
                 ):
+                    current_app.logger.debug(
+                        f"Sending {email_type} email to {contributor.email_address} for project {project_id}"
+                    )
                     SMTPService._send_message(
                         contributor.email_address, subject, html_template
                     )
