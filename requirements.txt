@@ -43,7 +43,7 @@ shapely==2.0.1
 SQLAlchemy==2.0.19
 Werkzeug==2.3.6
 # Dev dependencies (stuff useful for development)
-black==23.3.0
+black==23.7.0
 coverage==7.2.7
 flake8==6.1.0
 psycopg2-binary>=2.9.6
