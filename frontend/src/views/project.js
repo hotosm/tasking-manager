@@ -154,10 +154,8 @@ export const MoreFilters = () => {
   const [componentHeight, setComponentHeight] = useState(`${window.innerHeight}px`);
 
   useEffect(() => {
-    // Disable scrolling outside the component when it appears
     document.body.style.overflow = 'hidden';
     return () => {
-      // Restore scrolling when the component is closed
       document.body.style.overflow = 'auto';
     };
   }, []);
