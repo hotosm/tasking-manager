@@ -253,6 +253,18 @@ class StatsService:
                 func.array_agg(Task.id).label("task_ids"),
             )
             .filter(Task.project_id == project_id)
+            .filter(Task.task_status != TaskStatus.BADIMAGERY.value)
+            .group_by(Task.mapped_by)
+            .subquery()
+        )
+        badimagery_stmt = (
+            Task.query.with_entities(
+                Task.mapped_by,
+                func.count(Task.mapped_by).label("count"),
+                func.array_agg(Task.id).label("task_ids"),
+            )
+            .filter(Task.project_id == project_id)
+            .filter(Task.task_status == TaskStatus.BADIMAGERY.value)
             .group_by(Task.mapped_by)
             .subquery()
         )
@@ -286,15 +298,19 @@ class StatsService:
                 User.date_registered,
                 coalesce(mapped_stmt.c.count, 0).label("mapped"),
                 coalesce(validated_stmt.c.count, 0).label("validated"),
+                coalesce(badimagery_stmt.c.count, 0).label("bad_imagery"),
                 (
                     coalesce(mapped_stmt.c.count, 0)
                     + coalesce(validated_stmt.c.count, 0)
+                    + coalesce(badimagery_stmt.c.count, 0)
                 ).label("total"),
                 mapped_stmt.c.task_ids.label("mapped_tasks"),
                 validated_stmt.c.task_ids.label("validated_tasks"),
+                badimagery_stmt.c.task_ids.label("bad_imagery_tasks"),
             )
             .join(project_contributions, User.id == project_contributions.c.user_id)
             .outerjoin(mapped_stmt, User.id == mapped_stmt.c.mapped_by)
+            .outerjoin(badimagery_stmt, User.id == badimagery_stmt.c.mapped_by)
             .outerjoin(validated_stmt, User.id == validated_stmt.c.validated_by)
             .group_by(
                 User.id,
@@ -305,6 +321,8 @@ class StatsService:
                 User.date_registered,
                 mapped_stmt.c.count,
                 mapped_stmt.c.task_ids,
+                badimagery_stmt.c.count,
+                badimagery_stmt.c.task_ids,
                 validated_stmt.c.count,
                 validated_stmt.c.task_ids,
             )
@@ -321,9 +339,13 @@ class StatsService:
                     mapping_level=MappingLevel(r.mapping_level).name,
                     picture_url=r.picture_url,
                     mapped=r.mapped,
+                    bad_imagery=r.bad_imagery,
                     validated=r.validated,
                     total=r.total,
                     mapped_tasks=r.mapped_tasks if r.mapped_tasks is not None else [],
+                    bad_imagery_tasks=r.bad_imagery_tasks
+                    if r.bad_imagery_tasks
+                    else [],
                     validated_tasks=r.validated_tasks
                     if r.validated_tasks is not None
                     else [],

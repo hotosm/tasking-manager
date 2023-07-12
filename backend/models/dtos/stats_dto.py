@@ -12,9 +12,11 @@ class UserContribution(Model):
     picture_url = StringType(serialized_name="pictureUrl")
     mapped = IntType()
     validated = IntType()
+    bad_imagery = IntType(serialized_name="badImagery")
     total = IntType()
     mapped_tasks = ListType(IntType, serialized_name="mappedTasks")
     validated_tasks = ListType(IntType, serialized_name="validatedTasks")
+    bad_imagery_tasks = ListType(IntType, serialized_name="badImageryTasks")
     name = StringType()
     date_registered = DateType(serialized_name="dateRegistered")
 

@@ -11,7 +11,7 @@ from backend.models.dtos.validator_dto import (
     LockForValidationDTO,
     UnlockAfterValidationDTO,
     StopValidationDTO,
-    RevertUserValidatedTasksDTO,
+    RevertUserTasksDTO,
 )
 from backend.services.validator_service import (
     ValidatorService,
@@ -1087,6 +1087,11 @@ class TasksActionsReverUserTaskstAPI(Resource):
               required: true
               type: string
               default: test
+            - in: query
+              name: action
+              description: Action to revert tasks for. Can be BADIMAGERY or VALIDATED
+              required: true
+              type: string
         responses:
             200:
                 description: Tasks reverted
@@ -1102,12 +1107,15 @@ class TasksActionsReverUserTaskstAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            revert_dto = RevertUserValidatedTasksDTO()
+            revert_dto = RevertUserTasksDTO()
             revert_dto.project_id = project_id
+            revert_dto.action = request.args.get("action")
             user = UserService.get_user_by_username(request.args.get("username"))
             revert_dto.user_id = user.id
             revert_dto.action_by = token_auth.current_user()
             revert_dto.validate()
+        except NotFound:
+            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {
@@ -1115,9 +1123,9 @@ class TasksActionsReverUserTaskstAPI(Resource):
                 "SubCode": "InvalidData",
             }, 400
         try:
-            ValidatorService.revert_user_validated_tasks(revert_dto)
+            ValidatorService.revert_user_tasks(revert_dto)
             return {"Success": "Successfully reverted tasks"}, 200
-        except MappingServiceError as e:
+        except ValidatorServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
             return {"Error": "Task not found", "SubCode": "NotFound"}, 404

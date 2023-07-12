@@ -33,8 +33,8 @@ class TestProjectsContributionsAPI(BaseTestCase):
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 200)
-        # Since Tasks 1,3,4 are mapped by and Task 4 validated by the test user during test project creation
-        # We expect test user to have 4 contributions
+        # Since Tasks 1,4 are mapped, 3 is set as bad imagery and Task 4 validated by the test user during test project
+        # creation. We expect test user to have 4 contributions
         test_user_contribution = response.json["userContributions"][0]
         self.assertEqual(
             set(test_user_contribution.keys()),
@@ -45,18 +45,22 @@ class TestProjectsContributionsAPI(BaseTestCase):
                     "pictureUrl",
                     "mapped",
                     "validated",
+                    "badImagery",
                     "total",
                     "mappedTasks",
                     "validatedTasks",
+                    "badImageryTasks",
                     "name",
                     "dateRegistered",
                 ]
             ),
         )
         self.assertEqual(test_user_contribution["username"], self.test_author.username)
-        self.assertEqual(test_user_contribution["mapped"], 4)
+        self.assertEqual(test_user_contribution["mapped"], 3)
         self.assertEqual(test_user_contribution["validated"], 2)
-        self.assertEqual(test_user_contribution["mappedTasks"], [3, 4, 2, 1])
+        self.assertEqual(test_user_contribution["badImagery"], 1)
+        self.assertEqual(test_user_contribution["mappedTasks"], [4, 2, 1])
+        self.assertEqual(test_user_contribution["badImageryTasks"], [3])
         self.assertEqual(test_user_contribution["validatedTasks"], [4, 1])
 
     def test_return_empty_list_if_no_contributions(self):
@@ -77,7 +81,7 @@ class TestProjectsContributionsAPI(BaseTestCase):
         self.assertEqual(len(response.json["userContributions"]), 0)
         self.assertEqual(response.json["userContributions"], [])
 
-    def test_returns_list_of_all_coqntributors(self):
+    def test_returns_list_of_all_contributors(self):
         # Setup
         # new test user
         test_user = return_canned_user("test_user", 11111111)
@@ -90,7 +94,7 @@ class TestProjectsContributionsAPI(BaseTestCase):
         # Lock task 2 for mapping by test user
         task_2 = Task.get(2, self.test_project.id)
         task_2.lock_task_for_mapping(test_user.id)
-        task_2.task_status = TaskStatus.BADIMAGERY.value
+        task_2.unlock_task(test_user.id, new_state=TaskStatus.BADIMAGERY)
         # Act
         response = self.client.get(self.url)
         user_contributions_response = response.json["userContributions"]
@@ -102,16 +106,20 @@ class TestProjectsContributionsAPI(BaseTestCase):
         self.assertEqual(
             user_contributions_response[0]["username"], self.test_author.username
         )
-        self.assertEqual(user_contributions_response[0]["mapped"], 2)
+        self.assertEqual(user_contributions_response[0]["mapped"], 1)
         self.assertEqual(user_contributions_response[0]["validated"], 1)
-        self.assertEqual(user_contributions_response[0]["mappedTasks"], [3, 4])
+        self.assertEqual(user_contributions_response[0]["badImagery"], 1)
+        self.assertEqual(user_contributions_response[0]["mappedTasks"], [4])
         self.assertEqual(user_contributions_response[0]["validatedTasks"], [4])
+        self.assertEqual(user_contributions_response[0]["badImageryTasks"], [3])
         # 2nd contributor
         self.assertEqual(user_contributions_response[1]["username"], test_user.username)
         self.assertEqual(user_contributions_response[1]["mapped"], 0)
+        self.assertEqual(user_contributions_response[1]["badImagery"], 1)
         self.assertEqual(user_contributions_response[1]["validated"], 0)
         self.assertEqual(user_contributions_response[1]["mappedTasks"], [])
         self.assertEqual(user_contributions_response[1]["validatedTasks"], [])
+        self.assertEqual(user_contributions_response[1]["badImageryTasks"], [2])
 
 
 class TestProjectsContributionsQueriesDayAPI(BaseTestCase):
