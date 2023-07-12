@@ -11,10 +11,7 @@ import { Footer } from '../components/footer';
 // Components common to all routes can be included in <App>
 export function Root() {
   return (
-    <div
-      className="min-vh-100-l"
-      style={{ display: 'grid', gridTemplateRows: 'auto auto 1fr auto' }}
-    >
+    <div className="flex flex-column">
       <TopBanner />
       <Header />
       <QueryParamProvider adapter={ReactRouter6Adapter}>
