@@ -113,7 +113,7 @@ export function Footer() {
             </Link>
             {ORG_PRIVACY_POLICY_URL && (
               <div className="pt2 f6 lh-title">
-                <a href={`https://${ORG_PRIVACY_POLICY_URL}`} className="link white">
+                <a href={`${ORG_PRIVACY_POLICY_URL}`} className="link white">
                   <FormattedMessage {...messages.privacyPolicy} />
                 </a>
               </div>

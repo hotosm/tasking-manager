@@ -3,7 +3,7 @@ import { screen, fireEvent, act, within, waitFor, render } from '@testing-librar
 
 import '../../../utils/mockMatchMedia';
 import { IntlProviders, ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
-import { ORG_URL, ORG_LOGO, SERVICE_DESK } from '../../../config';
+import { ORG_NAME, ORG_URL, ORG_LOGO, SERVICE_DESK } from '../../../config';
 import { AuthButtons, getMenuItemsForUser, Header, PopupItems } from '..';
 import messages from '../messages';
 import { store } from '../../../store';
@@ -23,8 +23,8 @@ describe('Header', () => {
     setup();
     expect(screen.getByText(messages.slogan.defaultMessage)).toBeInTheDocument();
     if (ORG_URL) {
-      expect(screen.getByText(ORG_URL)).toBeInTheDocument();
-      expect(screen.getByText(ORG_URL).closest('a')).toHaveAttribute('href', `http://${ORG_URL}`);
+      expect(screen.getByText(`${ORG_NAME} Website`)).toBeInTheDocument();
+      expect(screen.getByText(`${ORG_NAME} Website`).closest('a')).toHaveAttribute('href', ORG_URL);
     }
     expect(screen.getByTitle('externalLink')).toBeInTheDocument();
     const orgLogo = screen.getByRole('img');
