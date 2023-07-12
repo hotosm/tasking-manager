@@ -6,31 +6,22 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 
 import { store } from '../../store';
-import { ReduxIntlProviders } from '../../utils/testWithIntl';
+import { ReduxIntlProviders, createComponentWithMemoryRouter } from '../../utils/testWithIntl';
 import { SelectTask } from '../taskSelection';
 
 describe('Task Selection Page', () => {
-  const setup = () => {
-    return {
-      user: userEvent.setup(),
-      ...render(
-        <MemoryRouter initialEntries={['/projects/123/tasks']}>
-          <Routes>
-            <Route
-              path="projects/:id/tasks"
-              element={
-                <QueryParamProvider adapter={ReactRouter6Adapter}>
-                  <ReduxIntlProviders>
-                    <SelectTask />
-                  </ReduxIntlProviders>
-                </QueryParamProvider>
-              }
-            />
-          </Routes>
-        </MemoryRouter>,
-      ),
-    };
-  };
+  const setup = () =>
+    createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
+        <ReduxIntlProviders>
+          <SelectTask />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
+      {
+        route: 'projects/:id/tasks',
+        entryRoute: '/projects/123/tasks',
+      },
+    );
 
   it('should redirect to login page if the user is not logged in', () => {
     act(() => {
@@ -232,27 +223,18 @@ describe('Task Selection Page', () => {
 });
 
 describe('Random Task Selection', () => {
-  const setup = () => {
-    return {
-      user: userEvent.setup(),
-      ...render(
-        <MemoryRouter initialEntries={['/projects/963/tasks']}>
-          <Routes>
-            <Route
-              path="projects/:id/tasks"
-              element={
-                <QueryParamProvider adapter={ReactRouter6Adapter}>
-                  <ReduxIntlProviders>
-                    <SelectTask />
-                  </ReduxIntlProviders>
-                </QueryParamProvider>
-              }
-            />
-          </Routes>
-        </MemoryRouter>,
-      ),
-    };
-  };
+  const setup = () =>
+    createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
+        <ReduxIntlProviders>
+          <SelectTask />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
+      {
+        route: 'projects/:id/tasks',
+        entryRoute: '/projects/963/tasks',
+      },
+    );
 
   it('should not change the button text to map selected task when user selects a task for mapping', async () => {
     act(() => {
@@ -300,21 +282,16 @@ describe('Random Task Selection', () => {
 
 describe('Complete Project', () => {
   const setup = () =>
-    render(
-      <MemoryRouter initialEntries={['/projects/6/tasks']}>
-        <Routes>
-          <Route
-            path="projects/:id/tasks"
-            element={
-              <QueryParamProvider adapter={ReactRouter6Adapter}>
-                <ReduxIntlProviders>
-                  <SelectTask />
-                </ReduxIntlProviders>
-              </QueryParamProvider>
-            }
-          />
-        </Routes>
-      </MemoryRouter>,
+    createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
+        <ReduxIntlProviders>
+          <SelectTask />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
+      {
+        route: 'projects/:id/tasks',
+        entryRoute: '/projects/6/tasks',
+      },
     );
 
   it('should display button to select another project', async () => {
@@ -330,21 +307,16 @@ describe('Complete Project', () => {
 
 describe('Mapped Project', () => {
   const setup = () =>
-    render(
-      <MemoryRouter initialEntries={['/projects/3/tasks']}>
-        <Routes>
-          <Route
-            path="projects/:id/tasks"
-            element={
-              <QueryParamProvider adapter={ReactRouter6Adapter}>
-                <ReduxIntlProviders>
-                  <SelectTask />
-                </ReduxIntlProviders>
-              </QueryParamProvider>
-            }
-          />
-        </Routes>
-      </MemoryRouter>,
+    createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
+        <ReduxIntlProviders>
+          <SelectTask />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
+      {
+        route: 'projects/:id/tasks',
+        entryRoute: '/projects/3/tasks',
+      },
     );
 
   it('should display button to validate a task', async () => {
@@ -366,21 +338,16 @@ describe('Mapped Project', () => {
 
 describe('Resume Mapping', () => {
   const setup = () =>
-    render(
-      <MemoryRouter initialEntries={['/projects/222/tasks']}>
-        <Routes>
-          <Route
-            path="projects/:id/tasks"
-            element={
-              <QueryParamProvider adapter={ReactRouter6Adapter}>
-                <ReduxIntlProviders>
-                  <SelectTask />
-                </ReduxIntlProviders>
-              </QueryParamProvider>
-            }
-          />
-        </Routes>
-      </MemoryRouter>,
+    createComponentWithMemoryRouter(
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
+        <ReduxIntlProviders>
+          <SelectTask />
+        </ReduxIntlProviders>
+      </QueryParamProvider>,
+      {
+        route: 'projects/:id/tasks',
+        entryRoute: '/projects/222/tasks',
+      },
     );
 
   it('should display button to resume mapping', async () => {
@@ -410,21 +377,16 @@ test('it should pre select task from the list from URL params', async () => {
     });
   });
 
-  render(
-    <MemoryRouter initialEntries={['/projects/123/tasks?search=1']}>
-      <Routes>
-        <Route
-          path="projects/:id/tasks"
-          element={
-            <QueryParamProvider adapter={ReactRouter6Adapter}>
-              <ReduxIntlProviders>
-                <SelectTask />
-              </ReduxIntlProviders>
-            </QueryParamProvider>
-          }
-        />
-      </Routes>
-    </MemoryRouter>,
+  createComponentWithMemoryRouter(
+    <QueryParamProvider adapter={ReactRouter6Adapter}>
+      <ReduxIntlProviders>
+        <SelectTask />
+      </ReduxIntlProviders>
+    </QueryParamProvider>,
+    {
+      route: 'projects/:id/tasks',
+      entryRoute: '/projects/123/tasks?search=1',
+    },
   );
   await screen.findAllByText(/last updated by/i);
   expect(screen.getByPlaceholderText(/filter tasks by id or username/i)).toHaveValue('1');
