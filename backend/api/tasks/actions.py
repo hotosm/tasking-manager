@@ -1089,7 +1089,7 @@ class TasksActionsReverUserTaskstAPI(Resource):
               default: test
             - in: query
               name: action
-              description: Action to revert tasks for
+              description: Action to revert tasks for. Can be BADIMAGERY or VALIDATED
               required: true
               type: string
         responses:
