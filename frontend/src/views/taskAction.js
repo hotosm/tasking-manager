@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryParam, StringParam } from 'use-query-params';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { Button } from '../components/button';
@@ -29,7 +30,14 @@ export function TaskAction({ projectId, action }: Object) {
   // eslint-disable-next-line
   const [editor, setEditor] = useQueryParam('editor', StringParam);
 
-  const { isLoading, data: lockedTasks, refetch: getTasks } = useLockedTasksQuery();
+  const { status: lockedTasksStatus, data: lockedTasks, refetch: getTasks } = useLockedTasksQuery();
+
+  useEffect(() => {
+    if (lockedTasksStatus === 'error') {
+      toast.error(<FormattedMessage {...messages.lockedTasksLoadingError} />);
+      navigate(`/projects/${projectId}/tasks/`);
+    }
+  }, [lockedTasksStatus, navigate, projectId]);
 
   useEffect(() => {
     dispatch({ type: 'SET_VISIBILITY', isVisible: false });
@@ -48,7 +56,7 @@ export function TaskAction({ projectId, action }: Object) {
     }
   }, [action, navigate, projectId, token]);
 
-  if (isLoading) {
+  if (lockedTasksStatus === 'loading') {
     return (
       <ReactPlaceholder showLoadingAnimation={true} type="text" rows={4} delay={10}>
         Loading...
@@ -56,48 +64,54 @@ export function TaskAction({ projectId, action }: Object) {
     );
   }
 
-  // if user has not locked tasks on the system, suggest him to go to the task selection page of the current project
-  if (lockedTasks.length === 0) {
-    return (
-      <div className="cf pull-center pa4">
-        <p>
-          <FormattedMessage
-            {...messages.noLockedTasksMessage}
-            values={{ currentProject: projectId }}
+  if (lockedTasksStatus === 'success') {
+    // if user has not locked tasks on the system, suggest him to go to the task selection page of the current project
+    if (lockedTasks.length === 0) {
+      return (
+        <div className="cf pull-center pa4">
+          <p>
+            <FormattedMessage
+              {...messages.noLockedTasksMessage}
+              values={{ currentProject: projectId }}
+            />
+          </p>
+          <Button
+            className="bg-red white"
+            onClick={() => navigate(`/projects/${projectId}/tasks/`)}
+          >
+            <FormattedMessage {...messages.goToProjectButton} values={{ project: projectId }} />
+          </Button>
+        </div>
+      );
+    }
+
+    // if user has locked tasks on another project, suggest him to go update it
+    if (lockedTasks.length > 0 && lockedTasks[0].projectId !== Number(projectId)) {
+      const action = lockedTasks[0].taskStatus === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
+      return (
+        <div className="cf tc blue-dark pull-center pa4">
+          <AnotherProjectLock
+            projectId={lockedTasks[0].projectId}
+            action={action}
+            lockedTasksLength={lockedTasks.length}
           />
-        </p>
-        <Button className="bg-red white" onClick={() => navigate(`/projects/${projectId}/tasks/`)}>
-          <FormattedMessage {...messages.goToProjectButton} values={{ project: projectId }} />
-        </Button>
-      </div>
-    );
-  }
+        </div>
+      );
+    }
 
-  // if user has locked tasks on another project, suggest him to go update it
-  if (lockedTasks.length > 0 && lockedTasks[0].projectId !== Number(projectId)) {
-    const action = lockedTasks[0].taskStatus === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
-    return (
-      <div className="cf tc blue-dark pull-center pa4">
-        <AnotherProjectLock
-          projectId={lockedTasks[0].projectId}
+    if (lockedTasks.length > 0 && lockedTasks[0].projectId === Number(projectId)) {
+      return (
+        <TaskActionPossible
+          projectId={projectId}
+          tasks={lockedTasks}
           action={action}
-          lockedTasksLength={lockedTasks.length}
+          editor={editor}
+          getTasks={getTasks}
         />
-      </div>
-    );
+      );
+    }
   }
-
-  if (lockedTasks.length > 0 && lockedTasks[0].projectId === Number(projectId)) {
-    return (
-      <TaskActionPossible
-        projectId={projectId}
-        tasks={lockedTasks}
-        action={action}
-        editor={editor}
-        getTasks={getTasks}
-      />
-    );
-  }
+  return null;
 }
 
 export function TaskActionPossible({ projectId, tasks, action, editor, getTasks }) {

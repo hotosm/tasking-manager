@@ -243,6 +243,10 @@ export default defineMessages({
     id: 'taskAction.go_to_project.button',
     defaultMessage: 'Go to Project #{project}',
   },
+  lockedTasksLoadingError: {
+    id: 'taskAction.locked_tasks.fetching.error',
+    defaultMessage: 'An error occurred when loading your tasks.',
+  },
   profileSettings: {
     id: 'EmailVerification.link.profileSettings',
     defaultMessage: 'Your profile settings',
