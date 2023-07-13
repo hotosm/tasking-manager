@@ -16,7 +16,7 @@ from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.team import Team, TeamMembers
-from backend.models.postgis.project import ProjectTeams
+from backend.models.postgis.project import Project, ProjectTeams
 from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.utils import NotFound
 from backend.models.postgis.statuses import (
@@ -390,8 +390,12 @@ class TeamService:
     @staticmethod
     def get_project_teams_as_dto(project_id: int) -> TeamsListDTO:
         """Gets all the teams for a specified project"""
+        project = Project.get(project_id)
+        if project is None:
+            raise NotFound()
+
         project_teams = ProjectTeams.query.filter(
-            ProjectTeams.project_id == project_id
+            ProjectTeams.project_id == project.id
         ).all()
         teams_list_dto = TeamsListDTO()
 
