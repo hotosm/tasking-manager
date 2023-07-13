@@ -15,7 +15,7 @@ import { UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { useEditProjectAllowed } from '../../hooks/UsePermissions';
 import { DeleteModal } from '../deleteModal';
-import { postComment, useCommentsQuery } from '../../api/questionsAndComments';
+import { postProjectComment, useCommentsQuery } from '../../api/questionsAndComments';
 
 import './styles.scss';
 
@@ -25,7 +25,7 @@ export const PostProjectComment = ({ projectId, refetchComments, contributors })
   const [comment, setComment] = useState('');
 
   const mutation = useMutation({
-    mutationFn: () => postComment(projectId, comment, token, locale),
+    mutationFn: () => postProjectComment(projectId, comment, token, locale),
     onSuccess: () => {
       refetchComments();
       setComment('');

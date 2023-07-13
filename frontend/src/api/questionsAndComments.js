@@ -24,6 +24,12 @@ export const useCommentsQuery = (projectId, page) => {
   });
 };
 
-export const postComment = (projectId, comment, token, locale = 'en') => {
+export const postProjectComment = (projectId, comment, token, locale = 'en') => {
   return api(token, locale).post(`projects/${projectId}/comments/`, { message: comment });
+};
+
+export const postTaskComment = (projectId, taskId, comment, token, locale = 'en') => {
+  return api(token, locale).post(`projects/${projectId}/comments/tasks/${taskId}/`, {
+    comment,
+  });
 };

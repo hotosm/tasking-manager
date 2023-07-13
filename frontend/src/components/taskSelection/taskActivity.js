@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { viewport } from '@placemarkio/geo-viewport';
 import { FormattedMessage } from 'react-intl';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
@@ -24,29 +24,29 @@ import { Dropdown } from '../dropdown';
 import { CommentInputField } from '../comments/commentInput';
 import { useTaskDetail } from '../../api/projects';
 import { Alert } from '../alert';
+import { MessageStatus } from '../comments/status';
+import { postTaskComment } from '../../api/questionsAndComments';
 
 import './styles.scss';
 
 const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => {
   const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences['locale']);
   const [comment, setComment] = useState('');
-
-  const pushComment = () => {
-    pushToLocalJSONAPI(
-      `projects/${projectId}/comments/tasks/${taskId}/`,
-      JSON.stringify({ comment: comment }),
-      token,
-    ).then((res) => {
-      setCommentPayload(res);
-      setComment('');
-    });
-  };
 
   const saveComment = () => {
     if (comment) {
-      pushComment();
+      mutation.mutate({ message: comment });
     }
   };
+
+  const mutation = useMutation({
+    mutationFn: () => postTaskComment(projectId, taskId, comment, token, locale),
+    onSuccess: (res) => {
+      setCommentPayload(res.data);
+      setComment('');
+    },
+  });
 
   return (
     <div className="w-100 pt3 ph3-ns ph1 flex flex-column">
@@ -59,10 +59,16 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
         isShowUserPicture
         isShowTabNavs
       />
-      <div className="ml-auto mb5">
-        <Button onClick={() => saveComment()} className="bg-red white f6">
+      <div className="ml-auto mb5 flex flex-column gap-1 items-end">
+        <Button
+          onClick={() => saveComment()}
+          className="bg-red white f6"
+          loading={mutation.isLoading}
+          disabled={!comment}
+        >
           <FormattedMessage {...messages.comment} />
         </Button>
+        <MessageStatus status={mutation.status} comment={comment} />
       </div>
     </div>
   );
@@ -258,6 +264,8 @@ export const TaskActivity = ({
   const setCommentPayload = (payload) => {
     queryClient.setQueryData(['task-detail', project.projectId, taskId], { data: payload });
   };
+
+  console.log('commentPayload', commentPayload);
 
   const resetTask = () => {
     pushToLocalJSONAPI(
