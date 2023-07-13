@@ -13,6 +13,7 @@ import {
   taskDetail,
   stopMapping,
   stopValidation,
+  similarProjects,
 } from './mockData/projects';
 import { featuredProjects } from './mockData/featuredProjects';
 import {
@@ -143,6 +144,9 @@ const handlers = [
       return res(ctx.json(stopValidation));
     },
   ),
+  rest.get(API_URL + 'projects/queries/:projectId/similar-projects/', async (req, res, ctx) => {
+    return res(ctx.json(similarProjects));
+  }),
   // AUTHENTICATION
   rest.get(API_URL + 'system/authentication/login/', async (req, res, ctx) => {
     return res(ctx.json(authLogin));
@@ -384,6 +388,7 @@ const faultyHandlers = [
   ),
   rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', failedToConnectError),
   rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', failedToConnectError),
+  rest.get(API_URL + 'projects/queries/:projectId/similar-projects/', failedToConnectError),
   rest.post(API_URL + 'licenses', failedToConnectError),
   rest.patch(API_URL + 'licenses/:id', failedToConnectError),
   rest.post(API_URL + 'interests', failedToConnectError),
