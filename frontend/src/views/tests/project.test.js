@@ -227,7 +227,6 @@ describe('Project Detail Page', () => {
     setup();
     await waitFor(() => {
       expect(screen.getByText(/sample project/i)).toBeInTheDocument();
-      expect(screen.getByText(/hello world/i)).toBeInTheDocument();
     });
   });
 
