@@ -108,4 +108,8 @@ export default defineMessages({
     id: 'common.loading',
     defaultMessage: 'Loading...',
   },
+  gpxNameAttribute: {
+    id: 'editor.layer.gpx.name',
+    defaultMessage: 'Task for project {projectId}. Do not edit outside of this area!',
+  },
 });
