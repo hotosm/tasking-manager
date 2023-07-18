@@ -51,5 +51,5 @@ pytest==7.4.0
 # Indirect, but required dependencies (often required for efficient deployments)
 gevent==22.10.2
 greenlet==2.0.2
-gunicorn==20.1.0
+gunicorn==21.0.1
 importlib-metadata==6.7.0 # See https://github.com/hotosm/tasking-manager/issues/5395
