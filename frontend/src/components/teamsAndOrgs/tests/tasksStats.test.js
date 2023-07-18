@@ -24,11 +24,9 @@ describe('TasksStats', () => {
       </ReduxIntlProviders>,
     );
     // wait for useTagAPI to act on the states
-    expect(
-      await screen.findByRole('group', {
-        name: 'Campaign',
-      }),
-    );
+    await screen.findByRole('group', {
+      name: 'Campaign',
+    });
     expect(screen.getByText('From')).toBeInTheDocument();
     expect(screen.getByText('To')).toBeInTheDocument();
     expect(
