@@ -11,10 +11,12 @@ from tests.backend.helpers.test_helpers import (
     create_canned_project,
 )
 
+from backend.exceptions import get_message_from_sub_code
+
 TEST_SUBJECT = "Test subject"
 TEST_MESSAGE = "This is a test message"
-MESSAGES_NOT_FOUND = "No messages found"
-NOT_FOUND = "NotFound"
+NOT_FOUND_SUB_CODE = "MESSAGE_NOT_FOUND"
+NOT_FOUND_MESSAGE = get_message_from_sub_code(NOT_FOUND_SUB_CODE)
 OLDER_TEST_SUBJECT = "Older Test Subject"
 OLDER_TEST_MESSAGE = "This is an older test message"
 
@@ -66,9 +68,10 @@ class TestNotificationsRestAPI(BaseTestCase):
             headers={"Authorization": self.test_sender_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], MESSAGES_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], NOT_FOUND)
+        self.assertEqual(error_details["message"], NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], NOT_FOUND_SUB_CODE)
 
     def test_get_message_returns_200(self):
         """
@@ -114,9 +117,10 @@ class TestNotificationsRestAPI(BaseTestCase):
             headers={"Authorization": self.test_sender_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], MESSAGES_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], NOT_FOUND)
+        self.assertEqual(error_details["message"], NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], NOT_FOUND_SUB_CODE)
 
     def test_delete_message_returns_200(self):
         """

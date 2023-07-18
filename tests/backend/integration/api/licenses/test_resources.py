@@ -5,12 +5,15 @@ from tests.backend.helpers.test_helpers import (
     create_canned_license,
 )
 
+from backend.exceptions import get_message_from_sub_code
+
 TEST_LICENSE_NAME = "test_license"
 TEST_LICENSE_DESCRIPTION = "test license"
 TEST_LICENSE_PLAINTEXT = "test license"
 NEW_LICENSE_DESCRIPTION = "A new test license"
 NEW_LICENSE_NAME = "New License"
-LICENSE_NOT_FOUND = "License Not Found"
+LICENSE_NOT_FOUND_SUB_CODE = "LICENSE_NOT_FOUND"
+LICENSE_NOT_FOUND_MESSAGE = get_message_from_sub_code(LICENSE_NOT_FOUND_SUB_CODE)
 
 
 class TestLicensesRestAPI(BaseTestCase):
@@ -81,9 +84,10 @@ class TestLicensesRestAPI(BaseTestCase):
         """
         response = self.client.get(self.non_existent_url)
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], LICENSE_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], LICENSE_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], LICENSE_NOT_FOUND_SUB_CODE)
 
     def test_get_license_passes(self):
         """
@@ -143,9 +147,10 @@ class TestLicensesRestAPI(BaseTestCase):
             },
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], LICENSE_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], LICENSE_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], LICENSE_NOT_FOUND_SUB_CODE)
 
     def test_update_license_by_authenticated_user_passes(self):
         """
@@ -189,9 +194,10 @@ class TestLicensesRestAPI(BaseTestCase):
             headers={"Authorization": self.test_user_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], LICENSE_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], LICENSE_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], LICENSE_NOT_FOUND_SUB_CODE)
 
     def test_delete_license_by_authenticated_user_passes(self):
         """

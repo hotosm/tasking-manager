@@ -7,10 +7,13 @@ from tests.backend.helpers.test_helpers import (
     return_canned_campaign,
 )
 from backend.models.postgis.statuses import UserRole
+from backend.exceptions import get_message_from_sub_code
 
 CAMPAIGN_NAME = "Test Campaign"
 CAMPAIGN_ID = 1
 NEW_CAMPAIGN_NAME = "New Campaign"
+CAMPAIGN_NOT_FOUND_SUB_CODE = "CAMPAIGN_NOT_FOUND"
+CAMPAIGN_NOT_FOUND_MESSAGE = get_message_from_sub_code(CAMPAIGN_NOT_FOUND_SUB_CODE)
 
 
 class TestCampaignsRestAPI(BaseTestCase):
@@ -43,9 +46,11 @@ class TestCampaignsRestAPI(BaseTestCase):
         """
         response = self.client.get(f"{self.endpoint_url}99/")
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "No campaign found")
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], CAMPAIGN_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], CAMPAIGN_NOT_FOUND_SUB_CODE)
+        self.assertEqual(error_details["details"], {"campaign_id": 99})
 
     # patch
     def test_update_existent_campaign_by_admin_passes(self):
@@ -133,9 +138,11 @@ class TestCampaignsRestAPI(BaseTestCase):
             headers={"Authorization": self.admin_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "Campaign not found")
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], CAMPAIGN_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], CAMPAIGN_NOT_FOUND_SUB_CODE)
+        self.assertEqual(error_details["details"], {"campaign_id": 99})
 
     # delete
     def test_delete_campaign_by_admin_passes(self):
@@ -180,11 +187,10 @@ class TestCampaignsRestAPI(BaseTestCase):
             f"{self.endpoint_url}99/", headers={"Authorization": self.admin_token}
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(
-            response_body, {"Error": "Campaign not found", "SubCode": "NotFound"}
-        )
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], CAMPAIGN_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], CAMPAIGN_NOT_FOUND_SUB_CODE)
 
 
 class TestCampaignsAllAPI(BaseTestCase):

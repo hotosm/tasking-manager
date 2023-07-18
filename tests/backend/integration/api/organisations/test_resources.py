@@ -9,12 +9,15 @@ from tests.backend.helpers.test_helpers import (
     generate_encoded_token,
     return_canned_user,
 )
+
+from backend.exceptions import get_message_from_sub_code
 from backend.services.users.authentication_service import AuthenticationService
 
 
 TEST_USER_ID = 777777
 TEST_USERNAME = "Thinkwhere Test"
-ORG_NOT_FOUND = "Organisation Not Found"
+ORG_NOT_FOUND_SUB_CODE = "ORGANISATION_NOT_FOUND"
+ORG_NOT_FOUND_MESSAGE = get_message_from_sub_code(ORG_NOT_FOUND_SUB_CODE)
 
 
 class TestOrganisationAllAPI(BaseTestCase):
@@ -164,10 +167,10 @@ class TestOrganisationsBySlugRestAPI(BaseTestCase):
         """
         response = self.client.get("/api/v2/organisations/random-organisation/")
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(len(response_body), 2)
-        self.assertEqual(response_body["Error"], ORG_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], ORG_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], ORG_NOT_FOUND_SUB_CODE)
 
 
 class TestOrganisationsRestAPI(BaseTestCase):
@@ -239,9 +242,10 @@ class TestOrganisationsRestAPI(BaseTestCase):
             headers={"Authorization": self.session_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], ORG_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], ORG_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], ORG_NOT_FOUND_SUB_CODE)
 
     # delete method tests
     def test_delete_org_by_admin_user_passes(self):
@@ -383,7 +387,8 @@ class TestOrganisationsStatsAPI(BaseTestCase):
         Tests that endpoint returns 404 when retrieving a non existent organisation's statistics
         """
         response = self.client.get("/api/v2/organisations/99/statistics/")
-        self.assertEqual(response.status_code, 404)
         response_body = response.get_json()
-        self.assertEqual(response_body["Error"], ORG_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        error_details = response_body["error"]
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(error_details["message"], ORG_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], ORG_NOT_FOUND_SUB_CODE)

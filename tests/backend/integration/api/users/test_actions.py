@@ -279,7 +279,7 @@ class TestUsersActionsSetRoleAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_FOUND")
 
     def test_returns_200_if_user_role_set(self):
         """Test that the API returns 200 if user role is set"""
