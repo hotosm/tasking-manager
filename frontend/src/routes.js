@@ -45,7 +45,7 @@ export const router = createBrowserRouter(
         path="projects/:id"
         lazy={async () => {
           const { ProjectDetailPage } = await import(
-            './views/project' /* webpackChunkName: "project" */
+            './views/project' /* webpackChunkName: "projectDetail" */
           );
           return { Component: ProjectDetailPage };
         }}
@@ -54,7 +54,7 @@ export const router = createBrowserRouter(
         path="projects/:id/tasks"
         lazy={async () => {
           const { SelectTask } = await import(
-            './views/taskSelection' /* webpackChunkName: "taskSelection" */
+            './views/taskSelection' /* webpackChunkName: "projectDetail" */
           );
           return { Component: SelectTask };
         }}
@@ -349,7 +349,7 @@ export const router = createBrowserRouter(
           path="projects/:id"
           lazy={async () => {
             const { ProjectEdit } = await import(
-              './views/projectEdit' /* webpackChunkName: "projectEdit" */
+              './views/projectEdit' /* webpackChunkName: "project" */
             );
             return { Component: ProjectEdit };
           }}
