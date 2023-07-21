@@ -65,10 +65,6 @@ class OrganisationsBySlugRestAPI(Resource):
             return organisation_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Organisation GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class OrganisationsRestAPI(Resource):
@@ -149,10 +145,6 @@ class OrganisationsRestAPI(Resource):
             return {"organisationId": org_id}, 201
         except OrganisationServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-        except Exception as e:
-            error_msg = f"Organisation POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def delete(self, organisation_id):
@@ -205,10 +197,6 @@ class OrganisationsRestAPI(Resource):
             }, 403
         except NotFound:
             return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Organisation DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required(optional=True)
     def get(self, organisation_id):
@@ -260,10 +248,6 @@ class OrganisationsRestAPI(Resource):
             return organisation_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Organisation GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def patch(self, organisation_id):
@@ -352,10 +336,6 @@ class OrganisationsRestAPI(Resource):
             return {"Error": str(e), "SubCode": "NotFound"}, 404
         except OrganisationServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 402
-        except Exception as e:
-            error_msg = f"Organisation PATCH - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class OrganisationsStatsAPI(Resource):
@@ -390,10 +370,6 @@ class OrganisationsStatsAPI(Resource):
             return organisation_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Organisation GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class OrganisationsAllAPI(Resource):
@@ -475,7 +451,3 @@ class OrganisationsAllAPI(Resource):
             return results_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "No organisations found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Organisations GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

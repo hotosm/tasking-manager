@@ -1,6 +1,6 @@
 from json import JSONEncoder
 from datetime import date, timedelta
-from flask_restful import Resource, request, current_app
+from flask_restful import Resource, request
 
 from backend.services.users.user_service import UserService, NotFound
 from backend.services.stats_service import StatsService
@@ -47,13 +47,6 @@ class UsersStatisticsAPI(Resource, JSONEncoder):
             return stats_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch user statistics",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class UsersStatisticsInterestsAPI(Resource):
@@ -91,10 +84,6 @@ class UsersStatisticsInterestsAPI(Resource):
             return rate.to_primitive(), 200
         except NotFound:
             return {"Error": "User not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Interest GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class UsersStatisticsAllAPI(Resource):
@@ -155,10 +144,3 @@ class UsersStatisticsAllAPI(Resource):
             return stats.to_primitive(), 200
         except (KeyError, ValueError) as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-        except Exception as e:
-            error_msg = f"User Statistics GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch user stats",
-                "SubCode": "InternalServerError",
-            }, 500

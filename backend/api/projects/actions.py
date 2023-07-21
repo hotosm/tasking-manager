@@ -75,13 +75,6 @@ class ProjectsActionsTransferAPI(Resource):
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
             return {"Error": "Project or user not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"ProjectsActionsTransferAPI POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to transfer project",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsActionsMessageContributorsAPI(Resource):
@@ -158,13 +151,6 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             return {"Success": "Messages started"}, 200
         except NotFound:
             return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Send message all - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to send messages to mappers",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsActionsFeatureAPI(Resource):
@@ -221,10 +207,6 @@ class ProjectsActionsFeatureAPI(Resource):
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"FeaturedProjects POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectsActionsUnFeatureAPI(Resource):
@@ -281,10 +263,6 @@ class ProjectsActionsUnFeatureAPI(Resource):
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"FeaturedProjects DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectsActionsSetInterestsAPI(Resource):
@@ -352,12 +330,6 @@ class ProjectsActionsSetInterestsAPI(Resource):
             return project_interests.to_primitive(), 200
         except NotFound:
             return {"Error": "Project not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = (
-                f"ProjectsActionsSetInterestsAPI POST - unhandled error: {str(e)}"
-            )
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectActionsIntersectingTilesAPI(Resource):
@@ -444,7 +416,3 @@ class ProjectActionsIntersectingTilesAPI(Resource):
                     "SubCode": "SelfIntersectingAOI",
                 }, 400
             return {"error": str(wrapped), "SubCode": "InternalServerError"}
-        except Exception as e:
-            error_msg = f"IntersectingTiles GET API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"error": error_msg, "SubCode": "InternalServerError"}, 500

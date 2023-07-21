@@ -179,7 +179,12 @@ export const MAPBOX_RTL_PLUGIN_URL =
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';
 
 export const DROPZONE_SETTINGS = {
-  accept: 'image/*',
+  accept: {
+    'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'],
+  },
   multiple: false,
   maxSize: 256000,
+  // noClick is needed to avoid file picker dialogs when switching between `Write` and `Preview` in `CommentInputField`
+  // At time of writing, this workaround is only needed on Chromium based browsers.
+  noClick: true,
 };

@@ -1583,3 +1583,124 @@ class TestTasksActionsExtendAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["Success"], "Successfully extended task expiry")
+
+
+class TestTasksActionsReverUserTaskstAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_user = return_canned_user("test_user", 1111111)
+        self.test_user.create()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.author_access_token = generate_encoded_token(self.test_author.id)
+        self.url = (
+            f"/api/v2/projects/{self.test_project.id}/tasks/actions/reset-by-user/"
+        )
+
+    def test_returns_401_if_user_not_logged_in(self):
+        """Test returns 401 if user not logged in."""
+        # Act
+        response = self.client.post(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_404_if_user_not_found(self):
+        """Test returns 404 if user not found."""
+        # Act
+        response = self.client.post(
+            "/api/v2/projects/999/tasks/actions/reset-by-user/",
+            headers={"Authorization": self.author_access_token},
+            query_string={"username": "invalid_user", "action": "VALIDATED"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["Error"], "User not found")
+
+    def test_returns_400_if_action_not_valid(self):
+        """Test returns 400 if action not valid."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.author_access_token},
+            query_string={"username": self.test_user.username, "action": "MAPPED"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json["SubCode"], "InvalidData")
+
+    def test_returns_404_if_project_not_found(self):
+        """Test returns 404 if project not found."""
+        # Act
+        response = self.client.post(
+            "/api/v2/projects/999/tasks/actions/reset-by-user/",
+            headers={"Authorization": self.user_session_token},
+            query_string={"username": "test_user", "action": "VALIDATED"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json["SubCode"], "NotFound")
+
+    def test_returns_403_if_user_doesnot_have_PM_permission(self):
+        """Test returns 403 if user doesnot have PM permission."""
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            query_string={"username": "test_user", "action": "VALIDATED"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "UserActionNotPermitted")
+
+    def set_task_status(self, task, status, user_id):
+        """Set task status."""
+        task.lock_task_for_mapping(user_id)
+        if status == "BADIMAGERY":
+            task.unlock_task(user_id, TaskStatus.BADIMAGERY)
+        elif status == "VALIDATED":
+            task.unlock_task(user_id, TaskStatus.MAPPED)
+            task.lock_task_for_validating(user_id)
+            task.unlock_task(user_id, TaskStatus.VALIDATED)
+
+    def test_returns_successfully_reverts_user_validated_tasks(self):
+        """Test user validated tasks are successfully reverted to mapped"""
+        # Arrange
+        task_1 = Task.get(1, self.test_project.id)
+        task_2 = Task.get(2, self.test_project.id)
+        # Set task as validated by test_user and test_author
+        self.set_task_status(task_1, "VALIDATED", self.test_user.id)
+        self.set_task_status(task_2, "VALIDATED", self.test_author.id)
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.author_access_token},
+            query_string={"username": self.test_user.username, "action": "VALIDATED"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["Success"], "Successfully reverted tasks")
+        self.assertEqual(task_1.task_status, TaskStatus.MAPPED.value)
+        # task_2 is validated by test_author so it should not be reverted to mapped status
+        self.assertEqual(task_2.task_status, TaskStatus.VALIDATED.value)
+
+    def test_returns_successfully_reverts_user_bad_imagery_tasks(self):
+        """Test user bad imagery tasks are successfully reverted to ready"""
+        # Arrange
+        task_1 = Task.get(1, self.test_project.id)
+        task_2 = Task.get(2, self.test_project.id)
+        # Set task as bad imagery by test_user and test_author
+        self.set_task_status(task_1, "BADIMAGERY", self.test_user.id)
+        self.set_task_status(task_2, "BADIMAGERY", self.test_author.id)
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.author_access_token},
+            query_string={"username": self.test_user.username, "action": "BADIMAGERY"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["Success"], "Successfully reverted tasks")
+        self.assertEqual(task_1.task_status, TaskStatus.READY.value)
+        # task_2 is set as bad imagery by test_author so it should not be reverted to ready status
+        self.assertEqual(task_2.task_status, TaskStatus.BADIMAGERY.value)

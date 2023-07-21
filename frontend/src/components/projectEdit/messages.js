@@ -246,23 +246,40 @@ export default defineMessages({
     defaultMessage:
       'This will copy all descriptions, instructions, metadata etc to a new project. The Area of Interest, tasks and the priority areas will not be copied. You will have to redraw/import these. Your newly cloned project will be in draft status.',
   },
-  revertValidatedTasks: {
+  revertVALIDATEDTasks: {
     id: 'projects.actions.revert_validated_tasks.button',
     defaultMessage: 'Revert validated tasks',
   },
-  revertValidatedTasksTitle: {
+  revertVALIDATEDTasksTitle: {
     id: 'projects.actions.revert_validated_tasks.title',
     defaultMessage: 'Revert validated tasks',
   },
-  revertValidatedTasksDescription: {
+  revertVALIDATEDTasksDescription: {
     id: 'projects.actions.revert_validated_tasks.description',
     defaultMessage: 'Revert all validated tasks by a specified user and mark it as mapped',
   },
-  revertValidatedTasksSuccess: {
+  revertVALIDATEDTasksSuccess: {
     id: 'projects.actions.revert_validated_tasks.success',
     defaultMessage: 'The tasks were reverted successfully.',
   },
-  revertValidatedTasksError: {
+  revertBADIMAGERYTasks: {
+    id: 'projects.actions.revert_unavailable_tasks.button',
+    defaultMessage: 'Revert unavailable tasks',
+  },
+  revertBADIMAGERYTasksTitle: {
+    id: 'projects.actions.revert_unavailable_tasks.title',
+    defaultMessage: 'Revert unavailable tasks',
+  },
+  revertBADIMAGERYTasksDescription: {
+    id: 'projects.actions.revert_unavailable_tasks.description',
+    defaultMessage:
+      'Revert all tasks marked as unavailable by a specified user and mark it as ready to map',
+  },
+  revertBADIMAGERYTasksSuccess: {
+    id: 'projects.actions.revert_unavailable_tasks.success',
+    defaultMessage: 'The tasks were reverted successfully.',
+  },
+  revertTasksError: {
     id: 'projects.actions.revert_validated_tasks.error',
     defaultMessage: 'The tasks reversion failed.',
   },

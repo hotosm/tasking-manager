@@ -48,13 +48,6 @@ class UsersRestAPI(Resource):
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Userid GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch user details",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class UsersAllAPI(Resource):
@@ -124,16 +117,8 @@ class UsersAllAPI(Resource):
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {"Error": "Unable to fetch user list", "SubCode": "InvalidData"}, 400
 
-        try:
-            users_dto = UserService.get_all_users(query)
-            return users_dto.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch user list",
-                "SubCode": "InternalServerError",
-            }, 500
+        users_dto = UserService.get_all_users(query)
+        return users_dto.to_primitive(), 200
 
 
 class UsersQueriesUsernameAPI(Resource):
@@ -176,13 +161,6 @@ class UsersQueriesUsernameAPI(Resource):
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch user details",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class UsersQueriesUsernameFilterAPI(Resource):
@@ -232,13 +210,6 @@ class UsersQueriesUsernameFilterAPI(Resource):
             return users_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch matching users",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class UsersQueriesOwnLockedAPI(Resource):
@@ -268,15 +239,10 @@ class UsersQueriesOwnLockedAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            locked_tasks = ProjectService.get_task_for_logged_in_user(
-                token_auth.current_user()
-            )
-            return locked_tasks.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"UsersQueriesOwnLockedAPI - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        locked_tasks = ProjectService.get_task_for_logged_in_user(
+            token_auth.current_user()
+        )
+        return locked_tasks.to_primitive(), 200
 
 
 class UsersQueriesOwnLockedDetailsAPI(Resource):
@@ -320,10 +286,6 @@ class UsersQueriesOwnLockedDetailsAPI(Resource):
             return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User has no locked tasks", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"UsersQueriesOwnLockedDetailsAPI - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class UsersQueriesFavoritesAPI(Resource):
@@ -356,10 +318,6 @@ class UsersQueriesFavoritesAPI(Resource):
             return favs_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"UserFavorites GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class UsersQueriesInterestsAPI(Resource):
@@ -398,10 +356,6 @@ class UsersQueriesInterestsAPI(Resource):
             return interests_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"UserInterests GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class UsersRecommendedProjectsAPI(Resource):
@@ -455,7 +409,3 @@ class UsersRecommendedProjectsAPI(Resource):
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User or mapping not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

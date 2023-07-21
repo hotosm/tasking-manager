@@ -10,12 +10,12 @@ dependencies = [
     "bleach==6.0.0",
     "cachetools==5.3.1",
     "Flask==2.3.2",
-    "Flask-Cors==3.0.10",
+    "Flask-Cors==4.0.0",
     "Flask-HTTPAuth==4.8.0",
     "Flask-Migrate==4.0.4",
     "Flask-Mail==0.9.1",
     "Flask-RESTful==0.3.10",
-    "Flask-SQLAlchemy==3.0.3",
+    "Flask-SQLAlchemy==3.0.5",
     "flask-swagger==0.2.14",
     "GeoAlchemy2==0.13.3",
     "geojson==3.0.1",
@@ -34,7 +34,7 @@ dependencies = [
     "sentry-sdk[flask]==1.26.0",
     "shapely==2.0.1",
     "SQLAlchemy==2.0.15",
-    "Werkzeug==2.3.4",
+    "Werkzeug==2.3.6",
     # Indirect, but required dependencies (often required for efficient deployments)
     "gevent==22.10.2",
     "greenlet==2.0.2",
@@ -50,7 +50,7 @@ license = { text = "BSD-2-Clause" }
 
 [tool]
 [tool.pdm.dev-dependencies]
-test = ["coverage==7.2.6", "pytest==7.3.2"]
+test = ["coverage==7.2.7", "pytest==7.4.0"]
 lint = ["black==23.3.0", "flake8==6.0.0"]
 dev = ["psycopg2-binary>=2.9.6"]
 

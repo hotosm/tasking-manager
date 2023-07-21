@@ -233,9 +233,10 @@ class TestTeamsActionsAddAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response_body["SubCode"], "InternalServerError")
+        error_resp = response_body["error"]
+        self.assertEqual(error_resp["sub_code"], "INTERNAL_SERVER_ERROR")
         self.assertTrue(
-            "User is not allowed to add member to the team" in response_body["Error"]
+            "User is not allowed to add member to the team" in error_resp["message"]
         )
 
     def test_add_non_existent_members_to_team_fails(self):
@@ -252,7 +253,8 @@ class TestTeamsActionsAddAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response_body["SubCode"], "InternalServerError")
+        error_resp = response_body["error"]
+        self.assertEqual(error_resp["sub_code"], "INTERNAL_SERVER_ERROR")
 
     def test_add_members_to_non_existent_team_fails(self):
         """
@@ -267,8 +269,10 @@ class TestTeamsActionsAddAPI(BaseTestCase):
             headers={"Authorization": self.admin_token},
         )
         response_body = response.get_json()
+        print(response_body)
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response_body["SubCode"], "InternalServerError")
+        error_resp = response_body["error"]
+        self.assertEqual(error_resp["sub_code"], "INTERNAL_SERVER_ERROR")
 
 
 class TestTeamsActionsLeaveAPI(BaseTestCase):

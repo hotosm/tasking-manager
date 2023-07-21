@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from flask_restful import Resource, current_app, request
+from flask_restful import Resource, request
 
 from backend.services.users.authentication_service import token_auth
 from backend.services.stats_service import StatsService
@@ -99,7 +99,3 @@ class TasksStatisticsAPI(Resource):
             return task_stats.to_primitive(), 200
         except (KeyError, ValueError) as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-        except Exception as e:
-            error_msg = f"Task Statistics GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch task statistics"}, 500

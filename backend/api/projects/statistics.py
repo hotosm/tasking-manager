@@ -1,4 +1,4 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource
 from backend.services.stats_service import NotFound, StatsService
 from backend.services.project_service import ProjectService
 
@@ -18,13 +18,8 @@ class ProjectsStatisticsQueriesPopularAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            stats = StatsService.get_popular_projects()
-            return stats.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        stats = StatsService.get_popular_projects()
+        return stats.to_primitive(), 200
 
 
 class ProjectsStatisticsAPI(Resource):
@@ -63,13 +58,6 @@ class ProjectsStatisticsAPI(Resource):
             return summary.to_primitive(), 200
         except NotFound:
             return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Project Summary GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project statistics",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsStatisticsQueriesUsernameAPI(Resource):
@@ -107,10 +95,3 @@ class ProjectsStatisticsQueriesUsernameAPI(Resource):
             return stats_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch user statistics for project",
-                "SubCode": "InternalServerError",
-            }, 500

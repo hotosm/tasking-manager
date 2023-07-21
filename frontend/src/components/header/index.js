@@ -100,8 +100,8 @@ export const Header = () => {
             </span>
           </div>
           <div className="tr red">
-            <a className="link red f6 mr2" href={`http://${ORG_URL}`}>
-              {ORG_URL}
+            <a className="link red f6 mr2" href={`${ORG_URL}`} target="_blank" rel="noreferrer">
+              {ORG_NAME} Website
               <ExternalLinkIcon
                 title="externalLink"
                 className="pl2 v-btm"
@@ -171,7 +171,7 @@ export function getMenuItemsForUser(userDetails, organisations) {
       authenticated: true,
     },
     { label: messages.manage, link: 'manage', authenticated: true, manager: true },
-    { label: messages.learn, link: 'learn', showAlways: true },
+    { label: messages.learn, link: 'learn/map', showAlways: true },
     { label: messages.about, link: 'about', showAlways: true },
   ];
 

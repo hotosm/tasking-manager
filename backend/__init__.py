@@ -641,7 +641,7 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         TasksActionsReverUserTaskstAPI,
-        format_url("projects/<int:project_id>/tasks/actions/reset-validated-by-user/"),
+        format_url("projects/<int:project_id>/tasks/actions/reset-by-user/"),
     )
     api.add_resource(
         TasksActionsSplitAPI,
