@@ -85,7 +85,7 @@
     "patch-rapid": "bash -c \"cp patch/rapid-imagery.min.json public/static/rapid/data/imagery.min.json\"",
     "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
     "start": "npm run preparation && npm run copy-static && npm run patch-id && npm run patch-rapid && react-scripts start",
-    "build": "npm run preparation && npm run update-static && npm run patch-id && npm run patch-rapid && react-scripts --max_old_space_size=5120 build",
+    "build": "npm run preparation && npm run update-static && npm run patch-id && npm run patch-rapid && react-scripts --max_old_space_size=6144 build",
     "prettier": "prettier --write 'src/**/*.js'",
     "lint": "eslint src",
     "test": "npm run lint && react-scripts test --env=jsdom",
