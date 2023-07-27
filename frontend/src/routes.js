@@ -1,437 +1,111 @@
+import { lazy } from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
 
 import { Root } from './views/root';
 import { Authorized, OSMTeamsAuthorized } from './views/authorized';
+import { Home } from './views/home';
+import { AboutPage } from './views/about';
+import { LearnPage } from './views/learn';
+import { QuickstartPage } from './views/quickstart';
+import { UserDetail } from './views/userDetail';
+import {
+  UserProjectsPage,
+  ManageProjectsPage,
+  CreateProject,
+  ProjectsPage,
+  ProjectsPageIndex,
+  MoreFilters,
+  ProjectDetailPage,
+} from './views/project';
+import { Login } from './views/login';
+import { Welcome } from './views/welcome';
+import { Settings } from './views/settings';
+import { ManagementPageIndex, ManagementSection } from './views/management';
+import {
+  ListOrganisations,
+  CreateOrganisation,
+  EditOrganisation,
+} from './views/organisationManagement';
+import { OrganisationDetail } from './views/organisationDetail';
+import { OrganisationStats } from './views/organisationStats';
+import { MyTeams, ManageTeams, CreateTeam, EditTeam, TeamDetail } from './views/teams';
+import { ListCampaigns, CreateCampaign, EditCampaign } from './views/campaigns';
+import { ListInterests, CreateInterest, EditInterest } from './views/interests';
+import { ListLicenses, CreateLicense, EditLicense } from './views/licenses';
+import { Stats } from './views/stats';
+import { UsersList } from './views/users';
 import { NotFound } from './views/notFound';
+import { SelectTask } from './views/taskSelection';
+import { MapTask, ValidateTask } from './views/taskAction';
+import { EmailVerification } from './views/verifyEmail';
+import { ProjectStats } from './views/projectStats';
+import { ContactPage } from './views/contact';
+import { SwaggerView } from './views/swagger';
+import { ContributionsPage, ContributionsPageIndex, UserStats } from './views/contributions';
+import { NotificationsPage } from './views/notifications';
 import { FallbackComponent } from './views/fallback';
 import { Redirect } from './components/redirect';
+const ProjectEdit = lazy(() => import('./views/projectEdit' /* webpackChunkName: "projectEdit" */));
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Root />} ErrorBoundary={FallbackComponent}>
-      <Route index lazy={async () => {
-        const { Home } = await import('./views/home' /* webpackChunkName: "home" */);
-        return { Component: Home };
-      }} />
-      <Route
-        path="explore"
-        lazy={async () => {
-          const { ProjectsPage } = await import(
-            './views/project' /* webpackChunkName: "project" */
-          );
-          return { Component: ProjectsPage };
-        }}
-      >
-        <Route
-          index
-          lazy={async () => {
-            const { ProjectsPageIndex } = await import(
-              './views/project' /* webpackChunkName: "project" */
-            );
-            return { Component: ProjectsPageIndex };
-          }}
-        />
-        <Route
-          path="filters/*"
-          lazy={async () => {
-            const { MoreFilters } = await import(
-              './views/project' /* webpackChunkName: "project" */
-            );
-            return { Component: MoreFilters };
-          }}
-        />
+      <Route index element={<Home />} />
+      <Route path="explore" element={<ProjectsPage />}>
+        <Route index element={<ProjectsPageIndex />} />
+        <Route path="filters/*" element={<MoreFilters />} />
       </Route>
-      <Route
-        path="projects/:id"
-        lazy={async () => {
-          const { ProjectDetailPage } = await import(
-            './views/project' /* webpackChunkName: "projectDetail" */
-          );
-          return { Component: ProjectDetailPage };
-        }}
-      />
-      <Route
-        path="projects/:id/tasks"
-        lazy={async () => {
-          const { SelectTask } = await import(
-            './views/taskSelection' /* webpackChunkName: "projectDetail" */
-          );
-          return { Component: SelectTask };
-        }}
-      />
-      <Route
-        path="projects/:id/map"
-        lazy={async () => {
-          const { MapTask } = await import(
-            './views/taskAction' /* webpackChunkName: "taskAction" */
-          );
-          return { Component: MapTask };
-        }}
-      />
-      <Route
-        path="projects/:id/validate"
-        lazy={async () => {
-          const { ValidateTask } = await import(
-            './views/taskAction' /* webpackChunkName: "taskAction" */
-          );
-          return { Component: ValidateTask };
-        }}
-      />
-      <Route
-        path="projects/:id/stats"
-        lazy={async () => {
-          const { ProjectStats } = await import(
-            './views/projectStats' /* webpackChunkName: "projectStats" */
-          );
-          return { Component: ProjectStats };
-        }}
-      />
-      <Route
-        path="organisations/:id/stats/"
-        lazy={async () => {
-          const { OrganisationStats } = await import(
-            './views/organisationStats' /* webpackChunkName: "organisationStats" */
-          );
-          return { Component: OrganisationStats };
-        }}
-      />
-      <Route
-        path="organisations/:slug/"
-        lazy={async () => {
-          const { OrganisationDetail } = await import(
-            './views/organisationDetail' /* webpackChunkName: "organisationDetail" */
-          );
-          return { Component: OrganisationDetail };
-        }}
-      />
-      <Route path="learn" element={<Redirect to="/learn/map" />} />
-      <Route
-        path="learn/:type"
-        lazy={async () => {
-          const { LearnPage } = await import('./views/learn' /* webpackChunkName: "learn" */);
-          return { Component: LearnPage };
-        }}
-      />
-      <Route
-        path="learn/quickstart"
-        lazy={async () => {
-          const { QuickstartPage } = await import(
-            './views/quickstart' /* webpackChunkName: "quickstart" */
-          );
-          return { Component: QuickstartPage };
-        }}
-      />
-      <Route
-        path="about"
-        lazy={async () => {
-          const { AboutPage } = await import('./views/about' /* webpackChunkName: "about" */);
-          return { Component: AboutPage };
-        }}
-      />
-      <Route
-        path="contact/"
-        lazy={async () => {
-          const { ContactPage } = await import('./views/contact' /* webpackChunkName: "contact" */);
-          return { Component: ContactPage };
-        }}
-      />
-      <Route
-        path="contributions"
-        lazy={async () => {
-          const { ContributionsPageIndex } = await import(
-            './views/contributions' /* webpackChunkName: "contributions" */
-          );
-          return { Component: ContributionsPageIndex };
-        }}
-      >
-        <Route
-          index
-          lazy={async () => {
-            const { UserStats } = await import(
-              './views/contributions' /* webpackChunkName: "contributions" */
-            );
-            return { Component: UserStats };
-          }}
-        />
-        <Route
-          path="tasks/*"
-          lazy={async () => {
-            const { ContributionsPage } = await import(
-              './views/contributions' /* webpackChunkName: "contributions" */
-            );
-            return { Component: ContributionsPage };
-          }}
-        />
-        <Route
-          path="projects/*"
-          lazy={async () => {
-            const { UserProjectsPage } = await import(
-              './views/project' /* webpackChunkName: "project" */
-            );
-            return { Component: UserProjectsPage };
-          }}
-        />
-        <Route
-          path="teams/*"
-          lazy={async () => {
-            const { MyTeams } = await import('./views/teams' /* webpackChunkName: "teams" */);
-            return { Component: MyTeams };
-          }}
-        />
+      <Route path="projects/:id" element={<ProjectDetailPage />} />
+      <Route path="projects/:id/tasks" element={<SelectTask />} />
+      <Route path="projects/:id/map" element={<MapTask />} />
+      <Route path="projects/:id/validate" element={<ValidateTask />} />
+      <Route path="projects/:id/stats" element={<ProjectStats />} />
+      <Route path="organisations/:id/stats/" element={<OrganisationStats />} />
+      <Route path="organisations/:slug/" element={<OrganisationDetail />} />
+      <Route path="learn" element={<Redirect to="map" />} />
+      <Route path="learn/:type" element={<LearnPage />} />
+      <Route path="learn/quickstart" element={<QuickstartPage />} />
+      <Route path="about" element={<AboutPage />} />
+      <Route path="contact/" element={<ContactPage />} />
+      <Route path="contributions" element={<ContributionsPageIndex />}>
+        <Route index element={<UserStats />} />
+        <Route path="tasks/*" element={<ContributionsPage />} />
+        <Route path="projects/*" element={<UserProjectsPage />} />
+        <Route path="teams/*" element={<MyTeams />} />
       </Route>
-      <Route
-        path="users/:username"
-        lazy={async () => {
-          const { UserDetail } = await import(
-            './views/userDetail' /* webpackChunkName: "userDetail" */
-          );
-          return { Component: UserDetail };
-        }}
-      />
-      <Route
-        path="inbox"
-        lazy={async () => {
-          const { NotificationsPage } = await import(
-            './views/notifications' /* webpackChunkName: "notifications" */
-          );
-          return { Component: NotificationsPage };
-        }}
-      />
+      <Route path="users/:username" element={<UserDetail />} />
+      <Route path="inbox" element={<NotificationsPage />} />
       <Route path="authorized" element={<Authorized />} />
       <Route path="osmteams-authorized" element={<OSMTeamsAuthorized />} />
-      <Route
-        path="login"
-        lazy={async () => {
-          const { Login } = await import('./views/login' /* webpackChunkName: "login" */);
-          return { Component: Login };
-        }}
-      />
-      <Route
-        path="welcome"
-        lazy={async () => {
-          const { Welcome } = await import('./views/welcome' /* webpackChunkName: "welcome" */);
-          return { Component: Welcome };
-        }}
-      />
-      <Route
-        path="settings"
-        lazy={async () => {
-          const { Settings } = await import('./views/settings' /* webpackChunkName: "settings" */);
-          return { Component: Settings };
-        }}
-      />
-      <Route
-        path="verify-email"
-        lazy={async () => {
-          const { EmailVerification } = await import(
-            './views/verifyEmail' /* webpackChunkName: "verifyEmail" */
-          );
-          return { Component: EmailVerification };
-        }}
-      />
-      <Route
-        path="manage"
-        lazy={async () => {
-          const { ManagementSection } = await import(
-            './views/management' /* webpackChunkName: "management" */
-          );
-          return { Component: ManagementSection };
-        }}
-      >
-        <Route
-          index
-          lazy={async () => {
-            const { ManagementPageIndex } = await import(
-              './views/management' /* webpackChunkName: "management" */
-            );
-            return { Component: ManagementPageIndex };
-          }}
-        />
-        <Route
-          path="stats/"
-          lazy={async () => {
-            const { Stats } = await import('./views/stats' /* webpackChunkName: "stats" */);
-            return { Component: Stats };
-          }}
-        />
-        <Route
-          path="organisations/"
-          lazy={async () => {
-            const { ListOrganisations } = await import(
-              './views/organisationManagement' /* webpackChunkName: "organisationManagement" */
-            );
-            return { Component: ListOrganisations };
-          }}
-        />
-        <Route
-          path="organisations/new/"
-          lazy={async () => {
-            const { CreateOrganisation } = await import(
-              './views/organisationManagement' /* webpackChunkName: "organisationManagement" */
-            );
-            return { Component: CreateOrganisation };
-          }}
-        />
-        <Route
-          path="organisations/:id/"
-          lazy={async () => {
-            const { EditOrganisation } = await import(
-              './views/organisationManagement' /* webpackChunkName: "organisationManagement" */
-            );
-            return { Component: EditOrganisation };
-          }}
-        />
-        <Route
-          path="teams/"
-          lazy={async () => {
-            const { ManageTeams } = await import('./views/teams' /* webpackChunkName: "teams" */);
-            return { Component: ManageTeams };
-          }}
-        />
-        <Route
-          path="users/"
-          lazy={async () => {
-            const { UsersList } = await import('./views/users' /* webpackChunkName: "users" */);
-            return { Component: UsersList };
-          }}
-        />
-        <Route
-          path="teams/new"
-          lazy={async () => {
-            const { CreateTeam } = await import('./views/teams' /* webpackChunkName: "teams" */);
-            return { Component: CreateTeam };
-          }}
-        />
-        <Route
-          path="teams/:id"
-          lazy={async () => {
-            const { EditTeam } = await import('./views/teams' /* webpackChunkName: "teams" */);
-            return { Component: EditTeam };
-          }}
-        />
-        <Route
-          path="campaigns/"
-          lazy={async () => {
-            const { ListCampaigns } = await import(
-              './views/campaigns' /* webpackChunkName: "campaigns" */
-            );
-            return { Component: ListCampaigns };
-          }}
-        />
-        <Route
-          path="campaigns/new"
-          lazy={async () => {
-            const { CreateCampaign } = await import(
-              './views/campaigns' /* webpackChunkName: "campaigns" */
-            );
-            return { Component: CreateCampaign };
-          }}
-        />
-        <Route
-          path="campaigns/:id"
-          lazy={async () => {
-            const { EditCampaign } = await import(
-              './views/campaigns' /* webpackChunkName: "campaigns" */
-            );
-            return { Component: EditCampaign };
-          }}
-        />
-        <Route
-          path="projects/new"
-          lazy={async () => {
-            const { CreateProject } = await import(
-              './views/project' /* webpackChunkName: "project" */
-            );
-            return { Component: CreateProject };
-          }}
-        />
-        <Route
-          path="projects/:id"
-          lazy={async () => {
-            const { ProjectEdit } = await import(
-              './views/projectEdit' /* webpackChunkName: "project" */
-            );
-            return { Component: ProjectEdit };
-          }}
-        />
-        <Route
-          path="projects/*"
-          lazy={async () => {
-            const { ManageProjectsPage } = await import(
-              './views/project' /* webpackChunkName: "project" */
-            );
-            return { Component: ManageProjectsPage };
-          }}
-        />
-        <Route
-          path="categories/"
-          lazy={async () => {
-            const { ListInterests } = await import(
-              './views/interests' /* webpackChunkName: "interests" */
-            );
-            return { Component: ListInterests };
-          }}
-        />
-        <Route
-          path="categories/:id"
-          lazy={async () => {
-            const { EditInterest } = await import(
-              './views/interests' /* webpackChunkName: "interests" */
-            );
-            return { Component: EditInterest };
-          }}
-        />
-        <Route
-          path="categories/new"
-          lazy={async () => {
-            const { CreateInterest } = await import(
-              './views/interests' /* webpackChunkName: "interests" */
-            );
-            return { Component: CreateInterest };
-          }}
-        />
-        <Route
-          path="licenses/new"
-          lazy={async () => {
-            const { CreateLicense } = await import(
-              './views/licenses' /* webpackChunkName: "licenses" */
-            );
-            return { Component: CreateLicense };
-          }}
-        />
-        <Route
-          path="licenses/"
-          lazy={async () => {
-            const { ListLicenses } = await import(
-              './views/licenses' /* webpackChunkName: "licenses" */
-            );
-            return { Component: ListLicenses };
-          }}
-        />
-        <Route
-          path="licenses/:id"
-          lazy={async () => {
-            const { EditLicense } = await import(
-              './views/licenses' /* webpackChunkName: "licenses" */
-            );
-            return { Component: EditLicense };
-          }}
-        />
+      <Route path="login" element={<Login />} />
+      <Route path="welcome" element={<Welcome />} />
+      <Route path="settings" element={<Settings />} />
+      <Route path="verify-email" element={<EmailVerification />} />
+      <Route path="manage" element={<ManagementSection />}>
+        <Route index element={<ManagementPageIndex />} />
+        <Route path="stats/" element={<Stats />} />
+        <Route path="organisations/" element={<ListOrganisations />} />
+        <Route path="organisations/new/" element={<CreateOrganisation />} />
+        <Route path="organisations/:id/" element={<EditOrganisation />} />
+        <Route path="teams/" element={<ManageTeams />} />
+        <Route path="users/" element={<UsersList />} />
+        <Route path="teams/new" element={<CreateTeam />} />
+        <Route path="teams/:id" element={<EditTeam />} />
+        <Route path="campaigns/" element={<ListCampaigns />} />
+        <Route path="campaigns/new" element={<CreateCampaign />} />
+        <Route path="campaigns/:id" element={<EditCampaign />} />
+        <Route path="projects/new" element={<CreateProject />} />
+        <Route path="projects/:id" element={<ProjectEdit />} />
+        <Route path="projects/*" element={<ManageProjectsPage />} />
+        <Route path="categories/" element={<ListInterests />} />
+        <Route path="categories/:id" element={<EditInterest />} />
+        <Route path="categories/new" element={<CreateInterest />} />
+        <Route path="licenses/new" element={<CreateLicense />} />
+        <Route path="licenses/" element={<ListLicenses />} />
+        <Route path="licenses/:id" element={<EditLicense />} />
       </Route>
-      <Route
-        path="teams/:id/membership"
-        lazy={async () => {
-          const { TeamDetail } = await import('./views/teams' /* webpackChunkName: "teams" */);
-          return { Component: TeamDetail };
-        }}
-      />
-      <Route
-        path="/api-docs/"
-        lazy={async () => {
-          const { SwaggerView } = await import('./views/swagger' /* webpackChunkName: "swagger" */);
-          return { Component: SwaggerView };
-        }}
-      />
+      <Route path="teams/:id/membership" element={<TeamDetail />} />
+      <Route path="/api-docs/" element={<SwaggerView />} />
       <Route path="project/:id" element={<Redirect to="/projects/:id" />} />
       <Route path="*" element={<NotFound />} />
     </Route>,
