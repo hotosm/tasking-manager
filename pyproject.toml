@@ -17,7 +17,7 @@ dependencies = [
     "Flask-RESTful==0.3.10",
     "Flask-SQLAlchemy==3.0.5",
     "flask-swagger==0.2.14",
-    "GeoAlchemy2==0.13.3",
+    "GeoAlchemy2==0.14.1",
     "geojson==3.0.1",
     "itsdangerous==2.1.2",
     "Markdown==3.4.3",
