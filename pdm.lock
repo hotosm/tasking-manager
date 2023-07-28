@@ -206,7 +206,7 @@ dependencies = [
 
 [[package]]
 name = "geoalchemy2"
-version = "0.13.3"
+version = "0.14.1"
 requires_python = ">=3.7"
 summary = "Using SQLAlchemy with Spatial Databases"
 dependencies = [
@@ -657,7 +657,7 @@ dependencies = [
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "dev", "lint", "test"]
-content_hash = "sha256:de8f98aea62944c3728f85ae3bfe0da791805d71e04514cb09e91e48a6a1b201"
+content_hash = "sha256:6ea6e74b8b1bf3be969e2b4b2409ba13b7c83269db2e1633a5eb986e3919d449"
 
 [metadata.files]
 "alembic 1.11.1" = [
@@ -967,9 +967,9 @@ content_hash = "sha256:de8f98aea62944c3728f85ae3bfe0da791805d71e04514cb09e91e48a
     {url = "https://files.pythonhosted.org/packages/18/78/2da3bf35a978127085ae6aff85d601b8842a4204fe88a506e23d0c79acc7/flask_swagger-0.2.14-py2-none-any.whl", hash = "sha256:3caddb1311388eafc86f82f8e64ba386a5df6b84e5f16dfae19ca08173eba216"},
     {url = "https://files.pythonhosted.org/packages/b2/a9/a6c05fbc592ac482bf9557e47957c429d2be8cb8addfbc92853fb862ea8f/flask-swagger-0.2.14.tar.gz", hash = "sha256:b4085f5bc36df4c20b6548cd1413adc9cf35719b0f0695367cd542065145294d"},
 ]
-"geoalchemy2 0.13.3" = [
-    {url = "https://files.pythonhosted.org/packages/17/56/3e8d472ae86068614cbc284b9607c11386df742c7136a4ebda42b6324e8f/GeoAlchemy2-0.13.3.tar.gz", hash = "sha256:d85a7deaa9a230901733f7419d6bff5674b8730651de1a07f2b6423aa4925d09"},
-    {url = "https://files.pythonhosted.org/packages/24/92/4496658fe2cd7c68c73d1ba5e321db82df7955d8710380ef4fb32fc57726/GeoAlchemy2-0.13.3-py3-none-any.whl", hash = "sha256:a29f98cbe2527284d2374a0aa6f7bf31fb7babb61bc56b7e557afdb21610827a"},
+"geoalchemy2 0.14.1" = [
+    {url = "https://files.pythonhosted.org/packages/0c/27/16b61ba31ccd2a60992e9f6fe02f972c8c352b8330f9b2755ea50a58178c/GeoAlchemy2-0.14.1.tar.gz", hash = "sha256:620b31cbf97a368b2486dbcfcd36da2081827e933d4163bcb942043b79b545e8"},
+    {url = "https://files.pythonhosted.org/packages/2e/25/4920806644dad0977d38df330374548ac30b2b5a82513a5ada42782489ab/GeoAlchemy2-0.14.1-py3-none-any.whl", hash = "sha256:0830c98f83d6b1706e62b5544793d304e2853493d6e70ac18444c13748c3d1c7"},
 ]
 "geojson 3.0.1" = [
     {url = "https://files.pythonhosted.org/packages/1e/17/4f866d92f74ac1dcca4dad1665ce2e54c8feb861cd6e4b20de4fbf9b5f7b/geojson-3.0.1.tar.gz", hash = "sha256:ff3d75acab60b1e66504a11f7ea12c104bad32ff3c410a807788663b966dee4a"},
