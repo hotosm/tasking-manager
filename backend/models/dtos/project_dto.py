@@ -29,7 +29,7 @@ from backend.models.dtos.campaign_dto import CampaignDTO
 
 def is_known_project_status(value):
     """Validates that Project Status is known value"""
-    if type(value) == list:
+    if type(value) is list:
         return  # Don't validate the entire list, just the individual values
 
     try:
@@ -55,7 +55,7 @@ def is_known_project_priority(value):
 
 def is_known_mapping_type(value):
     """Validates Mapping Type is known value"""
-    if type(value) == list:
+    if type(value) is list:
         return  # Don't validate the entire list, just the individual values
 
     try:
@@ -70,7 +70,7 @@ def is_known_mapping_type(value):
 
 def is_known_editor(value):
     """Validates Editor is known value"""
-    if type(value) == list:
+    if type(value) is list:
         return  # Don't validate the entire list, just the individual values
 
     try:

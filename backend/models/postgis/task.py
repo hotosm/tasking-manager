@@ -1057,7 +1057,7 @@ class Task(db.Model):
         task_dto.task_history = task_history
         task_dto.last_updated = last_updated if last_updated else None
         task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
-        task_dto.comments_number = comments if type(comments) == int else None
+        task_dto.comments_number = comments if type(comments) is int else None
         return task_dto
 
     def as_dto_with_instructions(self, preferred_locale: str = "en") -> TaskDTO:

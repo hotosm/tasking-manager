@@ -180,7 +180,7 @@ class TasksQueriesJsonAPI(Resource):
         tasks_ids = request.get_json().get("tasks")
         if tasks_ids is None:
             return {"Error": "Tasks ids not provided", "SubCode": "InvalidData"}, 400
-        if type(tasks_ids) != list:
+        if type(tasks_ids) is not list:
             return {
                 "Error": "Tasks were not provided as a list",
                 "SubCode": "InvalidData",
