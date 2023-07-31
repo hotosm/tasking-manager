@@ -3,10 +3,11 @@ import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { useFetch } from '../../hooks/UseFetch';
 import { shortEnglishHumanizer } from '../userDetail/elementsMapped';
 import { StatsCardContent } from '../statsCard';
 import { MappedIcon, ValidatedIcon } from '../svgIcons';
+import { useProjectStatisticsQuery } from '../../api/stats';
+import { Alert } from '../alert';
 
 const StatsRow = ({ stats }) => {
   const fields = [
@@ -60,16 +61,19 @@ const StatsCards = ({ stats }) => {
 };
 
 export const TimeStats = ({ id }) => {
-  const [error, loading, stats] = useFetch(`projects/${id}/statistics/`, id);
+  const { data: stats, status } = useProjectStatisticsQuery(id);
 
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      rows={26}
-      ready={!error && !loading}
-      className="pr3"
-    >
-      <StatsCards stats={stats} />
-    </ReactPlaceholder>
+    <>
+      {status === 'error' ? (
+        <Alert type="error">
+          <FormattedMessage {...messages.projectStatsError} />
+        </Alert>
+      ) : status === 'loading' ? (
+        <ReactPlaceholder showLoadingAnimation={true} rows={26} ready={false} className="pr3" />
+      ) : (
+        <StatsCards stats={stats} />
+      )}
+    </>
   );
 };

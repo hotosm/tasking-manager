@@ -48,7 +48,7 @@ export const useProjectQuery = (projectId) => {
     queryFn: fetchProject,
   });
 };
-export const useProjectSummaryQuery = (projectId) => {
+export const useProjectSummaryQuery = (projectId, otherOptions = {}) => {
   const fetchProjectSummary = ({ signal }) => {
     return api().get(`projects/${projectId}/queries/summary/`, {
       signal,
@@ -59,6 +59,7 @@ export const useProjectSummaryQuery = (projectId) => {
     queryKey: ['project-summary', projectId],
     queryFn: fetchProjectSummary,
     select: (data) => data.data,
+    ...otherOptions,
   });
 };
 
@@ -96,7 +97,7 @@ export const useActivitiesQuery = (projectId) => {
   });
 };
 
-export const useTasksQuery = (projectId) => {
+export const useTasksQuery = (projectId, otherOptions = {}) => {
   const fetchProjectTasks = ({ signal }) => {
     return api().get(`projects/${projectId}/tasks/`, {
       signal,
@@ -107,7 +108,7 @@ export const useTasksQuery = (projectId) => {
     queryKey: ['project-tasks', projectId],
     queryFn: fetchProjectTasks,
     select: (data) => data.data,
-    useErrorBoundary: true,
+    ...otherOptions,
   });
 };
 

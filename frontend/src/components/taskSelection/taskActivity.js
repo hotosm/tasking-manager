@@ -265,8 +265,6 @@ export const TaskActivity = ({
     queryClient.setQueryData(['task-detail', project.projectId, taskId], { data: payload });
   };
 
-  console.log('commentPayload', commentPayload);
-
   const resetTask = () => {
     pushToLocalJSONAPI(
       `projects/${project.projectId}/tasks/actions/undo-last-action/${taskId}/`,

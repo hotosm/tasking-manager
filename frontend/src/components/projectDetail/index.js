@@ -6,6 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import { supported } from 'mapbox-gl';
 
 import messages from './messages';
+import viewsMessages from '../../views/messages';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { TasksMap } from '../taskSelection/map.js';
 import { ProjectHeader } from './header';
@@ -296,7 +297,7 @@ export const ProjectDetail = (props) => {
             </React.Suspense>
           ) : timelineDataStatus === 'error' ? (
             <Alert type="error">
-              <FormattedMessage {...messages.timelineDataError} />
+              <FormattedMessage {...viewsMessages.timelineDataError} />
             </Alert>
           ) : (
             <ReactPlaceholder showLoadingAnimation rows={3} ready={false} />

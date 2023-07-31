@@ -85,6 +85,7 @@ export const router = createBrowserRouter(
           );
           return { Component: ProjectStats };
         }}
+        ErrorBoundary={FallbackComponent}
       />
       <Route
         path="organisations/:id/stats/"

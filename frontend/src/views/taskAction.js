@@ -116,7 +116,7 @@ export function TaskAction({ projectId, action }: Object) {
 
 export function TaskActionPossible({ projectId, tasks, action, editor, getTasks }) {
   const { data: project, status } = useProjectSummaryQuery(projectId);
-  const { data: tasksGeojson } = useTasksQuery(projectId);
+  const { data: tasksGeojson } = useTasksQuery(projectId, { useErrorBoundary: true });
 
   return (
     <div className="cf w-100">

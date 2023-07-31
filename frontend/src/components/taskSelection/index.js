@@ -74,7 +74,9 @@ export function TaskSelection({ project }: Object) {
     refetchOnWindowFocus: true,
     refetchInterval: activeSection === 'contributions' ? 1000 * 60 : false,
   });
-  const { data: tasksData, refetch: refetchTasks } = useTasksQuery(projectId);
+  const { data: tasksData, refetch: refetchTasks } = useTasksQuery(projectId, {
+    useErrorBoundary: true,
+  });
   const {
     data: priorityAreas,
     isLoading: isPriorityAreasLoading,

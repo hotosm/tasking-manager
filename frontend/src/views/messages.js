@@ -32,6 +32,22 @@ export default defineMessages({
     id: 'project.stats.timeline',
     defaultMessage: 'Project timeline',
   },
+  timelineDataError: {
+    id: 'project.stats.timeline.fetching.error',
+    defaultMessage: 'An error occured while loading contributions data',
+  },
+  editsStatsError: {
+    id: 'project.detail.stats.timeline.fetching.error',
+    defaultMessage: 'An error occured while loading edits stats',
+  },
+  tasksStatsError: {
+    id: 'project.detail.stats.tasks.error',
+    defaultMessage: 'An error occured while loading tasks stats',
+  },
+  contributionsStatsError: {
+    id: 'project.detail.stats.contributions.error',
+    defaultMessage: 'An error occured while loading contributions stats',
+  },
   sectionNotAllowed: {
     id: 'management.forbiddenAccess.title',
     defaultMessage: 'You are not allowed to access the management area.',

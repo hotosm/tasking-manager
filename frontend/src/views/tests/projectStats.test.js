@@ -4,7 +4,7 @@ import { render, waitFor, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { store } from '../../store';
-import { ReduxIntlProviders } from '../../utils/testWithIntl';
+import { QueryClientProviders, ReduxIntlProviders } from '../../utils/testWithIntl';
 import { ProjectStats } from '../projectStats';
 
 jest.mock('react-chartjs-2', () => ({
@@ -22,9 +22,11 @@ describe('ProjectStats dashboard', () => {
           <Route
             path="/projects/:id"
             element={
-              <ReduxIntlProviders>
-                <ProjectStats />
-              </ReduxIntlProviders>
+              <QueryClientProviders>
+                <ReduxIntlProviders>
+                  <ProjectStats />
+                </ReduxIntlProviders>
+              </QueryClientProviders>
             }
           />
         </Routes>
