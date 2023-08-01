@@ -7,7 +7,7 @@ class InterestDTO(Model):
     """DTO for a interest."""
 
     id = IntType()
-    name = StringType()
+    name = StringType(required=True, min_length=1)
     user_selected = BooleanType(
         serialized_name="userSelected", serialize_when_none=False
     )
