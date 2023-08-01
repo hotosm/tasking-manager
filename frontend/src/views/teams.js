@@ -5,13 +5,11 @@ import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
 import {
   BooleanParam,
-  encodeQueryParams,
   NumberParam,
   StringParam,
   useQueryParams,
   withDefault,
 } from 'use-query-params';
-import { stringify } from 'query-string';
 import toast from 'react-hot-toast';
 import Popup from 'reactjs-popup';
 
@@ -21,7 +19,7 @@ import { useEditTeamAllowed } from '../hooks/UsePermissions';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import useForceUpdate from '../hooks/UseForceUpdate';
 import { useModifyMembers } from '../hooks/UseModifyMembers';
-import { fetchLocalJSONAPIWithAbort, pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import {
   getMembersDiff,
   filterActiveMembers,
@@ -45,6 +43,7 @@ import { NotFound } from './notFound';
 import { PaginatorLine } from '../components/paginator';
 import { updateEntity } from '../utils/management';
 import { EntityError } from '../components/alert';
+import { useTeamsQuery } from '../api/teams';
 
 export function ManageTeams() {
   useSetTitleTag('Manage teams');
@@ -62,10 +61,6 @@ export function MyTeams() {
 
 export function ListTeams({ managementView = false }: Object) {
   const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
-  const [teams, setTeams] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [query, setQuery] = useQueryParams({
     page: withDefault(NumberParam, 1),
     showAll: BooleanParam,
@@ -73,43 +68,20 @@ export function ListTeams({ managementView = false }: Object) {
   });
   const [userTeamsOnly, setUserTeamsOnly] = useState(Boolean(!query.showAll));
 
+  const { searchQuery, ...restQuery } = query;
+
+  const { data: teams, status: teamsStatus } = useTeamsQuery({
+    fullMemberList: false,
+    paginate: true,
+    team_name: searchQuery, // Pass the searchQuery as team_name
+    ...(managementView ? userTeamsOnly && { manager: userDetails.id } : { member: userDetails.id }),
+    ...restQuery,
+  });
+
   useEffect(() => {
     setQuery({ ...query, page: 1, showAll: userTeamsOnly === false ? true : undefined });
     //eslint-disable-next-line
   }, [userTeamsOnly]);
-
-  const encodedQuery = encodeQueryParams(
-    { page: NumberParam, team_name: StringParam },
-    { page: query.page, team_name: query.searchQuery },
-  );
-
-  const pageParam = `${
-    stringify(encodedQuery) ? `&${stringify(encodedQuery)}` : stringify(encodedQuery)
-  }`;
-
-  useEffect(() => {
-    if (token && userDetails?.id) {
-      const controller = new AbortController();
-      const { signal } = controller;
-      let queryParam;
-      if (managementView) {
-        queryParam = userTeamsOnly ? `manager=${userDetails.id}` : '';
-      } else {
-        queryParam = `member=${userDetails.id}`;
-      }
-      setLoading(true);
-      fetchLocalJSONAPIWithAbort(
-        `teams/?fullMemberList=false&paginate=true&${queryParam}${pageParam}`,
-        token,
-        signal,
-      )
-        .then((res) => {
-          setTeams(res);
-          setLoading(false);
-        })
-        .catch((err) => setError(err));
-    }
-  }, [userDetails, token, managementView, userTeamsOnly, query, pageParam]);
 
   const handlePagination = (val) => {
     setQuery({ ...query, page: val }, 'pushIn');
@@ -125,7 +97,7 @@ export function ListTeams({ managementView = false }: Object) {
         setUserTeamsOnly={setUserTeamsOnly}
         query={query}
         setQuery={setQuery}
-        isTeamsFetched={!loading && !error}
+        teamsStatus={teamsStatus}
       />
       <PaginatorLine
         className="flex items-center flex-end gap-1"

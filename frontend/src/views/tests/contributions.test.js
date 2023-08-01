@@ -6,6 +6,7 @@ import { QueryParamProvider } from 'use-query-params';
 import { store } from '../../store';
 import {
   createComponentWithMemoryRouter,
+  QueryClientProviders,
   ReduxIntlProviders,
   renderWithRouter,
 } from '../../utils/testWithIntl';
@@ -62,9 +63,11 @@ describe('Contributions Page Index', () => {
     });
 
     renderWithRouter(
-      <ReduxIntlProviders>
-        <ContributionsPageIndex />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <ContributionsPageIndex />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     expect(screen.getAllByRole('link', { name: 'test_user' }).length).toBe(4);
   });

@@ -3,15 +3,13 @@ import { FormattedMessage } from 'react-intl';
 
 import { TeamBox } from '../teamsAndOrgs/teams';
 import { useUserOrganisationsQuery } from '../../api/organisations';
+import { useTeamsQuery } from '../../api/teams';
 import { Alert } from '../alert';
 import messages from './messages';
 
 export const UserTeams = ({ userId }) => {
-  //eslint-disable-next-line
-  const [teamsError, teamsLoading, teams] = useFetch(
-    `teams/?member=${userId}&omitMemberList=true`,
-    userId !== undefined,
-  );
+  const { data: teams } = useTeamsQuery({ member: userId, omitMemberList: true });
+
   return (
     <div className="cf db">
       {teams &&

@@ -30,7 +30,7 @@ import {
   useProjectContributionsQuery,
   useTasksQuery,
 } from '../../api/projects';
-import { useUserTeamsQuery } from '../../api/teams';
+import { useTeamsQuery } from '../../api/teams';
 const TaskSelectionFooter = React.lazy(() => import('./footer'));
 
 const getRandomTaskByAction = (activities, taskAction) => {
@@ -67,7 +67,15 @@ export function TaskSelection({ project }: Object) {
   const [activeUser, setActiveUser] = useState(null);
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
 
-  const { data: userTeams, isLoading: isUserTeamsLoading } = useUserTeamsQuery(user.id);
+  const { data: userTeams, isLoading: isUserTeamsLoading } = useTeamsQuery(
+    {
+      omitMemberList: true,
+      member: user.id,
+    },
+    {
+      useErrorBoundary: true,
+    },
+  );
   const { data: activities, refetch: getActivities } = useActivitiesQuery(projectId);
   const { data: contributions } = useProjectContributionsQuery(projectId, {
     useErrorBoundary: true,

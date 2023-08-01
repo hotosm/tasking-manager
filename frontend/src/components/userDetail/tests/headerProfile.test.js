@@ -2,7 +2,12 @@ import '@testing-library/jest-dom';
 import { render, screen, act } from '@testing-library/react';
 
 import { HeaderProfile, SocialMedia, MyContributionsNav } from '../headerProfile';
-import { IntlProviders, ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+import {
+  IntlProviders,
+  QueryClientProviders,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 import { userQueryDetails } from '../../../network/tests/mockData/userList';
 import { store } from '../../../store';
 
@@ -115,9 +120,11 @@ test('section menu should render display menus for contributions tab', () => {
 describe('Header Profile Component', () => {
   it('should render details of the components', async () => {
     const { container } = renderWithRouter(
-      <ReduxIntlProviders>
-        <HeaderProfile userDetails={userQueryDetails} changesets={120} selfProfile={false} />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <HeaderProfile userDetails={userQueryDetails} changesets={120} selfProfile={false} />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     expect(screen.getByRole('img', { name: 'somebodysomewhere' }).src).toContain(
       userQueryDetails.pictureUrl,
@@ -141,9 +148,15 @@ describe('Header Profile Component', () => {
   it('should display profile icon when no user display picture is present', async () => {
     const moddeduserQueryDetails = { ...userQueryDetails, pictureUrl: null };
     const { container } = renderWithRouter(
-      <ReduxIntlProviders>
-        <HeaderProfile userDetails={moddeduserQueryDetails} changesets={120} selfProfile={false} />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <HeaderProfile
+            userDetails={moddeduserQueryDetails}
+            changesets={120}
+            selfProfile={false}
+          />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     expect(container.querySelectorAll('svg').length).toBe(4); // socials icon plus display picture
   });
@@ -156,9 +169,11 @@ describe('Header Profile Component', () => {
       });
     });
     renderWithRouter(
-      <ReduxIntlProviders>
-        <HeaderProfile userDetails={userQueryDetails} changesets={120} selfProfile={false} />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <HeaderProfile userDetails={userQueryDetails} changesets={120} selfProfile={false} />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     expect(
       screen.getByRole('link', {

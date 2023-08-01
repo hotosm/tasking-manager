@@ -3,20 +3,20 @@ import { useQuery } from '@tanstack/react-query';
 
 import api from './apiClient';
 
-export const useUserTeamsQuery = (userId) => {
+export const useTeamsQuery = (params, otherOptions) => {
   const token = useSelector((state) => state.auth.token);
 
   const fetchUserTeams = ({ signal }) => {
-    return api(token).get(`teams/?omitMemberList=true&member=${userId}`, {
+    return api(token).get(`teams/`, {
       signal,
+      params: params,
     });
   };
 
   return useQuery({
-    queryKey: ['user-teams', userId],
+    queryKey: ['user-teams', params],
     queryFn: fetchUserTeams,
-    enabled: !!userId,
     select: (data) => data.data,
-    useErrorBoundary: true,
+    ...otherOptions,
   });
 };
