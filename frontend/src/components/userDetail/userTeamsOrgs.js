@@ -1,7 +1,10 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import { TeamBox } from '../teamsAndOrgs/teams';
-import { useFetch } from '../../hooks/UseFetch';
+import { useUserOrganisationsQuery } from '../../api/organisations';
+import { Alert } from '../alert';
+import messages from './messages';
 
 export const UserTeams = ({ userId }) => {
   //eslint-disable-next-line
@@ -23,23 +26,25 @@ export const UserTeams = ({ userId }) => {
 };
 
 export const UserOrganisations = ({ userId }) => {
-  //eslint-disable-next-line
-  const [orgsError, orgsLoading, orgs] = useFetch(
-    `organisations/?manager_user_id=${userId}&omitManagerList=true`,
-    userId !== undefined,
-  );
+  const { data: orgs, status } = useUserOrganisationsQuery(userId);
 
   return (
     <>
-      {orgs?.organisations?.map((org) => (
-        <div title={org.name} key={org.organisationId} className="cf ph2 pv1 tc dib">
-          {org.logo ? (
-            <img alt={org.name} src={org.logo} className="object-fit-contain h2 v-mid" />
-          ) : (
-            <span className="bg-red-light red truncate">{org.name}</span>
-          )}
-        </div>
-      ))}
+      {status === 'success' &&
+        orgs.organisations.map((org) => (
+          <div title={org.name} key={org.organisationId} className="cf ph2 pv1 tc dib">
+            {org.logo ? (
+              <img alt={org.name} src={org.logo} className="object-fit-contain h2 v-mid" />
+            ) : (
+              <span className="bg-red-light red truncate">{org.name}</span>
+            )}
+          </div>
+        ))}
+      {status === 'error' && (
+        <Alert type="error" compact inline>
+          <FormattedMessage {...messages.userOrganisationsError} />
+        </Alert>
+      )}
     </>
   );
 };
