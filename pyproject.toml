@@ -51,7 +51,7 @@ license = { text = "BSD-2-Clause" }
 [tool]
 [tool.pdm.dev-dependencies]
 test = ["coverage==7.2.7", "pytest==7.4.0"]
-lint = ["black==23.3.0", "flake8==6.0.0"]
+lint = ["black==23.3.0", "flake8==6.1.0"]
 dev = ["psycopg2-binary>=2.9.6"]
 
 [tool.pdm.scripts]
