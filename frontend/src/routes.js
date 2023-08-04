@@ -67,6 +67,7 @@ export const router = createBrowserRouter(
           );
           return { Component: MapTask };
         }}
+        ErrorBoundary={FallbackComponent}
       />
       <Route
         path="projects/:id/validate"
@@ -76,6 +77,7 @@ export const router = createBrowserRouter(
           );
           return { Component: ValidateTask };
         }}
+        ErrorBoundary={FallbackComponent}
       />
       <Route
         path="projects/:id/stats"

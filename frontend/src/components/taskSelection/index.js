@@ -84,6 +84,9 @@ export function TaskSelection({ project }: Object) {
   });
   const { data: tasksData, refetch: refetchTasks } = useTasksQuery(projectId, {
     useErrorBoundary: true,
+    // Task status on the map were not being updated when coming from the action page,
+    // so added this as a workaround.
+    cacheTime: 0,
   });
   const {
     data: priorityAreas,

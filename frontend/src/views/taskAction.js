@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryParam, StringParam } from 'use-query-params';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
-import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { Button } from '../components/button';
@@ -31,13 +30,6 @@ export function TaskAction({ projectId, action }: Object) {
   const [editor, setEditor] = useQueryParam('editor', StringParam);
 
   const { status: lockedTasksStatus, data: lockedTasks, refetch: getTasks } = useLockedTasksQuery();
-
-  useEffect(() => {
-    if (lockedTasksStatus === 'error') {
-      toast.error(<FormattedMessage {...messages.lockedTasksLoadingError} />);
-      navigate(`/projects/${projectId}/tasks/`);
-    }
-  }, [lockedTasksStatus, navigate, projectId]);
 
   useEffect(() => {
     dispatch({ type: 'SET_VISIBILITY', isVisible: false });
@@ -103,7 +95,7 @@ export function TaskAction({ projectId, action }: Object) {
       return (
         <TaskActionPossible
           projectId={projectId}
-          tasks={lockedTasks}
+          lockedTasks={lockedTasks}
           action={action}
           editor={editor}
           getTasks={getTasks}
@@ -114,9 +106,11 @@ export function TaskAction({ projectId, action }: Object) {
   return null;
 }
 
-export function TaskActionPossible({ projectId, tasks, action, editor, getTasks }) {
-  const { data: project, status } = useProjectSummaryQuery(projectId);
-  const { data: tasksGeojson } = useTasksQuery(projectId, { useErrorBoundary: true });
+export function TaskActionPossible({ projectId, lockedTasks, action, editor, getTasks }) {
+  const { data: project, status: projectStatus } = useProjectSummaryQuery(projectId, {
+    useErrorBoundary: true,
+  });
+  const { data: tasks, status: tasksStatus } = useTasksQuery(projectId, { useErrorBoundary: true });
 
   return (
     <div className="cf w-100">
@@ -125,12 +119,12 @@ export function TaskActionPossible({ projectId, tasks, action, editor, getTasks 
         type="media"
         rows={26}
         delay={10}
-        ready={status === 'success' && tasksGeojson}
+        ready={projectStatus === 'success' && tasksStatus === 'success'}
       >
         <TaskMapAction
           project={project}
-          tasks={tasksGeojson}
-          activeTasks={tasks}
+          tasks={tasks}
+          activeTasks={lockedTasks}
           getTasks={getTasks}
           action={action}
           editor={editor}

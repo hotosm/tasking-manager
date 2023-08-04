@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import Popup from 'reactjs-popup';
+import toast from 'react-hot-toast';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
@@ -80,7 +81,9 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
   timer.setSeconds(timer.getSeconds() + activeTask.autoUnlockSeconds);
   //eslint-disable-next-line
   const { data: taskDetail } = useTaskDetail(project.projectId, tasksIds[0]);
-  const { data: priorityArea } = usePriorityAreasQuery(project.projectId);
+  const { data: priorityArea, isError: isPriorityAreaError } = usePriorityAreasQuery(
+    project.projectId,
+  );
 
   const contributors = taskDetail?.taskHistory
     ? getTaskContributors(taskDetail.taskHistory, userDetails.username)
@@ -157,6 +160,12 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    isPriorityAreaError &&
+      !['ID', 'RAPID'].includes(editor) &&
+      toast.error(<FormattedMessage {...messages.priorityAreasLoadingError} />);
+  }, [editor, isPriorityAreaError]);
 
   const callEditor = async (arr) => {
     setIsJosmError(false);
@@ -366,6 +375,12 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                             )}
                             closeOnEscape={true}
                             closeOnDocumentClick={true}
+                            onOpen={() => {
+                              isPriorityAreaError &&
+                                toast.error(
+                                  <FormattedMessage {...messages.priorityAreasLoadingError} />,
+                                );
+                            }}
                           >
                             {(close) => (
                               <div className="vh-75">

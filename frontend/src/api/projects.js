@@ -158,6 +158,33 @@ export const useTaskDetail = (projectId, taskId, shouldRefetch) => {
   });
 };
 
+// MAPPING
+export const stopMapping = (projectId, taskId, comment, token, locale = 'en') => {
+  return api(token, locale).post(`projects/${projectId}/tasks/actions/stop-mapping/${taskId}/`, {
+    comment,
+  });
+};
+
+export const splitTask = (projectId, taskId, token, locale) => {
+  return api(token, locale).post(`projects/${projectId}/tasks/actions/split/${taskId}/`);
+};
+
+export const submitMappingTask = (url, payload, token, locale) => {
+  return api(token, locale).post(url, payload);
+};
+
+// VALIDATION
+export const stopValidation = (projectId, payload, token, locale = 'en') => {
+  return api(token, locale).post(`projects/${projectId}/tasks/actions/stop-validation/`, payload);
+};
+
+export const submitValidationTask = (projectId, payload, token, locale) => {
+  return api(token, locale).post(
+    `projects/${projectId}/tasks/actions/unlock-after-validation/`,
+    payload,
+  );
+};
+
 const backendToQueryConversion = {
   difficulty: 'difficulty',
   campaign: 'campaign',

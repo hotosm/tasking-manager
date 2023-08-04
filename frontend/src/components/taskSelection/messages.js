@@ -583,13 +583,25 @@ export default defineMessages({
     id: 'project.tasks.action.split_task.error.description',
     defaultMessage: 'This task is already too small and can not be split.',
   },
+  splitTaskGenericError: {
+    id: 'project.tasks.action.split_task.error.generic',
+    defaultMessage: 'An error occured while splitting the task.',
+  },
   selectAnotherTask: {
     id: 'project.tasks.action.select_another_task',
     defaultMessage: 'Select another task',
   },
+  stopMappingError: {
+    id: 'project.tasks.action.stop_mapping.error',
+    defaultMessage: 'An error occured while stopping mapping.',
+  },
   stopValidation: {
     id: 'project.tasks.action.stop_validation',
     defaultMessage: 'Stop validation',
+  },
+  stopValidationError: {
+    id: 'project.tasks.action.stop_validation.error',
+    defaultMessage: 'An error occured while stopping validation.',
   },
   tasksMap: {
     id: 'project.tasks.action.tasks_map',
@@ -602,6 +614,11 @@ export default defineMessages({
   submitTasks: {
     id: 'project.tasks.action.submit_tasks',
     defaultMessage: 'Submit tasks',
+  },
+  submitTaskError: {
+    id: 'project.tasks.action.submit_task.error',
+    defaultMessage:
+      'An error occured while submitting your {numTasks, plural, =1 {task} other {tasks}}.',
   },
   taskActivity: {
     id: 'project.tasks.history.title',
