@@ -97,7 +97,7 @@ export function OrganisationCard({ details }: Object) {
           </div>
           <div className="w-100 dib pt2 fl">
             <h4 className="ttu blue-grey f6">
-              <FormattedMessage {...messages.administrators} />
+              <FormattedMessage {...messages.managers} />
             </h4>
             <div className="dib">
               <UserAvatarList
