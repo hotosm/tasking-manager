@@ -187,7 +187,11 @@ class TeamService:
         user = UserService.get_user_by_username(username)
         team_member = TeamMembers.query.filter(
             TeamMembers.team_id == team_id, TeamMembers.user_id == user.id
-        ).one()
+        ).one_or_none()
+        if not team_member:
+            raise NotFound(
+                sub_code="USER_NOT_IN_TEAM", username=username, team_id=team_id
+            )
         team_member.delete()
 
     @staticmethod

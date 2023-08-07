@@ -18,6 +18,7 @@
     "TASK_NOT_FOUND": "The requested task was not found on the server.",
     "TASKS_NOT_FOUND": "The tasks associated with the requested resource were not found on the server.",
     "TEAM_NOT_FOUND": "The requested team was not found on the server.",
+    "USER_NOT_IN_TEAM": "The requested user is not a member of the team.",
     "USER_NOT_FOUND": "The requested user was not found on the server.",
     "BAD_REQUEST": "The request was invalid or cannot be otherwise served.",
     "UNAUTHORIZED": "Authentication credentials were missing or incorrect.",
