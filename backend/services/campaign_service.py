@@ -133,6 +133,11 @@ class CampaignService:
     @staticmethod
     def create_campaign_organisation(organisation_id: int, campaign_id: int):
         """Creates new campaign from DTO"""
+        # Check if campaign exists
+        CampaignService.get_campaign(campaign_id)
+        # Check if organisation exists
+        OrganisationService.get_organisation_by_id(organisation_id)
+
         statement = campaign_organisations.insert().values(
             campaign_id=campaign_id, organisation_id=organisation_id
         )
@@ -146,6 +151,8 @@ class CampaignService:
     @staticmethod
     def get_organisation_campaigns_as_dto(organisation_id: int) -> CampaignListDTO:
         """Gets all the campaigns for a specified project"""
+        # Check if organisation exists
+        OrganisationService.get_organisation_by_id(organisation_id)
         query = (
             Campaign.query.join(campaign_organisations)
             .filter(campaign_organisations.c.organisation_id == organisation_id)
@@ -175,7 +182,14 @@ class CampaignService:
             raise NotFound(
                 sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
             )
-
+        if not CampaignService.campaign_organisation_exists(
+            campaign_id, organisation_id
+        ):
+            raise NotFound(
+                sub_code="ORGANISATION_CAMPAIGN_NOT_FOUND",
+                organisation_id=organisation_id,
+                campaign_id=campaign_id,
+            )
         org.campaign.remove(campaign)
         db.session.commit()
         new_campaigns = CampaignService.get_organisation_campaigns_as_dto(

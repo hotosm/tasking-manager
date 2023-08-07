@@ -51,12 +51,14 @@ class OrganisationService:
     def get_organisation_by_id_as_dto(
         organisation_id: int, user_id: int, abbreviated: bool
     ):
-        org = Organisation.get(organisation_id)
+        org = OrganisationService.get_organisation_by_id(organisation_id)
         return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
 
     @staticmethod
     def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool):
         org = Organisation.query.filter_by(slug=slug).first()
+        if org is None:
+            raise NotFound(sub_code="ORGANISATION_NOT_FOUND", slug=slug)
         return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
 
     @staticmethod

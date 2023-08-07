@@ -11,6 +11,8 @@
     "MESSAGES_NOT_FOUND": "The messages associated with the requested resource were not found on the server.",
     "NOTIFICATIONS_NOT_FOUND": "The notifications associated with the requested resource were not found on the server.",
     "ORGANISATION_NOT_FOUND": "The requested organisation was not found on the server.",
+    "ORGANISATION_CAMPAIGN_NOT_FOUND": "The requested campaign associated with the requested organisation was not found on the server.",
+    "PROJECT_CAMPAIGN_NOT_FOUND": "The requested campaign associated with the requested project was not found on the server.",
     "PROJECT_NOT_FOUND": "The requested project was not found on the server.",
     "PROJECTS_NOT_FOUND": "The projects associated with the requested resource were not found on the server.",
     "TASK_NOT_FOUND": "The requested task was not found on the server.",
