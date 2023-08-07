@@ -63,21 +63,23 @@ export function TeamsManagement({
         />
       </div>
       <div className={`${teamsStatus !== 'error' ? 'cards-container' : ''} mt2`}>
-        {teamsStatus === 'loading' ? (
+        {teamsStatus === 'loading' && (
           <ReactPlaceholder
             showLoadingAnimation={true}
             customPlaceholder={nCardPlaceholders(4)}
             delay={10}
             ready={false}
           />
-        ) : teamsStatus === 'error' ? (
+        )}
+        {teamsStatus === 'error' && (
           <Alert type="error">
             <FormattedMessage {...messages.errorLoadingTeams} />
           </Alert>
-        ) : (
+        )}
+        {teamsStatus === 'success' && (
           <>
             {teams?.length ? (
-              teams.map((team, n) => <TeamCard team={team} key={n} />)
+              teams.map((team) => <TeamCard team={team} key={team.teamId} />)
             ) : (
               <div className="pb3 pt2">
                 <FormattedMessage {...messages.noTeams} />

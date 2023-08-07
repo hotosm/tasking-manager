@@ -85,27 +85,30 @@ export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
         <FormattedMessage {...messages.questionsAndComments} />
       </h3>
       <div className="ph6-l ph4 pb5 w-100 w-70-l">
-        {commentsStatus === 'loading' ? (
-          <ReactPlaceholder type="media" rows={3} ready={false} />
-        ) : commentsStatus === 'error' ? (
+        {commentsStatus === 'loading' && <ReactPlaceholder type="media" rows={3} ready={false} />}{' '}
+        {commentsStatus === 'error' && (
           <div className="mb4">
             <Alert type="error">
               <FormattedMessage {...messages.errorLoadingComments} />
             </Alert>
           </div>
-        ) : comments?.chat.length ? (
-          <CommentList
-            userCanEditProject={userCanEditProject}
-            projectId={projectId}
-            comments={comments.chat}
-            retryFn={refetch}
-          />
-        ) : (
-          <div className="pv4 blue-grey tc">
-            <FormattedMessage {...messages.noComments} />
-          </div>
         )}
-
+        {commentsStatus === 'success' && (
+          <>
+            {comments?.chat.length ? (
+              <CommentList
+                userCanEditProject={userCanEditProject}
+                projectId={projectId}
+                comments={comments.chat}
+                retryFn={refetch}
+              />
+            ) : (
+              <div className="pv4 blue-grey tc">
+                <FormattedMessage {...messages.noComments} />
+              </div>
+            )}
+          </>
+        )}
         {comments?.pagination?.pages > 0 && (
           <PaginatorLine
             activePage={page}

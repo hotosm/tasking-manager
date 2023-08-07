@@ -49,13 +49,15 @@ export function ProjectStats() {
           <ProjectHeader project={project} showEditLink={true} />
         </div>
         <div className="w-100 fl">
-          {tasksStatus === 'error' ? (
+          {tasksStatus === 'loading' && (
+            <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={false} />
+          )}
+          {tasksStatus === 'error' && (
             <Alert type="error">
               <FormattedMessage {...messages.tasksStatsError} />
             </Alert>
-          ) : tasksStatus === 'loading' ? (
-            <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={false} />
-          ) : (
+          )}
+          {tasksStatus === 'success' && (
             <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
               <TasksByStatus stats={tasksByStatus} />
             </React.Suspense>
@@ -63,13 +65,15 @@ export function ProjectStats() {
         </div>
         {defaultComment?.[0] && (
           <div className="w-100 fl">
-            {editsStatus === 'error' ? (
+            {editsStatus === 'loading' && (
+              <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={false} />
+            )}
+            {editsStatus === 'error' && (
               <Alert type="error">
                 <FormattedMessage {...messages.editsStatsError} />
               </Alert>
-            ) : editsStatus === 'loading' ? (
-              <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={false} />
-            ) : (
+            )}
+            {editsStatus === 'success' && (
               <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
                 <EditsStats data={edits} />
               </React.Suspense>
@@ -77,13 +81,15 @@ export function ProjectStats() {
           </div>
         )}
         <div className="w-100 fl pb4">
-          {contributionsStatus === 'error' ? (
+          {contributionsStatus === 'error' && (
             <Alert type="error">
               <FormattedMessage {...messages.contributionsStatsError} />
             </Alert>
-          ) : contributionsStatus === 'loading' ? (
+          )}
+          {contributionsStatus === 'loading' && (
             <ReactPlaceholder showLoadingAnimation={true} rows={7} delay={500} ready={false} />
-          ) : (
+          )}
+          {contributionsStatus === 'success' && (
             <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
               <ContributorsStats contributors={contributions} />
             </React.Suspense>
@@ -95,33 +101,35 @@ export function ProjectStats() {
           </h3>
           <div className="bg-white pv3 ph2 fl w-100 shadow-4">
             <div className="w-100 w-50-l fl">
-              {timelineDataStatus === 'loading' ? (
+              {timelineDataStatus === 'loading' && (
                 <ReactPlaceholder
                   showLoadingAnimation={true}
                   rows={3}
                   delay={500}
                   ready={timelineDataStatus === 'success'}
                 />
-              ) : timelineDataStatus === 'error' ? (
+              )}
+              {timelineDataStatus === 'error' && (
                 <Alert type="error">
                   <FormattedMessage {...messages.timelineDataError} />
                 </Alert>
-              ) : (
+              )}
+              {timelineDataStatus === 'success' && (
                 <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
                   <ProjectTimeline tasksByDay={timelineData} />
                 </React.Suspense>
               )}
             </div>
             <div className="w-100 w-50-l fl">
-              {tasksStatus === 'error' ? (
+              {tasksStatus === 'error' && (
                 <Alert type="error">
                   <FormattedMessage {...messages.tasksStatsError} />
                 </Alert>
-              ) : tasksStatus === 'loading' ? (
-                <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={false} />
-              ) : (
-                <CompletionStats tasksByStatus={tasksByStatus} />
               )}
+              {tasksStatus === 'loading' && (
+                <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={false} />
+              )}
+              {tasksStatus === 'success' && <CompletionStats tasksByStatus={tasksByStatus} />}
             </div>
           </div>
         </div>

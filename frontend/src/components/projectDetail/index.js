@@ -260,7 +260,7 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.contributors} />
       </h3>
       <div className="cf db mb3 ph4">
-        {contributorsStatus === 'loading' ? (
+        {contributorsStatus === 'loading' && (
           <ReactPlaceholder
             showLoadingAnimation={true}
             type={'media'}
@@ -268,13 +268,15 @@ export const ProjectDetail = (props) => {
             delay={200}
             ready={contributorsStatus === 'success'}
           />
-        ) : contributorsStatus === 'error' ? (
+        )}
+        {contributorsStatus === 'error' && (
           <div className="w-100 w-60-l">
             <Alert type="error">
               <FormattedMessage {...messages.contributorsError} />
             </Alert>
           </div>
-        ) : (
+        )}
+        {contributorsStatus === 'success' && (
           <UserAvatarList
             size={'large'}
             textColor="white"
@@ -291,16 +293,18 @@ export const ProjectDetail = (props) => {
       </h3>
       <div className="mb5 ph4 w-100 w-60-l">
         <div className="pt2 pb4">
-          {timelineDataStatus === 'success' ? (
-            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
-              <ProjectTimeline tasksByDay={timelineData} />
-            </React.Suspense>
-          ) : timelineDataStatus === 'error' ? (
+          {timelineDataStatus === 'loading' && (
+            <ReactPlaceholder showLoadingAnimation rows={3} ready={false} />
+          )}
+          {timelineDataStatus === 'error' && (
             <Alert type="error">
               <FormattedMessage {...viewsMessages.timelineDataError} />
             </Alert>
-          ) : (
-            <ReactPlaceholder showLoadingAnimation rows={3} ready={false} />
+          )}
+          {timelineDataStatus === 'success' && (
+            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+              <ProjectTimeline tasksByDay={timelineData} />
+            </React.Suspense>
           )}
         </div>
         <div className="flex gap-1 nowrap flex-wrap">

@@ -82,12 +82,14 @@ export const TaskHistory = ({ projectId, taskId }) => {
   const taskComments = commentPayload?.taskHistory.filter((t) => t.action === 'COMMENT');
   const taskChanges = commentPayload?.taskHistory.filter((t) => t.action !== 'COMMENT');
 
-  const shownHistory =
-    historyOption === 'Comments'
-      ? taskComments
-      : historyOption === 'Activities'
-      ? taskChanges
-      : history;
+  let shownHistory;
+  if (historyOption === 'Comments') {
+    shownHistory = taskComments;
+  } else if (historyOption === 'Activities') {
+    shownHistory = taskChanges;
+  } else {
+    shownHistory = history;
+  }
 
   const taskHistoryOptions = [
     { value: 'Comments', label: 'Comments' },
@@ -111,21 +113,32 @@ export const TaskHistory = ({ projectId, taskId }) => {
     return res;
   };
 
-  return status === 'error' ? (
-    <div className="ma4 gray">
-      <Alert type="error">
-        <FormattedMessage {...messages.taskDetailFetchError} />
-      </Alert>
-    </div>
-  ) : status === 'loading' ? (
-    <div className="ma4">
-      <ReactPlaceholder type="media" showLoadingAnimation delay={300} />
-    </div>
-  ) : history.length === 0 ? (
-    <div className="ma4 dark-gray tc">
-      <FormattedMessage {...messages.noActivitiesToDisplay} />
-    </div>
-  ) : (
+  if (status === 'loading') {
+    return (
+      <div className="ma4">
+        <ReactPlaceholder type="media" showLoadingAnimation delay={300} />
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="ma4 gray">
+        <Alert type="error">
+          <FormattedMessage {...messages.taskDetailFetchError} />
+        </Alert>
+      </div>
+    );
+  }
+
+  if (history.length === 0) {
+    return (
+      <div className="ma4 dark-gray tc">
+        <FormattedMessage {...messages.noActivitiesToDisplay} />
+      </div>
+    );
+  }
+  return (
     <>
       <div className="ml3 pl1 pv2 blue-dark flex flex-wrap" aria-label="view task history options">
         {taskHistoryOptions.map((option) => (

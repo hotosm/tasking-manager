@@ -63,17 +63,16 @@ const StatsCards = ({ stats }) => {
 export const TimeStats = ({ id }) => {
   const { data: stats, status } = useProjectStatisticsQuery(id);
 
-  return (
-    <>
-      {status === 'error' ? (
-        <Alert type="error">
-          <FormattedMessage {...messages.projectStatsError} />
-        </Alert>
-      ) : status === 'loading' ? (
-        <ReactPlaceholder showLoadingAnimation={true} rows={26} ready={false} className="pr3" />
-      ) : (
-        <StatsCards stats={stats} />
-      )}
-    </>
-  );
+  if (status === 'loading') {
+    return <ReactPlaceholder showLoadingAnimation={true} rows={26} ready={false} className="pr3" />;
+  }
+  if (status === 'error') {
+    return (
+      <Alert type="error">
+        <FormattedMessage {...messages.projectStatsError} />
+      </Alert>
+    );
+  }
+
+  return <StatsCards stats={stats} />;
 };

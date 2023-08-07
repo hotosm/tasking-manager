@@ -169,21 +169,27 @@ export const ProjectDetailPage = () => {
     window.scrollTo(0, 0);
   }, [id]);
 
-  return status === 'loading' ? (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={<ProjectDetailPlaceholder />}
-      ready={false}
-    />
-  ) : status === 'error' ? (
-    <>
-      {error.response.data.SubCode === 'PrivateProject' ? (
-        <PrivateProjectError />
-      ) : (
-        <NotFound projectId={id} />
-      )}
-    </>
-  ) : (
+  if (status === 'loading') {
+    return (
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        customPlaceholder={<ProjectDetailPlaceholder />}
+        ready={false}
+      />
+    );
+  }
+  if (status === 'error') {
+    return (
+      <>
+        {error.response.data.SubCode === 'PrivateProject' ? (
+          <PrivateProjectError />
+        ) : (
+          <NotFound projectId={id} />
+        )}
+      </>
+    );
+  }
+  return (
     <ProjectDetail
       project={project.data}
       projectLoading={false}
