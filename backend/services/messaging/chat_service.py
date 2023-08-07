@@ -121,6 +121,9 @@ class ChatService:
         ----------------------------------------
         returns: None
         """
+        # Check if project exists
+        ProjectService.exists(project_id)
+
         chat_message = ProjectChat.query.filter(
             ProjectChat.project_id == project_id,
             ProjectChat.id == comment_id,

@@ -284,7 +284,7 @@ class ProjectAdminService:
     @staticmethod
     def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
         """Transfers project from old owner (transfering_user_id) to new owner (username)"""
-        project = Project.get(project_id)
+        project = ProjectAdminService._get_project_by_id(project_id)
         new_owner = UserService.get_user_by_username(username)
         # No operation is required if the new owner is same as old owner
         if username == project.author.username:

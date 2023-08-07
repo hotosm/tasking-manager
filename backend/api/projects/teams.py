@@ -3,6 +3,7 @@ from schematics.exceptions import DataError
 
 from backend.services.team_service import TeamService, TeamServiceError
 from backend.services.project_admin_service import ProjectAdminService
+from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import token_auth
 
 
@@ -38,6 +39,8 @@ class ProjectsTeamsAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        # Check if project exists
+        ProjectService.exists(project_id)
         teams_dto = TeamService.get_project_teams_as_dto(project_id)
         return teams_dto.to_primitive(), 200
 
