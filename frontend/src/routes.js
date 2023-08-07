@@ -58,6 +58,7 @@ export const router = createBrowserRouter(
           );
           return { Component: SelectTask };
         }}
+        ErrorBoundary={FallbackComponent}
       />
       <Route
         path="projects/:id/map"
