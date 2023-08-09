@@ -1,12 +1,19 @@
 import { handleErrors } from '../utils/promise';
-import { API_URL } from '../config';
+import { API_URL, OHSOME_STATS_TOKEN } from '../config';
 
-export function fetchExternalJSONAPI(url): Promise<*> {
+export function fetchExternalJSONAPI(url, isSetToken = false): Promise<*> {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  // Passing token only for ohsomeNow stats
+  if (isSetToken) {
+    headers['Authorization'] = `Basic ${OHSOME_STATS_TOKEN}`;
+  }
+
   return fetch(url, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: headers,
   })
     .then(handleErrors)
     .then((res) => {

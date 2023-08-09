@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import api from './apiClient';
-import { HOMEPAGE_STATS_API_URL } from '../config';
+import { OHSOME_STATS_BASE_URL } from '../config';
 
 export const useSystemStatisticsQuery = () => {
   const fetchSystemStats = ({ signal }) => {
@@ -33,7 +33,7 @@ export const useProjectStatisticsQuery = (projectId) => {
 
 export const useOsmStatsQuery = () => {
   const fetchOsmStats = ({ signal }) => {
-    return api().get(HOMEPAGE_STATS_API_URL, {
+    return api().get(`${OHSOME_STATS_BASE_URL}/stats/hotosm-project-%2A`, {
       signal,
     });
   };
@@ -47,15 +47,9 @@ export const useOsmStatsQuery = () => {
 
 export const useOsmHashtagStatsQuery = (defaultComment) => {
   const fetchOsmStats = ({ signal }) => {
-    return api().get(
-      `https://osm-stats-production-api.azurewebsites.net/stats/${defaultComment[0].replace(
-        '#',
-        '',
-      )}`,
-      {
-        signal,
-      },
-    );
+    return api().get(`${OHSOME_STATS_BASE_URL}/stats/${defaultComment[0].replace('#', '')}`, {
+      signal,
+    });
   };
 
   return useQuery({
@@ -63,6 +57,6 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
     queryFn: fetchOsmStats,
     useErrorBoundary: true,
     enabled: Boolean(defaultComment?.[0]),
-    select: (data) => data.data,
+    select: (data) => data.data.result,
   });
 };

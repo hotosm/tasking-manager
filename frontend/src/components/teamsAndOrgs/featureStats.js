@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FormattedMessage } from 'react-intl';
 
 import userDetailMessages from '../userDetail/messages';
-import { HOMEPAGE_STATS_API_URL } from '../../config';
+import { OHSOME_STATS_BASE_URL } from '../../config';
 import { RoadIcon, HomeIcon, WavesIcon, MarkerIcon } from '../svgIcons';
 import { StatsCard } from '../statsCard';
 
@@ -11,11 +11,13 @@ export const FeatureStats = () => {
   const [stats, setStats] = useState({ edits: 0, buildings: 0, roads: 0, pois: 0, waterways: 0 });
   const getStats = async () => {
     try {
-      const response = await axios.get(HOMEPAGE_STATS_API_URL);
+      const response = await axios.get(
+        `${OHSOME_STATS_BASE_URL}/stats/hotosm-project-%2A?ohsomeFormat=false`,
+      );
       setStats({
         edits: response.data.edits,
-        buildings: response.data.building_count_add,
-        roads: response.data.road_km_add,
+        buildings: response.data.buildings,
+        roads: response.data.roads,
         pois: response.data.poi_count_add,
         waterways: response.data.waterway_km_add,
       });

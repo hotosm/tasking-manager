@@ -12,7 +12,7 @@ import { CountriesMapped } from '../components/userDetail/countriesMapped';
 import { TopProjects } from '../components/userDetail/topProjects';
 import { ContributionTimeline } from '../components/userDetail/contributionTimeline';
 import { NotFound } from './notFound';
-import { USER_STATS_API_URL } from '../config';
+import { OHSOME_STATS_BASE_URL } from '../config';
 import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
@@ -53,12 +53,12 @@ export const UserDetail = ({ withHeader = true }) => {
   }, [navigate, token]);
 
   useEffect(() => {
-    if (token && username) {
-      fetchExternalJSONAPI(`${USER_STATS_API_URL}${username}`)
+    if (userDetails.id) {
+      fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/HotTMUser?userId=${userDetails.id}`, true)
         .then((res) => setOsmStats(res))
         .catch((e) => console.log(e));
     }
-  }, [token, username]);
+  }, [userDetails.id]);
 
   const titleClass = 'contributions-titles fw5 ttu barlow-condensed blue-dark mt0';
 
