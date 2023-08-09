@@ -6,13 +6,19 @@ from tests.backend.helpers.test_helpers import (
     generate_encoded_token,
     return_canned_user,
 )
-from backend.models.postgis.utils import NotFound
+from backend.exceptions import NotFound, get_message_from_sub_code
 from backend.models.postgis.statuses import UserRole
 from backend.services.messaging.chat_service import ChatService, ChatMessageDTO
 from backend.services.messaging.message_service import MessageService
 
 
 TEST_MESSAGE = "Test comment"
+PROJECT_NOT_FOUND_SUB_CODE = "PROJECT_NOT_FOUND"
+TASK_NOT_FOUND_SUB_CODE = "TASK_NOT_FOUND"
+MESSAGE_NOT_FOUND_SUB_CODE = "MESSAGE_NOT_FOUND"
+PROJECT_NOT_FOUND_MESSAGE = get_message_from_sub_code(PROJECT_NOT_FOUND_SUB_CODE)
+TASK_NOT_FOUND_MESSAGE = get_message_from_sub_code(TASK_NOT_FOUND_SUB_CODE)
+MESSAGE_NOT_FOUND_MESSAGE = get_message_from_sub_code(MESSAGE_NOT_FOUND_SUB_CODE)
 
 
 class TestCommentsProjectsAllAPI(BaseTestCase):
@@ -104,9 +110,10 @@ class TestCommentsProjectsAllAPI(BaseTestCase):
         """
         response = self.client.get(self.non_existent_url)
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "Project not found")
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], PROJECT_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_get_project_chat_messages_passes(self):
         """
@@ -168,10 +175,11 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
             self.non_existent_url, headers={"Authorization": self.test_author_token}
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "Comment not found")
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], MESSAGE_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], MESSAGE_NOT_FOUND_SUB_CODE)
 
     def test_returns_403_if_user_not_allowed_to_delete_comment(self):
         """
@@ -288,9 +296,10 @@ class TestCommentsTasksRestAPI(BaseTestCase):
             json={"comment": TEST_MESSAGE},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "Task Not Found")
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], PROJECT_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_post_comment_to_task_chat_passes(self):
         """

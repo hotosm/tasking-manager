@@ -10,7 +10,10 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.users.authentication_service import AuthenticationService
 from tests.backend.helpers.test_helpers import return_canned_user
-
+from tests.backend.integration.api.users.test_resources import (
+    USER_NOT_FOUND_MESSAGE,
+    USER_NOT_FOUND_SUB_CODE,
+)
 
 USERNAME = "test_user"
 USER_ID = 1234
@@ -201,10 +204,11 @@ class TestSystemAuthenticationEmailAPI(BaseTestCase):
         response = self.client.get(
             self.url, query_string={"username": "non_existent_user"}
         )
+        error_details = response.json["error"]
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "UserNotFound")
-        self.assertEqual(response.json["Error"], "User not found")
+        self.assertEqual(error_details["sub_code"], USER_NOT_FOUND_SUB_CODE)
+        self.assertEqual(error_details["message"], USER_NOT_FOUND_MESSAGE)
 
     def test_returns_403_if_invalid_email_token(self):
         # Arrange

@@ -1,4 +1,5 @@
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.team_dto import (
     TeamDTO,
     NewTeamDTO,
@@ -14,7 +15,6 @@ from backend.models.postgis.statuses import (
     TeamRoles,
 )
 from backend.models.postgis.user import User
-from backend.models.postgis.utils import NotFound
 
 
 class TeamMembers(db.Model):
@@ -144,7 +144,9 @@ class Team(db.Model):
             for member in team_dto.members:
                 user = User.get_by_username(member["username"])
                 if user is None:
-                    raise NotFound("User not found")
+                    raise NotFound(
+                        sub_code="USER_NOT_FOUND", username=member["username"]
+                    )
                 team_member = TeamMembers.get(self.id, user.id)
                 if team_member:
                     team_member.join_request_notifications = member[

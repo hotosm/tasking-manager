@@ -6,6 +6,7 @@ from sqlalchemy.sql import extract
 from dateutil.relativedelta import relativedelta
 
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import (
     OrganisationDTO,
     NewOrganisationDTO,
@@ -23,7 +24,6 @@ from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.task import Task
 from backend.models.postgis.team import TeamVisibility
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
-from backend.models.postgis.utils import NotFound
 from backend.services.users.user_service import UserService
 
 
@@ -41,7 +41,9 @@ class OrganisationService:
         org = Organisation.get(organisation_id)
 
         if org is None:
-            raise NotFound()
+            raise NotFound(
+                sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
+            )
 
         return org
 
@@ -49,18 +51,20 @@ class OrganisationService:
     def get_organisation_by_id_as_dto(
         organisation_id: int, user_id: int, abbreviated: bool
     ):
-        org = Organisation.get(organisation_id)
+        org = OrganisationService.get_organisation_by_id(organisation_id)
         return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
 
     @staticmethod
     def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool):
         org = Organisation.query.filter_by(slug=slug).first()
+        if org is None:
+            raise NotFound(sub_code="ORGANISATION_NOT_FOUND", slug=slug)
         return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
 
     @staticmethod
     def get_organisation_dto(org, user_id: int, abbreviated: bool):
         if org is None:
-            raise NotFound()
+            raise NotFound(sub_code="ORGANISATION_NOT_FOUND")
         organisation_dto = org.as_dto(abbreviated)
 
         if user_id != 0:
@@ -89,7 +93,9 @@ class OrganisationService:
         organisation = Organisation.get_organisation_by_name(organisation_name)
 
         if organisation is None:
-            raise NotFound()
+            raise NotFound(
+                sub_code="ORGANISATION_NOT_FOUND", organisation_name=organisation_name
+            )
 
         return organisation
 
@@ -192,7 +198,9 @@ class OrganisationService:
         )
 
         if projects is None:
-            raise NotFound()
+            raise NotFound(
+                sub_code="PROJECTS_NOT_FOUND", organisation_id=organisation_id
+            )
 
         return projects
 
@@ -286,7 +294,7 @@ class OrganisationService:
                 try:
                     admin = UserService.get_user_by_username(user)
                 except NotFound:
-                    raise NotFound(f"User {user} does not exist")
+                    raise NotFound(sub_code="USER_NOT_FOUND", username=user)
 
                 managers.append(admin.username)
 
@@ -307,7 +315,9 @@ class OrganisationService:
         org = Organisation.get(organisation_id)
 
         if org is None:
-            raise NotFound()
+            raise NotFound(
+                sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
+            )
         user = UserService.get_user_by_id(user_id)
 
         return user in org.managers

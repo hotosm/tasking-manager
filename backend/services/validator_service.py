@@ -1,6 +1,7 @@
 from flask import current_app
 from sqlalchemy import text
 
+from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.dtos.validator_dto import (
@@ -20,7 +21,7 @@ from backend.models.postgis.task import (
     TaskInvalidationHistory,
     TaskMappingIssue,
 )
-from backend.models.postgis.utils import NotFound, UserLicenseError, timestamp
+from backend.models.postgis.utils import UserLicenseError, timestamp
 from backend.models.postgis.project_info import ProjectInfo
 from backend.services.messaging.message_service import MessageService
 from backend.services.project_service import ProjectService, ProjectAdminService
@@ -50,7 +51,11 @@ class ValidatorService:
             task = Task.get(task_id, validation_dto.project_id)
 
             if task is None:
-                raise NotFound(f"Task {task_id} not found")
+                raise NotFound(
+                    sub_code="TASK_NOT_FOUND",
+                    task_id=task_id,
+                    project_id=validation_dto.project_id,
+                )
             if not (
                 task.locked_by == validation_dto.user_id
                 and TaskStatus(task.task_status) == TaskStatus.LOCKED_FOR_VALIDATION
@@ -254,7 +259,11 @@ class ValidatorService:
             task = Task.get(unlock_task.task_id, project_id)
 
             if task is None:
-                raise NotFound(f"Task {unlock_task.task_id} not found")
+                raise NotFound(
+                    sub_code="TASK_NOT_FOUND",
+                    task_id=unlock_task.task_id,
+                    project_id=project_id,
+                )
 
             current_state = TaskStatus(task.task_status)
             if current_state != TaskStatus.LOCKED_FOR_VALIDATION:

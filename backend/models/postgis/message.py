@@ -3,11 +3,13 @@ from sqlalchemy.sql.expression import false
 from backend import db
 from flask import current_app
 from enum import Enum
+
+from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.postgis.user import User
 from backend.models.postgis.task import Task, TaskHistory, TaskAction
 from backend.models.postgis.project import Project
-from backend.models.postgis.utils import timestamp, NotFound
+from backend.models.postgis.utils import timestamp
 
 
 class MessageType(Enum):
@@ -156,7 +158,10 @@ class Message(db.Model):
         user_messages = Message.query.filter(Message.to_user_id == user_id).all()
 
         if len(user_messages) == 0:
-            raise NotFound()
+            raise NotFound(
+                sub_code="MESSAGES_NOT_FOUND",
+                user_id=user_id,
+            )
 
         messages_dto = MessagesDTO()
         for message in user_messages:

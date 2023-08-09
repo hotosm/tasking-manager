@@ -2,7 +2,6 @@ from flask_restful import Resource
 
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
-from backend.models.postgis.utils import NotFound
 from backend.services.users.authentication_service import token_auth
 
 
@@ -98,13 +97,8 @@ class OrganisationsCampaignsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            campaigns = CampaignService.get_organisation_campaigns_as_dto(
-                organisation_id
-            )
-            return campaigns.to_primitive(), 200
-        except NotFound:
-            return {"Error": "No campaign found", "SubCode": "NotFound"}, 404
+        campaigns = CampaignService.get_organisation_campaigns_as_dto(organisation_id)
+        return campaigns.to_primitive(), 200
 
     @token_auth.login_required
     def delete(self, organisation_id, campaign_id):
@@ -146,24 +140,16 @@ class OrganisationsCampaignsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            if OrganisationService.can_user_manage_organisation(
-                organisation_id, token_auth.current_user()
-            ):
-                CampaignService.delete_organisation_campaign(
-                    organisation_id, campaign_id
-                )
-                return (
-                    {"Success": "Organisation and campaign unassociated successfully"},
-                    200,
-                )
-            else:
-                return {
-                    "Error": "User is not a manager of the organisation",
-                    "SubCode": "UserNotPermitted",
-                }, 403
-        except NotFound:
+        if OrganisationService.can_user_manage_organisation(
+            organisation_id, token_auth.current_user()
+        ):
+            CampaignService.delete_organisation_campaign(organisation_id, campaign_id)
+            return (
+                {"Success": "Organisation and campaign unassociated successfully"},
+                200,
+            )
+        else:
             return {
-                "Error": "Organisation Campaign Not Found",
-                "SubCode": "NotFound",
-            }, 404
+                "Error": "User is not a manager of the organisation",
+                "SubCode": "UserNotPermitted",
+            }, 403

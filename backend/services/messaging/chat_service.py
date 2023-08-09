@@ -2,7 +2,7 @@ import threading
 from flask import current_app
 
 from backend import db
-from backend.models.postgis.utils import NotFound
+from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO
 from backend.models.postgis.project_chat import ProjectChat
 from backend.models.postgis.project_info import ProjectInfo
@@ -100,7 +100,11 @@ class ChatService:
             ProjectChat.id == comment_id,
         ).one_or_none()
         if chat_message is None:
-            raise NotFound("Message not found")
+            raise NotFound(
+                sub_code="MESSAGE_NOT_FOUND",
+                message_id=comment_id,
+                project_id=project_id,
+            )
 
         return chat_message
 
@@ -117,12 +121,19 @@ class ChatService:
         ----------------------------------------
         returns: None
         """
+        # Check if project exists
+        ProjectService.exists(project_id)
+
         chat_message = ProjectChat.query.filter(
             ProjectChat.project_id == project_id,
             ProjectChat.id == comment_id,
         ).one_or_none()
         if chat_message is None:
-            raise NotFound("Message not found")
+            raise NotFound(
+                sub_code="MESSAGE_NOT_FOUND",
+                message_id=comment_id,
+                project_id=project_id,
+            )
 
         is_user_allowed = (
             chat_message.user_id == user_id

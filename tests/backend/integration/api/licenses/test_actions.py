@@ -5,6 +5,12 @@ from tests.backend.helpers.test_helpers import (
     create_canned_license,
 )
 
+from backend.exceptions import get_message_from_sub_code
+
+
+LICENSE_NOT_FOUND_SUB_CODE = "LICENSE_NOT_FOUND"
+LICENSE_NOT_FOUND_MESSAGE = get_message_from_sub_code(LICENSE_NOT_FOUND_SUB_CODE)
+
 
 class TestLicensesActionsAcceptAPI(BaseTestCase):
     def setUp(self):
@@ -34,9 +40,10 @@ class TestLicensesActionsAcceptAPI(BaseTestCase):
             headers={"Authorization": self.test_user_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "User or License not found")
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], LICENSE_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], LICENSE_NOT_FOUND_SUB_CODE)
 
     def test_accept_license_terms_by_authenticated_user_passes(self):
         """

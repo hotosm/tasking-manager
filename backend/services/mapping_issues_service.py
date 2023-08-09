@@ -1,6 +1,6 @@
+from backend.exceptions import NotFound
 from backend.models.postgis.mapping_issues import MappingIssueCategory
 from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
-from backend.models.postgis.utils import NotFound
 
 
 class MappingIssueCategoryService:
@@ -13,7 +13,7 @@ class MappingIssueCategoryService:
         category = MappingIssueCategory.get_by_id(category_id)
 
         if category is None:
-            raise NotFound()
+            raise NotFound(sub_code="ISSUE_CATEGORY_NOT_FOUND", category_id=category_id)
 
         return category
 

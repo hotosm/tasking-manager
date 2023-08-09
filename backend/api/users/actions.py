@@ -4,7 +4,7 @@ from schematics.exceptions import DataError
 from backend.models.dtos.user_dto import UserDTO, UserRegisterEmailDTO
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.authentication_service import token_auth, tm
-from backend.services.users.user_service import UserService, UserServiceError, NotFound
+from backend.services.users.user_service import UserService, UserServiceError
 from backend.services.interests_service import InterestService
 
 
@@ -95,13 +95,10 @@ class UsersActionsSetUsersAPI(Resource):
                 "SubCode": "InvalidData",
             }, 400
 
-        try:
-            verification_sent = UserService.update_user_details(
-                authenticated_user_id, user_dto
-            )
-            return verification_sent, 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
+        verification_sent = UserService.update_user_details(
+            authenticated_user_id, user_dto
+        )
+        return verification_sent, 200
 
 
 class UsersActionsSetLevelAPI(Resource):
@@ -151,8 +148,6 @@ class UsersActionsSetLevelAPI(Resource):
             return {"Success": "Level set"}, 200
         except UserServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-        except NotFound:
-            return {"Error": "User or mapping not found", "SubCode": "NotFound"}, 404
 
 
 class UsersActionsSetRoleAPI(Resource):
@@ -202,8 +197,6 @@ class UsersActionsSetRoleAPI(Resource):
             return {"Success": "Role Added"}, 200
         except UserServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "User or mapping not found", "SubCode": "NotFound"}, 404
 
 
 class UsersActionsSetExpertModeAPI(Resource):
@@ -248,8 +241,6 @@ class UsersActionsSetExpertModeAPI(Resource):
             return {"Success": "Expert mode updated"}, 200
         except UserServiceError:
             return {"Error": "Not allowed"}, 400
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
 
 
 class UsersActionsVerifyEmailAPI(Resource):
@@ -378,5 +369,3 @@ class UsersActionsSetInterestsAPI(Resource):
             return user_interests.to_primitive(), 200
         except (ValueError, KeyError) as e:
             return {"Error": str(e)}, 400
-        except NotFound:
-            return {"Error": "Interest not Found", "SubCode": "NotFound"}, 404

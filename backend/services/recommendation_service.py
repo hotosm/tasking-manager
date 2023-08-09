@@ -6,11 +6,11 @@ from sqlalchemy.sql.expression import func
 from cachetools import TTLCache, cached
 
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.postgis.project import Project, Interest, project_interests
 from backend.models.postgis.statuses import ProjectStatus
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.services.project_search_service import ProjectSearchService
-from backend.models.postgis.utils import NotFound
 from backend.services.users.user_service import UserService
 
 similar_projects_cache = TTLCache(maxsize=1000, ttl=60 * 60 * 24)  # 24 hours
@@ -200,7 +200,7 @@ class ProjectRecommendationService:
             target_project and target_project.status == ProjectStatus.PUBLISHED.value
         )
         if not project_is_published:
-            raise NotFound()
+            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
         projects_df = ProjectRecommendationService.create_project_matrix()
         target_project_df = projects_df[projects_df["id"] == project_id]

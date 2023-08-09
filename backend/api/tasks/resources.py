@@ -5,7 +5,7 @@ from flask import send_file, Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from backend.services.mapping_service import MappingService, NotFound
+from backend.services.mapping_service import MappingService
 from backend.models.dtos.grid_dto import GridDTO
 
 from backend.services.users.authentication_service import token_auth, tm
@@ -54,13 +54,10 @@ class TasksRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+        preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
 
-            task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale)
-            return task.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
+        task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale)
+        return task.to_primitive(), 200
 
 
 class TasksQueriesJsonAPI(Resource):
@@ -119,8 +116,6 @@ class TasksQueriesJsonAPI(Resource):
                 )
 
             return tasks_json, 200
-        except NotFound:
-            return {"Error": "Project or Task Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError as e:
             return {"Error": str(e)}, 403
 
@@ -189,11 +184,6 @@ class TasksQueriesJsonAPI(Resource):
         try:
             ProjectService.delete_tasks(project_id, tasks_ids)
             return {"Success": "Task(s) deleted"}, 200
-        except NotFound as e:
-            return {
-                "Error": f"Project or Task Not Found: {e}",
-                "SubCode": "NotFound",
-            }, 404
         except ProjectServiceError as e:
             return {"Error": str(e)}, 403
 
@@ -234,33 +224,24 @@ class TasksQueriesXmlAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            tasks = request.args.get("tasks") if request.args.get("tasks") else None
-            as_file = (
-                strtobool(request.args.get("as_file"))
-                if request.args.get("as_file")
-                else False
+        tasks = request.args.get("tasks") if request.args.get("tasks") else None
+        as_file = (
+            strtobool(request.args.get("as_file"))
+            if request.args.get("as_file")
+            else False
+        )
+
+        xml = MappingService.generate_osm_xml(project_id, tasks)
+
+        if as_file:
+            return send_file(
+                io.BytesIO(xml),
+                mimetype="text.xml",
+                as_attachment=True,
+                download_name=f"HOT-project-{project_id}.osm",
             )
 
-            xml = MappingService.generate_osm_xml(project_id, tasks)
-
-            if as_file:
-                return send_file(
-                    io.BytesIO(xml),
-                    mimetype="text.xml",
-                    as_attachment=True,
-                    download_name=f"HOT-project-{project_id}.osm",
-                )
-
-            return Response(xml, mimetype="text/xml", status=200)
-        except NotFound:
-            return (
-                {
-                    "Error": "Not found; please check the project and task numbers.",
-                    "SubCode": "NotFound",
-                },
-                404,
-            )
+        return Response(xml, mimetype="text/xml", status=200)
 
 
 class TasksQueriesGpxAPI(Resource):
@@ -299,34 +280,25 @@ class TasksQueriesGpxAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            current_app.logger.debug("GPX Called")
-            tasks = request.args.get("tasks")
-            as_file = (
-                strtobool(request.args.get("as_file"))
-                if request.args.get("as_file")
-                else False
+        current_app.logger.debug("GPX Called")
+        tasks = request.args.get("tasks")
+        as_file = (
+            strtobool(request.args.get("as_file"))
+            if request.args.get("as_file")
+            else False
+        )
+
+        xml = MappingService.generate_gpx(project_id, tasks)
+
+        if as_file:
+            return send_file(
+                io.BytesIO(xml),
+                mimetype="text.xml",
+                as_attachment=True,
+                download_name=f"HOT-project-{project_id}.gpx",
             )
 
-            xml = MappingService.generate_gpx(project_id, tasks)
-
-            if as_file:
-                return send_file(
-                    io.BytesIO(xml),
-                    mimetype="text.xml",
-                    as_attachment=True,
-                    download_name=f"HOT-project-{project_id}.gpx",
-                )
-
-            return Response(xml, mimetype="text/xml", status=200)
-        except NotFound:
-            return (
-                {
-                    "Error": "Not found; please check the project and task numbers.",
-                    "SubCode": "NotFound",
-                },
-                404,
-            )
+        return Response(xml, mimetype="text/xml", status=200)
 
 
 class TasksQueriesAoiAPI(Resource):
@@ -425,18 +397,9 @@ class TasksQueriesMappedAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            ProjectService.get_project_by_id(project_id)
-            mapped_tasks = ValidatorService.get_mapped_tasks_by_user(project_id)
-            return mapped_tasks.to_primitive(), 200
-        except NotFound:
-            return (
-                {
-                    "Error": "Not found; please check the project number.",
-                    "SubCode": "NotFound",
-                },
-                404,
-            )
+        ProjectService.get_project_by_id(project_id)
+        mapped_tasks = ValidatorService.get_mapped_tasks_by_user(project_id)
+        return mapped_tasks.to_primitive(), 200
 
 
 class TasksQueriesOwnInvalidatedAPI(Resource):
@@ -504,34 +467,31 @@ class TasksQueriesOwnInvalidatedAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            sort_column = {"updatedDate": "updated_date", "projectId": "project_id"}
-            if request.args.get("sortBy", "updatedDate") in sort_column:
-                sort_column = sort_column[request.args.get("sortBy", "updatedDate")]
-            else:
-                sort_column = sort_column["updatedDate"]
-            # closed needs to be set to True, False, or None
-            closed = None
-            if request.args.get("closed") == "true":
-                closed = True
-            elif request.args.get("closed") == "false":
-                closed = False
-            # sort direction should only be desc or asc
-            if request.args.get("sortDirection") in ["asc", "desc"]:
-                sort_direction = request.args.get("sortDirection")
-            else:
-                sort_direction = "desc"
-            invalidated_tasks = ValidatorService.get_user_invalidated_tasks(
-                request.args.get("asValidator") == "true",
-                username,
-                request.environ.get("HTTP_ACCEPT_LANGUAGE"),
-                closed,
-                request.args.get("project", None, type=int),
-                request.args.get("page", None, type=int),
-                request.args.get("pageSize", None, type=int),
-                sort_column,
-                sort_direction,
-            )
-            return invalidated_tasks.to_primitive(), 200
-        except NotFound:
-            return {"Error": "No invalidated tasks", "SubCode": "NotFound"}, 404
+        sort_column = {"updatedDate": "updated_date", "projectId": "project_id"}
+        if request.args.get("sortBy", "updatedDate") in sort_column:
+            sort_column = sort_column[request.args.get("sortBy", "updatedDate")]
+        else:
+            sort_column = sort_column["updatedDate"]
+        # closed needs to be set to True, False, or None
+        closed = None
+        if request.args.get("closed") == "true":
+            closed = True
+        elif request.args.get("closed") == "false":
+            closed = False
+        # sort direction should only be desc or asc
+        if request.args.get("sortDirection") in ["asc", "desc"]:
+            sort_direction = request.args.get("sortDirection")
+        else:
+            sort_direction = "desc"
+        invalidated_tasks = ValidatorService.get_user_invalidated_tasks(
+            request.args.get("asValidator") == "true",
+            username,
+            request.environ.get("HTTP_ACCEPT_LANGUAGE"),
+            closed,
+            request.args.get("project", None, type=int),
+            request.args.get("page", None, type=int),
+            request.args.get("pageSize", None, type=int),
+            sort_column,
+            sort_direction,
+        )
+        return invalidated_tasks.to_primitive(), 200

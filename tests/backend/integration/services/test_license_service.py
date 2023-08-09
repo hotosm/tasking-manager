@@ -1,5 +1,5 @@
+from backend.exceptions import NotFound
 from backend.services.license_service import LicenseService, LicenseDTO
-from backend.models.postgis.utils import NotFound
 from tests.backend.base import BaseTestCase
 
 

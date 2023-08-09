@@ -2,7 +2,7 @@ from json import JSONEncoder
 from datetime import date, timedelta
 from flask_restful import Resource, request
 
-from backend.services.users.user_service import UserService, NotFound
+from backend.services.users.user_service import UserService
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
 from backend.services.users.authentication_service import token_auth
@@ -42,11 +42,8 @@ class UsersStatisticsAPI(Resource, JSONEncoder):
             500:
                 description: Internal Server Error
         """
-        try:
-            stats_dto = UserService.get_detailed_stats(username)
-            return stats_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
+        stats_dto = UserService.get_detailed_stats(username)
+        return stats_dto.to_primitive(), 200
 
 
 class UsersStatisticsInterestsAPI(Resource):
@@ -79,11 +76,8 @@ class UsersStatisticsInterestsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            rate = InterestService.compute_contributions_rate(user_id)
-            return rate.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not Found", "SubCode": "NotFound"}, 404
+        rate = InterestService.compute_contributions_rate(user_id)
+        return rate.to_primitive(), 200
 
 
 class UsersStatisticsAllAPI(Resource):

@@ -1,5 +1,5 @@
+from backend.exceptions import NotFound
 from backend.models.postgis.application import Application
-from backend.models.postgis.utils import NotFound
 from backend.services.users.authentication_service import AuthenticationService
 
 
@@ -15,7 +15,7 @@ class ApplicationService:
         application = Application.get_token(token)
 
         if application is None:
-            raise NotFound()
+            raise NotFound(sub_code="APPLICATION_NOT_FOUND")
 
         return application
 

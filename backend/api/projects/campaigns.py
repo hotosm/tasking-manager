@@ -4,7 +4,6 @@ from schematics.exceptions import DataError
 from backend.models.dtos.campaign_dto import CampaignProjectDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.project_admin_service import ProjectAdminService
-from backend.models.postgis.utils import NotFound
 from backend.services.users.authentication_service import token_auth
 
 
@@ -49,17 +48,14 @@ class ProjectsCampaignsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                return {
-                    "Error": "User is not a manager of the project",
-                    "SubCode": "UserPermissionError",
-                }, 403
-        except NotFound:
-            return {"Error": "User or Project not found", "SubCode": "NotFound"}, 404
+        authenticated_user_id = token_auth.current_user()
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
         try:
             campaign_project_dto = CampaignProjectDTO()
             campaign_project_dto.campaign_id = campaign_id
@@ -69,17 +65,13 @@ class ProjectsCampaignsAPI(Resource):
             current_app.logger.error(f"error validating request: {str(e)}")
             return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
-        try:
-            CampaignService.create_campaign_project(campaign_project_dto)
-            message = "campaign with id {} assigned successfully for project with id {}".format(
+        CampaignService.create_campaign_project(campaign_project_dto)
+        message = (
+            "campaign with id {} assigned successfully for project with id {}".format(
                 campaign_id, project_id
             )
-            return ({"Success": message}, 200)
-        except NotFound:
-            return {
-                "Error": "Campaign or Project not found",
-                "SubCode": "NotFound",
-            }, 404
+        )
+        return ({"Success": message}, 200)
 
     def get(self, project_id):
         """
@@ -106,11 +98,8 @@ class ProjectsCampaignsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
-            return campaigns.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
+        campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
+        return campaigns.to_primitive(), 200
 
     @token_auth.login_required
     def delete(self, project_id, campaign_id):
@@ -153,16 +142,13 @@ class ProjectsCampaignsAPI(Resource):
                 description: Internal Server Error
         """
         authenticated_user_id = token_auth.current_user()
-        try:
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                return {
-                    "Error": "User is not a manager of the project",
-                    "SubCode": "UserPermissionError",
-                }, 403
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
 
-            CampaignService.delete_project_campaign(project_id, campaign_id)
-            return {"Success": "Campaigns Deleted"}, 200
-        except NotFound:
-            return {"Error": "Campaign Not Found", "SubCode": "NotFound"}, 404
+        CampaignService.delete_project_campaign(project_id, campaign_id)
+        return {"Success": "Campaigns Deleted"}, 200

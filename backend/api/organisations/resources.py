@@ -10,7 +10,6 @@ from backend.models.postgis.user import User
 from backend.services.organisation_service import (
     OrganisationService,
     OrganisationServiceError,
-    NotFound,
 )
 from backend.models.postgis.statuses import OrganisationType
 from backend.services.users.authentication_service import token_auth
@@ -51,20 +50,17 @@ class OrganisationsBySlugRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if authenticated_user_id is None:
-                user_id = 0
-            else:
-                user_id = authenticated_user_id
-            # Validate abbreviated.
-            omit_managers = strtobool(request.args.get("omitManagerList", "false"))
-            organisation_dto = OrganisationService.get_organisation_by_slug_as_dto(
-                slug, user_id, omit_managers
-            )
-            return organisation_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
+        authenticated_user_id = token_auth.current_user()
+        if authenticated_user_id is None:
+            user_id = 0
+        else:
+            user_id = authenticated_user_id
+        # Validate abbreviated.
+        omit_managers = strtobool(request.args.get("omitManagerList", "false"))
+        organisation_dto = OrganisationService.get_organisation_by_slug_as_dto(
+            slug, user_id, omit_managers
+        )
+        return organisation_dto.to_primitive(), 200
 
 
 class OrganisationsRestAPI(Resource):
@@ -195,8 +191,6 @@ class OrganisationsRestAPI(Resource):
                 "Error": "Organisation has some projects",
                 "SubCode": "OrgHasProjects",
             }, 403
-        except NotFound:
-            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
 
     @token_auth.login_required(optional=True)
     def get(self, organisation_id):
@@ -234,20 +228,17 @@ class OrganisationsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if authenticated_user_id is None:
-                user_id = 0
-            else:
-                user_id = authenticated_user_id
-            # Validate abbreviated.
-            omit_managers = strtobool(request.args.get("omitManagerList", "false"))
-            organisation_dto = OrganisationService.get_organisation_by_id_as_dto(
-                organisation_id, user_id, omit_managers
-            )
-            return organisation_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
+        authenticated_user_id = token_auth.current_user()
+        if authenticated_user_id is None:
+            user_id = 0
+        else:
+            user_id = authenticated_user_id
+        # Validate abbreviated.
+        omit_managers = strtobool(request.args.get("omitManagerList", "false"))
+        organisation_dto = OrganisationService.get_organisation_by_id_as_dto(
+            organisation_id, user_id, omit_managers
+        )
+        return organisation_dto.to_primitive(), 200
 
     @token_auth.login_required
     def patch(self, organisation_id):
@@ -332,8 +323,6 @@ class OrganisationsRestAPI(Resource):
         try:
             OrganisationService.update_organisation(organisation_dto)
             return {"Status": "Updated"}, 200
-        except NotFound as e:
-            return {"Error": str(e), "SubCode": "NotFound"}, 404
         except OrganisationServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 402
 
@@ -362,14 +351,11 @@ class OrganisationsStatsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            OrganisationService.get_organisation_by_id(organisation_id)
-            organisation_dto = OrganisationService.get_organisation_stats(
-                organisation_id, None
-            )
-            return organisation_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
+        OrganisationService.get_organisation_by_id(organisation_id)
+        organisation_dto = OrganisationService.get_organisation_stats(
+            organisation_id, None
+        )
+        return organisation_dto.to_primitive(), 200
 
 
 class OrganisationsAllAPI(Resource):
@@ -441,13 +427,10 @@ class OrganisationsAllAPI(Resource):
         omit_managers = bool(strtobool(request.args.get("omitManagerList", "false")))
         omit_stats = bool(strtobool(request.args.get("omitOrgStats", "true")))
         # Obtain organisations
-        try:
-            results_dto = OrganisationService.get_organisations_as_dto(
-                manager_user_id,
-                authenticated_user_id,
-                omit_managers,
-                omit_stats,
-            )
-            return results_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "No organisations found", "SubCode": "NotFound"}, 404
+        results_dto = OrganisationService.get_organisations_as_dto(
+            manager_user_id,
+            authenticated_user_id,
+            omit_managers,
+            omit_stats,
+        )
+        return results_dto.to_primitive(), 200

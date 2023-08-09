@@ -18,7 +18,15 @@ from tests.backend.helpers.test_helpers import (
     generate_encoded_token,
     create_canned_license,
 )
+from tests.backend.integration.api.users.test_resources import (
+    USER_NOT_FOUND_SUB_CODE,
+    USER_NOT_FOUND_MESSAGE,
+)
 from backend.models.postgis.task import Task, TaskAction
+
+
+PROJECT_NOT_FOUND_SUB_CODE = "PROJECT_NOT_FOUND"
+TASK_NOT_FOUND_SUB_CODE = "TASK_NOT_FOUND"
 
 
 class TasksActionsMapAllAPI(BaseTestCase):
@@ -344,7 +352,7 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_mapping_lock_returns_404_for_invalid_task_id(self):
         """Test returns 404 on request with invalid task id."""
@@ -355,7 +363,7 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
     @patch.object(ProjectService, "is_user_permitted_to_map")
     def test_mapping_lock_returns_403_for_if_user_not_allowed_to_map(
@@ -489,7 +497,7 @@ class TestTasksActionsMappingUnlockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_mapping_unlock_returns_404_for_invalid_task_id(self):
         """Test returns 404 on request with invalid task id."""
@@ -501,7 +509,7 @@ class TestTasksActionsMappingUnlockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
     def test_mapping_unlock_returns_403_if_task_not_locked_for_mapping(self):
         """Test returns 403 if task is not locked for mapping."""
@@ -632,7 +640,7 @@ class TestTasksActionsMappingStopAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_mapping_stop_returns_404_for_invalid_task_id(self):
         """Test returns 404 on request with invalid task id."""
@@ -643,7 +651,7 @@ class TestTasksActionsMappingStopAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
     def test_mapping_stop_returns_403_if_task_not_locked_for_mapping(self):
         """Test returns 403 if task not locked for mapping."""
@@ -756,7 +764,7 @@ class TestTasksActionsValidationLockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_validation_lock_returns_404_for_invalid_task_id(self):
         """Test returns 404 on request with invalid task id."""
@@ -768,7 +776,7 @@ class TestTasksActionsValidationLockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
     def test_validation_lock_returns_403_if_task_not_ready_for_validation(self):
         """Test returns 403 if task not ready for validation."""
@@ -954,7 +962,7 @@ class TestTasksActionsValidationUnlockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_validation_unlock_returns_404_if_task_not_found(self):
         """Test returns 404 if task not found."""
@@ -966,7 +974,7 @@ class TestTasksActionsValidationUnlockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
     def test_validation_unlock_returns_403_if_task_not_locked_for_validation(self):
         """Test returns 403 if task not locked for validation."""
@@ -1138,7 +1146,7 @@ class TestTasksActionsValidationStopAPI(BaseTestCase):
 
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_validation_stop_returns_404_if_task_not_found(self):
         """Test returns 404 if task not found."""
@@ -1150,7 +1158,7 @@ class TestTasksActionsValidationStopAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
     def test_validation_stop_returns_403_if_task_not_locked_for_validation(self):
         """Test returns 403 if task not locked for validation."""
@@ -1262,7 +1270,7 @@ class TestTasksActionsSplitAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_returns_404_if_task_not_found(self):
         """Test returns 404 if task not found."""
@@ -1273,7 +1281,7 @@ class TestTasksActionsSplitAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
     def test_returns_403_if_task_too_small_to_split(self):
         """Test returns 403 if task too small to split."""
@@ -1363,7 +1371,7 @@ class TestTasksActionsMappingUndoAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_returns_404_if_task_not_found(self):
         """Test returns 404 if task not found."""
@@ -1374,7 +1382,7 @@ class TestTasksActionsMappingUndoAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
     def test_returns_403_if_task_in_invalid_state_for_undo(self):
         """Test returns 403 if task in invalid state for undo."""
@@ -1523,7 +1531,7 @@ class TestTasksActionsExtendAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_returns_404_if_task_not_found(self):
         """Test returns 404 if task not found."""
@@ -1535,7 +1543,7 @@ class TestTasksActionsExtendAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
     def test_returns_403_if_task_not_locked(self):
         """Test returns 403 if task not locked."""
@@ -1612,10 +1620,11 @@ class TestTasksActionsReverUserTaskstAPI(BaseTestCase):
             headers={"Authorization": self.author_access_token},
             query_string={"username": "invalid_user", "action": "VALIDATED"},
         )
+        error_details = response.json["error"]
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
-        self.assertEqual(response.json["Error"], "User not found")
+        self.assertEqual(error_details["sub_code"], USER_NOT_FOUND_SUB_CODE)
+        self.assertEqual(error_details["message"], USER_NOT_FOUND_MESSAGE)
 
     def test_returns_400_if_action_not_valid(self):
         """Test returns 400 if action not valid."""
@@ -1639,7 +1648,7 @@ class TestTasksActionsReverUserTaskstAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], PROJECT_NOT_FOUND_SUB_CODE)
 
     def test_returns_403_if_user_doesnot_have_PM_permission(self):
         """Test returns 403 if user doesnot have PM permission."""

@@ -1,6 +1,7 @@
 from slugify import slugify
 
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import (
     OrganisationDTO,
     NewOrganisationDTO,
@@ -8,7 +9,6 @@ from backend.models.dtos.organisation_dto import (
 )
 from backend.models.postgis.user import User
 from backend.models.postgis.campaign import Campaign, campaign_organisations
-from backend.models.postgis.utils import NotFound
 from backend.models.postgis.statuses import OrganisationType
 
 
@@ -77,7 +77,7 @@ class Organisation(db.Model):
             user = User.get_by_username(manager)
 
             if user is None:
-                raise NotFound(f"User {manager} Not Found")
+                raise NotFound(sub_code="USER_NOT_FOUND", username=manager)
 
             new_org.managers.append(user)
 
@@ -109,7 +109,7 @@ class Organisation(db.Model):
                 new_manager = User.get_by_username(manager)
 
                 if new_manager is None:
-                    raise NotFound(f"User {manager} Not Found")
+                    raise NotFound(sub_code="USER_NOT_FOUND", username=manager)
 
                 self.managers.append(new_manager)
 

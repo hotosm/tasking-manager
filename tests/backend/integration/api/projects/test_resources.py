@@ -19,7 +19,7 @@ from tests.backend.helpers.test_helpers import (
     create_canned_interest,
     update_project_with_info,
 )
-from backend.models.postgis.utils import NotFound
+from backend.exceptions import NotFound
 from backend.models.postgis.project import Project, ProjectDTO
 from backend.models.postgis.task import Task
 from backend.services.campaign_service import CampaignService

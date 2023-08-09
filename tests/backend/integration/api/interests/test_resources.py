@@ -6,10 +6,12 @@ from tests.backend.helpers.test_helpers import (
     generate_encoded_token,
     create_canned_user,
 )
-from backend.api.interests.resources import INTEREST_NOT_FOUND
+from backend.exceptions import get_message_from_sub_code
 
 TEST_INTEREST_NAME = "test_interest"
 NEW_INTEREST_NAME = "New Interest"
+INTEREST_NOT_FOUND_SUB_CODE = "INTEREST_NOT_FOUND"
+INTEREST_NOT_FOUND_MESSAGE = get_message_from_sub_code(INTEREST_NOT_FOUND_SUB_CODE)
 
 
 class TestInterestsAllAPI(BaseTestCase):
@@ -168,9 +170,10 @@ class TestInterestsRestAPI(BaseTestCase):
             headers={"Authorization": self.session_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], INTEREST_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], INTEREST_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], INTEREST_NOT_FOUND_SUB_CODE)
 
     def test_get_an_existing_interest_by_organisation_admin_passes(self):
         """
@@ -226,9 +229,10 @@ class TestInterestsRestAPI(BaseTestCase):
             json={"name": NEW_INTEREST_NAME},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], INTEREST_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], INTEREST_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], INTEREST_NOT_FOUND_SUB_CODE)
 
     def test_update_an_existent_interest_with_invalid_data_fails(self):
         """
@@ -311,9 +315,10 @@ class TestInterestsRestAPI(BaseTestCase):
             headers={"Authorization": self.session_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], INTEREST_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], INTEREST_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], INTEREST_NOT_FOUND_SUB_CODE)
 
     def test_delete_an_existing_interest_by_organisation_admin_passes(self):
         """

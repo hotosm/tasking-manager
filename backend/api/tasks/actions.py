@@ -1,11 +1,13 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
+from backend.exceptions import NotFound
 from backend.models.dtos.grid_dto import SplitTaskDTO
-from backend.models.postgis.utils import NotFound, InvalidGeoJson
+from backend.models.postgis.utils import InvalidGeoJson
 from backend.services.grid.split_service import SplitService, SplitServiceError
 from backend.services.users.user_service import UserService
 from backend.services.project_admin_service import ProjectAdminService
+from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import token_auth, tm
 from backend.models.dtos.validator_dto import (
     LockForValidationDTO,
@@ -90,10 +92,9 @@ class TasksActionsMappingLockAPI(Resource):
             return {"Error": "Unable to lock task", "SubCode": "InvalidData"}, 400
 
         try:
+            ProjectService.exists(project_id)  # Check if project exists
             task = MappingService.lock_task_for_mapping(lock_task_dto)
             return task.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except UserLicenseError:
@@ -177,10 +178,9 @@ class TasksActionsMappingStopAPI(Resource):
             return {"Error": "Task unlock failed", "SubCode": "InvalidData"}, 400
 
         try:
+            ProjectService.exists(project_id)  # Check if project exists
             task = MappingService.stop_mapping_task(stop_task)
             return task.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
@@ -257,12 +257,13 @@ class TasksActionsMappingUnlockAPI(Resource):
             return {"Error": "Task unlock failed", "SubCode": "InvalidData"}, 400
 
         try:
+            ProjectService.exists(project_id)  # Check if project exists
             task = MappingService.unlock_task_after_mapping(mapped_task)
             return task.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except NotFound as e:
+            return e.to_dict()
         except Exception as e:
             error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -322,12 +323,11 @@ class TasksActionsMappingUndoAPI(Resource):
         """
         try:
             preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            ProjectService.exists(project_id)  # Check if project exists
             task = MappingService.undo_mapping(
                 project_id, task_id, token_auth.current_user(), preferred_locale
             )
             return task.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
@@ -400,12 +400,11 @@ class TasksActionsValidationLockAPI(Resource):
             return {"Error": "Unable to lock task", "SubCode": "InvalidData"}, 400
 
         try:
+            ProjectService.exists(project_id)  # Check if project exists
             tasks = ValidatorService.lock_tasks_for_validation(validator_dto)
             return tasks.to_primitive(), 200
         except ValidatorServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Task not found", "SubCode": "NotFound"}, 404
         except UserLicenseError:
             return {
                 "Error": "User not accepted license terms",
@@ -479,12 +478,11 @@ class TasksActionsValidationStopAPI(Resource):
             return {"Error": "Task unlock failed", "SubCode": "InvalidData"}, 400
 
         try:
+            ProjectService.exists(project_id)  # Check if project exists
             tasks = ValidatorService.stop_validating_tasks(validated_dto)
             return tasks.to_primitive(), 200
         except ValidatorServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Task unlock failed", "SubCode": "NotFound"}, 404
 
 
 class TasksActionsValidationUnlockAPI(Resource):
@@ -552,12 +550,11 @@ class TasksActionsValidationUnlockAPI(Resource):
             return {"Error": "Task unlock failed", "SubCode": "InvalidData"}, 400
 
         try:
+            ProjectService.exists(project_id)  # Check if project exists
             tasks = ValidatorService.unlock_tasks_after_validation(validated_dto)
             return tasks.to_primitive(), 200
         except ValidatorServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Task unlock failed", "SubCode": "NotFound"}, 404
 
 
 class TasksActionsMapAllAPI(Resource):
@@ -868,10 +865,9 @@ class TasksActionsSplitAPI(Resource):
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {"Error": "Unable to split task", "SubCode": "InvalidData"}, 400
         try:
+            ProjectService.exists(project_id)  # Check if project exists
             tasks = SplitService.split_task(split_task_dto)
             return tasks.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except SplitServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except InvalidGeoJson as e:
@@ -946,12 +942,11 @@ class TasksActionsExtendAPI(Resource):
             }, 400
 
         try:
+            ProjectService.exists(project_id)  # Check if project exists
             MappingService.extend_task_lock_time(extend_dto)
             return {"Success": "Successfully extended task expiry"}, 200
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Task not found", "SubCode": "NotFound"}, 404
 
 
 class TasksActionsReverUserTaskstAPI(Resource):
@@ -1016,8 +1011,6 @@ class TasksActionsReverUserTaskstAPI(Resource):
             revert_dto.user_id = user.id
             revert_dto.action_by = token_auth.current_user()
             revert_dto.validate()
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {
@@ -1029,5 +1022,3 @@ class TasksActionsReverUserTaskstAPI(Resource):
             return {"Success": "Successfully reverted tasks"}, 200
         except ValidatorServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Task not found", "SubCode": "NotFound"}, 404

@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from backend.services.stats_service import NotFound, StatsService
+from backend.services.stats_service import StatsService
 from backend.services.project_service import ProjectService
 
 
@@ -52,12 +52,9 @@ class ProjectsStatisticsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            # preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            summary = ProjectService.get_project_stats(project_id)
-            return summary.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
+        # preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+        summary = ProjectService.get_project_stats(project_id)
+        return summary.to_primitive(), 200
 
 
 class ProjectsStatisticsQueriesUsernameAPI(Resource):
@@ -90,8 +87,5 @@ class ProjectsStatisticsQueriesUsernameAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            stats_dto = ProjectService.get_project_user_stats(project_id, username)
-            return stats_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
+        stats_dto = ProjectService.get_project_user_stats(project_id, username)
+        return stats_dto.to_primitive(), 200

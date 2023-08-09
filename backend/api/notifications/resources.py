@@ -1,7 +1,6 @@
 from flask_restful import Resource, request
 from backend.services.messaging.message_service import (
     MessageService,
-    NotFound,
     MessageServiceError,
 )
 from backend.services.notification_service import NotificationService
@@ -49,8 +48,6 @@ class NotificationsRestAPI(Resource):
             return user_message.to_primitive(), 200
         except MessageServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "No messages found", "SubCode": "NotFound"}, 404
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -90,8 +87,6 @@ class NotificationsRestAPI(Resource):
             return {"Success": "Message deleted"}, 200
         except MessageServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "No messages found", "SubCode": "NotFound"}, 404
 
 
 class NotificationsAllAPI(Resource):

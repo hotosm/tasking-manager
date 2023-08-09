@@ -4,7 +4,6 @@ from schematics.exceptions import DataError
 from backend.models.dtos.campaign_dto import CampaignDTO, NewCampaignDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
-from backend.models.postgis.utils import NotFound
 from backend.services.users.authentication_service import token_auth
 
 
@@ -43,17 +42,14 @@ class CampaignsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if authenticated_user_id:
-                campaign = CampaignService.get_campaign_as_dto(
-                    campaign_id, authenticated_user_id
-                )
-            else:
-                campaign = CampaignService.get_campaign_as_dto(campaign_id, 0)
-            return campaign.to_primitive(), 200
-        except NotFound:
-            return {"Error": "No campaign found", "SubCode": "NotFound"}, 404
+        authenticated_user_id = token_auth.current_user()
+        if authenticated_user_id:
+            campaign = CampaignService.get_campaign_as_dto(
+                campaign_id, authenticated_user_id
+            )
+        else:
+            campaign = CampaignService.get_campaign_as_dto(campaign_id, 0)
+        return campaign.to_primitive(), 200
 
     @token_auth.login_required
     def patch(self, campaign_id):
@@ -139,8 +135,6 @@ class CampaignsRestAPI(Resource):
         try:
             campaign = CampaignService.update_campaign(campaign_dto, campaign_id)
             return {"Success": "Campaign {} updated".format(campaign.id)}, 200
-        except NotFound:
-            return {"Error": "Campaign not found", "SubCode": "NotFound"}, 404
         except ValueError:
             error_msg = "Campaign PATCH - name already exists"
             return {"Error": error_msg, "SubCode": "NameExists"}, 409
@@ -195,12 +189,9 @@ class CampaignsRestAPI(Resource):
             error_msg = f"CampaignsRestAPI DELETE: {str(e)}"
             return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
-        try:
-            campaign = CampaignService.get_campaign(campaign_id)
-            CampaignService.delete_campaign(campaign.id)
-            return {"Success": "Campaign deleted"}, 200
-        except NotFound:
-            return {"Error": "Campaign not found", "SubCode": "NotFound"}, 404
+        campaign = CampaignService.get_campaign(campaign_id)
+        CampaignService.delete_campaign(campaign.id)
+        return {"Success": "Campaign deleted"}, 200
 
 
 class CampaignsAllAPI(Resource):
