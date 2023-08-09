@@ -368,7 +368,7 @@ const Resources = {
         'sudo apt-get -q -y update',
         'sudo DEBIAN_FRONTEND=noninteractive apt-get -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
         'sudo apt-get -q -y install awscli curl git gnupg ruby wget',
-        'sudo apt-get -q -y install python3.9 python3-pip python3-psycopg2 python-is-python3',
+        'sudo apt-get -q -y install python3.11 python3-pip python3-psycopg2 python-is-python3',
         'sudo apt-get -q -y install postgresql-client postgis libpq-dev',
         'sudo apt-get -q -y install libxml2 libxml2-dev',
         'sudo apt-get -q -y install libgeos-3.9.0 libgeos-dev',
