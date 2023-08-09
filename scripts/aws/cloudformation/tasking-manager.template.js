@@ -3,8 +3,8 @@ const cf = require('@mapbox/cloudfriend');
 const Parameters = {
   TaskingManagerBackendAMI: {
     Type: "AWS::EC2::Image::Id",
-    Description: 'AMI ID of Backend VM, currently Ubuntu 20.04 LTS - Was ami-00fa576fb10a52a1c',
-    Default: "ami-0aa2b7722dc1b5612",
+    Description: 'AMI ID of Backend VM, debian 12 - Was ami-0aa2b7722dc1b5612',
+    Default: "ami-01ae074e29e7f8fd0",
   },
   TaskingManagerBackendInstanceType: {
     Type: 'String',
@@ -675,25 +675,22 @@ const Resources = {
         Version: "2012-10-17",
         Statement: [
           {
-            Action: [ "s3:GetObject" ],
+            Action: [ 
+              "s3:GetObject",
+              "s3:ListBucket"
+            ],
             Effect: 'Allow',
-            Principal: "*",
+            Principal: {
+              CanonicalUser: cf.getAtt("TaskingManagerCloudfrontOriginAccessIdentity", "S3CanonicalUserId"),
+            },
             Resource: [
               cf.join("/", [
                   cf.getAtt("TaskingManagerReactBucket", "Arn"),
                   "*"
-              ])
-            ],
-            Sid: "PublicGetObject"
-          },
-          {
-            Action: [ "s3:ListBucket" ],
-            Effect: "Allow",
-            Principal: "*",
-            Resource: [
+              ]),
               cf.getAtt("TaskingManagerReactBucket", "Arn")
             ],
-            Sid: "PublicListBucket"
+            Sid: "PublicGetObject"
           }
         ]
       }
@@ -713,10 +710,13 @@ const Resources = {
           {
             Id: cf.join('-', [cf.stackName, 'react-app']),
             DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'), // NOTE: Can also be WebsiteURL
-            CustomOriginConfig: {
-              OriginProtocolPolicy: "https-only",
-              OriginSSLProtocols: [ "TLSv1.2" ]
+            S3OriginConfig: {
+              OriginAccessIdentity: cf.sub('origin-access-identity/cloudfront/${TaskingManagerCloudfrontOriginAccessIdentity}')
             }
+            // CustomOriginConfig: {
+            //   OriginProtocolPolicy: "https-only",
+            //   OriginSSLProtocols: [ "TLSv1.2" ]
+            // }
           }
         ],
         CustomErrorResponses: [{
@@ -749,6 +749,14 @@ const Resources = {
           MinimumProtocolVersion: 'TLSv1.2_2021',
           SslSupportMethod: 'sni-only'
         }
+      }
+    }
+  },
+  TaskingManagerCloudfrontOriginAccessIdentity: {
+    Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity',
+    Properties: {
+      CloudFrontOriginAccessIdentityConfig: {
+        Comment: cf.sub('CloudFront OAI for ${TaskingManagerURL}')
       }
     }
   },
