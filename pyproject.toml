@@ -33,7 +33,7 @@ dependencies = [
     "scikit-learn>=1.2.2",
     "sentry-sdk[flask]==1.26.0",
     "shapely==2.0.1",
-    "SQLAlchemy==2.0.15",
+    "SQLAlchemy==2.0.19",
     "Werkzeug==2.3.6",
     # Indirect, but required dependencies (often required for efficient deployments)
     "gevent==22.10.2",
