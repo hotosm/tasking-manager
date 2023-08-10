@@ -20,7 +20,7 @@ dependencies = [
     "GeoAlchemy2==0.14.1",
     "geojson==3.0.1",
     "itsdangerous==2.1.2",
-    "Markdown==3.4.3",
+    "Markdown==3.4.4",
     "oauthlib==3.2.2",
     "pandas>=2.0.2",
     "psycopg2==2.9.6",
