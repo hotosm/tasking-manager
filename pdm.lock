@@ -6,7 +6,7 @@ groups = ["default", "dev", "lint", "test"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:eaf655716ff955ab51cc361a662455e06573b4efe618a7101c229a3f5e599593"
+content_hash = "sha256:2accc44cf24a1ed889560e3ba7c4eb43ac6305e8698838ae84ce36974020cf72"
 
 [[package]]
 name = "alembic"
@@ -60,6 +60,7 @@ dependencies = [
     "pathspec>=0.9.0",
     "platformdirs>=2",
     "tomli>=1.1.0; python_version < \"3.11\"",
+    "typing-extensions>=3.10.0.0; python_version < \"3.10\"",
 ]
 files = [
     {file = "black-23.7.0-cp310-cp310-macosx_10_16_arm64.whl", hash = "sha256:5c4bc552ab52f6c1c506ccae05681fab58c3f72d59ae6e6639e8885e94fe2587"},
@@ -316,6 +317,7 @@ dependencies = [
     "Werkzeug>=2.3.3",
     "blinker>=1.6.2",
     "click>=8.1.3",
+    "importlib-metadata>=3.6.0; python_version < \"3.10\"",
     "itsdangerous>=2.1.2",
 ]
 files = [
@@ -621,6 +623,9 @@ name = "markdown"
 version = "3.4.4"
 requires_python = ">=3.7"
 summary = "Python implementation of John Gruber's Markdown."
+dependencies = [
+    "importlib-metadata>=4.4; python_version < \"3.10\"",
+]
 files = [
     {file = "Markdown-3.4.4-py3-none-any.whl", hash = "sha256:a4c1b65c0957b4bd9e7d86ddc7b3c9868fb9670660f6f99f6d1bca8954d5a941"},
     {file = "Markdown-3.4.4.tar.gz", hash = "sha256:225c6123522495d4119a90b3a3ba31a1e87a70369e03f14799ea9c0d7183a3d6"},
@@ -756,6 +761,7 @@ version = "2.0.2"
 requires_python = ">=3.8"
 summary = "Powerful data structures for data analysis, time series, and statistics"
 dependencies = [
+    "numpy>=1.20.3; python_version < \"3.10\"",
     "numpy>=1.21.0; python_version >= \"3.10\"",
     "numpy>=1.23.2; python_version >= \"3.11\"",
     "python-dateutil>=2.8.2",
