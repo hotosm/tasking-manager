@@ -59,4 +59,4 @@ services:
 
 networks:
   tm-web:
-    external: true
+    external: false
