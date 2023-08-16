@@ -137,12 +137,12 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
         <StatsCard
           icon={<HomeIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.buildingsMapped} />}
-          value={osmStats.building_count || 0}
+          value={osmStats.buildings || 0}
         />
         <StatsCard
           icon={<RoadIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.roadMapped} />}
-          value={osmStats.road_length || 0}
+          value={osmStats.roads || 0}
         />
         <StatsCard
           icon={<MarkerIcon className={iconClass} style={iconStyle} />}

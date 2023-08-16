@@ -42,15 +42,15 @@ export const StatsSection = () => {
       <div className="pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container">
         <StatsColumn
           label={messages.buildingsStats}
-          value={hasStatsLoaded ? osmStatsData?.data.result.buildings : undefined}
+          value={hasStatsLoaded ? osmStatsData?.buildings : undefined}
         />
         <StatsColumn
           label={messages.roadsStats}
-          value={hasStatsLoaded ? osmStatsData?.data.result.roads : undefined}
+          value={hasStatsLoaded ? osmStatsData?.roads : undefined}
         />
         <StatsColumn
           label={messages.editsStats}
-          value={hasStatsLoaded ? osmStatsData?.data.result.edits : undefined}
+          value={hasStatsLoaded ? osmStatsData?.edits : undefined}
         />
         <StatsColumn
           label={messages.communityStats}

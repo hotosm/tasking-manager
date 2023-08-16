@@ -14,10 +14,11 @@ export const FeatureStats = () => {
       const response = await axios.get(
         `${OHSOME_STATS_BASE_URL}/stats/hotosm-project-%2A?ohsomeFormat=false`,
       );
+      const { edits, buildings, roads } = response.data.result;
       setStats({
-        edits: response.data.edits,
-        buildings: response.data.buildings,
-        roads: response.data.roads,
+        edits,
+        buildings,
+        roads,
         pois: response.data.poi_count_add,
         waterways: response.data.waterway_km_add,
       });

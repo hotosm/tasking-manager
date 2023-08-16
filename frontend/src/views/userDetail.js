@@ -54,8 +54,8 @@ export const UserDetail = ({ withHeader = true }) => {
 
   useEffect(() => {
     if (userDetails.id) {
-      fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/HotTMUser?userId=${userDetails.id}`, true)
-        .then((res) => setOsmStats(res))
+      fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/hot-tm-user?userId=${userDetails.id}`, true)
+        .then((res) => setOsmStats(res.result))
         .catch((e) => console.log(e));
     }
   }, [userDetails.id]);
@@ -74,7 +74,7 @@ export const UserDetail = ({ withHeader = true }) => {
             rows={5}
             ready={!errorDetails && !loadingDetails}
           >
-            <HeaderProfile userDetails={userDetails} changesets={osmStats.changeset_count} />
+            <HeaderProfile userDetails={userDetails} changesets={osmStats.changesets} />
           </ReactPlaceholder>
         </div>
       )}

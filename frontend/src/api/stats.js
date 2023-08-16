@@ -42,6 +42,7 @@ export const useOsmStatsQuery = () => {
     queryKey: ['osm-stats'],
     queryFn: fetchOsmStats,
     useErrorBoundary: true,
+    select: (data) => data.data.result
   });
 };
 
