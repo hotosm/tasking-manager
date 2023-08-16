@@ -26,5 +26,5 @@ services:
     volumes:
       - ".:/usr/src/app"
     labels:
-      - traefik.http.routers.frontend.rule=Host(`localhost`)
+      - traefik.http.routers.frontend.rule=Host(`localhost`) || Host(`127.0.0.1`)
       - traefik.http.services.frontend.loadbalancer.server.port=80
