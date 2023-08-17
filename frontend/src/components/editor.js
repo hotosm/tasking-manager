@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useIntl } from 'react-intl';
+import { gpx } from '@tmcw/togeojson';
 import * as iD from '@hotosm/id';
 import '@hotosm/id/dist/iD.css';
 
 import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
+import messages from './messages';
 
 export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }) {
   const dispatch = useDispatch();
+  const intl = useIntl();
   const session = useSelector((state) => state.auth.session);
   const iDContext = useSelector((state) => state.editor.context);
   const locale = useSelector((state) => state.preferences.locale);
@@ -82,7 +86,20 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
         iDContext.init();
       }
       if (gpxUrl) {
-        iDContext.layers().layer('data').url(gpxUrl, '.gpx');
+        fetch(gpxUrl)
+          .then((response) => response.text())
+          .then((data) => {
+            let gpxData = new DOMParser().parseFromString(data, 'text/xml');
+            let nameNode = gpxData.getElementsByTagName('trk')[0].childNodes[0];
+            let projectId = nameNode.textContent.match(/\d+/g);
+            nameNode.textContent = intl.formatMessage(messages.gpxNameAttribute, {
+              projectId: projectId[0],
+            });
+            iDContext.layers().layer('data').geojson(gpx(gpxData));
+          })
+          .catch((error) => {
+            console.error('Error loading GPX data');
+          });
       }
 
       let osm = iDContext.connection();
@@ -106,7 +123,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
         }
       });
     }
-  }, [session, iDContext, setDisable, presets, locale, gpxUrl]);
+  }, [session, iDContext, setDisable, presets, locale, gpxUrl, intl]);
 
   return <div className="w-100 vh-minus-69-ns" id="id-container"></div>;
 }

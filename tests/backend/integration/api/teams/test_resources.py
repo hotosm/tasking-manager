@@ -7,6 +7,16 @@ from tests.backend.helpers.test_helpers import (
     return_canned_team,
     create_canned_team,
 )
+from tests.backend.integration.api.teams.test_actions import (
+    TEAM_NOT_FOUND_SUB_CODE,
+    TEAM_NOT_FOUND_MESSAGE,
+)
+from tests.backend.integration.api.organisations.test_resources import (
+    ORG_NOT_FOUND_MESSAGE,
+    ORG_NOT_FOUND_SUB_CODE,
+)
+
+
 from backend.models.postgis.statuses import UserRole
 
 TEST_ORGANISATION_NAME = "Kathmandu Living Labs"
@@ -32,9 +42,10 @@ class TestTeamsRestAPI(BaseTestCase):
         """
         response = self.client.get("/api/v2/teams/99/")
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "Team Not Found")
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], TEAM_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], TEAM_NOT_FOUND_SUB_CODE)
 
     def test_get_team_by_id_passes(self):
         """
@@ -143,9 +154,10 @@ class TestTeamsRestAPI(BaseTestCase):
             "/api/v2/teams/99/", headers={"Authorization": self.test_user_token}
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "Team Not Found")
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], TEAM_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], TEAM_NOT_FOUND_SUB_CODE)
 
 
 class TestTeamsAllPI(BaseTestCase):
@@ -177,11 +189,10 @@ class TestTeamsAllPI(BaseTestCase):
             headers={"Authorization": self.admin_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(
-            response_body["Error"], "Team POST - Organisation does not exist"
-        )
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], ORG_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], ORG_NOT_FOUND_SUB_CODE)
 
     def test_create_new_team_non_admin_fails(self):
         """

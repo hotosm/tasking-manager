@@ -1,7 +1,7 @@
 import threading
 from unittest.mock import patch
 
-from backend.models.postgis.utils import NotFound
+from backend.exceptions import NotFound
 from backend.models.postgis.statuses import ProjectStatus
 from backend.models.postgis.team import TeamRoles, TeamMemberFunctions
 from tests.backend.base import BaseTestCase

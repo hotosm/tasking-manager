@@ -3,6 +3,7 @@ import threading
 import geojson
 from flask import current_app
 
+from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
@@ -13,7 +14,7 @@ from backend.models.postgis.project import Project, Task, ProjectStatus
 from backend.models.postgis.statuses import TaskCreationMode, TeamRoles
 from backend.models.postgis.task import TaskHistory, TaskStatus, TaskAction
 from backend.models.postgis.user import User
-from backend.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
+from backend.models.postgis.utils import InvalidData, InvalidGeoJson
 from backend.services.grid.grid_service import GridService
 from backend.services.license_service import LicenseService
 from backend.services.messaging.message_service import MessageService
@@ -107,7 +108,7 @@ class ProjectAdminService:
         project = Project.get(project_id)
 
         if project is None:
-            raise NotFound()
+            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
         return project
 
@@ -203,7 +204,7 @@ class ProjectAdminService:
         comments = TaskHistory.get_all_comments(project_id)
 
         if len(comments.comments) == 0:
-            raise NotFound("No comments found on project")
+            raise NotFound(sub_code="COMMENTS_NOT_FOUND", project_id=project_id)
 
         return comments
 
@@ -283,7 +284,7 @@ class ProjectAdminService:
     @staticmethod
     def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
         """Transfers project from old owner (transfering_user_id) to new owner (username)"""
-        project = Project.get(project_id)
+        project = ProjectAdminService._get_project_by_id(project_id)
         new_owner = UserService.get_user_by_username(username)
         # No operation is required if the new owner is same as old owner
         if username == project.author.username:
@@ -330,7 +331,7 @@ class ProjectAdminService:
         """Is user action permitted on project"""
         project = Project.get(project_id)
         if project is None:
-            raise NotFound()
+            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
         author_id = project.author_id
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
 

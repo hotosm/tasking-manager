@@ -3,6 +3,8 @@ from flask import current_app
 import datetime
 from sqlalchemy.sql.expression import literal
 from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column
+
+from backend.exceptions import NotFound
 from backend import db
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
 from backend.models.dtos.user_dto import (
@@ -26,7 +28,6 @@ from backend.models.postgis.task import TaskHistory, TaskAction, Task
 from backend.models.dtos.user_dto import UserTaskDTOs
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.statuses import TaskStatus, ProjectStatus
-from backend.models.postgis.utils import NotFound
 from backend.services.users.osm_service import OSMService, OSMServiceError
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
@@ -52,7 +53,7 @@ class UserService:
         user = User.get_by_id(user_id)
 
         if user is None:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND", user_id=user_id)
 
         return user
 
@@ -61,7 +62,7 @@ class UserService:
         user = User.get_by_username(username)
 
         if user is None:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND", username=username)
 
         return user
 
@@ -94,7 +95,7 @@ class UserService:
         users = User.query.filter(User.role == 2).all()
 
         if users is None:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND")
 
         return users
 
@@ -103,7 +104,7 @@ class UserService:
         users = User.query.filter(User.role == 1).all()
 
         if users is None:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND")
 
         return users
 
@@ -625,7 +626,7 @@ class UserService:
             .one_or_none()
         )
         if user is None:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND", username=user_name)
 
         # Get all projects that the user has contributed
         sq = (

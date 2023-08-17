@@ -3,16 +3,15 @@ import warnings
 import base64
 import csv
 import datetime
-
 import click
 from flask_migrate import Migrate
 from dotenv import load_dotenv
+
 from backend import create_app, initialise_counters, db
 from backend.services.users.authentication_service import AuthenticationService
 from backend.services.users.user_service import UserService
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
-from backend.models.postgis.utils import NotFound
 from backend.models.postgis.task import Task, TaskHistory
 
 from sqlalchemy import func
@@ -110,6 +109,8 @@ def refresh_project_stats():
 @application.cli.command("update_project_categories")
 @click.argument("filename")
 def update_project_categories(filename):
+    from backend.exceptions import NotFound
+
     with open(filename, "r", encoding="ISO-8859-1", newline="") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:

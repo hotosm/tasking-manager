@@ -1,5 +1,7 @@
 from backend.models.postgis.task import Task, TaskStatus
 from backend.models.postgis.statuses import UserGender, UserRole, MappingLevel
+from backend.exceptions import get_message_from_sub_code
+
 
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
@@ -13,6 +15,8 @@ from tests.backend.helpers.test_helpers import (
 TEST_USERNAME = "test_user"
 TEST_USER_ID = 1111111
 TEST_EMAIL = "test@hotmail.com"
+USER_NOT_FOUND_SUB_CODE = "USER_NOT_FOUND"
+USER_NOT_FOUND_MESSAGE = get_message_from_sub_code(USER_NOT_FOUND_SUB_CODE)
 
 
 class TestUsersQueriesOwnLockedDetailsAPI(BaseTestCase):
@@ -39,7 +43,7 @@ class TestUsersQueriesOwnLockedDetailsAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], "TASK_NOT_FOUND")
 
     def test_returns_200_if_tasks_locked(self):
         """Test that the API returns 200 if a task is locked by user"""
@@ -84,7 +88,7 @@ class TestUsersQueriesUsernameAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], USER_NOT_FOUND_SUB_CODE)
 
     @staticmethod
     def assert_user_detail_response(
@@ -233,7 +237,7 @@ class UsersQueriesInterestsAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], USER_NOT_FOUND_SUB_CODE)
 
     def test_returns_user_interests_if_interest_found(self):
         """Test that the API returns user interests if user has interests"""
@@ -284,7 +288,7 @@ class TestUsersQueriesUsernameFilterAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], USER_NOT_FOUND_SUB_CODE)
 
     def test_returns_users_if_users_found(self):
         """Test that the API returns users if users found"""

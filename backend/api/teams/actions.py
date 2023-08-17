@@ -5,7 +5,6 @@ import threading
 from backend.models.dtos.message_dto import MessageDTO
 from backend.services.team_service import (
     TeamService,
-    NotFound,
     TeamJoinNotAllowed,
     TeamServiceError,
 )
@@ -54,10 +53,6 @@ class TeamsActionsJoinAPI(Resource):
             return {"Success": "Join request successful"}, 200
         except TeamServiceError as e:
             return {"Error": str(e), "SubCode": "InvalidRequest"}, 400
-        except NotFound:
-            return {"Error": TEAM_NOT_FOUND, "SubCode": "NotFound"}, 404
-        except Exception as e:
-            return {"Error": str(e), "SubCode": "InternalServerError"}, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -126,36 +121,26 @@ class TeamsActionsJoinAPI(Resource):
                 "SubCode": "InvalidData",
             }, 400
 
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if request_type == "join-response":
-                if TeamService.is_user_team_manager(team_id, authenticated_user_id):
-                    TeamService.accept_reject_join_request(
-                        team_id, authenticated_user_id, username, role, action
-                    )
-                    return {"Success": "True"}, 200
-                else:
-                    return (
-                        {
-                            "Error": "You don't have permissions to approve this join team request",
-                            "SubCode": "ApproveJoinError",
-                        },
-                        403,
-                    )
-            elif request_type == "invite-response":
-                TeamService.accept_reject_invitation_request(
+        authenticated_user_id = token_auth.current_user()
+        if request_type == "join-response":
+            if TeamService.is_user_team_manager(team_id, authenticated_user_id):
+                TeamService.accept_reject_join_request(
                     team_id, authenticated_user_id, username, role, action
                 )
                 return {"Success": "True"}, 200
-        except NotFound:
-            return {"Error": TEAM_NOT_FOUND, "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Team Join PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": error_msg,
-                "SubCode": "InternalServerError",
-            }, 500
+            else:
+                return (
+                    {
+                        "Error": "You don't have permissions to approve this join team request",
+                        "SubCode": "ApproveJoinError",
+                    },
+                    403,
+                )
+        elif request_type == "invite-response":
+            TeamService.accept_reject_invitation_request(
+                team_id, authenticated_user_id, username, role, action
+            )
+            return {"Success": "True"}, 200
 
 
 class TeamsActionsAddAPI(Resource):
@@ -220,10 +205,6 @@ class TeamsActionsAddAPI(Resource):
             return {"Success": "User added to the team"}, 200
         except TeamJoinNotAllowed as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"User POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class TeamsActionsLeaveAPI(Resource):
@@ -270,35 +251,25 @@ class TeamsActionsLeaveAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            username = request.get_json(force=True)["username"]
-            request_user = User.get_by_id(authenticated_user_id)
-            if (
-                TeamService.is_user_team_manager(team_id, authenticated_user_id)
-                or request_user.username == username
-            ):
-                TeamService.leave_team(team_id, username)
-                return {"Success": "User removed from the team"}, 200
-            else:
-                return (
-                    {
-                        "Error": "You don't have permissions to remove {} from this team.".format(
-                            username
-                        ),
-                        "SubCode": "RemoveUserError",
-                    },
-                    403,
-                )
-        except NotFound:
-            return {"Error": "No team member found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"TeamMembers DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": error_msg,
-                "SubCode": "InternalServerError",
-            }, 500
+        authenticated_user_id = token_auth.current_user()
+        username = request.get_json(force=True)["username"]
+        request_user = User.get_by_id(authenticated_user_id)
+        if (
+            TeamService.is_user_team_manager(team_id, authenticated_user_id)
+            or request_user.username == username
+        ):
+            TeamService.leave_team(team_id, username)
+            return {"Success": "User removed from the team"}, 200
+        else:
+            return (
+                {
+                    "Error": "You don't have permissions to remove {} from this team.".format(
+                        username
+                    ),
+                    "SubCode": "RemoveUserError",
+                },
+                403,
+            )
 
 
 class TeamsActionsMessageMembersAPI(Resource):
@@ -352,13 +323,7 @@ class TeamsActionsMessageMembersAPI(Resource):
             authenticated_user_id = token_auth.current_user()
             message_dto = MessageDTO(request.get_json())
             # Validate if team is present
-            try:
-                team = TeamService.get_team_by_id(team_id)
-            except NotFound:
-                return {
-                    "Error": TEAM_NOT_FOUND,
-                    "SubCode": "NotFound",
-                }, 404
+            team = TeamService.get_team_by_id(team_id)
 
             is_manager = TeamService.is_user_team_manager(
                 team_id, authenticated_user_id
@@ -392,10 +357,3 @@ class TeamsActionsMessageMembersAPI(Resource):
             return {"Success": "Message sent successfully"}, 200
         except ValueError as e:
             return {"Error": str(e)}, 403
-        except Exception as e:
-            error_msg = f"Send message all - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to send messages to team members",
-                "SubCode": "InternalServerError",
-            }, 500

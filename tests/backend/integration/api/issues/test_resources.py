@@ -5,9 +5,12 @@ from tests.backend.helpers.test_helpers import (
     create_canned_mapping_issue,
 )
 
+from backend.exceptions import get_message_from_sub_code
+
 TEST_ISSUE_NAME = "Test Issue"
 TEST_ISSUE_DESCRIPTION = "Test issue description"
-ISSUE_NOT_FOUND = "Mapping-issue category not found"
+ISSUE_NOT_FOUND_SUB_CODE = "ISSUE_CATEGORY_NOT_FOUND"
+ISSUE_NOT_FOUND_MESSAGE = get_message_from_sub_code(ISSUE_NOT_FOUND_SUB_CODE)
 
 
 class TestIssuesRestAPI(BaseTestCase):
@@ -35,9 +38,10 @@ class TestIssuesRestAPI(BaseTestCase):
         """
         response = self.client.get(self.non_existent_url)
         response_json = response.get_json()
+        error_details = response_json["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_json["Error"], ISSUE_NOT_FOUND)
-        self.assertEqual(response_json["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], ISSUE_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], ISSUE_NOT_FOUND_SUB_CODE)
 
     # patch
     def test_update_issue_by_unauthenticated_user_fails(self):
@@ -78,9 +82,10 @@ class TestIssuesRestAPI(BaseTestCase):
             json={"description": TEST_ISSUE_DESCRIPTION, "name": TEST_ISSUE_NAME},
         )
         response_json = response.get_json()
+        error_details = response_json["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_json["Error"], ISSUE_NOT_FOUND)
-        self.assertEqual(response_json["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], ISSUE_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], ISSUE_NOT_FOUND_SUB_CODE)
 
     def test_update_mapping_issue_passes(self):
         """
@@ -120,9 +125,10 @@ class TestIssuesRestAPI(BaseTestCase):
             self.non_existent_url, headers={"Authorization": self.test_user_token}
         )
         response_json = response.get_json()
+        error_details = response_json["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_json["Error"], ISSUE_NOT_FOUND)
-        self.assertEqual(response_json["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], ISSUE_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], ISSUE_NOT_FOUND_SUB_CODE)
 
     def test_delete_mapping_issue_passes(self):
         """

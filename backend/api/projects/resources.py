@@ -116,17 +116,8 @@ class ProjectsRestAPI(Resource):
                     "Error": "User not permitted: Private Project",
                     "SubCode": "PrivateProject",
                 }, 403
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project",
-                "SubCode": "InternalServerError",
-            }, 500
         finally:
             # this will try to unlock tasks that have been locked too long
             try:
@@ -217,13 +208,6 @@ class ProjectsRestAPI(Resource):
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except (InvalidGeoJson, InvalidData) as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-        except Exception as e:
-            error_msg = f"Project PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to create project",
-                "SubCode": "InternalServerError",
-            }, 500
 
     @token_auth.login_required
     def head(self, project_id):
@@ -269,18 +253,8 @@ class ProjectsRestAPI(Resource):
                 "SubCode": "UserPermissionError",
             }, 403
 
-        try:
-            project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
-            return project_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"ProjectsRestAPI HEAD - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project",
-                "SubCode": "InternalServerError",
-            }, 500
+        project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
+        return project_dto.to_primitive(), 200
 
     @token_auth.login_required
     def patch(self, project_id):
@@ -406,16 +380,13 @@ class ProjectsRestAPI(Resource):
                 description: Internal Server Error
         """
         authenticated_user_id = token_auth.current_user()
-        try:
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                return {
-                    "Error": "User is not a manager of the project",
-                    "SubCode": "UserPermissionError",
-                }, 403
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
         try:
             project_dto = ProjectDTO(request.get_json())
             project_dto.project_id = project_id
@@ -429,17 +400,8 @@ class ProjectsRestAPI(Resource):
             return {"Status": "Updated"}, 200
         except InvalidGeoJson as e:
             return {"Invalid GeoJson": str(e)}, 400
-        except NotFound as e:
-            return {"Error": str(e) or "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectAdminServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"ProjectsRestAPI PATCH - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to update project",
-                "SubCode": "InternalServerError",
-            }, 500
 
     @token_auth.login_required
     def delete(self, project_id):
@@ -492,15 +454,6 @@ class ProjectsRestAPI(Resource):
             return {"Success": "Project deleted"}, 200
         except ProjectAdminServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"ProjectsRestAPI DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to delete project",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectSearchBase(Resource):
@@ -723,13 +676,6 @@ class ProjectsAllAPI(ProjectSearchBase):
         except (KeyError, ValueError) as e:
             error_msg = f"Projects GET - {str(e)}"
             return {"Error": error_msg}, 400
-        except Exception as e:
-            error_msg = f"Projects GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch projects",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsQueriesBboxAPI(Resource):
@@ -818,13 +764,6 @@ class ProjectsQueriesBboxAPI(Resource):
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except ProjectSearchServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-        except Exception as e:
-            error_msg = f"ProjectsQueriesBboxAPI GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch projects",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsQueriesOwnerAPI(ProjectSearchBase):
@@ -871,18 +810,14 @@ class ProjectsQueriesOwnerAPI(ProjectSearchBase):
                 "Error": "User is not a manager of the project",
                 "SubCode": "UserPermissionError",
             }, 403
-        try:
-            search_dto = self.setup_search_dto()
-            admin_projects = ProjectAdminService.get_projects_for_admin(
-                authenticated_user_id,
-                request.environ.get("HTTP_ACCEPT_LANGUAGE"),
-                search_dto,
-            )
-            return admin_projects.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+
+        search_dto = self.setup_search_dto()
+        admin_projects = ProjectAdminService.get_projects_for_admin(
+            authenticated_user_id,
+            request.environ.get("HTTP_ACCEPT_LANGUAGE"),
+            search_dto,
+        )
+        return admin_projects.to_primitive(), 200
 
 
 class ProjectsQueriesTouchedAPI(Resource):
@@ -915,23 +850,13 @@ class ProjectsQueriesTouchedAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            locale = (
-                request.environ.get("HTTP_ACCEPT_LANGUAGE")
-                if request.environ.get("HTTP_ACCEPT_LANGUAGE")
-                else "en"
-            )
-            user_dto = UserService.get_mapped_projects(username, locale)
-            return user_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch projects",
-                "SubCode": "InternalServerError",
-            }, 500
+        locale = (
+            request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            if request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            else "en"
+        )
+        user_dto = UserService.get_mapped_projects(username, locale)
+        return user_dto.to_primitive(), 200
 
 
 class ProjectsQueriesSummaryAPI(Resource):
@@ -964,19 +889,9 @@ class ProjectsQueriesSummaryAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            summary = ProjectService.get_project_summary(project_id, preferred_locale)
-            return summary.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Project Summary GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project summary",
-                "SubCode": "InternalServerError",
-            }, 500
+        preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+        summary = ProjectService.get_project_summary(project_id, preferred_locale)
+        return summary.to_primitive(), 200
 
 
 class ProjectsQueriesNoGeometriesAPI(Resource):
@@ -1037,17 +952,8 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
                 )
 
             return project_dto, 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project",
-                "SubCode": "InternalServerError",
-            }, 500
         finally:
             # this will try to unlock tasks that have been locked too long
             try:
@@ -1091,23 +997,16 @@ class ProjectsQueriesNoTasksAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            ):
-                return {
-                    "Error": "User is not a manager of the project",
-                    "SubCode": "UserPermissionError",
-                }, 403
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        try:
-            project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
-            return project_dto.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            token_auth.current_user(), project_id
+        ):
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
+
+        project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
+        return project_dto.to_primitive(), 200
 
 
 class ProjectsQueriesAoiAPI(Resource):
@@ -1141,33 +1040,23 @@ class ProjectsQueriesAoiAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            as_file = (
-                strtobool(request.args.get("as_file"))
-                if request.args.get("as_file")
-                else True
+        as_file = (
+            strtobool(request.args.get("as_file"))
+            if request.args.get("as_file")
+            else True
+        )
+
+        project_aoi = ProjectService.get_project_aoi(project_id)
+
+        if as_file:
+            return send_file(
+                io.BytesIO(geojson.dumps(project_aoi).encode("utf-8")),
+                mimetype="application/json",
+                as_attachment=True,
+                download_name=f"{str(project_id)}.geojson",
             )
 
-            project_aoi = ProjectService.get_project_aoi(project_id)
-
-            if as_file:
-                return send_file(
-                    io.BytesIO(geojson.dumps(project_aoi).encode("utf-8")),
-                    mimetype="application/json",
-                    as_attachment=True,
-                    download_name=f"{str(project_id)}.geojson",
-                )
-
-            return project_aoi, 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project",
-                "SubCode": "InternalServerError",
-            }, 500
+        return project_aoi, 200
 
 
 class ProjectsQueriesPriorityAreasAPI(Resource):
@@ -1199,17 +1088,8 @@ class ProjectsQueriesPriorityAreasAPI(Resource):
         try:
             priority_areas = ProjectService.get_project_priority_areas(project_id)
             return priority_areas, 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError:
             return {"Error": "Unable to fetch project"}, 403
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch project",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsQueriesFeaturedAPI(Resource):
@@ -1234,14 +1114,9 @@ class ProjectsQueriesFeaturedAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            projects_dto = ProjectService.get_featured_projects(preferred_locale)
-            return projects_dto.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"FeaturedProjects GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+        projects_dto = ProjectService.get_featured_projects(preferred_locale)
+        return projects_dto.to_primitive(), 200
 
 
 class ProjectQueriesSimilarProjectsAPI(Resource):
@@ -1280,22 +1155,12 @@ class ProjectQueriesSimilarProjectsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = (
-                token_auth.current_user() if token_auth.current_user() else None
-            )
-            limit = int(request.args.get("limit", 4))
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE", "en")
-            projects_dto = ProjectRecommendationService.get_similar_projects(
-                project_id, authenticated_user_id, preferred_locale, limit
-            )
-            return projects_dto.to_primitive(), 200
-        except NotFound:
-            return {
-                "Error": "Project Not Found or Project is not published",
-                "SubCode": "NotFound",
-            }, 404
-        except Exception as e:
-            error_msg = f"SimilarProjects GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        authenticated_user_id = (
+            token_auth.current_user() if token_auth.current_user() else None
+        )
+        limit = int(request.args.get("limit", 4))
+        preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE", "en")
+        projects_dto = ProjectRecommendationService.get_similar_projects(
+            project_id, authenticated_user_id, preferred_locale, limit
+        )
+        return projects_dto.to_primitive(), 200

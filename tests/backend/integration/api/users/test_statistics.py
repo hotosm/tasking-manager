@@ -9,6 +9,7 @@ from tests.backend.helpers.test_helpers import (
     generate_encoded_token,
     return_canned_user,
 )
+from tests.backend.integration.api.users.test_resources import USER_NOT_FOUND_SUB_CODE
 
 
 class TestUsersStatisticsAPI(BaseTestCase):
@@ -34,7 +35,7 @@ class TestUsersStatisticsAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], USER_NOT_FOUND_SUB_CODE)
 
     def test_return_200_if_user_found(self):
         """Test returns 200 if user found."""

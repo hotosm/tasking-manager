@@ -45,8 +45,12 @@ const ActionStatus = ({ status, action }) => {
       errorMessage = 'resetAllError';
       break;
     case 'REVERT_VALIDATED_TASKS':
-      successMessage = 'revertValidatedTasksSuccess';
-      errorMessage = 'revertValidatedTasksError';
+      successMessage = 'revertVALIDATEDTasksSuccess';
+      errorMessage = 'revertTasksError';
+      break;
+    case 'REVERT_BADIMAGERY_TASKS':
+      successMessage = 'revertBADIMAGERYTasksSuccess';
+      errorMessage = 'revertTasksError';
       break;
     case 'TRANSFER_PROJECT':
       successMessage = 'transferProjectSuccess';
@@ -352,14 +356,20 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
   );
 };
 
-const RevertValidatedTasks = ({ projectId }: Object) => {
+const RevertTasks = ({ projectId, action }) => {
   const token = useSelector((state) => state.auth.token);
   const [user, setUser] = useState(null);
   const [, contributorsLoading, contributors] = useFetch(`projects/${projectId}/contributions/`);
 
-  // List only contributors who have validated some task
+  // To get the count of corresponding action key from contributors
+  const actionKey = {
+    VALIDATED: 'validated',
+    BADIMAGERY: 'badImagery',
+  };
+
+  // List only contributors who have made corresponding {action}
   const curatedContributors = contributors.userContributions?.filter(
-    (contributor) => contributor.validated > 0,
+    (contributor) => contributor[actionKey[action]] > 0,
   );
 
   const handleUsernameSelection = (e) => {
@@ -368,7 +378,7 @@ const RevertValidatedTasks = ({ projectId }: Object) => {
 
   const revertTasks = () => {
     return pushToLocalJSONAPI(
-      `projects/${projectId}/tasks/actions/reset-validated-by-user/?username=${user.username}`,
+      `projects/${projectId}/tasks/actions/reset-by-user/?username=${user.username}&action=${action}`,
       null,
       token,
       'POST',
@@ -395,10 +405,10 @@ const RevertValidatedTasks = ({ projectId }: Object) => {
         disabled={revertTasksAsync.status === 'pending' || !user}
         className={styleClasses.buttonClass}
       >
-        <FormattedMessage {...messages.revertValidatedTasks} />
+        <FormattedMessage {...messages[`revert${action}Tasks`]} />
       </Button>
       <div className="pt1">
-        <ActionStatus status={revertTasksAsync.status} action="REVERT_VALIDATED_TASKS" />
+        <ActionStatus status={revertTasksAsync.status} action={`REVERT_${action}_TASKS`} />
       </div>
     </div>
   );
@@ -598,15 +608,17 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </Popup>
       </div>
 
-      <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>
-          <FormattedMessage {...messages.revertValidatedTasksTitle} />
-        </label>
-        <p className={styleClasses.pClass}>
-          <FormattedMessage {...messages.revertValidatedTasksDescription} />
-        </p>
-        <RevertValidatedTasks projectId={projectId} />
-      </div>
+      {['VALIDATED', 'BADIMAGERY'].map((action) => (
+        <div key={action} className={styleClasses.divClass}>
+          <label className={styleClasses.labelClass}>
+            <FormattedMessage {...messages[`revert${action}TasksTitle`]} />
+          </label>
+          <p className={styleClasses.pClass}>
+            <FormattedMessage {...messages[`revert${action}TasksDescription`]} />
+          </p>
+          <RevertTasks projectId={projectId} action={action} />
+        </div>
+      ))}
 
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>

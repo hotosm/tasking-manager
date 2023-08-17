@@ -92,7 +92,7 @@ describe('Footer', () => {
         screen.getByRole('link', {
           name: messages.privacyPolicy.defaultMessage,
         }),
-      ).toHaveAttribute('href', `https://${ORG_PRIVACY_POLICY_URL}`);
+      ).toHaveAttribute('href', `${ORG_PRIVACY_POLICY_URL}`);
     } else {
       expect(
         screen.queryByRole('link', {

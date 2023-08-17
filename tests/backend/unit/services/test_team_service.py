@@ -1,4 +1,4 @@
-from backend.models.postgis.utils import NotFound
+from backend.exceptions import NotFound
 from backend.services.team_service import TeamService
 from backend.models.dtos.team_dto import TeamSearchDTO
 from tests.backend.base import BaseTestCase

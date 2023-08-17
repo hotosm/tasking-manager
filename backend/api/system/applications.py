@@ -1,6 +1,6 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource
 
-from backend.services.application_service import ApplicationService, NotFound
+from backend.services.application_service import ApplicationService
 from backend.services.users.authentication_service import token_auth
 
 
@@ -29,20 +29,12 @@ class SystemApplicationsRestAPI(Resource):
           500:
             description: A problem occurred
         """
-        try:
-            tokens = ApplicationService.get_all_tokens_for_logged_in_user(
-                token_auth.current_user()
-            )
-            if len(tokens) == 0:
-                return 400
-            return tokens.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Application GET API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch application keys",
-                "SubCode": "InternalServerError",
-            }, 500
+        tokens = ApplicationService.get_all_tokens_for_logged_in_user(
+            token_auth.current_user()
+        )
+        if len(tokens) == 0:
+            return 400
+        return tokens.to_primitive(), 200
 
     @token_auth.login_required
     def post(self):
@@ -68,16 +60,8 @@ class SystemApplicationsRestAPI(Resource):
           500:
             description: A problem occurred
         """
-        try:
-            token = ApplicationService.create_token(token_auth.current_user())
-            return token.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Application POST API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to create application keys",
-                "SubCode": "InternalServerError",
-            }, 500
+        token = ApplicationService.create_token(token_auth.current_user())
+        return token.to_primitive(), 200
 
     def patch(self, application_key):
         """
@@ -102,19 +86,11 @@ class SystemApplicationsRestAPI(Resource):
           500:
             description: A problem occurred
         """
-        try:
-            is_valid = ApplicationService.check_token(application_key)
-            if is_valid:
-                return 200
-            else:
-                return 302
-        except Exception as e:
-            error_msg = f"Application PUT API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to check application key",
-                "SubCode": "InternalServerError",
-            }, 500
+        is_valid = ApplicationService.check_token(application_key)
+        if is_valid:
+            return 200
+        else:
+            return 302
 
     @token_auth.login_required
     def delete(self, application_key):
@@ -148,19 +124,9 @@ class SystemApplicationsRestAPI(Resource):
           500:
             description: A problem occurred
         """
-        try:
-            token = ApplicationService.get_token(application_key)
-            if token.user == token_auth.current_user():
-                token.delete()
-                return 200
-            else:
-                return 302
-        except NotFound:
-            return {"Error": "Key does not exist for user", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Application DELETE API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to delete application key",
-                "SubCode": "InternalServerError",
-            }, 500
+        token = ApplicationService.get_token(application_key)
+        if token.user == token_auth.current_user():
+            token.delete()
+            return 200
+        else:
+            return 302

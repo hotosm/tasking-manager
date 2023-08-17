@@ -12,10 +12,10 @@ import { CommentInputField } from '../comments/commentInput';
 import { MessageStatus } from '../comments/status';
 import { UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
-import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useFetchWithAbort } from '../../hooks/UseFetch';
 import { useEditProjectAllowed } from '../../hooks/UsePermissions';
-import { DeleteButton } from '../teamsAndOrgs/management';
+import { DeleteModal } from '../deleteModal';
 
 import './styles.scss';
 
@@ -126,18 +126,7 @@ export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
 };
 
 export function CommentList({ userCanEditProject, projectId, comments, retryFn }: Object) {
-  const token = useSelector((state) => state.auth.token);
   const username = useSelector((state) => state.auth.userDetails.username);
-
-  const deleteComment = (commentId) => {
-    fetchLocalJSONAPI(`projects/${projectId}/comments/${commentId}/`, token, 'DELETE')
-      .then(() => {
-        retryFn();
-      })
-      .catch((e) => {
-        console.log(e.message);
-      });
-  };
 
   return (
     <div className="pt3">
@@ -170,12 +159,12 @@ export function CommentList({ userCanEditProject, projectId, comments, retryFn }
             </div>
             <div>
               {(userCanEditProject || comment.username === username) && (
-                <DeleteButton
-                  className={`bg-transparent bw0 w2 h2 lh-copy overflow-hidden blue-light p0 mb1 hover-red`}
-                  showText={false}
-                  onClick={() => {
-                    deleteComment(comment.id);
-                  }}
+                <DeleteModal
+                  id={comment.id}
+                  type={'comments'}
+                  className="bg-transparent bw0 w2 h2 lh-copy overflow-hidden blue-light p0 mb1 hover-red"
+                  onDelete={retryFn}
+                  endpointURL={`projects/${projectId}/comments/${comment.id}/`}
                 />
               )}
             </div>

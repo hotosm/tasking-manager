@@ -13,12 +13,17 @@ from backend.models.postgis.statuses import (
     TeamJoinMethod,
     TeamMemberFunctions,
 )
-from backend.api.teams.actions import TEAM_NOT_FOUND
+from backend.exceptions import get_message_from_sub_code
 
 TEST_ADMIN_USERNAME = "Test Admin"
 TEST_MESSAGE = "This is a test message"
 TEST_SUBJECT = "Test Subject"
 NON_EXISTENT_USER = "Random User"
+
+TEAM_NOT_FOUND_SUB_CODE = "TEAM_NOT_FOUND"
+USER_NOT_FOUND_SUB_CODE = "USER_NOT_FOUND"
+TEAM_NOT_FOUND_MESSAGE = get_message_from_sub_code(TEAM_NOT_FOUND_SUB_CODE)
+USER_NOT_FOUND_MESSAGE = get_message_from_sub_code(USER_NOT_FOUND_SUB_CODE)
 
 
 class TestTeamsActionsJoinAPI(BaseTestCase):
@@ -63,7 +68,7 @@ class TestTeamsActionsJoinAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], TEAM_NOT_FOUND)
+        self.assertEqual(response_body["error"]["message"], TEAM_NOT_FOUND_MESSAGE)
 
     def test_request_to_join_team_with_invite_only_request_fails(self):
         """
@@ -154,9 +159,10 @@ class TestTeamsActionsJoinAPI(BaseTestCase):
             },
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], TEAM_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], TEAM_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], TEAM_NOT_FOUND_SUB_CODE)
 
 
 class TestTeamsActionsAddAPI(BaseTestCase):
@@ -233,9 +239,10 @@ class TestTeamsActionsAddAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response_body["SubCode"], "InternalServerError")
+        error_resp = response_body["error"]
+        self.assertEqual(error_resp["sub_code"], "INTERNAL_SERVER_ERROR")
         self.assertTrue(
-            "User is not allowed to add member to the team" in response_body["Error"]
+            "User is not allowed to add member to the team" in error_resp["message"]
         )
 
     def test_add_non_existent_members_to_team_fails(self):
@@ -251,8 +258,9 @@ class TestTeamsActionsAddAPI(BaseTestCase):
             headers={"Authorization": self.admin_token},
         )
         response_body = response.get_json()
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response_body["SubCode"], "InternalServerError")
+        self.assertEqual(response.status_code, 404)
+        error_resp = response_body["error"]
+        self.assertEqual(error_resp["sub_code"], "USER_NOT_FOUND")
 
     def test_add_members_to_non_existent_team_fails(self):
         """
@@ -267,8 +275,9 @@ class TestTeamsActionsAddAPI(BaseTestCase):
             headers={"Authorization": self.admin_token},
         )
         response_body = response.get_json()
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response_body["SubCode"], "InternalServerError")
+        self.assertEqual(response.status_code, 404)
+        error_resp = response_body["error"]
+        self.assertEqual(error_resp["sub_code"], "TEAM_NOT_FOUND")
 
 
 class TestTeamsActionsLeaveAPI(BaseTestCase):
@@ -353,9 +362,10 @@ class TestTeamsActionsLeaveAPI(BaseTestCase):
             headers={"Authorization": self.admin_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "No team member found")
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], USER_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], USER_NOT_FOUND_SUB_CODE)
 
     def test_remove_members_from_non_existent_team_fails(self):
         """
@@ -369,9 +379,10 @@ class TestTeamsActionsLeaveAPI(BaseTestCase):
             headers={"Authorization": self.admin_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], "No team member found")
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], TEAM_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], TEAM_NOT_FOUND_SUB_CODE)
 
 
 class TestTeamsActionsMessageMembersAPI(BaseTestCase):
@@ -399,9 +410,10 @@ class TestTeamsActionsMessageMembersAPI(BaseTestCase):
             headers={"Authorization": self.admin_token},
         )
         response_body = response.get_json()
+        error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response_body["Error"], TEAM_NOT_FOUND)
-        self.assertEqual(response_body["SubCode"], "NotFound")
+        self.assertEqual(error_details["message"], TEAM_NOT_FOUND_MESSAGE)
+        self.assertEqual(error_details["sub_code"], TEAM_NOT_FOUND_SUB_CODE)
 
     def test_message_team_members_by_unauthenticated_user_fails(self):
         """

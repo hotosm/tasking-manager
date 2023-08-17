@@ -6,6 +6,33 @@ from backend.models.postgis.statuses import TaskStatus
 from backend.models.dtos.stats_dto import Pagination
 
 
+class ExtendedStringType(StringType):
+    converters = []
+
+    def __init__(self, **kwargs):
+        """
+        This takes in all the inputs as String Type, but takes in an extra
+        input called converters.
+
+        Converters must be a list of functions, and each of those functions
+        must take in exactly 1 value , and return the transformed input.
+        The order of the converters is important, as the input will be
+        transformed in the order of the converters.
+        """
+        if "converters" in kwargs:
+            self.converters = kwargs["converters"]
+            del kwargs["converters"]
+        super().__init__(**kwargs)
+
+    def convert(self, value, context=None):
+        value = super().convert(value, context)
+        for func in self.converters:
+            value = func(value)
+        return (
+            value  # will have a value after going through all the conversions in order
+        )
+
+
 def is_valid_validated_status(value):
     """Validates that Task Status is in correct range for after validation"""
     valid_values = f"{TaskStatus.MAPPED.name}, {TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}"
@@ -19,6 +46,22 @@ def is_valid_validated_status(value):
         TaskStatus.MAPPED,
         TaskStatus.INVALIDATED,
         TaskStatus.VALIDATED,
+    ]:
+        raise ValidationError(f"Invalid status.  Valid values are {valid_values}")
+
+
+def is_valid_revert_status(value):
+    """Validates that Task Status is in correct range for revert while reverting tasks for a user"""
+    valid_values = f"{TaskStatus.BADIMAGERY.name}, {TaskStatus.VALIDATED.name}"
+
+    try:
+        validated_status = TaskStatus[value.upper()]
+    except KeyError:
+        raise ValidationError(f"Unknown task status. Valid values are {valid_values}")
+
+    if validated_status not in [
+        TaskStatus.VALIDATED,
+        TaskStatus.BADIMAGERY,
     ]:
         raise ValidationError(f"Invalid status.  Valid values are {valid_values}")
 
@@ -131,10 +174,13 @@ class MappedTasks(Model):
     mapped_tasks = ListType(ModelType(MappedTasksByUser), serialized_name="mappedTasks")
 
 
-class RevertUserValidatedTasksDTO(Model):
+class RevertUserTasksDTO(Model):
     """DTO used to revert all tasks to a given status"""
 
     preferred_locale = StringType(default="en")
     project_id = IntType(required=True)
     user_id = IntType(required=True)
     action_by = IntType(required=True)
+    action = ExtendedStringType(
+        required=True, validators=[is_valid_revert_status], converters=[str.upper]
+    )

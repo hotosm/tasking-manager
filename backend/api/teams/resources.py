@@ -6,7 +6,7 @@ from backend.models.dtos.team_dto import (
     UpdateTeamDTO,
     TeamSearchDTO,
 )
-from backend.services.team_service import TeamService, TeamServiceError, NotFound
+from backend.services.team_service import TeamService, TeamServiceError
 from backend.services.users.authentication_service import token_auth
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
@@ -97,14 +97,8 @@ class TeamsRestAPI(Resource):
         try:
             TeamService.update_team(team_dto)
             return {"Status": "Updated"}, 200
-        except NotFound as e:
-            return {"Error": str(e), "SubCode": "NotFound"}, 404
         except TeamServiceError as e:
             return str(e), 402
-        except Exception as e:
-            error_msg = f"Team PATCH - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     def get(self, team_id):
         """
@@ -136,21 +130,14 @@ class TeamsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            omit_members = strtobool(request.args.get("omitMemberList", "false"))
-            if authenticated_user_id is None:
-                user_id = 0
-            else:
-                user_id = authenticated_user_id
-            team_dto = TeamService.get_team_as_dto(team_id, user_id, omit_members)
-            return team_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Team Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Team GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        authenticated_user_id = token_auth.current_user()
+        omit_members = strtobool(request.args.get("omitMemberList", "false"))
+        if authenticated_user_id is None:
+            user_id = 0
+        else:
+            user_id = authenticated_user_id
+        team_dto = TeamService.get_team_as_dto(team_id, user_id, omit_members)
+        return team_dto.to_primitive(), 200
 
     # TODO: Add delete API then do front end services and ui work
 
@@ -188,21 +175,14 @@ class TeamsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
-                return {
-                    "Error": "User is not a manager for the team",
-                    "SubCode": "UserNotTeamManager",
-                }, 401
+        if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
+            return {
+                "Error": "User is not a manager for the team",
+                "SubCode": "UserNotTeamManager",
+            }, 401
 
-            TeamService.delete_team(team_id)
-            return {"Success": "Team deleted"}, 200
-        except NotFound:
-            return {"Error": "Team Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Team DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        TeamService.delete_team(team_id)
+        return {"Success": "Team deleted"}, 200
 
 
 class TeamsAllAPI(Resource):
@@ -288,38 +268,28 @@ class TeamsAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            user_id = token_auth.current_user()
-            search_dto = TeamSearchDTO()
-            search_dto.team_name = request.args.get("team_name", None)
-            search_dto.member = request.args.get("member", None)
-            search_dto.manager = request.args.get("manager", None)
-            search_dto.member_request = request.args.get("member_request", None)
-            search_dto.team_role = request.args.get("team_role", None)
-            search_dto.organisation = request.args.get("organisation", None)
-            search_dto.omit_member_list = strtobool(
-                request.args.get("omitMemberList", "false")
-            )
-            search_dto.full_member_list = strtobool(
-                request.args.get("fullMemberList", "true")
-            )
-            search_dto.paginate = strtobool(request.args.get("paginate", "false"))
-            search_dto.page = request.args.get("page", 1)
-            search_dto.per_page = request.args.get("perPage", 10)
-            search_dto.user_id = user_id
-            search_dto.validate()
+        user_id = token_auth.current_user()
+        search_dto = TeamSearchDTO()
+        search_dto.team_name = request.args.get("team_name", None)
+        search_dto.member = request.args.get("member", None)
+        search_dto.manager = request.args.get("manager", None)
+        search_dto.member_request = request.args.get("member_request", None)
+        search_dto.team_role = request.args.get("team_role", None)
+        search_dto.organisation = request.args.get("organisation", None)
+        search_dto.omit_member_list = strtobool(
+            request.args.get("omitMemberList", "false")
+        )
+        search_dto.full_member_list = strtobool(
+            request.args.get("fullMemberList", "true")
+        )
+        search_dto.paginate = strtobool(request.args.get("paginate", "false"))
+        search_dto.page = request.args.get("page", 1)
+        search_dto.per_page = request.args.get("perPage", 10)
+        search_dto.user_id = user_id
+        search_dto.validate()
 
-        except Exception as e:
-            error_msg = f"Teams GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
-        try:
-            teams = TeamService.get_all_teams(search_dto)
-            return teams.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Teams GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        teams = TeamService.get_all_teams(search_dto)
+        return teams.to_primitive(), 200
 
     @token_auth.login_required
     def post(self):
@@ -399,10 +369,3 @@ class TeamsAllAPI(Resource):
                 return {"Error": error_msg, "SubCode": "CreateTeamNotPermitted"}, 403
         except TeamServiceError as e:
             return str(e), 400
-        except NotFound:
-            error_msg = "Team POST - Organisation does not exist"
-            return {"Error": error_msg, "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Team POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

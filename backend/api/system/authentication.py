@@ -8,7 +8,6 @@ from backend.services.users.authentication_service import (
     AuthenticationService,
     AuthServiceError,
 )
-from backend.services.users.user_service import NotFound
 
 
 class SystemAuthenticationLoginAPI(Resource):
@@ -163,12 +162,3 @@ class SystemAuthenticationEmailAPI(Resource):
 
         except AuthServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "UserNotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to authenticate",
-                "SubCode": "InternalServerError",
-            }, 500
