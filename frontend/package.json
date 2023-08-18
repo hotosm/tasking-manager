@@ -14,8 +14,8 @@
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mapbox/mapbox-gl-language": "^0.10.1",
     "@placemarkio/geo-viewport": "^1.0.1",
+    "@sentry/cli": "^2.20.5",
     "@sentry/react": "^7.56.0",
-    "@sentry/tracing": "^7.56.0",
     "@tmcw/togeojson": "^4.7.0",
     "@turf/area": "^6.5.0",
     "@turf/bbox": "^6.5.0",
@@ -85,12 +85,13 @@
     "patch-rapid": "bash -c \"cp patch/rapid-imagery.min.json public/static/rapid/data/imagery.min.json\"",
     "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
     "start": "npm run preparation && npm run copy-static && npm run patch-id && npm run patch-rapid && react-scripts start",
-    "build": "npm run preparation && npm run update-static && npm run patch-id && npm run patch-rapid && react-scripts build",
+    "build": "npm run preparation && npm run update-static && npm run patch-id && npm run patch-rapid && react-scripts build && yarn run sentry:sourcemaps",
     "prettier": "prettier --write 'src/**/*.js'",
     "lint": "eslint src",
     "test": "npm run lint && react-scripts test --env=jsdom",
     "coverage": "npm run test -- --coverage --watchAll=false",
-    "analyze": "source-map-explorer 'build/static/js/*.js'"
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build && sentry-cli sourcemaps upload --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build"
   },
   "eslintConfig": {
     "extends": "react-app"

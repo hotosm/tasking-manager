@@ -4,7 +4,12 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import WebFont from 'webfontloader';
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
+import {
+  createRoutesFromChildren,
+  matchRoutes,
+  useLocation,
+  useNavigationType,
+} from 'react-router-dom';
 
 import App from './App';
 import { store, persistor } from './store';
@@ -16,8 +21,21 @@ if (SENTRY_FRONTEND_DSN) {
   Sentry.init({
     dsn: SENTRY_FRONTEND_DSN,
     environment: ENVIRONMENT,
-    integrations: [new BrowserTracing()],
-    tracesSampleRate: 0.1,
+    integrations: [
+      new Sentry.BrowserTracing({
+        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
+          React.useEffect,
+          useLocation,
+          useNavigationType,
+          createRoutesFromChildren,
+          matchRoutes,
+        ),
+      }),
+      new Sentry.Replay(),
+    ],
+    tracesSampleRate: 1.0, // TODO: Find the right number
+    replaysSessionSampleRate: 1.0, // TODO: Find the right number
+    replaysOnErrorSampleRate: 1.0,
   });
 }
 
