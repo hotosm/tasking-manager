@@ -16,8 +16,22 @@ if (SENTRY_FRONTEND_DSN) {
   Sentry.init({
     dsn: SENTRY_FRONTEND_DSN,
     environment: ENVIRONMENT,
-    integrations: [new BrowserTracing()],
+    integrations: [
+      new BrowserTracing(),
+      new Sentry.Replay({
+        // Additional SDK configuration goes in here, for example:
+        maskAllText: true,
+        blockAllMedia: true,
+        }),
+      ],
     tracesSampleRate: 0.1,
+
+    // Session Replays integration
+    replaysSessionSampleRate: 1.0,
+    // If the entire session is not sampled, use the below sample rate to sample
+    // sessions when an error occurs.
+    replaysOnErrorSampleRate: 1.0,
+    
   });
 }
 
