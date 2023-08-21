@@ -84,10 +84,6 @@ export default defineMessages({
     id: 'management.stats.users.title',
     defaultMessage: 'New users',
   },
-  totalFeatures: {
-    id: 'management.stats.features',
-    defaultMessage: 'Total features',
-  },
   newOrganisation: {
     id: 'teamsAndOrgs.management.organisation.creation',
     defaultMessage: 'Create new organization',

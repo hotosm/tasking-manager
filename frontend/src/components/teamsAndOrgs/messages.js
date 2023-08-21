@@ -553,4 +553,8 @@ export default defineMessages({
     id: 'management.stats.overview',
     defaultMessage: 'Overview',
   },
+  totalFeatures: {
+    id: 'management.stats.features',
+    defaultMessage: 'Total features',
+  },
 });
