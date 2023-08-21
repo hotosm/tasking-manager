@@ -12,7 +12,7 @@
 # 8. Run tests
 #
 # Direct dependencies (at least one import requires it)
-APScheduler==3.10.1
+APScheduler==3.10.4
 alembic==1.11.1
 bleach==6.0.0
 cachetools==5.3.1
