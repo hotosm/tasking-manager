@@ -3,13 +3,11 @@ import threading
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
+from backend.exceptions import Forbidden
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.grid_dto import GridDTO
 from backend.services.project_service import ProjectService
-from backend.services.project_admin_service import (
-    ProjectAdminService,
-    ProjectAdminServiceError,
-)
+from backend.services.project_admin_service import ProjectAdminService
 from backend.services.grid.grid_service import GridService
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.authentication_service import token_auth, tm
@@ -65,14 +63,12 @@ class ProjectsActionsTransferAPI(Resource):
             username = request.get_json()["username"]
         except Exception:
             return {"Error": "Username not provided", "SubCode": "InvalidData"}, 400
-        try:
-            authenticated_user_id = token_auth.current_user()
-            ProjectAdminService.transfer_project_to(
-                project_id, authenticated_user_id, username
-            )
-            return {"Success": "Project Transferred"}, 200
-        except (ValueError, ProjectAdminServiceError) as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+
+        authenticated_user_id = token_auth.current_user()
+        ProjectAdminService.transfer_project_to(
+            project_id, authenticated_user_id, username
+        )
+        return {"Success": "Project Transferred"}, 200
 
 
 class ProjectsActionsMessageContributorsAPI(Resource):
@@ -128,7 +124,9 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             message_dto.from_user_id = authenticated_user_id
             message_dto.validate()
         except DataError as e:
-            current_app.logger.error(f"Error validating request: {str(e)}")
+            current_app.logger.error(
+                f"Error validating request: {str(e)}"
+            )  # FLAGGED FOR LOG LEVEL
             return {
                 "Error": "Unable to send message to mappers",
                 "SubCode": "InvalidData",
@@ -137,10 +135,11 @@ class ProjectsActionsMessageContributorsAPI(Resource):
         if not ProjectAdminService.is_user_action_permitted_on_project(
             authenticated_user_id, project_id
         ):
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
         threading.Thread(
             target=MessageService.send_message_to_all_contributors,
             args=(project_id, message_dto),
@@ -183,23 +182,24 @@ class ProjectsActionsFeatureAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                raise ValueError()
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+        authenticated_user_id = token_auth.current_user()
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
         try:
             ProjectService.set_project_as_featured(project_id)
             return {"Success": True}, 200
         except ValueError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+            return {
+                "Error": str(e).split("-")[1],
+                "SubCode": str(e).split("-")[0],
+            }, 403  # FLAGGED FOR STATUS CODE: 409?
 
 
 class ProjectsActionsUnFeatureAPI(Resource):
@@ -237,23 +237,24 @@ class ProjectsActionsUnFeatureAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                raise ValueError()
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+        authenticated_user_id = token_auth.current_user()
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
         try:
             ProjectService.unset_project_as_featured(project_id)
             return {"Success": True}, 200
         except ValueError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+            return {
+                "Error": str(e).split("-")[1],
+                "SubCode": str(e).split("-")[0],
+            }, 403  # FLAGGED FOR STATUS CODE: 409
 
 
 class ProjectsActionsSetInterestsAPI(Resource):
@@ -301,17 +302,15 @@ class ProjectsActionsSetInterestsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                raise ValueError()
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+        authenticated_user_id = token_auth.current_user()
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
         data = request.get_json()
         project_interests = InterestService.create_or_update_project_interests(

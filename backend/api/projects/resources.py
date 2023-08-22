@@ -1,9 +1,12 @@
 import geojson
 import io
+from distutils.util import strtobool
+
 from flask import send_file
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-from distutils.util import strtobool
+
+from backend.exceptions import NotFound, Forbidden
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
@@ -18,7 +21,6 @@ from backend.services.project_search_service import (
 from backend.services.project_service import (
     ProjectService,
     ProjectServiceError,
-    NotFound,
 )
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
@@ -100,24 +102,15 @@ class ProjectsRestAPI(Resource):
                 abbreviated,
             )
 
-            if project_dto:
-                project_dto = project_dto.to_primitive()
-                if as_file:
-                    return send_file(
-                        io.BytesIO(geojson.dumps(project_dto).encode("utf-8")),
-                        mimetype="application/json",
-                        as_attachment=True,
-                        download_name=f"project_{str(project_id)}.json",
-                    )
-
-                return project_dto, 200
-            else:
-                return {
-                    "Error": "User not permitted: Private Project",
-                    "SubCode": "PrivateProject",
-                }, 403
-        except ProjectServiceError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+            project_dto = project_dto.to_primitive()
+            if as_file:
+                return send_file(
+                    io.BytesIO(geojson.dumps(project_dto).encode("utf-8")),
+                    mimetype="application/json",
+                    as_attachment=True,
+                    download_name=f"project_{str(project_id)}.json",
+                )
+            return project_dto, 200
         finally:
             # this will try to unlock tasks that have been locked too long
             try:
@@ -204,8 +197,6 @@ class ProjectsRestAPI(Resource):
                 draft_project_dto
             )
             return {"projectId": draft_project_id}, 201
-        except ProjectAdminServiceError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except (InvalidGeoJson, InvalidData) as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
 
@@ -248,10 +239,11 @@ class ProjectsRestAPI(Resource):
                 token_auth.current_user(), project_id
             )
         except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=token_auth.current_user(),
+            )
 
         project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
         return project_dto.to_primitive(), 200
@@ -383,10 +375,11 @@ class ProjectsRestAPI(Resource):
         if not ProjectAdminService.is_user_action_permitted_on_project(
             authenticated_user_id, project_id
         ):
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
         try:
             project_dto = ProjectDTO(request.get_json())
             project_dto.project_id = project_id
@@ -401,7 +394,10 @@ class ProjectsRestAPI(Resource):
         except InvalidGeoJson as e:
             return {"Invalid GeoJson": str(e)}, 400
         except ProjectAdminServiceError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+            return {
+                "Error": str(e).split("-")[1],
+                "SubCode": str(e).split("-")[0],
+            }, 403  # FLAGGED FOR STATUS CODE
 
     @token_auth.login_required
     def delete(self, project_id):
@@ -437,22 +433,19 @@ class ProjectsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                raise ValueError()
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+        authenticated_user_id = token_auth.current_user()
+        # FLAGGED: CONFLICTING PERMISSION CHECK WITH SERVICE FUNCTION
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER", user_id=authenticated_user_id
+            )
 
         try:
             ProjectAdminService.delete_project(project_id, authenticated_user_id)
             return {"Success": "Project deleted"}, 200
-        except ProjectAdminServiceError as e:
+        except ProjectAdminServiceError as e:  # FLAGGED FOR STATUS CODE
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
@@ -733,10 +726,9 @@ class ProjectsQueriesBboxAPI(Resource):
             authenticated_user_id
         )
         if len(orgs_dto.organisations) < 1:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+            raise Forbidden(
+                sub_code="USER_NOT_ORG_MANAGER", user_id=authenticated_user_id
+            )
 
         try:
             search_dto = ProjectSearchBBoxDTO()
@@ -806,10 +798,9 @@ class ProjectsQueriesOwnerAPI(ProjectSearchBase):
             authenticated_user_id
         )
         if len(orgs_dto.organisations) < 1:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+            raise Forbidden(
+                sub_code="USER_NOT_ORG_MANAGER", user_id=authenticated_user_id
+            )
 
         search_dto = self.setup_search_dto()
         admin_projects = ProjectAdminService.get_projects_for_admin(
@@ -952,8 +943,6 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
                 )
 
             return project_dto, 200
-        except ProjectServiceError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         finally:
             # this will try to unlock tasks that have been locked too long
             try:
@@ -997,13 +986,15 @@ class ProjectsQueriesNoTasksAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        authenticated_user_id = token_auth.current_user()
         if not ProjectAdminService.is_user_action_permitted_on_project(
-            token_auth.current_user(), project_id
+            authenticated_user_id, project_id
         ):
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
         project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
         return project_dto.to_primitive(), 200
@@ -1088,7 +1079,7 @@ class ProjectsQueriesPriorityAreasAPI(Resource):
         try:
             priority_areas = ProjectService.get_project_priority_areas(project_id)
             return priority_areas, 200
-        except ProjectServiceError:
+        except ProjectServiceError:  # FLAGGED: NEVER REACHING CODE
             return {"Error": "Unable to fetch project"}, 403
 
 

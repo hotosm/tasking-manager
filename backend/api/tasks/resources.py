@@ -5,13 +5,12 @@ from flask import send_file, Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
+from backend.exceptions import Forbidden
 from backend.services.mapping_service import MappingService
 from backend.models.dtos.grid_dto import GridDTO
-
 from backend.services.users.authentication_service import token_auth, tm
 from backend.services.users.user_service import UserService
 from backend.services.validator_service import ValidatorService
-
 from backend.services.project_service import ProjectService, ProjectServiceError
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.statuses import UserRole
@@ -116,7 +115,7 @@ class TasksQueriesJsonAPI(Resource):
                 )
 
             return tasks_json, 200
-        except ProjectServiceError as e:
+        except ProjectServiceError as e:  # FLAGGED: CHECK IF THIS EXCEPTION IS RAISED
             return {"Error": str(e)}, 403
 
     @token_auth.login_required
@@ -167,10 +166,7 @@ class TasksQueriesJsonAPI(Resource):
         user_id = token_auth.current_user()
         user = UserService.get_user_by_id(user_id)
         if user.role != UserRole.ADMIN.value:
-            return {
-                "Error": "This endpoint action is restricted to ADMIN users.",
-                "SubCode": "OnlyAdminAccess",
-            }, 403
+            raise Forbidden(sub_code="USER_NOT_ADMIN", user_id=user_id)
 
         tasks_ids = request.get_json().get("tasks")
         if tasks_ids is None:

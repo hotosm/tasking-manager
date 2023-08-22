@@ -1,5 +1,6 @@
 from flask_restful import Resource
 
+from backend.exceptions import Forbidden
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.authentication_service import token_auth
@@ -63,10 +64,7 @@ class OrganisationsCampaignsAPI(Resource):
             )
             return {"Success": message}, 200
         else:
-            return {
-                "Error": "User is not a manager of the organisation",
-                "SubCode": "UserNotPermitted",
-            }, 403
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")
 
     def get(self, organisation_id):
         """
@@ -149,7 +147,4 @@ class OrganisationsCampaignsAPI(Resource):
                 200,
             )
         else:
-            return {
-                "Error": "User is not a manager of the organisation",
-                "SubCode": "UserNotPermitted",
-            }, 403
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")

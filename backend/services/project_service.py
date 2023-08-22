@@ -2,7 +2,7 @@ import threading
 from cachetools import TTLCache, cached
 from flask import current_app
 
-from backend.exceptions import NotFound
+from backend.exceptions import NotFound, Forbidden
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.project_dto import (
     ProjectDTO,
@@ -202,7 +202,7 @@ class ProjectService:
         """
         project = ProjectService.get_project_by_id(project_id)
         # if project is public and is not draft, we don't need to check permissions
-        if not project.private and not project.status == ProjectStatus.DRAFT.value:
+        if not project.private and project.status != ProjectStatus.DRAFT.value:
             return project.as_dto_for_mapping(current_user_id, locale, abbrev)
 
         is_allowed_user = True
@@ -219,11 +219,14 @@ class ProjectService:
         if project.status == ProjectStatus.DRAFT.value:
             if not is_manager_permission:
                 is_allowed_user = False
-                raise ProjectServiceError("ProjectNotFetched- Unable to fetch project")
+                raise Forbidden(
+                    sub_code="DRAFT_PROJECT_NOT_ALLOWED",
+                    project_id=project_id,
+                    user_id=current_user_id,
+                )
 
         # Private Projects - allowed_users, admins, org admins &
         # assigned teams (mappers, validators, project managers), authors permitted
-
         if project.private and not is_manager_permission:
             is_allowed_user = False
             if current_user_id:
@@ -252,7 +255,11 @@ class ProjectService:
         if is_allowed_user or is_manager_permission or is_team_member:
             return project.as_dto_for_mapping(current_user_id, locale, abbrev)
         else:
-            return None
+            raise Forbidden(
+                sub_code="PRIVATE_PROJECT_NOT_ALLOWED",
+                project_id=project_id,
+                user_id=current_user_id,
+            )
 
     @staticmethod
     def get_project_tasks(

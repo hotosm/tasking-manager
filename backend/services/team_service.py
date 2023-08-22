@@ -3,7 +3,7 @@ from sqlalchemy import and_, or_
 from markdown import markdown
 
 from backend import create_app, db
-from backend.exceptions import NotFound
+from backend.exceptions import NotFound, Forbidden
 from backend.models.dtos.team_dto import (
     TeamDTO,
     NewTeamDTO,
@@ -33,14 +33,6 @@ from backend.services.messaging.message_service import MessageService
 
 class TeamServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling teams"""
-
-    def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
-
-
-class TeamJoinNotAllowed(Exception):
-    """Custom Exception to notify bad user level on joining team"""
 
     def __init__(self, message):
         if current_app:
@@ -92,7 +84,11 @@ class TeamService:
     ):
         is_manager = TeamService.is_user_team_manager(team_id, requesting_user)
         if not is_manager:
-            raise TeamServiceError("User is not allowed to add member to the team")
+            raise Forbidden(
+                sub_code="USER_NOT_TEAM_MANAGER",
+                team_id=team_id,
+                user_id=requesting_user,
+            )
         team = TeamService.get_team_by_id(team_id)
         from_user = UserService.get_user_by_id(requesting_user)
         to_user = UserService.get_user_by_username(username)
@@ -467,7 +463,9 @@ class TeamService:
         return team
 
     @staticmethod
-    def assert_validate_organisation(org_id: int):
+    def assert_validate_organisation(
+        org_id: int,
+    ):  # FLAGGED: IS THIS FUNCTION REQUIRED?
         """Makes sure an organisation exists"""
         try:
             OrganisationService.get_organisation_by_id(org_id)

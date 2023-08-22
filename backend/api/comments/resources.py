@@ -1,6 +1,7 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
+from backend.exceptions import Forbidden
 from backend.models.dtos.message_dto import ChatMessageDTO
 from backend.models.dtos.mapping_dto import TaskCommentDTO
 from backend.services.messaging.chat_service import ChatService
@@ -53,7 +54,7 @@ class CommentsProjectsAllAPI(Resource):
         """
         authenticated_user_id = token_auth.current_user()
         if UserService.is_user_blocked(authenticated_user_id):
-            return {"Error": "User is on read only mode", "SubCode": "ReadOnly"}, 403
+            raise Forbidden(sub_code="USER_BLOCKED")
 
         try:
             chat_dto = ChatMessageDTO(request.get_json())
@@ -67,13 +68,10 @@ class CommentsProjectsAllAPI(Resource):
                 "SubCode": "InvalidData",
             }, 400
 
-        try:
-            project_messages = ChatService.post_message(
-                chat_dto, project_id, authenticated_user_id
-            )
-            return project_messages.to_primitive(), 201
-        except ValueError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        project_messages = ChatService.post_message(
+            chat_dto, project_id, authenticated_user_id
+        )
+        return project_messages.to_primitive(), 201
 
     def get(self, project_id):
         """
@@ -155,13 +153,10 @@ class CommentsProjectsRestAPI(Resource):
                 description: Internal Server Error
         """
         authenticated_user_id = token_auth.current_user()
-        try:
-            ChatService.delete_project_chat_by_id(
-                project_id, comment_id, authenticated_user_id
-            )
-            return {"Success": "Comment deleted"}, 200
-        except ValueError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        ChatService.delete_project_chat_by_id(
+            project_id, comment_id, authenticated_user_id
+        )
+        return {"Success": "Comment deleted"}, 200
 
 
 class CommentsTasksRestAPI(Resource):
@@ -222,7 +217,7 @@ class CommentsTasksRestAPI(Resource):
         """
         authenticated_user_id = token_auth.current_user()
         if UserService.is_user_blocked(authenticated_user_id):
-            return {"Error": "User is on read only mode", "SubCode": "ReadOnly"}, 403
+            raise Forbidden(sub_code="USER_BLOCKED")
 
         try:
             task_comment = TaskCommentDTO(request.get_json())
@@ -237,7 +232,7 @@ class CommentsTasksRestAPI(Resource):
         try:
             task = MappingService.add_task_comment(task_comment)
             return task.to_primitive(), 201
-        except MappingServiceError:
+        except MappingServiceError:  # FLAGGED: UNREACHABLE CODE
             return {"Error": "Task update failed"}, 403
 
     def get(self, project_id, task_id):

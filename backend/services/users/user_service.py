@@ -4,7 +4,7 @@ import datetime
 from sqlalchemy.sql.expression import literal
 from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column
 
-from backend.exceptions import NotFound
+from backend.exceptions import NotFound, Forbidden
 from backend import db
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
 from backend.models.dtos.user_dto import (
@@ -679,7 +679,7 @@ class UserService:
         :param role: The requested role
         :raises UserServiceError
         """
-        try:
+        try:  # FLAGGED CHECK IN DTO
             requested_role = UserRole[role.upper()]
         except KeyError:
             raise UserServiceError(
@@ -691,10 +691,7 @@ class UserService:
         admin_role = UserRole(admin.role)
 
         if admin_role != UserRole.ADMIN and requested_role == UserRole.ADMIN:
-            raise UserServiceError(
-                "NeedAdminRole- You must be an Admin to assign Admin role"
-            )
-
+            raise Forbidden(sub_code="USER_NOT_ADMIN", user_id=admin_user_id)
         user = UserService.get_user_by_username(username)
         user.set_user_role(requested_role)
 

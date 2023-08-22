@@ -1,6 +1,7 @@
 from flask_restful import Resource, current_app
 from schematics.exceptions import DataError
 
+from backend.exceptions import Forbidden
 from backend.models.dtos.campaign_dto import CampaignProjectDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.project_admin_service import ProjectAdminService
@@ -52,10 +53,11 @@ class ProjectsCampaignsAPI(Resource):
         if not ProjectAdminService.is_user_action_permitted_on_project(
             authenticated_user_id, project_id
         ):
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
         try:
             campaign_project_dto = CampaignProjectDTO()
             campaign_project_dto.campaign_id = campaign_id
@@ -145,10 +147,11 @@ class ProjectsCampaignsAPI(Resource):
         if not ProjectAdminService.is_user_action_permitted_on_project(
             authenticated_user_id, project_id
         ):
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
         CampaignService.delete_project_campaign(project_id, campaign_id)
         return {"Success": "Campaigns Deleted"}, 200

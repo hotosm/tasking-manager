@@ -1,7 +1,7 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from backend.exceptions import NotFound
+from backend.exceptions import NotFound, Forbidden
 from backend.models.dtos.grid_dto import SplitTaskDTO
 from backend.models.postgis.utils import InvalidGeoJson
 from backend.services.grid.split_service import SplitService, SplitServiceError
@@ -95,7 +95,7 @@ class TasksActionsMappingLockAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             task = MappingService.lock_task_for_mapping(lock_task_dto)
             return task.to_primitive(), 200
-        except MappingServiceError as e:
+        except MappingServiceError as e:  # FLAGGED FOR STATUS CODE
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except UserLicenseError:
             return {
@@ -181,7 +181,7 @@ class TasksActionsMappingStopAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             task = MappingService.stop_mapping_task(stop_task)
             return task.to_primitive(), 200
-        except MappingServiceError as e:
+        except MappingServiceError as e:  # FLAGGED FOR STATUS CODE
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
@@ -260,11 +260,11 @@ class TasksActionsMappingUnlockAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             task = MappingService.unlock_task_after_mapping(mapped_task)
             return task.to_primitive(), 200
-        except MappingServiceError as e:
+        except MappingServiceError as e:  # FLAGGED FOR STATUS CODE
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound as e:
+        except NotFound as e:  # FLAGGED IF THIS CATCH IS NEEDED
             return e.to_dict()
-        except Exception as e:
+        except Exception as e:  # FLAGGED IF THIS CATCH IS NEEDED
             error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {
@@ -328,7 +328,7 @@ class TasksActionsMappingUndoAPI(Resource):
                 project_id, task_id, token_auth.current_user(), preferred_locale
             )
             return task.to_primitive(), 200
-        except MappingServiceError as e:
+        except MappingServiceError as e:  # FLAGGED FOR STATUS CODE
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
@@ -403,7 +403,7 @@ class TasksActionsValidationLockAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             tasks = ValidatorService.lock_tasks_for_validation(validator_dto)
             return tasks.to_primitive(), 200
-        except ValidatorServiceError as e:
+        except ValidatorServiceError as e:  # FLAGGED FOR STATUS CODE
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except UserLicenseError:
             return {
@@ -481,7 +481,7 @@ class TasksActionsValidationStopAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             tasks = ValidatorService.stop_validating_tasks(validated_dto)
             return tasks.to_primitive(), 200
-        except ValidatorServiceError as e:
+        except ValidatorServiceError as e:  # FLAGGED FOR STATUS CODE
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
@@ -553,7 +553,7 @@ class TasksActionsValidationUnlockAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             tasks = ValidatorService.unlock_tasks_after_validation(validated_dto)
             return tasks.to_primitive(), 200
-        except ValidatorServiceError as e:
+        except ValidatorServiceError as e:  # FLAGGED FOR STATUS CODE
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
@@ -590,17 +590,15 @@ class TasksActionsMapAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                raise ValueError()
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+        authenticated_user_id = token_auth.current_user()
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
         MappingService.map_all_tasks(project_id, authenticated_user_id)
         return {"Success": "All tasks mapped"}, 200
@@ -639,17 +637,15 @@ class TasksActionsValidateAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                raise ValueError()
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+        authenticated_user_id = token_auth.current_user()
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
         ValidatorService.validate_all_tasks(project_id, authenticated_user_id)
         return {"Success": "All tasks validated"}, 200
@@ -688,17 +684,15 @@ class TasksActionsInvalidateAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                raise ValueError()
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+        authenticated_user_id = token_auth.current_user()
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
         ValidatorService.invalidate_all_tasks(project_id, authenticated_user_id)
         return {"Success": "All tasks invalidated"}, 200
@@ -737,17 +731,15 @@ class TasksActionsResetBadImageryAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                raise ValueError()
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+        authenticated_user_id = token_auth.current_user()
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
         MappingService.reset_all_badimagery(project_id, authenticated_user_id)
         return {"Success": "All bad imagery tasks marked ready for mapping"}, 200
@@ -786,18 +778,15 @@ class TasksActionsResetAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            authenticated_user_id = token_auth.current_user()
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                raise ValueError()
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+        authenticated_user_id = token_auth.current_user()
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
         ProjectAdminService.reset_all_tasks(project_id, authenticated_user_id)
         return {"Success": "All tasks reset"}, 200
@@ -868,9 +857,9 @@ class TasksActionsSplitAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             tasks = SplitService.split_task(split_task_dto)
             return tasks.to_primitive(), 200
-        except SplitServiceError as e:
+        except SplitServiceError as e:  # FLAGGED FOR STATUS CODE
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except InvalidGeoJson as e:
+        except InvalidGeoJson as e:  # FLAGGED FOR STATUS CODE
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
@@ -945,7 +934,7 @@ class TasksActionsExtendAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             MappingService.extend_task_lock_time(extend_dto)
             return {"Success": "Successfully extended task expiry"}, 200
-        except MappingServiceError as e:
+        except MappingServiceError as e:  # FLAGGED FOR STATUS CODE
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
@@ -1017,8 +1006,6 @@ class TasksActionsReverUserTaskstAPI(Resource):
                 "Error": "Unable to revert tasks",
                 "SubCode": "InvalidData",
             }, 400
-        try:
-            ValidatorService.revert_user_tasks(revert_dto)
-            return {"Success": "Successfully reverted tasks"}, 200
-        except ValidatorServiceError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+
+        ValidatorService.revert_user_tasks(revert_dto)
+        return {"Success": "Successfully reverted tasks"}, 200

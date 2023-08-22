@@ -5,6 +5,8 @@ from backend.models.dtos.licenses_dto import LicenseDTO
 from backend.services.license_service import LicenseService
 from backend.services.users.authentication_service import token_auth, tm
 
+# FLAGGED FOR PERMISSIONS REVIEW
+
 
 class LicensesRestAPI(Resource):
     @tm.pm_only()

@@ -1,6 +1,7 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
+from backend.exceptions import Forbidden
 from backend.models.dtos.campaign_dto import CampaignDTO, NewCampaignDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
@@ -115,15 +116,11 @@ class CampaignsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                token_auth.current_user()
-            )
-            if len(orgs_dto.organisations) < 1:
-                raise ValueError("User not a Org Manager")
-        except ValueError as e:
-            error_msg = f"CampaignsRestAPI PATCH: {str(e)}"
-            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+            token_auth.current_user()
+        )
+        if len(orgs_dto.organisations) < 1:
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")
 
         try:
             campaign_dto = CampaignDTO(request.get_json())
@@ -179,15 +176,11 @@ class CampaignsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                token_auth.current_user()
-            )
-            if len(orgs_dto.organisations) < 1:
-                raise ValueError("User not a Org Manager")
-        except ValueError as e:
-            error_msg = f"CampaignsRestAPI DELETE: {str(e)}"
-            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+            token_auth.current_user()
+        )
+        if len(orgs_dto.organisations) < 1:
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")
 
         campaign = CampaignService.get_campaign(campaign_id)
         CampaignService.delete_campaign(campaign.id)
@@ -268,15 +261,11 @@ class CampaignsAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                token_auth.current_user()
-            )
-            if len(orgs_dto.organisations) < 1:
-                raise ValueError("User not a Org Manager")
-        except ValueError as e:
-            error_msg = f"CampaignsAllAPI POST: {str(e)}"
-            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+            token_auth.current_user()
+        )
+        if len(orgs_dto.organisations) < 1:
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")
 
         try:
             campaign_dto = NewCampaignDTO(request.get_json())

@@ -23,6 +23,17 @@
     "BAD_REQUEST": "The request was invalid or cannot be otherwise served.",
     "UNAUTHORIZED": "Authentication credentials were missing or incorrect.",
     "FORBIDDEN": "The request is understood, but it has been refused or access is not allowed.",
+    "USER_NOT_ADMIN": "This action is only allowed for system administrators.",
+    "USER_NOT_ORG_MANAGER": "This action is only allowed for organisation managers or system administrators.",
+    "USER_NOT_PROJECT_MANAGER": "This action is only allowed for users with project manage permissions.",
+    "USER_NOT_TEAM_MANAGER": "This action is only allowed for users with team manage permissions.",
+    "INVALID_NEW_PROJECT_OWNER": "New project owner must be project's organisation manager or system admin",
+    "USER_ACTION_NOT_PERMITTED": "This user does not have the required permissions to perform this action.",
+    "DRAFT_PROJECT_NOT_ALLOWED": "This is a draft project and you do not have the required permissions to perform this action.",
+    "PRIVATE_PROJECT_NOT_ALLOWED": "This is a private project and you do not have the required permissions to perform this action.",
+    "USER_BLOCKED": "Your account has been blocked and is currently in read-only mode. Please contact support for further assistance.",
+    "MESSAGE_NOT_FOR_USER": "The requested message doesn't belong to the requesting user thus the action is not permitted.",
+    "COMMENT_NOT_OF_USER": "The requested comment doesn't belong to the requesting user thus the action is not permitted.",
     "CONFLICT": "The request could not be completed due to a conflict with the current state of the resource.",
     "INTERNAL_SERVER_ERROR": "An unexpected error occurred while processing the request. Please contact the system administrator."
 }

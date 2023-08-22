@@ -1,7 +1,7 @@
 from flask import current_app
 from sqlalchemy import text
 
-from backend.exceptions import NotFound
+from backend.exceptions import NotFound, Forbidden
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.dtos.validator_dto import (
@@ -67,7 +67,7 @@ class ValidatorService:
                 ]:
                     raise ValidatorServiceError(
                         f"NotReadyForValidation- Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
-                    )
+                    )  # FLAGGED STATUS CODE: 409
                 user_can_validate = ValidatorService._user_can_validate_task(
                     validation_dto.user_id, task.mapped_by
                 )
@@ -75,7 +75,7 @@ class ValidatorService:
                     raise ValidatorServiceError(
                         "CannotValidateMappedTask-"
                         + "Tasks cannot be validated by the same user who marked task as mapped or badimagery"
-                    )
+                    )  # FLAGGED STATUS CODE: 409
 
             tasks_to_lock.append(task)
 
@@ -89,17 +89,19 @@ class ValidatorService:
             elif error_reason == ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
                 raise ValidatorServiceError(
                     "UserNotAllowed- Validation not allowed because: User not on allowed list"
-                )
+                )  # FLAGGED STATUS CODE: 403
             elif error_reason == ValidatingNotAllowed.PROJECT_NOT_PUBLISHED:
-                raise ValidatorServiceError(
-                    "ProjectNotPublished- Validation not allowed because: Project not published"
+                raise Forbidden(
+                    sub_code="DRAFT_PROJECT_NOT_ALLOWED",
+                    project_id=validation_dto.project_id,
+                    user_id=validation_dto.user_id,
                 )
             elif error_reason == ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
                 user_tasks = Task.get_locked_tasks_for_user(validation_dto.user_id)
                 if set(user_tasks.locked_tasks) != set(validation_dto.task_ids):
                     raise ValidatorServiceError(
                         "UserAlreadyHasTaskLocked- User already has a task locked"
-                    )
+                    )  # FLAGGED FOR STATUS CODE: 409
             else:
                 raise ValidatorServiceError(
                     f"ValidtionNotAllowed- Validation not allowed because: {error_reason}"
@@ -269,12 +271,12 @@ class ValidatorService:
             if current_state != TaskStatus.LOCKED_FOR_VALIDATION:
                 raise ValidatorServiceError(
                     f"NotLockedForValidation- Task {unlock_task.task_id} is not LOCKED_FOR_VALIDATION"
-                )
+                )  # FLAGGED STATUS CODE: 409
 
             if task.locked_by != user_id:
                 raise ValidatorServiceError(
                     "TaskNotOwned- Attempting to unlock a task owned by another user"
-                )
+                )  # FLAGGED STATUS CODE: 409
 
             if hasattr(unlock_task, "status"):
                 # we know what status we ate going to be setting to on unlock
@@ -435,6 +437,8 @@ class ValidatorService:
                     revert_dto.preferred_locale,
                 )
         else:
-            raise ValidatorServiceError(
-                "UserActionNotPermitted- User not permitted to revert tasks"
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=revert_dto.project_id,
+                user_id=revert_dto.action_by,
             )

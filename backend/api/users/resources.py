@@ -372,8 +372,6 @@ class UsersRecommendedProjectsAPI(Resource):
                 description: Recommended projects found
             401:
                 description: Unauthorized - Invalid credentials
-            403:
-                description: Forbidden
             404:
                 description: No recommended projects found
             500:

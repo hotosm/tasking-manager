@@ -1,6 +1,7 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
+from backend.exceptions import Forbidden
 from backend.models.dtos.team_dto import (
     NewTeamDTO,
     UpdateTeamDTO,
@@ -86,10 +87,11 @@ class TeamsRestAPI(Resource):
             ) and not OrganisationService.can_user_manage_organisation(
                 team.organisation_id, authenticated_user_id
             ):
-                return {
-                    "Error": "User is not a admin or a manager for the team",
-                    "SubCode": "UserNotTeamManager",
-                }, 403
+                raise Forbidden(
+                    sub_code="USER_NOT_TEAM_MANAGER",
+                    team_id=team_id,
+                    user_id=authenticated_user_id,
+                )
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return {"Error": str(e), "SubCode": "InvalidData"}, 400
@@ -139,8 +141,6 @@ class TeamsRestAPI(Resource):
         team_dto = TeamService.get_team_as_dto(team_id, user_id, omit_members)
         return team_dto.to_primitive(), 200
 
-    # TODO: Add delete API then do front end services and ui work
-
     @token_auth.login_required
     def delete(self, team_id):
         """
@@ -175,11 +175,13 @@ class TeamsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
-            return {
-                "Error": "User is not a manager for the team",
-                "SubCode": "UserNotTeamManager",
-            }, 401
+        authenticated_user_id = token_auth.current_user()
+        if not TeamService.is_user_team_manager(team_id, authenticated_user_id):
+            raise Forbidden(
+                sub_code="USER_NOT_TEAM_MANAGER",
+                team_id=team_id,
+                user_id=authenticated_user_id,
+            )
 
         TeamService.delete_team(team_id)
         return {"Success": "Team deleted"}, 200
@@ -365,7 +367,6 @@ class TeamsAllAPI(Resource):
                 team_id = TeamService.create_team(team_dto)
                 return {"teamId": team_id}, 201
             else:
-                error_msg = "User not permitted to create team for the Organisation"
-                return {"Error": error_msg, "SubCode": "CreateTeamNotPermitted"}, 403
+                raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")
         except TeamServiceError as e:
             return str(e), 400

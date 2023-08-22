@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from flask import current_app
 from geoalchemy2 import shape
 
-from backend.exceptions import NotFound
+from backend.exceptions import NotFound, Forbidden
 from backend.models.dtos.mapping_dto import (
     ExtendLockTimeDTO,
     TaskDTO,
@@ -74,7 +74,7 @@ class MappingService:
             if last_action.user_id == int(logged_in_user_id) or is_user_permitted:
                 return True
 
-        return False
+        return False  # FLAGGED: Split out for permission and state
 
     @staticmethod
     def lock_task_for_mapping(lock_task_dto: LockTaskDTO) -> TaskDTO:
@@ -88,7 +88,7 @@ class MappingService:
 
         if task.locked_by != lock_task_dto.user_id:
             if not task.is_mappable():
-                raise MappingServiceError(
+                raise MappingServiceError(  # FLAGGED FOR STATUS CODE: 423
                     "InvalidTaskState- Task in invalid state for mapping"
                 )
 
@@ -97,17 +97,21 @@ class MappingService:
             )
             if not user_can_map:
                 if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
-                    raise UserLicenseError("User must accept license to map this task")
+                    raise UserLicenseError(
+                        "User must accept license to map this task"
+                    )  # FLAGGED FOR STATUS CODE: 409
                 elif error_reason == MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
-                    raise MappingServiceError(
-                        "UserNotAllowed- User not on allowed list"
+                    raise Forbidden(
+                        sub_code="USER_BLOCKED", user_id=lock_task_dto.user_id
                     )
                 elif error_reason == MappingNotAllowed.PROJECT_NOT_PUBLISHED:
-                    raise MappingServiceError(
-                        "ProjectNotPublished- Project is not published"
+                    raise Forbidden(
+                        sub_code="DRAFT_PROJECT_NOT_ALLOWED",
+                        project_id=lock_task_dto.project_id,
+                        user_id=lock_task_dto.user_id,
                     )
                 elif error_reason == MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
-                    raise MappingServiceError(
+                    raise MappingServiceError(  # FLAGGED FOR STATUS CODE: 409
                         "UserAlreadyHasTaskLocked- User already has task locked"
                     )
                 else:
@@ -134,7 +138,7 @@ class MappingService:
         ]:
             raise MappingServiceError(
                 "InvalidUnlockState- Can only set status to MAPPED, BADIMAGERY, READY after mapping"
-            )
+            )  # FLAGGED FOR STATUS CODE: 409
 
         # Update stats around the change of state
         last_state = TaskHistory.get_last_status(
@@ -180,7 +184,7 @@ class MappingService:
         :raises: MappingServiceError
         """
         task = MappingService.get_task(task_id, project_id)
-        if task is None:
+        if task is None:  # FLAGGED: CHECK IF THIS CONDITION IS EVER REACHED
             raise NotFound(
                 sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
             )
@@ -188,11 +192,11 @@ class MappingService:
         if current_state != TaskStatus.LOCKED_FOR_MAPPING:
             raise MappingServiceError(
                 "LockBeforeUnlocking- Status must be LOCKED_FOR_MAPPING to unlock"
-            )
+            )  # FLAGGED FOR STATUS CODE: 409
         if task.locked_by != user_id:
             raise MappingServiceError(
                 "TaskNotOwned- Attempting to unlock a task owned by another user"
-            )
+            )  # FLAGGED FOR STATUS CODE: 423
         return task
 
     @staticmethod
@@ -444,11 +448,11 @@ class MappingService:
         ]:
             raise MappingServiceError(
                 f"TaskStatusNotLocked- Task {task_id} status is not LOCKED_FOR_MAPPING or LOCKED_FOR_VALIDATION."
-            )
+            )  # FLAGGED FOR STATUS CODE: 409
         if task.locked_by != user_id:
             raise MappingServiceError(
                 "LockedByAnotherUser- Task is locked by another user."
-            )
+            )  # FLAGGED FOR STATUS CODE: 423
 
     @staticmethod
     def extend_task_lock_time(extend_dto: ExtendLockTimeDTO):
