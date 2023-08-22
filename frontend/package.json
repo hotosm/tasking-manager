@@ -15,8 +15,6 @@
     "@mapbox/mapbox-gl-language": "^0.10.1",
     "@placemarkio/geo-viewport": "^1.0.1",
     "@sentry/react": "^7.60.1",
-    "@sentry/tracing": "^7.60.1",
-    "@sentry/browser": "^7.60.1",
     "@tmcw/togeojson": "^4.7.0",
     "@turf/area": "^6.5.0",
     "@turf/bbox": "^6.5.0",
