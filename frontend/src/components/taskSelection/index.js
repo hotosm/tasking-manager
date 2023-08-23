@@ -408,6 +408,7 @@ export function TaskSelection({ project, type, loading }: Object) {
               tasks={tasks}
               taskAction={taskAction}
               selectedTasks={curatedSelectedTasks}
+              setSelectedTasks={setSelectedTasks}
             />
           </Suspense>
         </ReactPlaceholder>

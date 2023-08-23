@@ -28,6 +28,10 @@ export default defineMessages({
     id: 'project.tasks.unsaved_map_changes.actions.close_modal',
     defaultMessage: 'Close',
   },
+  deselectAndValidate: {
+    id: 'project.tasks.validation.cannot_validate_mapped_tasks.deselect_and_validate',
+    defaultMessage: 'Deselect and validate',
+  },
   cantValidateMappedTask: {
     id: 'project.tasks.select.cantValidateMappedTask',
     defaultMessage: 'This task was mapped by you',
