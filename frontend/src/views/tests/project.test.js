@@ -98,23 +98,7 @@ describe('UserProjectsPage Component', () => {
   });
 });
 
-// jest.spyOn(document, 'getElementById').mockImplementation((id) => {
-//   const mockElements = {
-//     'explore-nav': { offsetHeight: 100 },
-//     'top-header': { offsetHeight: 50 },
-//   };
-//   return mockElements[id];
-// });
-
 test('More Filters should close the more filters container when clicked outside the container', async () => {
-  //   const exploreNav = document.createElement('div');
-  //   exploreNav.id = 'explore-nav';
-  //   document.body.appendChild(exploreNav);
-
-  //   const topHeader = document.createElement('div');
-  //   topHeader.id = 'top-header';
-  //   document.body.appendChild(topHeader);
-
   jest.spyOn(document, 'getElementById').mockReturnValue({ offsetHeight: 100 });
 
   const { user, router } = createComponentWithMemoryRouter(
