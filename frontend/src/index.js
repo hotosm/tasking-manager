@@ -4,7 +4,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import WebFont from 'webfontloader';
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
 
 import App from './App';
 import { store, persistor } from './store';
@@ -17,7 +16,7 @@ if (SENTRY_FRONTEND_DSN) {
     dsn: SENTRY_FRONTEND_DSN,
     environment: ENVIRONMENT,
     integrations: [
-      new BrowserTracing(),
+      new Sentry.BrowserTracing(),
       new Sentry.Replay({
         // Additional SDK configuration goes in here, for example:
         maskAllText: true,
