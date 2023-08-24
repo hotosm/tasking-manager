@@ -107,15 +107,18 @@ export const UserProjectsPage = ({ management }) => {
     }
   }, [navigate, userToken]);
 
-  if (
-    !fullProjectsQuery.createdByMe &&
-    !fullProjectsQuery.managedByMe &&
-    !fullProjectsQuery.mappedByMe &&
-    !fullProjectsQuery.favoritedByMe &&
-    !fullProjectsQuery.status
-  ) {
-    setProjectQuery({ managedByMe: true });
-  }
+  useEffect(() => {
+    if (
+      !fullProjectsQuery.createdByMe &&
+      !fullProjectsQuery.managedByMe &&
+      !fullProjectsQuery.mappedByMe &&
+      !fullProjectsQuery.favoritedByMe &&
+      !fullProjectsQuery.status
+    ) {
+      setProjectQuery({ managedByMe: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="pull-center">

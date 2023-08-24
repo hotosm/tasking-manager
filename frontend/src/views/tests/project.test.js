@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 
 import { store } from '../../store';
 import {
@@ -21,7 +21,6 @@ import {
 import { setupFaultyHandlers } from '../../network/tests/server';
 
 import { projects } from '../../network/tests/mockData/projects';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 test('CreateProject renders ProjectCreate', async () => {
   renderWithRouter(
@@ -202,21 +201,30 @@ describe('Projects Page', () => {
 });
 
 describe('Project Detail Page', () => {
+  window.scrollTo = jest.fn();
   jest.mock('react-chartjs-2', () => ({
     Doughnut: () => null,
     Bar: () => null,
     Line: () => null,
   }));
 
+  const setup = () => {
+    createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <ProjectDetailPage />
+      </ReduxIntlProviders>,
+      {
+        route: '/projects/:id',
+        entryRoute: '/projects/123',
+      },
+    );
+  };
+
   it('should render component details', async () => {
     act(() => {
       store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
     });
-    renderWithRouter(
-      <ReduxIntlProviders>
-        <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-      </ReduxIntlProviders>,
-    );
+    setup();
     await waitFor(() => {
       expect(screen.getByText(/sample project/i)).toBeInTheDocument();
       expect(screen.getByText(/hello world/i)).toBeInTheDocument();
@@ -225,20 +233,7 @@ describe('Project Detail Page', () => {
 
   it('should display private project error message', async () => {
     setupFaultyHandlers();
-    render(
-      <MemoryRouter initialEntries={['/projects/123']}>
-        <Routes>
-          <Route
-            path="projects/:id"
-            element={
-              <ReduxIntlProviders>
-                <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-              </ReduxIntlProviders>
-            }
-          />
-        </Routes>
-      </MemoryRouter>,
-    );
+    setup();
 
     await waitFor(() =>
       expect(
@@ -249,20 +244,7 @@ describe('Project Detail Page', () => {
 
   it('should display generic error message', async () => {
     setupFaultyHandlers();
-    render(
-      <MemoryRouter initialEntries={['/projects/123']}>
-        <Routes>
-          <Route
-            path="projects/:id"
-            element={
-              <ReduxIntlProviders>
-                <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-              </ReduxIntlProviders>
-            }
-          />
-        </Routes>
-      </MemoryRouter>,
-    );
+    setup();
 
     await waitFor(() =>
       expect(
