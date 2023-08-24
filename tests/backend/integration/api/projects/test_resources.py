@@ -89,7 +89,7 @@ class TestDeleteProjectsRestAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "UserPermissionError")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_PROJECT_MANAGER")
 
     def test_project_with_mapped_tasks_cannot_be_deleted(self):
         "Test project with mapped tasks cannot be deleted"
@@ -187,7 +187,7 @@ class TestCreateProjectsRestAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "NotPermittedToCreate")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_ORG_MANAGER")
 
     def test_create_project_returns_400_if_invalid_json(self):
         "Test returns 400 if invalid json"
@@ -369,7 +369,9 @@ class TestGetProjectsRestAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "ProjectNotFetched")
+        self.assertEqual(
+            response.json["error"]["sub_code"], "DRAFT_PROJECT_NOT_ALLOWED"
+        )
 
         # Authenticated user with that is a admin
         self.test_user.role = UserRole.ADMIN.value
@@ -404,7 +406,9 @@ class TestGetProjectsRestAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "PrivateProject")
+        self.assertEqual(
+            response.json["error"]["sub_code"], "PRIVATE_PROJECT_NOT_ALLOWED"
+        )
 
         # Authenticated user with that is a admin
         # Arrange
@@ -539,7 +543,7 @@ class TestPatchProjectRestAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "UserPermissionError")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_PROJECT_MANAGER")
 
     def test_patch_project_returns_400_if_invalid_body(self):
         "Test patch project returns 400 if invalid body."

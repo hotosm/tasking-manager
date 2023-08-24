@@ -93,12 +93,9 @@ class TestTeamsRestAPI(BaseTestCase):
             headers={"Authorization": self.test_user_token},
             json={"name": NEW_TEAM_NAME},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "User is not a admin or a manager for the team"
-        )
-        self.assertEqual(response_body["SubCode"], "UserNotTeamManager")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_TEAM_MANAGER")
 
     def test_update_team_with_invalid_data_fails(self):
         """
@@ -140,10 +137,9 @@ class TestTeamsRestAPI(BaseTestCase):
         response = self.client.delete(
             self.endpoint_url, headers={"Authorization": self.test_user_token}
         )
-        response_body = response.get_json()
-        self.assertEqual(response.status_code, 401)
-        self.assertEqual(response_body["Error"], "User is not a manager for the team")
-        self.assertEqual(response_body["SubCode"], "UserNotTeamManager")
+        response_body = response.get_json()["error"]
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response_body["sub_code"], "USER_NOT_TEAM_MANAGER")
 
     def test_delete_non_existent_team_by_id_fails(self):
         """
@@ -209,13 +205,9 @@ class TestTeamsAllPI(BaseTestCase):
             },
             headers={"Authorization": self.non_admin_token},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"],
-            "User not permitted to create team for the Organisation",
-        )
-        self.assertEqual(response_body["SubCode"], "CreateTeamNotPermitted")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_ORG_MANAGER")
 
     def test_create_new_team_existent_org_passes(self):
         """

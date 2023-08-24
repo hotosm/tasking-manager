@@ -58,7 +58,7 @@ class TasksActionsMapAllAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "UserPermissionError")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_PROJECT_MANAGER")
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_map_all_tasks_is_allowed_for_user_with_pm_role(self, mock_pm_role):
@@ -116,7 +116,7 @@ class TasksActionsValidateAllAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "UserPermissionError")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_PROJECT_MANAGER")
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_validate_all_tasks_is_allowed_for_user_with_pm_role(self, mock_pm_role):
@@ -173,7 +173,7 @@ class TasksActionsInvalidateAllAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "UserPermissionError")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_PROJECT_MANAGER")
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_invalidate_all_tasks_is_allowed_for_user_with_pm_role(self, mock_pm_role):
@@ -233,7 +233,7 @@ class TasksActionsResetBadImageryAllAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "UserPermissionError")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_PROJECT_MANAGER")
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_reset_all_badimagery_tasks_is_allowed_for_user_with_pm_role(
@@ -287,7 +287,7 @@ class TasksActionsResetAllAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "UserPermissionError")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_PROJECT_MANAGER")
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_reset_all_tasks_is_allowed_for_user_with_pm_role(self, mock_pm_role):
@@ -381,7 +381,9 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "ProjectNotPublished")
+        self.assertEqual(
+            response.json["error"]["sub_code"], "DRAFT_PROJECT_NOT_ALLOWED"
+        )
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     def test_mapping_lock_returns_403_if_task_in_invalid_state_for_mapping(
@@ -823,7 +825,9 @@ class TestTasksActionsValidationLockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "ProjectNotPublished")
+        self.assertEqual(
+            response.json["error"]["sub_code"], "DRAFT_PROJECT_NOT_ALLOWED"
+        )
 
     def test_validation_lock_returns_409_if_user_hasnt_accepted_license(self):
         """Test returns 409 if user hasn't accepted license."""
@@ -1660,7 +1664,7 @@ class TestTasksActionsReverUserTaskstAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "UserActionNotPermitted")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_PROJECT_MANAGER")
 
     def set_task_status(self, task, status, user_id):
         """Set task status."""

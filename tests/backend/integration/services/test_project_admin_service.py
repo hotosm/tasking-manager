@@ -2,7 +2,8 @@ from unittest.mock import patch, MagicMock
 import json
 from flask import current_app
 
-from backend.models.postgis.project import Project, User, NotFound, ProjectPriority
+from backend.exceptions import NotFound, Forbidden
+from backend.models.postgis.project import Project, User, ProjectPriority
 from backend.models.postgis.statuses import UserRole, ProjectDifficulty
 from backend.services.messaging.message_service import MessageService
 from backend.services.team_service import TeamService
@@ -48,7 +49,7 @@ class TestProjectAdminService(BaseTestCase):
         mock_user_get.return_value = return_canned_user()
 
         # Act/Assert
-        with self.assertRaises(ProjectAdminServiceError):
+        with self.assertRaises(Forbidden):
             ProjectAdminService.create_draft_project(draft_project_dto)
 
     @patch.object(UserService, "is_user_an_admin")
@@ -384,7 +385,7 @@ class TestProjectAdminService(BaseTestCase):
         stub_user.role = UserRole.MAPPER.value
         mock_user.return_value = stub_user
         # Act/Assert
-        with self.assertRaises(ValueError):
+        with self.assertRaises(Forbidden):
             ProjectAdminService.update_project(dto, mock_user.id)
 
     def test_updating_a_project_with_valid_project_info(self):
@@ -438,7 +439,7 @@ class TestProjectAdminService(BaseTestCase):
         current_app.logger.debug(
             "Testing error is raised if initiating user is not permitted to transfer project"
         )
-        with self.assertRaises(ProjectAdminServiceError):
+        with self.assertRaises(Forbidden):
             ProjectAdminService.transfer_project_to(
                 test_project.id, test_user.id, test_manager.username
             )
@@ -447,7 +448,7 @@ class TestProjectAdminService(BaseTestCase):
         current_app.logger.debug(
             "Testing error is raised if transferred to user who is not a manager of the organisation"
         )
-        with self.assertRaises(ValueError):
+        with self.assertRaises(Forbidden):
             ProjectAdminService.transfer_project_to(
                 test_project.id, test_manager.id, test_user.username
             )

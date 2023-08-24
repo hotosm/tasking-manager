@@ -85,12 +85,9 @@ class TestCampaignsRestAPI(BaseTestCase):
             },
             headers={"Authorization": self.non_admin_token},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "CampaignsRestAPI PATCH: User not a Org Manager"
-        )
-        self.assertEqual(response_body["SubCode"], "UserNotPermitted")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_ORG_MANAGER")
 
     def test_update_existent_campaign_by_unauthenticated_user_fails(self):
         """
@@ -165,12 +162,9 @@ class TestCampaignsRestAPI(BaseTestCase):
             f"{self.endpoint_url}{self.test_campaign.id}/",
             headers={"Authorization": self.non_admin_token},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "CampaignsRestAPI DELETE: User not a Org Manager"
-        )
-        self.assertEqual(response_body["SubCode"], "UserNotPermitted")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_ORG_MANAGER")
 
     def test_delete_campaign_by_unauthenticated_user_fails(self):
         """
@@ -261,12 +255,9 @@ class TestCampaignsAllAPI(BaseTestCase):
             },
             headers={"Authorization": non_admin_token},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "CampaignsAllAPI POST: User not a Org Manager"
-        )
-        self.assertEqual(response_body["SubCode"], "UserNotPermitted")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_ORG_MANAGER")
 
     def test_create_new_campaign_by_unauthenticated_user_fails(self):
         """

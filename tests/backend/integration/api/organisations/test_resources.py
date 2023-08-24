@@ -208,12 +208,9 @@ class TestOrganisationsRestAPI(BaseTestCase):
                 "managers": [TEST_USERNAME],
             },
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "Only admin users can create organisations."
-        )
-        self.assertEqual(response_body["SubCode"], "OnlyAdminAccess")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_ADMIN")
 
     # get organisation
     def test_get_org_when_omitManagerList_is_false_passes(self):
@@ -271,10 +268,9 @@ class TestOrganisationsRestAPI(BaseTestCase):
             f"/api/v2/organisations/{self.test_org.id}/",
             headers={"Authorization": non_admin_token},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response_body["Error"], "User is not an admin for the org")
-        self.assertEqual(response_body["SubCode"], "UserNotOrgAdmin")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_ORG_MANAGER")
 
     def test_delete_org_with_projects_fails(self):
         """
@@ -327,10 +323,9 @@ class TestOrganisationsRestAPI(BaseTestCase):
                 "managers": [TEST_USERNAME],
             },
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response_body["Error"], "User is not an admin for the org")
-        self.assertEqual(response_body["SubCode"], "UserNotOrgAdmin")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_ORG_MANAGER")
 
     def test_update_org_details_with_invalid_data_fails(self):
         """

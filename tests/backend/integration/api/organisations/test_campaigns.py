@@ -96,12 +96,9 @@ class TestOrganisationsCampaignsAPI(BaseTestCase):
             },
             headers={"Authorization": self.test_user_session_token},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "User is not a manager of the organisation"
-        )
-        self.assertEqual(response_body["SubCode"], "UserNotPermitted")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_ORG_MANAGER")
 
     # get
     def test_get_organisation_campaigns_passes(self):
@@ -142,12 +139,9 @@ class TestOrganisationsCampaignsAPI(BaseTestCase):
             f"/api/v2/organisations/{self.test_org.id}/campaigns/{self.test_campaign.id}/",
             headers={"Authorization": self.test_user_session_token},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "User is not a manager of the organisation"
-        )
-        self.assertEqual(response_body["SubCode"], "UserNotPermitted")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_ORG_MANAGER")
 
     def test_delete_non_existent_organisation_campaign_fails(self):
         """Tests that the endpoint returns 404 when the org admin deletes a non existent campaign"""
