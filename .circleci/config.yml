@@ -244,7 +244,7 @@ jobs:
             cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
             export TM_ENVIRONMENT=<< parameters.stack_name >>
             yarn
-            CI=true GENERATE_SOURCEMAP=false yarn build
+            CI=true GENERATE_SOURCEMAP=true yarn build
             aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-react-app --delete --cache-control max-age=31536000
             aws s3 cp s3://tasking-manager-<< parameters.stack_name >>-react-app s3://tasking-manager-<< parameters.stack_name >>-react-app --recursive --exclude "*" --include "*.html" --metadata-directive REPLACE --cache-control no-cache --content-type text/html
             export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
