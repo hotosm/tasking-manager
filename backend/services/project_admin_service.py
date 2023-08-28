@@ -155,22 +155,11 @@ class ProjectAdminService:
         """Deletes project if it has no completed tasks"""
 
         project = ProjectAdminService._get_project_by_id(project_id)
-        is_admin = UserService.is_user_an_admin(authenticated_user_id)
-        user_orgs = OrganisationService.get_organisations_managed_by_user_as_dto(
-            authenticated_user_id
-        )
-        is_org_manager = len(user_orgs.organisations) > 0
-
-        if is_admin or is_org_manager:
-            if project.can_be_deleted():
-                project.delete()
-            else:
-                raise ProjectAdminServiceError(
-                    "HasMappedTasks- Project has mapped tasks, cannot be deleted"
-                )
+        if project.can_be_deleted():
+            project.delete()
         else:
-            raise Forbidden(
-                sub_code="USER_NOT_ORG_MANAGER", user_id=authenticated_user_id
+            raise ProjectAdminServiceError(
+                "HasMappedTasks- Project has mapped tasks, cannot be deleted"
             )
 
     @staticmethod
