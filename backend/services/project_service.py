@@ -331,7 +331,7 @@ class ProjectService:
             project_id, allowed_roles, user_id
         )
 
-        # mapping_permission = 1(level),2(teams),3(teamsAndLevel)
+        # mapping_permission: 1(level),2(teams),3(teamsAndLevel)
         if mapping_permission == MappingPermission.TEAMS.value:
             if not is_team_member:
                 return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
@@ -350,7 +350,7 @@ class ProjectService:
     def is_user_permitted_to_map(project_id: int, user_id: int):
         """Check if the user is allowed to map the on the project in scope"""
         if UserService.is_user_blocked(user_id):
-            return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+            return False, MappingNotAllowed.USER_IS_BLOCKED
 
         project = ProjectService.get_project_by_id(project_id)
         if project.license_id:
@@ -435,7 +435,7 @@ class ProjectService:
     def is_user_permitted_to_validate(project_id, user_id):
         """Check if the user is allowed to validate on the project in scope"""
         if UserService.is_user_blocked(user_id):
-            return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+            return False, ValidatingNotAllowed.USER_IS_BLOCKED
 
         project = ProjectService.get_project_by_id(project_id)
         if project.license_id:

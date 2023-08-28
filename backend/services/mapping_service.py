@@ -109,9 +109,14 @@ class MappingService:
                     raise UserLicenseError(
                         "User must accept license to map this task"
                     )  # FLAGGED FOR STATUS CODE: 409
-                elif error_reason == MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
+                elif error_reason == MappingNotAllowed.USER_IS_BLOCKED:
                     raise Forbidden(
                         sub_code="USER_BLOCKED", user_id=lock_task_dto.user_id
+                    )
+                elif error_reason == MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
+                    raise Forbidden(
+                        sub_code="USER_ACTION_NOT_PERMITTED",
+                        user_id=lock_task_dto.user_id,
                     )
                 elif error_reason == MappingNotAllowed.PROJECT_NOT_PUBLISHED:
                     raise Forbidden(

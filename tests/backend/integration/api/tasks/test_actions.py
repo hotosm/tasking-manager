@@ -871,6 +871,32 @@ class TestTasksActionsValidationLockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json["error"]["sub_code"], "USER_ACTION_NOT_PERMITTED"
+        )
+
+    @patch.object(ProjectService, "is_user_permitted_to_validate")
+    def test_validation_lock_returns_403_if_user_is_blocked(
+        self, mock_validate_permitted
+    ):
+        """Test returns 403 if user not on allowed list."""
+        # Arrange
+        mock_validate_permitted.return_value = (
+            False,
+            ValidatingNotAllowed.USER_IS_BLOCKED,
+        )
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.MAPPED.value
+        task.mapped_by = self.test_author.id
+        task.update()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            json={"taskIds": [1]},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json["error"]["sub_code"], "USER_BLOCKED")
 
     def test_validation_lock_returns_409_if_user_has_already_locked_other_task(self):
