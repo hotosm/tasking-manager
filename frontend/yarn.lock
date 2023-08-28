@@ -2408,7 +2408,7 @@
     "@sentry/utils" "7.64.0"
     tslib "^2.4.1 || ^1.9.3"
 
-"@sentry/browser@7.64.0", "@sentry/browser@^7.60.1":
+"@sentry/browser@7.64.0":
   version "7.64.0"
   resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-7.64.0.tgz#76db08a5d32ffe7c5aa907f258e6c845ce7f10d7"
   integrity sha512-lB2IWUkZavEDclxfLBp554dY10ZNIEvlDZUWWathW+Ws2wRb6PNLtuPUNu12R7Q7z0xpkOLrM1kRNN0OdldgKA==
@@ -2459,13 +2459,6 @@
     "@sentry/core" "7.64.0"
     "@sentry/types" "7.64.0"
     "@sentry/utils" "7.64.0"
-
-"@sentry/tracing@^7.60.1":
-  version "7.64.0"
-  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-7.64.0.tgz#994a779d6c8b810b98784b33eb6defd014303913"
-  integrity sha512-Php0XnnJolfxkFdgLlgwgRz3bgHmu/7gDRQaGQHJeDgCCjrmNHI+sHi8zmkWCWSO0Z1mi111n2ZUr9B9YLPBTg==
-  dependencies:
-    "@sentry-internal/tracing" "7.64.0"
 
 "@sentry/types@7.64.0":
   version "7.64.0"
@@ -9863,10 +9856,10 @@ markdown-table@^3.0.0:
   resolved "https://registry.yarnpkg.com/markdown-table/-/markdown-table-3.0.3.tgz#e6331d30e493127e031dd385488b5bd326e4a6bd"
   integrity sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==
 
-marked@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-4.3.0.tgz#796362821b019f734054582038b116481b456cf3"
-  integrity sha512-PRsaiG84bK+AMvxziE/lCFss8juXjNaWzVbN5tXAm4XjeaS9NAHhop+PjQxz2A9h8Q4M/xGmzP8vqNwy6JeK0A==
+marked@^7.0.5:
+  version "7.0.5"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-7.0.5.tgz#8a9e4e3afb93b58fe9ee7608e67cc154eb15d508"
+  integrity sha512-lwNAFTfXgqpt/XvK17a/8wY9/q6fcSPZT1aP6QW0u74VwaJF/Z9KbRcX23sWE4tODM+AolJNcUtErTkgOeFP/Q==
 
 marked@~4.0.12, marked@~4.0.15:
   version "4.0.19"
