@@ -101,7 +101,7 @@ class TestDeleteProjectsRestAPI(BaseTestCase):
             self.url, headers={"Authorization": self.author_session_token}
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "HasMappedTasks")
 
     def test_org_manager_can_delete_project(self):

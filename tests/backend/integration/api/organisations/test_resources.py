@@ -74,13 +74,13 @@ class TestOrganisationAllAPI(BaseTestCase):
             response_body[0]["managers"][0]["username"], self.test_author.username
         )
 
-    def test_get_all_org_raises_error_if_filter_by_manager_id__on_unauthenticated_request(
+    def test_get_all_org_raises_error_if_filter_by_manager_id_on_unauthenticated_request(
         self,
     ):
         "Test 403 is returned if filter by manager id on unauthenticated request"
 
         response = self.client.get(f"{self.endpoint_url}?manager_user_id=2")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_get_all_org_includes_stats_if_omit_stats_set_false(self):
         """Test stats are not returned is omitOrgStats is set to False"""
@@ -283,7 +283,7 @@ class TestOrganisationsRestAPI(BaseTestCase):
             headers={"Authorization": self.session_token},
         )
         response_body = response.get_json()
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response_body["Error"], "Organisation has some projects")
         self.assertEqual(response_body["SubCode"], "OrgHasProjects")
 

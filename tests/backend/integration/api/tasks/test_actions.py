@@ -386,10 +386,10 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
         )
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
-    def test_mapping_lock_returns_403_if_task_in_invalid_state_for_mapping(
+    def test_mapping_lock_returns_409_if_task_in_invalid_state_for_mapping(
         self, mock_pm_role
     ):
-        """Test returns 403 if task is in invalid state for mapping. i.e. not in READY or INVALIDATED state."""
+        """Test returns 409 if task is in invalid state for mapping. i.e. not in READY or INVALIDATED state."""
         # Arrange
         mock_pm_role.return_value = True
         # Act
@@ -398,7 +398,7 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
         )
         # Assert
         # As Task 1 is in MAPPED state, it should not be allowed to be locked for mapping.
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "InvalidTaskState")
 
         # Arrange
@@ -411,7 +411,7 @@ class TestTasksActionsMappingLockAPI(BaseTestCase):
         )
         # Assert
         # As Task 1 is in VALIDATED state, it should not be allowed to be locked for mapping.
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "InvalidTaskState")
 
     @patch.object(UserService, "has_user_accepted_license")
@@ -513,8 +513,8 @@ class TestTasksActionsMappingUnlockAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
-    def test_mapping_unlock_returns_403_if_task_not_locked_for_mapping(self):
-        """Test returns 403 if task is not locked for mapping."""
+    def test_mapping_unlock_returns_409_if_task_not_locked_for_mapping(self):
+        """Test returns 409 if task is not locked for mapping."""
         # Act
         response = self.client.post(
             self.url,
@@ -522,11 +522,11 @@ class TestTasksActionsMappingUnlockAPI(BaseTestCase):
             json={"status": "MAPPED"},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "LockBeforeUnlocking")
 
-    def test_mapping_unlock_returns_403_if_task_locked_by_other_user(self):
-        """Test returns 403 if task is locked by other user."""
+    def test_mapping_unlock_returns_409_if_task_locked_by_other_user(self):
+        """Test returns 409 if task is locked by other user."""
         # Arrange
         task = Task.get(1, self.test_project.id)
         task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
@@ -539,11 +539,11 @@ class TestTasksActionsMappingUnlockAPI(BaseTestCase):
             json={"status": "MAPPED"},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "TaskNotOwned")
 
-    def test_returns_403_if_invalid_new_state_passed(self):
-        """Test returns 403 if invalid new state passed as new task state should be READY, MAPPED or BADIMAGERY."""
+    def test_returns_409_if_invalid_new_state_passed(self):
+        """Test returns 409 if invalid new state passed as new task state should be READY, MAPPED or BADIMAGERY."""
         # Arrange
         task = Task.get(1, self.test_project.id)
         task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
@@ -556,7 +556,7 @@ class TestTasksActionsMappingUnlockAPI(BaseTestCase):
             json={"status": "INVALIDATED"},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "InvalidUnlockState")
 
     def test_mapping_unlock_returns_200_on_success(self):
@@ -664,11 +664,11 @@ class TestTasksActionsMappingStopAPI(BaseTestCase):
             headers={"Authorization": self.user_session_token},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "LockBeforeUnlocking")
 
-    def test_mapping_stop_returns_403_if_task_locked_by_other_user(self):
-        """Test returns 403 if task locked by other user."""
+    def test_mapping_stop_returns_409_if_task_locked_by_other_user(self):
+        """Test returns 409 if task locked by other user."""
         # Arrange
         task = Task.get(1, self.test_project.id)
         task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
@@ -680,7 +680,7 @@ class TestTasksActionsMappingStopAPI(BaseTestCase):
             headers={"Authorization": self.user_session_token},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "TaskNotOwned")
 
     def test_mapping_stop_returns_200_on_success(self):
@@ -780,8 +780,8 @@ class TestTasksActionsValidationLockAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
-    def test_validation_lock_returns_403_if_task_not_ready_for_validation(self):
-        """Test returns 403 if task not ready for validation."""
+    def test_validation_lock_returns_409_if_task_not_ready_for_validation(self):
+        """Test returns 409 if task not ready for validation."""
         # Arrange
         task = Task.get(1, self.test_project.id)
         task.task_status = TaskStatus.READY.value  # not ready for validation
@@ -793,13 +793,13 @@ class TestTasksActionsValidationLockAPI(BaseTestCase):
             json={"taskIds": [1]},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "NotReadyForValidation")
 
-    def test_validation_lock_returns_403_if_mapped_by_same_user_and_user_not_admin(
+    def test_validation_lock_returns_409_if_mapped_by_same_user_and_user_not_admin(
         self,
     ):
-        """Test returns 403 if mapped by same user."""
+        """Test returns 409 if mapped by same user."""
         # Arrange
         task = Task.get(1, self.test_project.id)
         task.task_status = TaskStatus.MAPPED.value
@@ -812,7 +812,7 @@ class TestTasksActionsValidationLockAPI(BaseTestCase):
             json={"taskIds": [1]},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "CannotValidateMappedTask")
 
     def test_validation_lock_returns_403_if_user_not_permitted_to_validate(self):
@@ -871,10 +871,10 @@ class TestTasksActionsValidationLockAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "UserNotAllowed")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_BLOCKED")
 
-    def test_validation_lock_returns_403_if_user_has_already_locked_other_task(self):
-        """Test returns 403 if user has already locked other task."""
+    def test_validation_lock_returns_409_if_user_has_already_locked_other_task(self):
+        """Test returns 409 if user has already locked other task."""
         # Arrange
         self.test_project.status = ProjectStatus.PUBLISHED.value
         self.test_project.save()
@@ -889,7 +889,7 @@ class TestTasksActionsValidationLockAPI(BaseTestCase):
             json={"taskIds": [1]},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "UserAlreadyHasTaskLocked")
 
     @patch.object(ProjectService, "is_user_permitted_to_validate")
@@ -980,8 +980,8 @@ class TestTasksActionsValidationUnlockAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
-    def test_validation_unlock_returns_403_if_task_not_locked_for_validation(self):
-        """Test returns 403 if task not locked for validation."""
+    def test_validation_unlock_returns_409_if_task_not_locked_for_validation(self):
+        """Test returns 409 if task not locked for validation."""
         # Act
         response = self.client.post(
             self.url,
@@ -989,7 +989,7 @@ class TestTasksActionsValidationUnlockAPI(BaseTestCase):
             json={"validatedTasks": [{"taskId": 1, "status": "VALIDATED"}]},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "NotLockedForValidation")
 
     @staticmethod
@@ -1002,8 +1002,8 @@ class TestTasksActionsValidationUnlockAPI(BaseTestCase):
             task.mapped_by = mapped_by
         task.update()
 
-    def test_validation_unlock_returns_403_if_task_locked_by_other_user(self):
-        """Test returns 403 if task locked by other user."""
+    def test_validation_unlock_returns_409_if_task_locked_by_other_user(self):
+        """Test returns 409 if task locked by other user."""
         # Arrange
         TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
             1, self.test_project.id, self.test_author.id
@@ -1015,7 +1015,7 @@ class TestTasksActionsValidationUnlockAPI(BaseTestCase):
             json={"validatedTasks": [{"taskId": 1, "status": "VALIDATED"}]},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "TaskNotOwned")
 
     def test_validation_unlock_returns_400_if_invalid_state_passsed(self):
@@ -1164,8 +1164,8 @@ class TestTasksActionsValidationStopAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
-    def test_validation_stop_returns_403_if_task_not_locked_for_validation(self):
-        """Test returns 403 if task not locked for validation."""
+    def test_validation_stop_returns_409_if_task_not_locked_for_validation(self):
+        """Test returns 409 if task not locked for validation."""
         # Arrange
         TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
             1, self.test_project.id, self.test_user.id
@@ -1178,11 +1178,11 @@ class TestTasksActionsValidationStopAPI(BaseTestCase):
         )
         # Assert
         # Since task 2 is not locked for validation, we should get a 403 even though task 1 is locked for validation
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "NotLockedForValidation")
 
-    def test_validation_stop_returns_403_if_task_locked_by_other_user(self):
-        """Test returns 403 if task locked by other user."""
+    def test_validation_stop_returns_409_if_task_locked_by_other_user(self):
+        """Test returns 409 if task locked by other user."""
         # Arrange
         TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
             1, self.test_project.id, self.test_author.id, self.test_author.id
@@ -1194,7 +1194,7 @@ class TestTasksActionsValidationStopAPI(BaseTestCase):
             json={"resetTasks": [{"taskId": 1}]},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "TaskNotOwned")
 
     def test_validation_stop_returns_200_if_task_locked_by_user(self):
@@ -1287,8 +1287,8 @@ class TestTasksActionsSplitAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
-    def test_returns_403_if_task_too_small_to_split(self):
-        """Test returns 403 if task too small to split."""
+    def test_returns_409_if_task_too_small_to_split(self):
+        """Test returns 409 if task too small to split."""
         # Arrange
         task = Task.get(1, self.test_project.id)
         task.zoom = 18
@@ -1299,21 +1299,21 @@ class TestTasksActionsSplitAPI(BaseTestCase):
             headers={"Authorization": self.author_session_token},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "SmallToSplit")
 
-    def test_returns_403_if_task_not_locked_for_mapping(self):
-        """Test returns 403 if task not locked for mapping."""
+    def test_returns_409_if_task_not_locked_for_mapping(self):
+        """Test returns 409 if task not locked for mapping."""
         # Since task should be locked for mapping to split, we should get a 403
         response = self.client.post(
             self.url,
             headers={"Authorization": self.author_session_token},
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "LockToSplit")
 
-    def test_returns_403_if_task_locked_by_other_user(self):
-        """Test returns 403 if task locked by other user."""
+    def test_returns_409_if_task_locked_by_other_user(self):
+        """Test returns 409 if task locked by other user."""
         # Arrange
         test_user = return_canned_user("test user", 1111111)
         test_user.create()
@@ -1325,7 +1325,7 @@ class TestTasksActionsSplitAPI(BaseTestCase):
             headers={"Authorization": self.author_session_token},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "SplitOtherUserTask")
 
     def test_returns_200_if_task_locked_by_user(self):
@@ -1549,8 +1549,8 @@ class TestTasksActionsExtendAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
-    def test_returns_403_if_task_not_locked(self):
-        """Test returns 403 if task not locked."""
+    def test_returns_409_if_task_not_locked(self):
+        """Test returns 409 if task not locked."""
         # Task should be locked for mapping or validation to extend
         # Act
         response = self.client.post(
@@ -1559,11 +1559,11 @@ class TestTasksActionsExtendAPI(BaseTestCase):
             json={"taskIds": [1]},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "TaskStatusNotLocked")
 
-    def test_returns_403_if_task_is_not_locked_by_requesting_user(self):
-        """Test returns 403 if task is not locked by requesting user."""
+    def test_returns_409_if_task_is_not_locked_by_requesting_user(self):
+        """Test returns 409 if task is not locked by requesting user."""
         # Task should be locked for mapping or validation to extend
         # Arrange
         task = Task.get(1, self.test_project.id)
@@ -1575,7 +1575,7 @@ class TestTasksActionsExtendAPI(BaseTestCase):
             json={"taskIds": [1]},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["SubCode"], "LockedByAnotherUser")
 
     def test_returns_200_if_task_locked_by_requesting_user(self):
