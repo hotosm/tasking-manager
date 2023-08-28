@@ -229,11 +229,8 @@ class CommentsTasksRestAPI(Resource):
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {"Error": "Unable to add comment", "SubCode": "InvalidData"}, 400
 
-        try:
-            task = MappingService.add_task_comment(task_comment)
-            return task.to_primitive(), 201
-        except MappingServiceError:  # FLAGGED: UNREACHABLE CODE
-            return {"Error": "Task update failed"}, 403
+        task = MappingService.add_task_comment(task_comment)
+        return task.to_primitive(), 201
 
     def get(self, project_id, task_id):
         """

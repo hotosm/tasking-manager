@@ -18,10 +18,7 @@ from backend.services.project_search_service import (
     ProjectSearchServiceError,
     BBoxTooBigError,
 )
-from backend.services.project_service import (
-    ProjectService,
-    ProjectServiceError,
-)
+from backend.services.project_service import ProjectService
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.authentication_service import token_auth
@@ -397,7 +394,7 @@ class ProjectsRestAPI(Resource):
             return {
                 "Error": str(e).split("-")[1],
                 "SubCode": str(e).split("-")[0],
-            }, 403  # FLAGGED FOR STATUS CODE
+            }, 400
 
     @token_auth.login_required
     def delete(self, project_id):
@@ -445,8 +442,8 @@ class ProjectsRestAPI(Resource):
         try:
             ProjectAdminService.delete_project(project_id, authenticated_user_id)
             return {"Success": "Project deleted"}, 200
-        except ProjectAdminServiceError as e:  # FLAGGED FOR STATUS CODE
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except ProjectAdminServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
 
 
 class ProjectSearchBase(Resource):
@@ -1076,11 +1073,8 @@ class ProjectsQueriesPriorityAreasAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            priority_areas = ProjectService.get_project_priority_areas(project_id)
-            return priority_areas, 200
-        except ProjectServiceError:  # FLAGGED: NEVER REACHING CODE
-            return {"Error": "Unable to fetch project"}, 403
+        priority_areas = ProjectService.get_project_priority_areas(project_id)
+        return priority_areas, 200
 
 
 class ProjectsQueriesFeaturedAPI(Resource):

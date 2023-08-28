@@ -87,9 +87,10 @@ class ValidatorService:
             if error_reason == ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError("User must accept license to map this task")
             elif error_reason == ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
-                raise ValidatorServiceError(
-                    "UserNotAllowed- Validation not allowed because: User not on allowed list"
-                )  # FLAGGED STATUS CODE: 403
+                raise Forbidden(
+                    sub_code="USER_BLOCKED",
+                    user_id=validation_dto.user_id,
+                )
             elif error_reason == ValidatingNotAllowed.PROJECT_NOT_PUBLISHED:
                 raise Forbidden(
                     sub_code="DRAFT_PROJECT_NOT_ALLOWED",

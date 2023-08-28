@@ -164,4 +164,4 @@ class SystemAuthenticationEmailAPI(Resource):
             return {
                 "Error": str(e).split("-")[1],
                 "SubCode": str(e).split("-")[0],
-            }, 403  # FLAGGED FOR STATUS CODE
+            }, 400

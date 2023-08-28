@@ -338,12 +338,10 @@ class TeamsActionsMessageMembersAPI(Resource):
                 "Error": "Request payload did not match validation",
                 "SubCode": "InvalidData",
             }, 400
-        try:
-            threading.Thread(
-                target=TeamService.send_message_to_all_team_members,
-                args=(team_id, team.name, message_dto),
-            ).start()
 
-            return {"Success": "Message sent successfully"}, 200
-        except ValueError as e:  # FLAGGED: CHECK IS THIS EVER RAISED
-            return {"Error": str(e)}, 403
+        threading.Thread(
+            target=TeamService.send_message_to_all_team_members,
+            args=(team_id, team.name, message_dto),
+        ).start()
+
+        return {"Success": "Message sent successfully"}, 200

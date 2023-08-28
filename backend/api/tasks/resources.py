@@ -95,28 +95,25 @@ class TasksQueriesJsonAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            tasks = request.args.get("tasks") if request.args.get("tasks") else None
-            as_file = (
-                strtobool(request.args.get("as_file"))
-                if request.args.get("as_file")
-                else True
+        tasks = request.args.get("tasks") if request.args.get("tasks") else None
+        as_file = (
+            strtobool(request.args.get("as_file"))
+            if request.args.get("as_file")
+            else True
+        )
+
+        tasks_json = ProjectService.get_project_tasks(int(project_id), tasks)
+
+        if as_file:
+            tasks_json = str(tasks_json).encode("utf-8")
+            return send_file(
+                io.BytesIO(tasks_json),
+                mimetype="application/json",
+                as_attachment=True,
+                download_name=f"{str(project_id)}-tasks.geojson",
             )
 
-            tasks_json = ProjectService.get_project_tasks(int(project_id), tasks)
-
-            if as_file:
-                tasks_json = str(tasks_json).encode("utf-8")
-                return send_file(
-                    io.BytesIO(tasks_json),
-                    mimetype="application/json",
-                    as_attachment=True,
-                    download_name=f"{str(project_id)}-tasks.geojson",
-                )
-
-            return tasks_json, 200
-        except ProjectServiceError as e:  # FLAGGED: CHECK IF THIS EXCEPTION IS RAISED
-            return {"Error": str(e)}, 403
+        return tasks_json, 200
 
     @token_auth.login_required
     def delete(self, project_id):

@@ -70,7 +70,7 @@ class MappingService:
             # User requesting task made the last change, so they are allowed to undo it.
             is_user_permitted, _ = ProjectService.is_user_permitted_to_validate(
                 task.project_id, logged_in_user_id
-            )
+            )  # FLAGGED: Make use of error_reason
             if last_action.user_id == int(logged_in_user_id) or is_user_permitted:
                 return True
 
@@ -138,7 +138,7 @@ class MappingService:
         ]:
             raise MappingServiceError(
                 "InvalidUnlockState- Can only set status to MAPPED, BADIMAGERY, READY after mapping"
-            )  # FLAGGED FOR STATUS CODE: 409
+            )  # FLAGGED FOR STATUS CODE: 400
 
         # Update stats around the change of state
         last_state = TaskHistory.get_last_status(
@@ -196,7 +196,7 @@ class MappingService:
         if task.locked_by != user_id:
             raise MappingServiceError(
                 "TaskNotOwned- Attempting to unlock a task owned by another user"
-            )  # FLAGGED FOR STATUS CODE: 423
+            )  # FLAGGED FOR STATUS CODE: 409
         return task
 
     @staticmethod

@@ -143,7 +143,7 @@ class OrganisationService:
         else:
             raise OrganisationServiceError(
                 "Organisation has projects, cannot be deleted"
-            )  # FLAGGED STATUS CODE: 409
+            )
 
     @staticmethod
     def get_organisations(manager_user_id: int):
@@ -277,7 +277,7 @@ class OrganisationService:
         """Validates that the organisation name doesn't exist"""
         if org.name != name and Organisation.get_organisation_by_name(name) is not None:
             raise OrganisationServiceError(
-                f"NameExists- Organisation name already exists: {name}"  # FLAGGED STATUS CODE : 409
+                f"NameExists- Organisation name already exists: {name}"
             )
 
     @staticmethod
@@ -286,7 +286,7 @@ class OrganisationService:
         if organisation_dto.managers and len(organisation_dto.managers) == 0:
             raise OrganisationServiceError(
                 "MustHaveAdmin- Must have at least one admin"
-            )  # FLAGGED: STATUS CODE 409
+            )
 
         if organisation_dto.managers and len(organisation_dto.managers) > 0:
             managers = []

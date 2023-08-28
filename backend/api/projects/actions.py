@@ -199,7 +199,7 @@ class ProjectsActionsFeatureAPI(Resource):
             return {
                 "Error": str(e).split("-")[1],
                 "SubCode": str(e).split("-")[0],
-            }, 403  # FLAGGED FOR STATUS CODE: 409?
+            }, 409
 
 
 class ProjectsActionsUnFeatureAPI(Resource):
@@ -254,7 +254,7 @@ class ProjectsActionsUnFeatureAPI(Resource):
             return {
                 "Error": str(e).split("-")[1],
                 "SubCode": str(e).split("-")[0],
-            }, 403  # FLAGGED FOR STATUS CODE: 409
+            }, 403
 
 
 class ProjectsActionsSetInterestsAPI(Resource):

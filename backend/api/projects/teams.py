@@ -94,10 +94,12 @@ class ProjectsTeamsAPI(Resource):
         """
         authenticated_user = token_auth.current_user()
         if not TeamService.is_user_team_manager(team_id, authenticated_user):
-            return {
-                "Error": "User is not an admin or a manager for the team",
-                "SubCode": "UserPermissionError",
-            }, 401  # FLAGGED FOR STATUS CODE
+            raise Forbidden(
+                sub_code="USER_NOT_TEAM_MANAGER",
+                project_id=project_id,
+                team_id=team_id,
+                user_id=authenticated_user,
+            )
 
         try:
             role = request.get_json(force=True)["role"]

@@ -95,8 +95,8 @@ class TasksActionsMappingLockAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             task = MappingService.lock_task_for_mapping(lock_task_dto)
             return task.to_primitive(), 200
-        except MappingServiceError as e:  # FLAGGED FOR STATUS CODE
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except MappingServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
         except UserLicenseError:
             return {
                 "Error": "User not accepted license terms",
@@ -181,8 +181,8 @@ class TasksActionsMappingStopAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             task = MappingService.stop_mapping_task(stop_task)
             return task.to_primitive(), 200
-        except MappingServiceError as e:  # FLAGGED FOR STATUS CODE
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except MappingServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
 
 
 class TasksActionsMappingUnlockAPI(Resource):
@@ -260,8 +260,8 @@ class TasksActionsMappingUnlockAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             task = MappingService.unlock_task_after_mapping(mapped_task)
             return task.to_primitive(), 200
-        except MappingServiceError as e:  # FLAGGED FOR STATUS CODE
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except MappingServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
         except NotFound as e:  # FLAGGED IF THIS CATCH IS NEEDED
             return e.to_dict()
         except Exception as e:  # FLAGGED IF THIS CATCH IS NEEDED
@@ -403,8 +403,8 @@ class TasksActionsValidationLockAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             tasks = ValidatorService.lock_tasks_for_validation(validator_dto)
             return tasks.to_primitive(), 200
-        except ValidatorServiceError as e:  # FLAGGED FOR STATUS CODE
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except ValidatorServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
         except UserLicenseError:
             return {
                 "Error": "User not accepted license terms",
@@ -481,8 +481,8 @@ class TasksActionsValidationStopAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             tasks = ValidatorService.stop_validating_tasks(validated_dto)
             return tasks.to_primitive(), 200
-        except ValidatorServiceError as e:  # FLAGGED FOR STATUS CODE
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except ValidatorServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
 
 
 class TasksActionsValidationUnlockAPI(Resource):
@@ -553,8 +553,8 @@ class TasksActionsValidationUnlockAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             tasks = ValidatorService.unlock_tasks_after_validation(validated_dto)
             return tasks.to_primitive(), 200
-        except ValidatorServiceError as e:  # FLAGGED FOR STATUS CODE
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except ValidatorServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
 
 
 class TasksActionsMapAllAPI(Resource):
@@ -857,10 +857,10 @@ class TasksActionsSplitAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             tasks = SplitService.split_task(split_task_dto)
             return tasks.to_primitive(), 200
-        except SplitServiceError as e:  # FLAGGED FOR STATUS CODE
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except InvalidGeoJson as e:  # FLAGGED FOR STATUS CODE
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except SplitServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
+        except InvalidGeoJson as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
 
 
 class TasksActionsExtendAPI(Resource):
@@ -934,8 +934,8 @@ class TasksActionsExtendAPI(Resource):
             ProjectService.exists(project_id)  # Check if project exists
             MappingService.extend_task_lock_time(extend_dto)
             return {"Success": "Successfully extended task expiry"}, 200
-        except MappingServiceError as e:  # FLAGGED FOR STATUS CODE
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except MappingServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
 
 
 class TasksActionsReverUserTaskstAPI(Resource):
