@@ -1388,10 +1388,10 @@ class TestTasksActionsMappingUndoAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json["error"]["sub_code"], TASK_NOT_FOUND_SUB_CODE)
 
-    def test_returns_403_if_task_in_invalid_state_for_undo(self):
-        """Test returns 403 if task in invalid state for undo."""
+    def test_returns_409_if_task_in_invalid_state_for_undo(self):
+        """Test returns 409 if task in invalid state for undo."""
         # Since task cannot be in READY, LOCKED_FOR_VALIDATION or LOCKED_FOR_MAPPING state for undo,
-        # we should get a 403
+        # we should get a 409
         # Arrange
         task = Task.get(1, self.test_project.id)
         task.task_status = TaskStatus.READY.value
@@ -1402,8 +1402,8 @@ class TestTasksActionsMappingUndoAPI(BaseTestCase):
             headers={"Authorization": self.user_session_token},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "UndoPermissionError")
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json["SubCode"], "UndoNotAllowed")
 
     @staticmethod
     def validate_task(task_id, project_id, user_id):
@@ -1428,7 +1428,7 @@ class TestTasksActionsMappingUndoAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "UndoPermissionError")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_VALIDATOR")
 
     @staticmethod
     def assert_undo_response(response, project_id, last_status, username, new_status):

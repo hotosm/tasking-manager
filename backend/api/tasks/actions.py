@@ -328,8 +328,8 @@ class TasksActionsMappingUndoAPI(Resource):
                 project_id, task_id, token_auth.current_user(), preferred_locale
             )
             return task.to_primitive(), 200
-        except MappingServiceError as e:  # FLAGGED FOR STATUS CODE
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except MappingServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
 
 
 class TasksActionsValidationLockAPI(Resource):

@@ -59,22 +59,31 @@ class MappingService:
     @staticmethod
     def _is_task_undoable(logged_in_user_id: int, task: Task) -> bool:
         """Determines if the current task status can be undone by the logged in user"""
-        # Test to see if user can undo status on this task
-        if logged_in_user_id and TaskStatus(task.task_status) not in [
+        # Check if task status is in a state that can be undone
+        if TaskStatus(task.task_status) in [
             TaskStatus.LOCKED_FOR_MAPPING,
             TaskStatus.LOCKED_FOR_VALIDATION,
             TaskStatus.READY,
         ]:
-            last_action = TaskHistory.get_last_action(task.project_id, task.id)
+            raise MappingServiceError(
+                "UndoNotAllowed- Task is in a state that cannot be undone"
+            )
+        # Test to see if user can undo status on this task
+        last_action = TaskHistory.get_last_action(task.project_id, task.id)
 
-            # User requesting task made the last change, so they are allowed to undo it.
-            is_user_permitted, _ = ProjectService.is_user_permitted_to_validate(
-                task.project_id, logged_in_user_id
-            )  # FLAGGED: Make use of error_reason
-            if last_action.user_id == int(logged_in_user_id) or is_user_permitted:
-                return True
-
-        return False  # FLAGGED: Split out for permission and state
+        # User requesting task made the last change, so they are allowed to undo it.
+        is_user_permitted, _ = ProjectService.is_user_permitted_to_validate(
+            task.project_id, logged_in_user_id
+        )
+        if last_action.user_id == int(logged_in_user_id) or is_user_permitted:
+            return True
+        else:
+            raise Forbidden(
+                sub_code="USER_NOT_VALIDATOR",
+                user_id=logged_in_user_id,
+                project_id=task.project_id,
+                task_id=task.id,
+            )
 
     @staticmethod
     def lock_task_for_mapping(lock_task_dto: LockTaskDTO) -> TaskDTO:

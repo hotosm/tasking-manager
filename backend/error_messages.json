@@ -27,6 +27,7 @@
     "USER_NOT_ADMIN": "This action is only allowed for system administrators.",
     "USER_NOT_ORG_MANAGER": "This action is only allowed for organisation managers or system administrators.",
     "USER_NOT_PROJECT_MANAGER": "This action is only allowed for users with project manage permissions.",
+    "USER_NOT_VALIDATOR": "This action is only allowed for users with validation permissions in the project.",
     "USER_NOT_TEAM_MANAGER": "This action is only allowed for users with team manage permissions.",
     "INVALID_NEW_PROJECT_OWNER": "New project owner must be project's organisation manager or system admin",
     "USER_ACTION_NOT_PERMITTED": "This user does not have the required permissions to perform this action.",
