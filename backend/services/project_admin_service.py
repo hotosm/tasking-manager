@@ -114,7 +114,7 @@ class ProjectAdminService:
         return project.as_dto_for_admin(project_id)
 
     @staticmethod
-    def update_project(project_dto: ProjectDTO, authenticated_user_id: int):
+    def update_project(project_dto: ProjectDTO):
         project_id = project_dto.project_id
 
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:
@@ -125,18 +125,8 @@ class ProjectAdminService:
         if project_dto.license_id:
             ProjectAdminService._validate_imagery_licence(project_dto.license_id)
 
-        # To be handled before reaching this function
-        if ProjectAdminService.is_user_action_permitted_on_project(  # FLAGGED: ALREADY CHECKED IN VIEW FUNCTION
-            authenticated_user_id, project_id
-        ):
-            project = ProjectAdminService._get_project_by_id(project_id)
-            project.update(project_dto)
-        else:
-            raise Forbidden(
-                sub_code="USER_NOT_PROJECT_MANAGER",
-                user_id=authenticated_user_id,
-                project_id=project_id,
-            )
+        project = ProjectAdminService._get_project_by_id(project_id)
+        project.update(project_dto)
 
         return project
 

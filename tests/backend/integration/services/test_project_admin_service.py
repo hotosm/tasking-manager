@@ -287,7 +287,7 @@ class TestProjectAdminService(BaseTestCase):
         mock_user.return_value = stub_admin_user
         # Act / Assert
         with self.assertRaises(ProjectAdminServiceError):
-            ProjectAdminService.update_project(dto, mock_user.id)
+            ProjectAdminService.update_project(dto)
 
     @patch.object(User, "get_by_id")
     @patch.object(Project, "update")
@@ -310,7 +310,7 @@ class TestProjectAdminService(BaseTestCase):
 
         # Act
         try:
-            ProjectAdminService.update_project(dto, mock_user.id)
+            ProjectAdminService.update_project(dto)
         # Assert
         except ProjectAdminServiceError:
             self.fail("update_project raised an exception when setting it as private")
@@ -349,44 +349,7 @@ class TestProjectAdminService(BaseTestCase):
         mock_user.return_value = stub_admin_user
         # Act / Assert
         with self.assertRaises(ProjectAdminServiceError):
-            ProjectAdminService.update_project(dto, mock_user.id)
-
-    @patch.object(User, "get_by_id")
-    @patch.object(Project, "update")
-    @patch.object(Project, "get")
-    def test_updating_a_project_with_different_roles_raises_error(
-        self, mock_project, mock_project2, mock_user
-    ):
-        # Arrange
-        stub_project = Project()
-        stub_project.status = ProjectStatus.DRAFT.value
-
-        mock_project.return_value = stub_project
-
-        locales = []
-        info = ProjectInfoDTO()
-        info.locale = "en"
-        info.name = "Test"
-        locales.append(info)
-
-        dto = ProjectDTO()
-        dto.project_id = 1
-        dto.default_locale = "en"
-        dto.project_status = ProjectStatus.DRAFT.name
-        dto.project_priority = ProjectPriority.LOW.name
-        dto.difficulty = ProjectDifficulty.EASY.name
-        dto.mapping_types = ["ROADS"]
-        dto.mapping_editors = ["ID"]
-        dto.validation_editors = ["ID"]
-        dto.project_info_locales = locales
-
-        stub_user = User()
-        stub_user.username = "mapper"
-        stub_user.role = UserRole.MAPPER.value
-        mock_user.return_value = stub_user
-        # Act/Assert
-        with self.assertRaises(Forbidden):
-            ProjectAdminService.update_project(dto, mock_user.id)
+            ProjectAdminService.update_project(dto)
 
     def test_updating_a_project_with_valid_project_info(self):
         locales = []
@@ -398,7 +361,7 @@ class TestProjectAdminService(BaseTestCase):
         info.instructions = "Test instructions"
         locales.append(info)
 
-        test_project, test_user = create_canned_project()
+        test_project, _ = create_canned_project()
 
         dto = ProjectDTO()
         dto.project_id = test_project.id
@@ -411,7 +374,7 @@ class TestProjectAdminService(BaseTestCase):
         dto.validation_editors = ["ID"]
         dto.project_info_locales = locales
         # Act
-        updated_project = ProjectAdminService.update_project(dto, test_user.id)
+        updated_project = ProjectAdminService.update_project(dto)
         # Assert
         self.assertEqual(
             updated_project.difficulty, ProjectDifficulty[dto.difficulty.upper()].value

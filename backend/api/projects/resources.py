@@ -386,7 +386,7 @@ class ProjectsRestAPI(Resource):
             return {"Error": "Unable to update project", "SubCode": "InvalidData"}, 400
 
         try:
-            ProjectAdminService.update_project(project_dto, authenticated_user_id)
+            ProjectAdminService.update_project(project_dto)
             return {"Status": "Updated"}, 200
         except InvalidGeoJson as e:
             return {"Invalid GeoJson": str(e)}, 400
