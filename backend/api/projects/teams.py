@@ -2,7 +2,7 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
 from backend.exceptions import Forbidden
-from backend.services.team_service import TeamService, TeamServiceError
+from backend.services.team_service import TeamService
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import token_auth
@@ -180,16 +180,13 @@ class ProjectsTeamsAPI(Resource):
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
-        try:
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user, project_id
-            ):
-                raise Forbidden(sub_code="USER_NOT_PROJECT_MANAGER")
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            token_auth.current_user, project_id
+        ):
+            raise Forbidden(sub_code="USER_NOT_PROJECT_MANAGER")
 
-            TeamService.change_team_role(team_id, project_id, role)
-            return {"Status": "Team role updated successfully."}, 200
-        except TeamServiceError as e:
-            return str(e), 402  # FLAGGED FOR STATUS CODE/UNREACHABLE
+        TeamService.change_team_role(team_id, project_id, role)
+        return {"Status": "Team role updated successfully."}, 200
 
     @token_auth.login_required
     def delete(self, team_id, project_id):

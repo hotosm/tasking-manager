@@ -1,7 +1,7 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from backend.exceptions import NotFound, Forbidden
+from backend.exceptions import Forbidden
 from backend.models.dtos.grid_dto import SplitTaskDTO
 from backend.models.postgis.utils import InvalidGeoJson
 from backend.services.grid.split_service import SplitService, SplitServiceError
@@ -262,15 +262,6 @@ class TasksActionsMappingUnlockAPI(Resource):
             return task.to_primitive(), 200
         except MappingServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
-        except NotFound as e:  # FLAGGED IF THIS CATCH IS NEEDED
-            return e.to_dict()
-        except Exception as e:  # FLAGGED IF THIS CATCH IS NEEDED
-            error_msg = f"Task Lock API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Task unlock failed",
-                "SubCode": "InternalServerError",
-            }, 500
         finally:
             # Refresh mapper level after mapping
             UserService.check_and_update_mapper_level(authenticated_user_id)

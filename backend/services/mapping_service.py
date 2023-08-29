@@ -198,10 +198,6 @@ class MappingService:
         :raises: MappingServiceError
         """
         task = MappingService.get_task(task_id, project_id)
-        if task is None:  # FLAGGED: CHECK IF THIS CONDITION IS EVER REACHED
-            raise NotFound(
-                sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
-            )
         current_state = TaskStatus(task.task_status)
         if current_state != TaskStatus.LOCKED_FOR_MAPPING:
             raise MappingServiceError(
