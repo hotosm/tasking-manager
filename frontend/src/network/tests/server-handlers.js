@@ -372,7 +372,7 @@ const faultyHandlers = [
     return res.once(
       ctx.status(403),
       ctx.json({
-        SubCode: `PrivateProject`,
+        error:{sub_code: `PRIVATE_PROJECT_NOT_ALLOWED`}
       }),
     );
   }),
