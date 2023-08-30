@@ -14,6 +14,7 @@
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mapbox/mapbox-gl-language": "^0.10.1",
     "@placemarkio/geo-viewport": "^1.0.1",
+    "@rapideditor/rapid": "^2.1.1",
     "@sentry/react": "^7.60.1",
     "@tmcw/togeojson": "^4.7.0",
     "@tanstack/react-query": "^4.29.7",
@@ -27,7 +28,6 @@
     "@turf/transform-scale": "^6.5.0",
     "@turf/truncate": "^6.5.0",
     "@uiw/react-md-editor": "^3.22.0",
-    "RapiD": "facebookincubator/rapid#rapid-v2.0.3",
     "axios": "^1.4.0",
     "chart.js": "^3.7.1",
     "chartjs-adapter-date-fns": "^3.0.0",
@@ -81,8 +81,8 @@
   },
   "scripts": {
     "build-locales": "combine-messages -i './src/**/messages.js' -o './src/locales/en.json'",
-    "copy-static": "bash -c \"mkdir -p public/static/id; mkdir -p public/static/rapid; if ! (test -a public/static/id/index.js); then cp -R node_modules/@hotosm/id/dist/* public/static/id; fi; if ! (test -a public/static/rapid/index.js); then if ! (test -a node_modules/RapiD/dist/RapiD.css) then mv node_modules/RapiD/dist/iD.css node_modules/RapiD/dist/RapiD.css; fi; cp -R node_modules/RapiD/dist/* public/static/rapid; fi\"",
-    "update-static": "bash -c \"mkdir -p public/static/id; mkdir -p public/static/rapid; cp -R node_modules/@hotosm/id/dist/* public/static/id; if ! (test -a node_modules/RapiD/dist/RapiD.css) then mv node_modules/RapiD/dist/iD.css node_modules/RapiD/dist/RapiD.css; fi; cp -R node_modules/RapiD/dist/* public/static/rapid;\"",
+    "copy-static": "bash -c \"mkdir -p public/static/id; mkdir -p public/static/rapid; if ! (test -a public/static/id/index.js); then cp -R node_modules/@hotosm/id/dist/* public/static/id; fi; if ! (test -a public/static/rapid/rapid.js); then cp -R node_modules/@rapideditor/rapid/dist/* public/static/rapid; fi\"",
+    "update-static": "bash -c \"mkdir -p public/static/id; mkdir -p public/static/rapid; cp -R node_modules/@hotosm/id/dist/* public/static/id; cp -R node_modules/@rapideditor/rapid/dist/* public/static/rapid;\"",
     "patch-id": "bash -c \"cp patch/imagery.min.json public/static/id/data\"",
     "patch-rapid": "bash -c \"cp patch/rapid-imagery.min.json public/static/rapid/data/imagery.min.json\"",
     "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
@@ -112,6 +112,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@sentry/cli": "^2.20.5",
     "@tanstack/eslint-plugin-query": "^4.29.8",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.5",
@@ -123,8 +124,7 @@
     "prettier": "^2.8.8",
     "react-select-event": "^5.5.1",
     "react-test-renderer": "^17.0.2",
-    "source-map-explorer": "^2.5.3",
-    "@sentry/cli": "^2.20.5"
+    "source-map-explorer": "^2.5.3"
   },
   "jest": {
     "coverageReporters": [
