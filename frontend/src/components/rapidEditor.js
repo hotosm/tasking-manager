@@ -439,15 +439,14 @@ export default function RapidEditor({
 
   useEffect(() => {
     if (rapidContext && session) {
-      rapidContext.apiConnections = [
-        {
-          url: OSM_SERVER_URL,
-          client_id: OSM_CLIENT_ID,
-          client_secret: OSM_CLIENT_SECRET,
-          redirect_uri: OSM_REDIRECT_URI,
-          access_token: session.osm_oauth_token,
-        },
-      ];
+      rapidContext.preauth = {
+        url: OSM_SERVER_URL,
+        client_id: OSM_CLIENT_ID,
+        client_secret: OSM_CLIENT_SECRET,
+        redirect_uri: OSM_REDIRECT_URI,
+        access_token: session.osm_oauth_token,
+      };
+      rapidContext.apiConnections = [rapidContext.preauth];
     }
   }, [rapidContext, session, session?.osm_oauth_token]);
 
