@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 
-// We import from a CDN
-import { version as rapidVersion, name as rapidName } from '@rapideditor/rapid/package.json'
-
-import '@rapideditor/rapid/dist/rapid.css';
-
 import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
+
+// We import from a CDN using a SEMVER minor version range
+import { version as rapidVersion, name as rapidName } from '@rapideditor/rapid/package.json';
+
+const baseCdnUrl = `https://cdn.jsdelivr.net/npm/${rapidName}@~${rapidVersion}/dist/`;
+// We currently copy rapid files to the public/static/rapid directory. This should probably remain,
+// since it can be useful for debugging rapid issues in the TM.
+//const baseCdnUrl = '/static/rapid/';
 
 /**
  * The HOT TM system for Rapid. This should (eventually) extend AbstractSystem from Rapid
@@ -15,7 +18,7 @@ import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } fr
  */
 class HotTaskingManagerSystem {
   constructor(context) {
-    this.context = context
+    this.context = context;
     this.id = 'HotTaskingManagerSystem';
     this.dependencies = new Set();
     this.dependencies.add('storage');
@@ -54,7 +57,7 @@ class HotTaskingManagerSystem {
    * @param {string} value The comment
    */
   set comment(value) {
-    this.context.defaultChangesetComment = value
+    this.context.defaultChangesetComment = value;
   }
 
   set presets(presets) {
@@ -88,7 +91,7 @@ class HotTaskingManagerSystem {
    * Rapid treats URLs with 'project', 'task', and 'gpx' in them as tasking manager boundaries.
    */
   _taskBoundaryInit(value) {
-    this._updateHash(hashParams => {
+    this._updateHash((hashParams) => {
       hashParams.set('data', value);
     });
   }
@@ -105,7 +108,7 @@ class HotTaskingManagerSystem {
    * @private
    */
   _imageryInit(value) {
-    this._updateHash(hashParams => {
+    this._updateHash((hashParams) => {
       if (value) {
         // RapidContext.urlhash().setParam('background', imagery)
         // window.location.hash = window.location.hash + '&background=' + imagery;
@@ -130,7 +133,7 @@ class HotTaskingManagerSystem {
    * @param {boolean} value true if the user should be shown power user options
    */
   _powerUserInit(value) {
-    this._updateHash(hashParams => {
+    this._updateHash((hashParams) => {
       /* Set the poweruser */
       if (value && !hashParams.has('poweruser')) {
         hashParams.set('poweruser', value);
@@ -174,7 +177,6 @@ class HotTaskingManagerSystem {
   set bulkUpdate(value) {
     this._bulkUpdate = value;
     if (!value && this._newHash) {
-
       window.history.pushState(null, '', this._getNewUrl(this._newHash));
       this._newHash = undefined;
     }
@@ -187,8 +189,7 @@ class HotTaskingManagerSystem {
    * @private
    */
   _getNewUrl(hashParams) {
-    let newUrl =
-      window.location.pathname + window.location.search + '#';
+    let newUrl = window.location.pathname + window.location.search + '#';
     let first = true;
     for (const [key, value] of hashParams) {
       if (!first) {
@@ -309,8 +310,13 @@ export default function RapidEditor({
   // This significantly reduces build time _and_ means different TM instances can share the same download of Rapid.
   // Unfortunately, Rapid doesn't use a public CDN itself, so we cannot reuse that.
   useEffect(() => {
-    // This could be ^${rapidVersion} if we are able to import the css here as well.
-    const baseCdnUrl = `https://cdn.jsdelivr.net/npm/${rapidName}@${rapidVersion}/dist/`;
+    // Add the style element
+    const style = document.createElement('link');
+    style.setAttribute('type', 'text/css');
+    style.setAttribute('rel', 'stylesheet');
+    style.setAttribute('href', baseCdnUrl + 'rapid.css');
+    document.head.appendChild(style);
+    // Now add the editor
     const script = document.createElement('script');
     script.src = baseCdnUrl + 'rapid.js';
     script.async = true;
@@ -334,7 +340,7 @@ export default function RapidEditor({
       context.embed(true);
       context.locale = locale;
       context.containerNode = document.getElementById('rapid-container');
-      context.assetPath = '/static/rapid/';
+      context.assetPath = baseCdnUrl;
       dispatch({ type: 'SET_RAPIDEDITOR', context: context });
     }
   }, [windowInit, rapidLoaded, rapidContext, dispatch, locale]);
@@ -359,8 +365,8 @@ export default function RapidEditor({
         rapidContext.systems.hottaskingmanager.bulkUpdate = true;
         rapidContext.systems.hottaskingmanager.comment = comment;
         rapidContext.systems.hottaskingmanager.presets = presets;
-        rapidContext.systems.hottaskingmanager.taskBoundary = gpxUrl
-        rapidContext.systems.hottaskingmanager.powerUser = powerUser
+        rapidContext.systems.hottaskingmanager.taskBoundary = gpxUrl;
+        rapidContext.systems.hottaskingmanager.powerUser = powerUser;
 
         /* Set the background */
         const imagerySystem = rapidContext?.systems?.imagery;
@@ -373,12 +379,7 @@ export default function RapidEditor({
             imagery,
             customSource,
           );
-          if(getBackground(
-            customImageryIsSet,
-            imagery,
-            imagerySystem,
-            customSource,
-          )) {
+          if (getBackground(customImageryIsSet, imagery, imagerySystem, customSource)) {
             rapidContext.systems.hottaskingmanager.imagery = imagery;
           }
         }
