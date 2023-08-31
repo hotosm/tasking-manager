@@ -93,7 +93,7 @@
     "test": "npm run lint && react-scripts test --env=jsdom",
     "coverage": "npm run test -- --coverage --watchAll=false",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build && sentry-cli sourcemaps upload --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build"
+    "sentry:sourcemaps": "if sentry-cli info; then sentry-cli sourcemaps inject --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build && sentry-cli sourcemaps upload --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build; fi"
   },
   "eslintConfig": {
     "extends": "react-app"
