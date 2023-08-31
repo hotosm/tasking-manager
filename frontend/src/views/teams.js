@@ -11,7 +11,7 @@ import {
   useQueryParams,
   withDefault,
 } from 'use-query-params';
-import { stringify } from 'query-string';
+import queryString from 'query-string';
 import toast from 'react-hot-toast';
 import Popup from 'reactjs-popup';
 
@@ -84,7 +84,9 @@ export function ListTeams({ managementView = false }: Object) {
   );
 
   const pageParam = `${
-    stringify(encodedQuery) ? `&${stringify(encodedQuery)}` : stringify(encodedQuery)
+    queryString.stringify(encodedQuery)
+      ? `&${queryString.stringify(encodedQuery)}`
+      : queryString.stringify(encodedQuery)
   }`;
 
   useEffect(() => {
