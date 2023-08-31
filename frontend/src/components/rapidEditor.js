@@ -10,7 +10,7 @@ import { version as rapidVersion, name as rapidName } from '@rapideditor/rapid/p
 const baseCdnUrl = `https://cdn.jsdelivr.net/npm/${rapidName}@~${rapidVersion}/dist/`;
 // We currently copy rapid files to the public/static/rapid directory. This should probably remain,
 // since it can be useful for debugging rapid issues in the TM.
-//const baseCdnUrl = '/static/rapid/';
+// const baseCdnUrl = '/static/rapid/';
 
 /**
  * The HOT TM system for Rapid. This should (eventually) extend AbstractSystem from Rapid
@@ -49,7 +49,6 @@ class HotTaskingManagerSystem {
     this._powerUserInit(this._powerUser);
     this._imageryInit(this._imagery);
     this.bulkUpdate = true;
-    return Promise.resolve();
   }
 
   /**
@@ -285,8 +284,9 @@ function setupImagery(
  * @param {string} comment The default changeset comment
  * @param {[string]|null|undefined} presets The presets to allow the user to use
  * @param {string|null|undefined} imagery The imagery to default to for the user
- * @param {string} gpxUrl
- * @param {boolean} powerUser
+ * @param {string} gpxUrl The task boundary url
+ * @param {boolean} powerUser true if the user should be shown advanced options
+ * @param {boolean} showSidebar Changes are used to resize the Rapid mapview
  * @returns {Element} The element to add to the DOM
  * @constructor
  */
@@ -297,12 +297,13 @@ export default function RapidEditor({
   imagery,
   gpxUrl,
   powerUser = false,
+  showSidebar = true,
 }) {
   const dispatch = useDispatch();
   const session = useSelector((state) => state.auth.session);
   const intl = useIntl();
   const [rapidLoaded, setRapidLoaded] = useState(window.Rapid !== undefined);
-  const rapidContext = useSelector((state) => state.editor.rapidContext);
+  const [rapidContext, setRapid] = useState(null);
   const locale = useSelector((state) => state.preferences.locale);
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
   const windowInit = typeof window !== 'undefined';
@@ -335,15 +336,31 @@ export default function RapidEditor({
     if (windowInit && rapidContext === null && rapidLoaded) {
       // we need to keep Rapid context on redux store because Rapid works better if
       // the context is not restarted while running in the same browser session
+      // Unfortunately, we need to recreate the context every time we recreate the rapid-container dom node.
       const context = new window.Rapid.Context();
       // setup the context
       context.embed(true);
       context.locale = locale;
       context.containerNode = document.getElementById('rapid-container');
       context.assetPath = baseCdnUrl;
-      dispatch({ type: 'SET_RAPIDEDITOR', context: context });
+      setRapid(context);
     }
-  }, [windowInit, rapidLoaded, rapidContext, dispatch, locale]);
+  }, [windowInit, rapidLoaded, rapidContext, setRapid, dispatch, locale]);
+
+  // This ensures that Rapid has the correct map size
+  useEffect(() => {
+    function resizeRapid() {
+      // Get rid of black bars when toggling the TM sidebar
+      const uiSystem = rapidContext?.systems?.ui;
+      if (uiSystem?.started) {
+        uiSystem.resize();
+      }
+    }
+    // This might be a _slight_ efficiency improvement by making certain that Rapid isn't painting unneeded items
+    resizeRapid();
+    // This is the only bit that is *really* needed -- it prevents black bars when hiding the sidebar.
+    return () => resizeRapid();
+  }, [showSidebar, rapidContext]);
 
   useEffect(() => {
     if (rapidContext) {
@@ -353,7 +370,9 @@ export default function RapidEditor({
         // Currently commented out in Rapid source code (2023-07-20)
         // RapidContext.systems.ui.restart();
         // resetAsync was a possible replacement, but it ran into issues when switching tasks.
-        promise = rapidContext.resetAsync();
+        // For now, we need to reinit rapid every time the rapid-container element is regenerated
+        //promise = rapidContext.resetAsync();
+        promise = Promise.resolve();
       } else {
         promise = rapidContext.initAsync();
         rapidContext.systems.hottaskingmanager = new HotTaskingManagerSystem(rapidContext);

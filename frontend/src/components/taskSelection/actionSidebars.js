@@ -763,24 +763,6 @@ export function ReopenEditor({ project, action, editor, callEditor }: Object) {
 
 export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
   const iDContext = useSelector((state) => state.editor.context);
-  const rapidContext = useSelector((state) => state.editor.rapidContext);
-
-  // This ensures that Rapid has the correct map size
-  useEffect(() => {
-    function resizeRapid() {
-      if (activeEditor === 'RAPID') {
-        // Get rid of black bars when toggling the TM sidebar
-        const uiSystem = rapidContext?.systems?.ui;
-        if (uiSystem?.started) {
-          uiSystem.resize();
-        }
-      }
-    }
-    // This might be a _slight_ efficiency improvement by making certain that Rapid isn't painting unneeded items
-    resizeRapid();
-    // This is the only bit that is *really* needed -- it prevents black bars when hiding the sidebar.
-    return () => resizeRapid();
-  }, [activeEditor, rapidContext?.systems?.ui, rapidContext?.systems?.ui?.started]);
 
   return (
     <div>
@@ -793,17 +775,6 @@ export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
               onClick={() => {
                 setShowSidebar(false);
                 activeEditor === 'ID' && iDContext.ui().restart();
-                if (activeEditor === 'RAPID') {
-                  const uiSystem = rapidContext?.systems?.ui;
-                  // Should be rapidContext.systems.ui.restart(), but that was commented out (2023-07-20)
-                  // This code is a bit more robust, since it will probably be forgotten.
-                  if (uiSystem?.hasOwnProperty('restart')) {
-                    uiSystem.restart();
-                    console.error('Someone should remove the rapidContext.resetAsync line now');
-                  } else {
-                    rapidContext.resetAsync();
-                  }
-                }
               }}
             />
           </div>
