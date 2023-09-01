@@ -560,9 +560,8 @@ class TestTasksActionsMappingUnlockAPI(BaseTestCase):
         """Test returns 200 on success."""
         # Arrange
         task = Task.get(1, self.test_project.id)
-        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
-        task.locked_by = self.test_user.id
-        task.update()
+        task.status = TaskStatus.READY.value
+        task.lock_task_for_mapping(self.test_user.id)
         # Act
         response = self.client.post(
             self.url,
@@ -583,9 +582,8 @@ class TestTasksActionsMappingUnlockAPI(BaseTestCase):
         """Test returns 200 on success."""
         # Arrange
         task = Task.get(1, self.test_project.id)
-        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
-        task.locked_by = self.test_user.id
-        task.update()
+        task.status = TaskStatus.READY.value
+        task.lock_task_for_mapping(self.test_user.id)
         # Act
         response = self.client.post(
             self.url,
@@ -684,9 +682,8 @@ class TestTasksActionsMappingStopAPI(BaseTestCase):
         """Test returns 200 on success."""
         # Arrange
         task = Task.get(1, self.test_project.id)
-        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
-        task.locked_by = self.test_user.id
-        task.update()
+        task.status = TaskStatus.READY.value
+        task.lock_task_for_mapping(self.test_user.id)
         # Act
         response = self.client.post(
             self.url,
@@ -702,9 +699,8 @@ class TestTasksActionsMappingStopAPI(BaseTestCase):
         """Test returns 200 on success."""
         # Arrange
         task = Task.get(1, self.test_project.id)
-        task.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
-        task.locked_by = self.test_user.id
-        task.update()
+        task.status = TaskStatus.READY.value
+        task.lock_task_for_mapping(self.test_user.id)
         # Act
         response = self.client.post(
             self.url,
@@ -991,11 +987,14 @@ class TestTasksActionsValidationUnlockAPI(BaseTestCase):
     def lock_task_for_validation(task_id, project_id, user_id, mapped_by=None):
         """Lock task for validation."""
         task = Task.get(task_id, project_id)
-        task.task_status = TaskStatus.LOCKED_FOR_VALIDATION.value
-        task.locked_by = user_id
+
         if mapped_by:
-            task.mapped_by = mapped_by
-        task.update()
+            task.status = TaskStatus.READY.value
+            task.lock_task_for_mapping(mapped_by)
+            task.unlock_task(mapped_by, TaskStatus.MAPPED)
+
+        task.status = TaskStatus.MAPPED.value
+        task.lock_task_for_validating(user_id)
 
     def test_validation_unlock_returns_403_if_task_locked_by_other_user(self):
         """Test returns 403 if task locked by other user."""
@@ -1206,7 +1205,6 @@ class TestTasksActionsValidationStopAPI(BaseTestCase):
         """Test returns 200 if task locked by user."""
         # Arrange
         task = Task.get(1, self.test_project.id)
-        task.unlock_task(self.test_user.id, TaskStatus.MAPPED)
         last_task_status = TaskStatus(task.task_status).name
         TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
             1, self.test_project.id, self.test_user.id, self.test_user.id
@@ -1227,7 +1225,6 @@ class TestTasksActionsValidationStopAPI(BaseTestCase):
         """Test returns 200 if task locked by user with comment."""
         # Arrange
         task = Task.get(1, self.test_project.id)
-        task.unlock_task(self.test_user.id, TaskStatus.MAPPED)
         last_task_status = TaskStatus(task.task_status).name
         TestTasksActionsValidationUnlockAPI.lock_task_for_validation(
             1, self.test_project.id, self.test_user.id, self.test_user.id
