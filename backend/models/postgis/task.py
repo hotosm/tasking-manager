@@ -1104,6 +1104,102 @@ class Task(Base):
         )
 
     @staticmethod
+    async def unlock_task(
+        task_id: int,
+        project_id: int,
+        user_id: int,
+        new_state: TaskStatus,
+        db: Database,
+        comment: Optional[str] = None,
+        undo: bool = False,
+        issues: Optional[List[Dict[str, Any]]] = None,
+    ):
+        """Unlock task and ensure duration task locked is saved in History"""
+        #  If not undo, update the duration of the lock
+        if not undo:
+            last_history = await TaskHistory.get_last_action(project_id, task_id, db)
+            # To unlock a task the last action must have been either lock or extension
+            last_action = TaskAction[last_history["result"][0]["action"]]
+            TaskHistory.update_task_locked_with_duration(
+                task_id, project_id, last_action, user_id
+            )
+
+        # Only create new history after updating the duration since we need the last action to update the duration.
+        if comment:
+            await Task.set_task_history(
+                task_id,
+                project_id,
+                user_id,
+                TaskAction.COMMENT,
+                db,
+                comment=comment,
+                mapping_issues=issues,
+            )
+
+        # Record state change in history
+        history = await Task.set_task_history(
+            task_id,
+            project_id,
+            user_id,
+            TaskAction.STATE_CHANGE,
+            db,
+            comment=comment,
+            new_state=new_state,
+            mapping_issues=issues,
+        )
+        # If undo, clear the mapped_by and validated_by fields
+        if undo:
+            if new_state == TaskStatus.MAPPED:
+                self.validated_by = None
+            elif new_state == TaskStatus.READY:
+                self.mapped_by = None
+        elif (
+            new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY]
+            and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION
+        ):
+            # Don't set mapped if state being set back to mapped after validation
+            self.mapped_by = user_id
+        elif new_state == TaskStatus.VALIDATED:
+            TaskInvalidationHistory.record_validation(
+                self.project_id, self.id, user_id, history
+            )
+            self.validated_by = user_id
+        elif new_state == TaskStatus.INVALIDATED:
+            TaskInvalidationHistory.record_invalidation(
+                self.project_id, self.id, user_id, history
+            )
+            self.mapped_by = None
+            self.validated_by = None
+
+        self.task_status = new_state.value
+        self.locked_by = None
+        self.update()
+
+    def reset_lock(self, user_id, comment=None):
+        """Removes a current lock from a task, resets to last status and
+        updates history with duration of lock"""
+        last_history = TaskHistory.get_last_action(self.project_id, self.id)
+        # To reset a lock the last action must have been either lock or extension
+        last_action = TaskAction[last_history.action]
+        TaskHistory.update_task_locked_with_duration(
+            self.id, self.project_id, last_action, user_id
+        )
+
+        # Only set task history after updating the duration since we need the last action to update the duration.
+        if comment:
+            self.set_task_history(
+                action=TaskAction.COMMENT, comment=comment, user_id=user_id
+            )
+
+        self.clear_lock()
+
+    def clear_lock(self):
+        """Resets to last status and removes current lock from a task"""
+        self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
+        self.locked_by = None
+        self.update()
+
+    @staticmethod
     async def clear_task_lock(task_id: int, project_id: int, db: Database):
         """Unlocks task in scope, clears the lock as though it never happened."""
 
