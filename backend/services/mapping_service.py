@@ -471,11 +471,16 @@ class MappingService:
             if task.task_status == TaskStatus.LOCKED_FOR_VALIDATION:
                 action = TaskAction.EXTENDED_FOR_VALIDATION
 
+            # Update the duration of the lock/extension before creating new history
+            last_history = TaskHistory.get_last_action(task.project_id, task.id)
+            # To reset a lock the last action must have been either lock or extension
+            last_action = TaskAction[last_history.action]
             TaskHistory.update_task_locked_with_duration(
                 task_id,
                 extend_dto.project_id,
-                TaskStatus(task.task_status),
+                last_action,
                 extend_dto.user_id,
             )
+
             task.set_task_history(action, extend_dto.user_id)
             task.update()
