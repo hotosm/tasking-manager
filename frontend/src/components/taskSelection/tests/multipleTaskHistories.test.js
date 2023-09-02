@@ -1,27 +1,25 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { MultipleTaskHistoriesAccordion } from '../multipleTaskHistories';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import userEvent from '@testing-library/user-event';
 
 describe('MultipleTaskHistories Accordion', () => {
-  let handleChange = jest.fn();
-
   it('does not render accordion with task history items if there are no tasks', () => {
     render(
       <ReduxIntlProviders>
-        <MultipleTaskHistoriesAccordion handleChange={handleChange} tasks={[]} projectId={1} />
+        <MultipleTaskHistoriesAccordion tasks={[]} projectId={1} />
       </ReduxIntlProviders>,
     );
 
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
-    expect(handleChange).not.toHaveBeenCalled();
     expect(screen.queryByText(/Comments/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Activities/i)).not.toBeInTheDocument();
   });
 
-  it('renders accordion correctly with task history items for 2 tasks', () => {
+  it('renders accordion correctly with task history items for 2 tasks', async () => {
     const tasks = [
       {
         taskId: 1,
@@ -54,9 +52,10 @@ describe('MultipleTaskHistories Accordion', () => {
         ],
       },
     ];
+    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
-        <MultipleTaskHistoriesAccordion handleChange={handleChange} tasks={tasks} projectId={1} />
+        <MultipleTaskHistoriesAccordion tasks={tasks} projectId={1} />
       </ReduxIntlProviders>,
     );
 
@@ -64,11 +63,10 @@ describe('MultipleTaskHistories Accordion', () => {
     expect(screen.getByText(/Task 2/i)).toBeInTheDocument();
 
     const taskAccordionItems = screen.getAllByRole('button');
-    taskAccordionItems.forEach((taskBtn) => {
-      fireEvent.click(taskBtn);
-    });
+    for (const taskBtn of taskAccordionItems) {
+      await user.click(taskBtn);
+    }
 
-    expect(handleChange).toHaveBeenCalledTimes(2);
     expect(screen.getAllByText(/Comments/i)).toHaveLength(2);
     expect(screen.getAllByText(/Activities/i)).toHaveLength(2);
   });

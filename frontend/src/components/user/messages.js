@@ -334,6 +334,16 @@ export default defineMessages({
     id: 'users.list.actions.setLevel',
     defaultMessage: 'Set mapper level',
   },
+  userAttributeUpdationSuccess: {
+    id: 'users.list.attribute.updation.success',
+    defaultMessage:
+      'User {attribute, select, role {role} mapperLevel {mapper level} other {attribute}} updated',
+  },
+  userAttributeUpdationFailure: {
+    id: 'users.list.attribute.updation.failure',
+    defaultMessage:
+      'Failed to update user {attribute, select, role {role} mapperLevel {mapper level} other {attribute}}. Please try again.',
+  },
   mapperLevelALL: {
     id: 'user.mapper_level.options.all',
     defaultMessage: 'All levels',

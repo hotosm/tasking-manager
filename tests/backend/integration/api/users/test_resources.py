@@ -1,5 +1,7 @@
 from backend.models.postgis.task import Task, TaskStatus
 from backend.models.postgis.statuses import UserGender, UserRole, MappingLevel
+from backend.exceptions import get_message_from_sub_code
+
 
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
@@ -13,6 +15,8 @@ from tests.backend.helpers.test_helpers import (
 TEST_USERNAME = "test_user"
 TEST_USER_ID = 1111111
 TEST_EMAIL = "test@hotmail.com"
+USER_NOT_FOUND_SUB_CODE = "USER_NOT_FOUND"
+USER_NOT_FOUND_MESSAGE = get_message_from_sub_code(USER_NOT_FOUND_SUB_CODE)
 
 
 class TestUsersQueriesOwnLockedDetailsAPI(BaseTestCase):
@@ -24,14 +28,14 @@ class TestUsersQueriesOwnLockedDetailsAPI(BaseTestCase):
         self.url = "/api/v2/users/queries/tasks/locked/details/"
 
     def test_returns_401_without_session_token(self):
-        """ Test that the API returns 401 if no session token is provided """
+        """Test that the API returns 401 if no session token is provided"""
         # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_404_if_no_tasks_locked(self):
-        """ Test that the API returns 404 if no task is locked by user"""
+        """Test that the API returns 404 if no task is locked by user"""
         # Act
         response = self.client.get(
             self.url,
@@ -39,10 +43,10 @@ class TestUsersQueriesOwnLockedDetailsAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], "TASK_NOT_FOUND")
 
     def test_returns_200_if_tasks_locked(self):
-        """ Test that the API returns 200 if a task is locked by user """
+        """Test that the API returns 200 if a task is locked by user"""
         # Arrange
         # Lock a task
         test_project, _ = create_canned_project()
@@ -69,14 +73,14 @@ class TestUsersQueriesUsernameAPI(BaseTestCase):
         self.url = f"/api/v2/users/queries/{self.user.username}/"
 
     def test_returns_401_without_session_token(self):
-        """ Test that the API returns 401 if no session token is provided """
+        """Test that the API returns 401 if no session token is provided"""
         # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_404_if_user_not_found(self):
-        """ Test that the API returns 404 if user is not found """
+        """Test that the API returns 404 if user is not found"""
         # Act
         response = self.client.get(
             "/api/v2/users/queries/unknown_user/",
@@ -84,7 +88,7 @@ class TestUsersQueriesUsernameAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], USER_NOT_FOUND_SUB_CODE)
 
     @staticmethod
     def assert_user_detail_response(
@@ -108,7 +112,7 @@ class TestUsersQueriesUsernameAPI(BaseTestCase):
             assert response.json["isEmailVerified"] is False
 
     def test_returns_email_and_gender_if_own_info_requested(self):
-        """ Test response contains email and gender info if user is requesting own info """
+        """Test response contains email and gender info if user is requesting own info"""
         # Arrange
         self.user.email_address = TEST_EMAIL
         self.user.gender = UserGender.MALE.value
@@ -157,14 +161,14 @@ class TestUsersQueriesOwnLockedAPI(BaseTestCase):
         self.url = "/api/v2/users/queries/tasks/locked/"
 
     def test_returns_401_without_session_token(self):
-        """ Test that the API returns 401 if no session token is provided """
+        """Test that the API returns 401 if no session token is provided"""
         # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_empty_list_if_no_tasks_locked(self):
-        """ Test that the API returns empty list if no task is locked by user"""
+        """Test that the API returns empty list if no task is locked by user"""
         # Act
         response = self.client.get(
             self.url,
@@ -177,7 +181,7 @@ class TestUsersQueriesOwnLockedAPI(BaseTestCase):
         self.assertEqual(response.json["taskStatus"], None)
 
     def test_returns_locked_task_if_tasks_locked(self):
-        """ Test that the API returns locked task if a task is locked by user """
+        """Test that the API returns locked task if a task is locked by user"""
         # Arrange
         # Lock a task
         test_project, _ = create_canned_project()
@@ -207,14 +211,14 @@ class UsersQueriesInterestsAPI(BaseTestCase):
         self.url = f"/api/v2/users/{self.user.username}/queries/interests/"
 
     def test_returns_401_without_session_token(self):
-        """ Test that the API returns 401 if no session token is provided """
+        """Test that the API returns 401 if no session token is provided"""
         # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_empty_list_if_no_interests(self):
-        """ Test that the API returns empty list if user has no interests """
+        """Test that the API returns empty list if user has no interests"""
         # Act
         response = self.client.get(
             self.url,
@@ -225,7 +229,7 @@ class UsersQueriesInterestsAPI(BaseTestCase):
         self.assertEqual(response.json["interests"], [])
 
     def test_returns_404_if_user_not_found(self):
-        """ Test that the API returns 404 if user is not found """
+        """Test that the API returns 404 if user is not found"""
         # Act
         response = self.client.get(
             "/api/v2/users/invalid_username/queries/interests/",
@@ -233,10 +237,10 @@ class UsersQueriesInterestsAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], USER_NOT_FOUND_SUB_CODE)
 
     def test_returns_user_interests_if_interest_found(self):
-        """ Test that the API returns user interests if user has interests """
+        """Test that the API returns user interests if user has interests"""
         # Arrange
         interest_1 = create_canned_interest("interest_1")
         interest_2 = create_canned_interest("interest_2")
@@ -269,14 +273,14 @@ class TestUsersQueriesUsernameFilterAPI(BaseTestCase):
         self.url = "/api/v2/users/queries/filter/tes/"
 
     def test_returns_401_without_session_token(self):
-        """ Test that the API returns 401 if no session token is provided """
+        """Test that the API returns 401 if no session token is provided"""
         # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_404_if_no_users_found(self):
-        """ Test that the API returns 404 if no users found """
+        """Test that the API returns 404 if no users found"""
         # Act
         response = self.client.get(
             "/api/v2/users/queries/filter/invalid_username/",
@@ -284,10 +288,10 @@ class TestUsersQueriesUsernameFilterAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], USER_NOT_FOUND_SUB_CODE)
 
     def test_returns_users_if_users_found(self):
-        """ Test that the API returns users if users found """
+        """Test that the API returns users if users found"""
         # Act
         response = self.client.get(
             self.url,
@@ -305,7 +309,7 @@ class TestUsersQueriesUsernameFilterAPI(BaseTestCase):
         self.assertEqual(response.json["pagination"]["total"], 1)
 
     def test_returnns_matching_project_contributors(self):
-        """ Test that the API returns matching project contributors """
+        """Test that the API returns matching project contributors"""
         # Arrange
         test_project, _ = create_canned_project()
         task = Task.get(1, test_project.id)
@@ -337,14 +341,14 @@ class TestUsersAllAPI(BaseTestCase):
         self.url = "/api/v2/users/"
 
     def test_returns_401_without_session_token(self):
-        """ Test that the API returns 401 if no session token is provided """
+        """Test that the API returns 401 if no session token is provided"""
         # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_400_if_invalid_data(self):
-        """ Test that the API returns 400 if invalid data is provided """
+        """Test that the API returns 400 if invalid data is provided"""
         # Act
         response = self.client.get(
             self.url,
@@ -356,7 +360,7 @@ class TestUsersAllAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "InvalidData")
 
     def test_returns_per_page_20_users_by_default(self):
-        """ Test that the API paginates and returns 20 users by default """
+        """Test that the API paginates and returns 20 users by default"""
         # Act
         response = self.client.get(
             self.url,
@@ -370,7 +374,7 @@ class TestUsersAllAPI(BaseTestCase):
         self.assertEqual(response.json["pagination"]["total"], 31)
 
     def test_pagination_can_be_disabled(self):
-        """ Test that the API can return all users if pagination is disabled """
+        """Test that the API can return all users if pagination is disabled"""
         # Act
         response = self.client.get(
             self.url,
@@ -382,7 +386,7 @@ class TestUsersAllAPI(BaseTestCase):
         self.assertEqual(len(response.json["users"]), 31)
 
     def test_returns_specified_per_page_users(self):
-        """ Test that the API returns specified per page users """
+        """Test that the API returns specified per page users"""
         # Act
         response = self.client.get(
             self.url,
@@ -399,7 +403,7 @@ class TestUsersAllAPI(BaseTestCase):
         self.assertEqual(response.json["pagination"]["pages"], 4)
 
     def test_returns_specified_page_users(self):
-        """ Test that the API returns specified page users """
+        """Test that the API returns specified page users"""
         # Act
         response = self.client.get(
             self.url,
@@ -415,7 +419,7 @@ class TestUsersAllAPI(BaseTestCase):
         self.assertEqual(response.json["pagination"]["pages"], 2)
 
     def test_returns_users_with_specified_role_(self):
-        """ Test that the API returns users with specified role """
+        """Test that the API returns users with specified role"""
         # Arrange
         self.user.role = UserRole.ADMIN.value
         self.user.save()
@@ -432,7 +436,7 @@ class TestUsersAllAPI(BaseTestCase):
         self.assertEqual(response.json["pagination"]["total"], 1)
 
     def test_returns_users_with_specified_level(self):
-        """ Test that the API returns users with specified level """
+        """Test that the API returns users with specified level"""
         # Arrange
         self.user.mapping_level = MappingLevel.ADVANCED.value
         self.user.save()
@@ -458,24 +462,24 @@ class TestUsersRecommendedProjectsAPI(BaseTestCase):
         self.url = f"/api/v2/users/{self.user.username}/recommended-projects/"
 
     def test_returns_401_without_session_token(self):
-        """ Test that the API returns 401 if no session token is provided """
+        """Test that the API returns 401 if no session token is provided"""
         # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_404_if_user_does_not_exist(self):
-        """ Test that the API returns 404 if user does not exist """
+        """Test that the API returns 404 if user does not exist"""
         # Act
         response = self.client.get(
-            "/api/v2/users/999/recommendedProjects/",
+            "api/v2/users/non_existent/recommended-projects/",
             headers={"Authorization": self.user_session_token},
         )
         # Assert
         self.assertEqual(response.status_code, 404)
 
     def test_returns_recommended_projects(self):
-        """ Test that the API returns recommended projects """
+        """Test that the API returns recommended projects"""
         # Arrange
         project, _ = create_canned_project()
         project.create()
@@ -497,14 +501,14 @@ class TestUsersRestAPI(BaseTestCase):
         self.url = f"/api/v2/users/{self.user.id}/"
 
     def test_returns_401_without_session_token(self):
-        """ Test that the API returns 401 if no session token is provided """
+        """Test that the API returns 401 if no session token is provided"""
         # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_404_if_user_does_not_exist(self):
-        """ Test that the API returns 404 if user does not exist """
+        """Test that the API returns 404 if user does not exist"""
         # Act
         response = self.client.get(
             "/api/v2/users/999/",
@@ -514,7 +518,7 @@ class TestUsersRestAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_returns_email_and_gender_if_own_info_requested(self):
-        """ Test response contains all user info if user is requesting own info """
+        """Test response contains all user info if user is requesting own info"""
         # Arrange
         self.user.email_address = TEST_EMAIL
         self.user.gender = UserGender.MALE.value

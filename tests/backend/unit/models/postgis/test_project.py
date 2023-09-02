@@ -1,8 +1,9 @@
 from unittest.mock import MagicMock
 from flask import current_app
+
+from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import DraftProjectDTO
 from backend.models.postgis.project import Project
-from backend.models.postgis.utils import NotFound
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_project,
@@ -61,4 +62,7 @@ class TestProject(BaseTestCase):
         # Act
         test_project.set_country_info()
         # Assert
-        self.assertNotEqual(0, len(test_project.country))
+        self.assertNotEqual(
+            0, len(test_project.country), "Nominatim may have given a bad response"
+        )
+        self.assertEqual(["United Kingdom"], test_project.country)

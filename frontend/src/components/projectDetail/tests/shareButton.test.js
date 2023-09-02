@@ -31,15 +31,15 @@ describe('test if shareButton', () => {
 
   it('render open corresponding window popup', async () => {
     global.open = jest.fn();
+    const user = userEvent.setup();
     render(
       <IntlProviders>
         <ShareButton projectId={1} />
       </IntlProviders>,
     );
-    await userEvent.click(screen.getByText(/tweet/i));
-    await userEvent.click(screen.getByText(/post on facebook/i));
-    await userEvent.click(screen.getByText(/share on linkedin/i));
-
+    await user.click(screen.getByText(/tweet/i));
+    await user.click(screen.getByText(/post on facebook/i));
+    await user.click(screen.getByText(/share on linkedin/i));
     expect(global.open).toHaveBeenCalledTimes(3);
   });
 });

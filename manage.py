@@ -3,16 +3,15 @@ import warnings
 import base64
 import csv
 import datetime
-
-from flask_migrate import MigrateCommand
-from flask_script import Manager
+import click
+from flask_migrate import Migrate
 from dotenv import load_dotenv
-from backend import create_app, initialise_counters
+
+from backend import create_app, initialise_counters, db
 from backend.services.users.authentication_service import AuthenticationService
 from backend.services.users.user_service import UserService
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
-from backend.models.postgis.utils import NotFound
 from backend.models.postgis.task import Task, TaskHistory
 
 from sqlalchemy import func
@@ -47,14 +46,13 @@ except Exception:
     warnings.warn("Homepage counters not initialized.")
 
 # Add management commands
-manager = Manager(application)
 
 # Enable db migrations to be run via the command line
-manager.add_command("db", MigrateCommand)
+migrate = Migrate(application, db)
 
 
 # Job runs once every 2 hours
-@manager.command
+@application.cli.command("auto_unlock_tasks")
 def auto_unlock_tasks():
     with application.app_context():
         # Identify distinct project IDs that were touched in the last 2 hours
@@ -84,7 +82,8 @@ application.logger.debug("Initiated background thread to auto unlock tasks")
 atexit.register(lambda: cron.shutdown(wait=False))
 
 
-@manager.option("-u", "--user_id", help="Test User ID")
+@application.cli.command("gen_token")
+@click.option("-u", "--user_id", help="Test User ID")
 def gen_token(user_id):
     """Helper method for generating valid base64 encoded session tokens"""
     token = AuthenticationService.generate_session_token_for_user(user_id)
@@ -93,22 +92,25 @@ def gen_token(user_id):
     print(f"Your base64 encoded session token: {b64_token}")
 
 
-@manager.command
+@application.cli.command("refresh_levels")
 def refresh_levels():
     print("Started updating mapper levels...")
     users_updated = UserService.refresh_mapper_level()
     print(f"Updated {users_updated} user mapper levels")
 
 
-@manager.command
+@application.cli.command("refresh_project_stats")
 def refresh_project_stats():
     print("Started updating project stats...")
     StatsService.update_all_project_stats()
     print("Project stats updated")
 
 
-@manager.command
+@application.cli.command("update_project_categories")
+@click.argument("filename")
 def update_project_categories(filename):
+    from backend.exceptions import NotFound
+
     with open(filename, "r", encoding="ISO-8859-1", newline="") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
@@ -132,4 +134,21 @@ def update_project_categories(filename):
 
 
 if __name__ == "__main__":
-    manager.run()
+    # This is compatibility code with previous releases
+    # People should generally prefer `flask <command>`.
+    from sys import argv
+    from flask.cli import FlaskGroup
+    from click import Command
+
+    cli = FlaskGroup(create_app=lambda: application)
+    cli.add_command(
+        cmd=Command(
+            name="runserver",
+            callback=application.run,
+            help='Deprecated, use "flask run" instead',
+        )
+    )
+    if argv[1] == "runserver":
+        application.run()
+    else:
+        cli()

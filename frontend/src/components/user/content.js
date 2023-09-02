@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, FormattedNumber, FormattedRelativeTime } from 'react-intl';
 import { selectUnit } from '../../utils/selectUnit';
-import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 import ReactPlaceholder from 'react-placeholder';
 import { OSM_SERVER_URL } from '../../config';
 
@@ -12,12 +11,8 @@ import { MappingIcon, ClipboardIcon } from '../svgIcons';
 import { UserInterestsForm } from './forms/interests';
 
 export function APIKeyCard({ token }) {
-  //eslint-disable-next-line
-  const [isCopied, setCopied] = useCopyClipboard();
+  const handleClick = () => navigator.clipboard.writeText(`Token ${token}`);
 
-  const handleClick = () => {
-    setCopied(`Token ${token}`);
-  };
   const link = (
     <a className="link red underline-hover" href="/api-docs/" target="_blank">
       <FormattedMessage {...messages.apiDocs} />
@@ -62,7 +57,7 @@ export function OSMCard({ username }: Object) {
               showLoadingAnimation={true}
               rows={1}
               delay={100}
-              ready={typeof osmUserInfo !== undefined}
+              ready={typeof osmUserInfo !== 'undefined'}
             >
               <FormattedRelativeTime value={value} unit={unit} />
             </ReactPlaceholder>
@@ -77,7 +72,7 @@ export function OSMCard({ username }: Object) {
               showLoadingAnimation={true}
               rows={1}
               delay={100}
-              ready={typeof osmUserInfo !== undefined}
+              ready={typeof osmUserInfo !== 'undefined'}
             >
               <FormattedNumber value={osmUserInfo ? osmUserInfo.changesetCount : 0} />
             </ReactPlaceholder>

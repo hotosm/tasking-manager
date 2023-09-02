@@ -175,6 +175,10 @@ export const ProjectDetailPage = () => {
   const navigate = useNavigate();
   const [error, loading, data] = useFetch(`projects/${id}/`, id);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
   return (
     <ReactPlaceholder
       showLoadingAnimation={true}

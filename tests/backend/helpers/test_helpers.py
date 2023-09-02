@@ -17,6 +17,8 @@ from backend.models.dtos.project_dto import (
 from backend.models.postgis.project import Project, ProjectTeams
 from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.statuses import MappingLevel, TaskStatus
+from backend.models.postgis.message import Message, MessageType
+from backend.models.postgis.notification import Notification
 from backend.models.postgis.task import Task
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.user import User
@@ -24,6 +26,10 @@ from backend.models.postgis.organisation import Organisation
 from backend.services.users.authentication_service import AuthenticationService
 from backend.services.interests_service import Interest
 from backend.services.license_service import LicenseService, LicenseDTO
+from backend.services.mapping_issues_service import (
+    MappingIssueCategoryService,
+    MappingIssueCategoryDTO,
+)
 
 
 TEST_USER_ID = 777777
@@ -35,10 +41,12 @@ TEST_PROJECT_NAME = "Test"
 TEST_TEAM_NAME = "Test Team"
 TEST_CAMPAIGN_NAME = "Test Campaign"
 TEST_CAMPAIGN_ID = 1
+TEST_MESSAGE_SUBJECT = "Test subject"
+TEST_MESSAGE_DETAILS = "This is a test message"
 
 
 def get_canned_osm_user_details():
-    """ Helper method to find test file, dependent on where tests are being run from """
+    """Helper method to find test file, dependent on where tests are being run from"""
 
     location = os.path.join(
         os.path.dirname(__file__), "test_files", "osm_user_details.json"
@@ -51,7 +59,7 @@ def get_canned_osm_user_details():
 
 
 def get_canned_osm_user_json_details():
-    """ Helper method to find test file, dependent on where tests are being run from """
+    """Helper method to find test file, dependent on where tests are being run from"""
 
     location = os.path.join(
         os.path.dirname(__file__), "test_files", "osm_user_details.json"
@@ -64,7 +72,7 @@ def get_canned_osm_user_json_details():
 
 
 def get_canned_osm_user_details_changed_name():
-    """ Helper method to find test file, dependent on where tests are being run from """
+    """Helper method to find test file, dependent on where tests are being run from"""
 
     location = os.path.join(
         os.path.dirname(__file__), "test_files", "osm_user_details_changed_name.xml"
@@ -78,7 +86,7 @@ def get_canned_osm_user_details_changed_name():
 
 
 def get_canned_json(name_of_file):
-    """ Read canned Grid request from file """
+    """Read canned Grid request from file"""
 
     location = os.path.join(os.path.dirname(__file__), "test_files", name_of_file)
 
@@ -92,7 +100,7 @@ def get_canned_json(name_of_file):
 
 
 def get_canned_simplified_osm_user_details():
-    """ Helper that reads file and returns it as a string """
+    """Helper that reads file and returns it as a string"""
     location = os.path.join(
         os.path.dirname(__file__), "test_files", "osm_user_details_simple.xml"
     )
@@ -123,7 +131,7 @@ def generate_encoded_token(user_id: int):
 
 
 def create_canned_user() -> User:
-    """ Generate a canned user in the DB """
+    """Generate a canned user in the DB"""
     test_user = return_canned_user()
     test_user.create()
 
@@ -136,7 +144,7 @@ def get_canned_user(username: str) -> User:
 
 
 def create_canned_project(name=TEST_PROJECT_NAME) -> Tuple[Project, User]:
-    """ Generates a canned project in the DB to help with integration tests """
+    """Generates a canned project in the DB to help with integration tests"""
     test_aoi_geojson = geojson.loads(json.dumps(get_canned_json("test_aoi.json")))
 
     task_feature = geojson.loads(json.dumps(get_canned_json("splittable_task.json")))
@@ -195,7 +203,7 @@ def create_canned_project(name=TEST_PROJECT_NAME) -> Tuple[Project, User]:
 
 
 def return_canned_draft_project_json():
-    """ Helper method to find test file, dependent on where tests are being run from """
+    """Helper method to find test file, dependent on where tests are being run from"""
 
     location = os.path.join(
         os.path.dirname(__file__), "test_files", "canned_draft_project.json"
@@ -296,6 +304,7 @@ def update_project_with_info(test_project: Project) -> Project:
     test_dto.mapping_editors = ["JOSM", "ID"]
     test_dto.validation_editors = ["JOSM"]
     test_dto.changeset_comment = "hot-project"
+    test_dto.private = False
     test_project.update(test_dto)
 
     return test_project
@@ -352,3 +361,32 @@ def create_canned_license(name="test_license") -> int:
     license_dto.plain_text = "test license"
     test_license = LicenseService.create_licence(license_dto)
     return test_license
+
+
+def create_canned_mapping_issue(name="Test Issue") -> int:
+    issue_dto = MappingIssueCategoryDTO()
+    issue_dto.name = name
+    test_issue_id = MappingIssueCategoryService.create_mapping_issue_category(issue_dto)
+    return test_issue_id
+
+
+def create_canned_message(
+    subject=TEST_MESSAGE_SUBJECT,
+    message=TEST_MESSAGE_DETAILS,
+    message_type=MessageType.SYSTEM.value,
+) -> Message:
+    test_message = Message()
+    test_message.subject = subject
+    test_message.message = message
+    test_message.message_type = message_type
+    test_message.save()
+    return test_message
+
+
+def create_canned_notification(user_id, unread_count, date) -> Notification:
+    test_notification = Notification()
+    test_notification.user_id = user_id
+    test_notification.unread_count = unread_count
+    test_notification.date = date
+    test_notification.save()
+    return test_notification

@@ -1,6 +1,7 @@
 import React from 'react';
-import { screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import toast from 'react-hot-toast';
 
 import {
   createComponentWithMemoryRouter,
@@ -8,6 +9,11 @@ import {
   renderWithRouter,
 } from '../../utils/testWithIntl';
 import { ListLicenses, CreateLicense, EditLicense } from '../licenses';
+import { setupFaultyHandlers } from '../../network/tests/server';
+
+jest.mock('react-hot-toast', () => ({
+  success: jest.fn(),
+}));
 
 describe('List Licenses', () => {
   const setup = () => {
@@ -40,7 +46,7 @@ describe('List Licenses', () => {
   });
 
   it('should navigate to license edit page when clicked on the license card', async () => {
-    const { container, router } = createComponentWithMemoryRouter(
+    const { user, container, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <ListLicenses />
       </ReduxIntlProviders>,
@@ -51,7 +57,7 @@ describe('List Licenses', () => {
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
-    fireEvent.click(
+    await user.click(
       screen.getByRole('link', {
         name: /license 1/i,
       }),
@@ -62,7 +68,7 @@ describe('List Licenses', () => {
 
 describe('Create License', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    const { user, history } = renderWithRouter(
       <ReduxIntlProviders>
         <CreateLicense />
       </ReduxIntlProviders>,
@@ -72,6 +78,7 @@ describe('Create License', () => {
       name: /cancel/i,
     });
     return {
+      user,
       createButton,
       cancelButton,
       history,
@@ -84,27 +91,57 @@ describe('Create License', () => {
   });
 
   it('should enable create license button when the value is changed', async () => {
-    const { createButton } = setup();
+    const { user, createButton } = setup();
     const nameInput = screen.getAllByRole('textbox')[0];
-    fireEvent.change(nameInput, { target: { value: 'New license Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New license Name');
     expect(createButton).toBeEnabled();
   });
 
   it('should navigate to the newly created license detail page on creation success', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <CreateLicense />
       </ReduxIntlProviders>,
     );
     const createButton = screen.getByRole('button', { name: /create license/i });
     const nameInput = screen.getAllByRole('textbox')[0];
-    fireEvent.change(nameInput, { target: { value: 'New license Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New license Name');
     const descriptionInput = screen.getAllByRole('textbox')[1];
-    fireEvent.change(descriptionInput, { target: { value: 'New license description' } });
+    await user.clear(descriptionInput);
+    await user.type(descriptionInput, 'New license description');
     const plainTextInput = screen.getAllByRole('textbox')[2];
-    fireEvent.change(plainTextInput, { target: { value: 'New license plain text' } });
-    fireEvent.click(createButton);
-    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/licenses/123'));
+    await user.clear(plainTextInput);
+    await user.type(plainTextInput, 'New license plain text');
+    await user.click(createButton);
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledTimes(1);
+      expect(router.state.location.pathname).toBe('/manage/licenses/123');
+    });
+  });
+
+  it('should display toast with error has occured message', async () => {
+    setupFaultyHandlers();
+    const { user } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <CreateLicense />
+      </ReduxIntlProviders>,
+    );
+    const createButton = screen.getByRole('button', { name: /create license/i });
+    const nameInput = screen.getAllByRole('textbox')[0];
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New license Name');
+    const descriptionInput = screen.getAllByRole('textbox')[1];
+    await user.clear(descriptionInput);
+    await user.type(descriptionInput, 'New license description');
+    const plainTextInput = screen.getAllByRole('textbox')[2];
+    await user.clear(plainTextInput);
+    await user.type(plainTextInput, 'New license plain text');
+    await user.click(createButton);
+    await waitFor(() =>
+      expect(screen.getByText(/Failed to create license. Please try again./i)).toBeInTheDocument(),
+    );
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
@@ -112,7 +149,7 @@ describe('Create License', () => {
 
 describe('Edit License', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    const { user, history } = renderWithRouter(
       <ReduxIntlProviders>
         <EditLicense id={1} />
       </ReduxIntlProviders>,
@@ -122,6 +159,7 @@ describe('Edit License', () => {
     const plainTextInput = screen.getAllByRole('textbox')[2];
 
     return {
+      user,
       nameInput,
       descriptionInput,
       plainTextInput,
@@ -139,9 +177,10 @@ describe('Edit License', () => {
   });
 
   it('should display save button when project name is changed', async () => {
-    const { nameInput } = setup();
+    const { user, nameInput } = setup();
     await waitFor(() => expect(nameInput.value).toBe('Sample License'));
-    fireEvent.change(nameInput, { target: { value: 'Changed License Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed License Name');
     const saveButton = screen.getByRole('button', {
       name: /save/i,
     });
@@ -149,9 +188,10 @@ describe('Edit License', () => {
   });
 
   it('should also display cancel button when project name is changed', async () => {
-    const { nameInput } = setup();
+    const { user, nameInput } = setup();
     await waitFor(() => expect(nameInput.value).toBe('Sample License'));
-    fireEvent.change(nameInput, { target: { value: 'Changed License Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed License Name');
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
@@ -159,25 +199,48 @@ describe('Edit License', () => {
   });
 
   it('should return input text value to default when cancel button is clicked', async () => {
-    const { nameInput } = setup();
+    const { user, nameInput } = setup();
     await waitFor(() => expect(nameInput.value).toBe('Sample License'));
-    fireEvent.change(nameInput, { target: { value: 'Changed License Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed License Name');
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    fireEvent.click(cancelButton);
+    await user.click(cancelButton);
     expect(nameInput.value).toBe('Sample License');
   });
 
   it('should hide the save button on click', async () => {
-    const { nameInput } = setup();
+    const { user, nameInput } = setup();
     await waitFor(() => expect(nameInput.value).toBe('Sample License'));
-    fireEvent.change(nameInput, { target: { value: 'Changed License Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed License Name');
     const saveButton = screen.getByRole('button', { name: /save/i });
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
+    await waitFor(() => expect(toast.success).toHaveBeenCalledTimes(1));
+    expect(saveButton).not.toBeInTheDocument();
+    expect(cancelButton).not.toBeInTheDocument();
+  });
+
+  it('should display toast with error has occured message', async () => {
+    setupFaultyHandlers();
+    const { user, nameInput } = setup();
+    await waitFor(() => expect(nameInput.value).toBe('Sample License'));
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed License Name');
+    const saveButton = screen.getByRole('button', { name: /save/i });
+    const cancelButton = screen.getByRole('button', {
+      name: /cancel/i,
+    });
+    await user.click(saveButton);
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Failed to update license information. Please try again/i),
+      ).toBeInTheDocument(),
+    );
     expect(saveButton).not.toBeInTheDocument();
     expect(cancelButton).not.toBeInTheDocument();
   });
@@ -185,7 +248,7 @@ describe('Edit License', () => {
 
 describe('Delete License', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    const { user, history } = renderWithRouter(
       <ReduxIntlProviders>
         <EditLicense id={1} />
       </ReduxIntlProviders>,
@@ -195,6 +258,7 @@ describe('Delete License', () => {
     const plainTextInput = screen.getAllByRole('textbox')[2];
 
     return {
+      user,
       nameInput,
       descriptionInput,
       plainTextInput,
@@ -203,33 +267,33 @@ describe('Delete License', () => {
   };
 
   it('should ask for confirmation when user tries to delete a license', async () => {
-    const { nameInput } = setup();
+    const { user, nameInput } = setup();
     await waitFor(() => expect(nameInput.value).toBe('Sample License'));
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     expect(screen.getByText('Are you sure you want to delete this license?')).toBeInTheDocument();
   });
 
   it('should close the confirmation popup when cancel is clicked', async () => {
-    const { nameInput } = setup();
+    const { user, nameInput } = setup();
     await waitFor(() => expect(nameInput.value).toBe('Sample License'));
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    fireEvent.click(cancelButton);
+    await user.click(cancelButton);
     expect(
       screen.queryByText('Are you sure you want to delete this license?'),
     ).not.toBeInTheDocument();
   });
 
   it('should direct to licenses list page on successful deletion of a license', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <EditLicense id={1} />
       </ReduxIntlProviders>,
@@ -239,12 +303,12 @@ describe('Delete License', () => {
     const deleteButton = screen.getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
     const dialog = screen.getByRole('dialog');
     const deleteConfirmationButton = within(dialog).getByRole('button', {
       name: /delete/i,
     });
-    fireEvent.click(deleteConfirmationButton);
+    await user.click(deleteConfirmationButton);
     expect(await screen.findByText('License deleted successfully.')).toBeInTheDocument();
     await waitFor(() => expect(router.state.location.pathname).toBe('/manage/licenses'));
   });

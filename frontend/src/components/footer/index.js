@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useMatch as matchPath } from 'react-router-dom';
+import { Link, matchRoutes, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import {
   TwitterIcon,
@@ -31,6 +31,7 @@ const socialNetworks = [
 ];
 
 export function Footer() {
+  const location = useLocation();
   const userDetails = useSelector((state) => state.auth.userDetails);
 
   const footerDisabledPaths = [
@@ -46,15 +47,15 @@ export function Footer() {
     'teams/:id/membership',
     '/api-docs/',
   ];
-  let isFooterEnabled = true;
-  footerDisabledPaths.forEach((path) => {
-    const match = matchPath(path);
-    if (match !== null) {
-      isFooterEnabled = false;
-    }
-  });
 
-  if (!isFooterEnabled) {
+  const matchedRoute = matchRoutes(
+    footerDisabledPaths.map((path) => ({
+      path,
+    })),
+    location,
+  );
+
+  if (matchedRoute) {
     return null;
   } else {
     return (
@@ -112,7 +113,7 @@ export function Footer() {
             </Link>
             {ORG_PRIVACY_POLICY_URL && (
               <div className="pt2 f6 lh-title">
-                <a href={`https://${ORG_PRIVACY_POLICY_URL}`} className="link white">
+                <a href={`${ORG_PRIVACY_POLICY_URL}`} className="link white">
                   <FormattedMessage {...messages.privacyPolicy} />
                 </a>
               </div>

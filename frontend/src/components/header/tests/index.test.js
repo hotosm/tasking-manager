@@ -1,29 +1,30 @@
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
 import { screen, fireEvent, act, within, waitFor, render } from '@testing-library/react';
 
 import '../../../utils/mockMatchMedia';
 import { IntlProviders, ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
-import { ORG_URL, ORG_LOGO, SERVICE_DESK } from '../../../config';
+import { ORG_NAME, ORG_URL, ORG_LOGO, SERVICE_DESK } from '../../../config';
 import { AuthButtons, getMenuItemsForUser, Header, PopupItems } from '..';
 import messages from '../messages';
 import { store } from '../../../store';
 
 describe('Header', () => {
   const setup = () => {
-    renderWithRouter(
-      <ReduxIntlProviders>
-        <Header />
-      </ReduxIntlProviders>,
-    );
+    return {
+      ...renderWithRouter(
+        <ReduxIntlProviders>
+          <Header />
+        </ReduxIntlProviders>,
+      ),
+    };
   };
 
   it('should render component details', () => {
     setup();
     expect(screen.getByText(messages.slogan.defaultMessage)).toBeInTheDocument();
     if (ORG_URL) {
-      expect(screen.getByText(ORG_URL)).toBeInTheDocument();
-      expect(screen.getByText(ORG_URL).closest('a')).toHaveAttribute('href', `http://${ORG_URL}`);
+      expect(screen.getByText(`${ORG_NAME} Website`)).toBeInTheDocument();
+      expect(screen.getByText(`${ORG_NAME} Website`).closest('a')).toHaveAttribute('href', ORG_URL);
     }
     expect(screen.getByTitle('externalLink')).toBeInTheDocument();
     const orgLogo = screen.getByRole('img');
@@ -78,8 +79,8 @@ describe('Header', () => {
   });
 
   it('should display menu when burger menu icon is clicked', async () => {
-    setup();
-    await userEvent.click(
+    const { user } = setup();
+    await user.click(
       screen.getByRole('button', {
         name: /menu/i,
       }),
@@ -169,8 +170,8 @@ describe('Dropdown menu of logged in user', () => {
         userDetails: { username: 'somebody' },
       });
     });
-    setup();
-    await userEvent.click(screen.getByText('somebody'));
+    const { user } = setup();
+    await user.click(screen.getByText('somebody'));
   });
 
   it('should log the user out', async () => {
@@ -180,10 +181,10 @@ describe('Dropdown menu of logged in user', () => {
         userDetails: { username: 'somebody' },
       });
     });
-    setup();
-    await userEvent.click(screen.getByText('somebody'));
+    const { user } = setup();
+    await user.click(screen.getByText('somebody'));
     // screen.getByRole('')
-    await userEvent.click(screen.getByText(/Logout/i));
+    await user.click(screen.getByText(/Logout/i));
     await waitFor(() =>
       expect(
         screen.getByRole('button', {
@@ -298,7 +299,7 @@ describe('PopupItems Component', () => {
   });
 
   it('should log the user out', async () => {
-    const { rerender } = renderWithRouter(
+    const { user, rerender } = renderWithRouter(
       <ReduxIntlProviders>
         <PopupItems
           menuItems={getMenuItemsForUser({ username: 'somebody', role: 'ADMIN' })}
@@ -309,7 +310,6 @@ describe('PopupItems Component', () => {
     const logoutBtn = screen.getByRole('button', {
       name: /logout/i,
     });
-    const user = userEvent.setup();
     await user.click(logoutBtn);
     rerender(
       <ReduxIntlProviders>

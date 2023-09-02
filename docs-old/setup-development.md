@@ -90,19 +90,29 @@ There are two ways to configure Tasking Manager. You can set some environment va
 
 #### Build
 
-* Create a Python Virtual Environment, using Python 3.6+:
-    * ```python3 -m venv ./venv```
-* Activate your virtual environment and install dependencies:
-    * Linux/Mac:
-        * ```. ./venv/bin/activate```
-        * ```pip install -r requirements.txt```
+* Install project dependencies:
+    * Linux/Mac (Option 1: pep582):
+        * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
+        * ```pip install --upgrade pdm```
+        * ```pdm config --global python.use_venv False```
+        * ```pdm --pep582 >> ~/.bash_profile```
+        * ```source ~/.bash_profile```
+        * ```pdm install```
+    * Linux/Mac (Option 2: pip (system/venv)):
+        * ```pip install --upgrade pdm```
+        * ```pdm export --without-hashes > requirements.txt```
+        * ```pip install requirements.txt```
 
 #### Tests
 
 The project includes a suite of Unit and Integration tests that you should run after any changes
 
-```
+```bash
 python3 -m unittest discover tests/backend
+```
+or 
+```bash
+pdm run tests
 ```
 
 #### Export translatable strings to en.json source file
@@ -119,7 +129,11 @@ cd frontend && yarn build-locales
 We use [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to create the database from the migrations directory. Check the instructions on how to setup a PostGIS database with [docker](#creating-a-local-postgis-database-with-docker) or on your [local system](#non-docker). Then you can execute the following command to apply the migrations:
 
 ```
-python3 manage.py db upgrade
+flask db upgrade
+```
+or
+```
+pdm run db upgrade
 ```
 
 #### Migrating your data from TM2
@@ -136,9 +150,7 @@ To be able to create projects and have full permissions as an admin user inside 
 
 If you plan to only work on the API you only have to build the backend architecture. Install the backend dependencies, and run the server:
 
-`
-python3 manage.py runserver -d -r
-`
+`flask run --debug --reload` or `pdm run start`
 
 You can access the API documentation on [http://localhost:5000/api-docs](http://localhost:5000/api-docs), it also allows you to execute requests on your local TM instance. The API docs is also available on our [production](https://tasks.hotosm.org/api-docs) and [staging](https://tasks-stage.hotosm.org/api-docs/) instances.
 
@@ -146,10 +158,10 @@ You can access the API documentation on [http://localhost:5000/api-docs](http://
 
 In order to authenticate on the API, you need to have an Authorization Token.
 
-1. Run the command line `manage.py` with the `gen_token` option and `-u <OSM_User_ID_number>`. The command line can be run in any shell session as long as you are in the tasking-manager directory.
+1. Run the command line `manage.py` via `flask` with the `gen_token` option and `-u <OSM_User_ID_number>`. The command line can be run in any shell session as long as you are in the tasking-manager directory.
 
 ```
-venv/bin/python manage.py gen_token -u 99999999
+flask gen_token -u 99999999
 ```
 
 This will generate a line that looks like this:

@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useIntl } from 'react-intl';
+import { gpx } from '@tmcw/togeojson';
 import * as RapiD from 'RapiD/dist/iD.legacy';
 import 'RapiD/dist/RapiD.css';
 
 import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
+import messages from './messages';
 
 export default function RapidEditor({
   setDisable,
@@ -15,10 +18,11 @@ export default function RapidEditor({
 }) {
   const dispatch = useDispatch();
   const session = useSelector((state) => state.auth.session);
+  const intl = useIntl();
   const RapiDContext = useSelector((state) => state.editor.rapidContext);
   const locale = useSelector((state) => state.preferences.locale);
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
-  const windowInit = typeof window !== undefined;
+  const windowInit = typeof window !== 'undefined';
   const customSource =
     RapiDContext && RapiDContext.background() && RapiDContext.background().findSource('custom');
 
@@ -88,7 +92,20 @@ export default function RapidEditor({
         RapiDContext.init();
       }
       if (gpxUrl) {
-        RapiDContext.layers().layer('data').url(gpxUrl, '.gpx');
+        fetch(gpxUrl)
+          .then((response) => response.text())
+          .then((data) => {
+            let gpxData = new DOMParser().parseFromString(data, 'text/xml');
+            let nameNode = gpxData.getElementsByTagName('trk')[0].childNodes[0];
+            let projectId = nameNode.textContent.match(/\d+/g);
+            nameNode.textContent = intl.formatMessage(messages.gpxNameAttribute, {
+              projectId: projectId[0],
+            });
+            RapiDContext.layers().layer('data').geojson(gpx(gpxData));
+          })
+          .catch((error) => {
+            console.error('Error loading GPX data');
+          });
       }
 
       RapiDContext.rapidContext().showPowerUser = powerUser;
@@ -114,7 +131,7 @@ export default function RapidEditor({
         }
       });
     }
-  }, [session, RapiDContext, setDisable, presets, locale, gpxUrl, powerUser]);
+  }, [session, RapiDContext, setDisable, presets, locale, gpxUrl, powerUser, intl]);
 
-  return <div className="w-100 vh-minus-77-ns" id="rapid-container"></div>;
+  return <div className="w-100 vh-minus-69-ns" id="rapid-container"></div>;
 }

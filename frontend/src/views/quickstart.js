@@ -146,7 +146,7 @@ export function QuickstartPage() {
           {steps.map((v, i) => {
             const idx = i + 1;
             return (
-              <div className="pv2">
+              <div className="pv2" key={v.message}>
                 <p>
                   <span className="b mr1">{idx}.</span>
                   {<FormattedMessage {...messages[v.message]} values={v.values} />}

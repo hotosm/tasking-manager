@@ -1,8 +1,8 @@
-from flask_restful import Resource, current_app, request
+from flask_restful import Resource, request
 from dateutil.parser import parse as date_parse
 
 from backend.services.users.authentication_service import token_auth
-from backend.services.users.user_service import UserService, NotFound
+from backend.services.users.user_service import UserService
 
 
 class UsersTasksAPI(Resource):
@@ -111,9 +111,3 @@ class UsersTasksAPI(Resource):
             return tasks.to_primitive(), 200
         except ValueError:
             return {"tasks": [], "pagination": {"total": 0}}, 200
-        except NotFound:
-            return {"Error": "User or tasks not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"error": error_msg, "SubCode": "InternalServerError"}, 500

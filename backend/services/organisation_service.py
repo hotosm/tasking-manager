@@ -6,6 +6,7 @@ from sqlalchemy.sql import extract
 from dateutil.relativedelta import relativedelta
 
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import (
     OrganisationDTO,
     NewOrganisationDTO,
@@ -21,8 +22,8 @@ from backend.models.postgis.campaign import campaign_organisations
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.task import Task
+from backend.models.postgis.team import TeamVisibility
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
-from backend.models.postgis.utils import NotFound
 from backend.services.users.user_service import UserService
 
 
@@ -40,7 +41,9 @@ class OrganisationService:
         org = Organisation.get(organisation_id)
 
         if org is None:
-            raise NotFound()
+            raise NotFound(
+                sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
+            )
 
         return org
 
@@ -48,18 +51,20 @@ class OrganisationService:
     def get_organisation_by_id_as_dto(
         organisation_id: int, user_id: int, abbreviated: bool
     ):
-        org = Organisation.get(organisation_id)
+        org = OrganisationService.get_organisation_by_id(organisation_id)
         return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
 
     @staticmethod
     def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool):
         org = Organisation.query.filter_by(slug=slug).first()
+        if org is None:
+            raise NotFound(sub_code="ORGANISATION_NOT_FOUND", slug=slug)
         return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
 
     @staticmethod
     def get_organisation_dto(org, user_id: int, abbreviated: bool):
         if org is None:
-            raise NotFound()
+            raise NotFound(sub_code="ORGANISATION_NOT_FOUND")
         organisation_dto = org.as_dto(abbreviated)
 
         if user_id != 0:
@@ -72,7 +77,14 @@ class OrganisationService:
         if abbreviated:
             return organisation_dto
 
-        organisation_dto.teams = [team.as_dto_inside_org() for team in org.teams]
+        if organisation_dto.is_manager:
+            organisation_dto.teams = [team.as_dto_inside_org() for team in org.teams]
+        else:
+            organisation_dto.teams = [
+                team.as_dto_inside_org()
+                for team in org.teams
+                if team.visibility == TeamVisibility.PUBLIC.value
+            ]
 
         return organisation_dto
 
@@ -81,7 +93,9 @@ class OrganisationService:
         organisation = Organisation.get_organisation_by_name(organisation_name)
 
         if organisation is None:
-            raise NotFound()
+            raise NotFound(
+                sub_code="ORGANISATION_NOT_FOUND", organisation_name=organisation_name
+            )
 
         return organisation
 
@@ -184,20 +198,22 @@ class OrganisationService:
         )
 
         if projects is None:
-            raise NotFound()
+            raise NotFound(
+                sub_code="PROJECTS_NOT_FOUND", organisation_id=organisation_id
+            )
 
         return projects
 
     @staticmethod
-    def get_organisation_stats(organisation_id: int, year: int) -> OrganizationStatsDTO:
+    def get_organisation_stats(
+        organisation_id: int, year: int = None
+    ) -> OrganizationStatsDTO:
         projects = db.session.query(
             Project.id, Project.status, Project.last_updated, Project.created
         ).filter(Project.organisation_id == organisation_id)
         if year:
             start_date = f"{year}/01/01"
-            projects = projects.filter(
-                Project.created.between(start_date, datetime.today())
-            )
+            projects = projects.filter(Project.created.between(start_date, func.now()))
 
         published_projects = projects.filter(
             Project.status == ProjectStatus.PUBLISHED.value
@@ -278,7 +294,7 @@ class OrganisationService:
                 try:
                     admin = UserService.get_user_by_username(user)
                 except NotFound:
-                    raise NotFound(f"User {user} does not exist")
+                    raise NotFound(sub_code="USER_NOT_FOUND", username=user)
 
                 managers.append(admin.username)
 
@@ -299,7 +315,9 @@ class OrganisationService:
         org = Organisation.get(organisation_id)
 
         if org is None:
-            raise NotFound()
+            raise NotFound(
+                sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
+            )
         user = UserService.get_user_by_id(user_id)
 
         return user in org.managers

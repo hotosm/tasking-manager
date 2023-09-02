@@ -1,6 +1,7 @@
 from slugify import slugify
 
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import (
     OrganisationDTO,
     NewOrganisationDTO,
@@ -8,7 +9,6 @@ from backend.models.dtos.organisation_dto import (
 )
 from backend.models.postgis.user import User
 from backend.models.postgis.campaign import Campaign, campaign_organisations
-from backend.models.postgis.utils import NotFound
 from backend.models.postgis.statuses import OrganisationType
 
 
@@ -29,7 +29,7 @@ class InvalidRoleException(Exception):
 
 
 class Organisation(db.Model):
-    """ Describes an Organisation """
+    """Describes an Organisation"""
 
     __tablename__ = "organisations"
 
@@ -53,7 +53,7 @@ class Organisation(db.Model):
     )
 
     def create(self):
-        """ Creates and saves the current model to the DB """
+        """Creates and saves the current model to the DB"""
         db.session.add(self)
         db.session.commit()
 
@@ -62,7 +62,7 @@ class Organisation(db.Model):
 
     @classmethod
     def create_from_dto(cls, new_organisation_dto: NewOrganisationDTO):
-        """ Creates a new organisation from a DTO """
+        """Creates a new organisation from a DTO"""
         new_org = cls()
 
         new_org.name = new_organisation_dto.name
@@ -77,7 +77,7 @@ class Organisation(db.Model):
             user = User.get_by_username(manager)
 
             if user is None:
-                raise NotFound(f"User {manager} Not Found")
+                raise NotFound(sub_code="USER_NOT_FOUND", username=manager)
 
             new_org.managers.append(user)
 
@@ -85,7 +85,7 @@ class Organisation(db.Model):
         return new_org
 
     def update(self, organisation_dto: OrganisationDTO):
-        """ Updates Organisation from DTO """
+        """Updates Organisation from DTO"""
 
         for attr, value in organisation_dto.items():
             if attr == "type" and value is not None:
@@ -109,19 +109,19 @@ class Organisation(db.Model):
                 new_manager = User.get_by_username(manager)
 
                 if new_manager is None:
-                    raise NotFound(f"User {manager} Not Found")
+                    raise NotFound(sub_code="USER_NOT_FOUND", username=manager)
 
                 self.managers.append(new_manager)
 
         db.session.commit()
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
     def can_be_deleted(self) -> bool:
-        """ An Organisation can be deleted if it doesn't have any projects or teams """
+        """An Organisation can be deleted if it doesn't have any projects or teams"""
         return len(self.projects) == 0 and len(self.teams) == 0
 
     @staticmethod
@@ -131,7 +131,7 @@ class Organisation(db.Model):
         :param organisation_id: organisation ID in scope
         :return: Organisation if found otherwise None
         """
-        return Organisation.query.get(organisation_id)
+        return db.session.get(Organisation, organisation_id)
 
     @staticmethod
     def get_organisation_by_name(organisation_name: str):
@@ -151,12 +151,12 @@ class Organisation(db.Model):
 
     @staticmethod
     def get_all_organisations():
-        """ Gets all organisations"""
+        """Gets all organisations"""
         return Organisation.query.order_by(Organisation.name).all()
 
     @staticmethod
     def get_organisations_managed_by_user(user_id: int):
-        """ Gets organisations a user can manage """
+        """Gets organisations a user can manage"""
         query_results = (
             Organisation.query.join(organisation_managers)
             .filter(
@@ -169,7 +169,7 @@ class Organisation(db.Model):
         return query_results
 
     def as_dto(self, omit_managers=False):
-        """ Returns a dto for an organisation """
+        """Returns a dto for an organisation"""
         organisation_dto = OrganisationDTO()
         organisation_dto.organisation_id = self.id
         organisation_dto.name = self.name

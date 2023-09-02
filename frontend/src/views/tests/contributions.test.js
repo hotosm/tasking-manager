@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
 import { act, screen, waitFor } from '@testing-library/react';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
@@ -38,7 +37,7 @@ describe('Contributions Page', () => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
 
-    renderWithRouter(
+    const { user } = renderWithRouter(
       <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <ContributionsPage />
@@ -46,7 +45,6 @@ describe('Contributions Page', () => {
       </QueryParamProvider>,
     );
     expect(screen.getByRole('heading', { name: /my tasks/i })).toBeInTheDocument();
-    const user = userEvent.setup();
     await user.click(screen.getByRole('combobox'));
     expect(await screen.findByText('#8629')).toBeInTheDocument();
     expect(await screen.findByText('Task #1822 · Project #5871')).toBeInTheDocument();

@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { screen, waitFor, fireEvent } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { InterestsManagement } from '../index';
 
@@ -62,7 +62,7 @@ describe('InterestsManagement component', () => {
   });
 
   it('filters interests list by the search query', async () => {
-    const { container } = renderWithRouter(
+    const { user, container } = renderWithRouter(
       <IntlProviders>
         <InterestsManagement interests={dummyInterests} isInterestsFetched={true} />
       </IntlProviders>,
@@ -73,11 +73,8 @@ describe('InterestsManagement component', () => {
       expect(screen.getByText(/Interest 1/i));
     });
     expect(container.querySelectorAll('svg').length).toBe(5);
-    fireEvent.change(textField, {
-      target: {
-        value: 2,
-      },
-    });
+    await user.clear(textField);
+    await user.type(textField, '2');
     expect(screen.getByText(/Interest 2/i)).toBeInTheDocument();
     expect(screen.queryByText(/Interest 1/i)).not.toBeInTheDocument();
   });

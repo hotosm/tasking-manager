@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { act, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { store } from '../../../store';
 import {
@@ -34,12 +33,12 @@ describe('AddToFavorites button', () => {
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: null });
     });
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <AddToFavorites projectId={1} />
       </ReduxIntlProviders>,
     );
-    await userEvent.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button'));
     expect(router.state.location.pathname).toBe('/login');
   });
 
@@ -47,13 +46,13 @@ describe('AddToFavorites button', () => {
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
-    createComponentWithMemoryRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <AddToFavorites projectId={123} />
       </ReduxIntlProviders>,
     );
     expect(screen.getByText(messages.addToFavorites.defaultMessage)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button'));
     await waitFor(() =>
       expect(screen.queryByText(messages.addToFavorites.defaultMessage)).not.toBeInTheDocument(),
     );

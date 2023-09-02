@@ -4,12 +4,14 @@ from shapely.ops import split
 from backend import db
 from flask import current_app
 from geoalchemy2 import shape
+
+from backend.exceptions import NotFound
 from backend.models.dtos.grid_dto import SplitTaskDTO
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.postgis.utils import ST_Transform, ST_Area, ST_GeogFromWKB
 from backend.models.postgis.task import Task, TaskStatus, TaskAction
 from backend.models.postgis.project import Project
-from backend.models.postgis.utils import NotFound, InvalidGeoJson
+from backend.models.postgis.utils import InvalidGeoJson
 
 
 class SplitServiceError(Exception):
@@ -88,9 +90,10 @@ class SplitService:
         transformed_geometry = ST_Transform(shape.from_shape(multipolygon, 3857), 4326)
 
         # use DB to get the geometry as geojson
-        return geojson.loads(
-            db.engine.execute(transformed_geometry.ST_AsGeoJSON()).scalar()
-        )
+        with db.engine.connect() as conn:
+            return geojson.loads(
+                conn.execute(transformed_geometry.ST_AsGeoJSON()).scalar()
+            )
 
     @staticmethod
     def _create_split_tasks_from_geometry(task) -> list:
@@ -127,9 +130,10 @@ class SplitService:
             feature = geojson.Feature()
             # Tasks expect multipolygons. Convert and use the database to get as GeoJSON
             multipolygon_geometry = shape.from_shape(split_geometry, 4326)
-            feature.geometry = geojson.loads(
-                db.engine.execute(multipolygon_geometry.ST_AsGeoJSON()).scalar()
-            )
+            with db.engine.connect() as conn:
+                feature.geometry = geojson.loads(
+                    conn.execute(multipolygon_geometry.ST_AsGeoJSON()).scalar()
+                )
             feature.properties["x"] = None
             feature.properties["y"] = None
             feature.properties["zoom"] = None
@@ -147,11 +151,13 @@ class SplitService:
         """
         first_half = [
             g
-            for g in geometries
+            for g in geometries.geoms
             if getattr(g.centroid, axis) <= getattr(centroid, axis)
         ]
         second_half = [
-            g for g in geometries if getattr(g.centroid, axis) > getattr(centroid, axis)
+            g
+            for g in geometries.geoms
+            if getattr(g.centroid, axis) > getattr(centroid, axis)
         ]
         return (MultiPolygon(first_half), MultiPolygon(second_half))
 
@@ -167,14 +173,15 @@ class SplitService:
         # get the task to be split
         original_task = Task.get(split_task_dto.task_id, split_task_dto.project_id)
         if original_task is None:
-            raise NotFound()
+            raise NotFound(sub_code="TASK_NOT_FOUND", task_id=split_task_dto.task_id)
 
         original_geometry = shape.to_shape(original_task.geometry)
 
         # Fetch the task geometry in meters
-        original_task_area_m = db.engine.execute(
-            ST_Area(ST_GeogFromWKB(original_task.geometry))
-        ).scalar()
+        with db.engine.connect() as conn:
+            original_task_area_m = conn.execute(
+                ST_Area(ST_GeogFromWKB(original_task.geometry))
+            ).scalar()
 
         if (
             original_task.zoom and original_task.zoom >= 18

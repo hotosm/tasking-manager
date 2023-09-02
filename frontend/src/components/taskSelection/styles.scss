@@ -1,0 +1,36 @@
+@import '../../assets/styles/variables';
+
+.timeline-container > div:first-of-type {
+  border-top: 1px solid $tan;
+  padding-top: 2rem;
+  margin-top: 0.5rem;
+}
+
+.activity {
+  padding-bottom: 1.8rem;
+}
+
+.session > div:not(:last-child)::before {
+  content: '';
+  background-color: $blue-light;
+  bottom: 0;
+  display: block;
+  left: 24px;
+  position: absolute;
+  top: 0;
+  width: 2px;
+}
+
+.oval {
+  height: 12px;
+  width: 12px;
+  background-color: #fff;
+  border: 2px solid $blue-light;
+  border-radius: 50%;
+  margin-left: 19px;
+  margin-right: 16px;
+}
+
+.comment > p {
+  margin-bottom: 0;
+}

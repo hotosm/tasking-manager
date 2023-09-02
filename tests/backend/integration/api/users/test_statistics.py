@@ -9,6 +9,7 @@ from tests.backend.helpers.test_helpers import (
     generate_encoded_token,
     return_canned_user,
 )
+from tests.backend.integration.api.users.test_resources import USER_NOT_FOUND_SUB_CODE
 
 
 class TestUsersStatisticsAPI(BaseTestCase):
@@ -19,14 +20,14 @@ class TestUsersStatisticsAPI(BaseTestCase):
         self.url = f"/api/v2/users/{self.test_user.username}/statistics/"
 
     def test_returns_401_if_no_token(self):
-        """ Test that the user needs to be logged in. """
+        """Test that the user needs to be logged in."""
         # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_return_404_if_user_not_found(self):
-        """ Test returns 404 if user not found. """
+        """Test returns 404 if user not found."""
         # Act
         response = self.client.get(
             "/api/v2/users/doesntexist/statistics/",
@@ -34,10 +35,10 @@ class TestUsersStatisticsAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json["SubCode"], "NotFound")
+        self.assertEqual(response.json["error"]["sub_code"], USER_NOT_FOUND_SUB_CODE)
 
     def test_return_200_if_user_found(self):
-        """ Test returns 200 if user found. """
+        """Test returns 200 if user found."""
         # Arrange
         task = Task.get(1, self.test_project.id)
         task.lock_task_for_mapping(self.test_user.id)
@@ -80,7 +81,7 @@ class TestUsersStatisticsAllAPI(BaseTestCase):
         self.assertEqual(response.status_code, 401)
 
     def returns_400_if_start_date_not_provided(self):
-        """ Test that the start date needs to be provided. """
+        """Test that the start date needs to be provided."""
         # Act
         response = self.client.get(
             self.url,
@@ -91,7 +92,7 @@ class TestUsersStatisticsAllAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "MissingDate")
 
     def returns_400_if_invalid_date_value(self):
-        """ Test that the date should be in date format """
+        """Test that the date should be in date format"""
         # Act
         response = self.client.get(
             self.url,
@@ -103,7 +104,7 @@ class TestUsersStatisticsAllAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "InvalidDateValue")
 
     def returns_400_if_start_date_greater_than_end_date(self):
-        """ Test that the start date cannot be greater than the end date. """
+        """Test that the start date cannot be greater than the end date."""
         # Act
         response = self.client.get(
             self.url,
@@ -115,7 +116,7 @@ class TestUsersStatisticsAllAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "InvalidDateRange")
 
     def test_returns_400_if_date_range_greater_than_3_years(self):
-        """ Test that the date range cannot be greater than 3 years. """
+        """Test that the date range cannot be greater than 3 years."""
         # Act
         response = self.client.get(
             self.url,
@@ -127,7 +128,7 @@ class TestUsersStatisticsAllAPI(BaseTestCase):
         self.assertEqual(response.json["SubCode"], "InvalidDateRange")
 
     def test_returns_all_users_statistics(self):
-        """ Test that the statistics for all users that registerd in the give priod are returned."""
+        """Test that the statistics for all users that registerd in the give priod are returned."""
         # Arrange
         mapping_level_dict = {1: 0, 2: 0, 3: 0}
         #  Create 10 users with random mapping levels

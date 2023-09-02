@@ -1,4 +1,5 @@
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.team_dto import (
     TeamDTO,
     NewTeamDTO,
@@ -14,7 +15,6 @@ from backend.models.postgis.statuses import (
     TeamRoles,
 )
 from backend.models.postgis.user import User
-from backend.models.postgis.utils import NotFound
 
 
 class TeamMembers(db.Model):
@@ -38,27 +38,27 @@ class TeamMembers(db.Model):
     )
 
     def create(self):
-        """ Creates and saves the current model to the DB """
+        """Creates and saves the current model to the DB"""
         db.session.add(self)
         db.session.commit()
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
     def update(self):
-        """ Updates the current model in the DB """
+        """Updates the current model in the DB"""
         db.session.commit()
 
     @staticmethod
     def get(team_id: int, user_id: int):
-        """ Returns a team member by team_id and user_id """
+        """Returns a team member by team_id and user_id"""
         return TeamMembers.query.filter_by(team_id=team_id, user_id=user_id).first()
 
 
 class Team(db.Model):
-    """ Describes a team """
+    """Describes a team"""
 
     __tablename__ = "teams"
 
@@ -82,13 +82,13 @@ class Team(db.Model):
     organisation = db.relationship(Organisation, backref="teams")
 
     def create(self):
-        """ Creates and saves the current model to the DB """
+        """Creates and saves the current model to the DB"""
         db.session.add(self)
         db.session.commit()
 
     @classmethod
     def create_from_dto(cls, new_team_dto: NewTeamDTO):
-        """ Creates a new team from a dto """
+        """Creates a new team from a dto"""
         new_team = cls()
 
         new_team.name = new_team_dto.name
@@ -112,7 +112,7 @@ class Team(db.Model):
         return new_team
 
     def update(self, team_dto: TeamDTO):
-        """ Updates Team from DTO """
+        """Updates Team from DTO"""
         if team_dto.organisation:
             self.organisation = Organisation().get_organisation_by_name(
                 team_dto.organisation
@@ -144,7 +144,9 @@ class Team(db.Model):
             for member in team_dto.members:
                 user = User.get_by_username(member["username"])
                 if user is None:
-                    raise NotFound("User not found")
+                    raise NotFound(
+                        sub_code="USER_NOT_FOUND", username=member["username"]
+                    )
                 team_member = TeamMembers.get(self.id, user.id)
                 if team_member:
                     team_member.join_request_notifications = member[
@@ -161,12 +163,12 @@ class Team(db.Model):
         db.session.commit()
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
     def can_be_deleted(self) -> bool:
-        """ A Team can be deleted if it doesn't have any projects """
+        """A Team can be deleted if it doesn't have any projects"""
         return len(self.projects) == 0
 
     def get(team_id: int):
@@ -175,7 +177,7 @@ class Team(db.Model):
         :param team_id: team ID in scope
         :return: Team if found otherwise None
         """
-        return Team.query.get(team_id)
+        return db.session.get(Team, team_id)
 
     def get_team_by_name(team_name: str):
         """
@@ -186,7 +188,7 @@ class Team(db.Model):
         return Team.query.filter_by(name=team_name).one_or_none()
 
     def as_dto(self):
-        """ Returns a dto for the team """
+        """Returns a dto for the team"""
         team_dto = TeamDTO()
         team_dto.team_id = self.id
         team_dto.description = self.description
@@ -200,7 +202,7 @@ class Team(db.Model):
         return team_dto
 
     def as_dto_inside_org(self):
-        """ Returns a dto for the team """
+        """Returns a dto for the team"""
         team_dto = OrganisationTeamsDTO()
         team_dto.team_id = self.id
         team_dto.name = self.name
@@ -211,7 +213,7 @@ class Team(db.Model):
         return team_dto
 
     def as_dto_team_member(self, member) -> TeamMembersDTO:
-        """ Returns a dto for the team  member"""
+        """Returns a dto for the team  member"""
         member_dto = TeamMembersDTO()
         user = User.get_by_id(member.user_id)
         member_function = TeamMemberFunctions(member.function).name
@@ -223,7 +225,7 @@ class Team(db.Model):
         return member_dto
 
     def as_dto_team_project(self, project) -> TeamProjectDTO:
-        """ Returns a dto for the team project """
+        """Returns a dto for the team project"""
         project_team_dto = TeamProjectDTO()
         project_team_dto.project_name = project.name
         project_team_dto.project_id = project.project_id
@@ -231,7 +233,7 @@ class Team(db.Model):
         return project_team_dto
 
     def _get_team_members(self):
-        """ Helper to get JSON serialized members """
+        """Helper to get JSON serialized members"""
         members = []
         for mem in self.members:
             members.append(

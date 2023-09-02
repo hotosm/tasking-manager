@@ -2,7 +2,9 @@ from cachetools import TTLCache, cached
 from flask import current_app
 import datetime
 from sqlalchemy.sql.expression import literal
-from sqlalchemy import func, or_, desc, and_, distinct, cast, Time
+from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column
+
+from backend.exceptions import NotFound
 from backend import db
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
 from backend.models.dtos.user_dto import (
@@ -26,7 +28,6 @@ from backend.models.postgis.task import TaskHistory, TaskAction, Task
 from backend.models.dtos.user_dto import UserTaskDTOs
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.statuses import TaskStatus, ProjectStatus
-from backend.models.postgis.utils import NotFound
 from backend.services.users.osm_service import OSMService, OSMServiceError
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
@@ -52,7 +53,7 @@ class UserService:
         user = User.get_by_id(user_id)
 
         if user is None:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND", user_id=user_id)
 
         return user
 
@@ -61,7 +62,7 @@ class UserService:
         user = User.get_by_username(username)
 
         if user is None:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND", username=username)
 
         return user
 
@@ -94,7 +95,7 @@ class UserService:
         users = User.query.filter(User.role == 2).all()
 
         if users is None:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND")
 
         return users
 
@@ -103,7 +104,7 @@ class UserService:
         users = User.query.filter(User.role == 1).all()
 
         if users is None:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND")
 
         return users
 
@@ -291,7 +292,7 @@ class UserService:
                 Task.project_id == sq.c.project_id,
             ),
         )
-        tasks = tasks.add_columns("max", "comments")
+        tasks = tasks.add_columns(column("max"), column("comments"))
 
         if sort_by == "action_date":
             tasks = tasks.order_by(sq.c.max)
@@ -311,7 +312,7 @@ class UserService:
         if project_id:
             tasks = tasks.filter_by(project_id=project_id)
 
-        results = tasks.paginate(page, page_size, True)
+        results = tasks.paginate(page=page, per_page=page_size, error_out=True)
 
         task_list = []
 
@@ -625,7 +626,7 @@ class UserService:
             .one_or_none()
         )
         if user is None:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND", username=user_name)
 
         # Get all projects that the user has contributed
         sq = (
@@ -822,14 +823,17 @@ class UserService:
     @staticmethod
     def register_user_with_email(user_dto: UserRegisterEmailDTO):
         # Validate that user is not within the general users table.
-        user = User.query.filter(User.email_address == user_dto.email).one_or_none()
+        user_email = user_dto.email.lower()
+        user = User.query.filter(func.lower(User.email_address) == user_email).first()
         if user is not None:
-            details_msg = f"Email address {user_dto.email} already exists"
+            details_msg = f"Email address {user_email} already exists"
             raise ValueError(details_msg)
 
-        user = UserEmail.query.filter(UserEmail.email == user_dto.email).one_or_none()
+        user = UserEmail.query.filter(
+            func.lower(UserEmail.email) == user_email
+        ).one_or_none()
         if user is None:
-            user = UserEmail(email=user_dto.email)
+            user = UserEmail(email=user_email)
             user.create()
 
         return user

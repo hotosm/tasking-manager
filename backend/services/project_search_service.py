@@ -7,6 +7,7 @@ from shapely.geometry import Polygon, box
 from cachetools import TTLCache, cached
 
 from backend import db
+from backend.exceptions import NotFound
 from backend.api.utils import validate_date_input
 from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
@@ -31,7 +32,6 @@ from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.task import TaskHistory
 from backend.models.postgis.utils import (
-    NotFound,
     ST_Intersects,
     ST_MakeEnvelope,
     ST_Transform,
@@ -120,6 +120,7 @@ class ProjectSearchService:
         project_info_dto = ProjectInfo.get_dto_for_locale(
             project.id, preferred_locale, project.default_locale
         )
+        project_obj = Project.get(project.id)
         list_dto = ListSearchResultDTO()
         list_dto.project_id = project.id
         list_dto.locale = project_info_dto.locale
@@ -129,19 +130,11 @@ class ProjectSearchService:
         list_dto.short_description = project_info_dto.short_description
         list_dto.last_updated = project.last_updated
         list_dto.due_date = project.due_date
-        list_dto.percent_mapped = Project.calculate_tasks_percent(
+        list_dto.percent_mapped = project_obj.calculate_tasks_percent(
             "mapped",
-            project.total_tasks,
-            project.tasks_mapped,
-            project.tasks_validated,
-            project.tasks_bad_imagery,
         )
-        list_dto.percent_validated = Project.calculate_tasks_percent(
+        list_dto.percent_validated = project_obj.calculate_tasks_percent(
             "validated",
-            project.total_tasks,
-            project.tasks_mapped,
-            project.tasks_validated,
-            project.tasks_bad_imagery,
         )
         list_dto.status = ProjectStatus(project.status).name
         list_dto.active_mappers = Project.get_active_mappers(project.id)
@@ -184,7 +177,7 @@ class ProjectSearchService:
             search_dto, user
         )
         if paginated_results.total == 0:
-            raise NotFound()
+            raise NotFound(sub_code="PROJECTS_NOT_FOUND")
 
         dto = ProjectSearchResultsDTO()
         dto.results = [
@@ -332,7 +325,7 @@ class ProjectSearchService:
                 Project.id, func.unnest(Project.country).label("country")
             ).subquery()
             query = query.filter(
-                sq.c.country.ilike("%{}%".format(search_dto.country))
+                func.lower(sq.c.country) == search_dto.country.lower()
             ).filter(Project.id == sq.c.id)
 
         if search_dto.last_updated_gte:
@@ -384,12 +377,16 @@ class ProjectSearchService:
         if not search_dto.omit_map_results:
             query_result = query
             query_result.column_descriptions.clear()
-            query_result.add_column(Project.id)
-            query_result.add_column(Project.centroid.ST_AsGeoJSON().label("centroid"))
-            query_result.add_column(Project.priority)
+            query_result.add_columns(
+                Project.id,
+                Project.centroid.ST_AsGeoJSON().label("centroid"),
+                Project.priority,
+            )
             all_results = query_result.all()
 
-        paginated_results = query.paginate(search_dto.page, 14, True)
+        paginated_results = query.paginate(
+            page=search_dto.page, per_page=14, error_out=True
+        )
 
         return all_results, paginated_results
 
@@ -553,7 +550,8 @@ class ProjectSearchService:
             polygon = box(bbox[0], bbox[1], bbox[2], bbox[3])
             if not srid == 4326:
                 geometry = shape.from_shape(polygon, srid)
-                geom_4326 = db.engine.execute(ST_Transform(geometry, 4326)).scalar()
+                with db.engine.connect() as conn:
+                    geom_4326 = conn.execute(ST_Transform(geometry, 4326)).scalar()
                 polygon = shape.to_shape(geom_4326)
         except Exception as e:
             current_app.logger.error(f"InvalidData- error making polygon: {e}")
@@ -563,9 +561,10 @@ class ProjectSearchService:
     @staticmethod
     def _get_area_sqm(polygon: Polygon) -> float:
         """get the area of the polygon in square metres"""
-        return db.engine.execute(
-            ST_Area(ST_Transform(shape.from_shape(polygon, 4326), 3857))
-        ).scalar()
+        with db.engine.connect() as conn:
+            return conn.execute(
+                ST_Area(ST_Transform(shape.from_shape(polygon, 4326), 3857))
+            ).scalar()
 
     @staticmethod
     def validate_bbox_area(polygon: Polygon) -> bool:

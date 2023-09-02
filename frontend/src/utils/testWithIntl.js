@@ -1,11 +1,12 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, createMemoryRouter, RouterProvider } from 'react-router-dom';
 import TestRenderer from 'react-test-renderer';
 
 import { store } from '../store';
+import userEvent from '@testing-library/user-event';
 
 export const createComponentWithIntl = (children, props = { locale: 'en' }) => {
   return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);
@@ -16,9 +17,10 @@ export const createComponentWithReduxAndIntl = (children, props = { locale: 'en'
 };
 
 export const renderWithRouter = (ui, { route = '/' } = {}) => {
-  window.history.pushState({}, 'Test page', route);
+  act(() => window.history.pushState({}, 'Test page', route));
 
   return {
+    user: userEvent.setup({ copyToClipboard: true }),
     ...render(ui, { wrapper: BrowserRouter }),
   };
 };
@@ -37,7 +39,11 @@ export const IntlProviders = ({ children, props = { locale: 'en' } }: Object) =>
   <IntlProvider {...props}>{children}</IntlProvider>
 );
 
-export const createComponentWithMemoryRouter = (component, { route = '/starting/path' } = {}) => {
+export const createComponentWithMemoryRouter = (
+  component,
+  { route = '/starting/path', entryRoute = route } = {},
+) => {
+  const user = userEvent.setup();
   const router = createMemoryRouter(
     [
       {
@@ -46,7 +52,7 @@ export const createComponentWithMemoryRouter = (component, { route = '/starting/
       },
       {
         path: route,
-        // Render the component causing the navigate to '/'
+        // Render the component causing the navigate to route
         element: component,
       },
       {
@@ -55,14 +61,12 @@ export const createComponentWithMemoryRouter = (component, { route = '/starting/
       },
     ],
     {
-      // Set for where you want to start in the routes. Remember, KISS (Keep it simple, stupid) the routes.
-      initialEntries: [route],
-      // We don't need to explicitly set this, but it's nice to have.
-      initialIndex: 0,
+      initialEntries: ['/', entryRoute],
+      initialIndex: 1,
     },
   );
 
   const { container } = render(<RouterProvider router={router} />);
 
-  return { container, router };
+  return { user, container, router };
 };

@@ -172,7 +172,7 @@ const SignupForm = ({ data, setData, step, setStep }) => {
             className="link pointer red fw5"
             target="_blank"
             rel="noopener noreferrer"
-            href={`http://${ORG_PRIVACY_POLICY_URL}`}
+            href={`${ORG_PRIVACY_POLICY_URL}`}
           >
             <FormattedMessage {...messages.privacyPolicy} />
           </a>

@@ -5,7 +5,7 @@ from schematics.exceptions import DataError
 
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.grid_dto import GridDTO
-from backend.services.project_service import ProjectService, NotFound
+from backend.services.project_service import ProjectService
 from backend.services.project_admin_service import (
     ProjectAdminService,
     ProjectAdminServiceError,
@@ -15,6 +15,8 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.users.authentication_service import token_auth, tm
 from backend.services.interests_service import InterestService
 from backend.models.postgis.utils import InvalidGeoJson
+
+from shapely import GEOSException
 from shapely.errors import TopologicalError
 
 
@@ -71,15 +73,6 @@ class ProjectsActionsTransferAPI(Resource):
             return {"Success": "Project Transferred"}, 200
         except (ValueError, ProjectAdminServiceError) as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "Project or user not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"ProjectsActionsTransferAPI POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to transfer project",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class ProjectsActionsMessageContributorsAPI(Resource):
@@ -141,28 +134,18 @@ class ProjectsActionsMessageContributorsAPI(Resource):
                 "SubCode": "InvalidData",
             }, 400
 
-        try:
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            ):
-                return {
-                    "Error": "User is not a manager of the project",
-                    "SubCode": "UserPermissionError",
-                }, 403
-            threading.Thread(
-                target=MessageService.send_message_to_all_contributors,
-                args=(project_id, message_dto),
-            ).start()
-            return {"Success": "Messages started"}, 200
-        except NotFound:
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Send message all - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
             return {
-                "Error": "Unable to send messages to mappers",
-                "SubCode": "InternalServerError",
-            }, 500
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
+        threading.Thread(
+            target=MessageService.send_message_to_all_contributors,
+            args=(project_id, message_dto),
+        ).start()
+        return {"Success": "Messages started"}, 200
 
 
 class ProjectsActionsFeatureAPI(Resource):
@@ -215,14 +198,8 @@ class ProjectsActionsFeatureAPI(Resource):
         try:
             ProjectService.set_project_as_featured(project_id)
             return {"Success": True}, 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"FeaturedProjects POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectsActionsUnFeatureAPI(Resource):
@@ -275,14 +252,8 @@ class ProjectsActionsUnFeatureAPI(Resource):
         try:
             ProjectService.unset_project_as_featured(project_id)
             return {"Success": True}, 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"FeaturedProjects DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectsActionsSetInterestsAPI(Resource):
@@ -342,20 +313,11 @@ class ProjectsActionsSetInterestsAPI(Resource):
                 "SubCode": "UserPermissionError",
             }, 403
 
-        try:
-            data = request.get_json()
-            project_interests = InterestService.create_or_update_project_interests(
-                project_id, data["interests"]
-            )
-            return project_interests.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = (
-                f"ProjectsActionsSetInterestsAPI POST - unhandled error: {str(e)}"
-            )
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        data = request.get_json()
+        project_interests = InterestService.create_or_update_project_interests(
+            project_id, data["interests"]
+        )
+        return project_interests.to_primitive(), 200
 
 
 class ProjectActionsIntersectingTilesAPI(Resource):
@@ -432,7 +394,13 @@ class ProjectActionsIntersectingTilesAPI(Resource):
                 "error": "Invalid geometry. Polygon is self intersecting",
                 "SubCode": "SelfIntersectingAOI",
             }, 400
-        except Exception as e:
-            error_msg = f"IntersectingTiles GET API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"error": error_msg, "SubCode": "InternalServerError"}, 500
+        except GEOSException as wrapped:
+            if (
+                isinstance(wrapped.args[0], str)
+                and "Self-intersection" in wrapped.args[0]
+            ):
+                return {
+                    "error": "Invalid geometry. Polygon is self intersecting",
+                    "SubCode": "SelfIntersectingAOI",
+                }, 400
+            return {"error": str(wrapped), "SubCode": "InternalServerError"}

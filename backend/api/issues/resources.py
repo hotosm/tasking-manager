@@ -2,9 +2,10 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
 from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
-from backend.models.postgis.utils import NotFound
 from backend.services.mapping_issues_service import MappingIssueCategoryService
 from backend.services.users.authentication_service import token_auth, tm
+
+ISSUE_NOT_FOUND = "Mapping-issue category not found"
 
 
 class IssuesRestAPI(Resource):
@@ -31,21 +32,10 @@ class IssuesRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            category_dto = MappingIssueCategoryService.get_category_as_dto(category_id)
-            return category_dto.to_primitive(), 200
-        except NotFound:
-            return {
-                "Error": "Mapping-issue category Not Found",
-                "SubCode": "NotFound",
-            }, 404
-        except Exception as e:
-            error_msg = f"Mapping-issue category PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch mapping issue category",
-                "SubCode": "InternalServerError",
-            }, 500
+        category_dto = MappingIssueCategoryService.get_mapping_issue_category_as_dto(
+            category_id
+        )
+        return category_dto.to_primitive(), 200
 
     @tm.pm_only()
     @token_auth.login_required
@@ -87,6 +77,8 @@ class IssuesRestAPI(Resource):
                 description: Invalid Request
             401:
                 description: Unauthorized - Invalid credentials
+            404:
+                description: Mapping-issue category not found
             500:
                 description: Internal Server Error
         """
@@ -101,32 +93,19 @@ class IssuesRestAPI(Resource):
                 "SubCode": "InvalidData",
             }, 400
 
-        try:
-            updated_category = (
-                MappingIssueCategoryService.update_mapping_issue_category(category_dto)
-            )
-            return updated_category.to_primitive(), 200
-        except NotFound:
-            return {
-                "Error": "Mapping-issue category Not Found",
-                "SubCode": "NotFound",
-            }, 404
-        except Exception as e:
-            error_msg = f"Mapping-issue category PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to update mapping issue category",
-                "SubCode": "InternalServerError",
-            }, 500
+        updated_category = MappingIssueCategoryService.update_mapping_issue_category(
+            category_dto
+        )
+        return updated_category.to_primitive(), 200
 
     @tm.pm_only()
     @token_auth.login_required
     def delete(self, category_id):
         """
-        Delete the specified mapping-issue category. Note that categories can
-        be deleted only if they have never been associated with a task. To
-        instead archive a used category that is no longer needed, update the
-        category with its archived flag set to true.
+        Delete the specified mapping-issue category.
+        Note that categories can be deleted only if they have never been associated with a task.\
+        To instead archive a used category that is no longer needed, \
+        update the category with its archived flag set to true.
         ---
         tags:
             - issues
@@ -155,21 +134,8 @@ class IssuesRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            MappingIssueCategoryService.delete_mapping_issue_category(category_id)
-            return {"Success": "Mapping-issue category deleted"}, 200
-        except NotFound:
-            return {
-                "Error": "Mapping-issue category Not Found",
-                "SubCode": "NotFound",
-            }, 404
-        except Exception as e:
-            error_msg = f"Mapping-issue category DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to delete mapping issue category",
-                "SubCode": "InternalServerError",
-            }, 500
+        MappingIssueCategoryService.delete_mapping_issue_category(category_id)
+        return {"Success": "Mapping-issue category deleted"}, 200
 
 
 class IssuesAllAPI(Resource):
@@ -193,19 +159,11 @@ class IssuesAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            include_archived = request.args.get("includeArchived") == "true"
-            categories = MappingIssueCategoryService.get_all_mapping_issue_categories(
-                include_archived
-            )
-            return categories.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch mapping issue categories",
-                "SubCode": "InternalServerError",
-            }, 500
+        include_archived = request.args.get("includeArchived") == "true"
+        categories = MappingIssueCategoryService.get_all_mapping_issue_categories(
+            include_archived
+        )
+        return categories.to_primitive(), 200
 
     @tm.pm_only()
     @token_auth.login_required
@@ -255,15 +213,7 @@ class IssuesAllAPI(Resource):
                 "SubCode": "InvalidData",
             }, 400
 
-        try:
-            new_category_id = MappingIssueCategoryService.create_mapping_issue_category(
-                category_dto
-            )
-            return {"categoryId": new_category_id}, 200
-        except Exception as e:
-            error_msg = f"Mapping-issue category POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to create a new mapping issue category",
-                "SubCode": "InternalServerError",
-            }, 500
+        new_category_id = MappingIssueCategoryService.create_mapping_issue_category(
+            category_dto
+        )
+        return {"categoryId": new_category_id}, 200

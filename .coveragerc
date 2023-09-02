@@ -9,6 +9,7 @@ omit =
 omit =
         tests/*
         backend/*/__init__.py
+        __pypackages__/*
 
 # Regexes for lines to exclude from consideration
 exclude_lines =

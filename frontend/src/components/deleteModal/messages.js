@@ -32,6 +32,10 @@ export default defineMessages({
     id: 'deleteModal.status.success.licenses',
     defaultMessage: 'License deleted successfully.',
   },
+  success_comments: {
+    id: 'deleteModal.status.success.comments',
+    defaultMessage: 'Comment deleted successfully.',
+  },
   success_campaigns: {
     id: 'deleteModal.status.success.campaigns',
     defaultMessage: 'Campaign deleted successfully.',
@@ -63,6 +67,10 @@ export default defineMessages({
   failure_teams: {
     id: 'deleteModal.status.failure.teams',
     defaultMessage: 'An error occurred when trying to delete this team.',
+  },
+  failure_comments: {
+    id: 'deleteModal.status.failure.comments',
+    defaultMessage: 'An error occurred when trying to delete this comment.',
   },
   delete: {
     id: 'deleteModal.button.delete',
@@ -108,6 +116,10 @@ export default defineMessages({
   confirmDeleteTitle_teams: {
     id: 'deleteModal.title.teams',
     defaultMessage: 'Are you sure you want to delete this team?',
+  },
+  confirmDeleteTitle_comments: {
+    id: 'deleteModal.title.comments',
+    defaultMessage: 'Are you sure you want to delete this comment?',
   },
   OrgHasProjectsError: {
     id: 'deleteModal.error.OrgHasProjectsError',

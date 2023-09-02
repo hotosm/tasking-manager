@@ -14,6 +14,7 @@ import { TeamsBoxList } from '../teamsAndOrgs/teams';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { ProjectDetailFooter } from './footer';
 import { QuestionsAndComments } from './questionsAndComments';
+import { SimilarProjects } from './similarProjects';
 import { PermissionBox } from './permissionBox';
 import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
@@ -128,12 +129,12 @@ export const ProjectDetail = (props) => {
   /* eslint-disable-next-line */
   const [visualError, visualLoading, visualData] = useFetch(
     `projects/${props.project.projectId}/contributions/queries/day/`,
-    props.project && props.project.projectId,
+    props.project?.projectId,
   );
   /* eslint-disable-next-line */
   const [contributorsError, contributorsLoading, contributors] = useFetch(
     `projects/${props.project.projectId}/contributions/`,
-    props.project && props.project.projectId,
+    props.project?.projectId,
   );
 
   const htmlDescription =
@@ -260,7 +261,7 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.questionsAndComments} />
       </a>
       <QuestionsAndComments
-        projectId={props.project.projectId}
+        project={props.project}
         contributors={contributors}
         titleClass={`${h2Classes} mv0 pt5`}
       />
@@ -276,7 +277,7 @@ export const ProjectDetail = (props) => {
           type={'media'}
           rows={1}
           delay={200}
-          ready={contributors && contributors.userContributions}
+          ready={contributors?.userContributions}
         >
           {contributors && (
             <UserAvatarList
@@ -288,14 +289,13 @@ export const ProjectDetail = (props) => {
           )}
         </ReactPlaceholder>
       </div>
-
       <a href="#contributionTimeline" style={{ visibility: 'hidden' }} name="contributionTimeline">
         <FormattedMessage {...messages.contributionsTimeline} />
       </a>
       <h3 className={`${h2Classes}`}>
         <FormattedMessage {...messages.contributionsTimeline} />
       </h3>
-      <div className="mb5 ph4 w-100 w-60-l">
+      <div className="ph4 w-100 w-60-l">
         <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
           <ReactPlaceholder
             showLoadingAnimation={true}
@@ -335,6 +335,15 @@ export const ProjectDetail = (props) => {
             />
           </div>
         </ReactPlaceholder>
+      </div>
+      <a href="#similarProjects" style={{ visibility: 'hidden' }} name="similarProjects">
+        <FormattedMessage {...messages.similarProjects} />
+      </a>
+      <h3 className={`${h2Classes} mv0 pt5`}>
+        <FormattedMessage {...messages.similarProjects} />
+      </h3>
+      <div className="mb5 w-100 w-60-l">
+        <SimilarProjects projectId={props.project.projectId} />
       </div>
       <ProjectDetailFooter projectId={props.project.projectId} />
     </div>

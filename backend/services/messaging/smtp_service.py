@@ -15,7 +15,7 @@ from backend.services.messaging.template_service import (
 class SMTPService:
     @staticmethod
     def send_verification_email(to_address: str, username: str):
-        """ Sends a verification email with a unique token so we can verify user owns this email address """
+        """Sends a verification email with a unique token so we can verify user owns this email address"""
         # TODO these could be localised if needed, in the future
         verification_url = SMTPService._generate_email_verification_url(
             to_address, username
@@ -32,7 +32,7 @@ class SMTPService:
 
     @staticmethod
     def send_welcome_email(to_address: str, username: str):
-        """ Sends email welcoming new user to tasking manager """
+        """Sends email welcoming new user to tasking manager"""
         values = {
             "USERNAME": username,
         }
@@ -46,7 +46,9 @@ class SMTPService:
     def send_contact_admin_email(data):
         email_to = current_app.config["EMAIL_CONTACT_ADDRESS"]
         if email_to is None:
-            raise ValueError("variable TM_EMAIL_CONTACT_ADDRESS not set")
+            raise ValueError(
+                "This feature is not implemented due to missing variable TM_EMAIL_CONTACT_ADDRESS."
+            )
 
         message = """New contact from {name} - {email}.
             <p>{content}</p>
@@ -66,7 +68,7 @@ class SMTPService:
         project_name: str = None,
         project_completion: int = None,
     ):
-        """ Sends an encouraging email to a users when a project they have contributed to make progress"""
+        """Sends an encouraging email to a users when a project they have contributed to make progress"""
         from backend.services.users.user_service import UserService
 
         app = (
@@ -114,6 +116,9 @@ class SMTPService:
                     and contributor.is_email_verified
                     and contributor.projects_notifications
                 ):
+                    current_app.logger.debug(
+                        f"Sending {email_type} email to {contributor.email_address} for project {project_id}"
+                    )
                     SMTPService._send_message(
                         contributor.email_address, subject, html_template
                     )
@@ -174,7 +179,7 @@ class SMTPService:
     def _send_message(
         to_address: str, subject: str, html_message: str, text_message: str = None
     ):
-        """ Helper sends SMTP message """
+        """Helper sends SMTP message"""
         from_address = current_app.config["MAIL_DEFAULT_SENDER"]
         if from_address is None:
             raise ValueError("Missing TM_EMAIL_FROM_ADDRESS environment variable")
@@ -203,7 +208,7 @@ class SMTPService:
 
     @staticmethod
     def _generate_email_verification_url(email_address: str, user_name: str):
-        """ Generate email verification url with unique token """
+        """Generate email verification url with unique token"""
         entropy = current_app.secret_key if current_app.secret_key else "un1testingmode"
 
         serializer = URLSafeTimedSerializer(entropy)

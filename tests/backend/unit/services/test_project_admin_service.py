@@ -111,7 +111,7 @@ class TestProjectAdminService(BaseTestCase):
             ProjectAdminService._validate_imagery_licence(1)
 
     @patch.object(ProjectAdminService, "_get_project_by_id")
-    @patch("flask_sqlalchemy._QueryProperty.__get__")
+    @patch("flask_sqlalchemy.model._QueryProperty.__get__")
     @patch.object(Task, "set_task_history")
     def test_reset_all_tasks(self, mock_set_task_history, mock_query, mock_get_project):
         user_id = 123

@@ -18,7 +18,7 @@ from backend.models.postgis.statuses import (
 
 
 def validate_team_visibility(value):
-    """ Validates that value is a known Team Visibility """
+    """Validates that value is a known Team Visibility"""
     try:
         TeamVisibility[value.upper()]
     except KeyError:
@@ -30,7 +30,7 @@ def validate_team_visibility(value):
 
 
 def validate_team_join_method(value):
-    """ Validates join method value and its visibility """
+    """Validates join method value and its visibility"""
     try:
         TeamJoinMethod[value.upper()]
     except KeyError:
@@ -43,7 +43,7 @@ def validate_team_join_method(value):
 
 
 def validate_team_member_function(value):
-    """ Validates that value is a known Team Member Function """
+    """Validates that value is a known Team Member Function"""
     try:
         TeamMemberFunctions[value.upper()]
     except KeyError:
@@ -55,7 +55,7 @@ def validate_team_member_function(value):
 
 
 class TeamMembersDTO(Model):
-    """ Describe a JSON model for team members """
+    """Describe a JSON model for team members"""
 
     username = StringType(required=True)
     function = StringType(required=True, validators=[validate_team_member_function])
@@ -67,7 +67,7 @@ class TeamMembersDTO(Model):
 
 
 class TeamProjectDTO(Model):
-    """ Describes a JSON model to create a project team """
+    """Describes a JSON model to create a project team"""
 
     project_name = StringType(required=True)
     project_id = IntType(required=True)
@@ -75,7 +75,7 @@ class TeamProjectDTO(Model):
 
 
 class ProjectTeamDTO(Model):
-    """ Describes a JSON model to create a project team """
+    """Describes a JSON model to create a project team"""
 
     team_id = IntType(required=True, serialized_name="teamId")
     team_name = StringType(serialized_name="name")
@@ -84,7 +84,7 @@ class ProjectTeamDTO(Model):
 
 class TeamDetailsDTO(Model):
     def __init__(self):
-        """ DTO constructor initialise all arrays to empty"""
+        """DTO constructor initialise all arrays to empty"""
         super().__init__()
         self.members = []
         self.team_projects = []
@@ -112,7 +112,7 @@ class TeamDetailsDTO(Model):
 
 
 class TeamDTO(Model):
-    """ Describes JSON model for a team """
+    """Describes JSON model for a team"""
 
     team_id = IntType(serialized_name="teamId")
     organisation_id = IntType(required=True, serialized_name="organisationId")
@@ -135,7 +135,7 @@ class TeamDTO(Model):
 
 class TeamsListDTO(Model):
     def __init__(self):
-        """ DTO constructor initialise all arrays to empty"""
+        """DTO constructor initialise all arrays to empty"""
         super().__init__()
         self.teams = []
 
@@ -145,7 +145,7 @@ class TeamsListDTO(Model):
 
 
 class NewTeamDTO(Model):
-    """ Describes a JSON model to create a new team """
+    """Describes a JSON model to create a new team"""
 
     creator = LongType(required=True)
     organisation_id = IntType(required=True)
@@ -162,7 +162,7 @@ class NewTeamDTO(Model):
 
 
 class UpdateTeamDTO(Model):
-    """ Describes a JSON model to update a team """
+    """Describes a JSON model to update a team"""
 
     creator = LongType()
     team_id = IntType()
@@ -181,7 +181,7 @@ class UpdateTeamDTO(Model):
 
 
 class TeamSearchDTO(Model):
-    """ Describes a JSON model to search for a team """
+    """Describes a JSON model to search for a team"""
 
     user_id = LongType(serialized_name="userId")
     organisation = IntType(serialized_name="organisation")

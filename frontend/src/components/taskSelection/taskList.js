@@ -4,7 +4,6 @@ import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import ReactPlaceholder from 'react-placeholder';
 import bbox from '@turf/bbox';
-import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 import { FormattedMessage, FormattedRelativeTime } from 'react-intl';
 
 import messages from './messages';
@@ -50,7 +49,7 @@ export function TaskStatus({ status, lockHolder }: Object) {
   );
 }
 
-function TaskItem({
+export function TaskItem({
   data,
   project,
   setZoomedTaskId,
@@ -60,9 +59,14 @@ function TaskItem({
   userCanValidate,
   selected = [],
 }: Object) {
-  const [isCopied, setCopied] = useCopyClipboard();
+  const [isCopied, setIsCopied] = useState(false);
   const location = useLocation();
   const { value, unit } = selectUnit(new Date(data.actionDate));
+
+  const handleCopyToClipboard = () =>
+    navigator.clipboard
+      .writeText(`${window.location.origin}${location.pathname}?search=${data.taskId}`)
+      .then(() => setIsCopied(true));
 
   return (
     <div
@@ -72,6 +76,7 @@ function TaskItem({
     >
       <div
         className="w-80 pv3 fl cf pointer"
+        role="button"
         onClick={() => selectTask(data.taskId, data.taskStatus)}
       >
         <div className="w-70-l w-40 fl dib truncate">
@@ -133,6 +138,7 @@ function TaskItem({
                 width="18px"
                 height="18px"
                 className="pointer hover-blue-grey"
+                role="button"
                 onClick={() => setZoomedTaskId(data.taskId)}
               />
             </div>
@@ -142,12 +148,11 @@ function TaskItem({
           {(msg) => (
             <div className={`ph2 dib v-mid ${isCopied ? 'grey-light' : ''}`} title={msg}>
               <InternalLinkIcon
+                role="button"
                 width="18px"
                 height="18px"
                 className={`pointer ${isCopied ? '' : 'hover-blue-grey'}`}
-                onClick={() =>
-                  setCopied(`${location.origin}${location.pathname}?search=${data.taskId}`)
-                }
+                onClick={handleCopyToClipboard}
               />
             </div>
           )}
@@ -420,9 +425,9 @@ function PaginatedList({
             <FormattedMessage {...messages.noTasksFound} />
           </div>
         )}
-        {items.slice(pageSize * ((page || 1) - 1), pageSize * (page || 1)).map((item, n) => (
+        {items.slice(pageSize * ((page || 1) - 1), pageSize * (page || 1)).map((item) => (
           <ItemComponent
-            key={n}
+            key={item.properties.taskId}
             data={item.properties}
             project={project}
             selectTask={selectTask}

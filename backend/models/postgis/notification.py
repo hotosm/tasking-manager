@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 
 class Notification(db.Model):
-    """ Describes a Notification for a user """
+    """Describes a Notification for a user"""
 
     __tablename__ = "notifications"
 
@@ -22,7 +22,7 @@ class Notification(db.Model):
     user = db.relationship(User, foreign_keys=[user_id], backref="notifications")
 
     def as_dto(self) -> NotificationDTO:
-        """ Casts notification object to DTO """
+        """Casts notification object to DTO"""
         dto = NotificationDTO()
         dto.user_id = self.user_id
         dto.unread_count = self.unread_count
@@ -40,7 +40,7 @@ class Notification(db.Model):
 
     @staticmethod
     def get_unread_message_count(user_id: int) -> int:
-        """ Get count of unread messages for user """
+        """Get count of unread messages for user"""
         notifications = Notification.query.filter(
             Notification.user_id == user_id
         ).first()
@@ -56,7 +56,7 @@ class Notification(db.Model):
 
         # Count messages that the user has received after last check.
         count = (
-            Message.query.filter(Message.to_user_id == user_id)
+            Message.query.filter_by(to_user_id=user_id, read=False)
             .filter(Message.date > notifications.date)
             .count()
         )

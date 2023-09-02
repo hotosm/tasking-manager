@@ -179,16 +179,8 @@ class SystemLanguagesAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            languages = SettingsService.get_settings()
-            return languages.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Languages GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch supported languages",
-                "SubCode": "InternalServerError",
-            }, 500
+        languages = SettingsService.get_settings()
+        return languages.to_primitive(), 200
 
 
 class SystemContactAdminRestAPI(Resource):
@@ -221,6 +213,8 @@ class SystemContactAdminRestAPI(Resource):
             description: Email sent successfully
           400:
               description: Invalid Request
+          501:
+            description: Not Implemented
           500:
             description: A problem occurred
         """
@@ -228,13 +222,8 @@ class SystemContactAdminRestAPI(Resource):
             data = request.get_json()
             SMTPService.send_contact_admin_email(data)
             return {"Success": "Email sent"}, 201
-        except Exception as e:
-            error_msg = f"Application GET API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch application keys",
-                "SubCode": "InternalServerError",
-            }, 500
+        except ValueError as e:
+            return {"Error": str(e), "SubCode": "NotImplemented"}, 501
 
 
 class SystemReleaseAPI(Resource):
@@ -276,10 +265,3 @@ class SystemReleaseAPI(Resource):
                 "Error": "Couldn't fetch latest release from github",
                 "SubCode": "GithubFetchError",
             }, 502
-        except Exception as e:
-            error_msg = f"System Release API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to upload image",
-                "SubCode": "InternalServerError",
-            }, 500

@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from flask import current_app
 from geoalchemy2 import shape
 
+from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import (
     ExtendLockTimeDTO,
     TaskDTO,
@@ -14,7 +15,7 @@ from backend.models.dtos.mapping_dto import (
 )
 from backend.models.postgis.statuses import MappingNotAllowed
 from backend.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
-from backend.models.postgis.utils import NotFound, UserLicenseError
+from backend.models.postgis.utils import UserLicenseError
 from backend.services.messaging.message_service import MessageService
 from backend.services.project_service import ProjectService
 from backend.services.stats_service import StatsService
@@ -38,7 +39,9 @@ class MappingService:
         task = Task.get(task_id, project_id)
 
         if task is None:
-            raise NotFound()
+            raise NotFound(
+                sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
+            )
 
         return task
 
@@ -62,7 +65,6 @@ class MappingService:
             TaskStatus.LOCKED_FOR_VALIDATION,
             TaskStatus.READY,
         ]:
-
             last_action = TaskHistory.get_last_action(task.project_id, task.id)
 
             # User requesting task made the last change, so they are allowed to undo it.
@@ -179,7 +181,9 @@ class MappingService:
         """
         task = MappingService.get_task(task_id, project_id)
         if task is None:
-            raise NotFound(f"Task {task_id} not found")
+            raise NotFound(
+                sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
+            )
         current_state = TaskStatus(task.task_status)
         if current_state != TaskStatus.LOCKED_FOR_MAPPING:
             raise MappingServiceError(
@@ -194,9 +198,16 @@ class MappingService:
     @staticmethod
     def add_task_comment(task_comment: TaskCommentDTO) -> TaskDTO:
         """Adds the comment to the task history"""
+        # Check if project exists
+        ProjectService.exists(task_comment.project_id)
+
         task = Task.get(task_comment.task_id, task_comment.project_id)
         if task is None:
-            raise NotFound(f"Task {task_comment.task_id} not found")
+            raise NotFound(
+                sub_code="TASK_NOT_FOUND",
+                project_id=task_comment.project_id,
+                task_id=task_comment.task_id,
+            )
 
         task.set_task_history(
             TaskAction.COMMENT, task_comment.user_id, task_comment.comment
@@ -222,9 +233,9 @@ class MappingService:
         root = ET.Element(
             "gpx",
             attrib=dict(
-                xmlns="http://www.topografix.com/GPX/1/1",
                 version="1.1",
                 creator="HOT Tasking Manager",
+                xmlns="http://www.topografix.com/GPX/1/1",
             ),
         )
 
@@ -248,18 +259,20 @@ class MappingService:
 
         # Construct trkseg elements
         if task_ids_str is not None:
-            task_ids = map(int, task_ids_str.split(","))
+            task_ids = list(map(int, task_ids_str.split(",")))
             tasks = Task.get_tasks(project_id, task_ids)
             if not tasks or len(tasks) == 0:
-                raise NotFound()
+                raise NotFound(
+                    sub_code="TASKS_NOT_FOUND", project_id=project_id, task_ids=task_ids
+                )
         else:
             tasks = Task.get_all_tasks(project_id)
             if not tasks or len(tasks) == 0:
-                raise NotFound()
+                raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
 
         for task in tasks:
             task_geom = shape.to_shape(task.geometry)
-            for poly in task_geom:
+            for poly in task_geom.geoms:
                 trkseg = ET.SubElement(trk, "trkseg")
                 for point in poly.exterior.coords:
                     ET.SubElement(
@@ -288,14 +301,16 @@ class MappingService:
         )
 
         if task_ids_str:
-            task_ids = map(int, task_ids_str.split(","))
+            task_ids = list(map(int, task_ids_str.split(",")))
             tasks = Task.get_tasks(project_id, task_ids)
             if not tasks or len(tasks) == 0:
-                raise NotFound()
+                raise NotFound(
+                    sub_code="TASKS_NOT_FOUND", project_id=project_id, task_ids=task_ids
+                )
         else:
             tasks = Task.get_all_tasks(project_id)
             if not tasks or len(tasks) == 0:
-                raise NotFound()
+                raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
 
         fake_id = -1  # We use fake-ids to ensure XML will not be validated by OSM
         for task in tasks:
@@ -305,7 +320,7 @@ class MappingService:
                 "way",
                 attrib=dict(id=str((task.id * -1)), action="modify", visible="true"),
             )
-            for poly in task_geom:
+            for poly in task_geom.geoms:
                 for point in poly.exterior.coords:
                     ET.SubElement(
                         root,
@@ -419,7 +434,9 @@ class MappingService:
     def lock_time_can_be_extended(project_id, task_id, user_id):
         task = Task.get(task_id, project_id)
         if task is None:
-            raise NotFound(f"Task {task_id} not found")
+            raise NotFound(
+                sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
+            )
 
         if TaskStatus(task.task_status) not in [
             TaskStatus.LOCKED_FOR_MAPPING,

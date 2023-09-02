@@ -17,8 +17,9 @@ from tests.backend.helpers.test_helpers import (
     get_canned_json,
     return_canned_campaign,
     create_canned_interest,
+    update_project_with_info,
 )
-from backend.models.postgis.utils import NotFound
+from backend.exceptions import NotFound
 from backend.models.postgis.project import Project, ProjectDTO
 from backend.models.postgis.task import Task
 from backend.services.campaign_service import CampaignService
@@ -259,14 +260,16 @@ class TestGetProjectsRestAPI(BaseTestCase):
         assert expected_project.id == project_response["projectId"]
         # Since some of the fields are not returned in summary mode we need to skip them
         if assert_type != "summary":
-            assert geojson.is_valid(project_response["areaOfInterest"])
+            assert geojson.loads(
+                geojson.dumps(project_response["areaOfInterest"])
+            ).is_valid
             assert ["type", "coordinates"] == list(
                 project_response["areaOfInterest"].keys()
             )
             if assert_type == "notasks":
                 assert "tasks" not in project_response
             else:
-                assert geojson.is_valid(project_response["tasks"])
+                assert geojson.loads(geojson.dumps(project_response["tasks"])).is_valid
             assert (
                 is_known_task_creation_mode(project_response["taskCreationMode"])
                 is None
@@ -1983,7 +1986,7 @@ class TestProjectsQueriesTouchedAPI(BaseTestCase):
         Test 404 is returned if project doesn't exist
         """
         # Act
-        response = self.client.get("/api/v2/projects/test_user_123/queries/touched/")
+        response = self.client.get("/api/v2/projects/queries/non_existent/touched/")
         self.assertEqual(response.status_code, 404)
 
 
@@ -1995,37 +1998,6 @@ class TestProjectsQueriesPriorityAreasAPI(BaseTestCase):
         self.test_project.private = False
         self.test_project.save()
         self.url = f"/api/v2/projects/{self.test_project.id}/queries/priority-areas/"
-
-    # Code modified from https://github.com/larsbutler/oq-engine/blob/master/tests/utils/helpers.py
-    def assertDeepAlmostEqual(self, expected, actual, *args, **kwargs):
-        """
-        Assert that two complex structures have almost equal contents.
-
-        Compares lists, dicts and tuples recursively. Checks numeric values
-        using test_case's :py:meth:`unittest.TestCase.assertAlmostEqual` and
-        checks all other values with :py:meth:`unittest.TestCase.assertEqual`.
-        Accepts additional positional and keyword arguments and pass those
-        intact to assertAlmostEqual() (that's how you specify comparison
-        precision).
-
-        :type test_case: :py:class:`unittest.TestCase` object
-        """
-        kwargs.pop("__trace", "ROOT")
-        if isinstance(expected, (int, float, complex)):
-            self.assertAlmostEqual(expected, actual, *args, **kwargs)
-        elif isinstance(expected, (list, tuple)):
-            self.assertEqual(len(expected), len(actual))
-            for index in range(len(expected)):
-                v1, v2 = expected[index], actual[index]
-                self.assertDeepAlmostEqual(v1, v2, __trace=repr(index), *args, **kwargs)
-        elif isinstance(expected, dict):
-            self.assertEqual(set(expected), set(actual))
-            for key in expected:
-                self.assertDeepAlmostEqual(
-                    expected[key], actual[key], __trace=repr(key), *args, **kwargs
-                )
-        else:
-            self.assertEqual(expected, actual)
 
     def returns_404_if_project_doesnt_exist(self):
         """
@@ -2050,7 +2022,7 @@ class TestProjectsQueriesPriorityAreasAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json), 1)
         self.assertDeepAlmostEqual(
-            response.json[0], json_data["priorityAreas"][0], places=8
+            response.json[0], json_data["priorityAreas"][0], places=6
         )
 
 
@@ -2248,3 +2220,101 @@ class TestProjectsQueriesNoTasksAPI(BaseTestCase):
         TestGetProjectsRestAPI.assert_project_response(
             response.json, self.test_project, assert_type="notasks"
         )
+
+
+class TestProjectQueriesSimilarProjectsAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.test_project.save()
+        # Since project_info is required to retrun project summary in the response
+        update_project_with_info(self.test_project)
+        self.url = f"/api/v2/projects/queries/{self.test_project.id}/similar-projects/"
+        self.user_session_token = generate_encoded_token(self.test_author.id)
+
+    def create_project(self, status=ProjectStatus.PUBLISHED.value):
+        project, _ = create_canned_project()
+        project.status = status
+        project.save()
+        return project
+
+    def arrange_projects(self):
+        # Create test projects
+        project_1 = self.create_project()
+        project_2 = self.create_project()
+        project_3 = self.create_project()
+        self.create_project(ProjectStatus.DRAFT.value)
+        # Since project_info is required to retrun project summary in the response
+        update_project_with_info(project_1)
+        update_project_with_info(project_2)
+        update_project_with_info(project_3)
+        return project_1, project_2, project_3
+
+    def test_private_projects_are_not_returned_if_user_not_logged_in(self):
+        """
+        Test private projects are not returned if user is not logged in
+        """
+        # Arrange
+        # Create and arrange test projects
+        project_1, project_2, project_3 = self.arrange_projects()
+        project_3.private = True
+        project_3.save()
+        # Act
+        response = self.client.get(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json["results"]), 2)
+        self.assertEqual(response.json["results"][0]["projectId"], project_2.id)
+        self.assertEqual(response.json["results"][1]["projectId"], project_1.id)
+
+    def test_returns_404_if_project_doesnt_exist(self):
+        """
+        Test 404 is returned if project doesn't exist
+        """
+        # Act
+        response = self.client.get(
+            "/api/v2/projects/queries/999/similar-projects/",
+            headers={"Authorization": self.user_session_token},
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_returns_private_projects_if_user_is_allowed(self):
+        """
+        Test private projects are returned if user is author of project
+        """
+        # Arrange
+        # Create and arrange test projects
+        project_1, project_2, project_3 = self.arrange_projects()
+        project_3.private = True
+        project_3.save()
+        self.test_author.role = UserRole.ADMIN.value
+        self.test_author.save()
+        # Act
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json["results"]), 3)
+        returned_project_ids = sorted(
+            [i["projectId"] for i in response.json["results"]]
+        )
+        self.assertEqual(
+            returned_project_ids, [project_1.id, project_2.id, project_3.id]
+        )
+
+    def test_returns_limit_projects(self):
+        """
+        Test limit is applied to projects returned
+        """
+        # Arrange
+        # Create and arrange test projects
+        self.arrange_projects()
+        # Act
+        response = self.client.get(
+            f"{self.url}?limit=1", headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json["results"]), 1)

@@ -2,6 +2,8 @@ import geojson
 from backend import db
 from sqlalchemy import desc, func
 from geoalchemy2 import functions
+
+from backend.exceptions import NotFound
 from backend.models.dtos.user_dto import (
     UserDTO,
     UserMappedProjectsDTO,
@@ -21,7 +23,7 @@ from backend.models.postgis.statuses import (
     UserRole,
     UserGender,
 )
-from backend.models.postgis.utils import NotFound, timestamp
+from backend.models.postgis.utils import timestamp
 from backend.models.postgis.interests import Interest, user_interests
 
 
@@ -69,7 +71,9 @@ class User(db.Model):
     last_validation_date = db.Column(db.DateTime, default=timestamp)
 
     # Relationships
-    accepted_licenses = db.relationship("License", secondary=user_licenses_table)
+    accepted_licenses = db.relationship(
+        "License", secondary=user_licenses_table, overlaps="users"
+    )
     interests = db.relationship(Interest, secondary=user_interests, backref="users")
 
     def create(self):
@@ -83,7 +87,7 @@ class User(db.Model):
     @staticmethod
     def get_by_id(user_id: int):
         """Return the user for the specified id, or None if not found"""
-        return User.query.get(user_id)
+        return db.session.get(User, user_id)
 
     @staticmethod
     def get_by_username(username: str):
@@ -101,7 +105,6 @@ class User(db.Model):
         db.session.commit()
 
     def update(self, user_dto: UserDTO):
-
         """Update the user details"""
         for attr, value in user_dto.items():
             if attr == "gender" and value is not None:
@@ -159,7 +162,7 @@ class User(db.Model):
             base = base.filter(User.role.in_(role_array))
         if query.pagination:
             results = base.order_by(User.username).paginate(
-                query.page, query.per_page, True
+                page=query.page, per_page=query.per_page, error_out=True
             )
         else:
             per_page = base.count()
@@ -199,10 +202,10 @@ class User(db.Model):
             .order_by(desc("participant").nullslast(), User.username)
         )
 
-        results = query.paginate(page, 20, True)
+        results = query.paginate(page=page, per_page=20, error_out=True)
 
         if results.total == 0:
-            raise NotFound()
+            raise NotFound(sub_code="USER_NOT_FOUND", username=user_filter)
 
         dto = UserFilterDTO()
         for result in results.items:

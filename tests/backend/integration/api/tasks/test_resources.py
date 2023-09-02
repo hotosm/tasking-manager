@@ -22,14 +22,14 @@ class TestGetTasksQueriesJsonAPI(BaseTestCase):
         self.url = f"/api/v2/projects/{self.test_project.id}/tasks/"
 
     def test_returns_404_if_project_does_not_exist(self):
-        """ Test that a 404 is returned if the project does not exist. """
+        """Test that a 404 is returned if the project does not exist."""
         # Act
-        response = self.client.get("/api/projects/999/tasks")
+        response = self.client.get("/api/v2/projects/11111/tasks/")
         # Assert
         self.assertEqual(response.status_code, 404)
 
     def test_returns_all_tasks_if_task_ids_not_specified(self):
-        """ Test that all tasks are returned if no task_ids are specified. """
+        """Test that all tasks are returned if no task_ids are specified."""
         # Act
         response = self.client.get(self.url)
         # Assert
@@ -39,7 +39,7 @@ class TestGetTasksQueriesJsonAPI(BaseTestCase):
         self.assertEqual(len(response.json["features"]), 4)
 
     def test_returns_only_specified_tasks_if_task_ids_specified(self):
-        """ Test that only the specified tasks are returned if task_ids are specified. """
+        """Test that only the specified tasks are returned if task_ids are specified."""
         # Act
         response = self.client.get(self.url + "?tasks=1,2")
         # Assert
@@ -49,7 +49,7 @@ class TestGetTasksQueriesJsonAPI(BaseTestCase):
         self.assertEqual(response.json["features"][1]["properties"]["taskId"], 2)
 
     def test_returns_tasks_as_file_id_as_file_set_true(self):
-        """ Test that the tasks are returned with the file_id as the file if file_set is true. """
+        """Test that the tasks are returned with the file_id as the file if file_set is true."""
         # Act
         response = self.client.get(self.url + "?as_file=true")
         # Assert
@@ -78,14 +78,14 @@ class TestDeleteTasksJsonAPI(BaseTestCase):
         self.test_project.save()
 
     def test_returns_401_if_not_authorized(self):
-        """ Test that a 401 is returned if the user is not authorized. """
+        """Test that a 401 is returned if the user is not authorized."""
         # Act
         response = self.client.delete(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_403_if_user_not_admin(self):
-        """ Test that a 403 is returned if the user is not a project manager. """
+        """Test that a 403 is returned if the user is not a project manager."""
         # Act
         response = self.client.delete(
             self.url, headers={"Authorization": self.test_user_access_token}
@@ -94,14 +94,22 @@ class TestDeleteTasksJsonAPI(BaseTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_returns_404_if_project_does_not_exist(self):
-        """ Test that a 404 is returned if the project does not exist. """
+        """Test that a 404 is returned if the project does not exist."""
+        # Arrange
+        self.test_user.role = UserRole.ADMIN.value  # Since only admins can delete tasks
+        self.test_user.save()
+        body = {"tasks": [1, 2]}
         # Act
-        response = self.client.delete("/api/projects/999/tasks")
+        response = self.client.delete(
+            "/api/v2/projects/11111/tasks/",
+            headers={"Authorization": self.test_user_access_token},
+            json=body,
+        )
         # Assert
         self.assertEqual(response.status_code, 404)
 
     def test_even_org_manager_cannot_delete_tasks(self):
-        """ Test that an org manager cannot delete tasks. """
+        """Test that an org manager cannot delete tasks."""
         # Arrange
         add_manager_to_organisation(self.test_organization, self.test_user)
         # Act
@@ -112,7 +120,7 @@ class TestDeleteTasksJsonAPI(BaseTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_returns_400_if_no_task_ids_specified(self):
-        """ Test that a 400 is returned if no task_ids are specified. """
+        """Test that a 400 is returned if no task_ids are specified."""
         # Arrange
         self.test_user.role = UserRole.ADMIN.value
         self.test_user.save()
@@ -126,7 +134,7 @@ class TestDeleteTasksJsonAPI(BaseTestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_returns_404_if_task_not_found(self):
-        """ Test that a 400 is returned if the task is not found. """
+        """Test that a 400 is returned if the task is not found."""
         # Arrange
         self.test_user.role = UserRole.ADMIN.value
         self.test_user.save()
@@ -140,7 +148,7 @@ class TestDeleteTasksJsonAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_deletes_specified_tasks_if_user_admin(self):
-        """ Test that the specified tasks are deleted. """
+        """Test that the specified tasks are deleted."""
         # Arrange
         self.test_user.role = UserRole.ADMIN.value
         self.test_user.save()
@@ -166,21 +174,23 @@ class TestTaskRestAPI(BaseTestCase):
         self.url = f"/api/v2/projects/{self.test_project.id}/tasks/1/"
 
     def test_returrns_404_if_project_does_not_exist(self):
-        """ Test that a 404 is returned if the project does not exist. """
+        """Test that a 404 is returned if the project does not exist."""
         # Act
-        response = self.client.get("/api/projects/999/tasks/1")
+        response = self.client.get("/api/v2/projects/11111/tasks/1/")
         # Assert
         self.assertEqual(response.status_code, 404)
 
     def test_returns_404_if_task_does_not_exist(self):
-        """ Test that a 404 is returned if the task does not exist. """
+        """Test that a 404 is returned if the task does not exist."""
         # Act
-        response = self.client.get(f"/api/projects/{self.test_project.id}/tasks/999")
+        response = self.client.get(
+            f"/api/v2/projects/{self.test_project.id}/tasks/999/"
+        )
         # Assert
         self.assertEqual(response.status_code, 404)
 
     def test_returns_200_if_task_exists(self):
-        """ Test that a 200 is returned if the task exists. """
+        """Test that a 200 is returned if the task exists."""
         # Lets add task history
         task = Task.get(1, self.test_project.id)
         task.lock_task_for_validating(self.test_author.id)
@@ -224,14 +234,14 @@ class TestTasksQueriesGpxAPI(BaseTestCase):
         self.url = f"/api/v2/projects/{self.test_project.id}/tasks/queries/gpx/"
 
     def test_returns_404_if_project_does_not_exist(self):
-        """ Test that a 404 is returned if the project does not exist. """
+        """Test that a 404 is returned if the project does not exist."""
         # Act
-        response = self.client.get("/api/projects/999/tasks/queries/gpx")
+        response = self.client.get("/api/v2/projects/11111/tasks/queries/gpx/")
         # Assert
         self.assertEqual(response.status_code, 404)
 
     def test_returns_all_tasks_if_no_tasks_specified(self):
-        """ Test that all tasks are returned if no tasks are specified. """
+        """Test that all tasks are returned if no tasks are specified."""
         # Act
         response = self.client.get(self.url)
         # Assert
@@ -251,7 +261,7 @@ class TestTasksQueriesGpxAPI(BaseTestCase):
         )  # Since project has 4 tasks
 
     def test_returns_gpx_for_specified_tasks(self):
-        """ Test that the specified tasks are returned. """
+        """Test that the specified tasks are returned."""
         # Act
         response = self.client.get(self.url + "?tasks=1,2")
         # Assert
@@ -271,7 +281,7 @@ class TestTasksQueriesGpxAPI(BaseTestCase):
         )  # Since we only asked for tasks 1 and 2
 
     def test_returns_file_if_as_file_set_true(self):
-        """ Test that the file is returned if the as_file parameter is set to true. """
+        """Test that the file is returned if the as_file parameter is set to true."""
         # Act
         response = self.client.get(self.url + "?as_file=true")
         # Assert
@@ -291,14 +301,14 @@ class TestTasksQueriesXmlAPI(BaseTestCase):
         self.url = f"/api/v2/projects/{self.test_project.id}/tasks/queries/xml/"
 
     def test_returns_404_if_project_does_not_exist(self):
-        """ Test that a 404 is returned if the project does not exist. """
+        """Test that a 404 is returned if the project does not exist."""
         # Act
-        response = self.client.get("/api/projects/999/tasks/queries/xml")
+        response = self.client.get("/api/v2/projects/11111/tasks/queries/xml/")
         # Assert
         self.assertEqual(response.status_code, 404)
 
     def test_returns_all_tasks_if_no_tasks_specified(self):
-        """ Test that all tasks are returned if no tasks are specified. """
+        """Test that all tasks are returned if no tasks are specified."""
         # Act
         response = self.client.get(self.url)
         # Assert
@@ -313,7 +323,7 @@ class TestTasksQueriesXmlAPI(BaseTestCase):
         )  # Since project has 4 tasks
 
     def test_returns_xml_for_specified_tasks(self):
-        """ Test that the specified tasks are returned. """
+        """Test that the specified tasks are returned."""
         # Act
         response = self.client.get(self.url + "?tasks=1,2")
         # Assert
@@ -328,7 +338,7 @@ class TestTasksQueriesXmlAPI(BaseTestCase):
         )  # Since we are only requesting 2 tasks
 
     def test_returns_file_if_as_file_set_true(self):
-        """ Test that the file is returned if the as_file parameter is set to true. """
+        """Test that the file is returned if the as_file parameter is set to true."""
         # Act
         response = self.client.get(self.url + "?as_file=true")
         # Assert
@@ -372,17 +382,17 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         task.unlock_task(validator_id, TaskStatus.INVALIDATED)
 
     def test_returns_401_if_user_not_authorized(self):
-        """ Test that a 401 is returned if the user is not authorized. """
+        """Test that a 401 is returned if the user is not authorized."""
         # Act
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 401)
 
     def test_returns_404_if_user_does_not_exist(self):
-        """ Test that a 404 is returned if the user does not exist. """
+        """Test that a 404 is returned if the user does not exist."""
         # Act
         response = self.client.get(
-            "/api/projects/hello/tasks/queries/own/invalidated/",
+            "/api/v2/projects/non_existent/tasks/queries/own/invalidated/",
             headers={"Authorization": self.test_user_access_token},
         )
         # Assert
@@ -433,7 +443,7 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         self.assertEqual(response.json["invalidatedTasks"][0]["taskId"], 2)
 
     def returns_404_if_no_tasks_found(self):
-        """ Test that a 404 is returned if no tasks are found. """
+        """Test that a 404 is returned if no tasks are found."""
         # Act
 
         response = self.client.get(
@@ -444,7 +454,7 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_sort_by_sorts_task_by_specified_fields(self):
-        """ Test that the tasks are sorted by the specified_fields. """
+        """Test that the tasks are sorted by the specified_fields."""
         # Arrange
         test_project_2, _ = create_canned_project()
         test_project_3, _ = create_canned_project()
@@ -539,7 +549,7 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         )
 
     def test_filters_by_closed(self):
-        """ Test that the tasks are filtered by closed. """
+        """Test that the tasks are filtered by closed."""
         # Arrange
         # Lets map a task by test author and invalidate it by test user
         task_1 = Task.get(2, self.test_project.id)
@@ -585,7 +595,7 @@ class TestTasksQueriesMappedAPI(BaseTestCase):
         self.url = f"/api/v2/projects/{self.test_project.id}/tasks/queries/mapped/"
 
     def test_returns_404_if_project_does_not_exist(self):
-        """ Test that the endpoint returns 404 if the project does not exist. """
+        """Test that the endpoint returns 404 if the project does not exist."""
         # Arrange
         # Act
         response = self.client.get("/api/v2/projects/999999/tasks/queries/mapped/")

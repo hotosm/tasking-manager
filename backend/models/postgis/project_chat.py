@@ -8,7 +8,7 @@ from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO, Pagi
 
 
 class ProjectChat(db.Model):
-    """ Contains all project info localized into supported languages """
+    """Contains all project info localized into supported languages"""
 
     __tablename__ = "project_chat"
     id = db.Column(db.BigInteger, primary_key=True)
@@ -24,7 +24,7 @@ class ProjectChat(db.Model):
 
     @classmethod
     def create_from_dto(cls, dto: ChatMessageDTO):
-        """ Creates a new ProjectInfo class from dto, used from project edit """
+        """Creates a new ProjectInfo class from dto, used from project edit"""
         current_app.logger.debug("Create chat message from DTO")
         new_message = cls()
         new_message.project_id = dto.project_id
@@ -64,12 +64,12 @@ class ProjectChat(db.Model):
 
     @staticmethod
     def get_messages(project_id: int, page: int, per_page: int = 20) -> ProjectChatDTO:
-        """ Get all messages on the project """
+        """Get all messages on the project"""
 
         project_messages = (
             ProjectChat.query.filter_by(project_id=project_id)
             .order_by(ProjectChat.time_stamp.desc())
-            .paginate(page, per_page, True)
+            .paginate(page=page, per_page=per_page, error_out=True)
         )
 
         dto = ProjectChatDTO()
@@ -83,6 +83,7 @@ class ProjectChat(db.Model):
             chat_dto.username = message.posted_by.username
             chat_dto.picture_url = message.posted_by.picture_url
             chat_dto.timestamp = message.time_stamp
+            chat_dto.id = message.id
 
             dto.chat.append(chat_dto)
 

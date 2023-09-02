@@ -24,8 +24,8 @@ export const MAX_AOI_AREA = Number(process.env.REACT_APP_MAX_AOI_AREA) || 5000;
 export const MAX_FILESIZE = parseInt(process.env.REACT_APP_MAX_FILESIZE) || 1000000; // bytes
 
 // ORGANISATIONAL INFORMATION
-export const ORG_NAME = process.env.REACT_APP_ORG_NAME || '';
-export const ORG_CODE = process.env.REACT_APP_ORG_CODE || '';
+export const ORG_NAME = process.env.REACT_APP_ORG_NAME || 'Humanitarian OpenStreetMap Team';
+export const ORG_CODE = process.env.REACT_APP_ORG_CODE || 'HOT';
 export const ORG_URL = process.env.REACT_APP_ORG_URL || '';
 export const ORG_LOGO = process.env.REACT_APP_ORG_LOGO || '';
 export const HOMEPAGE_IMG_HIGH = process.env.REACT_APP_HOMEPAGE_IMG_HIGH || '';
@@ -36,16 +36,18 @@ export const OSM_REDIRECT_URI = process.env.REACT_APP_OSM_REDIRECT_URI || '';
 export const ORG_PRIVACY_POLICY_URL = process.env.REACT_APP_ORG_PRIVACY_POLICY_URL || '';
 export const OSM_REGISTER_URL =
   process.env.REACT_APP_OSM_REGISTER_URL || 'https://www.openstreetmap.org/user/new';
-export const ORG_TWITTER = process.env.REACT_APP_ORG_TWITTER || '';
-export const ORG_FB = process.env.REACT_APP_ORG_FB || '';
-export const ORG_INSTAGRAM = process.env.REACT_APP_ORG_INSTAGRAM || '';
-export const ORG_YOUTUBE = process.env.REACT_APP_ORG_YOUTUBE || '';
-export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || '';
+export const ORG_TWITTER = process.env.REACT_APP_ORG_TWITTER || 'https://twitter.com/hotosm';
+export const ORG_FB = process.env.REACT_APP_ORG_FB || 'https://www.facebook.com/hotosm';
+export const ORG_INSTAGRAM =
+  process.env.REACT_APP_ORG_INSTAGRAM || 'https://www.instagram.com/open.mapping.hubs/';
+export const ORG_YOUTUBE =
+  process.env.REACT_APP_ORG_YOUTUBE || 'https://www.youtube.com/user/hotosm';
+export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.com/hotosm';
 export const MATOMO_ID = process.env.REACT_APP_MATOMO_ID || '';
 export const SERVICE_DESK = process.env.REACT_APP_SERVICE_DESK || '';
 export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL || '';
 export const TM_DEFAULT_CHANGESET_COMMENT =
-  process.env.REACT_APP_TM_DEFAULT_CHANGESET_COMMENT || '';
+  process.env.REACT_APP_TM_DEFAULT_CHANGESET_COMMENT || '#hotosm-project';
 export const HOMEPAGE_VIDEO_URL = process.env.REACT_APP_HOMEPAGE_VIDEO_URL || '';
 // Sentry.io DSN
 export const SENTRY_FRONTEND_DSN = process.env.REACT_APP_SENTRY_FRONTEND_DSN;
@@ -173,7 +175,12 @@ export const MAPBOX_RTL_PLUGIN_URL =
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';
 
 export const DROPZONE_SETTINGS = {
-  accept: 'image/*',
+  accept: {
+    'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'],
+  },
   multiple: false,
   maxSize: 256000,
+  // noClick is needed to avoid file picker dialogs when switching between `Write` and `Preview` in `CommentInputField`
+  // At time of writing, this workaround is only needed on Chromium based browsers.
+  noClick: true,
 };

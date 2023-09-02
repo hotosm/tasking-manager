@@ -47,7 +47,7 @@ def upgrade():
     project_existence = {}
 
     # Attempt to classify existing messages
-    messages = conn.execute("select * from messages")
+    messages = conn.execute(sa.text("select * from messages"))
     for message in messages:
         message_type = None
         project_id = None
@@ -85,7 +85,7 @@ def upgrade():
             # If we haven't checked yet if this project exists, check now and cache result
             if project_id not in project_existence:
                 project = conn.execute(
-                    "select * from projects where id = " + str(project_id)
+                    sa.text("select * from projects where id = " + str(project_id))
                 ).first()
                 project_existence[project_id] = project is not None
 

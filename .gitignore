@@ -11,6 +11,8 @@ frontend/package-lock.json
 frontend/.env
 frontend/.eslintcache
 frontend/coverage/
+# Sentry Auth Token
+frontend/.sentryclirc
 
 # Ignore dist folder as this contains the minimized build for deploy
 backend/web/static/dist
@@ -26,6 +28,9 @@ logs/
 #python
 venv/
 *pyc
+.pdm.toml
+.pdm-python
+__pypackages__/
 
 # Editor generated files #
 .idea/

@@ -1,6 +1,7 @@
 import React from 'react';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import toast from 'react-hot-toast';
 
 import {
   createComponentWithMemoryRouter,
@@ -8,6 +9,11 @@ import {
   renderWithRouter,
 } from '../../utils/testWithIntl';
 import { ListInterests, CreateInterest, EditInterest } from '../interests';
+import { setupFaultyHandlers } from '../../network/tests/server';
+
+jest.mock('react-hot-toast', () => ({
+  success: jest.fn(),
+}));
 
 describe('List Interests', () => {
   const setup = () => {
@@ -40,7 +46,7 @@ describe('List Interests', () => {
   });
 
   it('should navigate to interest edit page when clicked on the interest card', async () => {
-    const { container, router } = createComponentWithMemoryRouter(
+    const { user, container, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <ListInterests />
       </ReduxIntlProviders>,
@@ -51,7 +57,7 @@ describe('List Interests', () => {
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
-    fireEvent.click(
+    await user.click(
       screen.getByRole('link', {
         name: /Interest Name 1/i,
       }),
@@ -62,7 +68,7 @@ describe('List Interests', () => {
 
 describe('Create Interest', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    const { user, history } = renderWithRouter(
       <ReduxIntlProviders>
         <CreateInterest />
       </ReduxIntlProviders>,
@@ -72,6 +78,7 @@ describe('Create Interest', () => {
       name: /cancel/i,
     });
     return {
+      user,
       createButton,
       cancelButton,
       history,
@@ -84,23 +91,45 @@ describe('Create Interest', () => {
   });
 
   it('should enable create interest button when the value is changed', async () => {
-    const { createButton } = setup();
+    const { user, createButton } = setup();
     const nameInput = screen.getByRole('textbox');
-    fireEvent.change(nameInput, { target: { value: 'New interest Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New interest Name');
     expect(createButton).toBeEnabled();
   });
 
   it('should navigate to the newly created interest detail page on creation success', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <CreateInterest />
       </ReduxIntlProviders>,
     );
     const createButton = screen.getByRole('button', { name: /create category/i });
     const nameInput = screen.getByRole('textbox');
-    fireEvent.change(nameInput, { target: { value: 'New interest Name' } });
-    fireEvent.click(createButton);
-    await waitFor(() => expect(router.state.location.pathname).toBe('/manage/categories/123'));
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New interest Name');
+    await user.click(createButton);
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledTimes(1);
+      expect(router.state.location.pathname).toBe('/manage/categories/123');
+    });
+  });
+
+  it('should display callout alert with error has occured message', async () => {
+    setupFaultyHandlers();
+    const { user } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <CreateInterest />
+      </ReduxIntlProviders>,
+    );
+    const createButton = screen.getByRole('button', { name: /create category/i });
+    const nameInput = screen.getByRole('textbox');
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New interest Name');
+    await user.click(createButton);
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to create category. Please try again./i)).toBeInTheDocument();
+    });
   });
 
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
@@ -108,16 +137,20 @@ describe('Create Interest', () => {
 
 describe('Edit Interest', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
-        <EditInterest id={1} />
+        <EditInterest />
       </ReduxIntlProviders>,
+      {
+        route: '/interests/:id',
+        entryRoute: '/interests/1',
+      },
     );
     const nameInput = screen.getByRole('textbox');
 
     return {
+      user,
       nameInput,
-      history,
     };
   };
 
@@ -127,9 +160,10 @@ describe('Edit Interest', () => {
   });
 
   it('should display save button when interest name is changed', async () => {
-    const { nameInput } = setup();
+    const { user, nameInput } = setup();
     await waitFor(() => expect(nameInput.value).toBe('Interest Name 123'));
-    fireEvent.change(nameInput, { target: { value: 'Changed Interest Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed Interest Name');
     const saveButton = screen.getByRole('button', {
       name: /save/i,
     });
@@ -137,9 +171,10 @@ describe('Edit Interest', () => {
   });
 
   it('should also display cancel button when project name is changed', async () => {
-    const { nameInput } = setup();
+    const { user, nameInput } = setup();
     await waitFor(() => expect(nameInput.value).toBe('Interest Name 123'));
-    fireEvent.change(nameInput, { target: { value: 'Changed Interest Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed Interest Name');
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
@@ -147,26 +182,28 @@ describe('Edit Interest', () => {
   });
 
   it('should return input text value to default when cancel button is clicked', async () => {
-    const { nameInput } = setup();
+    const { user, nameInput } = setup();
     await waitFor(() => expect(nameInput.value).toBe('Interest Name 123'));
-    fireEvent.change(nameInput, { target: { value: 'Changed Interest Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed Interest Name');
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    fireEvent.click(cancelButton);
+    await user.click(cancelButton);
     expect(nameInput.value).toBe('Interest Name 123');
   });
 
   it('should hide the save button on click', async () => {
-    const { nameInput } = setup();
+    const { user, nameInput } = setup();
     await waitFor(() => expect(nameInput.value).toBe('Interest Name 123'));
-    fireEvent.change(nameInput, { target: { value: 'Changed Interest Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Changed Interest Name');
     const saveButton = screen.getByRole('button', { name: /save/i });
     const cancelButton = screen.getByRole('button', {
       name: /cancel/i,
     });
-    fireEvent.click(saveButton);
-    expect(saveButton).not.toBeInTheDocument();
+    await user.click(saveButton);
+    await waitFor(() => expect(saveButton).not.toBeInTheDocument());
     expect(cancelButton).not.toBeInTheDocument();
   });
 });

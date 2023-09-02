@@ -66,6 +66,7 @@ export const ProjectHeader = ({ project, showEditLink }: Object) => {
       </div>
       <TagLine
         campaigns={project.campaigns}
+        interests={project.interests}
         countries={
           locale.includes('en') ? project.countryTag : translateCountry(project.countryTag, locale)
         }
@@ -74,14 +75,19 @@ export const ProjectHeader = ({ project, showEditLink }: Object) => {
   );
 };
 
-function TagLine({ campaigns = [], countries = [] }: Object) {
-  let tags = [];
-  tags = campaigns.map((i) => i.name).concat(countries);
+export function TagLine({ campaigns = [], countries = [], interests = [] }: Object) {
+  const locale = useSelector((state) => state.preferences.locale);
+  const formattedCampaigns = campaigns.map((campaign) => campaign.name).join(', ');
+  const formattedCountries = locale.includes('en') ? countries.join(', ') : countries;
+  const formattedInterests = interests.map((interest) => interest.name).join(', ');
+  // Remove empty formatted strings
+  const tags = [formattedCampaigns, formattedCountries, formattedInterests].filter((n) => n);
+
   return (
     <span className="blue-light">
-      {tags.map((tag, n) => (
-        <span key={n}>
-          <span className={n === 0 ? 'dn' : 'ph2'}>&#183;</span>
+      {tags.map((tag, index) => (
+        <span key={tag}>
+          {index !== 0 && <span className="ph2">&#183;</span>}
           {tag}
         </span>
       ))}

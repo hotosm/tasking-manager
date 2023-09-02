@@ -21,3 +21,8 @@
 .menu-items-container::-webkit-scrollbar {
   display: none;
 }
+
+/* Hide the scrollbar in Firefox */
+.menu-items-container {
+  scrollbar-width: none;
+}

@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
 import { parse } from 'query-string';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
@@ -16,22 +15,19 @@ import { MoreFiltersForm } from '../moreFiltersForm';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 describe('MoreFiltersForm', () => {
-  const setup = async () => {
-    renderWithRouter(
+  it('should not display toggle to filter by user interests if not logged in', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_TOKEN', token: null });
+    });
+    const { user, container } = renderWithRouter(
       <ReduxIntlProviders>
         <QueryParamProvider adapter={ReactRouter6Adapter}>
           <MoreFiltersForm currentUrl="/current-url" />
         </QueryParamProvider>
       </ReduxIntlProviders>,
     );
-    await screen.findByTitle('American Red Cross');
-  };
-
-  it('should not display toggle to filter by user interests if not logged in', async () => {
-    act(() => {
-      store.dispatch({ type: 'SET_TOKEN', token: null });
-    });
-    setup();
+    await user.click(container.querySelector('#organisation > div > div'));
+    await screen.findByText('American Red Cross');
     expect(screen.queryByLabelText('filter by user interests')).not.toBeInTheDocument();
   });
 
@@ -39,7 +35,7 @@ describe('MoreFiltersForm', () => {
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <QueryParamProvider adapter={ReactRouter6Adapter}>
           <MoreFiltersForm currentUrl="/current-url" />
@@ -49,8 +45,8 @@ describe('MoreFiltersForm', () => {
     const switchControl = screen.getAllByRole('checkbox').slice(-1)[0];
 
     expect(switchControl).toBeInTheDocument();
-    await userEvent.click(switchControl);
-    waitFor(() =>
+    await user.click(switchControl);
+    await waitFor(() =>
       expect(
         decodeQueryParams(
           {
@@ -58,7 +54,7 @@ describe('MoreFiltersForm', () => {
           },
           parse(router.state.location.search),
         ),
-      ).toEqual({ basedOnMyInterests: 1 }),
+      ).toEqual({ basedOnMyInterests: true }),
     );
   });
 

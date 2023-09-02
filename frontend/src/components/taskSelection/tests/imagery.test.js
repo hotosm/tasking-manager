@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import { IntlProviders } from '../../../utils/testWithIntl';
@@ -175,5 +176,16 @@ describe('Imagery', () => {
     );
     expect(screen.getByText('Digital Globe')).toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+
+  it('should copy value to the clipboard', async () => {
+    const user = userEvent.setup({ writeToClipboard: true });
+    render(
+      <IntlProviders>
+        <Imagery value={'wms'} />
+      </IntlProviders>,
+    );
+    await user.click(screen.getByRole('img'));
+    await waitFor(async () => expect(await navigator.clipboard.readText()).toBe('wms'));
   });
 });

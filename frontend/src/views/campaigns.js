@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -17,8 +17,9 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { Alert } from '../components/alert';
+import { Alert, EntityError } from '../components/alert';
 import { useAsync } from '../hooks/UseAsync';
+import { updateEntity } from '../utils/management';
 
 export const CampaignError = ({ error }) => {
   return (
@@ -54,15 +55,23 @@ export function CreateCampaign() {
   useSetTitleTag('Create new campaign');
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
-  const [error, setError] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const createCampaign = (payload) => {
+    setIsError(false);
     return pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
-        setError(false);
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'campaign',
+            }}
+          />,
+        );
         navigate(`/manage/campaigns/${result.campaignId}`);
       })
-      .catch((e) => setError(true));
+      .catch(() => setIsError(true));
   };
 
   const createCampaignAsync = useAsync(createCampaign);
@@ -83,8 +92,8 @@ export function CreateCampaign() {
                     <FormattedMessage {...messages.campaignInfo} />
                   </h3>
                   <CampaignInformation />
-                  <CampaignError error={error} />
                 </div>
+                {isError && <EntityError entity="campaign" />}
               </div>
             </div>
             <div className="fixed left-0 bottom-0 cf bg-white h3 w-100">
@@ -126,9 +135,9 @@ export function EditCampaign() {
   const [nameError, setNameError] = useState(false);
 
   const updateCampaign = (payload) => {
-    return pushToLocalJSONAPI(`campaigns/${id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then((res) => setNameError(false))
-      .catch((e) => setNameError(true));
+    const onSuccess = () => setNameError(false);
+    const onFailure = () => setNameError(true);
+    return updateEntity(`campaigns/${id}/`, 'campaign', payload, token, onSuccess, onFailure);
   };
 
   const updateCampaignAsync = useAsync(updateCampaign);

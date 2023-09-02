@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { Button } from '../button';
@@ -24,11 +25,15 @@ export function MessageMembers({ teamId, members }: Object) {
         'POST',
       )
         .then((res) => {
+          toast.success(<FormattedMessage {...messages.sendMessageSuccess} />);
           setStatus('messageSent');
           setMessage('');
           setSubject('');
         })
-        .catch((e) => setStatus('error'));
+        .catch((e) => {
+          toast.error(<FormattedMessage {...messages.sendMessageFailure} />);
+          setStatus('error');
+        });
     }
   };
 
@@ -63,6 +68,7 @@ export function MessageMembers({ teamId, members }: Object) {
             comment={message}
             setComment={setMessage}
             contributors={members?.map((member) => member.username)}
+            isShowTabNavs
           />
         </div>
         {!message && <MessageStatus status={status} />}

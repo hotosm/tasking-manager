@@ -1,11 +1,10 @@
+from backend.exceptions import NotFound
 from backend.services.interests_service import InterestService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
-from backend.models.postgis.utils import NotFound
 
 
 class TestInterestService(BaseTestCase):
-
     test_project = None
     test_user = None
 

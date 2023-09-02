@@ -10,11 +10,14 @@ import { ORG_PRIVACY_POLICY_URL } from '../../../config';
 describe('Update Email Dialog', () => {
   const closeModalMock = jest.fn();
   const setup = () => {
-    render(
-      <ReduxIntlProviders>
-        <UpdateEmail closeModal={closeModalMock} />
-      </ReduxIntlProviders>,
-    );
+    return {
+      user: userEvent.setup(),
+      ...render(
+        <ReduxIntlProviders>
+          <UpdateEmail closeModal={closeModalMock} />
+        </ReduxIntlProviders>,
+      ),
+    };
   };
   it('should render component details', () => {
     setup();
@@ -50,8 +53,8 @@ describe('Update Email Dialog', () => {
   });
 
   it('should update user email', async () => {
-    setup();
-    await userEvent.click(
+    const { user } = setup();
+    await user.click(
       screen.getByRole('button', {
         name: /update/i,
       }),
@@ -62,12 +65,9 @@ describe('Update Email Dialog', () => {
   });
 
   it('should update email text', async () => {
-    setup();
+    const { user } = setup();
 
-    await userEvent.type(
-      screen.getByPlaceholderText(messages.emailPlaceholder.defaultMessage),
-      'meow',
-    );
+    await user.type(screen.getByPlaceholderText(messages.emailPlaceholder.defaultMessage), 'meow');
     expect(screen.getByPlaceholderText(messages.emailPlaceholder.defaultMessage)).toHaveValue(
       'meow',
     );

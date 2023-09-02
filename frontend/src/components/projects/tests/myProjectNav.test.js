@@ -86,7 +86,7 @@ describe('Manage Projects Top Navigation Bar', () => {
   });
 
   it('should navigate to new project creation page on button click', async () => {
-    const { router } = createComponentWithMemoryRouter(
+    const { user, router } = createComponentWithMemoryRouter(
       <QueryParamProvider adapter={ReactRouter6Adapter}>
         <ReduxIntlProviders>
           <MyProjectNav management />
@@ -94,7 +94,6 @@ describe('Manage Projects Top Navigation Bar', () => {
       </QueryParamProvider>,
     );
 
-    const user = userEvent.setup();
     await user.click(
       screen.queryByRole('button', {
         name: /new/i,
@@ -122,13 +121,13 @@ describe('Filter Button Component', () => {
 
   it('should set query when clicked', async () => {
     const setQueryMock = jest.fn();
+    const user = userEvent.setup();
     render(
       <FilterButton isActive={false} setQuery={setQueryMock}>
         Click me!
       </FilterButton>,
     );
 
-    const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: /click me!/i }));
     expect(setQueryMock).toHaveBeenCalled();
   });

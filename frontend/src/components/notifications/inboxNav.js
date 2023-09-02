@@ -10,7 +10,7 @@ import { useInboxQueryParams, stringify } from '../../hooks/UseInboxQueryAPI';
 import { ProjectSearchBox } from '../projects/projectSearchBox';
 import { NotificationOrderBySelector } from './notificationOrderBy';
 
-const filters = [
+export const filters = [
   {
     messageId: 'all',
     isActiveConstraint: 'All',

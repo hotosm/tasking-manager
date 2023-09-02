@@ -64,12 +64,15 @@ export function CompletionTabForMapping({
       )
         .then((res) => {
           clearLockedTasks();
-          navigate((redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`, {
-            state: {
-              lastLockedTasksIds: res.tasks.map((task) => task.taskId),
-              lastLockedProjectId: project.projectId,
+          navigate(
+            (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+            {
+              state: {
+                lastLockedTasksIds: res.tasks.map((task) => task.taskId),
+                lastLockedProjectId: project.projectId,
+              },
             },
-          });
+          );
         })
         .catch((e) => {
           setSplitTaskError(true);
@@ -169,6 +172,7 @@ export function CompletionTabForMapping({
       {showReadCommentsAlert && (
         <div
           className="tc pa2 mb1 bg-grey-light blue-dark pointer"
+          role="button"
           onClick={() => historyTabSwitch()}
         >
           <InfoIcon className="v-mid h1 w1" />
@@ -179,11 +183,13 @@ export function CompletionTabForMapping({
       )}
       <div className="cf">
         {taskInstructions && <TaskSpecificInstructions instructions={taskInstructions} />}
-        <h4 className="ttu blue-grey f5">
+        <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.editStatus} />
           <QuestionCircleIcon
             className="pointer dib v-mid pl2 pb1 blue-light"
             height="1.25rem"
+            role="button"
+            aria-label="toggle help"
             onClick={() => setShowHelp(!showHelp)}
           />
         </h4>
@@ -238,7 +244,7 @@ export function CompletionTabForMapping({
         )}
       </div>
       <div className="cf">
-        <h4 className="ttu blue-grey f5">
+        <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.comment} />
         </h4>
         <p>
@@ -248,6 +254,7 @@ export function CompletionTabForMapping({
             contributors={contributors}
             enableHashtagPaste={true}
             enableContributorsHashtag
+            isShowTabNavs
           />
         </p>
       </div>
@@ -357,12 +364,15 @@ export function CompletionTabForValidation({
         token,
       ).then((r) => {
         clearLockedTasks();
-        navigate((redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`, {
-          state: {
-            lastLockedTasksIds: tasksIds,
-            lastLockedProjectId: project.projectId,
+        navigate(
+          (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+          {
+            state: {
+              lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
+            },
           },
-        });
+        );
       });
     } else {
       return new Promise((resolve, reject) => {
@@ -395,11 +405,6 @@ export function CompletionTabForValidation({
             },
           },
         );
-      });
-    } else if (disabled) {
-      return new Promise((resolve, reject) => {
-        setShowMapChangesModal('unlock');
-        resolve();
       });
     }
   };
@@ -568,21 +573,23 @@ const TaskValidationSelector = ({
           <input
             type="radio"
             value="VALIDATED"
+            id={`#${id}-VALIDATED`}
             className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
             checked={currentStatus === 'VALIDATED'}
             onChange={() => updateStatus(id, 'VALIDATED')}
           />
-          <label htmlFor="VALIDATED">
+          <label htmlFor={`#${id}-VALIDATED`}>
             <FormattedMessage {...messages.complete} />
           </label>
           <input
             type="radio"
             value="INVALIDATED"
+            id={`#${id}-INVALIDATED`}
             className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
             checked={currentStatus === 'INVALIDATED'}
             onChange={() => updateStatus(id, 'INVALIDATED')}
           />
-          <label htmlFor="INVALIDATED">
+          <label htmlFor={`#${id}-INVALIDATED`}>
             <FormattedMessage {...messages.incomplete} />
           </label>
           <CustomButton
@@ -610,8 +617,8 @@ const TaskValidationSelector = ({
               setComment={setComment}
               contributors={contributors.length ? contributors : contributorsList}
               enableHashtagPaste
-              autoFocus
               enableContributorsHashtag
+              isShowTabNavs
             />
           </div>
           {isValidatingMultipleTasks && comment && (
@@ -627,15 +634,17 @@ const TaskValidationSelector = ({
                   >
                     <FormattedMessage {...messages.copyCommentToAll} />
                   </CustomButton>
-                  <CustomButton
-                    className="bg-white ba b--grey-light blue-dark br1 ml1 pv2 ph2 mb1"
-                    onClick={() => {
-                      copyCommentToTasks(id, currentStatus);
-                      setEnableCopy(false);
-                    }}
-                  >
-                    <FormattedMessage {...messages[`copyCommentTo${currentStatus}`]} />
-                  </CustomButton>
+                  {currentStatus && (
+                    <CustomButton
+                      className="bg-white ba b--grey-light blue-dark br1 ml1 pv2 ph2 mb1"
+                      onClick={() => {
+                        copyCommentToTasks(id, currentStatus);
+                        setEnableCopy(false);
+                      }}
+                    >
+                      <FormattedMessage {...messages[`copyCommentTo${currentStatus}`]} />
+                    </CustomButton>
+                  )}
                   <CustomButton
                     className="red bn bg-white br1 ml2 ph2 pv2"
                     onClick={() => setEnableCopy(false)}
@@ -670,7 +679,7 @@ function CompletionInstructions({ setVisibility }: Object) {
         className="br-100 bg-grey-light white h1 w1 fr pointer tc v-mid di"
         onClick={() => setVisibility(false)}
       >
-        <CloseIcon className="pv1" />
+        <CloseIcon className="pv1" aria-label="hide instructions" />
       </span>
       <div className="blue-grey">
         <p>
@@ -727,6 +736,8 @@ export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
         {(msg) => (
           <div className="fr pointer" title={msg}>
             <SidebarIcon
+              role="button"
+              aria-label="Hide sidebar"
               onClick={() => {
                 setShowSidebar(false);
                 activeEditor === 'ID' && iDContext.ui().restart();
@@ -786,7 +797,11 @@ function TaskSpecificInstructions({ instructions, open = true }: Object) {
   const [isOpen, setIsOpen] = useState(open);
   return (
     <>
-      <h4 className="ttu blue-grey mt1 mb0 pointer" onClick={() => setIsOpen(!isOpen)}>
+      <h4
+        className="ttu blue-grey mt1 mb0 pointer"
+        role="button"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {isOpen ? (
           <ChevronDownIcon style={{ height: '14px' }} className="pr1 pb1 v-mid" />
         ) : (

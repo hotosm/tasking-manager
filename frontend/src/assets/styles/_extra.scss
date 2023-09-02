@@ -48,8 +48,8 @@ html {
     height: calc(100vh - 122px);
   }
 
-  .vh-minus-77-ns {
-    height: calc(100vh - 77px);
+  .vh-minus-69-ns {
+    height: calc(100vh - 69px); // nice
   }
 
   .popup-content {
@@ -610,4 +610,9 @@ a[href="https://www.mapbox.com/map-feedback/"]
 // Imported from HOTOSM site to use for long texts
 .blue-dark-abbey {
   color: #4c4f56;
+}
+
+// Remove tachyons outline
+.link:focus {
+  outline: revert;
 }

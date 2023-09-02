@@ -9,8 +9,10 @@ from sqlalchemy import desc, cast, func, distinct
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
-from backend import db
 from typing import List
+
+from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from backend.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
 from backend.models.dtos.project_dto import (
@@ -28,7 +30,6 @@ from backend.models.postgis.utils import (
     ST_SetSRID,
     timestamp,
     parse_duration,
-    NotFound,
 )
 from backend.models.postgis.task_annotation import TaskAnnotation
 
@@ -563,9 +564,10 @@ class Task(db.Model):
         if type(task_geometry) is not geojson.MultiPolygon:
             raise InvalidGeoJson("MustBeMultiPloygon- Geometry must be a MultiPolygon")
 
-        is_valid_geojson = geojson.is_valid(task_geometry)
-        if is_valid_geojson["valid"] == "no":
-            raise InvalidGeoJson(f"InvalidMultiPolygon- {is_valid_geojson['message']}")
+        if not task_geometry.is_valid:
+            raise InvalidGeoJson(
+                "InvalidMultiPolygon - " + ", ".join(task_geometry.errors())
+            )
 
         task = cls()
         try:
@@ -796,8 +798,13 @@ class Task(db.Model):
             user_id=user_id,
             mapping_issues=issues,
         )
-
-        if (
+        # If undo, clear the mapped_by and validated_by fields
+        if undo:
+            if new_state == TaskStatus.MAPPED:
+                self.validated_by = None
+            elif new_state == TaskStatus.READY:
+                self.mapped_by = None
+        elif (
             new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY]
             and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION
         ):
@@ -886,17 +893,19 @@ class Task(db.Model):
         filters = [Task.project_id == project_id]
 
         if task_ids_str:
-            task_ids = map(int, task_ids_str.split(","))
+            task_ids = list(map(int, task_ids_str.split(",")))
             tasks = Task.get_tasks(project_id, task_ids)
             if not tasks or len(tasks) == 0:
-                raise NotFound()
+                raise NotFound(
+                    sub_code="TASKS_NOT_FOUND", tasks=task_ids, project_id=project_id
+                )
             else:
                 tasks_filters = [task.id for task in tasks]
             filters = [Task.project_id == project_id, Task.id.in_(tasks_filters)]
         else:
             tasks = Task.get_all_tasks(project_id)
             if not tasks or len(tasks) == 0:
-                raise NotFound()
+                raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
 
         if status:
             filters.append(Task.task_status == status)
@@ -1032,7 +1041,7 @@ class Task(db.Model):
             .group_by(Task.project_id)
         )
         if result.count() == 0:
-            raise NotFound()
+            raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
         for row in result:
             return row[0]
 
@@ -1051,7 +1060,7 @@ class Task(db.Model):
         task_dto.task_history = task_history
         task_dto.last_updated = last_updated if last_updated else None
         task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
-        task_dto.comments_number = comments if type(comments) == int else None
+        task_dto.comments_number = comments if isinstance(comments, int) else None
         return task_dto
 
     def as_dto_with_instructions(self, preferred_locale: str = "en") -> TaskDTO:
@@ -1126,7 +1135,10 @@ class Task(db.Model):
 
         try:
             instructions = instructions.format(**properties)
-        except KeyError:
+        except (KeyError, ValueError, IndexError):
+            # KeyError is raised if a format string contains a key that is not in the dictionary, e.g. {foo}
+            # ValueError is raised if a format string contains a single { or }
+            # IndexError is raised if a format string contains empty braces, e.g. {}
             pass
         return instructions
 

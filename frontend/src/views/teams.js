@@ -12,12 +12,15 @@ import {
   withDefault,
 } from 'use-query-params';
 import { stringify } from 'query-string';
+import toast from 'react-hot-toast';
+import Popup from 'reactjs-popup';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
 import { useEditTeamAllowed } from '../hooks/UsePermissions';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import useForceUpdate from '../hooks/UseForceUpdate';
+import { useModifyMembers } from '../hooks/UseModifyMembers';
 import { fetchLocalJSONAPIWithAbort, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import {
   getMembersDiff,
@@ -35,10 +38,13 @@ import {
 } from '../components/teamsAndOrgs/teams';
 import { MessageMembers } from '../components/teamsAndOrgs/messageMembers';
 import { Projects } from '../components/teamsAndOrgs/projects';
+import { LeaveTeamConfirmationAlert } from '../components/teamsAndOrgs/leaveTeamConfirmationAlert';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { NotFound } from './notFound';
 import { PaginatorLine } from '../components/paginator';
+import { updateEntity } from '../utils/management';
+import { EntityError } from '../components/alert';
 
 export function ManageTeams() {
   useSetTitleTag('Manage teams');
@@ -60,14 +66,17 @@ export function ListTeams({ managementView = false }: Object) {
   const [teams, setTeams] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // QUERY PARAMETERS
   const [query, setQuery] = useQueryParams({
     page: withDefault(NumberParam, 1),
-    isUserTeamsOnly: BooleanParam,
+    showAll: BooleanParam,
     searchQuery: withDefault(StringParam, undefined),
   });
-  const isUserTeamsOnly = query.isUserTeamsOnly === undefined ? true : query.isUserTeamsOnly;
-  const [userTeamsOnly, setUserTeamsOnly] = useState(isUserTeamsOnly);
+  const [userTeamsOnly, setUserTeamsOnly] = useState(Boolean(!query.showAll));
+
+  useEffect(() => {
+    setQuery({ ...query, page: 1, showAll: userTeamsOnly === false ? true : undefined });
+    //eslint-disable-next-line
+  }, [userTeamsOnly]);
 
   const encodedQuery = encodeQueryParams(
     { page: NumberParam, team_name: StringParam },
@@ -79,7 +88,7 @@ export function ListTeams({ managementView = false }: Object) {
   }`;
 
   useEffect(() => {
-    if (token && userDetails && userDetails.id) {
+    if (token && userDetails?.id) {
       const controller = new AbortController();
       const { signal } = controller;
       let queryParam;
@@ -151,46 +160,35 @@ export function CreateTeam() {
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const [managers, setManagers] = useState([]);
-  const [members, setMembers] = useState([]);
-
-  useEffect(() => {
-    if (userDetails && userDetails.username && managers.length === 0) {
-      setManagers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
-    }
-  }, [userDetails, managers]);
-
-  const addManagers = (values) => {
-    const newValues = values.filter(
-      (newUser) => !managers.map((i) => i.username).includes(newUser.username),
-    );
-    setManagers(managers.concat(newValues));
-  };
-
-  const removeManagers = (username) => {
-    setManagers(managers.filter((i) => i.username !== username));
-  };
-
-  const addMembers = (values) => {
-    const newValues = values.filter(
-      (newUser) => !members.map((i) => i.username).includes(newUser.username),
-    );
-    setMembers(members.concat(newValues));
-  };
-
-  const removeMembers = (username) => {
-    setMembers(members.filter((i) => i.username !== username));
-  };
+  const {
+    members: managers,
+    setMembers: setManagers,
+    addMember: addManager,
+    removeMember: removeManager,
+  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
+  const { members, setMembers, addMember, removeMember } = useModifyMembers([]);
+  const [isError, setIsError] = useState(false);
 
   const createTeam = (payload) => {
     delete payload['organisation'];
-    pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST').then((result) => {
-      managers
-        .filter((user) => user.username !== userDetails.username)
-        .map((user) => joinTeamRequest(result.teamId, user.username, 'MANAGER', token));
-      members.map((user) => joinTeamRequest(result.teamId, user.username, 'MEMBER', token));
-      navigate(`/manage/teams/${result.teamId}`);
-    });
+    setIsError(false);
+    pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST')
+      .then((result) => {
+        managers
+          .filter((user) => user.username !== userDetails.username)
+          .map((user) => joinTeamRequest(result.teamId, user.username, 'MANAGER', token));
+        members.map((user) => joinTeamRequest(result.teamId, user.username, 'MEMBER', token));
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'team',
+            }}
+          />,
+        );
+        navigate(`/manage/teams/${result.teamId}`);
+      })
+      .catch(() => setIsError(true));
   };
 
   return (
@@ -211,12 +209,13 @@ export function CreateTeam() {
                   </h3>
                   <TeamInformation />
                 </div>
+                {isError && <EntityError entity="team" />}
               </div>
               <div className="w-40-l w-100 fl pl5-l pl0 ">
                 <div className="mb3">
                   <Members
-                    addMembers={addManagers}
-                    removeMembers={removeManagers}
+                    addMembers={addManager}
+                    removeMembers={removeManager}
                     members={managers}
                     resetMembersFn={setManagers}
                     creationMode={true}
@@ -224,8 +223,8 @@ export function CreateTeam() {
                 </div>
                 <div className="mb3">
                   <Members
-                    addMembers={addMembers}
-                    removeMembers={removeMembers}
+                    addMembers={addMember}
+                    removeMembers={removeMember}
                     members={members}
                     resetMembersFn={setMembers}
                     creationMode={true}
@@ -272,6 +271,7 @@ export function EditTeam(props) {
   const [canUserEditTeam] = useEditTeamAllowed(team);
   const [memberJoinTeamError, setMemberJoinTeamError] = useState(null);
   const [managerJoinTeamError, setManagerJoinTeamError] = useState(null);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (!initManagers && team && team.members) {
@@ -313,32 +313,63 @@ export function EditTeam(props) {
     setMembers((prevMembers) => prevMembers.filter((i) => i.username !== username));
   };
 
-  const updateManagers = () => {
-    const { usersAdded, usersRemoved } = getMembersDiff(team.members, managers, true);
+  const updateAffiliation = (affiliationType) => {
+    const role = affiliationType === 'managers' ? 'MANAGER' : 'MEMBER';
+    const { usersAdded, usersRemoved } = getMembersDiff(
+      team.members,
+      affiliationType === 'managers' ? managers : members,
+      affiliationType === 'managers',
+    );
+
     Promise.all([
-      ...usersAdded.map((user) => joinTeamRequest(team.teamId, user, 'MANAGER', token)),
-      ...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, 'MANAGER', token)),
-    ]).then(forceUpdate);
+      ...usersAdded.map((user) =>
+        joinTeamRequest(team.teamId, user, role, token).catch((err) => {
+          affiliationType === 'managers'
+            ? setManagerJoinTeamError(err.message)
+            : setMemberJoinTeamError(err.message);
+          affiliationType === 'managers' ? removeManagers(user) : removeMembers(user);
+        }),
+      ),
+      ...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, role, token)),
+    ])
+      .then(() => {
+        toast.success(
+          <FormattedMessage
+            {...messages.affiliationUpdationSuccess}
+            values={{
+              affiliation: affiliationType,
+            }}
+          />,
+        );
+        forceUpdate();
+      })
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.affiliationUpdationFailure}
+            values={{
+              affiliation: affiliationType,
+            }}
+          />,
+        ),
+      );
+  };
+
+  const updateManagers = () => {
+    updateAffiliation('managers');
   };
 
   const updateMembers = () => {
-    const { usersAdded, usersRemoved } = getMembersDiff(team.members, members);
-    Promise.all([
-      ...usersAdded.map((user) =>
-        joinTeamRequest(team.teamId, user, 'MEMBER', token).catch((err) => {
-          setMemberJoinTeamError(err.message);
-          removeMembers(user);
-        }),
-      ),
-      ...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, 'MEMBER', token)),
-    ]).then(forceUpdate);
+    updateAffiliation('members');
   };
+
+  const onUpdateTeamFailure = () => setIsError(true);
 
   const updateTeam = (payload) => {
     if (payload.joinMethod !== 'BY_INVITE') {
       payload.visibility = 'PUBLIC';
     }
-    pushToLocalJSONAPI(`teams/${id}/`, JSON.stringify(payload), token, 'PATCH').then(forceUpdate);
+    updateEntity(`teams/${id}/`, 'team', payload, token, forceUpdate, onUpdateTeamFailure);
   };
 
   if (team && team.teamId && !canUserEditTeam) {
@@ -374,6 +405,7 @@ export function EditTeam(props) {
           updateTeam={updateTeam}
           disabledForm={error || loading}
         />
+        {isError && <EntityError entity="team" action="updation" />}
       </div>
       <div className="w-40-l w-100 mt4 pl5-l pl0 fl">
         <Members
@@ -503,15 +535,28 @@ export function TeamDetail() {
           </div>
           <div className="w-20-l w-40-m w-50 h-100 fr">
             {isMember ? (
-              <CustomButton
-                className="w-100 h-100 bg-red white"
-                disabledClassName="bg-red o-50 white w-100 h-100"
-                onClick={() => leaveTeam()}
+              <Popup
+                trigger={
+                  <CustomButton
+                    className="w-100 h-100 bg-red white"
+                    disabledClassName="bg-red o-50 white w-100 h-100"
+                  >
+                    <FormattedMessage
+                      {...messages[isMember === 'requested' ? 'cancelRequest' : 'leaveTeam']}
+                    />
+                  </CustomButton>
+                }
+                modal
+                closeOnEscape
               >
-                <FormattedMessage
-                  {...messages[isMember === 'requested' ? 'cancelRequest' : 'leaveTeam']}
-                />
-              </CustomButton>
+                {(close) => (
+                  <LeaveTeamConfirmationAlert
+                    teamName={team.name}
+                    close={close}
+                    leaveTeam={leaveTeam}
+                  />
+                )}
+              </Popup>
             ) : (
               team.joinMethod !== 'BY_INVITE' && (
                 <CustomButton

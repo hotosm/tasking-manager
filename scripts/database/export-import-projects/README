@@ -2,7 +2,7 @@
 
 These migration scripts allow to restore deleted projects using postgres commands. For now, there are two scripts:
 1. dbtocsv.sh: By setting the required variables, this script reads the defined project ids within the PROJECT_IDS variable and starts saving the required information for each table in a csv file.
-2. restart_table.sh: which destroys and then creates with postgis extension the desired database. However, migration tables are not executed within this script. You need to run `python manage.py db upgrade` yourself every time the database is restarted.
+2. restart_table.sh: which destroys and then creates with postgis extension the desired database. However, migration tables are not executed within this script. You need to run `flask db upgrade` yourself every time the database is restarted.
 
 Tables to migrate and verify if they are necessary to:
 [x] projects

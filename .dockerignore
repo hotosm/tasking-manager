@@ -1,7 +1,23 @@
 .*
 *.yml
 **/*.pyc
+**/__pypackages__
+**/__pycache__
 **/node_modules
 **/npm-debug.log
-logs/
+**/venv
+**/.venv
+docs-old/
 docs/
+logs/
+
+# Generated frontend #
+frontend/node_modules/
+frontend/build/
+frontend/public/static/
+frontend/assets/styles/
+frontend/package-lock.json
+frontend/.env
+frontend/.eslintcache
+frontend/coverage/
+

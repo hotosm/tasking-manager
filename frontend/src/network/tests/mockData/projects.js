@@ -1,4 +1,20 @@
 import { TM_DEFAULT_CHANGESET_COMMENT } from '../../../config';
+import nextDay from 'date-fns/nextDay';
+import { formatISO } from 'date-fns';
+
+export const PROJECT_ID_WITH_RANDOM_TASK_ENFORCED = 963;
+export const PROJECT_ID_ALL_VALIDATED = 6;
+export const PROJECT_ID_ALL_MAPPED = 3;
+
+const status = {
+  [PROJECT_ID_ALL_VALIDATED]: {
+    mappedPercent: 100,
+    validatedPercent: 100,
+  },
+  [PROJECT_ID_ALL_MAPPED]: {
+    mappedPercent: 100,
+  },
+};
 
 export const getProjectSummary = (id) => ({
   projectId: id,
@@ -25,18 +41,18 @@ export const getProjectSummary = (id) => ({
   osmchaFilterId: '9322aa63-cccc-4d0d-9f93-403678e52345',
   mappingTypes: ['BUILDINGS'],
   changesetComment: `${TM_DEFAULT_CHANGESET_COMMENT}-${id} #brumado-buildings`,
-  percentMapped: 16,
-  percentValidated: 6,
+  percentMapped: status[id]?.mappedPercent || 16,
+  percentValidated: status[id]?.validatedPercent || 6,
   percentBadImagery: 0,
   aoiCentroid: {
     type: 'Point',
     coordinates: [-41.669134813, -14.20341561],
   },
   difficulty: 'EASY',
-  mappingPermission: 'LEVEL',
+  mappingPermission: 'ANY',
   validationPermission: 'LEVEL',
   allowedUsernames: [],
-  enforceRandomTaskSelection: false,
+  enforceRandomTaskSelection: id === PROJECT_ID_WITH_RANDOM_TASK_ENFORCED,
   private: false,
   teams: [],
   projectInfo: {
@@ -55,11 +71,11 @@ export const getProjectSummary = (id) => ({
   licenseId: null,
   idPresets: ['building/house', 'building/residential', 'building'],
   mappingEditors: ['ID', 'JOSM'],
-  validationEditors: ['JOSM', 'POTLATCH_2', 'FIELD_PAPERS'],
+  validationEditors: ['JOSM', 'POTLATCH_2', 'FIELD_PAPERS', 'ID'],
 });
 
 export const getProjectStats = (id) => ({
-  projectId: id,
+  projectId: Number(id),
   'projectArea(in sq.km)': 3506.03997973834,
   totalMappers: 105,
   totalTasks: 2779,
@@ -99,7 +115,7 @@ export const projects = {
       status: 'PUBLISHED',
       activeMappers: 0,
       lastUpdated: '2020-05-01T11:03:43.689732Z',
-      dueDate: '2023-03-10T21:00:00.000000Z',
+      dueDate: nextDay(new Date(), 1),
       totalContributors: 50,
       country: ['Nepal'],
     },
@@ -279,6 +295,31 @@ export const userTouchedProjects = {
   ],
 };
 
+export const taskDetail = (taskId) => ({
+  taskId: taskId,
+  projectId: 5871,
+  taskStatus: 'LOCKED_FOR_MAPPING',
+  lockHolder: 'helnershingthapa',
+  taskHistory: [
+    {
+      historyId: 10764790,
+      taskId: null,
+      action: 'LOCKED_FOR_MAPPING',
+      actionText: null,
+      actionDate: '2023-03-16T16:49:29.977470Z',
+      actionBy: 'helnershingthapa',
+      pictureUrl:
+        'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXQ2Q3c9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--fe41f1b2a5d6cf492a7133f15c81f105dec06ff7/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBPZ2h3Ym1jNkZISmxjMmw2WlY5MGIxOXNhVzFwZEZzSGFXbHBhUT09IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--058ac785867b32287d598a314311e2253bd879a3/unnamed.webp',
+      issues: null,
+    },
+  ],
+  taskAnnotation: [],
+  perTaskInstructions: '',
+  autoUnlockSeconds: 7200,
+  lastUpdated: formatISO(new Date()),
+  numberOfComments: null,
+});
+
 export const projectComments = {
   chat: [
     {
@@ -339,3 +380,188 @@ export const userFavorite = {
 export const favoritePost = (id) => ({
   project_id: 123,
 });
+
+export const activities = (id) => {
+  const isProjectValidated = id === PROJECT_ID_ALL_VALIDATED;
+  return {
+    activity: [
+      {
+        taskId: 1,
+        taskStatus: isProjectValidated ? 'VALIDATED' : 'READY',
+        actionDate: '2023-02-08T13:41:24.917474Z',
+        actionBy: 'Patrik_B',
+      },
+      {
+        taskId: 2,
+        taskStatus: isProjectValidated ? 'VALIDATED' : 'READY',
+        actionDate: '2022-11-16T08:31:56.917380Z',
+        actionBy: 'helnershingthapa',
+      },
+      {
+        taskId: 3,
+        taskStatus: isProjectValidated ? 'VALIDATED' : 'READY',
+        actionDate: '2023-02-28T06:10:55.329731Z',
+        actionBy: 'helnershingthapa',
+      },
+      {
+        taskId: 4,
+        taskStatus: isProjectValidated ? 'VALIDATED' : 'INVALIDATED',
+        actionDate: '2022-12-19T10:28:55.565213Z',
+        actionBy: 'helnershingthapa',
+      },
+      {
+        taskId: 5,
+        taskStatus: isProjectValidated ? 'VALIDATED' : 'MAPPED',
+        actionDate: '2022-11-30T05:36:43.518052Z',
+        actionBy: 'Aadesh Baral',
+      },
+      {
+        taskId: 6,
+        taskStatus: id === 222 ? 'LOCKED_FOR_MAPPING' : isProjectValidated ? 'VALIDATED' : 'MAPPED',
+        actionDate: '2022-11-22T05:36:43.518052Z',
+        actionBy: 'Patrik_B',
+      },
+      {
+        taskId: 7,
+        taskStatus: 'VALIDATED',
+        actionDate: '2022-11-16T08:31:56.897777Z',
+        actionBy: 'helnershingthapa',
+      },
+    ],
+  };
+};
+
+export const stopMapping = {
+  taskId: 1997,
+  projectId: 123,
+  taskStatus: 'READY',
+  taskHistory: [
+    {
+      historyId: 10764792,
+      taskId: null,
+      action: 'LOCKED_FOR_MAPPING',
+      actionText: '00:00:29.484161',
+      actionDate: '2023-03-19T14:57:58.038417Z',
+      actionBy: 'helnershingthapa',
+      pictureUrl:
+        'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXQ2Q3c9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--fe41f1b2a5d6cf492a7133f15c81f105dec06ff7/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBPZ2h3Ym1jNkZISmxjMmw2WlY5MGIxOXNhVzFwZEZzSGFXbHBhUT09IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--058ac785867b32287d598a314311e2253bd879a3/unnamed.webp',
+      issues: null,
+    },
+  ],
+  taskAnnotation: [],
+  perTaskInstructions: '',
+  autoUnlockSeconds: 7200,
+  lastUpdated: '2023-03-19T14:57:58.038417Z',
+  numberOfComments: null,
+};
+
+export const stopValidation = {
+  tasks: [
+    {
+      taskId: 1997,
+      projectId: 123,
+      taskStatus: 'MAPPED',
+      taskHistory: [
+        {
+          historyId: 10764833,
+          taskId: null,
+          action: 'LOCKED_FOR_VALIDATION',
+          actionText: '00:06:58.832787',
+          actionDate: '2023-03-21T04:42:04.868220Z',
+          actionBy: 'helnershingthapa',
+          pictureUrl:
+            'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXQ2Q3c9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--fe41f1b2a5d6cf492a7133f15c81f105dec06ff7/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBPZ2h3Ym1jNkZISmxjMmw2WlY5MGIxOXNhVzFwZEZzSGFXbHBhUT09IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--058ac785867b32287d598a314311e2253bd879a3/unnamed.webp',
+          issues: null,
+        },
+      ],
+      taskAnnotation: [],
+      perTaskInstructions: '',
+      autoUnlockSeconds: 7200,
+      lastUpdated: '2023-03-21T04:42:04.868220Z',
+      numberOfComments: null,
+    },
+  ],
+};
+
+export const similarProjects = {
+  mapResults: [],
+  results: [
+    {
+      projectId: 17,
+      locale: 'en',
+      name: 'Similar Project 1',
+      shortDescription: 'asdasdasd',
+      difficulty: 'MODERATE',
+      priority: 'MEDIUM',
+      organisationName: 'asdasdsadasdasd,ll,ll',
+      organisationLogo: null,
+      campaigns: [],
+      percentMapped: 6,
+      percentValidated: 0,
+      status: 'PUBLISHED',
+      activeMappers: 0,
+      lastUpdated: '2023-06-28T10:45:01.841598Z',
+      dueDate: null,
+      totalContributors: 2,
+      country: [],
+    },
+    {
+      projectId: 14,
+      locale: 'en',
+      name: 'Similar Project 2',
+      shortDescription: 'asdasd',
+      difficulty: 'MODERATE',
+      priority: 'MEDIUM',
+      organisationName: 'MÉDECINS SANS FRONTIÈRES (MSF)',
+      organisationLogo: null,
+      campaigns: [],
+      percentMapped: 0,
+      percentValidated: 0,
+      status: 'PUBLISHED',
+      activeMappers: 0,
+      lastUpdated: '2023-06-21T04:37:03.788468Z',
+      dueDate: null,
+      totalContributors: 1,
+      country: ['Bolivia'],
+    },
+    {
+      projectId: 16,
+      locale: 'en',
+      name: 'Newchi',
+      shortDescription: 'asdasd',
+      difficulty: 'EASY',
+      priority: 'MEDIUM',
+      organisationName: 'asdasdasdasdsssssss',
+      organisationLogo: null,
+      campaigns: [],
+      percentMapped: 100,
+      percentValidated: 0,
+      status: 'PUBLISHED',
+      activeMappers: 0,
+      lastUpdated: '2023-06-26T11:02:31.390857Z',
+      dueDate: null,
+      totalContributors: 1,
+      country: ['Brazil'],
+    },
+    {
+      projectId: 18,
+      locale: 'en',
+      name: 'asdasdasd',
+      shortDescription: 'asdasd',
+      difficulty: 'MODERATE',
+      priority: 'MEDIUM',
+      organisationName: 'asdasdsadasdasd,ll,ll',
+      organisationLogo: null,
+      campaigns: [],
+      percentMapped: 0,
+      percentValidated: 0,
+      status: 'PUBLISHED',
+      activeMappers: 0,
+      lastUpdated: '2023-07-06T06:22:12.105538Z',
+      dueDate: null,
+      totalContributors: 1,
+      country: ['Peru'],
+    },
+  ],
+  pagination: null,
+};

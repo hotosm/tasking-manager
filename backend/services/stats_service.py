@@ -1,10 +1,11 @@
 from cachetools import TTLCache, cached
 from datetime import date, timedelta
-from sqlalchemy import func, desc, cast, extract, or_, tuple_
+from sqlalchemy import func, desc, cast, extract, or_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
 
 from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.stats_dto import (
     ProjectContributionsDTO,
     UserContribution,
@@ -28,7 +29,7 @@ from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import TaskStatus, MappingLevel, UserGender
 from backend.models.postgis.task import TaskHistory, User, Task, TaskAction
-from backend.models.postgis.utils import timestamp, NotFound  # noqa: F401
+from backend.models.postgis.utils import timestamp  # noqa: F401
 from backend.services.project_service import ProjectService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
@@ -47,7 +48,7 @@ class StatsService:
         new_state: TaskStatus,
         action="change",
     ):
-        """ Update stats when a task has had a state change """
+        """Update stats when a task has had a state change"""
 
         if new_state in [
             TaskStatus.LOCKED_FOR_VALIDATION,
@@ -75,7 +76,6 @@ class StatsService:
         new_state: TaskStatus,
         action="change",
     ):
-
         # Make sure you are aware that users table has it as incrementing counters,
         # while projects table reflect the actual state, and both increment and decrement happens
         if new_state == last_state:
@@ -117,10 +117,10 @@ class StatsService:
 
     @staticmethod
     def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
-        """ Gets all the activity on a project """
+        """Gets all the activity on a project"""
 
         if not ProjectService.exists(project_id):
-            raise NotFound
+            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
         results = (
             db.session.query(
@@ -137,7 +137,7 @@ class StatsService:
                 TaskHistory.action != TaskAction.COMMENT.name,
             )
             .order_by(TaskHistory.action_date.desc())
-            .paginate(page, 10, True)
+            .paginate(page=page, per_page=10, error_out=True)
         )
 
         activity_dto = ProjectActivityDTO()
@@ -156,7 +156,7 @@ class StatsService:
 
     @staticmethod
     def get_popular_projects() -> ProjectSearchResultsDTO:
-        """ Get all projects ordered by task_history """
+        """Get all projects ordered by task_history"""
 
         rate_func = func.count(TaskHistory.user_id) / extract(
             "epoch", func.sum(cast(TaskHistory.action_date, Time))
@@ -196,7 +196,7 @@ class StatsService:
 
     @staticmethod
     def get_last_activity(project_id: int) -> ProjectLastActivityDTO:
-        """ Gets the last activity for a project's tasks """
+        """Gets the last activity for a project's tasks"""
         sq = (
             TaskHistory.query.with_entities(
                 TaskHistory.task_id,
@@ -245,31 +245,47 @@ class StatsService:
 
     @staticmethod
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:
-        """ Get all user contributions on a project"""
+        """Get all user contributions on a project"""
 
-        actions = [
-            TaskStatus.MAPPED.name,
-            TaskStatus.BADIMAGERY.name,
-            TaskStatus.SPLIT.name,
-            TaskStatus.VALIDATED.name,
-            TaskStatus.INVALIDATED.name,
-        ]
+        mapped_stmt = (
+            Task.query.with_entities(
+                Task.mapped_by,
+                func.count(Task.mapped_by).label("count"),
+                func.array_agg(Task.id).label("task_ids"),
+            )
+            .filter(Task.project_id == project_id)
+            .filter(Task.task_status != TaskStatus.BADIMAGERY.value)
+            .group_by(Task.mapped_by)
+            .subquery()
+        )
+        badimagery_stmt = (
+            Task.query.with_entities(
+                Task.mapped_by,
+                func.count(Task.mapped_by).label("count"),
+                func.array_agg(Task.id).label("task_ids"),
+            )
+            .filter(Task.project_id == project_id)
+            .filter(Task.task_status == TaskStatus.BADIMAGERY.value)
+            .group_by(Task.mapped_by)
+            .subquery()
+        )
+        validated_stmt = (
+            Task.query.with_entities(
+                Task.validated_by,
+                func.count(Task.validated_by).label("count"),
+                func.array_agg(Task.id).label("task_ids"),
+            )
+            .filter(Task.project_id == project_id)
+            .group_by(Task.validated_by)
+            .subquery()
+        )
 
-        # Filter for rows with the actions in a task's possible state_changes.
-        sq = (
-            TaskHistory.query.with_entities(
-                TaskHistory.user_id,
-                TaskHistory.task_id,
-                TaskHistory.action_text,
-            )
-            .distinct(
-                TaskHistory.task_id,
-                TaskHistory.action_text,
-            )
+        project_contributions = (
+            TaskHistory.query.with_entities(TaskHistory.user_id)
             .filter(
-                TaskHistory.action_text.in_(actions),
-                TaskHistory.project_id == project_id,
+                TaskHistory.project_id == project_id, TaskHistory.action != "COMMENT"
             )
+            .distinct(TaskHistory.user_id)
             .subquery()
         )
 
@@ -281,46 +297,36 @@ class StatsService:
                 User.mapping_level,
                 User.picture_url,
                 User.date_registered,
-                func.count(sq.c.action_text)
-                .filter(sq.c.action_text == TaskStatus.MAPPED.name)
-                .label("mapped"),
-                func.count(sq.c.action_text)
-                .filter(
-                    sq.c.action_text == TaskStatus.BADIMAGERY.name,
-                )
-                .label("bad_imagery"),
-                func.count(sq.c.action_text)
-                .filter(sq.c.action_text == TaskStatus.SPLIT.name)
-                .label("split"),
-                func.count(sq.c.action_text)
-                .filter(sq.c.action_text == TaskStatus.VALIDATED.name)
-                .label("validated"),
-                func.count(sq.c.action_text)
-                .filter(sq.c.action_text == TaskStatus.INVALIDATED.name)
-                .label("invalidated"),
-                func.array_agg(sq.c.task_id)
-                .filter(sq.c.action_text == TaskStatus.MAPPED.name)
-                .label("mapped_tasks"),
-                func.array_agg(sq.c.task_id)
-                .filter(sq.c.action_text == TaskStatus.VALIDATED.name)
-                .label("validated_tasks"),
+                coalesce(mapped_stmt.c.count, 0).label("mapped"),
+                coalesce(validated_stmt.c.count, 0).label("validated"),
+                coalesce(badimagery_stmt.c.count, 0).label("bad_imagery"),
                 (
-                    coalesce(
-                        func.count(sq.c.action_text).filter(
-                            sq.c.action_text == TaskStatus.MAPPED.name
-                        ),
-                        0,
-                    )
-                    + coalesce(
-                        func.count(sq.c.action_text).filter(
-                            sq.c.action_text == TaskStatus.VALIDATED.name
-                        ),
-                        0,
-                    )
+                    coalesce(mapped_stmt.c.count, 0)
+                    + coalesce(validated_stmt.c.count, 0)
+                    + coalesce(badimagery_stmt.c.count, 0)
                 ).label("total"),
+                mapped_stmt.c.task_ids.label("mapped_tasks"),
+                validated_stmt.c.task_ids.label("validated_tasks"),
+                badimagery_stmt.c.task_ids.label("bad_imagery_tasks"),
             )
-            .join(User, sq.c.user_id == User.id)
-            .group_by(User.id)
+            .join(project_contributions, User.id == project_contributions.c.user_id)
+            .outerjoin(mapped_stmt, User.id == mapped_stmt.c.mapped_by)
+            .outerjoin(badimagery_stmt, User.id == badimagery_stmt.c.mapped_by)
+            .outerjoin(validated_stmt, User.id == validated_stmt.c.validated_by)
+            .group_by(
+                User.id,
+                User.username,
+                User.name,
+                User.mapping_level,
+                User.picture_url,
+                User.date_registered,
+                mapped_stmt.c.count,
+                mapped_stmt.c.task_ids,
+                badimagery_stmt.c.count,
+                badimagery_stmt.c.task_ids,
+                validated_stmt.c.count,
+                validated_stmt.c.task_ids,
+            )
             .order_by(desc("total"))
             .all()
         )
@@ -334,12 +340,13 @@ class StatsService:
                     mapping_level=MappingLevel(r.mapping_level).name,
                     picture_url=r.picture_url,
                     mapped=r.mapped,
+                    bad_imagery=r.bad_imagery,
                     validated=r.validated,
-                    split=r.split,
-                    marked_bad_imagery=r.bad_imagery,
-                    invalidated=r.invalidated,
                     total=r.total,
                     mapped_tasks=r.mapped_tasks if r.mapped_tasks is not None else [],
+                    bad_imagery_tasks=r.bad_imagery_tasks
+                    if r.bad_imagery_tasks
+                    else [],
                     validated_tasks=r.validated_tasks
                     if r.validated_tasks is not None
                     else [],
@@ -355,7 +362,7 @@ class StatsService:
     @staticmethod
     @cached(homepage_stats_cache)
     def get_homepage_stats(abbrev=True) -> HomePageStatsDTO:
-        """ Get overall TM stats to give community a feel for progress that's being made """
+        """Get overall TM stats to give community a feel for progress that's being made"""
         dto = HomePageStatsDTO()
         dto.total_projects = Project.query.with_entities(
             func.count(Project.id)
@@ -565,7 +572,7 @@ class StatsService:
     def get_task_stats(
         start_date, end_date, org_id, org_name, campaign, project_id, country
     ):
-        """ Creates tasks stats for a period using the TaskStatsDTO """
+        """Creates tasks stats for a period using the TaskStatsDTO"""
 
         query = (
             db.session.query(
@@ -575,9 +582,7 @@ class StatsService:
                 func.DATE(TaskHistory.action_date).label("day"),
             )
             .distinct(
-                tuple_(
-                    TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text
-                )
+                TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text
             )
             .filter(
                 TaskHistory.action == "STATE_CHANGE",

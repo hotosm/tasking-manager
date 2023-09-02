@@ -1,7 +1,6 @@
-from flask_restful import Resource, request, current_app
+from flask_restful import Resource, request
 from backend.services.messaging.message_service import (
     MessageService,
-    NotFound,
     MessageServiceError,
 )
 from backend.services.notification_service import NotificationService
@@ -49,15 +48,6 @@ class NotificationsRestAPI(Resource):
             return user_message.to_primitive(), 200
         except MessageServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "No messages found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Messages GET all - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch message",
-                "SubCode": "InternalServerError",
-            }, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -97,15 +87,6 @@ class NotificationsRestAPI(Resource):
             return {"Success": "Message deleted"}, 200
         except MessageServiceError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except NotFound:
-            return {"Error": "No messages found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Messages GET all - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to delete message",
-                "SubCode": "InternalServerError",
-            }, 500
 
 
 class NotificationsAllAPI(Resource):
@@ -129,7 +110,11 @@ class NotificationsAllAPI(Resource):
             - in: query
               name: messageType
               type: string
-              description: Optional message-type filter; leave blank to retrieve all
+              description: Optional message-type filter; leave blank to retrieve all\n
+                Accepted values are 1 (System), 2 (Broadcast), 3 (Mention), 4 (Validation),
+                5 (Invalidation), 6 (Request team), \n
+                7 (Invitation), 8 (Task comment), 9 (Project chat),
+                10 (Project Activity), and 11 (Team broadcast)
             - in: query
               name: from
               description: Optional from username filter
@@ -171,38 +156,30 @@ class NotificationsAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            page = request.args.get("page", 1, int)
-            page_size = request.args.get("pageSize", 10, int)
-            sort_by = request.args.get("sortBy", "date")
-            sort_direction = request.args.get("sortDirection", "desc")
-            message_type = request.args.get("messageType", None)
-            from_username = request.args.get("from")
-            project = request.args.get("project", None, int)
-            task_id = request.args.get("taskId", None, int)
-            status = request.args.get("status", None, str)
-            user_messages = MessageService.get_all_messages(
-                token_auth.current_user(),
-                preferred_locale,
-                page,
-                page_size,
-                sort_by,
-                sort_direction,
-                message_type,
-                from_username,
-                project,
-                task_id,
-                status,
-            )
-            return user_messages.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Messages GET all - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch messages",
-                "SubCode": "InternalServerError",
-            }, 500
+        preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+        page = request.args.get("page", 1, int)
+        page_size = request.args.get("pageSize", 10, int)
+        sort_by = request.args.get("sortBy", "date")
+        sort_direction = request.args.get("sortDirection", "desc")
+        message_type = request.args.get("messageType", None)
+        from_username = request.args.get("from")
+        project = request.args.get("project", None, int)
+        task_id = request.args.get("taskId", None, int)
+        status = request.args.get("status", None, str)
+        user_messages = MessageService.get_all_messages(
+            token_auth.current_user(),
+            preferred_locale,
+            page,
+            page_size,
+            sort_by,
+            sort_direction,
+            message_type,
+            from_username,
+            project,
+            task_id,
+            status,
+        )
+        return user_messages.to_primitive(), 200
 
 
 class NotificationsQueriesCountUnreadAPI(Resource):
@@ -229,18 +206,8 @@ class NotificationsQueriesCountUnreadAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            unread_count = MessageService.has_user_new_messages(
-                token_auth.current_user()
-            )
-            return unread_count, 200
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch messages count",
-                "SubCode": "InternalServerError",
-            }, 500
+        unread_count = MessageService.has_user_new_messages(token_auth.current_user())
+        return unread_count, 200
 
 
 class NotificationsQueriesPostUnreadAPI(Resource):
@@ -269,14 +236,6 @@ class NotificationsQueriesPostUnreadAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            user_id = token_auth.current_user()
-            unread_count = NotificationService.update(user_id)
-            return unread_count, 200
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch messages count",
-                "SubCode": "InternalServerError",
-            }, 500
+        user_id = token_auth.current_user()
+        unread_count = NotificationService.update(user_id)
+        return unread_count, 200

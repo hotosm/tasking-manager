@@ -3,7 +3,7 @@
 Project and code leads are experienced HOT volunteer and staff developers and the main points of contact for the project. They are also the final reviewers of issues and pull requests. Code leads will review pull requests and provide feedback. The purpose of this role is to help contributors,
 provide consistency and ensure code quality.
 
-Currently, HOT has been collaborating with the developers at [Kathmandu Living Labs](https://www.kathmandulivinglabs.org/) to help maintain and support community development on the project. Their role as leaders on the project and in the development community has greatly benefitted the Tasking Manager development and sustainability of the project. 
+Currently, HOT has been collaborating with the developers at [Kathmandu Living Labs](https://www.kathmandulivinglabs.org/) to help maintain and support community development on the project. Their role as leaders on the project and in the development community has greatly benefitted the Tasking Manager development and sustainability of the project.
 
 All of the development is going to happen in the [project repository](https://github.com/hotosm/tasking-manager) and everything we work on shall be related to and documented in issues of the related [issue queue](https://github.com/hotosm/tasking-manager/issues).
 
@@ -14,7 +14,7 @@ All of the development is going to happen in the [project repository](https://gi
 3. Stick to pep8 python style guide for the backend.
 4. Apply ESLint and [prettier](https://prettier.io/) style guide rules for the frontend code.
 5. Export translatable strings with `make refresh-translatables` and include them in your commit.
-6. When creating new environment variables or changing existing ones, make sure to add them to the AWS Cloudformation template (see [the deployment docs](../sysadmins/deployment.md)) and note them in the Pull Request. 
+6. When creating new environment variables or changing existing ones, make sure to add them to the AWS Cloudformation template (see [the deployment docs](../sysadmins/deployment.md)) and note them in the Pull Request.
 
 ## Code collaboration and version control
 
@@ -23,7 +23,7 @@ All of the development is going to happen in the [project repository](https://gi
 * Use branches in the tasking-manager project. This allows others to rebase your branch when they are reviewing or to continue started work. We follow git flow’s naming convention
   - `feature/ISSUENUMBER-SHORT-TITLE-SEPARATED-BY-HYPHENS` for general new features you are working on
   - `hotfix/ISSUENUMBER-SHORT-TITLE-SEPARATED-BY-HYPHENS` for important bug fixes that need to go into the main releases as soon as possible
-  - `bugfix/ISSUENUMBER-SHORT-TITLE-SEPARATED-BY-HYPHENS` for non-critical fixes that can be deployed in the next scheduled release. 
+  - `bugfix/ISSUENUMBER-SHORT-TITLE-SEPARATED-BY-HYPHENS` for non-critical fixes that can be deployed in the next scheduled release.
 (e.g. for a normal feature feature/893-restrict-available-editors).
 * Make sure your PR is always up to date and rebased with the latest develop branch.
 * Try to build a nice and understandable commit history of the project. Please use [meaningful commit messages](https://medium.com/@nawarpianist/git-commit-best-practices-dab8d722de99) and try to unite/squash related work into one commit. Eventually we will squash commits before merging a new feature or hotfix into the main branches (develop and master).
@@ -66,9 +66,9 @@ of the commit message can be left out.
 Before sending a PR, make sure you run the following commands and include the changes in your commit.
 
 * Code formatting:
-  * Format all backend code by running [Black](https://pypi.org/project/black/): `black manage.py backend tests migrations`
+  * Format all backend code by running [Black](https://pypi.org/project/black/): `black manage.py backend tests migrations` or `pdm run lint`
   * Format all frontend code with [prettier](https://prettier.io/) either by [configuring your editor](https://prettier.io/docs/en/editors.html) or by running `yarn prettier` inside the `frontend` directory.
-* Coding standards: Make sure you adhere to the coding standards eventually risen by [Flake8](http://flake8.pycqa.org/en/latest/): `flake8 manage.py backend tests migrations`
+* Coding standards: Make sure you adhere to the coding standards eventually risen by [Flake8](http://flake8.pycqa.org/en/latest/): `flake8 manage.py backend tests migrations` or `pdm run flake8`
 * Prepare for translations: In case you have introduced new strings on the frontend, the translation source file must be updated this can be done via `make refresh-translatables` or `yarn build-locales` (inside the `frontend` directory).
 
 If you have forked this project on GitHub then the best way to submit your patches is to
@@ -93,7 +93,7 @@ echo "$PY_FILES" | xargs git add
 exit 0
 ```
 ### Reviewing Pull Requests
-We welcome community members to review Pull Request. The process to review a PR  is by adding a comment if already reviewed and everything looks good, or specifying what change is needed. 
+We welcome community members to review Pull Request. The process to review a PR  is by adding a comment if already reviewed and everything looks good, or specifying what change is needed.
 
 ## Translators
 
@@ -110,7 +110,7 @@ The Tasking Manager is using Angular Translate to display the translated strings
 
 ### Setting up Transifex locally
 
-To [set up the Transifex client](https://docs.transifex.com/client/init), you'll need a Transifex account and API key.
+To [set up the Transifex client](https://developers.transifex.com/docs/cli), you'll need a Transifex account and API key.
 In the project's top level directory, initialize Transifex service: `tx init`. The init process will ask for service URL
 (leave the default suggestion by hitting enter) and your Transifex username/password.
 

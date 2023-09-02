@@ -162,7 +162,10 @@ export const MetadataForm = () => {
             values={{ link: <IdDocsLink /> }}
           />
         </p>
-        <ExtraIdParams value={projectInfo.extraIdParams} setProjectInfo={setProjectInfo} />
+        <ExtraIdParams
+          value={projectInfo.extraIdParams ? projectInfo.extraIdParams : ''}
+          setProjectInfo={setProjectInfo}
+        />
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>

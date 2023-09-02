@@ -1,6 +1,5 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource
 
-from backend.models.postgis.utils import NotFound
 from backend.models.dtos.project_dto import ProjectFavoriteDTO
 from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import token_auth
@@ -38,19 +37,12 @@ class ProjectsFavoritesAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            user_id = token_auth.current_user()
-            favorited = ProjectService.is_favorited(project_id, user_id)
-            if favorited is True:
-                return {"favorited": True}, 200
+        user_id = token_auth.current_user()
+        favorited = ProjectService.is_favorited(project_id, user_id)
+        if favorited is True:
+            return {"favorited": True}, 200
 
-            return {"favorited": False}, 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Favorite GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        return {"favorited": False}, 200
 
     @token_auth.login_required
     def post(self, project_id: int):
@@ -87,15 +79,8 @@ class ProjectsFavoritesAPI(Resource):
         favorite_dto = ProjectFavoriteDTO()
         favorite_dto.project_id = project_id
         favorite_dto.user_id = authenticated_user_id
-        try:
-            ProjectService.favorite(project_id, authenticated_user_id)
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Favorite PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
+        ProjectService.favorite(project_id, authenticated_user_id)
         return {"project_id": project_id}, 200
 
     @token_auth.login_required
@@ -131,13 +116,7 @@ class ProjectsFavoritesAPI(Resource):
         """
         try:
             ProjectService.unfavorite(project_id, token_auth.current_user())
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-        except Exception as e:
-            error_msg = f"Favorite PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
         return {"project_id": project_id}, 200

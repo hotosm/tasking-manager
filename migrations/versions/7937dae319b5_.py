@@ -6,6 +6,7 @@ Create Date: 2020-09-21 17:17:10.542429
 
 """
 from alembic import op
+import sqlalchemy as sa
 import requests
 
 
@@ -24,7 +25,7 @@ def upgrade():
     fetch_countries = (
         "select distinct(unnest(country)) from projects where country is not null;"
     )
-    countries = conn.execute(fetch_countries)
+    countries = conn.execute(sa.text(fetch_countries))
     for country in countries:
         country = country[0]
         # search by name
@@ -40,7 +41,7 @@ def upgrade():
                 + "']::varchar[]"
                 + ";"
             )
-            conn.execute(update_project)
+            conn.execute(sa.text(update_project))
 
 
 def downgrade():

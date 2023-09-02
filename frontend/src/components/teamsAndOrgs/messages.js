@@ -68,6 +68,14 @@ export default defineMessages({
     id: 'management.teams.members.send_message',
     defaultMessage: 'Team messaging',
   },
+  sendMessageSuccess: {
+    id: 'management.teams.members.send_message.success',
+    defaultMessage: 'Message sent',
+  },
+  sendMessageFailure: {
+    id: 'management.teams.members.send_message.failure',
+    defaultMessage: 'Failed to send message. Please try again.',
+  },
   send: {
     id: 'management.teams.members.send_message.button',
     defaultMessage: 'Send',
@@ -91,6 +99,18 @@ export default defineMessages({
   team: {
     id: 'management.team',
     defaultMessage: 'Team',
+  },
+  leaveTheTeam: {
+    id: 'user.team.leaveTeam',
+    defaultMessage: 'Leave the team',
+  },
+  leaveTheTeamDescription: {
+    id: 'user.team.leaveTeam.description',
+    defaultMessage: 'Are you sure you want to leave <b>{name}</b>?',
+  },
+  leave: {
+    id: 'user.team.leaveTeam.button.leave',
+    defaultMessage: 'Leave',
   },
   projects: {
     id: 'management.projects',

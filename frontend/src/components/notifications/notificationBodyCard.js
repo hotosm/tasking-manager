@@ -43,7 +43,12 @@ export const NotificationBodyModal = (props) => {
         style={{ letterSpacing: '0.114546px' }}
       >
         <FormattedMessage {...messages.message} />
-        <CloseIcon className={`fr ml4 blue-dark h1 w1 blue-dark pointer`} onClick={props.close} />
+        <CloseIcon
+          role="button"
+          className={`fr ml4 blue-dark h1 w1 blue-dark pointer`}
+          onClick={props.close}
+          aria-label="Close"
+        />
       </div>
       {!thisNotificationError && (
         <NotificationBodyCard
@@ -58,7 +63,7 @@ export const NotificationBodyModal = (props) => {
           <FormattedMessage
             {...messages.errorLoadingTheX}
             values={{
-              xWord: <FormattedMessage {...messages.message} />,
+              xWord: <FormattedMessage {...messages.notification} />,
             }}
           />
         </div>

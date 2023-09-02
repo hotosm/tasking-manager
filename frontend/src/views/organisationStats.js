@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { startOfYear, format } from 'date-fns';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { useTasksStatsQueryParams, useTasksStatsQueryAPI } from '../hooks/UseTasksStatsQueryAPI';
-import { useForceUpdate } from '../hooks/UseForceUpdate';
 import { useTotalTasksStats } from '../hooks/UseTotalTasksStats';
 import { useCurrentYearStats } from '../hooks/UseOrgYearStats';
 import { useFetch } from '../hooks/UseFetch';
@@ -23,20 +21,13 @@ export const OrganisationStats = () => {
   const token = useSelector((state) => state.auth.token);
   const isOrgManager = useSelector(
     (state) =>
-      state.auth.userDetails.role === 'ADMIN' ||
-      (state.auth.organisations && state.auth.organisations.includes(Number(id))),
+      state.auth.userDetails.role === 'ADMIN' || state.auth.organisations?.includes(Number(id)),
   );
   const [query, setQuery] = useTasksStatsQueryParams();
-  const [forceUpdated, forceUpdate] = useForceUpdate();
-  useEffect(() => {
-    if (!query.startDate) {
-      setQuery({ ...query, startDate: format(startOfYear(Date.now()), 'yyyy-MM-dd') }, 'replaceIn');
-    }
-  });
-  const [apiState] = useTasksStatsQueryAPI(
+
+  const [apiState, fetchTasksStatistics] = useTasksStatsQueryAPI(
     { taskStats: [] },
     query,
-    query.startDate ? forceUpdated : false,
     `organisationId=${id}`,
   );
   const [error, loading, organisation] = useFetch(`organisations/${id}/?omitManagerList=true`, id);
@@ -82,7 +73,7 @@ export const OrganisationStats = () => {
               stats={apiState.stats}
               error={apiState.isError}
               loading={apiState.isLoading}
-              retryFn={forceUpdate}
+              retryFn={fetchTasksStatistics}
             />
           </div>
           <div className="w-100 fl cf">

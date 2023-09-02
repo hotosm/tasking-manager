@@ -5,7 +5,7 @@
 -- Also, we assume you have created the TM3 database by following the README or migration guide,
 --   meaning you will have a database named "taskingmanager" already. Make sure you have run the alembic
 --   database upgrades to load the schema of "taskingmanager". As a refresher, this is done in the base
---   TM3 directory via:   venv/bin/python manage.py db upgrade
+--   TM3 directory via: flask db upgrade
 -- If you run into errors, make sure your environmental variable is set for TM_DB.
 --
 -- Now to the migration...
