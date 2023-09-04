@@ -578,6 +578,10 @@ class TestTasksActionsMappingUnlockAPI(BaseTestCase):
         self.assertEqual(last_task_history["action"], TaskAction.STATE_CHANGE.name)
         self.assertEqual(last_task_history["actionText"], TaskStatus.MAPPED.name)
         self.assertEqual(last_task_history["actionBy"], self.test_user.username)
+        # Check if lock duration is saved
+        # Since locked duration is saved in entry with action as "LOCKED_FOR_MAPPING"
+        # we need to look for second entry in task history
+        self.assertIsNotNone(response.json["taskHistory"][1]["actionText"])
 
     def test_mapping_unlock_returns_200_on_success_with_comment(self):
         """Test returns 200 on success."""
@@ -609,6 +613,11 @@ class TestTasksActionsMappingUnlockAPI(BaseTestCase):
         self.assertEqual(last_comment_history["action"], TaskAction.COMMENT.name)
         self.assertEqual(last_comment_history["actionText"], "cannot map")
         self.assertEqual(last_comment_history["actionBy"], self.test_user.username)
+
+        # Check if lock duration is saved
+        # Since locked duration is saved in entry with action as "LOCKED_FOR_MAPPING"
+        # we need to look for third entry in task history as second entry is comment
+        self.assertIsNotNone(response.json["taskHistory"][2]["actionText"])
 
 
 class TestTasksActionsMappingStopAPI(BaseTestCase):
@@ -1242,6 +1251,11 @@ class TestTasksActionsValidationStopAPI(BaseTestCase):
         self.assertEqual(task_history_comment["action"], "COMMENT")
         self.assertEqual(task_history_comment["actionText"], "Test comment")
         self.assertEqual(task_history_comment["actionBy"], self.test_user.username)
+
+        # Check if lock duration is saved
+        # Since locked duration is saved in entry with action as "LOCKED_FOR_MAPPING"
+        # we need to look for third entry in task history as second entry is comment
+        self.assertIsNotNone(response.json["tasks"][0]["taskHistory"][2]["actionText"])
 
 
 class TestTasksActionsSplitAPI(BaseTestCase):

@@ -1,7 +1,12 @@
 import datetime
 import xml.etree.ElementTree as ET
 from unittest.mock import patch
-from backend.services.mapping_service import MappingService, Task
+from backend.services.mapping_service import (
+    MappingService,
+    Task,
+    TaskHistory,
+    ExtendLockTimeDTO,
+)
 from backend.models.postgis.task import TaskStatus
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
@@ -165,3 +170,38 @@ class TestMappingService(BaseTestCase):
         # Assert
         for task in self.test_project.tasks:
             self.assertNotEqual(task.task_status, TaskStatus.BADIMAGERY.value)
+
+    def test_task_extend_duration_is_recorded(self):
+        if self.skip_tests:
+            return
+
+        # Arrange
+        task = Task.get(1, self.test_project.id)
+        task.task_status = TaskStatus.READY.value
+        task.update()
+        task.lock_task_for_mapping(self.test_user.id)
+        extend_lock_dto = ExtendLockTimeDTO()
+        extend_lock_dto.task_ids = [task.id]
+        extend_lock_dto.project_id = self.test_project.id
+        extend_lock_dto.user_id = self.test_user.id
+        # Act
+        # Extend the task lock time twice and check the task history
+        MappingService.extend_task_lock_time(extend_lock_dto)
+        MappingService.extend_task_lock_time(extend_lock_dto)
+        task.reset_lock(self.test_user.id)
+
+        # Assert
+        # Check that the task history has 2 entries for EXTENDED_FOR_MAPPING and that the action_text is not None
+        extended_task_history = (
+            TaskHistory.query.filter_by(
+                task_id=task.id,
+                project_id=self.test_project.id,
+            )
+            .order_by(TaskHistory.action_date.desc())
+            .limit(5)
+            .all()
+        )
+        self.assertEqual(extended_task_history[0].action, "EXTENDED_FOR_MAPPING")
+        self.assertEqual(extended_task_history[1].action, "EXTENDED_FOR_MAPPING")
+        self.assertIsNotNone(extended_task_history[0].action_text)
+        self.assertIsNotNone(extended_task_history[1].action_text)
