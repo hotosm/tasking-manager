@@ -11,6 +11,7 @@ export const types = {
   UPDATE_OSM_INFO: 'UPDATE_OSM_INFO',
   GET_USER_DETAILS: 'GET_USER_DETAILS',
   SET_TOKEN: 'SET_TOKEN',
+  SET_OSM_TEAMS_TOKEN: 'SET_OSM_TEAMS_TOKEN',
   SET_SESSION: 'SET_SESSION',
   CLEAR_SESSION: 'CLEAR_SESSION',
 };
@@ -43,6 +44,8 @@ export const logout = () => (dispatch) => {
   safeStorage.removeItem('token');
   safeStorage.removeItem('action');
   safeStorage.removeItem('osm_oauth_token');
+  safeStorage.removeItem('osmteams_token');
+  safeStorage.removeItem('osmteams_refresh_token');
   safeStorage.removeItem('tasksSortOrder');
   dispatch(clearUserDetails());
 };
@@ -82,6 +85,13 @@ export function updateToken(token) {
   };
 }
 
+export function updateOSMTeamsToken(osmteams_token) {
+  return {
+    type: types.SET_OSM_TEAMS_TOKEN,
+    osmteams_token: osmteams_token,
+  };
+}
+
 export function updateSession(session) {
   return {
     type: types.SET_SESSION,
@@ -101,6 +111,12 @@ export const setAuthDetails = (username, token, osm_oauth_token) => (dispatch) =
     }),
   );
   dispatch(setUserDetails(username, encoded_token));
+};
+
+export const setOSMTeamsDetails = (osmteams_token, refresh_token) => (dispatch) => {
+  safeStorage.setItem('osmteams_token', osmteams_token);
+  safeStorage.setItem('osmteams_refresh_token', refresh_token);
+  dispatch(updateOSMTeamsToken(osmteams_token));
 };
 
 // UPDATES OSM INFORMATION OF THE USER

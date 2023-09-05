@@ -56,14 +56,14 @@ import {
   teams,
   team,
   teamCreationSuccess,
-  teamUpdationSuccess,
+  teamUpdateSuccess,
   teamDeletionSuccess,
 } from './mockData/teams';
 import { userTasks } from './mockData/tasksStats';
 import { homepageStats } from './mockData/homepageStats';
 import { banner, countries, josmRemote, systemStats } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
-import { API_URL } from '../../config';
+import { API_URL, OSM_TEAMS_API_URL } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
 import { authLogin, setUser, userRegister } from './mockData/auth';
 import {
@@ -75,6 +75,7 @@ import {
   submitValidationTask,
   userLockedTasks,
 } from './mockData/taskHistory';
+import { myTeams, osmTeam1, osmTeamMembers, osmTeamModerators } from './mockData/osmTeams';
 
 const handlers = [
   rest.get(API_URL + 'projects/:id/queries/summary/', async (req, res, ctx) => {
@@ -246,7 +247,7 @@ const handlers = [
     return res(ctx.json(teamCreationSuccess));
   }),
   rest.patch(API_URL + 'teams/:id/', (req, res, ctx) => {
-    return res(ctx.json(teamUpdationSuccess));
+    return res(ctx.json(teamUpdateSuccess));
   }),
   rest.delete(API_URL + 'teams/:id', (req, res, ctx) => {
     return res(ctx.json(teamDeletionSuccess));
@@ -360,6 +361,19 @@ const handlers = [
   ),
   rest.get('http://127.0.0.1:8111/version', (req, res, ctx) => {
     return res(ctx.json(josmRemote));
+  }),
+  // OSM Teams
+  rest.get(OSM_TEAMS_API_URL + '/api/my/teams', (req, res, ctx) => {
+    return res(ctx.json(myTeams));
+  }),
+  rest.get(OSM_TEAMS_API_URL + '/api/teams/:id', (req, res, ctx) => {
+    return res(ctx.json(osmTeam1));
+  }),
+  rest.get(OSM_TEAMS_API_URL + '/api/teams/:id/members', (req, res, ctx) => {
+    return res(ctx.json(osmTeamMembers));
+  }),
+  rest.get(OSM_TEAMS_API_URL + '/api/teams/:id/moderators', (req, res, ctx) => {
+    return res(ctx.json(osmTeamModerators));
   }),
 ];
 

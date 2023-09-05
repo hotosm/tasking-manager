@@ -35,3 +35,10 @@ export function formatMemberObject(user, manager = false) {
     active: true,
   };
 }
+
+export const filterOSMTeamsMembers = (members, moderators) => {
+  const managersIds = moderators.map((user) => user.osm_id);
+  const managers = members.filter((user) => managersIds.includes(user.id));
+  members = members.filter((user) => !managersIds.includes(user.id));
+  return { managers, members };
+}

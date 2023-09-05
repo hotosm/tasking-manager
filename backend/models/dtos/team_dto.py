@@ -39,6 +39,7 @@ def validate_team_join_method(value):
             f"{TeamJoinMethod.ANY.name}, "
             f"{TeamJoinMethod.BY_INVITE.name}, "
             f"{TeamJoinMethod.BY_REQUEST.name}"
+            f"{TeamJoinMethod.OSM_TEAMS.name}"
         )
 
 
@@ -92,6 +93,7 @@ class TeamDetailsDTO(Model):
     """ Describes JSON model for a team """
     team_id = IntType(serialized_name="teamId")
     organisation_id = IntType(required=True)
+    osm_teams_id = IntType(required=False)
     organisation = StringType(required=True)
     organisation_slug = StringType(serialized_name="organisationSlug")
     name = StringType(required=True)
@@ -131,6 +133,7 @@ class TeamDTO(Model):
     members = ListType(ModelType(TeamMembersDTO))
     members_count = IntType(serialized_name="membersCount", required=False)
     managers_count = IntType(serialized_name="managersCount", required=False)
+    osm_teams_id = IntType(required=False)
 
 
 class TeamsListDTO(Model):
@@ -150,6 +153,7 @@ class NewTeamDTO(Model):
     creator = LongType(required=True)
     organisation_id = IntType(required=True)
     name = StringType(required=True)
+    osm_teams_id = IntType()
     description = StringType()
     join_method = StringType(
         required=True,
@@ -166,6 +170,7 @@ class UpdateTeamDTO(Model):
 
     creator = LongType()
     team_id = IntType()
+    osm_teams_id = IntType()
     organisation = StringType()
     organisation_id = IntType()
     name = StringType()

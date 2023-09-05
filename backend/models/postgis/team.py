@@ -78,6 +78,7 @@ class Team(db.Model):
     visibility = db.Column(
         db.Integer, default=TeamVisibility.PUBLIC.value, nullable=False
     )
+    osm_teams_id = db.Column(db.BigInteger, nullable=True)
 
     organisation = db.relationship(Organisation, backref="teams")
 
@@ -95,6 +96,7 @@ class Team(db.Model):
         new_team.description = new_team_dto.description
         new_team.join_method = TeamJoinMethod[new_team_dto.join_method].value
         new_team.visibility = TeamVisibility[new_team_dto.visibility].value
+        new_team.osm_teams_id = new_team_dto.osm_teams_id
 
         org = Organisation.get(new_team_dto.organisation_id)
         new_team.organisation = org
@@ -197,6 +199,7 @@ class Team(db.Model):
         team_dto.name = self.name
         team_dto.organisation = self.organisation.name
         team_dto.organisation_id = self.organisation.id
+        team_dto.osm_teams_id = self.osm_teams_id
         team_dto.logo = self.organisation.logo
         team_dto.visibility = TeamVisibility(self.visibility).name
         return team_dto
@@ -207,6 +210,7 @@ class Team(db.Model):
         team_dto.team_id = self.id
         team_dto.name = self.name
         team_dto.description = self.description
+        team_dto.osm_teams_id = self.osm_teams_id
         team_dto.join_method = TeamJoinMethod(self.join_method).name
         team_dto.members = self._get_team_members()
         team_dto.visibility = TeamVisibility(self.visibility).name

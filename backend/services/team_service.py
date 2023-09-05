@@ -306,6 +306,7 @@ class TeamService:
             team_dto.join_method = TeamJoinMethod(team.join_method).name
             team_dto.visibility = TeamVisibility(team.visibility).name
             team_dto.description = team.description
+            team_dto.osm_teams_id = team.osm_teams_id
             team_dto.logo = team.organisation.logo
             team_dto.organisation = team.organisation.name
             team_dto.organisation_id = team.organisation.id
@@ -345,6 +346,7 @@ class TeamService:
         team_dto.join_method = TeamJoinMethod(team.join_method).name
         team_dto.visibility = TeamVisibility(team.visibility).name
         team_dto.description = team.description
+        team_dto.osm_teams_id = team.osm_teams_id
         team_dto.logo = team.organisation.logo
         team_dto.organisation = team.organisation.name
         team_dto.organisation_id = team.organisation.id

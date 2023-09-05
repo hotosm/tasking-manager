@@ -63,6 +63,10 @@ export const POTLATCH2_EDITOR_URL =
 export const RAPID_EDITOR_URL =
   process.env.REACT_APP_RAPID_EDITOR_URL || 'https://mapwith.ai/rapid';
 
+// OSM Teams integration
+export const OSM_TEAMS_API_URL = process.env.REACT_APP_OSM_TEAMS_API_URL || 'https://mapping.team';
+export const OSM_TEAMS_CLIENT_ID = process.env.REACT_APP_OSM_TEAMS_CLIENT_ID || '';
+
 export const TASK_COLOURS = {
   READY: '#fff',
   LOCKED_FOR_MAPPING: '#fff',

@@ -30,7 +30,7 @@ jobs:
           name: Run yarn test
           command: |
             cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
-            CI=true yarn test -w 1
+            CI=true REACT_APP_OSM_TEAMS_CLIENT_ID=boo yarn test -w 1
             CI=true GENERATE_SOURCEMAP=false yarn build
 
   backend-code-check-PEP8:

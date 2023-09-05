@@ -51,7 +51,7 @@ export const teamCreationSuccess = {
   teamId: 123,
 };
 
-export const teamUpdationSuccess = {
+export const teamUpdateSuccess = {
   Status: 'Updated',
 };
 

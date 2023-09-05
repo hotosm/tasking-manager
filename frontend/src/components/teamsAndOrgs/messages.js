@@ -490,6 +490,15 @@ export default defineMessages({
     id: 'management.teams.join_method.by_invite.description',
     defaultMessage: 'Users can only join this team if managers invite them.',
   },
+  OSMTeams: {
+    id: 'management.teams.join_method.osm_teams',
+    defaultMessage: 'OSM Teams',
+  },
+  OSMTeamsDescription: {
+    id: 'management.teams.join_method.osm_teams.description',
+    defaultMessage:
+      'The users of this team are managed in OSM Teams. This option is automatically selected when you enable the sync with OSM Teams.',
+  },
   public: {
     id: 'management.teams.visibility.public',
     defaultMessage: 'Public',
@@ -514,6 +523,107 @@ export default defineMessages({
   waitingApproval: {
     id: 'teamsAndOrgs.management.teams.messages.waiting_approval',
     defaultMessage: 'Your request to join this team is waiting for approval.',
+  },
+  syncWithOSMTeams: {
+    id: 'management.teams.sync.title',
+    defaultMessage: 'Sync with OSM Teams',
+  },
+  syncedWithOSMTeams: {
+    id: 'management.teams.sync.synced',
+    defaultMessage: 'Synced with OSM Teams',
+  },
+  osmTeamsIntegrationDescription: {
+    id: 'management.teams.syncOSMTeams.description',
+    defaultMessage:
+      'Import members and managers from one of your teams in the {osmTeams} platform.',
+  },
+  osmTeamsReSyncHelp: {
+    id: 'management.teams.syncOSMTeams.description',
+    defaultMessage:
+      'The members and managers of this team are configured through the {osmTeams} platform.',
+  },
+  sync: {
+    id: 'management.teams.sync.button',
+    defaultMessage: 'Sync',
+  },
+  authenticationModalTitle: {
+    id: 'management.teams.sync.authentication.title',
+    defaultMessage: 'OSM Teams authentication successful',
+  },
+  authenticationModalDescription: {
+    id: 'management.teams.sync.authentication.description',
+    defaultMessage: 'You are now able to sync with OSM Teams.',
+  },
+  connectOSMTeams: {
+    id: 'management.teams.sync.connect',
+    defaultMessage:
+      'Authorize Tasking Manager to connect to your OSM Teams account to use this feature.',
+  },
+  authenticate: {
+    id: 'management.teams.sync.authenticate',
+    defaultMessage: 'Authenticate OSM Teams',
+  },
+  selectTeam: {
+    id: 'management.teams.sync.select',
+    defaultMessage: 'Select a team from OSM Teams',
+  },
+  selectedTeam: {
+    id: 'management.teams.sync.selected',
+    defaultMessage: 'Selected team',
+  },
+  openOnOsmTeams: {
+    id: 'management.teams.sync.open_osm_teams',
+    defaultMessage: 'Open on OSM Teams',
+  },
+  back: {
+    id: 'management.teams.sync.back',
+    defaultMessage: 'Back',
+  },
+  stopPairing: {
+    id: 'management.teams.sync.stop',
+    defaultMessage: 'Stop OSM Teams pairing',
+  },
+  updateUsers: {
+    id: 'management.teams.sync.update',
+    defaultMessage: 'Synchronize again',
+  },
+  confirmSelection: {
+    id: 'management.teams.sync.confirm',
+    defaultMessage: 'Confirm selection',
+  },
+  dismiss: {
+    id: 'management.teams.sync.error.dismiss',
+    defaultMessage: 'Click to dismiss',
+  },
+  close: {
+    id: 'management.teams.sync.error.close',
+    defaultMessage: 'Close',
+  },
+  syncUsersError: {
+    id: 'management.teams.sync.users.error',
+    defaultMessage:
+      '{number, plural, one {It was not possible to add the user: {users}.} other {It was not possible to add the users: {users}.}}',
+  },
+  syncUsersGenericError: {
+    id: 'management.teams.sync.users.generic_error',
+    defaultMessage: 'It was not possible to add some users.',
+  },
+  syncUsersErrorExtra: {
+    id: 'management.teams.sync.users.error.extra',
+    defaultMessage:
+      'The users need to be registered on Tasking Manager in order to be added to a team.',
+  },
+  lastUpdated: {
+    id: 'management.teams.sync.last_updated',
+    defaultMessage: 'Last updated',
+  },
+  osmTeamsError: {
+    id: 'management.teams.sync.error',
+    defaultMessage: 'It was not possible to fetch your teams.',
+  },
+  osmTeamInfoError: {
+    id: 'management.teams.sync.error.single',
+    defaultMessage: 'It was not possible to fetch your team information.',
   },
   noProjectsFound: {
     id: 'management.projects.no_found',
@@ -548,5 +658,17 @@ export default defineMessages({
   overview: {
     id: 'management.stats.overview',
     defaultMessage: 'Overview',
+  },
+  joinTeam: {
+    id: 'teamsAndOrgs.management.button.join_team',
+    defaultMessage: 'Join team',
+  },
+  cancelRequest: {
+    id: 'teamsAndOrgs.management.button.cancel_request',
+    defaultMessage: 'Cancel request',
+  },
+  leaveTeam: {
+    id: 'teamsAndOrgs.management.button.leave_team',
+    defaultMessage: 'Leave team',
   },
 });
