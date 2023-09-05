@@ -9,7 +9,7 @@ from sqlalchemy import text, func
 from markdown import markdown
 
 from backend import db, create_app
-from backend.exceptions import NotFound
+from backend.exceptions import NotFound, Forbidden
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType
@@ -754,9 +754,8 @@ class MessageService:
             raise NotFound(sub_code="MESSAGE_NOT_FOUND", message_id=message_id)
 
         if message.to_user_id != int(user_id):
-            raise MessageServiceError(
-                "AccessOtherUserMessage- "
-                + f"User {user_id} attempting to access another users message {message_id}"
+            raise Forbidden(
+                sub_code="MESSAGE_NOT_FOR_USER", message_id=message_id, user_id=user_id
             )
 
         return message

@@ -198,7 +198,7 @@ export const ProjectDetailPage = () => {
       )}
       {error && (
         <>
-          {error.message === 'PrivateProject' ? (
+          {error.message === 'PRIVATE_PROJECT_NOT_ALLOWED' ? (
             <PrivateProjectError />
           ) : (
             <NotFound projectId={id} />

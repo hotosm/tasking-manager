@@ -55,9 +55,9 @@ class TestNotificationsRestAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.test_sender_token},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response_body["SubCode"], "AccessOtherUserMessage")
+        self.assertEqual(response_body["sub_code"], "MESSAGE_NOT_FOR_USER")
 
     def test_get_message_returns_404(self):
         """
@@ -104,9 +104,9 @@ class TestNotificationsRestAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.test_sender_token},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response_body["SubCode"], "AccessOtherUserMessage")
+        self.assertEqual(response_body["sub_code"], "MESSAGE_NOT_FOR_USER")
 
     def test_delete_message_returns_404(self):
         """

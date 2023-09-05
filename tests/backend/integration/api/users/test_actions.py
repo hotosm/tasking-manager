@@ -257,7 +257,7 @@ class TestUsersActionsSetRoleAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "NeedAdminRole")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_ADMIN")
 
     def test_returns_403_if_unknown_user_role(self):
         """Test API returns 403 if unknown user role is provided"""
@@ -267,7 +267,7 @@ class TestUsersActionsSetRoleAPI(BaseTestCase):
             headers={"Authorization": self.admin_session_token},
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json["SubCode"], "UnknownAddRole")
 
     def test_returns_404_if_user_not_found(self):

@@ -2,11 +2,12 @@ from distutils.util import strtobool
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
+from backend.exceptions import Forbidden, Unauthorized
 from backend.models.dtos.organisation_dto import (
     NewOrganisationDTO,
     UpdateOrganisationDTO,
 )
-from backend.models.postgis.user import User
+from backend.models.postgis.user import User, UserRole
 from backend.services.organisation_service import (
     OrganisationService,
     OrganisationServiceError,
@@ -121,11 +122,8 @@ class OrganisationsRestAPI(Resource):
                 description: Internal Server Error
         """
         request_user = User.get_by_id(token_auth.current_user())
-        if request_user.role != 1:
-            return {
-                "Error": "Only admin users can create organisations.",
-                "SubCode": "OnlyAdminAccess",
-            }, 403
+        if request_user.role != UserRole.ADMIN.value:
+            raise Forbidden(sub_code="USER_NOT_ADMIN")
 
         try:
             organisation_dto = NewOrganisationDTO(request.get_json())
@@ -179,10 +177,7 @@ class OrganisationsRestAPI(Resource):
         if not OrganisationService.can_user_manage_organisation(
             organisation_id, token_auth.current_user()
         ):
-            return {
-                "Error": "User is not an admin for the org",
-                "SubCode": "UserNotOrgAdmin",
-            }, 403
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")
         try:
             OrganisationService.delete_organisation(organisation_id)
             return {"Success": "Organisation deleted"}, 200
@@ -190,7 +185,7 @@ class OrganisationsRestAPI(Resource):
             return {
                 "Error": "Organisation has some projects",
                 "SubCode": "OrgHasProjects",
-            }, 403
+            }, 409
 
     @token_auth.login_required(optional=True)
     def get(self, organisation_id):
@@ -303,15 +298,13 @@ class OrganisationsRestAPI(Resource):
         if not OrganisationService.can_user_manage_organisation(
             organisation_id, token_auth.current_user()
         ):
-            return {
-                "Error": "User is not an admin for the org",
-                "SubCode": "UserNotOrgAdmin",
-            }, 403
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")
         try:
             organisation_dto = UpdateOrganisationDTO(request.get_json())
             organisation_dto.organisation_id = organisation_id
+
             # Don't update organisation type and subscription_tier if request user is not an admin
-            if User.get_by_id(token_auth.current_user()).role != 1:
+            if User.get_by_id(token_auth.current_user()).role != UserRole.ADMIN.value:
                 org = OrganisationService.get_organisation_by_id(organisation_id)
                 organisation_dto.type = OrganisationType(org.type).name
                 organisation_dto.subscription_tier = org.subscription_tier
@@ -324,7 +317,7 @@ class OrganisationsRestAPI(Resource):
             OrganisationService.update_organisation(organisation_dto)
             return {"Status": "Updated"}, 200
         except OrganisationServiceError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 402
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
 
 
 class OrganisationsStatsAPI(Resource):
@@ -415,13 +408,7 @@ class OrganisationsAllAPI(Resource):
             manager_user_id = None
 
         if manager_user_id is not None and not authenticated_user_id:
-            return (
-                {
-                    "Error": "Unauthorized - Filter by manager_user_id is not allowed to unauthenticated requests",
-                    "SubCode": "LoginToFilterManager",
-                },
-                403,
-            )
+            raise Unauthorized(sub_code="UNAUTHORIZED_MANAGER_FILTER")
 
         # Validate abbreviated.
         omit_managers = bool(strtobool(request.args.get("omitManagerList", "false")))

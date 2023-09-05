@@ -186,17 +186,19 @@ class SplitService:
         if (
             original_task.zoom and original_task.zoom >= 18
         ) or original_task_area_m < 25000:
-            raise SplitServiceError("SmallToSplit- Task is too small to be split")
+            raise SplitServiceError(
+                "SmallToSplit- Task is too small to be split"
+            )  # FLAGGED STATUS CODE: 409
 
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
             raise SplitServiceError(
-                "LockToSplit- Status must be LOCKED_FOR_MAPPING to split"
+                "LockToSplit- Status must be LOCKED_FOR_MAPPING to split"  # FLAGGED STATUS CODE: 409
             )
 
         if original_task.locked_by != split_task_dto.user_id:
             raise SplitServiceError(
-                "SplitOtherUserTask- Attempting to split a task owned by another user"
+                "SplitOtherUserTask- Attempting to split a task owned by another user"  # FLAGGED STATUS CODE: 423
             )
 
         # create new geometries from the task geometry
@@ -205,7 +207,9 @@ class SplitService:
                 original_task.x, original_task.y, original_task.zoom, original_task
             )
         except Exception as e:
-            raise SplitServiceError(f"Error splitting task{str(e)}")
+            raise SplitServiceError(
+                f"Error splitting task{str(e)}"
+            )  # FLAGGED STATUS CODE: 500
 
         # create new tasks from the new geojson
         i = Task.get_max_task_id_for_project(split_task_dto.project_id)
@@ -217,7 +221,7 @@ class SplitService:
             if not new_geometry.intersects(original_geometry):
                 raise InvalidGeoJson(
                     "SplitGeoJsonError- New split task does not intersect original task"
-                )
+                )  # FLAGGED STATUS CODE: 400
 
             # insert new tasks into database
             i = i + 1

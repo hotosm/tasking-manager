@@ -1,7 +1,7 @@
 import threading
 from unittest.mock import patch
 
-from backend.exceptions import NotFound
+from backend.exceptions import NotFound, Forbidden
 from backend.models.postgis.statuses import ProjectStatus
 from backend.models.postgis.team import TeamRoles, TeamMemberFunctions
 from tests.backend.base import BaseTestCase
@@ -44,7 +44,7 @@ class TestChatService(BaseTestCase):
         self.chat_dto.user_id = self.test_user.id
         self.chat_dto.username = self.test_user.username
         # Act/Assert
-        with self.assertRaises(ValueError):
+        with self.assertRaises(Forbidden):
             ChatService.post_message(
                 self.chat_dto, self.canned_project.id, self.test_user.id
             )
@@ -81,7 +81,7 @@ class TestChatService(BaseTestCase):
         self.canned_project.status = ProjectStatus.PUBLISHED.value
         self.canned_project.private = True
         # Act/Assert
-        with self.assertRaises(ValueError):
+        with self.assertRaises(Forbidden):
             ChatService.post_message(
                 self.chat_dto, self.canned_project.id, self.test_user.id
             )
@@ -143,7 +143,7 @@ class TestChatService(BaseTestCase):
         )
         comment = comments.chat[0]
         # Act/Assert
-        with self.assertRaises(ValueError):
+        with self.assertRaises(Forbidden):
             ChatService.delete_project_chat_by_id(
                 self.canned_project.id, comment.id, self.test_user.id
             )

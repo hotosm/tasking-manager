@@ -3,7 +3,7 @@ import threading
 import geojson
 from flask import current_app
 
-from backend.exceptions import NotFound
+from backend.exceptions import NotFound, Forbidden
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
@@ -57,12 +57,7 @@ class ProjectAdminService:
 
         # First things first, we need to validate that the author_id is a PM. issue #1715
         if not (is_admin or is_org_manager):
-            user = UserService.get_user_by_id(user_id)
-            raise (
-                ProjectAdminServiceError(
-                    f"NotPermittedToCreate- User {user.username} is not permitted to create project"
-                )
-            )
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER", user_id=user_id)
 
         # If we're cloning we'll copy all the project details from the clone, otherwise create brand new project
         if draft_project_dto.cloneFromProjectId:
@@ -119,7 +114,7 @@ class ProjectAdminService:
         return project.as_dto_for_admin(project_id)
 
     @staticmethod
-    def update_project(project_dto: ProjectDTO, authenticated_user_id: int):
+    def update_project(project_dto: ProjectDTO):
         project_id = project_dto.project_id
 
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:
@@ -130,17 +125,8 @@ class ProjectAdminService:
         if project_dto.license_id:
             ProjectAdminService._validate_imagery_licence(project_dto.license_id)
 
-        # To be handled before reaching this function
-        if ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
-        ):
-            project = ProjectAdminService._get_project_by_id(project_id)
-            project.update(project_dto)
-        else:
-            raise ValueError(
-                str(project_id)
-                + " :Project can only be updated by admins or by the owner"
-            )
+        project = ProjectAdminService._get_project_by_id(project_id)
+        project.update(project_dto)
 
         return project
 
@@ -150,7 +136,7 @@ class ProjectAdminService:
         try:
             LicenseService.get_license_as_dto(license_id)
         except NotFound:
-            raise ProjectAdminServiceError(
+            raise ProjectAdminServiceError(  # FLAGGED WHY NOT NOTFOUND?
                 f"RequireLicenseId- LicenseId {license_id} not found"
             )
 
@@ -159,22 +145,11 @@ class ProjectAdminService:
         """Deletes project if it has no completed tasks"""
 
         project = ProjectAdminService._get_project_by_id(project_id)
-        is_admin = UserService.is_user_an_admin(authenticated_user_id)
-        user_orgs = OrganisationService.get_organisations_managed_by_user_as_dto(
-            authenticated_user_id
-        )
-        is_org_manager = len(user_orgs.organisations) > 0
-
-        if is_admin or is_org_manager:
-            if project.can_be_deleted():
-                project.delete()
-            else:
-                raise ProjectAdminServiceError(
-                    "HasMappedTasks- Project has mapped tasks, cannot be deleted"
-                )
+        if project.can_be_deleted():
+            project.delete()
         else:
             raise ProjectAdminServiceError(
-                "DeletePermissionError- User does not have permissions to delete project"
+                "HasMappedTasks- Project has mapped tasks, cannot be deleted"
             )
 
     @staticmethod
@@ -257,7 +232,7 @@ class ProjectAdminService:
                 break
 
         if default_info is None:
-            raise ProjectAdminServiceError(
+            raise ProjectAdminServiceError(  # FLAGGED: SHOULD BE VALIDATED IN  DTO? 400
                 "InfoForLocaleRequired- Project Info for Default Locale not provided"
             )
 
@@ -267,10 +242,10 @@ class ProjectAdminService:
 
             if not value:
                 raise (
-                    ProjectAdminServiceError(
+                    ProjectAdminServiceError(  # FLAGGED: SHOULD BE VALIDATED IN  DTO?
                         f"MissingRequiredAttribute- {attr} not provided for Default Locale"
                     )
-                )
+                )  # Flagged : for status code 400
 
         return True  # Indicates valid default locale for unit testing
 
@@ -299,8 +274,8 @@ class ProjectAdminService:
             project.organisation_id, transfering_user_id
         )
         if not (is_admin or is_author or is_org_manager):
-            raise ProjectAdminServiceError(
-                "TransferPermissionError- User does not have permissions to transfer project"
+            raise Forbidden(
+                sub_code="USER_NOT_ORG_MANAGER", user_id=transfering_user_id
             )
 
         # Check permissions for the new owner - must be project's org manager
@@ -309,12 +284,7 @@ class ProjectAdminService:
         )
         is_new_owner_admin = UserService.is_user_an_admin(new_owner.id)
         if not (is_new_owner_org_manager or is_new_owner_admin):
-            error_message = (
-                "InvalidNewOwner- New owner must be project's org manager or TM admin"
-            )
-            if current_app:
-                current_app.logger.debug(error_message)
-            raise ValueError(error_message)
+            raise Forbidden(sub_code="INVALID_NEW_PROJECT_OWNER", user_id=new_owner.id)
         else:
             transferred_by = User.get_by_id(transfering_user_id).username
             project.author_id = new_owner.id

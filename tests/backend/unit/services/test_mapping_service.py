@@ -1,4 +1,6 @@
 from unittest.mock import patch, MagicMock
+
+from backend.exceptions import Forbidden
 from backend.services.mapping_service import (
     MappingService,
     Task,
@@ -231,7 +233,7 @@ class TestMappingService(BaseTestCase):
 
         # Act
         mock_project.return_value = (False, None)
-        is_undoable = MappingService._is_task_undoable(1, task)
 
         # Assert
-        self.assertFalse(is_undoable)
+        with self.assertRaises(Forbidden):
+            MappingService._is_task_undoable(1, task)

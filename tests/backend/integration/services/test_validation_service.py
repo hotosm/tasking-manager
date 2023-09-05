@@ -1,6 +1,6 @@
+from backend.exceptions import Forbidden
 from backend.services.validator_service import (
     ValidatorService,
-    ValidatorServiceError,
     TaskStatus,
     Task,
 )
@@ -70,7 +70,7 @@ class TestValidationService(BaseTestCase):
         revert_dto.action_by = self.test_user.id
         revert_dto.action = "VALIDATED"
         # Act/Assert
-        with self.assertRaises(ValidatorServiceError):
+        with self.assertRaises(Forbidden):
             ValidatorService.revert_user_tasks(revert_dto)
 
     def test_revert_user_tasks_revert_validated_task_to_mapped_status(self):

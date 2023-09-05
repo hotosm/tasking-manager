@@ -2,7 +2,7 @@ import threading
 from flask import current_app
 
 from backend import db
-from backend.exceptions import NotFound
+from backend.exceptions import NotFound, Forbidden
 from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO
 from backend.models.postgis.project_chat import ProjectChat
 from backend.models.postgis.project_info import ProjectInfo
@@ -26,6 +26,8 @@ class ChatService:
         project_name = ProjectInfo.get_dto_for_locale(
             project_id, project.default_locale
         ).name
+
+        # Check if user is allowed to post message
         is_allowed_user = True
         is_manager_permission = ProjectAdminService.is_user_action_permitted_on_project(
             authenticated_user_id, project_id
@@ -37,7 +39,11 @@ class ChatService:
             ProjectStatus(project.status) == ProjectStatus.DRAFT
             and not is_manager_permission
         ):
-            raise ValueError("UserNotPermitted- User not permitted to post Comment")
+            raise Forbidden(
+                sub_code="DRAFT_PROJECT_NOT_ALLOWED",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
         if project.private:
             is_allowed_user = False
@@ -77,7 +83,11 @@ class ChatService:
             # Ensure we return latest messages after post
             return ProjectChat.get_messages(chat_dto.project_id, 1, 5)
         else:
-            raise ValueError("UserNotPermitted- User not permitted to post Comment")
+            raise Forbidden(
+                sub_code="PRIVATE_PROJECT_NOT_ALLOWED",
+                project_id=project_id,
+                user_id=authenticated_user_id,
+            )
 
     @staticmethod
     def get_messages(project_id: int, page: int, per_page: int) -> ProjectChatDTO:
@@ -112,12 +122,12 @@ class ChatService:
     def delete_project_chat_by_id(project_id: int, comment_id: int, user_id: int):
         """Deletes a message from a project chat
         ----------------------------------------
-        :param project_id: The id of the project the message belongs to
-        :param message_id: The message id to delete
         :param user_id: The id of the requesting user
+        :param project_id: The id of the project the message belongs to
+        :param comment_id: The message id to delete
         ----------------------------------------
         :raises NotFound: When the message is not found
-        :raises Unauthorized: When the user is not allowed to delete the message
+        :raises Forbidden: When the user is not allowed to delete the message
         ----------------------------------------
         returns: None
         """
@@ -145,6 +155,8 @@ class ChatService:
             db.session.delete(chat_message)
             db.session.commit()
         else:
-            raise ValueError(
-                "DeletePermissionError- User not allowed to delete message"
+            raise Forbidden(
+                sub_code="COMMENT_NOT_OF_USER",
+                project_id=project_id,
+                comment_id=comment_id,
             )

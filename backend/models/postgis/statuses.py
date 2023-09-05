@@ -73,6 +73,7 @@ class MappingNotAllowed(Enum):
     USER_NOT_TEAM_MEMBER = 105
     PROJECT_HAS_NO_TEAM = 106
     NOT_A_MAPPING_TEAM = 107
+    USER_IS_BLOCKED = 108
 
 
 class ValidatingNotAllowed(Enum):
@@ -87,6 +88,7 @@ class ValidatingNotAllowed(Enum):
     USER_NOT_TEAM_MEMBER = 106
     PROJECT_HAS_NO_TEAM = 107
     USER_ALREADY_HAS_TASK_LOCKED = 108
+    USER_IS_BLOCKED = 109
 
 
 class UserGender(Enum):

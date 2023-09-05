@@ -161,4 +161,7 @@ class SystemAuthenticationEmailAPI(Resource):
             return {"Status": "OK"}, 200
 
         except AuthServiceError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+            return {
+                "Error": str(e).split("-")[1],
+                "SubCode": str(e).split("-")[0],
+            }, 400

@@ -136,13 +136,9 @@ class TestTeamsActionsJoinAPI(BaseTestCase):
                 "username": self.test_user.username,
             },
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"],
-            "You don't have permissions to approve this join team request",
-        )
-        self.assertEqual(response_body["SubCode"], "ApproveJoinError")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_TEAM_MANAGER")
 
     def test_handle_join_request_to_non_existent_team_fails(self):
         """
@@ -238,12 +234,9 @@ class TestTeamsActionsAddAPI(BaseTestCase):
             headers={"Authorization": self.session_token},
         )
         response_body = response.get_json()
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 403)
         error_resp = response_body["error"]
-        self.assertEqual(error_resp["sub_code"], "INTERNAL_SERVER_ERROR")
-        self.assertTrue(
-            "User is not allowed to add member to the team" in error_resp["message"]
-        )
+        self.assertEqual(error_resp["sub_code"], "USER_NOT_TEAM_MANAGER")
 
     def test_add_non_existent_members_to_team_fails(self):
         """
@@ -342,13 +335,9 @@ class TestTeamsActionsLeaveAPI(BaseTestCase):
             },
             headers={"Authorization": self.session_token},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"],
-            f"You don't have permissions to remove {TEST_ADMIN_USERNAME} from this team.",
-        )
-        self.assertEqual(response_body["SubCode"], "RemoveUserError")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_TEAM_MANAGER")
 
     def test_remove_non_existent_members_from_team_fails(self):
         """
@@ -436,12 +425,9 @@ class TestTeamsActionsMessageMembersAPI(BaseTestCase):
             json={"message": TEST_MESSAGE, "subject": TEST_SUBJECT},
             headers={"Authorization": self.session_token},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "Unauthorised to send message to team members"
-        )
-        self.assertEqual(response_body["SubCode"], "UserNotPermitted")
+        self.assertEqual(response_body["sub_code"], "USER_NOT_TEAM_MANAGER")
 
     def test_message_team_members_with_invalid_data_fails(self):
         """

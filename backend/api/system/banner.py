@@ -2,6 +2,7 @@ from flask import current_app
 from flask_restful import Resource, request
 from schematics.exceptions import DataError
 
+from backend.exceptions import Forbidden
 from backend.models.postgis.banner import Banner
 from backend.models.dtos.banner_dto import BannerDTO
 from backend.models.postgis.statuses import UserRole
@@ -83,10 +84,7 @@ class SystemBannerAPI(Resource):
         authenticated_user_id = token_auth.current_user()
         authenticated_user = UserService.get_user_by_id(authenticated_user_id)
         if authenticated_user.role != UserRole.ADMIN.value:
-            return {
-                "Error": "Banner can only be updated by system admins",
-                "SubCode": "OnlyAdminAccess",
-            }, 403
+            raise Forbidden(sub_code="USER_NOT_ADMIN", user_id=authenticated_user_id)
 
         banner_dto.message = Banner.to_html(
             banner_dto.message

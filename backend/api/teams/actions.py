@@ -2,10 +2,10 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 import threading
 
+from backend.exceptions import Forbidden
 from backend.models.dtos.message_dto import MessageDTO
 from backend.services.team_service import (
     TeamService,
-    TeamJoinNotAllowed,
     TeamServiceError,
 )
 from backend.services.users.authentication_service import token_auth, tm
@@ -129,12 +129,10 @@ class TeamsActionsJoinAPI(Resource):
                 )
                 return {"Success": "True"}, 200
             else:
-                return (
-                    {
-                        "Error": "You don't have permissions to approve this join team request",
-                        "SubCode": "ApproveJoinError",
-                    },
-                    403,
+                raise Forbidden(
+                    sub_code="USER_NOT_TEAM_MANAGER",
+                    team_id=team_id,
+                    user_id=authenticated_user_id,
                 )
         elif request_type == "invite-response":
             TeamService.accept_reject_invitation_request(
@@ -199,12 +197,9 @@ class TeamsActionsAddAPI(Resource):
                 "SubCode": "InvalidData",
             }, 400
 
-        try:
-            authenticated_user_id = token_auth.current_user()
-            TeamService.add_user_to_team(team_id, authenticated_user_id, username, role)
-            return {"Success": "User added to the team"}, 200
-        except TeamJoinNotAllowed as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        authenticated_user_id = token_auth.current_user()
+        TeamService.add_user_to_team(team_id, authenticated_user_id, username, role)
+        return {"Success": "User added to the team"}, 200
 
 
 class TeamsActionsLeaveAPI(Resource):
@@ -261,14 +256,10 @@ class TeamsActionsLeaveAPI(Resource):
             TeamService.leave_team(team_id, username)
             return {"Success": "User removed from the team"}, 200
         else:
-            return (
-                {
-                    "Error": "You don't have permissions to remove {} from this team.".format(
-                        username
-                    ),
-                    "SubCode": "RemoveUserError",
-                },
-                403,
+            raise Forbidden(
+                sub_code="USER_NOT_TEAM_MANAGER",
+                team_id=team_id,
+                user_id=authenticated_user_id,
             )
 
 
@@ -329,7 +320,12 @@ class TeamsActionsMessageMembersAPI(Resource):
                 team_id, authenticated_user_id
             )
             if not is_manager:
-                raise ValueError
+                raise Forbidden(
+                    sub_code="USER_NOT_TEAM_MANAGER",
+                    team_id=team_id,
+                    user_id=authenticated_user_id,
+                )
+
             message_dto.from_user_id = authenticated_user_id
             message_dto.validate()
             if not message_dto.message.strip() or not message_dto.subject.strip():
@@ -342,18 +338,10 @@ class TeamsActionsMessageMembersAPI(Resource):
                 "Error": "Request payload did not match validation",
                 "SubCode": "InvalidData",
             }, 400
-        except ValueError:
-            return {
-                "Error": "Unauthorised to send message to team members",
-                "SubCode": "UserNotPermitted",
-            }, 403
 
-        try:
-            threading.Thread(
-                target=TeamService.send_message_to_all_team_members,
-                args=(team_id, team.name, message_dto),
-            ).start()
+        threading.Thread(
+            target=TeamService.send_message_to_all_team_members,
+            args=(team_id, team.name, message_dto),
+        ).start()
 
-            return {"Success": "Message sent successfully"}, 200
-        except ValueError as e:
-            return {"Error": str(e)}, 403
+        return {"Success": "Message sent successfully"}, 200

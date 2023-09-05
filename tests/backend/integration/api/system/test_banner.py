@@ -48,7 +48,7 @@ class TestBannerAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json["SubCode"], "OnlyAdminAccess")
+        self.assertEqual(response.json["error"]["sub_code"], "USER_NOT_ADMIN")
 
         # Test returns 200 OK for admin users
         test_user.role = 1

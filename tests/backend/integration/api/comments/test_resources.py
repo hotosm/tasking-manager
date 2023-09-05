@@ -53,10 +53,9 @@ class TestCommentsProjectsAllAPI(BaseTestCase):
             headers={"Authorization": generate_encoded_token(self.test_user.id)},
             json={"message": TEST_MESSAGE},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response_body["Error"], "User is on read only mode")
-        self.assertEqual(response_body["SubCode"], "ReadOnly")
+        self.assertEqual(response_body["sub_code"], "USER_BLOCKED")
 
     def test_invalid_request_to_post_comment_to_project_chat_fails(self):
         """
@@ -191,10 +190,9 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
             self.endpoint_url, headers={"Authorization": self.test_user_token}
         )
         # Assert
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response_body["Error"], " User not allowed to delete message")
-        self.assertEqual(response_body["SubCode"], "DeletePermissionError")
+        self.assertEqual(response_body["sub_code"], "COMMENT_NOT_OF_USER")
 
     def test_comment_can_be_deleted_by_author(self):
         """Test that endpoint returns 200 when deleting a comment of a project by the comment author"""
@@ -267,10 +265,9 @@ class TestCommentsTasksRestAPI(BaseTestCase):
             headers={"Authorization": generate_encoded_token(self.test_user.id)},
             json={"comment": TEST_MESSAGE},
         )
-        response_body = response.get_json()
+        response_body = response.get_json()["error"]
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response_body["Error"], "User is on read only mode")
-        self.assertEqual(response_body["SubCode"], "ReadOnly")
+        self.assertEqual(response_body["sub_code"], "USER_BLOCKED")
 
     def test_post_comment_to_task_chat_using_an_invalid_request_fails(self):
         """

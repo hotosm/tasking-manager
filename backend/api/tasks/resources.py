@@ -5,13 +5,12 @@ from flask import send_file, Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
+from backend.exceptions import Forbidden
 from backend.services.mapping_service import MappingService
 from backend.models.dtos.grid_dto import GridDTO
-
 from backend.services.users.authentication_service import token_auth, tm
 from backend.services.users.user_service import UserService
 from backend.services.validator_service import ValidatorService
-
 from backend.services.project_service import ProjectService, ProjectServiceError
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.statuses import UserRole
@@ -96,28 +95,25 @@ class TasksQueriesJsonAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            tasks = request.args.get("tasks") if request.args.get("tasks") else None
-            as_file = (
-                strtobool(request.args.get("as_file"))
-                if request.args.get("as_file")
-                else True
+        tasks = request.args.get("tasks") if request.args.get("tasks") else None
+        as_file = (
+            strtobool(request.args.get("as_file"))
+            if request.args.get("as_file")
+            else True
+        )
+
+        tasks_json = ProjectService.get_project_tasks(int(project_id), tasks)
+
+        if as_file:
+            tasks_json = str(tasks_json).encode("utf-8")
+            return send_file(
+                io.BytesIO(tasks_json),
+                mimetype="application/json",
+                as_attachment=True,
+                download_name=f"{str(project_id)}-tasks.geojson",
             )
 
-            tasks_json = ProjectService.get_project_tasks(int(project_id), tasks)
-
-            if as_file:
-                tasks_json = str(tasks_json).encode("utf-8")
-                return send_file(
-                    io.BytesIO(tasks_json),
-                    mimetype="application/json",
-                    as_attachment=True,
-                    download_name=f"{str(project_id)}-tasks.geojson",
-                )
-
-            return tasks_json, 200
-        except ProjectServiceError as e:
-            return {"Error": str(e)}, 403
+        return tasks_json, 200
 
     @token_auth.login_required
     def delete(self, project_id):
@@ -167,10 +163,7 @@ class TasksQueriesJsonAPI(Resource):
         user_id = token_auth.current_user()
         user = UserService.get_user_by_id(user_id)
         if user.role != UserRole.ADMIN.value:
-            return {
-                "Error": "This endpoint action is restricted to ADMIN users.",
-                "SubCode": "OnlyAdminAccess",
-            }, 403
+            raise Forbidden(sub_code="USER_NOT_ADMIN", user_id=user_id)
 
         tasks_ids = request.get_json().get("tasks")
         if tasks_ids is None:

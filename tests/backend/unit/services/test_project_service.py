@@ -119,7 +119,7 @@ class TestProjectService(BaseTestCase):
         mock_user_blocked.return_value = True
         allowed, reason = ProjectService.is_user_permitted_to_map(1, 1)
         self.assertFalse(allowed)
-        self.assertEqual(reason, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST)
+        self.assertEqual(reason, MappingNotAllowed.USER_IS_BLOCKED)
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     @patch.object(UserService, "is_user_blocked")
@@ -169,7 +169,7 @@ class TestProjectService(BaseTestCase):
         mock_user_blocked.return_value = True
         allowed, reason = ProjectService.is_user_permitted_to_validate(1, 1)
         self.assertFalse(allowed)
-        self.assertEqual(reason, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST)
+        self.assertEqual(reason, ValidatingNotAllowed.USER_IS_BLOCKED)
 
         # Unpublished project
         stub_project.status = ProjectStatus.DRAFT.value

@@ -210,7 +210,7 @@ class TestSystemAuthenticationEmailAPI(BaseTestCase):
         self.assertEqual(error_details["sub_code"], USER_NOT_FOUND_SUB_CODE)
         self.assertEqual(error_details["message"], USER_NOT_FOUND_MESSAGE)
 
-    def test_returns_403_if_invalid_email_token(self):
+    def test_returns_400_if_invalid_email_token(self):
         # Arrange
         user = return_canned_user(USERNAME, USER_ID)
         user.create()
@@ -219,7 +219,7 @@ class TestSystemAuthenticationEmailAPI(BaseTestCase):
             self.url, query_string={"token": "1234", "username": USERNAME}
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json["SubCode"], "BadSignature")
         self.assertEqual(response.json["Error"], " Bad Token Signature")
 
@@ -239,11 +239,11 @@ class TestSystemAuthenticationEmailAPI(BaseTestCase):
             self.url, query_string={"token": token, "username": USERNAME}
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json["SubCode"], "ExpiredToken")
         self.assertEqual(response.json["Error"], " Token has expired")
 
-    def test_returns_403_if_token_and_email_mismatch(self):
+    def test_returns_400_if_token_and_email_mismatch(self):
         # Arrange
         user = return_canned_user(USERNAME, USER_ID)
         user.email_address = "test_email_2"
@@ -257,7 +257,7 @@ class TestSystemAuthenticationEmailAPI(BaseTestCase):
             self.url, query_string={"token": token, "username": USERNAME}
         )
         # Assert
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json["SubCode"], "InvalidEmail")
         self.assertEqual(response.json["Error"], " Email address does not match token")
 

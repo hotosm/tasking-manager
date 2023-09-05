@@ -1,7 +1,8 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
-from backend.services.team_service import TeamService, TeamServiceError
+from backend.exceptions import Forbidden
+from backend.services.team_service import TeamService
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import token_auth
@@ -32,7 +33,7 @@ class ProjectsTeamsAPI(Resource):
         responses:
             200:
                 description: Teams listed successfully
-            403:
+            403: # TODO: Check if this is the correct error code
                 description: Forbidden, if user is not authenticated
             404:
                 description: Not found
@@ -91,11 +92,14 @@ class ProjectsTeamsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
-            return {
-                "Error": "User is not an admin or a manager for the team",
-                "SubCode": "UserPermissionError",
-            }, 401
+        authenticated_user = token_auth.current_user()
+        if not TeamService.is_user_team_manager(team_id, authenticated_user):
+            raise Forbidden(
+                sub_code="USER_NOT_TEAM_MANAGER",
+                project_id=project_id,
+                team_id=team_id,
+                user_id=authenticated_user,
+            )
 
         try:
             role = request.get_json(force=True)["role"]
@@ -103,25 +107,25 @@ class ProjectsTeamsAPI(Resource):
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
-        try:
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user, project_id
-            ):
-                raise ValueError()
-            TeamService.add_team_project(team_id, project_id, role)
-            return (
-                {
-                    "Success": "Team {} assigned to project {} with role {}".format(
-                        team_id, project_id, role
-                    )
-                },
-                201,
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            token_auth.current_user, project_id
+        ):
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                team_id=team_id,
+                user_id=authenticated_user,
             )
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+
+        TeamService.add_team_project(team_id, project_id, role)
+        return (
+            {
+                "Success": "Team {} assigned to project {} with role {}".format(
+                    team_id, project_id, role
+                )
+            },
+            201,
+        )
 
     @token_auth.login_required
     def patch(self, team_id, project_id):
@@ -162,9 +166,9 @@ class ProjectsTeamsAPI(Resource):
             201:
                 description: Team project assignment created
             401:
-                description: Forbidden, if user is not a manager of the project
+                description: Unauthenticated user
             403:
-                description: Forbidden, if user is not authenticated
+                description: Forbidden, if user is not a manager of the project
             404:
                 description: Not found
             500:
@@ -176,20 +180,13 @@ class ProjectsTeamsAPI(Resource):
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
-        try:
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user, project_id
-            ):
-                raise ValueError()
-            TeamService.change_team_role(team_id, project_id, role)
-            return {"Status": "Team role updated successfully."}, 200
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
-        except TeamServiceError as e:
-            return str(e), 402
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            token_auth.current_user, project_id
+        ):
+            raise Forbidden(sub_code="USER_NOT_PROJECT_MANAGER")
+
+        TeamService.change_team_role(team_id, project_id, role)
+        return {"Status": "Team role updated successfully."}, 200
 
     @token_auth.login_required
     def delete(self, team_id, project_id):
@@ -225,15 +222,15 @@ class ProjectsTeamsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user, project_id
-            ):
-                raise ValueError()
-            TeamService.delete_team_project(team_id, project_id)
-            return {"Success": True}, 200
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+        authenticated_user_id = token_auth.current_user()
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
+            raise Forbidden(
+                sub_code="USER_NOT_PROJECT_MANAGER",
+                project_id=project_id,
+                team_id=team_id,
+                user_id=authenticated_user_id,
+            )
+        TeamService.delete_team_project(team_id, project_id)
+        return {"Success": True}, 200

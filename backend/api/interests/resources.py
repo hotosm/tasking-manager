@@ -1,6 +1,7 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
+from backend.exceptions import Forbidden
 from backend.models.dtos.interests_dto import InterestDTO
 from backend.services.interests_service import InterestService
 from backend.services.organisation_service import OrganisationService
@@ -9,6 +10,7 @@ from backend.services.users.authentication_service import token_auth
 from sqlalchemy.exc import IntegrityError
 
 INTEREST_NOT_FOUND = "Interest Not Found"
+# FLAGGED FOR PERMISSIONS REVIEW
 
 
 class InterestsAllAPI(Resource):
@@ -49,15 +51,11 @@ class InterestsAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                token_auth.current_user()
-            )
-            if len(orgs_dto.organisations) < 1:
-                raise ValueError("User not a Org Manager")
-        except ValueError as e:
-            error_msg = f"InterestsAllAPI POST: {str(e)}"
-            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+            token_auth.current_user()
+        )
+        if len(orgs_dto.organisations) < 1:
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")
 
         try:
             interest_dto = InterestDTO(request.get_json())
@@ -133,15 +131,12 @@ class InterestsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                token_auth.current_user()
-            )
-            if len(orgs_dto.organisations) < 1:
-                raise ValueError("User not a Org Manager")
-        except ValueError as e:
-            error_msg = f"InterestsRestAPI GET: {str(e)}"
-            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        # FLAGGED
+        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+            token_auth.current_user()
+        )
+        if len(orgs_dto.organisations) < 1:
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")
 
         interest = InterestService.get(interest_id)
         return interest.to_primitive(), 200
@@ -191,15 +186,11 @@ class InterestsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                token_auth.current_user()
-            )
-            if len(orgs_dto.organisations) < 1:
-                raise ValueError("User not a Org Manager")
-        except ValueError as e:
-            error_msg = f"InterestsRestAPI PATCH: {str(e)}"
-            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+            token_auth.current_user()
+        )
+        if len(orgs_dto.organisations) < 1:
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")
 
         try:
             interest_dto = InterestDTO(request.get_json())
@@ -245,15 +236,11 @@ class InterestsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                token_auth.current_user()
-            )
-            if len(orgs_dto.organisations) < 1:
-                raise ValueError("User not a Org Manager")
-        except ValueError as e:
-            error_msg = f"InterestsRestAPI DELETE: {str(e)}"
-            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+            token_auth.current_user()
+        )
+        if len(orgs_dto.organisations) < 1:
+            raise Forbidden(sub_code="USER_NOT_ORG_MANAGER")
 
         InterestService.delete(interest_id)
         return {"Success": "Interest deleted"}, 200

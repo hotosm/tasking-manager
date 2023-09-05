@@ -183,6 +183,8 @@ class UsersActionsSetRoleAPI(Resource):
         responses:
             200:
                 description: Role set
+            400:
+                description: Bad Request - Client Error
             401:
                 description: Unauthorized - Invalid credentials
             403:
@@ -196,7 +198,7 @@ class UsersActionsSetRoleAPI(Resource):
             UserService.add_role_to_user(token_auth.current_user(), username, role)
             return {"Success": "Role Added"}, 200
         except UserServiceError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
 
 
 class UsersActionsSetExpertModeAPI(Resource):

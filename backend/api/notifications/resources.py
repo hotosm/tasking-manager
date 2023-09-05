@@ -1,8 +1,5 @@
 from flask_restful import Resource, request
-from backend.services.messaging.message_service import (
-    MessageService,
-    MessageServiceError,
-)
+from backend.services.messaging.message_service import MessageService
 from backend.services.notification_service import NotificationService
 from backend.services.users.authentication_service import token_auth, tm
 
@@ -41,13 +38,10 @@ class NotificationsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            user_message = MessageService.get_message_as_dto(
-                message_id, token_auth.current_user()
-            )
-            return user_message.to_primitive(), 200
-        except MessageServiceError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        user_message = MessageService.get_message_as_dto(
+            message_id, token_auth.current_user()
+        )
+        return user_message.to_primitive(), 200
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -82,11 +76,8 @@ class NotificationsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            MessageService.delete_message(message_id, token_auth.current_user())
-            return {"Success": "Message deleted"}, 200
-        except MessageServiceError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        MessageService.delete_message(message_id, token_auth.current_user())
+        return {"Success": "Message deleted"}, 200
 
 
 class NotificationsAllAPI(Resource):
