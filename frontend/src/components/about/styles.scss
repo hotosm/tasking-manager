@@ -1,0 +1,77 @@
+.coordination-cards-container-parent {
+  position: relative;
+  z-index: 1;
+}
+
+.coordination-cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.8rem;
+
+  @media screen and (max-width: 60em) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.coordination-cards-container::before {
+  content: '';
+  width: 100%;
+  height: 75%;
+  background-image: url('../../assets/img/mask.png');
+  position: absolute;
+  bottom: -32px; //adjust your positioning as necessary
+  right: -32px;
+  z-index: -1;
+
+  @media screen and (max-width: 60em) {
+    height: 90%;
+  }
+}
+
+.category-cards-ctr {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  row-gap: 1.25rem;
+  column-gap: 2rem;
+
+  @media screen and (max-width: 60em) {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 1rem;
+  }
+
+  @media screen and (max-width: 30em) {
+    grid-template-columns: repeat(1, 1fr);
+    row-gap: 0.5rem;
+  }
+
+  .interest {
+    .card-image {
+      height: 150px;
+    }
+
+    .detail-container {
+      padding: 1.5rem 1.5rem 2.25rem 1.5rem;
+    }
+  }
+}
+
+.open-source {
+  margin: 6rem 0;
+}
+
+.get-in-touch {
+  padding-bottom: 6.5rem;
+
+  .heading {
+    max-width: 27.25rem;
+  }
+
+  .description {
+    max-width: 25.25rem;
+  }
+
+  hr {
+    width: 11.25rem;
+    margin: 2.5rem 0;
+  }
+}

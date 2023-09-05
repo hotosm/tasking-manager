@@ -616,3 +616,7 @@ a[href="https://www.mapbox.com/map-feedback/"]
 .link:focus {
   outline: revert;
 }
+
+.drop-shadow-1 {
+  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.1));
+}

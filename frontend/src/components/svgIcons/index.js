@@ -41,6 +41,7 @@ export { TaskSelectionIcon } from './taskSelection';
 export { MapIcon } from './map';
 export { MappingIcon } from './mapping';
 export { MappedIcon } from './mapped';
+export { ProjectManagementIcon } from './projectManagement';
 export { MappedSquareIcon } from './mappedSquare';
 export { ValidatedIcon } from './validated';
 export { InvalidatedIcon } from './invalidated';
