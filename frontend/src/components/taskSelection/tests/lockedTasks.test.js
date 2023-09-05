@@ -3,7 +3,7 @@ import React from 'react';
 import TestRenderer from 'react-test-renderer';
 import { FormattedMessage } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import {
@@ -168,6 +168,69 @@ describe('License Modal', () => {
       }),
     );
     expect(closeMock).toHaveBeenCalled();
+  });
+});
+
+describe('LockError for CannotValidateMappedTask', () => {
+  it('should display the Deselect and continue button', () => {
+    render(
+      <ReduxIntlProviders>
+        <LockError error="CannotValidateMappedTask" selectedTasks={[1, 2, 3]} />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByRole('button', { name: 'Deselect and validate' })).toBeInTheDocument();
+  });
+
+  it('should not display the Deselect and continue button if only one task is selected for validation', () => {
+    render(
+      <ReduxIntlProviders>
+        <LockError error="CannotValidateMappedTask" selectedTasks={[1]} />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.queryByRole('button', { name: 'Deselect and validate' })).not.toBeInTheDocument();
+  });
+
+  it('should lock tasks after deselecting the tasks that the user mapped from the list of selected tasks', async () => {
+    const lockTasksFnMock = jest.fn();
+    const setSelectedTasksFnMock = jest.fn();
+    const dummyTasks = {
+      features: [
+        {
+          properties: {
+            taskId: 1,
+            mappedBy: 123, // Same value as the logged in user's username
+          },
+        },
+        {
+          properties: {
+            taskId: 2,
+            mappedBy: 321,
+          },
+        },
+      ],
+    };
+
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 123 },
+      });
+    });
+
+    render(
+      <ReduxIntlProviders>
+        <LockError
+          error="CannotValidateMappedTask"
+          selectedTasks={[1, 2]}
+          lockTasks={lockTasksFnMock}
+          setSelectedTasks={setSelectedTasksFnMock}
+          tasks={dummyTasks}
+        />
+      </ReduxIntlProviders>,
+    );
+    const user = userEvent.setup();
+    await user.click(screen.queryByRole('button', { name: 'Deselect and validate' }));
+    expect(lockTasksFnMock).toHaveBeenCalledTimes(1);
   });
 });
 
