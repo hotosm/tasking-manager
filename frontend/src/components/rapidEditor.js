@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
+import { types } from '../store/actions/editor';
 
 // We import from a CDN using a SEMVER minor version range
 import { version as rapidVersion, name as rapidName } from '@rapideditor/rapid/package.json';
@@ -10,6 +11,10 @@ const baseCdnUrl = `https://cdn.jsdelivr.net/npm/${rapidName}@~${rapidVersion}/d
 // We currently copy rapid files to the public/static/rapid directory. This should probably remain,
 // since it can be useful for debugging rapid issues in the TM.
 // const baseCdnUrl = '/static/rapid/';
+
+/** This is used to avoid needing to re-initialize Rapid on every page load -- this can lead to jerky movements in the UI */
+const rapidDom = document.createElement('div');
+rapidDom.className = 'w-100 vh-minus-69-ns';
 
 /**
  * Check if two URL search parameters are semantically equal
@@ -83,6 +88,19 @@ function generateStartingHash(comment, presets, gpxUrl, powerUser, imagery) {
 }
 
 /**
+ * Resize rapid
+ * @param {Context} rapidContext The rapid context to resize
+ * @type {import('@rapideditor/rapid').Context} Context
+ */
+function resizeRapid(rapidContext) {
+  // Get rid of black bars when toggling the TM sidebar
+  const uiSystem = rapidContext?.systems?.ui;
+  if (uiSystem?.started) {
+    uiSystem.resize();
+  }
+}
+
+/**
  * Create a new RapidEditor component
  * @param {function(boolean)} setDisable
  * @param {string} comment The default changeset comment
@@ -91,7 +109,7 @@ function generateStartingHash(comment, presets, gpxUrl, powerUser, imagery) {
  * @param {string} gpxUrl The task boundary url
  * @param {boolean} powerUser true if the user should be shown advanced options
  * @param {boolean} showSidebar Changes are used to resize the Rapid mapview
- * @returns {Element} The element to add to the DOM
+ * @returns {JSX.Element} The element to add to the DOM
  * @constructor
  */
 export default function RapidEditor({
@@ -106,33 +124,36 @@ export default function RapidEditor({
   const dispatch = useDispatch();
   const session = useSelector((state) => state.auth.session);
   const [rapidLoaded, setRapidLoaded] = useState(window.Rapid !== undefined);
-  const [rapidContext, setRapid] = useState(null);
+  const rapidContext = useSelector((state) => state.editor.rapidContext);
   const locale = useSelector((state) => state.preferences.locale);
   const windowInit = typeof window !== 'undefined';
 
   // This significantly reduces build time _and_ means different TM instances can share the same download of Rapid.
   // Unfortunately, Rapid doesn't use a public CDN itself, so we cannot reuse that.
   useEffect(() => {
-    // Add the style element
-    const style = document.createElement('link');
-    style.setAttribute('type', 'text/css');
-    style.setAttribute('rel', 'stylesheet');
-    style.setAttribute('href', baseCdnUrl + 'rapid.css');
-    document.head.appendChild(style);
-    // Now add the editor
-    const script = document.createElement('script');
-    script.src = baseCdnUrl + 'rapid.js';
-    script.async = true;
-    script.onload = () => setRapidLoaded(true);
-    document.body.appendChild(script);
-  }, [setRapidLoaded]);
+    if (!rapidLoaded && !rapidContext) {
+      // Add the style element
+      const style = document.createElement('link');
+      style.setAttribute('type', 'text/css');
+      style.setAttribute('rel', 'stylesheet');
+      style.setAttribute('href', baseCdnUrl + 'rapid.css');
+      document.head.appendChild(style);
+      // Now add the editor
+      const script = document.createElement('script');
+      script.src = baseCdnUrl + 'rapid.js';
+      script.async = true;
+      script.onload = () => setRapidLoaded(true);
+      document.body.appendChild(script);
+    } else if (rapidContext && !rapidLoaded) {
+      setRapidLoaded(true);
+    }
+  }, [rapidLoaded, setRapidLoaded, rapidContext]);
 
   useEffect(() => {
     return () => {
       dispatch({ type: 'SET_VISIBILITY', isVisible: true });
     };
-    // eslint-disable-next-line
-  }, []);
+  });
 
   useEffect(() => {
     if (windowInit && rapidContext === null && rapidLoaded) {
@@ -140,10 +161,8 @@ export default function RapidEditor({
       // the context is not restarted while running in the same browser session
       // Unfortunately, we need to recreate the context every time we recreate the rapid-container dom node.
       const context = new window.Rapid.Context();
-      // setup the context
       context.embed(true);
-      context.locale = locale;
-      context.containerNode = document.getElementById('rapid-container');
+      context.containerNode = rapidDom;
       context.assetPath = baseCdnUrl;
       context.apiConnections = [
         {
@@ -153,23 +172,23 @@ export default function RapidEditor({
           redirect_uri: OSM_REDIRECT_URI,
         },
       ];
-      setRapid(context);
+      dispatch({ type: types.SET_RAPIDEDITOR, context: context });
     }
-  }, [windowInit, rapidLoaded, rapidContext, setRapid, dispatch, locale]);
+  }, [windowInit, rapidLoaded, rapidContext, dispatch]);
+
+  useEffect(() => {
+    if (rapidContext) {
+      // setup the context
+      rapidContext.locale = locale;
+    }
+  }, [rapidContext, locale]);
 
   // This ensures that Rapid has the correct map size
   useEffect(() => {
-    function resizeRapid() {
-      // Get rid of black bars when toggling the TM sidebar
-      const uiSystem = rapidContext?.systems?.ui;
-      if (uiSystem?.started) {
-        uiSystem.resize();
-      }
-    }
     // This might be a _slight_ efficiency improvement by making certain that Rapid isn't painting unneeded items
-    resizeRapid();
+    resizeRapid(rapidContext);
     // This is the only bit that is *really* needed -- it prevents black bars when hiding the sidebar.
-    return () => resizeRapid();
+    return () => resizeRapid(rapidContext);
   }, [showSidebar, rapidContext]);
 
   useEffect(() => {
@@ -180,15 +199,15 @@ export default function RapidEditor({
   }, [comment, presets, gpxUrl, powerUser, imagery]);
 
   useEffect(() => {
+    const containerRoot = document.getElementById('rapid-container-root');
     if (rapidContext) {
+      containerRoot.appendChild(rapidDom);
       // init the ui or restart if it was loaded previously
       let promise;
       if (rapidContext?.systems?.ui !== undefined) {
         // Currently commented out in Rapid source code (2023-07-20)
         // RapidContext.systems.ui.restart();
-        // resetAsync was a possible replacement, but it ran into issues when switching tasks.
-        // For now, we need to reinit rapid every time the rapid-container element is regenerated
-        //promise = rapidContext.resetAsync();
+        resizeRapid(rapidContext);
         promise = Promise.resolve();
       } else {
         promise = rapidContext.initAsync();
@@ -210,6 +229,11 @@ export default function RapidEditor({
         });
       });
     }
+    return () => {
+      if (containerRoot?.childNodes && rapidDom in containerRoot.childNodes) {
+        document.getElementById('rapid-container-root')?.removeChild(rapidDom);
+      }
+    };
   }, [rapidContext, setDisable]);
 
   useEffect(() => {
@@ -231,5 +255,5 @@ export default function RapidEditor({
     }
   }, [rapidContext, session, session?.osm_oauth_token]);
 
-  return <div className="w-100 vh-minus-69-ns" id="rapid-container"></div>;
+  return <div className="w-100 vh-minus-69-ns" id="rapid-container-root"></div>;
 }
