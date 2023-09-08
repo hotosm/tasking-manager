@@ -82,15 +82,21 @@
     "update-static": "bash -c \"mkdir -p public/static/id; mkdir -p public/static/rapid; cp -R node_modules/@hotosm/id/dist/* public/static/id; if ! (test -a node_modules/RapiD/dist/RapiD.css) then mv node_modules/RapiD/dist/iD.css node_modules/RapiD/dist/RapiD.css; fi; cp -R node_modules/RapiD/dist/* public/static/rapid;\"",
     "patch-id": "bash -c \"cp patch/imagery.min.json public/static/id/data\"",
     "patch-rapid": "bash -c \"cp patch/rapid-imagery.min.json public/static/rapid/data/imagery.min.json\"",
+    "patch": "npm run patch-id && npm run patch-rapid",
     "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
-    "start": "npm run preparation && npm run copy-static && npm run patch-id && npm run patch-rapid && react-scripts start",
-    "build": "npm run preparation && npm run update-static && npm run patch-id && npm run patch-rapid && react-scripts build && npm run sentry:sourcemaps",
+    "start16": "react-scripts start",
+    "start18": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
+    "start": "npm run preparation && npm run copy-static && npm run patch && (npm run versioncheck && npm run start16 || npm run start18)",
+    "build16": "react-scripts build",
+    "build18": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "build": "npm run preparation && npm run update-static && npm run patch && (npm run versioncheck && npm run build16 || npm run build18) && npm run sentry:sourcemaps",
+    "versioncheck": "node -e \"if (process.version.split('.')[0] > 'v16') { process.exit(1) }\"",
     "prettier": "prettier --write 'src/**/*.js'",
     "lint": "eslint src",
     "test": "npm run lint && react-scripts test --env=jsdom",
     "coverage": "npm run test -- --coverage --watchAll=false",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build && sentry-cli sourcemaps upload --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build"
+    "sentry:sourcemaps": "if sentry-cli info; then sentry-cli sourcemaps inject --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build && sentry-cli sourcemaps upload --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build; fi"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -8,7 +8,7 @@ jobs:
   frontend-code-test:
     resource_class: large
     docker:
-      - image: cimg/node:16.20
+      - image: cimg/node:18.17
     working_directory: /home/circleci/tasking-manager
     steps:
       - checkout
