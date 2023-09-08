@@ -18,7 +18,7 @@ const baseCdnUrl = `https://cdn.jsdelivr.net/npm/${rapidName}@~${rapidVersion}/d
  * @param {URLSearchParams} second
  * @return {boolean} true if they are semantically equal
  */
-function _equalsUrlParameters(first, second) {
+function equalsUrlParameters(first, second) {
   if (first.size === second.size) {
     for (const [key, value] of first) {
       if (!second.has(key) || second.get(key) !== value) {
@@ -33,9 +33,8 @@ function _equalsUrlParameters(first, second) {
 /**
  * Update the URL (this also fires a hashchange event)
  * @param {URLSearchParams} hashParams the URL hash parameters
- * @private
  */
-function _updateUrl(hashParams) {
+function updateUrl(hashParams) {
   const oldUrl = window.location.href;
   const newUrl = window.location.pathname + window.location.search + '#' + hashParams.toString();
   window.history.pushState(null, '', newUrl);
@@ -54,9 +53,9 @@ function _updateUrl(hashParams) {
  * @param {string | undefined} gpxUrl The task boundaries
  * @param {boolean | undefined} powerUser if the user should be shown advanced options
  * @param {string | undefined} imagery The imagery to use for the task
- * @return {URLSearchParams | boolean} the new URL search params or {@code false} if no parameters changed
+ * @return {module:url.URLSearchParams | boolean} the new URL search params or {@code false} if no parameters changed
  */
-function generateStartingHash(comment, presets, gpxUrl, powerUser, imagery) {
+function generateStartingHash({ comment, presets, gpxUrl, powerUser, imagery }) {
   const hashParams = new URLSearchParams(window.location.hash.substring(1));
   if (comment) {
     hashParams.set('comment', comment);
@@ -64,8 +63,8 @@ function generateStartingHash(comment, presets, gpxUrl, powerUser, imagery) {
   if (gpxUrl) {
     hashParams.set('data', gpxUrl);
   }
-  if (powerUser) {
-    hashParams.set('poweruser', powerUser);
+  if (powerUser !== undefined) {
+    hashParams.set('poweruser', powerUser.toString());
   }
   if (presets) {
     hashParams.set('presets', presets.join(','));
@@ -77,7 +76,7 @@ function generateStartingHash(comment, presets, gpxUrl, powerUser, imagery) {
       hashParams.set('background', imagery);
     }
   }
-  if (_equalsUrlParameters(hashParams, new URLSearchParams(window.location.hash.substring(1)))) {
+  if (equalsUrlParameters(hashParams, new URLSearchParams(window.location.hash.substring(1)))) {
     return false;
   }
   return hashParams;
@@ -108,7 +107,7 @@ function resizeRapid(rapidContext) {
  * @returns {JSX.Element} The element to add to the DOM
  * @constructor
  */
-export default function RapidEditor({
+function RapidEditor({
   setDisable,
   comment,
   presets,
@@ -191,9 +190,9 @@ export default function RapidEditor({
   }, [showSidebar, context]);
 
   useEffect(() => {
-    const newParams = generateStartingHash(comment, presets, gpxUrl, powerUser, imagery);
+    const newParams = generateStartingHash({ comment, presets, gpxUrl, powerUser, imagery });
     if (newParams) {
-      _updateUrl(newParams);
+      updateUrl(newParams);
     }
   }, [comment, presets, gpxUrl, powerUser, imagery]);
 
@@ -256,3 +255,6 @@ export default function RapidEditor({
 
   return <div className="w-100 vh-minus-69-ns" id="rapid-container-root"></div>;
 }
+
+export { RapidEditor, generateStartingHash, equalsUrlParameters, updateUrl };
+export default RapidEditor;
