@@ -12,10 +12,6 @@ const baseCdnUrl = `https://cdn.jsdelivr.net/npm/${rapidName}@~${rapidVersion}/d
 // since it can be useful for debugging rapid issues in the TM.
 // const baseCdnUrl = '/static/rapid/';
 
-/** This is used to avoid needing to re-initialize Rapid on every page load -- this can lead to jerky movements in the UI */
-const rapidDom = document.createElement('div');
-rapidDom.className = 'w-100 vh-minus-69-ns';
-
 /**
  * Check if two URL search parameters are semantically equal
  * @param {URLSearchParams} first
@@ -124,14 +120,14 @@ export default function RapidEditor({
   const dispatch = useDispatch();
   const session = useSelector((state) => state.auth.session);
   const [rapidLoaded, setRapidLoaded] = useState(window.Rapid !== undefined);
-  const rapidContext = useSelector((state) => state.editor.rapidContext);
+  const { context, dom } = useSelector((state) => state.editor.rapidContext);
   const locale = useSelector((state) => state.preferences.locale);
   const windowInit = typeof window !== 'undefined';
 
   // This significantly reduces build time _and_ means different TM instances can share the same download of Rapid.
   // Unfortunately, Rapid doesn't use a public CDN itself, so we cannot reuse that.
   useEffect(() => {
-    if (!rapidLoaded && !rapidContext) {
+    if (!rapidLoaded && !context) {
       // Add the style element
       const style = document.createElement('link');
       style.setAttribute('type', 'text/css');
@@ -144,10 +140,10 @@ export default function RapidEditor({
       script.async = true;
       script.onload = () => setRapidLoaded(true);
       document.body.appendChild(script);
-    } else if (rapidContext && !rapidLoaded) {
+    } else if (context && !rapidLoaded) {
       setRapidLoaded(true);
     }
-  }, [rapidLoaded, setRapidLoaded, rapidContext]);
+  }, [rapidLoaded, setRapidLoaded, context]);
 
   useEffect(() => {
     return () => {
@@ -156,13 +152,16 @@ export default function RapidEditor({
   });
 
   useEffect(() => {
-    if (windowInit && rapidContext === null && rapidLoaded) {
+    if (windowInit && context === null && rapidLoaded) {
+      /* This is used to avoid needing to re-initialize Rapid on every page load -- this can lead to jerky movements in the UI */
+      const dom = document.createElement('div');
+      dom.className = 'w-100 vh-minus-69-ns';
       // we need to keep Rapid context on redux store because Rapid works better if
       // the context is not restarted while running in the same browser session
       // Unfortunately, we need to recreate the context every time we recreate the rapid-container dom node.
       const context = new window.Rapid.Context();
       context.embed(true);
-      context.containerNode = rapidDom;
+      context.containerNode = dom;
       context.assetPath = baseCdnUrl;
       context.apiConnections = [
         {
@@ -172,24 +171,24 @@ export default function RapidEditor({
           redirect_uri: OSM_REDIRECT_URI,
         },
       ];
-      dispatch({ type: types.SET_RAPIDEDITOR, context: context });
+      dispatch({ type: types.SET_RAPIDEDITOR, context: { context, dom } });
     }
-  }, [windowInit, rapidLoaded, rapidContext, dispatch]);
+  }, [windowInit, rapidLoaded, context, dispatch]);
 
   useEffect(() => {
-    if (rapidContext) {
+    if (context) {
       // setup the context
-      rapidContext.locale = locale;
+      context.locale = locale;
     }
-  }, [rapidContext, locale]);
+  }, [context, locale]);
 
   // This ensures that Rapid has the correct map size
   useEffect(() => {
     // This might be a _slight_ efficiency improvement by making certain that Rapid isn't painting unneeded items
-    resizeRapid(rapidContext);
+    resizeRapid(context);
     // This is the only bit that is *really* needed -- it prevents black bars when hiding the sidebar.
-    return () => resizeRapid(rapidContext);
-  }, [showSidebar, rapidContext]);
+    return () => resizeRapid(context);
+  }, [showSidebar, context]);
 
   useEffect(() => {
     const newParams = generateStartingHash(comment, presets, gpxUrl, powerUser, imagery);
@@ -200,23 +199,23 @@ export default function RapidEditor({
 
   useEffect(() => {
     const containerRoot = document.getElementById('rapid-container-root');
-    if (rapidContext) {
-      containerRoot.appendChild(rapidDom);
+    if (context && dom) {
+      containerRoot.appendChild(dom);
       // init the ui or restart if it was loaded previously
       let promise;
-      if (rapidContext?.systems?.ui !== undefined) {
+      if (context?.systems?.ui !== undefined) {
         // Currently commented out in Rapid source code (2023-07-20)
         // RapidContext.systems.ui.restart();
-        resizeRapid(rapidContext);
+        resizeRapid(context);
         promise = Promise.resolve();
       } else {
-        promise = rapidContext.initAsync();
+        promise = context.initAsync();
       }
 
       /* Perform tasks after Rapid has started up */
       promise.then(() => {
         /* Keep track of edits */
-        const editSystem = rapidContext.systems.edits;
+        const editSystem = context.systems.edits;
         const thereAreChanges = (changes) =>
           changes.modified.length || changes.created.length || changes.deleted.length;
 
@@ -230,30 +229,30 @@ export default function RapidEditor({
       });
     }
     return () => {
-      if (containerRoot?.childNodes && rapidDom in containerRoot.childNodes) {
-        document.getElementById('rapid-container-root')?.removeChild(rapidDom);
+      if (containerRoot?.childNodes && dom in containerRoot.childNodes) {
+        document.getElementById('rapid-container-root')?.removeChild(dom);
       }
     };
-  }, [rapidContext, setDisable]);
+  }, [dom, context, setDisable]);
 
   useEffect(() => {
-    if (rapidContext) {
-      return () => rapidContext.save();
+    if (context) {
+      return () => context.save();
     }
-  }, [rapidContext]);
+  }, [context]);
 
   useEffect(() => {
-    if (rapidContext && session) {
-      rapidContext.preauth = {
+    if (context && session) {
+      context.preauth = {
         url: OSM_SERVER_URL,
         client_id: OSM_CLIENT_ID,
         client_secret: OSM_CLIENT_SECRET,
         redirect_uri: OSM_REDIRECT_URI,
         access_token: session.osm_oauth_token,
       };
-      rapidContext.apiConnections = [rapidContext.preauth];
+      context.apiConnections = [context.preauth];
     }
-  }, [rapidContext, session, session?.osm_oauth_token]);
+  }, [context, session, session?.osm_oauth_token]);
 
   return <div className="w-100 vh-minus-69-ns" id="rapid-container-root"></div>;
 }
