@@ -96,6 +96,29 @@ function resizeRapid(rapidContext) {
 }
 
 /**
+ * Check if there are changes
+ * @param changes The changes to check
+ * @returns {boolean} {@code true} if there are changes
+ */
+function thereAreChanges(changes) {
+  return changes.modified.length || changes.created.length || changes.deleted.length;
+}
+
+/**
+ * Update the disable state for the sidebar map actions
+ * @param {function(boolean)} setDisable
+ * @param {EditSystem} editSystem The edit system
+ * @type {import('@rapideditor/rapid/modules').EditSystem} EditSystem
+ */
+function updateDisableState(setDisable, editSystem) {
+  if (thereAreChanges(editSystem.changes())) {
+    setDisable(true);
+  } else {
+    setDisable(false);
+  }
+}
+
+/**
  * Create a new RapidEditor component
  * @param {function(boolean)} setDisable
  * @param {string} comment The default changeset comment
@@ -198,6 +221,7 @@ function RapidEditor({
 
   useEffect(() => {
     const containerRoot = document.getElementById('rapid-container-root');
+    const editListener = () => updateDisableState(setDisable, context.systems.edits);
     if (context && dom) {
       containerRoot.appendChild(dom);
       // init the ui or restart if it was loaded previously
@@ -215,21 +239,19 @@ function RapidEditor({
       promise.then(() => {
         /* Keep track of edits */
         const editSystem = context.systems.edits;
-        const thereAreChanges = (changes) =>
-          changes.modified.length || changes.created.length || changes.deleted.length;
 
-        editSystem.on('change', () => {
-          if (thereAreChanges(editSystem.changes())) {
-            setDisable(true);
-          } else {
-            setDisable(false);
-          }
-        });
+        editSystem.on('change', editListener);
+        editSystem.on('reset', editListener);
       });
     }
     return () => {
       if (containerRoot?.childNodes && dom in containerRoot.childNodes) {
         document.getElementById('rapid-container-root')?.removeChild(dom);
+      }
+      if (context?.systems?.edits) {
+        const editSystem = context.systems.edits;
+        editSystem.off('change', editListener);
+        editSystem.off('reset', editListener);
       }
     };
   }, [dom, context, setDisable]);
