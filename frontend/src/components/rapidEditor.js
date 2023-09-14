@@ -43,15 +43,7 @@ export default function RapidEditor({
   }, [customImageryIsSet, imagery, RapiDContext, customSource]);
 
   useEffect(() => {
-    return () => {
-      dispatch({ type: 'SET_VISIBILITY', isVisible: true });
-    };
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
     if (windowInit) {
-      dispatch({ type: 'SET_VISIBILITY', isVisible: false });
       if (RapiDContext === null) {
         // we need to keep iD context on redux store because iD works better if
         // the context is not restarted while running in the same browser session

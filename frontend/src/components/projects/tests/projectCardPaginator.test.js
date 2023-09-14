@@ -9,16 +9,12 @@ describe('ProjectCardPaginator Component', () => {
   it('shows the pagination controls', () => {
     render(
       <ProjectCardPaginator
-        projectAPIstate={{
-          isLoading: false,
-          isError: false,
-          tasks: [],
-          pagination: {
-            hasNext: true,
-            hasPrev: false,
-            page: 1,
-            pages: 3,
-          },
+        status="success"
+        pagination={{
+          hasNext: true,
+          hasPrev: false,
+          page: 1,
+          pages: 3,
         }}
       />,
     );
@@ -30,16 +26,12 @@ describe('ProjectCardPaginator Component', () => {
     render(
       <ProjectCardPaginator
         setQueryParam={setQueryParamMock}
-        projectAPIstate={{
-          isLoading: false,
-          isError: false,
-          tasks: [],
-          pagination: {
-            hasNext: true,
-            hasPrev: false,
-            page: 1,
-            pages: 3,
-          },
+        status="success"
+        pagination={{
+          hasNext: true,
+          hasPrev: false,
+          page: 1,
+          pages: 3,
         }}
       />,
     );
@@ -54,7 +46,7 @@ describe('ProjectCardPaginator Component', () => {
   it('should render nothing if no pagination detail is provided', async () => {
     const { container } = render(
       <ProjectCardPaginator
-        projectAPIstate={{
+        pagination={{
           pagination: null,
         }}
       />,

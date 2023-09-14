@@ -14,6 +14,7 @@ import { AddButton, ViewAllLink, Management, VisibilityBox, JoinMethodBox } from
 import { RadioField, OrganisationSelectInput, TextField } from '../formInputs';
 import { Button, EditButton } from '../button';
 import { nCardPlaceholders } from './teamsPlaceholder';
+import { Alert } from '../alert';
 
 export function TeamsManagement({
   teams,
@@ -21,7 +22,7 @@ export function TeamsManagement({
   managementView,
   userTeamsOnly,
   setUserTeamsOnly,
-  isTeamsFetched,
+  teamsStatus,
   query,
   setQuery,
 }: Object) {
@@ -61,21 +62,31 @@ export function TeamsManagement({
           onCloseIconClick={clearSearchQuery}
         />
       </div>
-      <div className="cards-container mt2">
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          customPlaceholder={nCardPlaceholders(4)}
-          delay={10}
-          ready={isTeamsFetched}
-        >
-          {teams?.length ? (
-            teams.map((team, n) => <TeamCard team={team} key={n} />)
-          ) : (
-            <div className="pb3 pt2">
-              <FormattedMessage {...messages.noTeams} />
-            </div>
-          )}
-        </ReactPlaceholder>
+      <div className={`${teamsStatus !== 'error' ? 'cards-container' : ''} mt2`}>
+        {teamsStatus === 'loading' && (
+          <ReactPlaceholder
+            showLoadingAnimation={true}
+            customPlaceholder={nCardPlaceholders(4)}
+            delay={10}
+            ready={false}
+          />
+        )}
+        {teamsStatus === 'error' && (
+          <Alert type="error">
+            <FormattedMessage {...messages.errorLoadingTeams} />
+          </Alert>
+        )}
+        {teamsStatus === 'success' && (
+          <>
+            {teams?.length ? (
+              teams.map((team) => <TeamCard team={team} key={team.teamId} />)
+            ) : (
+              <div className="pb3 pt2">
+                <FormattedMessage {...messages.noTeams} />
+              </div>
+            )}
+          </>
+        )}
       </div>
     </Management>
   );

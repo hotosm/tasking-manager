@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
+import { useMutation } from '@tanstack/react-query';
+import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
-import { useAsync } from '../../hooks/UseAsync';
 import { PaginatorLine } from '../paginator';
 import { Button } from '../button';
 import { Alert } from '../alert';
@@ -12,28 +13,28 @@ import { CommentInputField } from '../comments/commentInput';
 import { MessageStatus } from '../comments/status';
 import { UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
-import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
-import { useFetchWithAbort } from '../../hooks/UseFetch';
 import { useEditProjectAllowed } from '../../hooks/UsePermissions';
 import { DeleteModal } from '../deleteModal';
+import { postProjectComment, useCommentsQuery } from '../../api/questionsAndComments';
 
 import './styles.scss';
 
-export const PostProjectComment = ({ projectId, updateComments, contributors }) => {
+export const PostProjectComment = ({ projectId, refetchComments, contributors }) => {
   const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences['locale']);
   const [comment, setComment] = useState('');
 
-  const saveComment = () => {
-    return pushToLocalJSONAPI(
-      `projects/${projectId}/comments/`,
-      JSON.stringify({ message: comment }),
-      token,
-    ).then(() => {
-      updateComments();
+  const mutation = useMutation({
+    mutationFn: () => postProjectComment(projectId, comment, token, locale),
+    onSuccess: () => {
+      refetchComments();
       setComment('');
-    });
+    },
+  });
+
+  const saveComment = () => {
+    mutation.mutate({ message: comment });
   };
-  const saveCommentAsync = useAsync(saveComment);
 
   return (
     <div className="w-100 cf mh4 pv4 bg-white center shadow-7 ba0 br1 post-comment-ctr">
@@ -51,16 +52,16 @@ export const PostProjectComment = ({ projectId, updateComments, contributors }) 
 
       <div className="fl w-100 tr pt1 pr0-ns pr1 ml-auto">
         <Button
-          onClick={() => saveCommentAsync.execute()}
+          onClick={() => saveComment()}
           className="bg-red white f5"
-          disabled={comment === '' || saveCommentAsync.status === 'pending'}
-          loading={saveCommentAsync.status === 'pending'}
+          disabled={comment === ''}
+          loading={mutation.isLoading}
         >
           <FormattedMessage {...messages.post} />
         </Button>
       </div>
       <div className="cf w-100 fr tr pr2 mt3">
-        <MessageStatus status={saveCommentAsync.status} comment={comment} />
+        <MessageStatus status={mutation.status} comment={comment} />
       </div>
     </div>
   );
@@ -76,9 +77,7 @@ export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
     setPage(val);
   };
 
-  const [, , comments, refetch] = useFetchWithAbort(
-    `projects/${projectId}/comments/?perPage=5&page=${page}`,
-  );
+  const { data: comments, status: commentsStatus, refetch } = useCommentsQuery(projectId, page);
 
   return (
     <div className="bg-tan-dim">
@@ -86,19 +85,30 @@ export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
         <FormattedMessage {...messages.questionsAndComments} />
       </h3>
       <div className="ph6-l ph4 pb5 w-100 w-70-l">
-        {comments?.chat?.length ? (
-          <CommentList
-            userCanEditProject={userCanEditProject}
-            projectId={projectId}
-            comments={comments.chat}
-            retryFn={refetch}
-          />
-        ) : (
-          <div className="pv4 blue-grey tc">
-            <FormattedMessage {...messages.noComments} />
+        {commentsStatus === 'loading' && <ReactPlaceholder type="media" rows={3} ready={false} />}{' '}
+        {commentsStatus === 'error' && (
+          <div className="mb4">
+            <Alert type="error">
+              <FormattedMessage {...messages.errorLoadingComments} />
+            </Alert>
           </div>
         )}
-
+        {commentsStatus === 'success' && (
+          <>
+            {comments?.chat.length ? (
+              <CommentList
+                userCanEditProject={userCanEditProject}
+                projectId={projectId}
+                comments={comments.chat}
+                retryFn={refetch}
+              />
+            ) : (
+              <div className="pv4 blue-grey tc">
+                <FormattedMessage {...messages.noComments} />
+              </div>
+            )}
+          </>
+        )}
         {comments?.pagination?.pages > 0 && (
           <PaginatorLine
             activePage={page}
@@ -110,7 +120,7 @@ export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
         {token ? (
           <PostProjectComment
             projectId={projectId}
-            updateComments={refetch}
+            refetchComments={refetch}
             contributors={contributors}
           />
         ) : (

@@ -1,30 +1,16 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { backendToQueryConversion, useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
+
+import { useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
 import { InboxNav, InboxNavMini, InboxNavMiniBottom } from '../components/notifications/inboxNav';
 import {
   NotificationResults,
   NotificationResultsMini,
 } from '../components/notifications/notificationResults';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import Paginator from '../components/notifications/paginator';
-import { useFetchWithAbort } from '../hooks/UseFetch';
-
-function serializeParams(queryState) {
-  const obj = remapParamsToAPI(queryState, backendToQueryConversion);
-
-  Object.keys(obj).forEach((key) => {
-    if (obj[key] === undefined) {
-      delete obj[key];
-    }
-  });
-
-  return Object.entries(obj)
-    .map(([key, val]) => `${key}=${val}`)
-    .join('&');
-}
+import { useNotificationsQuery } from '../api/notifications';
 
 export const NotificationPopout = (props) => {
   // Small screen size, as defined by tachyons
@@ -75,9 +61,7 @@ export const NotificationsPage = () => {
   const location = useLocation();
   const userToken = useSelector((state) => state.auth.token);
   const [inboxQuery, setInboxQuery] = useInboxQueryParams();
-  const [error, loading, notifications, refetch] = useFetchWithAbort(
-    `notifications/?${serializeParams(inboxQuery)}`,
-  );
+  const { data: notifications, isError, isLoading, refetch } = useNotificationsQuery(inboxQuery);
 
   useEffect(() => {
     if (!userToken) {
@@ -94,8 +78,8 @@ export const NotificationsPage = () => {
       <section>
         <InboxNav />
         <NotificationResults
-          error={error}
-          loading={loading}
+          isError={isError}
+          isLoading={isLoading}
           notifications={notifications}
           inboxQuery={inboxQuery}
           retryFn={refetch}

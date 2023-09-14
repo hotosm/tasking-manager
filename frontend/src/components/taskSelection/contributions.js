@@ -135,7 +135,7 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
   const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(tasks);
 
   const contributors = useFilterContributors(
-    contribsData.userContributions || [],
+    contribsData || [],
     level && level.value,
     userFilter && userFilter.value,
   );

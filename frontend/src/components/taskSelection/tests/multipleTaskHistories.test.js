@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
 import { MultipleTaskHistoriesAccordion } from '../multipleTaskHistories';
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { QueryClientProviders, ReduxIntlProviders } from '../../../utils/testWithIntl';
 import userEvent from '@testing-library/user-event';
 
 describe('MultipleTaskHistories Accordion', () => {
@@ -54,9 +54,11 @@ describe('MultipleTaskHistories Accordion', () => {
     ];
     const user = userEvent.setup();
     render(
-      <ReduxIntlProviders>
-        <MultipleTaskHistoriesAccordion tasks={tasks} projectId={1} />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <MultipleTaskHistoriesAccordion tasks={tasks} projectId={1} />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
 
     expect(screen.getByText(/Task 1/i)).toBeInTheDocument();
@@ -67,7 +69,7 @@ describe('MultipleTaskHistories Accordion', () => {
       await user.click(taskBtn);
     }
 
-    expect(screen.getAllByText(/Comments/i)).toHaveLength(2);
+    expect(screen.getAllByText(/Comments/i)).toHaveLength(4);
     expect(screen.getAllByText(/Activities/i)).toHaveLength(2);
   });
 });

@@ -376,7 +376,14 @@ const faultyHandlers = [
       }),
     );
   }),
-  rest.get(API_URL + 'projects/:id/', failedToConnectError),
+  rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
+    return res.once(
+      ctx.status(403),
+      ctx.json({
+        SubCode: `Project Not Found`,
+      }),
+    );
+  }),
   rest.get('http://127.0.0.1:8111/version', failedToConnectError),
   rest.post(
     API_URL + 'projects/:projectId/tasks/actions/lock-for-mapping/:taskId',

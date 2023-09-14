@@ -17,7 +17,7 @@ test('ContributorsStats renders the correct labels and numbers', () => {
   render(
     <Provider store={store}>
       <ConnectedIntl>
-        <ContributorsStats contributors={projectContributions} />
+        <ContributorsStats contributors={projectContributions.userContributions} />
       </ConnectedIntl>
     </Provider>,
   );
@@ -35,7 +35,7 @@ test('ContributorsStats renders values as 0 if the project did not received cont
   render(
     <Provider store={store}>
       <ConnectedIntl>
-        <ContributorsStats contributors={{ userContributions: [] }} />
+        <ContributorsStats contributors={[]} />
       </ConnectedIntl>
     </Provider>,
   );

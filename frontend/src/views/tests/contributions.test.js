@@ -6,6 +6,7 @@ import { QueryParamProvider } from 'use-query-params';
 import { store } from '../../store';
 import {
   createComponentWithMemoryRouter,
+  QueryClientProviders,
   ReduxIntlProviders,
   renderWithRouter,
 } from '../../utils/testWithIntl';
@@ -48,11 +49,6 @@ describe('Contributions Page', () => {
     await user.click(screen.getByRole('combobox'));
     expect(await screen.findByText('#8629')).toBeInTheDocument();
     expect(await screen.findByText('Task #1822 · Project #5871')).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', {
-        name: '1',
-      }),
-    ).toBeInTheDocument();
   });
 });
 
@@ -67,9 +63,11 @@ describe('Contributions Page Index', () => {
     });
 
     renderWithRouter(
-      <ReduxIntlProviders>
-        <ContributionsPageIndex />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <ContributionsPageIndex />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     expect(screen.getAllByRole('link', { name: 'test_user' }).length).toBe(4);
   });

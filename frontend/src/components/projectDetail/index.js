@@ -6,6 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import { supported } from 'mapbox-gl';
 
 import messages from './messages';
+import viewsMessages from '../../views/messages';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { TasksMap } from '../taskSelection/map.js';
 import { ProjectHeader } from './header';
@@ -20,7 +21,8 @@ import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
-import { useFetch } from '../../hooks/UseFetch';
+import { useProjectContributionsQuery, useProjectTimelineQuery } from '../../api/projects';
+import { Alert } from '../alert';
 
 import './styles.scss';
 import { useWindowSize } from '../../hooks/UseWindowSize';
@@ -126,15 +128,11 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
 export const ProjectDetail = (props) => {
   useSetProjectPageTitleTag(props.project);
   const size = useWindowSize();
-  /* eslint-disable-next-line */
-  const [visualError, visualLoading, visualData] = useFetch(
-    `projects/${props.project.projectId}/contributions/queries/day/`,
-    props.project?.projectId,
+  const { data: contributors, status: contributorsStatus } = useProjectContributionsQuery(
+    props.project.projectId,
   );
-  /* eslint-disable-next-line */
-  const [contributorsError, contributorsLoading, contributors] = useFetch(
-    `projects/${props.project.projectId}/contributions/`,
-    props.project?.projectId,
+  const { data: timelineData, status: timelineDataStatus } = useProjectTimelineQuery(
+    props.project.projectId,
   );
 
   const htmlDescription =
@@ -152,21 +150,11 @@ export const ProjectDetail = (props) => {
         <ProjectDetailLeft
           className="w-100 w-60-l ph4 ph2 pv3 blue-dark"
           project={props.project}
-          contributors={
-            contributors.hasOwnProperty('userContributions') ? contributors.userContributions : []
-          }
+          contributors={contributorsStatus === 'success' ? contributors : []}
           type="detail"
         />
         <div className="w-100 w-40-l">
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            type={'media'}
-            rows={26}
-            delay={200}
-            ready={typeof props.project.projectId === 'number'}
-          >
-            <ProjectDetailMap {...props} />
-          </ReactPlaceholder>
+          <ProjectDetailMap {...props} />
         </div>
       </div>
 
@@ -272,22 +260,30 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.contributors} />
       </h3>
       <div className="cf db mb3 ph4">
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          type={'media'}
-          rows={1}
-          delay={200}
-          ready={contributors?.userContributions}
-        >
-          {contributors && (
-            <UserAvatarList
-              size={'large'}
-              textColor="white"
-              users={contributors.userContributions}
-              maxLength={parseInt(size[0] / 75) > 12 ? 12 : parseInt(size[0] / 75)}
-            />
-          )}
-        </ReactPlaceholder>
+        {contributorsStatus === 'loading' && (
+          <ReactPlaceholder
+            showLoadingAnimation={true}
+            type={'media'}
+            rows={1}
+            delay={200}
+            ready={contributorsStatus === 'success'}
+          />
+        )}
+        {contributorsStatus === 'error' && (
+          <div className="w-100 w-60-l">
+            <Alert type="error">
+              <FormattedMessage {...messages.contributorsError} />
+            </Alert>
+          </div>
+        )}
+        {contributorsStatus === 'success' && (
+          <UserAvatarList
+            size={'large'}
+            textColor="white"
+            users={contributors}
+            maxLength={parseInt(size[0] / 75) > 12 ? 12 : parseInt(size[0] / 75)}
+          />
+        )}
       </div>
       <a href="#contributionTimeline" style={{ visibility: 'hidden' }} name="contributionTimeline">
         <FormattedMessage {...messages.contributionsTimeline} />
@@ -295,46 +291,41 @@ export const ProjectDetail = (props) => {
       <h3 className={`${h2Classes}`}>
         <FormattedMessage {...messages.contributionsTimeline} />
       </h3>
-      <div className="ph4 w-100 w-60-l">
-        <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            rows={3}
-            delay={500}
-            ready={typeof visualData === 'object' && visualData.stats !== undefined}
-          >
-            <div className="pt2 pb4">
-              <ProjectTimeline tasksByDay={visualData.stats} />
-            </div>
-          </ReactPlaceholder>
-        </React.Suspense>
-        <ReactPlaceholder
-          delay={100}
-          showLoadingAnimation={true}
-          type="rect"
-          style={{ width: 150, height: 30 }}
-          ready={typeof props.project === 'object'}
-        >
-          <div className="flex gap-1 nowrap flex-wrap">
-            <Link to={`/projects/${props.project.projectId}/stats`} className="link">
-              <CustomButton className="bg-red white bn pa3">
-                <FormattedMessage {...messages.moreStats} />
-              </CustomButton>
-            </Link>
-            <OSMChaButton
-              project={props.project}
-              className="bg-white blue-dark ba b--grey-light pa3"
-            />
-            <DownloadAOIButton
-              projectId={props.project.projectId}
-              className="bg-white blue-dark ba b--grey-light pa3"
-            />
-            <DownloadTaskGridButton
-              projectId={props.project.projectId}
-              className="bg-white blue-dark ba b--grey-light pa3"
-            />
-          </div>
-        </ReactPlaceholder>
+      <div className="mb5 ph4 w-100 w-60-l">
+        <div className="pt2 pb4">
+          {timelineDataStatus === 'loading' && (
+            <ReactPlaceholder showLoadingAnimation rows={3} ready={false} />
+          )}
+          {timelineDataStatus === 'error' && (
+            <Alert type="error">
+              <FormattedMessage {...viewsMessages.timelineDataError} />
+            </Alert>
+          )}
+          {timelineDataStatus === 'success' && (
+            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+              <ProjectTimeline tasksByDay={timelineData} />
+            </React.Suspense>
+          )}
+        </div>
+        <div className="flex gap-1 nowrap flex-wrap">
+          <Link to={`/projects/${props.project.projectId}/stats`} className="link">
+            <CustomButton className="bg-red white bn pa3">
+              <FormattedMessage {...messages.moreStats} />
+            </CustomButton>
+          </Link>
+          <OSMChaButton
+            project={props.project}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
+          <DownloadAOIButton
+            projectId={props.project.projectId}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
+          <DownloadTaskGridButton
+            projectId={props.project.projectId}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
+        </div>
       </div>
       <a href="#similarProjects" style={{ visibility: 'hidden' }} name="similarProjects">
         <FormattedMessage {...messages.similarProjects} />

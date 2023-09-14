@@ -15,6 +15,7 @@ import {
 } from '../project';
 import {
   createComponentWithMemoryRouter,
+  QueryClientProviders,
   ReduxIntlProviders,
   renderWithRouter,
 } from '../../utils/testWithIntl';
@@ -41,11 +42,13 @@ describe('UserProjectsPage Component', () => {
     });
 
     const { router } = createComponentWithMemoryRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <UserProjectsPage management={false} />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <UserProjectsPage management={false} />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/login'));
@@ -57,11 +60,13 @@ describe('UserProjectsPage Component', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <UserProjectsPage management={false} location={{ pathname: '/manage' }} />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <UserProjectsPage management={false} location={{ pathname: '/manage' }} />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
     await waitFor(() =>
       expect(screen.getByRole('heading', { name: projects.results[0].name })).toBeInTheDocument(),
@@ -85,11 +90,13 @@ describe('UserProjectsPage Component', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <UserProjectsPage management={false} />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <UserProjectsPage management={false} />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
     await screen.findByRole('heading', { name: projects.results[0].name });
     // Since WebGL is not supported by Node, we'll assume that the map context will be loaded
@@ -124,11 +131,13 @@ describe('ManageProjectsPage', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <ManageProjectsPage />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <ManageProjectsPage />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
 
     await screen.findByRole('heading', { name: projects.results[0].name });
@@ -144,11 +153,13 @@ describe('ManageProjectsPage', () => {
       store.dispatch({ type: 'TOGGLE_MAP' });
     });
     const { user } = renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <ManageProjectsPage />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <ManageProjectsPage />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
 
     await user.click(screen.getByRole('checkbox'));
@@ -166,11 +177,13 @@ test('ProjectsPageIndex is a null DOM element', () => {
 describe('Projects Page', () => {
   const setup = () => {
     renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <ProjectsPage />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <ProjectsPage />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
   };
 
@@ -213,9 +226,11 @@ describe('Project Detail Page', () => {
       store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
     });
     renderWithRouter(
-      <ReduxIntlProviders>
-        <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <ProjectDetailPage />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     await waitFor(() => {
       expect(screen.getByText(/sample project/i)).toBeInTheDocument();
@@ -231,9 +246,11 @@ describe('Project Detail Page', () => {
           <Route
             path="projects/:id"
             element={
-              <ReduxIntlProviders>
-                <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-              </ReduxIntlProviders>
+              <QueryClientProviders>
+                <ReduxIntlProviders>
+                  <ProjectDetailPage />
+                </ReduxIntlProviders>
+              </QueryClientProviders>
             }
           />
         </Routes>
@@ -255,9 +272,11 @@ describe('Project Detail Page', () => {
           <Route
             path="projects/:id"
             element={
-              <ReduxIntlProviders>
-                <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-              </ReduxIntlProviders>
+              <QueryClientProviders>
+                <ReduxIntlProviders>
+                  <ProjectDetailPage />
+                </ReduxIntlProviders>
+              </QueryClientProviders>
             }
           />
         </Routes>

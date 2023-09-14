@@ -143,7 +143,7 @@ describe('TeamsManagement component', () => {
             query={{ searchQuery: undefined }}
             userDetails={{ role: 'ADMIN' }}
             managementView={true}
-            isTeamsFetched={false}
+            teamsStatus={'loading'}
           />
         </ReduxIntlProviders>
       </MemoryRouter>,
@@ -165,7 +165,7 @@ describe('TeamsManagement component', () => {
             query={{ searchQuery: undefined }}
             userDetails={{ role: 'ADMIN' }}
             managementView={true}
-            isTeamsFetched={true}
+            teamsStatus={'success'}
           />
         </ReduxIntlProviders>
       </MemoryRouter>,
@@ -184,7 +184,7 @@ describe('TeamsManagement component', () => {
             query={{ searchQuery: undefined }}
             userDetails={{ role: 'MAPPER' }}
             managementView={true}
-            isTeamsFetched={true}
+            teamsStatus={'success'}
           />
         </ReduxIntlProviders>
       </MemoryRouter>,
@@ -204,7 +204,7 @@ describe('TeamsManagement component', () => {
             query={{ searchQuery: undefined }}
             userDetails={{ role: 'ADMIN' }}
             managementView={true}
-            isTeamsFetched={true}
+            teamsStatus={'success'}
           />
         </ReduxIntlProviders>
       </MemoryRouter>,
@@ -230,7 +230,7 @@ describe('TeamsManagement component', () => {
             teams={dummyTeams}
             userDetails={{ role: 'ADMIN' }}
             managementView={true}
-            isTeamsFetched={true}
+            teamsStatus={'success'}
           />
         </ReduxIntlProviders>
       </MemoryRouter>,
@@ -252,7 +252,7 @@ describe('TeamsManagement component', () => {
             teams={[]}
             userDetails={{ role: 'ADMIN' }}
             managementView={false}
-            isTeamsFetched={true}
+            teamsStatus={'success'}
           />
         </ReduxIntlProviders>
       </MemoryRouter>,

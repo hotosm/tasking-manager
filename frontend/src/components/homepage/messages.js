@@ -63,6 +63,10 @@ export default defineMessages({
     id: 'home.stats.mappers',
     defaultMessage: 'Mappers Online',
   },
+  statsLoadingError: {
+    id: 'home.stats.loading.error',
+    defaultMessage: 'An error occured while loading the stats',
+  },
   mappingFlowTitle: {
     id: 'home.mappingFlow.title',
     defaultMessage:

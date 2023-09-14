@@ -6,6 +6,7 @@ import { UserDetail } from '../userDetail';
 import { store } from '../../store';
 import {
   createComponentWithMemoryRouter,
+  QueryClientProviders,
   ReduxIntlProviders,
   renderWithRouter,
 } from '../../utils/testWithIntl';
@@ -44,9 +45,11 @@ describe('User Detail Component', () => {
           <Route
             path="users/:username"
             element={
-              <ReduxIntlProviders>
-                <UserDetail />
-              </ReduxIntlProviders>
+              <QueryClientProviders>
+                <ReduxIntlProviders>
+                  <UserDetail />
+                </ReduxIntlProviders>
+              </QueryClientProviders>
             }
           />
         </Routes>
