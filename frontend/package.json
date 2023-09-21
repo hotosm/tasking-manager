@@ -10,7 +10,7 @@
     "@formatjs/macro": "^0.2.8",
     "@hotosm/id": "^2.21.1",
     "@hotosm/iso-countries-languages": "^1.1.2",
-    "@mapbox/mapbox-gl-draw": "^1.4.1",
+    "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mapbox/mapbox-gl-language": "^0.10.1",
     "@placemarkio/geo-viewport": "^1.0.1",

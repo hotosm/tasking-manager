@@ -2178,10 +2178,10 @@
   resolved "https://registry.yarnpkg.com/@mapbox/jsonlint-lines-primitives/-/jsonlint-lines-primitives-2.0.2.tgz#ce56e539f83552b58d10d672ea4d6fc9adc7b234"
   integrity sha512-rY0o9A5ECsTQRVhv7tL/OyDpGAoUB4tTvLiW1DSzQGq4bvTPhNw1VpSNjDJc5GFZ2XuyOtSWSVN05qOtcD71qQ==
 
-"@mapbox/mapbox-gl-draw@^1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-draw/-/mapbox-gl-draw-1.4.1.tgz#96dcec4d3957150de854423ac15856fde43d1452"
-  integrity sha512-g6F49KZagF9269/IoF6vZJeail6qtoc5mVF3eVRikNT7UFnY0QASfe2y53mgE99s6GrHdpV+PZuFxaL71hkMhg==
+"@mapbox/mapbox-gl-draw@^1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-draw/-/mapbox-gl-draw-1.4.3.tgz#3f95362fdeabcffcb46f3392f24bf5914e7be817"
+  integrity sha512-03qIJgyGmm0IoTZbV/cfODru9jRGogi4LcQ3maxIJDKccq1gY3ofgt2UYPkeU143ElxitZahEythNQv1NpsLhg==
   dependencies:
     "@mapbox/geojson-area" "^0.2.2"
     "@mapbox/geojson-extent" "^1.0.1"
@@ -2408,7 +2408,7 @@
     "@sentry/utils" "7.64.0"
     tslib "^2.4.1 || ^1.9.3"
 
-"@sentry/browser@7.64.0", "@sentry/browser@^7.60.1":
+"@sentry/browser@7.64.0":
   version "7.64.0"
   resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-7.64.0.tgz#76db08a5d32ffe7c5aa907f258e6c845ce7f10d7"
   integrity sha512-lB2IWUkZavEDclxfLBp554dY10ZNIEvlDZUWWathW+Ws2wRb6PNLtuPUNu12R7Q7z0xpkOLrM1kRNN0OdldgKA==
@@ -2459,13 +2459,6 @@
     "@sentry/core" "7.64.0"
     "@sentry/types" "7.64.0"
     "@sentry/utils" "7.64.0"
-
-"@sentry/tracing@^7.60.1":
-  version "7.64.0"
-  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-7.64.0.tgz#994a779d6c8b810b98784b33eb6defd014303913"
-  integrity sha512-Php0XnnJolfxkFdgLlgwgRz3bgHmu/7gDRQaGQHJeDgCCjrmNHI+sHi8zmkWCWSO0Z1mi111n2ZUr9B9YLPBTg==
-  dependencies:
-    "@sentry-internal/tracing" "7.64.0"
 
 "@sentry/types@7.64.0":
   version "7.64.0"
