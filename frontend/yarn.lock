@@ -2408,7 +2408,7 @@
     "@sentry/utils" "7.64.0"
     tslib "^2.4.1 || ^1.9.3"
 
-"@sentry/browser@7.64.0", "@sentry/browser@^7.60.1":
+"@sentry/browser@7.64.0":
   version "7.64.0"
   resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-7.64.0.tgz#76db08a5d32ffe7c5aa907f258e6c845ce7f10d7"
   integrity sha512-lB2IWUkZavEDclxfLBp554dY10ZNIEvlDZUWWathW+Ws2wRb6PNLtuPUNu12R7Q7z0xpkOLrM1kRNN0OdldgKA==
@@ -2459,13 +2459,6 @@
     "@sentry/core" "7.64.0"
     "@sentry/types" "7.64.0"
     "@sentry/utils" "7.64.0"
-
-"@sentry/tracing@^7.60.1":
-  version "7.64.0"
-  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-7.64.0.tgz#994a779d6c8b810b98784b33eb6defd014303913"
-  integrity sha512-Php0XnnJolfxkFdgLlgwgRz3bgHmu/7gDRQaGQHJeDgCCjrmNHI+sHi8zmkWCWSO0Z1mi111n2ZUr9B9YLPBTg==
-  dependencies:
-    "@sentry-internal/tracing" "7.64.0"
 
 "@sentry/types@7.64.0":
   version "7.64.0"
@@ -7656,9 +7649,9 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
 "graphql@^15.0.0 || ^16.0.0":
-  version "16.6.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.6.0.tgz#c2dcffa4649db149f6282af726c8c83f1c7c5fdb"
-  integrity sha512-KPIBPDlW7NxrbT/eh4qPXz5FiFdL5UbaA0XUNz2Rp3Z3hqBSkbj0GVjwFDztsWVauZUWsbKHgMg++sk8UX0bkw==
+  version "16.8.1"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.8.1.tgz#1930a965bef1170603702acdb68aedd3f3cf6f07"
+  integrity sha512-59LZHPdGZVh695Ud9lRzPBVTtlX9ZCV150Er2W43ro37wVof0ctenSaskPPjN7lVTIN8mSZt8PHUNKZuNQUuxw==
 
 grid-index@^1.1.0:
   version "1.1.0"
