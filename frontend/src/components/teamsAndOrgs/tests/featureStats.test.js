@@ -23,6 +23,7 @@ test('FeatureStats renders the correct values and labels', async () => {
   expect(screen.getByText('Km waterways mapped')).toBeInTheDocument();
   await waitFor(() => expect(screen.getByText('2,380,562')).toBeInTheDocument());
   expect(screen.getByText('101,367,027')).toBeInTheDocument();
-  expect(screen.getByText('183,011')).toBeInTheDocument();
-  expect(screen.getByText('350,906')).toBeInTheDocument();
+  // Uncomment the following when POIs and waterways become available
+  // expect(screen.getByText('183,011')).toBeInTheDocument();
+  // expect(screen.getByText('350,906')).toBeInTheDocument();
 });

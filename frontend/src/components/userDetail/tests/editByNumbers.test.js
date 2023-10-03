@@ -27,12 +27,10 @@ describe('EditsByNumbers card', () => {
 
   it('renders the chart if osmStats data is present', () => {
     const stats = {
-      total_building_count_add: 3282,
-      total_building_count_mod: 7959,
+      buildings: 3282,
       total_waterway_count_add: 11493,
       total_poi_count_add: 10805,
-      total_road_km_add: 5571.84370201545,
-      total_road_km_mod: 4203.47860727417,
+      roads: 5571.84370201545,
       total_waterway_km_add: 512.706405358494,
       total_road_count_add: 13345,
       total_road_count_mod: 51730,

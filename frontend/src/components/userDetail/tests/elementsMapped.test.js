@@ -12,7 +12,7 @@ describe('ElementsMapped & TaskStats components', () => {
     };
     const osmStats = {
       total_building_count_add: 10,
-      total_road_km_add: 229.113,
+      roads: 229.113,
       total_poi_count_add: 15,
       total_waterway_count_add: 20,
     };
