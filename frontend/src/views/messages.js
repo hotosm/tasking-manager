@@ -33,7 +33,7 @@ export default defineMessages({
     defaultMessage: 'Project timeline',
   },
   timelineDataError: {
-    id: 'project.stats.timeline.fetching.error',
+    id: 'project.stats.contributions.timeline.fetching.error',
     defaultMessage: 'An error occured while loading contributions data',
   },
   editsStatsError: {
