@@ -25,6 +25,7 @@ function StatsTimestamp({ messageType }) {
     day: '2-digit',
     hour: 'numeric',
     minute: 'numeric',
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   };
 
   return (
@@ -32,7 +33,8 @@ function StatsTimestamp({ messageType }) {
       <InfoIcon
         className="blue-grey h1 w1 v-mid ml2 pointer"
         data-tip={intl.formatMessage(messages[messageType], {
-          formattedDate: intl.formatDate(lastUpdated, dateOptions),
+          // formattedDate: intl.formatDate(lastUpdated, dateOptions),
+          formattedDate: new Intl.DateTimeFormat('en', dateOptions).format(new Date(lastUpdated)),
         })}
         data-for="ohsome-timestamp"
       />
