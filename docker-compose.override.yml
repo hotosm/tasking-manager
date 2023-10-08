@@ -19,6 +19,10 @@ services:
     volumes:
       - .:/usr/src/app
 
+  postgresql:
+    volumes:
+      - "postgresql-data:/var/lib/postgresql/data"
+
   frontend:
     build:
       context: "."
@@ -26,5 +30,10 @@ services:
     volumes:
       - ".:/usr/src/app"
     labels:
-      - traefik.http.routers.frontend.rule=Host(`localhost`) || Host(`127.0.0.1`)
+      - TM_APP_API_URL=https://tasks.smartcitiestransport.com/api
+      - traefik.http.routers.frontend.rule=Host(`localhost`, `tasks.smartcitiestransport.com`) || Host(`localhost`)
+      # - traefik.http.routers.frontend.rule=Host(`localhost`) || Host(`127.0.0.1`)
       - traefik.http.services.frontend.loadbalancer.server.port=80
+
+volumes:
+  postgresql-data:

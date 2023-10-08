@@ -18,7 +18,8 @@ services:
     container_name: backend
     restart: always
     labels:
-      - traefik.http.routers.backend.rule=(Host(`127.0.0.1`) || Host(`localhost`)) && PathPrefix(`/api/`)
+      - traefik.http.routers.backend.rule=Host(`localhost`, `tasks.smartcitiestransport.com`) && PathPrefix(`/api/`)
+      # - traefik.http.routers.backend.rule=(Host(`127.0.0.1`) || Host(`localhost`)) && PathPrefix(`/api/`)
       - traefik.http.services.backend.loadbalancer.server.port=5000
 
   migration:
@@ -33,7 +34,8 @@ services:
     networks:
       - tm-web
     labels:
-      - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
+      - traefik.http.routers.frontend.rule=Host(`localhost`, `tasks.smartcitiestransport.com`)
+      # - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
       - traefik.http.services.frontend.loadbalancer.server.port=3000
 
   postgresql:
