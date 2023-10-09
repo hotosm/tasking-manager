@@ -50,7 +50,7 @@ export function Home() {
         }
       >
         <StatsSection />
-        <div>
+        <div className="info-ohsome-tooltip">
           <InfoIcon
             className="blue-grey h1 w1 v-mid ml2 pointer"
             data-tip={intl.formatMessage(messages['statsTooltip'], {
