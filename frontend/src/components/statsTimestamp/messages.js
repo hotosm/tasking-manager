@@ -3,7 +3,8 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   generic: {
     id: 'stats.ohsome.timestamp.generic',
-    defaultMessage: 'These statistics come from ohsomeNow Stats and were last updated at {formattedDate}. Missing fields will be made available soon!',
+    defaultMessage:
+      'These statistics come from ohsomeNow Stats and were last updated at {formattedDate} ({timeZone}). Missing fields will be made available soon!',
   },
   project: {
     id: 'stats.ohsome.timestamp.project',

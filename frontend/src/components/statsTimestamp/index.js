@@ -35,6 +35,7 @@ function StatsTimestamp({ messageType }) {
         data-tip={intl.formatMessage(messages[messageType], {
           // formattedDate: intl.formatDate(lastUpdated, dateOptions),
           formattedDate: new Intl.DateTimeFormat('en', dateOptions).format(new Date(lastUpdated)),
+          timeZone: intl.timeZone,
         })}
         data-for="ohsome-timestamp"
       />

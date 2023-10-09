@@ -131,8 +131,8 @@ let ConnectedIntl = (props) => {
       locale={props.locale ? props.locale.substr(0, 2) : config.DEFAULT_LOCALE}
       textComponent={React.Fragment}
       messages={getTranslatedMessages(props.locale)}
-      // timeZone={Intl.DateTimeFormat().resolvedOptions().timeZone}
-      timeZone="America/Chicago"
+      timeZone={Intl.DateTimeFormat().resolvedOptions().timeZone}
+      // timeZone="America/Chicago"
     >
       {props.children}
     </IntlProvider>
