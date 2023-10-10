@@ -617,7 +617,7 @@
   "project.stats.changesets": "Changesets",
   "project.stats.edits": "Edits",
   "stats.ohsome.timestamp.generic": "These statistics come from ohsomeNow Stats and were last updated at {formattedDate} ({timeZone}). Missing fields will be made available soon!",
-  "stats.ohsome.timestamp.project": "These stats were retrieved using the default changeset comment of the project and were last updated at {formattedDate}",
+  "stats.ohsome.timestamp.project": "These stats were retrieved using the default changeset comment of the project and were last updated at {formattedDate} ({timeZone})",
   "project.tasks.unsaved_map_changes.title": "You have some unsaved map changes",
   "project.tasks.unsaved_map_changes.split": "Save or undo it to be able to split the task",
   "project.tasks.unsaved_map_changes.unlock": "Save or undo it to be able to select another task",
