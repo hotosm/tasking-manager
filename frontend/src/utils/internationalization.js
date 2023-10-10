@@ -132,7 +132,6 @@ let ConnectedIntl = (props) => {
       textComponent={React.Fragment}
       messages={getTranslatedMessages(props.locale)}
       timeZone={Intl.DateTimeFormat().resolvedOptions().timeZone}
-      // timeZone="America/Chicago"
     >
       {props.children}
     </IntlProvider>

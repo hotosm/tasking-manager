@@ -170,9 +170,4 @@ export default defineMessages({
     id: 'home.testimonials.ifrc.bio',
     defaultMessage: 'Remote Coordinator for the IFRC Information Management Team for Cyclone Idai',
   },
-  statsTooltip: {
-    id: 'home.statsTooltip',
-    defaultMessage:
-      'These statistics come from ohsomeNow Stats and were last updated at {formattedDate} ({timeZone}). Missing fields will be made available soon!',
-  },
 });

@@ -1210,7 +1210,6 @@
   "home.contact.thanksError": "One moment, there was a problem sending your message.",
   "home.contact.thanksBody": "You'll be hearing from us soon!",
   "home.contact.thanksProceed": "Proceed",
-  "home.statsTooltip": "These statistics come from ohsomeNow Stats and were last updated at {formattedDate} ({timeZone}). Missing fields will be made available soon!",
   "pages.about.description": "The purpose of the Tasking Manager is to divide a large mapping project into smaller tasks that can be completed rapidly and collaboratively, with many people contributing to a collective project goal. The tool shows what needs to be mapped, which areas need to be reviewed and validated for quality assurance and which areas are completed.",
   "pages.about.description2": "This approach allows the distribution of tasks to many individual mappers. It also allows monitoring of project progress and helps to improve the consistency of the mapping (e.g. elements to cover, specific tags to use, etc.)",
   "pages.about.OpenStreetMap.description": "All work is done through {osmLink}. OpenStreetMap is the community-driven free and editable map of the world, supported by the not-for-profit OpenStreetMap Foundation.",
