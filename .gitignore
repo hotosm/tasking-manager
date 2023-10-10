@@ -55,3 +55,6 @@ venv_aws/
 # Backend coverage generated files
 htmlcov/
 .coverage
+
+#docker/deployment
+docker-compose.overide.yml
