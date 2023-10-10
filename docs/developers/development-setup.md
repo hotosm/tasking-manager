@@ -3,20 +3,25 @@
 
 ### Architecture
 
-The Tasking Manager is composed of two parts:
+The Tasking Manager is composed of following services:
 
-* **Frontend**: A user interface built using React.
-* **Backend**: A database and API built using Python.
+* **Frontend**: A user interface built using [react](https://react.dev/).
+* **API Server**: API built using Python [flask](https://flask.palletsprojects.com/en/3.0.x/).
+* **Database**: [postgis](https://postgis.net/) used a Database
+* **Reverse Proxy**: [traefik](https://github.com/traefik/traefik) is used as a reverse proxy. 
 
-The two parts can be developed independently of each other.
+These services can be setup seperately or you can use existing [docker-compose.yml](../../docker-compose.yml) to spin all these resources.
+
+As a developer you can setup backend & frontend code independently and work on it's development.
 
 ### Frontend
 
-The client is the front-end user interface of the Tasking Manager. It is based on the React framework and you can find all files in the `frontend` directory.
+The client is the front-end user interface of the Tasking Manager. It is based on the React framework and you can find all files in the [frontend](../../frontend/) directory.
 
-If you don't want to setup a backend server, you can work on frontend development using our staging server API. Execute `export TM_APP_API_URL='https://tasking-manager-staging-api.hotosm.org'` before running the `yarn start` command. Be aware that the staging API can be offline while we are deploying newer versions to the staging server and that you'll not have access to some management views due to permissions. Check the [configuration](#configuration) section to learn more about how to configure Tasking Manager.
+If you don't want to setup a backend server, you can work on frontend development using our staging server API. Execute `export TM_APP_API_URL='https://tasking-manager-staging-api.hotosm.org'` 
+Before running the `yarn start` command. Be aware that the staging API can be offline while we are deploying newer versions to the staging server and that you'll not have access to some management views due to permissions. Check the [configuration](#configuration) section to learn more about how to configure Tasking Manager.
 
-**Dependencies**
+> **_NOTE:_**  If you have issues with login with Openstreet Account on your local setup, make sure `TM_REDIRECT_URI` is configured properly and it matches OAuth2 application's redirect url's that you created [here](https://www.openstreetmap.org/oauth2/applications).
 
 The following dependencies must be available _globally_ on your system:
 * Download and install [NodeJS LTS v12+](https://nodejs.org/en/) and [yarn](https://classic.yarnpkg.com/en/docs/install)
@@ -57,7 +62,7 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ### Backend
 
-The backend is made up of a postgres database and an associated API that calls various end points to create tasks, manage task state, and produce analytics.
+The backend is made up of a postgis database and an associated API that calls various end points to create tasks, manage task state, and produce analytics.
 
 #### Dependencies
 
@@ -67,7 +72,7 @@ The backend is made up of a postgres database and an associated API that calls v
 * [pip](https://pip.pypa.io/en/stable/installing/)
 * [libgeos-dev](https://trac.osgeo.org/geos/)
 
-You can check the [Dockerfile](../scripts/docker/tasking-manager/Dockerfile) to have a reference of how to install it in a Debian/Ubuntu system.
+You can check the [Dockerfile](../../scripts/docker/Dockerfile.backend) to have a reference of how to install it in a Debian/Ubuntu system.
 
 #### Configuration
 
@@ -109,12 +114,17 @@ In order to send email correctly, set these variables as well:
     * Linux/Mac (Option 2: pip (system/venv)):
         * ```pip install --upgrade pdm```
         * ```pdm export --without-hashes > requirements.txt```
-        * ```pip install requirements.txt```
-
+        * ```pip install -r requirements.txt```
+> **_NOTE:_**  If you encounter any system level dependencies missing, please consult [Dockerfile](../../scripts/docker/Dockerfile.backend) for debian/ubuntu.
 #### Tests
 
 The project includes a suite of Unit and Integration tests that you should run after any changes
 
+First source your environment variables
+```
+source tasking-manager.env
+```
+run your tests
 ```
 python3 -m unittest discover tests/backend
 ```
@@ -191,36 +201,48 @@ To get your token on the production or staging Tasking Manager instances, sign i
 
 
 # Docker
+## Setup Tasking Manager with docker
 
-## Creating a local PostGIS database with Docker
+If you have hard time setting up tasking-manager project manually, you can use the avalible docker compose configuration.
 
-If you're not able to connect to an existing tasking-manager DB, we have a [Dockerfile]() that will allow you to run PostGIS locally as follows.
+This setup can be used for development as well, you can choose the service you want to run.
 
 ### Dependencies
 
 Following must be available locally:
 
-* [Docker CE](https://www.docker.com/community-edition#/download)
+* [docker](https://www.docker.com/community-edition#/download)
+* [docker compose](https://docs.docker.com/compose/)
+
+### Understanding `docker-compose.override.yml`
+
+`docker-compose.yml` file is not meant to be modified locally, if you want to have your own config you can make a copy of `docker-compose.override.sample.yml` and perform necessary changes here. 
+This file is ignored through `.gitignore` so your changes won't be pushed upstream.
+```
+cp docker-compose.override.sample.yml docker-compose.override.yml
+```
+### Running docker containers
+
+Once you have your `docker-compose.override.yml` created, make sure you have the environment variables configured as explained [here](#configuration).
+
+> **_NOTE:_**  you should have `POSTGRES_ENDPOINT=postgresql`, where `postgresql` is the name of the docker service.
+
+to start all the services:
+```
+docker-compose up -d
+```
+you should have frontend in http://localhost and backend accessible at http://localhost/api/
+## Creating a local PostGIS database with Docker
+
+If you're not able to connect to an existing tasking-manager DB, we have a [Dockerfile]() that will allow you to run PostGIS locally as follows.
 
 ### Build & Run the PostGIS dockerfile
 
-1. From the root of the project:
-
-`
-docker build -t tasking-manager-db ./scripts/docker/postgis
-`
-
-2. The image should be downloaded and build locally.  Once complete you should see it listed, with
-
-`
-docker images
-`
-
 3. You can now run the image (this will run PostGIS in a docker container, with port 5432 mapped to localhost):
 
-`
-docker run -d -p 5432:5432 tasking-manager-db
-`
+```
+docker run -d --name tasking-manager-db -p 5432:5432 -e POSTGRES_PASSWORD=hottm -e POSTGRES_USER=hottm -e POSTGRES_DB=tasking-manager postgis/postgis:14-3.3
+```
 
 4.  Confirm the image is running successfully:
 

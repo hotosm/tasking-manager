@@ -21,3 +21,5 @@ frontend/.env
 frontend/.eslintcache
 frontend/coverage/
 
+#deployment/docker
+docker-compose.overide.yml

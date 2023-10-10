@@ -40,6 +40,8 @@ services:
     image: postgis/postgis:14-3.3
     container_name: postgresql
     restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     env_file: ${ENV_FILE:-tasking-manager.env}
     networks:
       - tm-web
@@ -60,3 +62,6 @@ services:
 networks:
   tm-web:
     external: false
+
+volumes:
+  postgres-data:
