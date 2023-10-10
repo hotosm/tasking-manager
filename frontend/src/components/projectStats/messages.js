@@ -93,8 +93,4 @@ export default defineMessages({
     id: 'project.stats.edits',
     defaultMessage: 'Edits',
   },
-  editsStats: {
-    id: 'project.stats.edits.info',
-    defaultMessage: 'These stats are retrieved using the default changeset comment of the project',
-  },
 });

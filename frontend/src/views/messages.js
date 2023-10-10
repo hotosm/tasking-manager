@@ -33,7 +33,7 @@ export default defineMessages({
     defaultMessage: 'Project timeline',
   },
   timelineDataError: {
-    id: 'project.stats.timeline.fetching.error',
+    id: 'project.stats.contributions.timeline.fetching.error',
     defaultMessage: 'An error occured while loading contributions data',
   },
   editsStatsError: {
@@ -83,10 +83,6 @@ export default defineMessages({
   newUsers: {
     id: 'management.stats.users.title',
     defaultMessage: 'New users',
-  },
-  totalFeatures: {
-    id: 'management.stats.features',
-    defaultMessage: 'Total features',
   },
   newOrganisation: {
     id: 'teamsAndOrgs.management.organisation.creation',

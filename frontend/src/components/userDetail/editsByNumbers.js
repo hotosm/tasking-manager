@@ -15,13 +15,13 @@ const EditsByNumbers = ({ osmStats }) => {
   let reference = [
     {
       label: intl.formatMessage(typesMessages.buildings),
-      field: 'total_building_count_add',
+      field: 'buildings',
       backgroundColor: CHART_COLOURS.red,
       borderColor: CHART_COLOURS.white,
     },
     {
       label: intl.formatMessage(typesMessages.roads),
-      field: 'total_road_km_add',
+      field: 'roads',
       backgroundColor: CHART_COLOURS.green,
       borderColor: CHART_COLOURS.white,
     },

@@ -45,9 +45,6 @@ export const Stats = () => {
         </div>
       </div>
       <div className="w-100 fl cf mt3 pb3">
-        <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
-          <FormattedMessage {...messages.totalFeatures} />
-        </h4>
         <FeatureStats />
       </div>
     </div>

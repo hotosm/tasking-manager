@@ -1,6 +1,5 @@
 import React from 'react';
 import humanizeDuration from 'humanize-duration';
-import ReactTooltip from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -10,11 +9,11 @@ import {
   HomeIcon,
   WavesIcon,
   MarkerIcon,
-  QuestionCircleIcon,
   MappedIcon,
   ValidatedIcon,
 } from '../svgIcons';
 import { StatsCard } from '../statsCard';
+import StatsTimestamp from '../statsTimestamp';
 
 export const TaskStats = ({ userStats, username }) => {
   const {
@@ -137,12 +136,12 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
         <StatsCard
           icon={<HomeIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.buildingsMapped} />}
-          value={osmStats.total_building_count_add || 0}
+          value={osmStats.buildings || 0}
         />
         <StatsCard
           icon={<RoadIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.roadMapped} />}
-          value={osmStats.total_road_km_add || 0}
+          value={osmStats.roads || 0}
         />
         <StatsCard
           icon={<MarkerIcon className={iconClass} style={iconStyle} />}
@@ -156,16 +155,7 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
         />
       </div>
       <div className="cf w-100 relative tr pt3 pr3">
-        <FormattedMessage {...messages.delayPopup}>
-          {(msg) => (
-            <QuestionCircleIcon
-              className="pointer dib v-mid pl2 pb1 blue-light"
-              height="1.25rem"
-              data-tip={msg}
-            />
-          )}
-        </FormattedMessage>
-        <ReactTooltip />
+        <StatsTimestamp messageType="generic" />
       </div>
     </div>
   );

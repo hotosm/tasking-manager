@@ -9,6 +9,7 @@ import { WhoIsMapping } from '../components/homepage/whoIsMapping';
 import { Testimonials } from '../components/homepage/testimonials';
 import { Alert } from '../components/alert';
 import homeMessages from '../components/homepage/messages';
+import StatsTimestamp from '../components/statsTimestamp/';
 
 export function Home() {
   return (
@@ -24,6 +25,9 @@ export function Home() {
         }
       >
         <StatsSection />
+        <div class="cf w-100 relative tr pt3 pr3">
+          <StatsTimestamp messageType="generic" />
+        </div>
       </ErrorBoundary>
       <MappingFlow />
       <WhoIsMapping />
