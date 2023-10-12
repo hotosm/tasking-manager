@@ -146,12 +146,12 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
         <StatsCard
           icon={<MarkerIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.poiMapped} />}
-          value={osmStats.total_poi_count_add || 0}
+          value={osmStats.total_poi_count_add || '-'}
         />
         <StatsCard
           icon={<WavesIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.waterwaysMapped} />}
-          value={osmStats.total_waterway_km_add || 0}
+          value={osmStats.total_waterway_km_add || '-'}
         />
       </div>
       <div className="cf w-100 relative tr pt3 pr3">
