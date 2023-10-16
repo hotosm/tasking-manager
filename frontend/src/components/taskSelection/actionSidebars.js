@@ -763,7 +763,6 @@ export function ReopenEditor({ project, action, editor, callEditor }: Object) {
 
 export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
   const iDContext = useSelector((state) => state.editor.context);
-  const rapidContext = useSelector((state) => state.editor.rapidContext);
 
   return (
     <div>
@@ -776,7 +775,6 @@ export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
               onClick={() => {
                 setShowSidebar(false);
                 activeEditor === 'ID' && iDContext.ui().restart();
-                activeEditor === 'RAPID' && rapidContext.ui().restart();
               }}
             />
           </div>
