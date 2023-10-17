@@ -33,6 +33,7 @@ We have included below a high level roadmap/plan [subject to change] that can be
 ## Instances
 * [HOT Tasking Manager (production)](https://tasks.hotosm.org)
 * [HOT Tasking Manager (staging)](https://tasks-stage.hotosm.org)
+* [HOT Tasking Manager (develop)](https://tm.naxa.com.np/)
 * [TeachOSM](https://tasks.teachosm.org/)
 * [OpenStreetMap Indonesia](https://tasks-indonesia.hotosm.org/)
 * [OpenStreetMap US](https://tasks.openstreetmap.us/)

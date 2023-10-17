@@ -2,7 +2,7 @@ FROM node:16
 
 WORKDIR /usr/src/app/frontend
 
-COPY frontend /usr/src/app/
+COPY frontend /usr/src/app/frontend/
 
 ## Install dependencies
 RUN npm install
@@ -10,4 +10,4 @@ RUN npm install
 # SERVE as a development 
 # Is a dev dockerfile, runs npm install on every startup through CMD
 
-CMD ["npm", "install", "&&", "npm", "start"]
+CMD ["sh", "-c", "npm install && npm start"]

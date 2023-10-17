@@ -302,8 +302,13 @@ export TM_DB=postgresql://hottm:hottm@localhost/tasking-manager
 ## Openstreet OAuth2 Application
 Tasking manager uses [Openstreetmap](https://www.openstreetmap.org) account to authenticate users, for it to work on your local setup. You can create/login into [Openstreet map](https://www.openstreetmap.org/login)  and Create an OAuth2 Application [here](https://www.openstreetmap.org/oauth2/applications).
 
+If you are running frontend independently & accessing it from http://127.0.0.1:3000
 ```
 TM_REDIRECT_URI=http://127.0.0.1:3000/authorized
+```
+Or if you are using docker compose and accessing your frontend from http://127.0.0.1
+```
+TM_REDIRECT_URI=http://127.0.0.1/authorized
 ```
 You will be provided with client_id and client_secret. You should have this value as `TM_CLIENT_ID` and `TM_CLIENT_SECRET` respectively in `tasking-manager.env` file.
 ```

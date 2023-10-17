@@ -269,7 +269,7 @@ jobs:
       - run:
           name: Deploy to develop
           command: |
-            docker ps
+            docker compose build --no-cache && docker compose up -d
           environment:
             DOCKER_HOST: ssh://ubuntu@ec2-43-204-84-238.ap-south-1.compute.amazonaws.com
             
@@ -476,14 +476,14 @@ workflows:
           pattern: "deployment/naxa"
           value: << pipeline.git.branch >>
     jobs:
-      # - frontend-code-test
-      # - backend-code-check-PEP8
-      # - backend-code-check-Black
-      # - backend-functional-tests
+      - frontend-code-test
+      - backend-code-check-PEP8
+      - backend-code-check-Black
+      - backend-functional-tests
       - develop_deploy:
           name: Deploy to develop
-          # requires:
-          #   - frontend-code-test
-          #   - backend-code-check-PEP8
-          #   - backend-code-check-Black
-          #   - backend-functional-tests
+          requires:
+            - frontend-code-test
+            - backend-code-check-PEP8
+            - backend-code-check-Black
+            - backend-functional-tests
