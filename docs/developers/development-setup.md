@@ -179,20 +179,33 @@ Following must be available locally:
 
 `docker-compose.yml` file is not meant to be modified locally, if you want to have your own config you can make a copy of `docker-compose.override.sample.yml` and perform necessary changes here. 
 This file is ignored through `.gitignore` so your changes won't be pushed upstream.
+
 ```
 cp docker-compose.override.sample.yml docker-compose.override.yml
+# Also the environment file
+cp example.env tasking-manager.env
 ```
 ### Running docker containers
 
 Once you have your `docker-compose.override.yml` created, make sure you have the environment variables configured as explained [here](#configuration).
 
 > **_NOTE:_**  you should have `POSTGRES_ENDPOINT=postgresql`, where `postgresql` is the name of the docker service.
+Also, as there is `traefik` as a reverse proxy in this setup, your `ENDPOINTS` will be `127.0.0.1` or `localhost`.
+
+Set these in `tasking-manager.env`
+```
+TM_APP_API_URL=http://127.0.0.1
+TM_APP_BASE_URL=http://127.0.0.1
+```
+
+Check [OAuth2](#openstreet-oauth2-application)
 
 to start all the services:
 ```
 docker-compose up -d
 ```
-you should have frontend in http://localhost and backend accessible at http://localhost/api/
+You should have frontend service in http://127.0.0.1 and backend api accessible at http://127.0.0.1/api/.
+
 ## Creating a local PostGIS database with Docker
 
 If you're not able to connect to an existing tasking-manager DB, we have a [Dockerfile]() that will allow you to run PostGIS locally as follows.
@@ -259,7 +272,6 @@ To get your token on the production or staging Tasking Manager instances, sign i
 - go to the user profile page, enable _Expert mode_ in the settings, and copy the token from the _API Key_ section.
 - inspect a network request and search for the `Authorization` field in the request headers section.
 
-
 # Non-Docker
 
 ## Creating the PostGIS database
@@ -290,13 +302,18 @@ export TM_DB=postgresql://hottm:hottm@localhost/tasking-manager
 ## Openstreet OAuth2 Application
 Tasking manager uses [Openstreetmap](https://www.openstreetmap.org) account to authenticate users, for it to work on your local setup. You can create/login into [Openstreet map](https://www.openstreetmap.org/login)  and Create an OAuth2 Application [here](https://www.openstreetmap.org/oauth2/applications).
 
-Make sure `Redirect URIs` contains `http://<your-frontend-url>/authorized`
-
-This should match the environment varible `TM_REDIRECT_URI` present in `tasking-manager.env` file.
 ```
 TM_REDIRECT_URI=http://127.0.0.1:3000/authorized
 ```
 You will be provided with client_id and client_secret. You should have this value as `TM_CLIENT_ID` and `TM_CLIENT_SECRET` respectively in `tasking-manager.env` file.
+```
+TM_CLIENT_ID=paste-your-client-id-from-openstreetmap-here
+TM_CLIENT_SECRET=paste-your-client-secret-from-openstreetmap-here
+```
+Make sure `Redirect URIs` contains `http://<your-frontend-url>/authorized`
+
+This should match the environment varible `TM_REDIRECT_URI` present in `tasking-manager.env` file.
+
 
 ## Sysadmins guide
 

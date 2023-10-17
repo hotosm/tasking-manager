@@ -22,6 +22,11 @@ services:
   frontend:
     build:
       context: "."
-      dockerfile: "./scripts/docker/Dockerfile.frontend"
+      dockerfile: "./scripts/docker/Dockerfile.frontend_development"
     volumes:
       - ".:/usr/src/app"
+    ports:
+      - 3000:3000 
+    labels:
+      - traefik.http.routers.frontend.rule=(Host(`localhost`) || Host(`${TM_APP_BASE_DOMAIN:-127.0.0.1}`))
+      - traefik.http.services.frontend.loadbalancer.server.port=3000

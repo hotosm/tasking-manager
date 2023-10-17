@@ -1,12 +1,12 @@
-# To use this file, run `docker-compose up`.
+# This docker compose setup is not production ready and to be used to spin resources quicky
+# Modify docker-compose.override.yml with appropriate production level changes.
+# https://github.com/hotosm/tasking-manager/blob/feat-docker-setup/docs/developers/development-setup.md#docker
 version: "3.4"
 
 x-backend-config: &backend
   image: hotosm-tasking-manager:backend
   env_file: ${ENV_FILE:-tasking-manager.env}
   depends_on:
-    - postgresql
-  links:
     - postgresql
   networks:
     - tm-web
@@ -18,7 +18,7 @@ services:
     container_name: backend
     restart: always
     labels:
-      - traefik.http.routers.backend.rule=(Host(`${TM_APP_API_DOMAIN:-127.0.0.1}`) && PathPrefix(`/api/`)
+      - traefik.http.routers.backend.rule=(Host(`${TM_APP_API_DOMAIN:-127.0.0.1}`) || Host(`localhost`)) && PathPrefix(`/api/`)
       - traefik.http.services.backend.loadbalancer.server.port=5000
 
   migration:
@@ -30,17 +30,22 @@ services:
   frontend:
     image: hotosm-tasking-manager:frontend
     restart: always
+    env_file: ${ENV_FILE:-tasking-manager.env}
+    depends_on:
+      - postgresql
+    labels:
+      - traefik.http.routers.frontend.rule=(Host(`localhost`) || Host(`${TM_APP_BASE_DOMAIN:-127.0.0.1}`))
+      - traefik.http.services.frontend.loadbalancer.server.port=3000
     networks:
       - tm-web
-    labels:
-      - traefik.http.routers.frontend.rule=Host(`${TM_APP_BASE_DOMAIN:-127.0.0.1}`)
-      - traefik.http.services.frontend.loadbalancer.server.port=3000
 
   postgresql:
     image: postgis/postgis:14-3.3
     container_name: postgresql
     restart: always
     env_file: ${ENV_FILE:-tasking-manager.env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data    # Makes database data persists
     networks:
       - tm-web
 
@@ -54,9 +59,15 @@ services:
     command:
       - --entrypoints.web.address=:80
       - --providers.docker=true
+    depends_on:
+      - backend
+      - frontend  
     networks:
       - tm-web
 
 networks:
   tm-web:
     external: false
+    
+volumes:
+  postgres-data:
