@@ -250,6 +250,29 @@ jobs:
             export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
             aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
 
+  develop_deploy:
+    working_directory: /home/circleci/tasking-manager
+    resource_class: large
+    docker:
+      - image: cimg/base:2023.09
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.14
+      - add_ssh_keys:
+          fingerprints:
+            - "af:00:1e:ac:45:bc:d6:79:98:eb:46:df:cb:a5:cb:7f"
+      - run:
+          name: Add to Known Hosts
+          command: |
+            ssh-keyscan -H ec2-43-204-84-238.ap-south-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+      - run:
+          name: Deploy to develop
+          command: |
+            docker ps
+          environment:
+            DOCKER_HOST: ssh://ubuntu@ec2-43-204-84-238.ap-south-1.compute.amazonaws.com
+            
 workflows:
   version: 2
 
@@ -447,4 +470,20 @@ workflows:
       - backend-code-check-Black
       - backend-functional-tests
 
-
+  build-develop:
+    when:
+        matches:
+          pattern: "deployment/naxa"
+          value: << pipeline.git.branch >>
+    jobs:
+      # - frontend-code-test
+      # - backend-code-check-PEP8
+      # - backend-code-check-Black
+      # - backend-functional-tests
+      - develop_deploy:
+          name: Deploy to develop
+          # requires:
+          #   - frontend-code-test
+          #   - backend-code-check-PEP8
+          #   - backend-code-check-Black
+          #   - backend-functional-tests

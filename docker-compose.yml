@@ -18,7 +18,7 @@ services:
     container_name: backend
     restart: always
     labels:
-      - traefik.http.routers.backend.rule=(Host(`127.0.0.1`) || Host(`localhost`)) && PathPrefix(`/api/`)
+      - traefik.http.routers.backend.rule=(Host(`${TM_APP_API_DOMAIN:-127.0.0.1}`) && PathPrefix(`/api/`)
       - traefik.http.services.backend.loadbalancer.server.port=5000
 
   migration:
@@ -33,15 +33,13 @@ services:
     networks:
       - tm-web
     labels:
-      - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
+      - traefik.http.routers.frontend.rule=Host(`${TM_APP_BASE_DOMAIN:-127.0.0.1}`)
       - traefik.http.services.frontend.loadbalancer.server.port=3000
 
   postgresql:
     image: postgis/postgis:14-3.3
     container_name: postgresql
     restart: always
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
     env_file: ${ENV_FILE:-tasking-manager.env}
     networks:
       - tm-web
@@ -50,7 +48,7 @@ services:
     image: traefik:v2.10
     restart: always
     ports:
-      - "80:80"
+      - "${TRAEFIK_HOST_PORT:-80}:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
@@ -62,6 +60,3 @@ services:
 networks:
   tm-web:
     external: false
-
-volumes:
-  postgres-data:
