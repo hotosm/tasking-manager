@@ -205,7 +205,7 @@ class EnvironmentConfig:
         """
         import json
 
-        _params = json.loads(os.getenv("OAUTH2_APP_CREDENTIALS"), None)
+        _params = json.loads(os.getenv("OAUTH2_APP_CREDENTIALS", None))
         OAUTH_CLIENT_ID = _params.get("CLIENT_ID", None)
         OAUTH_CLIENT_SECRET = _params.get("CLIENT_SECRET", None)
         OAUTH_REDIRECT_URI = _params.get("REDIRECT_URI", None)
