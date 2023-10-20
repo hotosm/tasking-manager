@@ -15,7 +15,7 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 # Install dependencies
 RUN apt-get update \
   && apt-get upgrade -y \
-  && apt-get install -y nodejs libgeos-dev \
+  && apt-get install -y --no-install-recommends nodejs libgeos-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Upgrade pip
@@ -35,7 +35,7 @@ RUN pip install --no-cache-dir pdm \
     && pdm install --prod --no-lock --no-editable
 
 # Setup and build frontend
-RUN cd frontend && npm install && npm run build
+RUN cd frontend && npm install --ignore-scripts && npm run build
 
 # INITIALIZATION
 

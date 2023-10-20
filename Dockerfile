@@ -91,7 +91,7 @@ FROM runtime as prod
 USER root
 # Get the necessary bits for the health check
 RUN apt-get update && \
-	apt-get install -y curl && \
+	apt-get install --no-install-recommends -y curl && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 # Pre-compile packages to .pyc (init speed gains)
