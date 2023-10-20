@@ -4,8 +4,6 @@ FROM python:${PYTHON_IMG_TAG}-bookworm
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-# INSTALLATION
-
 # Add repository for node
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 
@@ -22,6 +20,10 @@ RUN pip install --upgrade pip
 ARG branch=develop
 RUN git clone --depth=1 git://github.com/hotosm/tasking-manager.git \
 	--branch $branch /usr/src/app
+
+## Create & use new user to run pdm
+RUN useradd --uid 9000 --create-home --home /home/appuser --shell /bin/false appuser
+USER appuser:appuser
 
 ## SETUP
 
