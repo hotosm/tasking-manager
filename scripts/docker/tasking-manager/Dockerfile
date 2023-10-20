@@ -4,9 +4,6 @@ FROM python:${PYTHON_IMG_TAG}-bookworm
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-ENV PATH="/usr/src/app/__pypackages__/${PYTHON_IMG_TAG}/bin:$PATH" \
-    PYTHONPATH="/usr/src/app/__pypackages__/${PYTHON_IMG_TAG}/lib"
-
 # INSTALLATION
 
 # Add repository for node
