@@ -37,8 +37,10 @@ export const useProjectsQuery = (fullProjectsQuery, action) => {
 };
 
 export const useProjectQuery = (projectId) => {
+  const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences['locale']);
   const fetchProject = ({ signal }) => {
-    return api().get(`projects/${projectId}/`, {
+    return api(token, locale).get(`projects/${projectId}/`, {
       signal,
     });
   };
