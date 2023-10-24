@@ -562,7 +562,9 @@ const Resources = {
       Name: cf.stackName,
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
       Subnets: cf.ref('ELBSubnets'),
-      Type: 'application'
+      Type: 'application',
+      IpAddressType: 'dualstack',
+      Tags: [ { "Key": "stack_name", "Value": cf.stackName } ]
     }
   },
   TaskingManagerLoadBalancerRoute53: {
