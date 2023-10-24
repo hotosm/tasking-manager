@@ -653,6 +653,7 @@ const Resources = {
         DBInstanceClass: cf.ref('DatabaseInstanceType'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
+	NetworkType: 'DUAL'
     }
   },
   TaskingManagerReactBucket: {
