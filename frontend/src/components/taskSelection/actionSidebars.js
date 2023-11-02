@@ -586,19 +586,12 @@ const TaskValidationSelector = ({
   // the contributors is filled only on the case of single task validation,
   // so we need to fetch the task history in the case of multiple task validation
   useEffect(() => {
-    if (showCommentInput && isValidatingMultipleTasks && !contributors.length) {
+    if (showCommentInput && isValidatingMultipleTasks) {
       fetchLocalJSONAPI(`projects/${projectId}/tasks/${id}/`).then((response) =>
         setContributorsList(getTaskContributors(response.taskHistory, userDetails.username)),
       );
     }
-  }, [
-    isValidatingMultipleTasks,
-    showCommentInput,
-    contributors,
-    id,
-    projectId,
-    userDetails.username,
-  ]);
+  }, [isValidatingMultipleTasks, showCommentInput, id, projectId, userDetails.username]);
 
   return (
     <div className="cf w-100 db pt1 pv2 blue-dark">
@@ -650,7 +643,7 @@ const TaskValidationSelector = ({
             <CommentInputField
               comment={comment}
               setComment={setComment}
-              contributors={contributors.length ? contributors : contributorsList}
+              contributors={isValidatingMultipleTasks ? contributorsList : contributors}
               enableHashtagPaste
               enableContributorsHashtag
               isShowTabNavs
