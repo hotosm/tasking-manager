@@ -185,9 +185,10 @@ export function CompletionTabForMapping({
       )}
       {showReadCommentsAlert && (
         <div
-          className="tc pa2 mb1 bg-grey-light blue-dark pointer"
           role="button"
+          className="tc pa2 mb1 bg-grey-light blue-dark pointer"
           onClick={() => historyTabSwitch()}
+          onKeyDown={() => {}}
         >
           <InfoIcon className="v-mid h1 w1" />
           <span className="ml2 fw1 pa1">
@@ -706,6 +707,7 @@ function CompletionInstructions({ setVisibility }: Object) {
       <span
         className="br-100 bg-grey-light white h1 w1 fr pointer tc v-mid di"
         onClick={() => setVisibility(false)}
+        onKeyDown={() => {}}
       >
         <CloseIcon className="pv1" aria-label="hide instructions" />
       </span>
@@ -829,6 +831,7 @@ function TaskSpecificInstructions({ instructions, open = true }: Object) {
         className="ttu blue-grey mt1 mb0 pointer"
         role="button"
         onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={() => {}}
       >
         {isOpen ? (
           <ChevronDownIcon style={{ height: '14px' }} className="pr1 pb1 v-mid" />
