@@ -46,7 +46,9 @@ export const PostProjectComment = ({ projectId, refetchComments, contributors })
           isShowUserPicture
           isShowFooter
           isShowTabNavs
-          contributors={contributors?.map((user) => user.username)}
+          contributors={
+            Array.isArray(contributors) ? contributors.map((user) => user.username) : undefined
+          }
         />
       </div>
 
