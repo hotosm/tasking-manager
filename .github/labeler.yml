@@ -1,12 +1,12 @@
-"Component: Frontend":
+"codebase: frontend":
   - frontend/**/*
-"Component: Backend":
+"codebase: backend":
   - backend/**/*
   - tests/**/*
   - migrations/**/*
   - ./manage.py
   - ./pyproject.toml
-"Component: Infrastructure":
+"infrastructure":
   - .circleci/*
   - .github/**/*
   - scripts/aws/**/*
@@ -20,5 +20,5 @@
   - frontend/yarn.lock
 "python":
   - ./pyproject.toml
-"Type: Translations":
+"type: translations":
   - frontend/src/locales/*
