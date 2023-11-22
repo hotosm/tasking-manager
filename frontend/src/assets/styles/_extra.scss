@@ -616,3 +616,8 @@ a[href="https://www.mapbox.com/map-feedback/"]
 .link:focus {
   outline: revert;
 }
+
+// Override tachyons font-family for code tag
+.code {
+  font-family: inherit;
+}
