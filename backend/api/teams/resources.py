@@ -181,8 +181,7 @@ class TeamsRestAPI(Resource):
                 "SubCode": "UserNotTeamManager",
             }, 401
 
-        TeamService.delete_team(team_id)
-        return {"Success": "Team deleted"}, 200
+        return TeamService.delete_team(team_id)
 
 
 class TeamsAllAPI(Resource):

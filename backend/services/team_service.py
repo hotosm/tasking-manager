@@ -566,8 +566,12 @@ class TeamService:
 
         if team.can_be_deleted():
             team.delete()
+            return {"Success": "Team deleted"}, 200
         else:
-            raise TeamServiceError("Team has projects, cannot be deleted")
+            return {
+                "Error": "Team has projects, cannot be deleted",
+                "SubCode": "This team has projects associated. Before deleting a team, unlink any associated projects."
+            }, 400
 
     @staticmethod
     def check_team_membership(project_id: int, allowed_roles: list, user_id: int):
