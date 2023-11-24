@@ -570,7 +570,7 @@ class TeamService:
         else:
             return {
                 "Error": "Team has projects, cannot be deleted",
-                "SubCode": "This team has projects associated. Before deleting a team, unlink any associated projects."
+                "SubCode": "This team has projects associated. Before deleting team, unlink any associated projects.",
             }, 400
 
     @staticmethod
