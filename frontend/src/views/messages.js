@@ -658,15 +658,6 @@ export default defineMessages({
     id: 'pages.about.sustainabilityModel.faq',
     defaultMessage: 'Tasking Manager Sustainability Model FAQs',
   },
-  floss: {
-    id: 'pages.about.floss.title',
-    defaultMessage: 'Free and Open Source Software',
-  },
-  flossDescription: {
-    id: 'pages.about.floss.description',
-    defaultMessage:
-      'The Tasking Manager is Free and Open Source software developed by the {hotLink}. The application’s code can be accessed through {code}, where you can report issues and make contributions.',
-  },
   editProject: {
     id: 'pages.edit_project.title',
     defaultMessage: 'Edit project',

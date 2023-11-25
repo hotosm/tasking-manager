@@ -1,13 +1,13 @@
-import messages from './messages';
 import { OverlayListDisplay } from '../common/overlayListDisplay.js';
 import {
   TheWorldBankIcon,
   AmericanRedCrossIcon,
   UsAidIcon,
-  BritishRedCrossIcon,
   MsfIcon,
+  BritishRedCrossIcon,
   BingIcon,
 } from '../svgIcons/organisations';
+import messages from './messages';
 
 const organizations = [
   {
@@ -30,14 +30,14 @@ const organizations = [
   { url: 'https://www.bing.com/', name: 'Bing', Icon: BingIcon },
 ];
 
-export function WhoIsMapping() {
+export function SponsorshipAndFunding() {
   return (
     <OverlayListDisplay
-      variant="dark"
-      title={messages.whoIsMappingTitle}
-      description={messages.whoIsMappingHeadline}
+      variant="light"
+      title={messages.sponsorshipAndFunding}
+      description={messages.sponsorshipAndFundingDesc}
       organizations={organizations}
-      contactTitle={messages.organizationContactTitle}
+      contactTitle={messages.applySponsorship}
     />
   );
 }
