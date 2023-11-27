@@ -15,6 +15,7 @@ describe('ProjectCardPaginator Component', () => {
           hasPrev: false,
           page: 1,
           pages: 3,
+          total: 10,
         }}
       />,
     );
@@ -32,6 +33,7 @@ describe('ProjectCardPaginator Component', () => {
           hasPrev: false,
           page: 1,
           pages: 3,
+          total: 10,
         }}
       />,
     );
