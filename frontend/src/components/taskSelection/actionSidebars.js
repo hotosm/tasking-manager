@@ -185,9 +185,10 @@ export function CompletionTabForMapping({
       )}
       {showReadCommentsAlert && (
         <div
-          className="tc pa2 mb1 bg-grey-light blue-dark pointer"
           role="button"
+          className="tc pa2 mb1 bg-grey-light blue-dark pointer"
           onClick={() => historyTabSwitch()}
+          onKeyDown={() => {}}
         >
           <InfoIcon className="v-mid h1 w1" />
           <span className="ml2 fw1 pa1">
@@ -586,19 +587,12 @@ const TaskValidationSelector = ({
   // the contributors is filled only on the case of single task validation,
   // so we need to fetch the task history in the case of multiple task validation
   useEffect(() => {
-    if (showCommentInput && isValidatingMultipleTasks && !contributors.length) {
+    if (showCommentInput && isValidatingMultipleTasks) {
       fetchLocalJSONAPI(`projects/${projectId}/tasks/${id}/`).then((response) =>
         setContributorsList(getTaskContributors(response.taskHistory, userDetails.username)),
       );
     }
-  }, [
-    isValidatingMultipleTasks,
-    showCommentInput,
-    contributors,
-    id,
-    projectId,
-    userDetails.username,
-  ]);
+  }, [isValidatingMultipleTasks, showCommentInput, id, projectId, userDetails.username]);
 
   return (
     <div className="cf w-100 db pt1 pv2 blue-dark">
@@ -650,7 +644,7 @@ const TaskValidationSelector = ({
             <CommentInputField
               comment={comment}
               setComment={setComment}
-              contributors={contributors.length ? contributors : contributorsList}
+              contributors={isValidatingMultipleTasks ? contributorsList : contributors}
               enableHashtagPaste
               enableContributorsHashtag
               isShowTabNavs
@@ -713,6 +707,7 @@ function CompletionInstructions({ setVisibility }: Object) {
       <span
         className="br-100 bg-grey-light white h1 w1 fr pointer tc v-mid di"
         onClick={() => setVisibility(false)}
+        onKeyDown={() => {}}
       >
         <CloseIcon className="pv1" aria-label="hide instructions" />
       </span>
@@ -836,6 +831,7 @@ function TaskSpecificInstructions({ instructions, open = true }: Object) {
         className="ttu blue-grey mt1 mb0 pointer"
         role="button"
         onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={() => {}}
       >
         {isOpen ? (
           <ChevronDownIcon style={{ height: '14px' }} className="pr1 pb1 v-mid" />
