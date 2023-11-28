@@ -19,12 +19,16 @@ import {
 import { setupFaultyHandlers } from '../../../network/tests/server';
 import messages from '../messages';
 import { store } from '../../../store';
+import { TaskMapAction } from '../action';
+import { getProjectSummary } from '../../../network/tests/mockData/projects';
+import tasksGeojson from '../../../utils/tests/snippets/tasksGeometry';
+import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/userStats';
 
 jest.mock('react-hot-toast', () => ({
   error: jest.fn(),
 }));
 
-describe('Appeareance of unsaved map changes to be dealt with while mapping', () => {
+describe('Appearance of unsaved map changes to be dealt with while mapping', () => {
   test('when splitting a task', async () => {
     const { user } = renderWithRouter(
       <QueryClientProviders>
@@ -183,7 +187,7 @@ describe('Miscellaneous modals and prompts', () => {
   });
 });
 
-describe('Appeareance of unsaved map changes to be dealt with while validating', () => {
+describe('Appearance of unsaved map changes to be dealt with while validating', () => {
   test('when stopping validation session', async () => {
     const { user } = renderWithRouter(
       <QueryClientProviders>
@@ -340,31 +344,34 @@ describe('Toggling display of the sidebar', () => {
   });
 
   it('should call the sidebar toggle function for RAPID editor', async () => {
-    const restartMock = jest.fn();
+    // Testing the resize call cannot be done currently, due to the following reasons:
+    // 1. Jest cannot mock/spy on the function call
+    // 2. The test environment doesn't have width/height information
+    // 3. The resize call in Rapid cannot be mocked since it is difficult to (a) get the context and (b) mock the call prior to full initialization.
+    // const resizeMock = jest.fn();
+    // expect(resizeMock).toHaveBeenCalledTimes(1); // This should be at the end of the test
     const user = userEvent.setup();
-    const context = {
-      ui: jest.fn().mockReturnValue({
-        restart: restartMock,
-      }),
-    };
-    act(() => {
-      store.dispatch({ type: 'SET_RAPIDEDITOR', context: context });
-    });
-    const setShowSidebarMock = jest.fn();
-    render(
+    const { getByRole, queryByRole } = renderWithRouter(
       <QueryClientProviders>
         <ReduxIntlProviders>
-          <SidebarToggle setShowSidebar={setShowSidebarMock} activeEditor="RAPID" />
+          <TaskMapAction
+            project={getProjectSummary(123)}
+            projectIsReady
+            tasks={tasksGeojson}
+            activeTasks={userMultipleLockedTasksDetails.tasks}
+            action="MAPPING"
+            editor="RAPID"
+          />
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
     await user.click(
-      screen.getByRole('button', {
-        name: /hide sidebar/i,
+      getByRole('button', {
+        name: 'Hide sidebar',
       }),
     );
-    expect(setShowSidebarMock).toHaveBeenCalledTimes(1);
-    expect(restartMock).toHaveBeenCalledTimes(1);
+    expect(getByRole('generic', { name: 'Show sidebar' })).toBeVisible();
+    expect(queryByRole('button', { name: 'Hide sidebar' })).toBeNull();
   });
 });
 

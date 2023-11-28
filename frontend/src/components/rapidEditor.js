@@ -288,7 +288,7 @@ RapidEditor.propTypes = {
   gpxUrl: PropTypes.string.isRequired,
   powerUser: PropTypes.bool.isRequired,
   showSidebar: PropTypes.bool.isRequired,
-}
+};
 
 export { RapidEditor, generateStartingHash, equalsUrlParameters, updateUrl };
 export default RapidEditor;
