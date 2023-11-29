@@ -562,7 +562,9 @@ const Resources = {
       Name: cf.stackName,
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
       Subnets: cf.ref('ELBSubnets'),
-      Type: 'application'
+      Type: 'application',
+      IpAddressType: 'dualstack',
+      Tags: [ { "Key": "stack_name", "Value": cf.stackName } ]
     }
   },
   TaskingManagerLoadBalancerRoute53: {
@@ -651,6 +653,7 @@ const Resources = {
         DBInstanceClass: cf.ref('DatabaseInstanceType'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
+	PubliclyAccessible: false
     }
   },
   TaskingManagerReactBucket: {

@@ -1,8 +1,10 @@
 version: 2.1
 
 orbs:
-  aws-cli: circleci/aws-cli@3.1
+  aws-cli: circleci/aws-cli@4.1.1
+  aws-ecs: circleci/aws-ecs@4.0.0
   opsgenie: opsgenie/opsgenie@1.0.8
+
 
 jobs:
   frontend-code-test:
@@ -68,7 +70,7 @@ jobs:
           TM_ORG_CODE: "CICode"
           TM_ORG_NAME: "CircleCI Test Organisation"
 
-      - image: cimg/postgres:14.2-postgis
+      - image: cimg/postgres:14.9-postgis
         environment:
           POSTGRES_USER: taskingmanager
           POSTGRES_DB: test_tm
@@ -79,12 +81,6 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get -y install libgeos-dev # Required for shapely
       - run: sudo apt-get -y install proj-bin libproj-dev
-      - run:
-          name: Configure Postgresql Test database
-          command: |
-            psql \
-            -d $SQLALCHEMY_DATABASE_URI \
-            -c "CREATE EXTENSION postgis;"
       - run: pip install --upgrade pip pdm
       - run: pdm config --global python.use_venv False
       - run: pdm export --dev --without-hashes > requirements.txt
@@ -113,13 +109,13 @@ jobs:
         description: "Cloudformation stack name"
         type: string
     docker:
-      - image: cimg/postgres:15.1-postgis
+      - image: cimg/postgres:15.4-postgis
     steps:
       - aws-cli/setup:
-          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
-          profile-name: "OIDC-Profile"
-          role-session-name: "database-snapshot"
-          session-duration: "2700"
+          role_arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile_name: "OIDC-Profile"
+          role_session_name: "database-snapshot"
+          session_duration: "2700"
       - run:
           name: Find the instance ID of the database in the stack to backup
           command: |
@@ -193,10 +189,10 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup:
-          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
-          profile-name: "OIDC-Profile"
-          role-session-name: "backend-deploy"
-          session-duration: "2700"
+          role_arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile_name: "OIDC-Profile"
+          role_session_name: "backend-deploy"
+          session_duration: "2700"
       - run: sudo apt-get update
       - run: sudo apt-get -y install libgeos-dev jq
       - run: sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
@@ -222,6 +218,21 @@ jobs:
             export JSON_CONFIG="$(< $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json)"
             cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
 
+  backend_deploy_containers:
+    working_directory: /home/circleci/tasking-manager
+    docker:
+      - image: cimg/python:3.10.7
+    steps:
+      - checkout
+      - aws-cli/setup:
+          role_arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile_name: "OIDC-Profile"
+          role_session_name: "backend-deploy-containers"
+          session_duration: "2700"
+      - run: sudo apt-get update
+      - run: sudo apt-get -y install curl
+      - run: echo "Run AWS Fargate"
+
   frontend_deploy:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
@@ -234,10 +245,10 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup:
-          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
-          profile-name: "OIDC-Profile"
-          role-session-name: "frontend-deploy"
-          session-duration: "1800"
+          role_arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile_name: "OIDC-Profile"
+          role_session_name: "frontend-deploy"
+          session_duration: "1800"
       - run:
           name: Deploy Frontend to S3
           command: |

@@ -18,9 +18,7 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 * Read the monthly update blogs on [OSM Discourse](https://community.openstreetmap.org/c/general/38/all).
 
 ## Product Roadmap
-We have included below a high level roadmap/plan [subject to change] that can be used as an overview.
-![image](https://user-images.githubusercontent.com/98902727/218763601-f08e3879-51f3-40a7-ae6e-bdf96f8a5979.png)
-
+We have included below a [high level roadmap/plan](https://github.com/orgs/hotosm/projects/28/) [subject to change] that can be used as an overview.
 
 
 ## Developers
