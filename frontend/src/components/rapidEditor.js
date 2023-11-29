@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import PropTypes from 'prop-types';
+
 import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 import { types } from '../store/actions/editor';
 
@@ -277,6 +279,16 @@ function RapidEditor({
 
   return <div className="w-100 vh-minus-69-ns" id="rapid-container-root"></div>;
 }
+
+RapidEditor.propTypes = {
+  setDisable: PropTypes.func,
+  comment: PropTypes.string,
+  presets: PropTypes.array,
+  imagery: PropTypes.string,
+  gpxUrl: PropTypes.string.isRequired,
+  powerUser: PropTypes.bool.isRequired,
+  showSidebar: PropTypes.bool.isRequired,
+};
 
 export { RapidEditor, generateStartingHash, equalsUrlParameters, updateUrl };
 export default RapidEditor;
