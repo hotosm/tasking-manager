@@ -15,8 +15,9 @@ const Parameters = {
     Type: 'String'
   },
   NetworkEnvironment: {
+    Description: "Legacy parameter aka Deployment Environment",
     Type :'String',
-    AllowedValues: ['staging', 'production']
+    AllowedValues: ['demo', 'staging', 'production']
   },
   AutoscalingPolicy: {
     Type: 'String',
@@ -51,7 +52,7 @@ const Parameters = {
   DatabaseEngineVersion: {
     Description: 'AWS PostgreSQL Engine version',
     Type: 'String',
-    Default: '11.19'
+    Default: '13.10'
   },
   DatabaseInstanceType: {
     Description: 'Database instance type',
@@ -173,6 +174,11 @@ const Parameters = {
   TaskingManagerOrgCode: {
     Description: 'Org Code',
     Type: 'String'
+  },
+  TaskingManagerOrgDomain: {
+    Description: 'FQDN for Organisation used as suffix for DNS entries',
+    Type: 'String',
+    Default: 'hotosm.org'
   },
   SentryBackendDSN: {
     Description: "DSN for sentry",
@@ -560,11 +566,40 @@ const Resources = {
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
     Properties: {
       Name: cf.stackName,
+      IpAddressType: 'dualstack',
+      LoadBalancerAttributes: [
+        { "Key": "routing.http2.enabled", "Value": "true" },
+        { "Key": "idle_timeout.timeout_seconds", "Value": "180" },
+      ],
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
       Subnets: cf.ref('ELBSubnets'),
       Type: 'application',
-      IpAddressType: 'dualstack',
       Tags: [ { "Key": "stack_name", "Value": cf.stackName } ]
+    }
+  },
+  BackendAPIDNSEntries: {
+    Type: "AWS::Route53::RecordSetGroup",
+    Properties: {
+      Comment: "DNS records pointing to API backend",
+      HostedZoneId: 'Z05223682CWA7KUW593DH', // NOTE: tasks.hotosm.org HostedZone ID on Route53
+      RecordSets: [
+        {
+          Name: cf.join('.', [ cf.join('-', ['api', cf.ref('NetworkEnvironment')]), 'tasks.hotosm.org']),
+          Type: 'A',
+          AliasTarget: {
+            DNSName: cf.getAtt('TaskingManagerLoadBalancer', 'DNSName'),
+            HostedZoneId: cf.getAtt('TaskingManagerLoadBalancer', 'CanonicalHostedZoneID') // NOTE: AWS Route53 Canonical HostedZone ID
+          }
+        },
+        {
+          Name: cf.join('.', [ cf.join('-', ['api', cf.ref('NetworkEnvironment')]), 'tasks.hotosm.org']),
+          Type: 'AAAA',
+          AliasTarget: {
+            DNSName: cf.getAtt('TaskingManagerLoadBalancer', 'DNSName'),
+            HostedZoneId: cf.getAtt('TaskingManagerLoadBalancer', 'CanonicalHostedZoneID') // NOTE: AWS Route53 Canonical HostedZone ID
+          },
+        }
+      ]
     }
   },
   TaskingManagerLoadBalancerRoute53: {
@@ -753,19 +788,6 @@ const Resources = {
           SslSupportMethod: 'sni-only'
         }
       }
-    }
-  },
-  TaskingManagerRoute53: {
-    Type: 'AWS::Route53::RecordSet',
-    Condition: 'IsHOTOSMUrl',
-    Properties: {
-      Name: 't0.hotosm.org',
-      Type: 'A',
-      AliasTarget: {
-        DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
-        HostedZoneId: 'Z2FDTNDATAQYW2'
-      },
-      HostedZoneId: 'Z2O929GW6VWG99',
     }
   },
   TaskingManagerDNSEntries: {
