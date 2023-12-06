@@ -216,7 +216,6 @@ export function ProjectLiveMonitoring() {
                             status={status}
                             orderBy="created_at"
                             onFetchFirstTime={(mostRecentFeature) => {
-                                console.log(mostRecentFeature);
                                 if (mostRecentFeature) {
                                     setCoords([mostRecentFeature.lat, mostRecentFeature.lon]);
                                 }
