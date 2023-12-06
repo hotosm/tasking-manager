@@ -318,10 +318,15 @@ export const ProjectDetail = (props) => {
             project={props.project}
             className="bg-white blue-dark ba b--grey-light pa3"
           />
+
+          {/* TODO: Enable/disable this button depending of
+                Underpass availability for the project's area.
+                https://underpass.hotosm.org/priority.geojson */}
           <LiveViewButton
             projectId={props.project.projectId}
             className="bg-white blue-dark ba b--grey-light pa3"
           />
+
           <DownloadAOIButton
             projectId={props.project.projectId}
             className="bg-white blue-dark ba b--grey-light pa3"
