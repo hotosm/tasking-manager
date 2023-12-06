@@ -1,0 +1,13 @@
+@import "@hotosm/underpass-ui/dist/index.css";
+
+.maplibregl-map {
+  height: 100vh;
+}
+
+.top {
+  position: absolute;
+  top: 390px;
+  left: 20px;
+  z-index: 999;
+}
+
