@@ -1,6 +1,8 @@
 import threading
 from cachetools import TTLCache, cached
 from flask import current_app
+import geojson
+from datetime import datetime, timedelta
 
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTOs
@@ -615,3 +617,37 @@ class ProjectService:
                     project_completion,
                 ),
             ).start()
+
+    @staticmethod
+    def get_active_projects(interval):
+        action_date = datetime.now() - timedelta(hours=interval)
+        result = (
+            TaskHistory.query.with_entities(TaskHistory.project_id)
+            .distinct()
+            .filter(TaskHistory.action_date >= action_date)
+            .all()
+        )
+        project_ids = [row.project_id for row in result]
+        projects = (
+            Project.query.with_entities(
+                Project.id,
+                Project.mapping_types,
+                Project.geometry.ST_AsGeoJSON().label("geometry"),
+            )
+            .filter(
+                Project.status == ProjectStatus.PUBLISHED.value,
+                Project.id.in_(project_ids),
+            )
+            .all()
+        )
+        features = []
+        for project in projects:
+            properties = {
+                "project_id": project.id,
+                "mapping_types": project.mapping_types,
+            }
+            feature = geojson.Feature(
+                geometry=geojson.loads(project.geometry), properties=properties
+            )
+            features.append(feature)
+        return geojson.FeatureCollection(features)

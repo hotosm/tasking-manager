@@ -1164,3 +1164,39 @@ class ProjectQueriesSimilarProjectsAPI(Resource):
             project_id, authenticated_user_id, preferred_locale, limit
         )
         return projects_dto.to_primitive(), 200
+
+
+class ProjectQueriesActiveProjectsAPI(Resource):
+    @token_auth.login_required(optional=True)
+    def get(self):
+        """
+        Get active projects
+        ---
+        tags:
+            - projects
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: false
+              type: string
+              default: Token sessionTokenHere==
+            - name: interval
+              in: path
+              description: Time interval to get active project
+              required: false
+              type: integer
+              default: 24
+        responses:
+            200:
+                description: Active projects geojson
+            404:
+                description: Project not found or project is not published
+            500:
+                description: Internal Server Error
+        """
+        interval = int(request.args.get("interval", 24))
+        projects_dto = ProjectService.get_active_projects(interval)
+        return projects_dto, 200
