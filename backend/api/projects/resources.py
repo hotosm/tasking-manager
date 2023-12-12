@@ -1185,7 +1185,7 @@ class ProjectQueriesActiveProjectsAPI(Resource):
               default: Token sessionTokenHere==
             - name: interval
               in: path
-              description: Time interval to get active project
+              description: Time interval in hours to get active project
               required: false
               type: integer
               default: 24
@@ -1197,6 +1197,9 @@ class ProjectQueriesActiveProjectsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        interval = int(request.args.get("interval", 24))
+        interval = request.args.get("interval", "24")
+        if not interval.isdigit():
+            return {"Error": "Interval must be a number greater than 0"}, 400
+        interval = int(interval)
         projects_dto = ProjectService.get_active_projects(interval)
         return projects_dto, 200

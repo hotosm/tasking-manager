@@ -2,7 +2,7 @@ import threading
 from cachetools import TTLCache, cached
 from flask import current_app
 import geojson
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTOs
@@ -620,7 +620,7 @@ class ProjectService:
 
     @staticmethod
     def get_active_projects(interval):
-        action_date = datetime.now() - timedelta(hours=interval)
+        action_date = datetime.now(timezone.utc) - timedelta(hours=interval)
         result = (
             TaskHistory.query.with_entities(TaskHistory.project_id)
             .distinct()
