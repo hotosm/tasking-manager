@@ -13,7 +13,7 @@
 #
 # Direct dependencies (at least one import requires it)
 APScheduler==3.10.1
-alembic==1.11.1
+alembic==1.13.0
 bleach==6.0.0
 cachetools==5.3.1
 Flask==2.3.2
