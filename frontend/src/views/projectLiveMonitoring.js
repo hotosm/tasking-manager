@@ -52,11 +52,25 @@ export function ProjectLiveMonitoring() {
     }, [data])
 
     useEffect(() => {
-      if (project && project.areaOfInterest) {
-          setCoords(centroid(project.areaOfInterest).geometry.coordinates.reverse());
+      if (project && project.aoiBBOX && project.areaOfInterest) {
+          const bbox = [
+            [project.aoiBBOX[0], project.aoiBBOX[1]],
+            [project.aoiBBOX[0], project.aoiBBOX[3]],
+            [project.aoiBBOX[1], project.aoiBBOX[3]],
+            [project.aoiBBOX[1], project.aoiBBOX[1]],
+            [project.aoiBBOX[0], project.aoiBBOX[1]],
+          ]
+          setCoords(centroid({
+            type: "MultiPolygon",
+            coordinates: [[bbox]]
+          }).geometry.coordinates.reverse());
           setAreaOfInterest([
-            ].join(",")
-          );
+            bbox[0].join(" "),
+            bbox[1].join(" "),
+            bbox[2].join(" "),
+            bbox[3].join(" "),
+            bbox[4].join(" "),
+          ].join(","));
           setTags(mappingTypesTags[project.mappingTypes]);
       }
     }, [project]);
@@ -205,6 +219,7 @@ export function ProjectLiveMonitoring() {
                             tags={tags}
                             hashtag={hashtag}
                             page={0}
+                            area={areaOfInterest}
                             onSelect={(feature) => {
                                 setCoords([feature.lat, feature.lon]);
                                 const tags = JSON.stringify(feature.tags);
