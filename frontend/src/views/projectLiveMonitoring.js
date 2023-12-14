@@ -9,7 +9,7 @@ import centroid from '@turf/centroid';
 import "./projectLiveMonitoring.css";
 
 const config = {
-    API_URL: "https://underpass.hotosm.org:8000",
+    API_URL: "http://localhost:8000",
     MAPBOX_TOKEN: "pk.eyJ1IjoiZW1pNDIwIiwiYSI6ImNqZW9leG5pZTAxYWwyeG83bHU0eHM0ZXcifQ.YWmk4Rp8FBGCLmpx_huJYw"
 };
 
@@ -71,7 +71,7 @@ export function ProjectLiveMonitoring() {
             bbox[3].join(" "),
             bbox[4].join(" "),
           ].join(","));
-          setTags(mappingTypesTags[project.mappingTypes]);
+          setTags(mappingTypesTags[project.mappingTypes] || "building");
       }
     }, [project]);
 
