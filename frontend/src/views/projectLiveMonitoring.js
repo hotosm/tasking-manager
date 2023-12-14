@@ -56,14 +56,18 @@ export function ProjectLiveMonitoring() {
           const bbox = [
             [project.aoiBBOX[0], project.aoiBBOX[1]],
             [project.aoiBBOX[0], project.aoiBBOX[3]],
-            [project.aoiBBOX[1], project.aoiBBOX[3]],
-            [project.aoiBBOX[1], project.aoiBBOX[1]],
+            [project.aoiBBOX[2], project.aoiBBOX[3]],
+            [project.aoiBBOX[2], project.aoiBBOX[1]],
             [project.aoiBBOX[0], project.aoiBBOX[1]],
           ]
           setCoords(centroid({
             type: "MultiPolygon",
             coordinates: [[bbox]]
-          }).geometry.coordinates.reverse());
+          }).geometry.coordinates);
+          console.log(centroid({
+            type: "MultiPolygon",
+            coordinates: [[bbox]]
+          }))
           setAreaOfInterest([
             bbox[0].join(" "),
             bbox[1].join(" "),
