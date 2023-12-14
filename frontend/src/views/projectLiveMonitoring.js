@@ -64,10 +64,6 @@ export function ProjectLiveMonitoring() {
             type: "MultiPolygon",
             coordinates: [[bbox]]
           }).geometry.coordinates);
-          console.log(centroid({
-            type: "MultiPolygon",
-            coordinates: [[bbox]]
-          }))
           setAreaOfInterest([
             bbox[0].join(" "),
             bbox[1].join(" "),
