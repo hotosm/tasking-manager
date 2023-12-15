@@ -26,6 +26,7 @@ import { Alert } from '../alert';
 
 import './styles.scss';
 import { useWindowSize } from '../../hooks/UseWindowSize';
+import { DownloadOsmData } from './downloadOsmData.js';
 
 /* lazy imports must be last import */
 const ProjectTimeline = React.lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
@@ -285,6 +286,24 @@ export const ProjectDetail = (props) => {
           />
         )}
       </div>
+
+      {/* Download OSM Data section Start */}
+
+      <div className="bg-tan-dim">
+        <a href="#downloadOsmData" name="downloadOsmData" style={{ visibility: 'hidden' }}>
+          <FormattedMessage {...messages.downloadOsmData} />
+        </a>
+        <h3 className={`${h2Classes}`}>
+          <FormattedMessage {...messages.downloadOsmData} />
+        </h3>
+        <DownloadOsmData
+          projectMappingTypes={props?.project?.mappingTypes}
+          project={props.project}
+        />
+      </div>
+
+      {/* Download OSM Data section End */}
+
       <a href="#contributionTimeline" style={{ visibility: 'hidden' }} name="contributionTimeline">
         <FormattedMessage {...messages.contributionsTimeline} />
       </a>

@@ -223,6 +223,10 @@ export default defineMessages({
     id: 'project.detail.sections.contributionsTimeline',
     defaultMessage: 'Contributions timeline',
   },
+  downloadOsmData: {
+    id: 'project.detail.sections.downloadOsmData',
+    defaultMessage: 'Download OSM Data',
+  },
   viewInOsmcha: {
     id: 'project.detail.sections.contributions.osmcha',
     defaultMessage: 'Changesets in OSMCha',
