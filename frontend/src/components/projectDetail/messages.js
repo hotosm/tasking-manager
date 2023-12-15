@@ -227,6 +227,14 @@ export default defineMessages({
     id: 'project.detail.sections.contributions.osmcha',
     defaultMessage: 'Changesets in OSMCha',
   },
+  live: {
+    id: 'project.detail.sections.contributions.live',
+    defaultMessage: 'Live',
+  },
+  liveMonitoring: {
+    id: 'project.detail.sections.contributions.liveMonitoring',
+    defaultMessage: 'Live monitoring',
+  },
   changesets: {
     id: 'project.detail.sections.contributions.changesets',
     defaultMessage: 'Changesets',
