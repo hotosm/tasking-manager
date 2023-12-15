@@ -286,7 +286,9 @@ export const ProjectDetail = (props) => {
           />
         )}
       </div>
+
       {/* Download OSM Data section Start */}
+
       <div className="bg-tan-dim">
         <a href="#downloadOsmData" name="downloadOsmData" style={{ visibility: 'hidden' }}>
           <FormattedMessage {...messages.downloadOsmData} />
@@ -294,8 +296,12 @@ export const ProjectDetail = (props) => {
         <h3 className={`${h2Classes}`}>
           <FormattedMessage {...messages.downloadOsmData} />
         </h3>
-        <DownloadOsmData projectMappingTypes={props?.project?.mappingTypes} />
+        <DownloadOsmData
+          projectMappingTypes={props?.project?.mappingTypes}
+          project={props.project}
+        />
       </div>
+
       {/* Download OSM Data section End */}
 
       <a href="#contributionTimeline" style={{ visibility: 'hidden' }} name="contributionTimeline">
