@@ -1,0 +1,39 @@
+name: Build and Deploy Tasking Manager Frontend
+
+on:
+  push:
+    branches:
+      - deployment/naxa
+    paths:
+      - "frontend/**"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: SSH Run command
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SERVER_IP }}
+          username: ${{ vars.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 20m
+          script: |
+            #!/bin/bash -i
+            echo '==In Server=='
+            echo '==Building Frontend=='
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            cd /home/ubuntu/Projects/tasking-manager
+            git pull naxa deployment/naxa
+            cd /home/ubuntu/Projects/tasking-manager/frontend
+            nvm i 16
+            nvm use 16
+            npm i -g yarn
+            yarn install
+            npm run build
