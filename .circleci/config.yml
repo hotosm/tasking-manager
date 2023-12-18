@@ -22,7 +22,7 @@ jobs:
           command: |
             yarn --version
             cd ${CIRCLE_WORKING_DIRECTORY}/frontend
-            yarn install
+            yarn install --network-concurrency 1 # lodash which has prepare script fails. Hotfix: https://github.com/yarnpkg/yarn/issues/6312
       - save_cache:
           key: yarn-deps-{{ checksum "frontend/yarn.lock" }}
           paths:
