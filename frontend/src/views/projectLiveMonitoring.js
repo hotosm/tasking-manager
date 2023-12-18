@@ -43,6 +43,7 @@ export function ProjectLiveMonitoring() {
   const [realtimeList, setRealtimeList] = useState(false);
   const [realtimeMap, setRealtimeMap] = useState(false);
   const [status, setStatus] = useState(statusList.UNSQUARED);
+  // eslint-disable-next-line
   const [area, setArea] = useState(null);
   const tagsInputRef = useRef('');
   const hashtagInputRef = useRef('');
@@ -103,6 +104,7 @@ export function ProjectLiveMonitoring() {
     },
   };
 
+  // eslint-disable-next-line
   const [demoTheme, setDemoTheme] = useState({
     map: defaultMapStyle,
   });
