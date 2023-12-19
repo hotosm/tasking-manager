@@ -5,10 +5,10 @@ import Popup from 'reactjs-popup';
 import { EXPORT_TOOL_S3_URL } from '../../config';
 
 export const TITLED_ICONS = [
-  { Icon: RoadIcon, title: 'highway', value: 'HIGHWAY' },
-  { Icon: HomeIcon, title: 'building', value: 'BUILDING' },
-  { Icon: WavesIcon, title: 'waterway', value: 'WATERWAY' },
-  { Icon: TaskIcon, title: 'landuse', value: 'LANDUSE' },
+  { Icon: RoadIcon, title: 'roads', value: 'ROADS' },
+  { Icon: HomeIcon, title: 'buildings', value: 'BUILDINGS' },
+  { Icon: WavesIcon, title: 'waterways', value: 'WATERWAYS' },
+  { Icon: TaskIcon, title: 'landUse', value: 'LAND_USE' },
   { Icon: AsteriskIcon, title: 'other', value: 'OTHER' },
 ];
 
