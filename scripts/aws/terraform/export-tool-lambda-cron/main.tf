@@ -106,15 +106,16 @@ resource "aws_cloudwatch_event_target" "cron_raw_data_lambda_target" {
   arn       = aws_lambda_function.lambda_raw_data.arn
 }
 
+
 resource "aws_cloudwatch_metric_alarm" "lambda_error_alarm" {
   alarm_name          = "lambda_raw_data_error_alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = 3
-  threshold           = 3  # Number of errors that trigger the alarm.
-  period              = 300  # 5 Mins
+  evaluation_periods  = 5
+  threshold           = 2  # Number of errors that trigger the alarm.
+  period              = 14400  # 1 Day
   namespace           = "AWS/Lambda"
   metric_name         = "Errors"
-  statistic           = "Sum"
+  statistic           = "Maximum"
   dimensions = {
     FunctionName = aws_lambda_function.lambda_raw_data.function_name
   }
@@ -123,5 +124,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_error_alarm" {
 
   actions_enabled = false  # Disable actions, meaning no notification actions will be taken
 
-  treat_missing_data = "notBreaching"
+  treat_missing_data = "breaching"
 }
+
+
