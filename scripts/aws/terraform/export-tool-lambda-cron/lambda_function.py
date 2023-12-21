@@ -3,16 +3,16 @@ import requests
 import os
 
 mapping_types_reverse = {
-    1 : "highway",
-    2 : "building",
-    3 : "waterway",
-    4 : "landuse",
-    5 : "other"
+    1 : ["highway", "roads"],
+    2 : ["building", "buildings"],
+    3 : ["waterway", "waterways"],
+    4 : ["landuse", "landUse"],
+    5 : ["other", "other"]
 }
 
 output_types = ["geojson", "shp", "kml"]
 
-
+raw_data_api = os.environ.get('RAW_DATA_API', "https://api-prod.raw-data.hotosm.org/v1/snapshot/")
 rawdata_api_auth_token = os.environ.get('RAWDATA_API_AUTH_TOKEN', "")
 active_projects_api_base_url = os.environ.get('ACTIVE_PROJECTS_API_BASE_URL', "")
 
@@ -37,7 +37,7 @@ def generate_payload(project_id: int, mapping_type: str, output_type: str, bbox_
     payload_data = {
         "bindZip": "true",
         "centroid": "false",
-        "fileName": f"hotosm_project_{project_id}_{mapping_type}",
+        "fileName": f"hotosm_project_{project_id}_{mapping_type[1]}",
         "outputType": output_type,
         "uuid": "false",
         "useStWithin": "true",
@@ -45,7 +45,7 @@ def generate_payload(project_id: int, mapping_type: str, output_type: str, bbox_
             "tags": {
                 "all_geometry": {
                     "join_or": {
-                        mapping_type: [],
+                        mapping_type[0]: [],
                     }
                 }
             },
@@ -67,7 +67,6 @@ def lambda_handler(event, context):
     """
 
     time_interval = 24
-    raw_data_api = "https://api-prod.raw-data.hotosm.org/v1/snapshot/"
     active_projects_api = f"{active_projects_api_base_url}/api/v2/projects/queries/active/?interval={time_interval}"
     active_projects_api_response = requests.get(active_projects_api)
     
