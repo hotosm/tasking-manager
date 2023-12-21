@@ -28,6 +28,16 @@ resource "aws_lambda_layer_version" "lambda_layer" {
 
   compatible_runtimes = ["python3.8"]
 }
+resource "aws_cloudwatch_log_group" "lambda_raw_data_cron" {
+  name = "/aws/lambda/${aws_lambda_function.lambda_raw_data.function_name}"
+  retention_in_days = 14
+  lifecycle {
+    prevent_destroy = false
+  }
+  tags = {
+  Application = "lambda"
+  }
+}
 
 resource "aws_lambda_function" "lambda_raw_data" {
 
@@ -36,24 +46,28 @@ resource "aws_lambda_function" "lambda_raw_data" {
   role          = aws_iam_role.iam_for_lambda_tm.arn
   handler       = "lambda_function.lambda_handler"
   memory_size   = 128
-  timeout = 10 # To be Increased if active projects are more.
+  timeout = 20 # To be Increased if active projects are more.
   layers = [ aws_lambda_layer_version.lambda_layer.id ]
-
+  
   source_code_hash = data.archive_file.lambda.output_base64sha256
 
   runtime = "python3.9"
   # To be accessed from Environmnet varible TF_VAR_rawdata_api_auth_token & TF_VAR_active_projects_api_base_url.
+  depends_on = [
+    aws_lambda_layer_version.lambda_layer,
+    aws_iam_role.iam_for_lambda_tm,
+    aws_iam_role_policy_attachment.lambda_logs,
+  ]
   environment {
     variables = {
       ACTIVE_PROJECTS_API_BASE_URL = "${var.active_projects_api_base_url}",
       RAWDATA_API_AUTH_TOKEN = "${var.rawdata_api_auth_token}"
     }
   }
-
+  
   tracing_config {
     mode = "PassThrough"
   }
-  depends_on = [aws_iam_role_policy_attachment.lambda_logs]
   lifecycle {
     ignore_changes = [layers]  # Ignore changes to layers for now
   }
