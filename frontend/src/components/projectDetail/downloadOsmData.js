@@ -24,7 +24,7 @@ const fileFormats = [{ format: 'SHP' }, { format: 'GEOJSON' }, { format: 'KML' }
  */
 
 export const DownloadOsmData = ({ projectMappingTypes, project }) => {
-  const [showPopup, setShowPopup] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
   const [isDownloadingState, setIsDownloadingState] = useState(null);
 
   /**
