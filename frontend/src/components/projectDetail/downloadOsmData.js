@@ -3,6 +3,8 @@ import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, AsteriskIcon } from '../svgIco
 import FileFormatCard from './fileFormatCard';
 import Popup from 'reactjs-popup';
 import { EXPORT_TOOL_S3_URL } from '../../config';
+import messages from './messages';
+import { FormattedMessage } from 'react-intl';
 
 export const TITLED_ICONS = [
   { Icon: RoadIcon, title: 'roads', value: 'ROADS' },
@@ -22,7 +24,7 @@ const fileFormats = [{ format: 'SHP' }, { format: 'GEOJSON' }, { format: 'KML' }
  */
 
 export const DownloadOsmData = ({ projectMappingTypes, project }) => {
-  const [showPopup, setShowPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(true);
   const [isDownloadingState, setIsDownloadingState] = useState(null);
 
   /**
@@ -47,9 +49,6 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
 
       // Check if the request was successful
       if (response.ok) {
-        // Set the state to indicate that the file download is complete
-        setIsDownloadingState({ title: title, fileFormat: fileFormat, isDownloading: false });
-
         // Get the file data as a blob
         const blob = await response.blob();
 
@@ -66,6 +65,8 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        // Set the state to indicate that the file download is complete
+        setIsDownloadingState({ title: title, fileFormat: fileFormat, isDownloading: false });
       } else {
         // Show a popup and throw an error if the request was not successful
         setShowPopup(true);
@@ -87,7 +88,12 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
       <Popup modal open={showPopup} closeOnDocumentClick nested onClose={() => setShowPopup(false)}>
         {(close) => (
           <div class="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
-            <h3 class="barlow-condensed f3 fw6 mv0">Data Not Available.</h3>
+            <h3 class="barlow-condensed f3 fw6 mv0">
+              <FormattedMessage {...messages.errorDownloadOsmData} />
+            </h3>
+            <p class="mt4">
+              <FormattedMessage {...messages.errorDownloadOsmDataDescription} />
+            </p>
             <div class="w-100 pt3 flex justify-end">
               <button
                 aria-pressed="false"
