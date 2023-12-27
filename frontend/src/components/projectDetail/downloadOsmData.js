@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, AsteriskIcon } from '../svgIcons';
 import FileFormatCard from './fileFormatCard';
 import Popup from 'reactjs-popup';
@@ -87,18 +88,18 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
     <div className="mb5 w-100 pa5 ph flex flex-wrap">
       <Popup modal open={showPopup} closeOnDocumentClick nested onClose={() => setShowPopup(false)}>
         {(close) => (
-          <div class="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
-            <h3 class="barlow-condensed f3 fw6 mv0">
+          <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
+            <h3 className="barlow-condensed f3 fw6 mv0">
               <FormattedMessage {...messages.errorDownloadOsmData} />
             </h3>
-            <p class="mt4">
+            <p className="mt4">
               <FormattedMessage {...messages.errorDownloadOsmDataDescription} />
             </p>
-            <div class="w-100 pt3 flex justify-end">
+            <div className="w-100 pt3 flex justify-end">
               <button
                 aria-pressed="false"
-                focusindex="0"
-                class="mr2 bg-red white br1 f5 bn pointer"
+                tabIndex={0}
+                className="mr2 bg-red white br1 f5 bn pointer"
                 style={{ padding: '0.75rem 1.5rem' }}
                 onClick={() => {
                   setShowPopup(false);
@@ -151,4 +152,9 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
       ))}
     </div>
   );
+};
+
+DownloadOsmData.propTypes = {
+  projectMappingTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  project: PropTypes.objectOf(PropTypes.any).isRequired,
 };
