@@ -1,5 +1,6 @@
 import React from 'react';
 import { AnimatedLoadingIcon } from '../button';
+import PropTypes from 'prop-types';
 
 /**
  * Renders a list of file formats as clickable links.
@@ -19,23 +20,23 @@ function FileFormatCard({ title, fileFormats, downloadS3Data, isDownloadingState
           isDownloadingState?.fileFormat === fileFormat?.format;
 
         return (
-          <React.Fragment key={index}>
-            <div
+          <React.Fragment key={fileFormat.title}>
+            <button
               tabIndex={0}
               style={
                 loadingState
                   ? { cursor: 'not-allowed', pointerEvents: 'none' }
                   : { cursor: 'pointer' }
               }
-              role="button"
               onClick={() => downloadS3Data(title, fileFormat.format)}
+              onKeyUp={() => downloadS3Data(title, fileFormat.format)}
               className="link hover-red color-inherit"
             >
               <p className="underline fw5" style={{ textUnderlineOffset: '5px' }}>
                 {fileFormat.format}
                 {loadingState ? <AnimatedLoadingIcon /> : null}
               </p>
-            </div>
+            </button>
             {index !== fileFormats.length - 1 && <hr className="file-list-separator" />}
           </React.Fragment>
         );
@@ -45,3 +46,10 @@ function FileFormatCard({ title, fileFormats, downloadS3Data, isDownloadingState
 }
 
 export default FileFormatCard;
+
+FileFormatCard.propTypes = {
+  title: PropTypes.string,
+  fileFormats: PropTypes.arrayOf(PropTypes.object),
+  downloadS3Data: PropTypes.func,
+  isDownloadingState: PropTypes.bool,
+};
