@@ -21,7 +21,8 @@ function FileFormatCard({ title, fileFormats, downloadS3Data, isDownloadingState
 
         return (
           <React.Fragment key={fileFormat.title}>
-            <button
+            <span
+              role="button"
               tabIndex={0}
               style={
                 loadingState
@@ -36,7 +37,7 @@ function FileFormatCard({ title, fileFormats, downloadS3Data, isDownloadingState
                 {fileFormat.format}
                 {loadingState ? <AnimatedLoadingIcon /> : null}
               </p>
-            </button>
+            </span>
             {index !== fileFormats.length - 1 && <hr className="file-list-separator" />}
           </React.Fragment>
         );
