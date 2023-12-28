@@ -40,6 +40,10 @@ const menuItems = [
     href: '#similarProjects',
     label: <FormattedMessage {...messages.similarProjects} />,
   },
+  {
+    href: '#downloadOsmData',
+    label: <FormattedMessage {...messages.downloadOsmData} />,
+  },
 ];
 
 export const ProjectDetailFooter = ({ className, projectId }) => {
