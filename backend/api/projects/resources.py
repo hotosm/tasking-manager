@@ -1199,7 +1199,13 @@ class ProjectQueriesActiveProjectsAPI(Resource):
         """
         interval = request.args.get("interval", "24")
         if not interval.isdigit():
-            return {"Error": "Interval must be a number greater than 0"}, 400
+            return {
+                "Error": "Interval must be a number greater than 0 and less than or equal to 24"
+            }, 400
         interval = int(interval)
+        if interval <= 0 or interval > 24:
+            return {
+                "Error": "Interval must be a number greater than 0 and less than or equal to 24"
+            }, 400
         projects_dto = ProjectService.get_active_projects(interval)
         return projects_dto, 200
