@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactPlaceholder from 'react-placeholder';
+import centroid from '@turf/centroid';
 import {
   UnderpassFeatureList,
   UnderpassMap,
@@ -6,17 +8,16 @@ import {
   UnderpassFeatureStats,
   UnderpassValidationStats,
 } from '@hotosm/underpass-ui';
+
 import { ProjectHeader } from '../components/projectDetail/header';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useParams } from 'react-router-dom';
 import { useFetch } from '../hooks/UseFetch';
-import ReactPlaceholder from 'react-placeholder';
-import centroid from '@turf/centroid';
 import './projectLiveMonitoring.css';
-import { MAPBOX_TOKEN } from '../config';
+import { MAPBOX_TOKEN, UNDERPASS_URL } from '../config';
 
 const config = {
-  API_URL: 'http://localhost:8000',
+  API_URL: `${UNDERPASS_URL}:8000`,
   MAPBOX_TOKEN: MAPBOX_TOKEN,
 };
 
