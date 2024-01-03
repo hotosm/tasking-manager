@@ -4,6 +4,7 @@ import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
 import { supported } from 'mapbox-gl';
+import booleanIntersects from '@turf/boolean-intersects';
 
 import messages from './messages';
 import viewsMessages from '../../views/messages';
@@ -22,7 +23,11 @@ import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
 import { LiveViewButton } from './liveViewButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
-import { useProjectContributionsQuery, useProjectTimelineQuery } from '../../api/projects';
+import {
+  useProjectContributionsQuery,
+  useProjectTimelineQuery,
+  usePriorityGeojsonQuery,
+} from '../../api/projects';
 import { Alert } from '../alert';
 
 import './styles.scss';
@@ -144,6 +149,13 @@ export const ProjectDetail = (props) => {
       {props.project.author}
     </Link>
   );
+
+  const { data } = usePriorityGeojsonQuery();
+
+  // a project has live monitoring feature enabled only if the AOI is within the supported area
+  const hasLiveMonitoringFeature = data
+    ? booleanIntersects(props.project.areaOfInterest, data)
+    : false;
 
   return (
     <div className={`${props.className || 'blue-dark'}`}>
@@ -319,13 +331,13 @@ export const ProjectDetail = (props) => {
             className="bg-white blue-dark ba b--grey-light pa3"
           />
 
-          {/* TODO: Enable/disable this button depending of
-                Underpass availability for the project's area.
-                https://underpass.hotosm.org/priority.geojson */}
-          <LiveViewButton
-            projectId={props.project.projectId}
-            className="bg-white blue-dark ba b--grey-light pa3"
-          />
+          {/* show live view button only when the project has live monitoring feature */}
+          {hasLiveMonitoringFeature && (
+            <LiveViewButton
+              projectId={props.project.projectId}
+              className="bg-white blue-dark ba b--grey-light pa3"
+            />
+          )}
 
           <DownloadAOIButton
             projectId={props.project.projectId}
