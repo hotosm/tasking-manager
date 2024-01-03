@@ -29,11 +29,24 @@ jobs:
             echo '==Building Frontend=='
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
-            cd /home/ubuntu/Projects/tasking-manager
-            git pull naxa deployment/naxa
-            cd /home/ubuntu/Projects/tasking-manager/frontend
+            cd /tmp
+            git clone https://github.com/naxa-developers/tasking-manager
+            cd tasking-manager
+            git checkout ${{ github.ref }}
+            cp /home/ubuntu/Projects/tasking-manager/tasking-manager.env .
             nvm i 16
             nvm use 16
             npm i -g yarn
             yarn install
             npm run build
+            cp frontend/build/* /home/ubuntu/Projects/tasking-manager/frontend/build/
+            
+            
+            # cd /home/ubuntu/Projects/tasking-manager
+            # git pull naxa deployment/naxa
+            # cd /home/ubuntu/Projects/tasking-manager/frontend
+            # nvm i 16
+            # nvm use 16
+            # npm i -g yarn
+            # yarn install
+            # npm run build
