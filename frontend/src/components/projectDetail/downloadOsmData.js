@@ -91,7 +91,9 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
         link.href = href;
         link.setAttribute(
           'download',
-          `hotosm_project_${project.projectId}_${title}_${fileFormat?.toLowerCase()}.zip`,
+          `hotosm_project_${
+            project.projectId
+          }_${title}_${feature_type}_${fileFormat?.toLowerCase()}.zip`,
         );
 
         // Add the link to the document body, click it, and then remove it

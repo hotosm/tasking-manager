@@ -13,12 +13,10 @@
 @import 'contributions';
 
 .fade-in {
-  //   display: none;
   opacity: 0;
   transition: opacity 0.5s ease-in;
 }
 
 .fade-in.active {
-  //   display: flex;
   opacity: 1;
 }
