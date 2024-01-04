@@ -62,6 +62,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
    *
    * @param {string} title - The title of the file.
    * @param {string} fileFormat - The format of the file.
+   * @param {string} feature_type - The feature type of the  ffile.
    * @return {Promise<void>} Promise that resolves when the download is complete.
    */
   const downloadS3File = async (title, fileFormat, feature_type) => {
@@ -192,7 +193,15 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                 selectedCategoryFormat.title === type.title &&
                 type?.featuretype?.map((typ) => (
                   <span
+                    key={`${typ}_${selectedCategoryFormat.title}`}
                     onClick={() =>
+                      downloadS3File(
+                        selectedCategoryFormat.title,
+                        selectedCategoryFormat.format,
+                        typ,
+                      )
+                    }
+                    onKeyUp={() =>
                       downloadS3File(
                         selectedCategoryFormat.title,
                         selectedCategoryFormat.format,
