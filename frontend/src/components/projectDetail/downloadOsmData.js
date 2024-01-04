@@ -19,7 +19,7 @@ export const TITLED_ICONS = [
     Icon: HomeIcon,
     title: 'buildings',
     value: 'BUILDINGS',
-    featuretype: ['points', 'polygons'],
+    featuretype: ['polygons'],
     formats: ['geojson', 'shp', 'kml'],
   },
   {
