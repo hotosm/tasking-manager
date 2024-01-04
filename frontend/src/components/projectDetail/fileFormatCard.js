@@ -10,7 +10,13 @@ import PropTypes from 'prop-types';
  * @return {JSX.Element} The rendered list of file formats.
  */
 
-function FileFormatCard({ title, fileFormats, downloadS3Data, isDownloadingState }) {
+function FileFormatCard({
+  title,
+  fileFormats,
+  isDownloadingState,
+  setSelectedCategoryFormat,
+  selectedCategoryFormat,
+}) {
   return (
     <>
       {fileFormats.map((fileFormat, index) => {
@@ -29,9 +35,14 @@ function FileFormatCard({ title, fileFormats, downloadS3Data, isDownloadingState
                   ? { cursor: 'not-allowed', pointerEvents: 'none' }
                   : { cursor: 'pointer' }
               }
-              onClick={() => downloadS3Data(title, fileFormat.format)}
-              onKeyUp={() => downloadS3Data(title, fileFormat.format)}
-              className="link hover-red color-inherit"
+              onClick={() => setSelectedCategoryFormat({ title, format: fileFormat.format })}
+              onKeyUp={() => setSelectedCategoryFormat({ title, format: fileFormat.format })}
+              className={`link ${
+                selectedCategoryFormat?.format === fileFormat?.format &&
+                selectedCategoryFormat.title === title
+                  ? 'red'
+                  : ''
+              } hover-red color-inherit`}
             >
               <p className="underline fw5" style={{ textUnderlineOffset: '5px' }}>
                 {fileFormat.format}
