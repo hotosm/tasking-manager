@@ -28,7 +28,7 @@
     "@turf/transform-scale": "^6.5.0",
     "@turf/truncate": "^6.5.0",
     "@uiw/react-md-editor": "^3.22.0",
-    "axios": "^1.4.0",
+    "axios": "^1.6.4",
     "chart.js": "^3.7.1",
     "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^2.30.0",
