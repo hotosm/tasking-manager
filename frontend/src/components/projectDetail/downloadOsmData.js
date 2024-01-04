@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, AsteriskIcon } from '../svgIcons';
+import PropTypes from 'prop-types';
+import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon } from '../svgIcons';
 import FileFormatCard from './fileFormatCard';
 import Popup from 'reactjs-popup';
 import { EXPORT_TOOL_S3_URL } from '../../config';
@@ -7,11 +8,34 @@ import messages from './messages';
 import { FormattedMessage } from 'react-intl';
 
 export const TITLED_ICONS = [
-  { Icon: RoadIcon, title: 'roads', value: 'ROADS' },
-  { Icon: HomeIcon, title: 'buildings', value: 'BUILDINGS' },
-  { Icon: WavesIcon, title: 'waterways', value: 'WATERWAYS' },
-  { Icon: TaskIcon, title: 'landUse', value: 'LAND_USE' },
-  { Icon: AsteriskIcon, title: 'other', value: 'OTHER' },
+  {
+    Icon: RoadIcon,
+    title: 'roads',
+    value: 'ROADS',
+    featuretype: ['lines'],
+    formats: ['geojson', 'shp', 'kml'],
+  },
+  {
+    Icon: HomeIcon,
+    title: 'buildings',
+    value: 'BUILDINGS',
+    featuretype: ['points', 'polygons'],
+    formats: ['geojson', 'shp', 'kml'],
+  },
+  {
+    Icon: WavesIcon,
+    title: 'waterways',
+    value: 'WATERWAYS',
+    featuretype: ['lines', 'polygons'],
+    formats: ['geojson', 'shp', 'kml'],
+  },
+  {
+    Icon: TaskIcon,
+    title: 'landuse',
+    value: 'LAND_USE',
+    featuretype: ['points', 'polygons'],
+    formats: ['geojson', 'shp', 'kml'],
+  },
 ];
 
 const fileFormats = [{ format: 'SHP' }, { format: 'GEOJSON' }, { format: 'KML' }];
@@ -26,19 +50,28 @@ const fileFormats = [{ format: 'SHP' }, { format: 'GEOJSON' }, { format: 'KML' }
 export const DownloadOsmData = ({ projectMappingTypes, project }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [isDownloadingState, setIsDownloadingState] = useState(null);
+  const [selectedCategoryFormat, setSelectedCategoryFormat] = useState(null);
 
+  const datasetConfig = {
+    dataset_prefix: `hotosm_project_${project.projectId}`,
+    dataset_folder: 'TM',
+    dataset_title: `Tasking Manger Project ${project.projectId}`,
+  };
   /**
    * Downloads an S3 file from the given URL and saves it as a file.
    *
    * @param {string} title - The title of the file.
    * @param {string} fileFormat - The format of the file.
+   * @param {string} feature_type - The feature type of the  ffile.
    * @return {Promise<void>} Promise that resolves when the download is complete.
    */
-  const downloadS3File = async (title, fileFormat) => {
+  const downloadS3File = async (title, fileFormat, feature_type) => {
     // Create the base URL for the S3 file
-    const baseUrl = `${EXPORT_TOOL_S3_URL}/TM/${project.projectId}/hotosm_project_${
-      project.projectId
-    }_${title}_${fileFormat?.toLowerCase()}.zip`;
+    const baseUrl = `${EXPORT_TOOL_S3_URL}/${datasetConfig.dataset_folder}/${
+      datasetConfig.dataset_prefix
+    }/${title}/${feature_type}/${
+      datasetConfig.dataset_prefix
+    }_${title}_${feature_type}_${fileFormat.toLowerCase()}.zip`;
 
     // Set the state to indicate that the file download is in progress
     setIsDownloadingState({ title: title, fileFormat: fileFormat, isDownloading: true });
@@ -82,23 +115,22 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
   const filteredMappingTypes = TITLED_ICONS?.filter((icon) =>
     projectMappingTypes?.includes(icon.value),
   );
-
   return (
     <div className="mb5 w-100 pa5 ph flex flex-wrap">
       <Popup modal open={showPopup} closeOnDocumentClick nested onClose={() => setShowPopup(false)}>
         {(close) => (
-          <div class="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
-            <h3 class="barlow-condensed f3 fw6 mv0">
+          <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
+            <h3 className="barlow-condensed f3 fw6 mv0">
               <FormattedMessage {...messages.errorDownloadOsmData} />
             </h3>
-            <p class="mt4">
+            <p className="mt4">
               <FormattedMessage {...messages.errorDownloadOsmDataDescription} />
             </p>
-            <div class="w-100 pt3 flex justify-end">
+            <div className="w-100 pt3 flex justify-end">
               <button
                 aria-pressed="false"
-                focusindex="0"
-                class="mr2 bg-red white br1 f5 bn pointer"
+                tabIndex={0}
+                className="mr2 bg-red white br1 f5 bn pointer"
                 style={{ padding: '0.75rem 1.5rem' }}
                 onClick={() => {
                   setShowPopup(false);
@@ -134,21 +166,68 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
               style={{ height: '56px' }}
             />
           </div>
-
-          <div
-            className="file-list flex barlow-condensed f3"
-            style={{ display: 'flex', gap: '12px' }}
-          >
-            <p className="fw5 ttc">{type.title}</p>
-            <FileFormatCard
-              title={type.title}
-              fileFormats={fileFormats}
-              downloadS3Data={downloadS3File}
-              isDownloadingState={isDownloadingState}
-            />
+          <div className="flex-column">
+            <div
+              className="file-list flex barlow-condensed f3"
+              style={{ display: 'flex', gap: '12px' }}
+            >
+              <p className="fw5 ttc">{type.title}</p>
+              <FileFormatCard
+                title={type.title}
+                fileFormats={fileFormats}
+                downloadS3Data={downloadS3File}
+                isDownloadingState={isDownloadingState}
+                selectedCategoryFormat={selectedCategoryFormat}
+                setSelectedCategoryFormat={setSelectedCategoryFormat}
+              />
+            </div>
+            <div
+              className={`flex flex-row ${
+                selectedCategoryFormat && selectedCategoryFormat.title === type.title
+                  ? 'fade-in active'
+                  : 'fade-in'
+              } `}
+              style={{ gap: '20px' }}
+            >
+              {selectedCategoryFormat &&
+                selectedCategoryFormat.title === type.title &&
+                type?.featuretype?.map((typ) => (
+                  <span
+                    key={`${typ}_${selectedCategoryFormat.title}`}
+                    onClick={() =>
+                      downloadS3File(
+                        selectedCategoryFormat.title,
+                        selectedCategoryFormat.format,
+                        typ,
+                      )
+                    }
+                    onKeyUp={() =>
+                      downloadS3File(
+                        selectedCategoryFormat.title,
+                        selectedCategoryFormat.format,
+                        typ,
+                      )
+                    }
+                    className="flex flex-row items-center pointer link hover-red color-inherit"
+                    style={{ gap: '10px' }}
+                  >
+                    <DownloadIcon
+                      style={{ height: '28px' }}
+                      color="#D73F3F"
+                      className="link hover-red"
+                    />
+                    <p className="ttc">{typ}</p>
+                  </span>
+                ))}
+            </div>
           </div>
         </div>
       ))}
     </div>
   );
+};
+
+DownloadOsmData.propTypes = {
+  projectMappingTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  project: PropTypes.objectOf(PropTypes.any).isRequired,
 };
