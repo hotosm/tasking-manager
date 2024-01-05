@@ -210,14 +210,10 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                         typ,
                       )
                     }
-                    className="flex flex-row items-center pointer link hover-red color-inherit"
+                    className="flex flex-row items-center pointer link hover-red color-inherit categorycard"
                     style={{ gap: '10px' }}
                   >
-                    <DownloadIcon
-                      style={{ height: '28px' }}
-                      color="#D73F3F"
-                      className="link hover-red"
-                    />
+                    <DownloadIcon style={{ height: '28px' }} color="#D73F3F" />
                     <p className="ttc">{typ}</p>
                   </span>
                 ))}
