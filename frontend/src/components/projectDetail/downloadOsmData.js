@@ -118,7 +118,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
     projectMappingTypes?.includes(icon.value),
   );
   return (
-    <div className="mb5 w-100 pa5 ph flex flex-wrap">
+    <div className="mb5 w-100 pb5 ph4 flex flex-wrap">
       <Popup modal open={showPopup} closeOnDocumentClick nested onClose={() => setShowPopup(false)}>
         {(close) => (
           <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
