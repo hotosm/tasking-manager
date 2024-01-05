@@ -20,3 +20,8 @@
 .fade-in.active {
   opacity: 1;
 }
+
+.categorycard:hover > svg *,
+.categorycard:hover {
+  fill: #d73f3f;
+}
