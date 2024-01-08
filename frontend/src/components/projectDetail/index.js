@@ -4,7 +4,6 @@ import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
 import { supported } from 'mapbox-gl';
-import booleanIntersects from '@turf/boolean-intersects';
 
 import messages from './messages';
 import viewsMessages from '../../views/messages';
@@ -26,7 +25,7 @@ import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import {
   useProjectContributionsQuery,
   useProjectTimelineQuery,
-  usePriorityGeojsonQuery,
+  useAvailableCountriesQuery,
 } from '../../api/projects';
 import { Alert } from '../alert';
 
@@ -150,12 +149,15 @@ export const ProjectDetail = (props) => {
     </Link>
   );
 
-  const { data } = usePriorityGeojsonQuery();
+  const { data } = useAvailableCountriesQuery();
 
-  // a project has live monitoring feature enabled only if the AOI is within the supported area
-  const hasLiveMonitoringFeature = data
-    ? booleanIntersects(props.project.areaOfInterest, data)
-    : false;
+  // check if the project has live monitoring feature enabled
+  // based on the country list provided by available.json
+  const hasLiveMonitoringFeature = !data
+    ? false
+    : props.project.countryTag.some((country) =>
+        data.countries.some((item) => country.toLowerCase() === item.toLowerCase()),
+      );
 
   return (
     <div className={`${props.className || 'blue-dark'}`}>
