@@ -11,7 +11,7 @@
 # deployed version.
 terraform {
   # Sourcing from here rn, updating to a release from https://github.com/hotosm/TM-Extractor/ later.
-  source = "${local.base_source_url}?ref=feat-terraform"
+  source = "${local.base_source_url}?ref=v1.0.0"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ locals {
 
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
-  base_source_url = "git::https://github.com/naxa-developers/TM-Extractor/"
+  base_source_url = "git::https://github.com/hotosm/TM-Extractor/"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
