@@ -60,6 +60,7 @@ htmlcov/
 .terraform
 *.tfstate
 *.tfstate.backup
+.terraform.lock.hcl
 
 # Terragrunt
 .terragrunt-cache
