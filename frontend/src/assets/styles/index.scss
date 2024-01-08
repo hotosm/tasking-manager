@@ -11,17 +11,3 @@
 @import 'learn';
 @import 'notifications';
 @import 'contributions';
-
-.fade-in {
-  opacity: 0;
-  transition: opacity 0.5s ease-in;
-}
-
-.fade-in.active {
-  opacity: 1;
-}
-
-.categorycard:hover > svg *,
-.categorycard:hover {
-  fill: #d73f3f;
-}

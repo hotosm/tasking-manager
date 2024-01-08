@@ -37,10 +37,6 @@ const menuItems = [
     label: <FormattedMessage {...messages.contributions} />,
   },
   {
-    href: '#downloadOsmData',
-    label: <FormattedMessage {...messages.downloadOsmData} />,
-  },
-  {
     href: '#similarProjects',
     label: <FormattedMessage {...messages.similarProjects} />,
   },
