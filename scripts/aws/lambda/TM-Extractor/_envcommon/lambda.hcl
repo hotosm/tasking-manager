@@ -10,8 +10,8 @@
 # needs to deploy a different module version, it should redefine this block with a different ref to override the
 # deployed version.
 terraform {
-  #source = "${local.base_source_url}?ref=feat-terraform"
-  source = "/Users/invoron/NAXA/tm-extrator-hotosm/"
+  # Sourcing from here rn, updating to a release from https://github.com/hotosm/TM-Extractor/ later.
+  source = "${local.base_source_url}?ref=feat-terraform"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ locals {
 
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
-  base_source_url = "git::git@github.com:mahesh-naxa/TM-Extractor.git//lambda"
+  base_source_url = "git::https://github.com/naxa-developers/TM-Extractor/"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
