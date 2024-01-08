@@ -223,6 +223,19 @@ export default defineMessages({
     id: 'project.detail.sections.contributionsTimeline',
     defaultMessage: 'Contributions timeline',
   },
+  downloadOsmData: {
+    id: 'project.detail.sections.downloadOsmData',
+    defaultMessage: 'Download OSM Data',
+  },
+  errorDownloadOsmData: {
+    id: 'project.detail.sections.errorDownloadOsmData',
+    defaultMessage: 'Data Extraction Unavailable',
+  },
+  errorDownloadOsmDataDescription: {
+    id: 'project.detail.sections.errorDownloadOsmDataDescription',
+    defaultMessage:
+      'The data extract you are attempting to download is currently inactive or unavailable. Please ensure that the extract is active and try again later.',
+  },
   viewInOsmcha: {
     id: 'project.detail.sections.contributions.osmcha',
     defaultMessage: 'Changesets in OSMCha',
