@@ -4,6 +4,7 @@ import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
 import { supported } from 'mapbox-gl';
+import PropTypes from 'prop-types';
 
 import messages from './messages';
 import viewsMessages from '../../views/messages';
@@ -31,6 +32,8 @@ import { Alert } from '../alert';
 
 import './styles.scss';
 import { useWindowSize } from '../../hooks/UseWindowSize';
+import { DownloadOsmData } from './downloadOsmData.js';
+import { ENABLE_EXPORT_TOOL } from '../../config/index.js';
 
 /* lazy imports must be last import */
 const ProjectTimeline = React.lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
@@ -83,7 +86,13 @@ const ProjectDetailMap = (props) => {
           }}
         >
           <div className="cf ttu bg-white barlow-condensed f4 pv2">
-            <span onClick={(e) => setTaskBordersOnly(false)} className="pb2 mh2 pointer ph2">
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={() => setTaskBordersOnly(false)}
+              onKeyDown={() => setTaskBordersOnly(false)}
+              className="pb2 mh2 pointer ph2 "
+            >
               <FormattedMessage {...messages.zoomToTasks} />
             </span>
           </div>
@@ -93,7 +102,7 @@ const ProjectDetailMap = (props) => {
   );
 };
 
-export const ProjectDetailLeft = ({ project, contributors, className, type }: Object) => {
+export const ProjectDetailLeft = ({ project, contributors, className, type }) => {
   const htmlShortDescription =
     project.projectInfo && htmlFromMarkdown(project.projectInfo.shortDescription);
 
@@ -300,6 +309,26 @@ export const ProjectDetail = (props) => {
           />
         )}
       </div>
+
+      {/* Download OSM Data section Start */}
+      {/* Converted String to Integer */}
+      {+ENABLE_EXPORT_TOOL === 1 && (
+        <div className="bg-tan-dim">
+          <a href="#downloadOsmData" name="downloadOsmData" style={{ visibility: 'hidden' }}>
+            <FormattedMessage {...messages.downloadOsmData} />
+          </a>
+          <h3 className={`${h2Classes}`}>
+            <FormattedMessage {...messages.downloadOsmData} />
+          </h3>
+          <DownloadOsmData
+            projectMappingTypes={props?.project?.mappingTypes}
+            project={props.project}
+          />
+        </div>
+      )}
+
+      {/* Download OSM Data section End */}
+
       <a href="#contributionTimeline" style={{ visibility: 'hidden' }} name="contributionTimeline">
         <FormattedMessage {...messages.contributionsTimeline} />
       </a>
@@ -363,4 +392,47 @@ export const ProjectDetail = (props) => {
       <ProjectDetailFooter projectId={props.project.projectId} />
     </div>
   );
+};
+
+ProjectDetail.propTypes = {
+  project: PropTypes.shape({
+    projectId: PropTypes.number,
+    projectInfo: PropTypes.shape({
+      description: PropTypes.string,
+    }),
+    mappingTypes: PropTypes.arrayOf(PropTypes.any).isRequired,
+    author: PropTypes.string,
+    organisationName: PropTypes.string,
+    organisationSlug: PropTypes.string,
+    organisationLogo: PropTypes.string,
+    mappingPermission: PropTypes.string,
+    validationPermission: PropTypes.string,
+    teams: PropTypes.arrayOf(PropTypes.object),
+  }).isRequired,
+  className: PropTypes.string,
+};
+
+ProjectDetailMap.propTypes = {
+  project: PropTypes.shape({
+    areaOfInterest: PropTypes.object,
+    priorityAreas: PropTypes.arrayOf(PropTypes.object),
+  }).isRequired,
+  tasks: PropTypes.arrayOf(PropTypes.object),
+  navigate: PropTypes.func,
+  type: PropTypes.string,
+  tasksError: PropTypes.string,
+  projectLoading: PropTypes.bool,
+};
+
+ProjectDetailLeft.propTypes = {
+  project: PropTypes.shape({
+    projectInfo: PropTypes.shape({
+      shortDescription: PropTypes.string,
+    }),
+    projectId: PropTypes.number,
+    tasks: PropTypes.arrayOf(PropTypes.object),
+  }).isRequired,
+  contributors: PropTypes.arrayOf(PropTypes.object),
+  className: PropTypes.string,
+  type: PropTypes.string,
 };
