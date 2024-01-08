@@ -1195,7 +1195,7 @@ class ProjectQueriesActiveProjectsAPI(Resource):
             404:
                 description: Project not found or project is not published
             500:
-                description: Internal Server Error
+                description: Internal Server Error 
         """
         interval = request.args.get("interval", "24")
         if not interval.isdigit():
