@@ -26,10 +26,10 @@ function FileFormatCard({
         const loadingState =
           isDownloadingState?.isDownloading &&
           isDownloadingState?.title === title &&
-          isDownloadingState?.fileFormat === fileFormat?.format;
+          isDownloadingState?.fileFormat === fileFormat;
 
         return (
-          <React.Fragment key={fileFormat.title}>
+          <React.Fragment key={fileFormat}>
             <span
               role="button"
               tabIndex={0}
@@ -38,17 +38,16 @@ function FileFormatCard({
                   ? { cursor: 'not-allowed', pointerEvents: 'none' }
                   : { cursor: 'pointer' }
               }
-              onClick={() => setSelectedCategoryFormat({ title, format: fileFormat.format })}
-              onKeyUp={() => setSelectedCategoryFormat({ title, format: fileFormat.format })}
+              onClick={() => setSelectedCategoryFormat({ title, format: fileFormat })}
+              onKeyUp={() => setSelectedCategoryFormat({ title, format: fileFormat })}
               className={`link ${
-                selectedCategoryFormat?.format === fileFormat?.format &&
-                selectedCategoryFormat.title === title
+                selectedCategoryFormat === fileFormat && selectedCategoryFormat.title === title
                   ? 'red'
                   : ''
               } hover-red color-inherit`}
             >
-              <p className="underline fw5" style={{ textUnderlineOffset: '5px' }}>
-                {fileFormat.format}
+              <p className="underline fw5 ttu  " style={{ textUnderlineOffset: '5px' }}>
+                {fileFormat}
                 {loadingState ? <AnimatedLoadingIcon /> : null}
               </p>
             </span>

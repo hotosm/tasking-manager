@@ -38,8 +38,6 @@ export const TITLED_ICONS = [
   },
 ];
 
-const fileFormats = [{ format: 'SHP' }, { format: 'GEOJSON' }, { format: 'KML' }];
-
 /**
  * Renders a list of download options for OSM data based on the project mapping types.
  *
@@ -176,7 +174,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
               <p className="fw5 ttc">{type.title}</p>
               <FileFormatCard
                 title={type.title}
-                fileFormats={fileFormats}
+                fileFormats={type.formats}
                 downloadS3Data={downloadS3File}
                 isDownloadingState={isDownloadingState}
                 selectedCategoryFormat={selectedCategoryFormat}
@@ -214,7 +212,9 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                     style={{ gap: '10px' }}
                   >
                     <DownloadIcon style={{ height: '28px' }} color="#D73F3F" />
-                    <p className="ttc">{typ}</p>
+                    <p className="ttc">
+                      {typ} {selectedCategoryFormat.format}
+                    </p>
                   </span>
                 ))}
             </div>
