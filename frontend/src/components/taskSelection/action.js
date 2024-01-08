@@ -235,6 +235,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                     imagery={formatImageryUrlCallback(project.imagery)}
                     gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
                     powerUser={project.rapidPowerUser}
+                    showSidebar={showSidebar}
                   />
                 )}
               </React.Suspense>
