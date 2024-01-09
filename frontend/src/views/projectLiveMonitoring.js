@@ -8,7 +8,6 @@ import {
   UnderpassFeatureStats,
   UnderpassValidationStats,
 } from '@hotosm/underpass-ui';
-
 import { ProjectHeader } from '../components/projectDetail/header';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useParams } from 'react-router-dom';
