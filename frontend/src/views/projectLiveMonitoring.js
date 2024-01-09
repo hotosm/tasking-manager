@@ -34,12 +34,18 @@ const mappingTypesTags = {
   WATERWAYS: 'waterway',
 };
 
+const mappingTypesFeatureTypes = {
+  ROADS: 'line',
+  BUILDINGS: 'polygon',
+  WATERWAYS: 'line',
+};
+
 export function ProjectLiveMonitoring() {
   const { id } = useParams();
   const [coords, setCoords] = useState([0, 0]);
   const [activeFeature, setActiveFeature] = useState(null);
   const [tags, setTags] = useState('building');
-  const [hashtag, setHashtag] = useState('hotosm-project-' + id);
+  const [featureType, setFeatureType] = useState("polygon");
   const [mapSource, setMapSource] = useState('osm');
   const [realtimeList, setRealtimeList] = useState(false);
   const [realtimeMap, setRealtimeMap] = useState(false);
@@ -47,7 +53,6 @@ export function ProjectLiveMonitoring() {
   // eslint-disable-next-line
   const [area, setArea] = useState(null);
   const tagsInputRef = useRef('');
-  const hashtagInputRef = useRef('');
   const styleSelectRef = useRef();
 
   useSetTitleTag(`Project #${id} Live Monitoring`);
@@ -85,6 +90,7 @@ export function ProjectLiveMonitoring() {
         ].join(','),
       );
       setTags(mappingTypesTags[project.mappingTypes] || 'building');
+      setFeatureType(mappingTypesFeatureTypes[project.mappingTypes] || 'polygon');
     }
   }, [project]);
 
@@ -113,7 +119,6 @@ export function ProjectLiveMonitoring() {
   const handleFilterClick = (e) => {
     e.preventDefault();
     setTags(tagsInputRef.current.value);
-    setHashtag(hashtagInputRef.current.value);
     return false;
   };
 
@@ -151,14 +156,6 @@ export function ProjectLiveMonitoring() {
                   defaultValue="building"
                 />
                 &nbsp;
-                <input
-                  className="border px-2 py-2 text-sm"
-                  type="text"
-                  placeholder="hashtag (ex: hotosm-project)"
-                  ref={hashtagInputRef}
-                  defaultValue={'hotosm-project-' + id}
-                />
-                &nbsp;
                 <button
                   className="inline-flex items-center rounded bg-primary px-2 py-2 text-sm font-medium text-white"
                   onClick={handleFilterClick}
@@ -181,7 +178,8 @@ export function ProjectLiveMonitoring() {
             <UnderpassMap
               center={coords}
               tags={tags}
-              hashtag={hashtag}
+              hashtag={'hotosm-project-' + id}
+              featureType={featureType}
               highlightDataQualityIssues
               popupFeature={activeFeature}
               source={mapSource}
@@ -197,26 +195,28 @@ export function ProjectLiveMonitoring() {
             style={{
               flex: 1,
               padding: 10,
-              backgroundColor: `rgb(${hottheme.colors.white})`,
-            }}
-          >
+              display: "flex",
+              "flex-direction": "column",
+              backgroundColor: `rgb(${hottheme.colors.white})`}}>
             <div className="border-b-2 pb-5 space-y-3">
               <UnderpassFeatureStats
                 tags={tags}
-                hashtag={hashtag}
+                hashtag={'hotosm-project-' + id}
+                featureType={featureType}
                 apiUrl={config.API_URL}
                 area={areaOfInterest}
               />
               <UnderpassValidationStats
                 tags={tags}
-                hashtag={hashtag}
+                hashtag={'hotosm-project-' + id}
+                featureType={featureType}
                 apiUrl={config.API_URL}
                 status="badgeom"
                 area={areaOfInterest}
               />
             </div>
-            <div className="border-b-2 py-5 mb-5">
-              <form className="space-x-2 mb-3">
+            <div className="border-b-2 py-5 mb-4">
+              <form className="space-x-2">
                 <input
                   onChange={() => {
                     setRealtimeList(!realtimeList);
@@ -234,7 +234,7 @@ export function ProjectLiveMonitoring() {
                 />
                 <label target="liveMapCheckbox">Live map</label>
               </form>
-              <form className="space-x-2">
+              <form className="space-x-2 py-4">
                 <input
                   checked={status === statusList.ALL}
                   onChange={() => {
@@ -266,30 +266,45 @@ export function ProjectLiveMonitoring() {
                 />
                 <label htmlFor="semanticCheckbox">Semantic</label>
               </form>
+              <form className="space-x-2">
+                  <input checked={featureType === "all"} onChange={() => { setFeatureType("all") }} name="featureTypeAllCheckbox" id="featureTypeAllCheckbox" type="radio" />
+                  <label htmlFor="featureTypeAllCheckbox">All</label>
+                  <input checked={featureType === "polygon"} onChange={() => { setFeatureType("polygon") }} name="featureTypePolygonCheckbox" id="featureTypePolygonCheckbox" type="radio" />
+                  <label htmlFor="featureTypePolygonCheckbox">Polygon</label>
+                  <input checked={featureType === "line"} onChange={() => { setFeatureType("line") }} name="featureTypeLineCheckbox" id="featureTypeLineCheckbox" type="radio" />
+                  <label htmlFor="featureTypeLineCheckbox">Line</label>
+                  <input checked={featureType === "node"} onChange={() => { setFeatureType("node") }} name="featureTypeNodeCheckbox" id="featureTypeNodeCheckbox" type="radio" />
+                  <label htmlFor="featureTypeNodeCheckbox">Node</label>
+              </form>
             </div>
-            <div style={{ height: '512px', overflow: 'hidden' }}>
-              <UnderpassFeatureList
-                tags={tags}
-                hashtag={hashtag}
-                page={0}
-                area={areaOfInterest}
-                onSelect={(feature) => {
-                  setCoords([feature.lat, feature.lon]);
-                  const tags = JSON.stringify(feature.tags);
-                  const status = feature.status;
-                  setActiveFeature({ properties: { tags, status }, ...feature });
-                }}
-                realtime={realtimeList}
-                config={config}
-                status={status}
-                orderBy="created_at"
-                onFetchFirstTime={(mostRecentFeature) => {
-                  if (mostRecentFeature) {
-                    setCoords([mostRecentFeature.lat, mostRecentFeature.lon]);
-                  }
-                }}
-              />
-            </div>
+            <UnderpassFeatureList
+              style={{
+                  display: "flex",
+                  "flex-flow": "column",
+                  height: "100px",
+                  flex: "1 1 auto"
+              }}
+              tags={tags}
+              hashtag={'hotosm-project-' + id}
+              featureType={featureType}
+              page={0}
+              area={areaOfInterest}
+              onSelect={(feature) => {
+                setCoords([feature.lat, feature.lon]);
+                const tags = JSON.stringify(feature.tags);
+                const status = feature.status;
+                setActiveFeature({ properties: { tags, status }, ...feature });
+              }}
+              realtime={realtimeList}
+              config={config}
+              status={status}
+              orderBy="created_at"
+              onFetchFirstTime={(mostRecentFeature) => {
+                if (mostRecentFeature) {
+                  setCoords([mostRecentFeature.lat, mostRecentFeature.lon]);
+                }
+              }}
+            />
           </div>
         </div>
       </div>
