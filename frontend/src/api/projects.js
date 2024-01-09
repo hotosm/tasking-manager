@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { subMonths, format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
@@ -185,6 +186,18 @@ export const submitValidationTask = (projectId, payload, token, locale) => {
     `projects/${projectId}/tasks/actions/unlock-after-validation/`,
     payload,
   );
+};
+
+export const useAvailableCountriesQuery = () => {
+  const fetchGeojsonData = () => {
+    return axios.get(`https://underpass.live/availability.json`);
+  };
+
+  return useQuery({
+    queryKey: ['priority-geojson'],
+    queryFn: fetchGeojsonData,
+    select: (res) => res.data,
+  });
 };
 
 const backendToQueryConversion = {
