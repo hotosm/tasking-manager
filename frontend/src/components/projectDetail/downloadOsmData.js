@@ -115,6 +115,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
   const filteredMappingTypes = TITLED_ICONS?.filter((icon) =>
     projectMappingTypes?.includes(icon.value),
   );
+
   return (
     <div className="mb5 w-100 pb5 ph4 flex flex-wrap">
       <Popup modal open={showPopup} closeOnDocumentClick nested onClose={() => setShowPopup(false)}>
@@ -143,84 +144,91 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
           </div>
         )}
       </Popup>
-      {filteredMappingTypes.map((type) => (
-        <div
-          className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex flex-wrap items-center  "
-          style={{
-            width: '560px',
-            gap: '16px',
-          }}
-          key={type.title}
-        >
+      {filteredMappingTypes.map((type) => {
+        const loadingState = isDownloadingState?.isDownloading;
+        return (
           <div
+            className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex flex-wrap items-center  "
             style={{
-              justifyContent: 'center',
-              display: 'flex',
-              alignItems: 'center',
+              width: '560px',
+              gap: '16px',
             }}
+            key={type.title}
           >
-            <type.Icon
-              title={type.title}
-              color="#D73F3F"
-              className="br1 h2 w2 pa1 ma1 ba b--white bw1 dib h-65 w-65"
-              style={{ height: '56px' }}
-            />
-          </div>
-          <div className="flex-column">
             <div
-              className="file-list flex barlow-condensed f3"
-              style={{ display: 'flex', gap: '12px' }}
+              style={{
+                justifyContent: 'center',
+                display: 'flex',
+                alignItems: 'center',
+              }}
             >
-              <p className="fw5 ttc">{type.title}</p>
-              <FileFormatCard
+              <type.Icon
                 title={type.title}
-                fileFormats={type.formats}
-                downloadS3Data={downloadS3File}
-                isDownloadingState={isDownloadingState}
-                selectedCategoryFormat={selectedCategoryFormat}
-                setSelectedCategoryFormat={setSelectedCategoryFormat}
+                color="#D73F3F"
+                className="br1 h2 w2 pa1 ma1 ba b--white bw1 dib h-65 w-65"
+                style={{ height: '56px' }}
               />
             </div>
-            <div
-              className={`flex flex-row ${
-                selectedCategoryFormat && selectedCategoryFormat.title === type.title
-                  ? 'fade-in active'
-                  : 'fade-in'
-              } `}
-              style={{ gap: '20px' }}
-            >
-              {selectedCategoryFormat &&
-                selectedCategoryFormat.title === type.title &&
-                type?.featuretype?.map((typ) => (
-                  <span
-                    key={`${typ}_${selectedCategoryFormat.title}`}
-                    onClick={() =>
-                      downloadS3File(
-                        selectedCategoryFormat.title,
-                        selectedCategoryFormat.format,
-                        typ,
-                      )
-                    }
-                    onKeyUp={() =>
-                      downloadS3File(
-                        selectedCategoryFormat.title,
-                        selectedCategoryFormat.format,
-                        typ,
-                      )
-                    }
-                    className="flex flex-row items-center pointer link hover-red color-inherit categorycard"
-                    style={{ gap: '10px' }}
-                  >
-                    <DownloadIcon style={{ height: '28px' }} color="#D73F3F" />
-                    <p className="ttc">
-                      {typ} {selectedCategoryFormat.format}
-                    </p>
-                  </span>
-                ))}
+            <div className="flex-column">
+              <div
+                className="file-list flex barlow-condensed f3"
+                style={{ display: 'flex', gap: '12px' }}
+              >
+                <p className="fw5 ttc">{type.title}</p>
+                <FileFormatCard
+                  title={type.title}
+                  fileFormats={type.formats}
+                  downloadS3Data={downloadS3File}
+                  isDownloadingState={isDownloadingState}
+                  selectedCategoryFormat={selectedCategoryFormat}
+                  setSelectedCategoryFormat={setSelectedCategoryFormat}
+                />
+              </div>
+              <div
+                className={`flex flex-row ${
+                  selectedCategoryFormat && selectedCategoryFormat.title === type.title
+                    ? 'fade-in active'
+                    : 'fade-in'
+                } `}
+                style={{ gap: '20px' }}
+              >
+                {selectedCategoryFormat &&
+                  selectedCategoryFormat.title === type.title &&
+                  type?.featuretype?.map((typ) => (
+                    <span
+                      key={`${typ}_${selectedCategoryFormat.title}`}
+                      onClick={() =>
+                        downloadS3File(
+                          selectedCategoryFormat.title,
+                          selectedCategoryFormat.format,
+                          typ,
+                        )
+                      }
+                      onKeyUp={() =>
+                        downloadS3File(
+                          selectedCategoryFormat.title,
+                          selectedCategoryFormat.format,
+                          typ,
+                        )
+                      }
+                      style={
+                        loadingState
+                          ? { cursor: 'not-allowed', pointerEvents: 'none', gap: '10px' }
+                          : { cursor: 'pointer', gap: '10px' }
+                      }
+                      className="flex flex-row items-center pointer link hover-red color-inherit categorycard"
+                    >
+                      <DownloadIcon style={{ height: '28px' }} color="#D73F3F" />
+                      <p className="ttc">
+                        {typ} {selectedCategoryFormat.format}
+                      </p>
+                    </span>
+                  ))}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
