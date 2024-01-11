@@ -12,8 +12,10 @@ To get it running on your environment follow the following.
 This are list of things you will need. 
 * AWS IAM User with permission for creating resources such as lambda function, cloudwatch group, cloudwatch event etc. 
 See all resource [here](https://github.com/hotosm/TM-Extractor/blob/ec37c1318325c534b4ac47f057263050e6e92f03/main.tf).
-* [Terraform](https://www.terraform.io/)
-* [Terragrunt](https://terragrunt.gruntwork.io/)
+* [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) or (OpenTofu)[https://opentofu.org/docs/intro/install/]
+* [Terragrunt](https://terragrunt.gruntwork.io/docs/getting-started/install/#install-terragrunt)
+> **_NOTE:_**  Please check compatibility note. https://terragrunt.gruntwork.io/docs/getting-started/supported-versions/
+Tested on: Terraform v1.5.5 & terragrunt version v0.54.9.
 
 ### Environments
 
