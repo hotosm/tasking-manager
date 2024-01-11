@@ -261,6 +261,62 @@ jobs:
             export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
             aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
 
+  tf-plan-tm-extractor:
+    docker:
+      - image: hashicorp/terraform:1.5.5
+    steps:
+      - checkout
+      - run:
+          name: Setup terragrunt
+          command: |
+            wget https://github.com/gruntwork-io/terragrunt/releases/download/v0.54.12/terragrunt_linux_amd64 -O terragrunt
+            chmod +x terragrunt
+            mv terragrunt /usr/local/bin/terragrunt
+            terragrunt -v
+      - run:
+          name: Run Terraform Plan
+          command: |
+            case $CIRCLE_BRANCH in
+            staging)
+                 export TF_ENV="stag"
+                ;;
+            infra-lambda-tm-exporter)
+                 export TF_ENV="dev"
+                ;;
+            deployment/hot-tasking-manager)
+                 export TF_ENV="prod"
+                ;;
+            esac
+            cd scripts/aws/lambda/TM-Extractor/$TF_ENV/tm-extractor/ && terragrunt apply --auto-approve
+
+  tf-apply-tm-extractor:
+    docker:
+      - image: hashicorp/terraform:1.5.5
+    steps:
+      - checkout
+      - run:
+          name: Setup terragrunt
+          command: |
+            wget https://github.com/gruntwork-io/terragrunt/releases/download/v0.54.12/terragrunt_linux_amd64 -O terragrunt
+            chmod +x terragrunt
+            mv terragrunt /usr/local/bin/terragrunt
+            terragrunt -v
+      - run:
+          name: Run Terraform Apply
+          command: |
+            case $CIRCLE_BRANCH in
+            staging)
+                 export TF_ENV="stag"
+                ;;
+            infra-lambda-tm-exporter)
+                 export TF_ENV="dev"
+                ;;
+            deployment/hot-tasking-manager)
+                 export TF_ENV="prod"
+                ;;
+            esac
+            cd scripts/aws/lambda/TM-Extractor/$TF_ENV/tm-extractor/ && terragrunt apply --auto-approve
+
 workflows:
   version: 2
 
@@ -458,4 +514,19 @@ workflows:
       - backend-code-check-Black
       - backend-functional-tests
 
-
+  tf-tm-extractor:
+    when:
+      and:
+        - or:
+          - equal: [ staging, << pipeline.git.branch >> ]
+          - equal: [ infra-lambda-tm-exporter, << pipeline.git.branch >> ]
+          - equal: [ deployment/hot-tasking-manager, << pipeline.git.branch >> ]
+    jobs:
+      - tf-plan-tm-extractor
+      - hold-tf-apply-tm-extractor:
+          type: approval
+          requires:
+            - tf-plan-tm-extractor
+      - tf-apply-tm-extractor:
+          requires:
+            - hold-tf-apply-tm-extractor
