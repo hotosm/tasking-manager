@@ -4,6 +4,7 @@
 locals {
   environment = "dev"
   account_name   = "naxadevelopers"
+  aws_profile = "default"
   aws_region = "ap-south-1"
   application = "tasking-manager"
   team  = "HOTOSM"

@@ -10,6 +10,7 @@ locals {
 
   # Extract the variables we need for easy access
   account_name = local.environment_vars.locals.account_name
+  aws_profile = local.environment_vars.locals.aws_profile
   aws_region   = local.environment_vars.locals.aws_region
   environment = local.environment_vars.locals.environment
   application = local.environment_vars.locals.application
@@ -23,20 +24,38 @@ generate "provider" {
   path      = "provider.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
-provider "aws" {
-  region = "${local.aws_region}"
+  provider "aws" {
+      region = "${local.aws_region}"
+      profile = "${local.aws_profile}"
+      default_tags {
+        tags = {
+          Environment = "${local.environment}"
+          Application = "${local.application}"
+          Team        = "${local.team}"
+          Creator     = "${local.creator}"
+          Owner       = "${local.owner}"
+        }
+      }
+    }
+EOF
+}
 
-  default_tags {
-    tags = {
-      Environment = "${local.environment}"
-      Application = "${local.application}"
-      Team        = "${local.team}"
-      Creator     = "${local.creator}"
-      Owner       = "${local.owner}"
+#Export AWS_PROFILE env var.
+terraform {
+  extra_arguments "aws_profile" {
+    commands = [
+      "init",
+      "apply",
+      "refresh",
+      "import",
+      "plan",
+      "destroy"
+    ]
+
+    env_vars = {
+      AWS_PROFILE = "${local.aws_profile}"
     }
   }
-}
-EOF
 }
 
 # Configure Terragrunt to automatically store tfstate files in an S3 bucket
@@ -48,6 +67,7 @@ remote_state {
     key            = "${path_relative_to_include()}/terraform.tfstate"
     region         = local.aws_region
     dynamodb_table = "tm-extractor-locks"
+    profile = "${local.aws_profile}"
   }
   generate = {
     path      = "backend.tf"
