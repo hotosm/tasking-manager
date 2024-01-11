@@ -4,6 +4,7 @@
 locals {
   environment = "stag"
   account_name   = "hotosm"
+  aws_profile = "default"
   aws_region = "ap-south-1"
   application = "tasking-manager"
   team  = "HOTOSM"
