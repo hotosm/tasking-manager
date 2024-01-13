@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactPlaceholder from 'react-placeholder';
+import Select from 'react-select';
 import centroid from '@turf/centroid';
 import {
   UnderpassFeatureList,
@@ -16,9 +17,52 @@ import { useFetch } from '../hooks/UseFetch';
 import './projectLiveMonitoring.css';
 import { MAPBOX_TOKEN } from '../config';
 
+const availableImageryOptions = [
+  { label: 'Bing', value: 'Bing' },
+  { label: 'Mapbox Satellite', value: 'Mapbox' },
+  { label: 'ESRI World Imagery', value: 'EsriWorldImagery' },
+];
+
+const availableImageryValues = availableImageryOptions.map((item) => item.value);
+
 const config = {
   API_URL: `https://underpass.live:8000`,
   MAPBOX_TOKEN: MAPBOX_TOKEN,
+  // set default sources of Tasking Manager
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '&copy; OpenStreetMap Contributors',
+      maxzoom: 19,
+    },
+    Mapbox: {
+      type: 'raster',
+      tiles: [
+        `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`,
+      ],
+      tileSize: 512,
+      attribution: '&copy; OpenStreetMap Contributors &copy; Mapbox',
+      maxzoom: 19,
+    },
+    EsriWorldImagery: {
+      type: 'raster',
+      tiles: [
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      ],
+      tileSize: 256,
+      attribution: '&copy; OpenStreetMap Contributors &copy; ESRI',
+      maxzoom: 18,
+    },
+    Bing: {
+      type: 'raster',
+      tiles: ['http://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1'],
+      tileSize: 256,
+      attribution: '&copy; OpenStreetMap Contributors',
+      maxzoom: 18,
+    },
+  },
 };
 
 const statusList = {
@@ -45,15 +89,16 @@ export function ProjectLiveMonitoring() {
   const [coords, setCoords] = useState([0, 0]);
   const [activeFeature, setActiveFeature] = useState(null);
   const [tags, setTags] = useState('building');
-  const [featureType, setFeatureType] = useState("polygon");
+  const [featureType, setFeatureType] = useState('polygon');
   const [mapSource, setMapSource] = useState('osm');
+  const [imageryOptions, setImageryOptions] = useState(availableImageryOptions);
+  const [mapConfig, setMapConfig] = useState(config);
   const [realtimeList, setRealtimeList] = useState(false);
   const [realtimeMap, setRealtimeMap] = useState(false);
   const [status, setStatus] = useState(statusList.UNSQUARED);
   // eslint-disable-next-line
   const [area, setArea] = useState(null);
   const tagsInputRef = useRef('');
-  const styleSelectRef = useRef();
 
   useSetTitleTag(`Project #${id} Live Monitoring`);
   const [error, loading, data] = useFetch(`projects/${id}/`, id);
@@ -62,7 +107,33 @@ export function ProjectLiveMonitoring() {
   const [project, setProject] = useState(null);
 
   useEffect(() => {
+    if (!Object.keys(data).length) return;
     setProject(data);
+    // add custom to config sources if the project has custom imagery
+    const hasCustomImagery = data.imagery.includes('http');
+    if (hasCustomImagery) {
+      setMapConfig((prev) => ({
+        ...prev,
+        sources: {
+          ...prev.sources,
+          custom: {
+            type: 'raster',
+            tiles: [data.imagery],
+            tileSize: 256,
+            attribution: 'custom',
+            maxzoom: 19,
+          },
+        },
+      }));
+      setImageryOptions((prev) => [...prev, { label: 'Custom', value: 'custom' }]);
+    }
+    // set mapSource after data fetch
+    const mapSourceValue = hasCustomImagery
+      ? 'custom'
+      : availableImageryValues.includes(data.imagery)
+      ? data.imagery
+      : 'Bing';
+    setMapSource(mapSourceValue);
   }, [data]);
 
   useEffect(() => {
@@ -122,8 +193,8 @@ export function ProjectLiveMonitoring() {
     return false;
   };
 
-  const handleMapSourceSelect = (e) => {
-    setMapSource(e.target.options[e.target.selectedIndex].value);
+  const handleMapSourceSelect = (selectedItem) => {
+    setMapSource(selectedItem.value);
   };
 
   const handleMapMove = ({ bbox }) => {
@@ -163,17 +234,15 @@ export function ProjectLiveMonitoring() {
                   Search
                 </button>
               </form>
-              <select
+              <Select
+                classNamePrefix="react-select"
+                isClearable={true}
+                value={imageryOptions.find((item) => item.value === mapSource)}
+                options={imageryOptions}
+                // placeholder={<FormattedMessage {...messages.selectImagery} />}
                 onChange={handleMapSourceSelect}
-                ref={styleSelectRef}
-                className="border mt-2 bg-white px-2 py-2 text-sm"
-              >
-                <option value="osm">OSM</option>
-                <option value="bing">Bing</option>
-                <option value="esri">ESRI</option>
-                <option value="mapbox">Mapbox</option>
-                <option value="oam">OAM</option>
-              </select>
+                className="w-50 z-2"
+              />
             </div>
             <UnderpassMap
               center={coords}
@@ -183,7 +252,7 @@ export function ProjectLiveMonitoring() {
               highlightDataQualityIssues
               popupFeature={activeFeature}
               source={mapSource}
-              config={config}
+              config={mapConfig}
               realtime={realtimeMap}
               theme={demoTheme}
               zoom={17}
@@ -195,9 +264,11 @@ export function ProjectLiveMonitoring() {
             style={{
               flex: 1,
               padding: 10,
-              display: "flex",
-              "flex-direction": "column",
-              backgroundColor: `rgb(${hottheme.colors.white})`}}>
+              display: 'flex',
+              'flex-direction': 'column',
+              backgroundColor: `rgb(${hottheme.colors.white})`,
+            }}
+          >
             <div className="border-b-2 pb-5 space-y-3">
               <UnderpassFeatureStats
                 tags={tags}
@@ -267,22 +338,54 @@ export function ProjectLiveMonitoring() {
                 <label htmlFor="semanticCheckbox">Semantic</label>
               </form>
               <form className="space-x-2">
-                  <input checked={featureType === "all"} onChange={() => { setFeatureType("all") }} name="featureTypeAllCheckbox" id="featureTypeAllCheckbox" type="radio" />
-                  <label htmlFor="featureTypeAllCheckbox">All</label>
-                  <input checked={featureType === "polygon"} onChange={() => { setFeatureType("polygon") }} name="featureTypePolygonCheckbox" id="featureTypePolygonCheckbox" type="radio" />
-                  <label htmlFor="featureTypePolygonCheckbox">Polygon</label>
-                  <input checked={featureType === "line"} onChange={() => { setFeatureType("line") }} name="featureTypeLineCheckbox" id="featureTypeLineCheckbox" type="radio" />
-                  <label htmlFor="featureTypeLineCheckbox">Line</label>
-                  <input checked={featureType === "node"} onChange={() => { setFeatureType("node") }} name="featureTypeNodeCheckbox" id="featureTypeNodeCheckbox" type="radio" />
-                  <label htmlFor="featureTypeNodeCheckbox">Node</label>
+                <input
+                  checked={featureType === 'all'}
+                  onChange={() => {
+                    setFeatureType('all');
+                  }}
+                  name="featureTypeAllCheckbox"
+                  id="featureTypeAllCheckbox"
+                  type="radio"
+                />
+                <label htmlFor="featureTypeAllCheckbox">All</label>
+                <input
+                  checked={featureType === 'polygon'}
+                  onChange={() => {
+                    setFeatureType('polygon');
+                  }}
+                  name="featureTypePolygonCheckbox"
+                  id="featureTypePolygonCheckbox"
+                  type="radio"
+                />
+                <label htmlFor="featureTypePolygonCheckbox">Polygon</label>
+                <input
+                  checked={featureType === 'line'}
+                  onChange={() => {
+                    setFeatureType('line');
+                  }}
+                  name="featureTypeLineCheckbox"
+                  id="featureTypeLineCheckbox"
+                  type="radio"
+                />
+                <label htmlFor="featureTypeLineCheckbox">Line</label>
+                <input
+                  checked={featureType === 'node'}
+                  onChange={() => {
+                    setFeatureType('node');
+                  }}
+                  name="featureTypeNodeCheckbox"
+                  id="featureTypeNodeCheckbox"
+                  type="radio"
+                />
+                <label htmlFor="featureTypeNodeCheckbox">Node</label>
               </form>
             </div>
             <UnderpassFeatureList
               style={{
-                  display: "flex",
-                  "flex-flow": "column",
-                  height: "100px",
-                  flex: "1 1 auto"
+                display: 'flex',
+                'flex-flow': 'column',
+                height: '100px',
+                flex: '1 1 auto',
               }}
               tags={tags}
               hashtag={'hotosm-project-' + id}
