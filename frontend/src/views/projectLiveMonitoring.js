@@ -265,7 +265,7 @@ export function ProjectLiveMonitoring() {
               flex: 1,
               padding: 10,
               display: 'flex',
-              'flex-direction': 'column',
+              flexDirection: 'column',
               backgroundColor: `rgb(${hottheme.colors.white})`,
             }}
           >
