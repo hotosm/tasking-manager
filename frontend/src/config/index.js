@@ -51,6 +51,8 @@ export const SENTRY_FRONTEND_DSN = process.env.REACT_APP_SENTRY_FRONTEND_DSN;
 // OSM API and Editor URLs
 export const OSM_SERVER_URL =
   process.env.REACT_APP_OSM_SERVER_URL || 'https://www.openstreetmap.org';
+export const OSM_SERVER_API_URL =
+  process.env.REACT_APP_OSM_SERVER_API_URL || 'https://api.openstreetmap.org';
 export const ID_EDITOR_URL =
   process.env.REACT_APP_ID_EDITOR_URL || 'https://www.openstreetmap.org/edit?editor=id&';
 export const POTLATCH2_EDITOR_URL =
