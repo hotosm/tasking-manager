@@ -3,7 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import PropTypes from 'prop-types';
 
-import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
+import {
+  OSM_CLIENT_ID,
+  OSM_CLIENT_SECRET,
+  OSM_REDIRECT_URI,
+  OSM_SERVER_API_URL,
+  OSM_SERVER_URL,
+} from '../config';
 import { types } from '../store/actions/editor';
 
 // We import from a CDN using a SEMVER minor version range
@@ -190,6 +196,7 @@ function RapidEditor({
       context.apiConnections = [
         {
           url: OSM_SERVER_URL,
+          apiUrl: OSM_SERVER_API_URL,
           client_id: OSM_CLIENT_ID,
           client_secret: OSM_CLIENT_SECRET,
           redirect_uri: OSM_REDIRECT_URI,
@@ -223,7 +230,7 @@ function RapidEditor({
 
   useEffect(() => {
     const containerRoot = document.getElementById('rapid-container-root');
-    const editListener = () => updateDisableState(setDisable, context.systems.edits);
+    const editListener = () => updateDisableState(setDisable, context.systems.editor);
     if (context && dom) {
       containerRoot.appendChild(dom);
       // init the ui or restart if it was loaded previously
@@ -239,28 +246,30 @@ function RapidEditor({
 
       /* Perform tasks after Rapid has started up */
       promise.then(() => {
-        /* Keep track of edits */
-        const editSystem = context.systems.edits;
+        if (context?.systems?.editor) {
+          /* Keep track of edits */
+          const editSystem = context.systems.editor;
 
-        editSystem.on('change', editListener);
-        editSystem.on('reset', editListener);
+          editSystem.on('stablechange', editListener);
+          editSystem.on('reset', editListener);
+        }
       });
     }
     return () => {
       if (containerRoot?.childNodes && dom in containerRoot.childNodes) {
         document.getElementById('rapid-container-root')?.removeChild(dom);
       }
-      if (context?.systems?.edits) {
-        const editSystem = context.systems.edits;
-        editSystem.off('change', editListener);
+      if (context?.systems?.editor) {
+        const editSystem = context.systems.editor;
+        editSystem.off('stablechange', editListener);
         editSystem.off('reset', editListener);
       }
     };
   }, [dom, context, setDisable]);
 
   useEffect(() => {
-    if (context) {
-      return () => context.save();
+    if (context?.systems?.editor) {
+      return () => context.systems.editor.saveBackup();
     }
   }, [context]);
 
@@ -268,6 +277,7 @@ function RapidEditor({
     if (context && session) {
       context.preauth = {
         url: OSM_SERVER_URL,
+        apiUrl: OSM_SERVER_API_URL,
         client_id: OSM_CLIENT_ID,
         client_secret: OSM_CLIENT_SECRET,
         redirect_uri: OSM_REDIRECT_URI,
