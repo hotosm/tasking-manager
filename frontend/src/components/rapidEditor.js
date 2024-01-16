@@ -223,7 +223,7 @@ function RapidEditor({
 
   useEffect(() => {
     const containerRoot = document.getElementById('rapid-container-root');
-    const editListener = () => updateDisableState(setDisable, context.systems.edits);
+    const editListener = () => updateDisableState(setDisable, context.systems.editor);
     if (context && dom) {
       containerRoot.appendChild(dom);
       // init the ui or restart if it was loaded previously
@@ -240,9 +240,9 @@ function RapidEditor({
       /* Perform tasks after Rapid has started up */
       promise.then(() => {
         /* Keep track of edits */
-        const editSystem = context.systems.edits;
+        const editSystem = context.systems.editor;
 
-        editSystem.on('change', editListener);
+        editSystem.on('stablechange', editListener);
         editSystem.on('reset', editListener);
       });
     }
@@ -250,9 +250,9 @@ function RapidEditor({
       if (containerRoot?.childNodes && dom in containerRoot.childNodes) {
         document.getElementById('rapid-container-root')?.removeChild(dom);
       }
-      if (context?.systems?.edits) {
-        const editSystem = context.systems.edits;
-        editSystem.off('change', editListener);
+      if (context?.systems?.editor) {
+        const editSystem = context.systems.editor;
+        editSystem.off('stablechange', editListener);
         editSystem.off('reset', editListener);
       }
     };
