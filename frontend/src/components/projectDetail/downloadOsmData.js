@@ -65,7 +65,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
    */
   const downloadS3File = async (title, fileFormat, feature_type) => {
     // Create the base URL for the S3 file
-    const baseUrl = `${EXPORT_TOOL_S3_URL}/${datasetConfig.dataset_folder}/${
+    const downloadUrl = `${EXPORT_TOOL_S3_URL}/${datasetConfig.dataset_folder}/${
       datasetConfig.dataset_prefix
     }/${title}/${feature_type}/${
       datasetConfig.dataset_prefix
@@ -76,34 +76,24 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
 
     try {
       // Fetch the file from the S3 URL
-      const response = await fetch(baseUrl);
+      const responsehead = await fetch(downloadUrl, { method: 'HEAD' });
+      // console.log(responsehead, 'responsehead');
+      // const lastMod = responsehead.headers.get('Last-Modified');
+      // console.log(lastMod, 'lastMod');
+      // console.log(
+      //   responsehead.headers.get('Content-Length'),
+      //   'responsehead.headers.get(Last-Modified)',
+      // );
+      window.location.href = downloadUrl;
 
       // Check if the request was successful
-      if (response.ok) {
-        // Get the file data as a blob
-        const blob = await response.blob();
-
-        // Create a download link for the file
-        const href = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = href;
-        link.setAttribute(
-          'download',
-          `hotosm_project_${
-            project.projectId
-          }_${title}_${feature_type}_${fileFormat?.toLowerCase()}.zip`,
-        );
-
-        // Add the link to the document body, click it, and then remove it
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        // Set the state to indicate that the file download is complete
+      if (responsehead.ok) {
         setIsDownloadingState({ title: title, fileFormat: fileFormat, isDownloading: false });
       } else {
+        setIsDownloadingState({ title: title, fileFormat: fileFormat, isDownloading: false });
         // Show a popup and throw an error if the request was not successful
         setShowPopup(true);
-        throw new Error(`Request failed with status: ${response.status}`);
+        throw new Error(`Request failed with status: ${responsehead.status}`);
       }
     } catch (error) {
       // Show a popup and log the error if an error occurs during the download
