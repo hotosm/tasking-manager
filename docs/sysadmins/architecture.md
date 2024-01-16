@@ -1,6 +1,6 @@
 # Architecture
 
-![TM Architecture](../assets/tm-architecture.svg)
+![TM Architecture](../images/tm-architecture.svg)
 
 Reference for the [Cloudformation script](../scripts/aws/cloudformation/tasking-manager.template.js):
 
