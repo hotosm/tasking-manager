@@ -10,7 +10,8 @@ import {
   UnderpassValidationStats,
 } from '@hotosm/underpass-ui';
 
-import { ProjectHeader } from '../components/projectDetail/header';
+import { ProjectVisibilityBox } from '../components/projectDetail/visibilityBox';
+import { ProjectStatusBox } from '../components/projectDetail/statusBox';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useParams } from 'react-router-dom';
 import { useFetch } from '../hooks/UseFetch';
@@ -267,9 +268,22 @@ export function ProjectLiveMonitoring() {
               backgroundColor: `rgb(${hottheme.colors.white})`,
             }}
           >
-            <div className="w-100 fl pv1 bg-white blue-dark">
-          <ProjectHeader project={project} showEditLink={true} />
-        </div>
+            { project &&
+              <div className="w-100 fl pv1 bg-white blue-dark">
+                <div>
+                  <h3
+                    className="f2 fw5 mt3 mt2-ns mb3 ttu barlow-condensed blue-dark dib mr3"
+                    lang={project.projectInfo.locale}
+                  >
+                    {project.projectInfo && project.projectInfo.name}
+                  </h3>
+                  {project.private && <ProjectVisibilityBox className="pv2 ph3 mb3 mr3 v-mid dib" />}
+                  {['DRAFT', 'ARCHIVED'].includes(project.status) && (
+                    <ProjectStatusBox status={project.status} className="pv2 ph3 mb3 v-mid dib mr3" />
+                  )}
+                </div>
+              </div> 
+            }
             <div className="border-b-2 pb-5 space-y-3">
               <UnderpassFeatureStats
                 tags={tags}
@@ -305,80 +319,6 @@ export function ProjectLiveMonitoring() {
                   type="checkbox"
                 />
                 <label target="liveMapCheckbox">Live map</label>
-              </form>
-              <form className="space-x-2 py-4">
-                <input
-                  checked={status === statusList.ALL}
-                  onChange={() => {
-                    setStatus(statusList.ALL);
-                  }}
-                  name="allCheckbox"
-                  id="allCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="allCheckbox">All</label>
-                <input
-                  checked={status === statusList.UNSQUARED}
-                  onChange={() => {
-                    setStatus(statusList.UNSQUARED);
-                  }}
-                  name="geospatialCheckbox"
-                  id="geospatialCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="geospatialCheckbox">Geospatial</label>
-                <input
-                  checked={status === statusList.BADVALUE}
-                  onChange={() => {
-                    setStatus(statusList.BADVALUE);
-                  }}
-                  name="semanticCheckbox"
-                  id="semanticCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="semanticCheckbox">Semantic</label>
-              </form>
-              <form className="space-x-2">
-                <input
-                  checked={featureType === 'all'}
-                  onChange={() => {
-                    setFeatureType('all');
-                  }}
-                  name="featureTypeAllCheckbox"
-                  id="featureTypeAllCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="featureTypeAllCheckbox">All</label>
-                <input
-                  checked={featureType === 'polygon'}
-                  onChange={() => {
-                    setFeatureType('polygon');
-                  }}
-                  name="featureTypePolygonCheckbox"
-                  id="featureTypePolygonCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="featureTypePolygonCheckbox">Polygon</label>
-                <input
-                  checked={featureType === 'line'}
-                  onChange={() => {
-                    setFeatureType('line');
-                  }}
-                  name="featureTypeLineCheckbox"
-                  id="featureTypeLineCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="featureTypeLineCheckbox">Line</label>
-                <input
-                  checked={featureType === 'node'}
-                  onChange={() => {
-                    setFeatureType('node');
-                  }}
-                  name="featureTypeNodeCheckbox"
-                  id="featureTypeNodeCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="featureTypeNodeCheckbox">Node</label>
               </form>
             </div>
             <UnderpassFeatureList
