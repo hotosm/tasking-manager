@@ -1,3 +1,0 @@
-# Networking and Connectivity
-
-TBD
