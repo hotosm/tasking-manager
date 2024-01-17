@@ -212,9 +212,6 @@ export function ProjectLiveMonitoring() {
       className="pr3"
     >
       <div>
-        <div className="w-100 fl pv3 ph2 ph4-ns bg-white blue-dark">
-          <ProjectHeader project={project} showEditLink={true} />
-        </div>
         <div className="flex p-2">
           <div style={{ flex: 2 }}>
             <div className="top">
@@ -241,7 +238,7 @@ export function ProjectLiveMonitoring() {
                 options={imageryOptions}
                 // placeholder={<FormattedMessage {...messages.selectImagery} />}
                 onChange={handleMapSourceSelect}
-                className="w-50 z-2"
+                className="w-60 z-2"
               />
             </div>
             <UnderpassMap
@@ -263,12 +260,15 @@ export function ProjectLiveMonitoring() {
           <div
             style={{
               flex: 1,
-              padding: 10,
+              padding: 5,
               display: 'flex',
               flexDirection: 'column',
               backgroundColor: `rgb(${hottheme.colors.white})`,
             }}
           >
+            <div className="w-100 fl pv3 ph2 ph4-ns bg-white blue-dark">
+          <ProjectHeader project={project} showEditLink={true} />
+        </div>
             <div className="border-b-2 pb-5 space-y-3">
               <UnderpassFeatureStats
                 tags={tags}
