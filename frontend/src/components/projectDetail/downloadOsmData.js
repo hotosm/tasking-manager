@@ -65,7 +65,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
    */
   const downloadS3File = async (title, fileFormat, feature_type) => {
     // Create the base URL for the S3 file
-    const baseUrl = `${EXPORT_TOOL_S3_URL}/${datasetConfig.dataset_folder}/${
+    const downloadUrl = `${EXPORT_TOOL_S3_URL}/${datasetConfig.dataset_folder}/${
       datasetConfig.dataset_prefix
     }/${title}/${feature_type}/${
       datasetConfig.dataset_prefix
@@ -76,34 +76,24 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
 
     try {
       // Fetch the file from the S3 URL
-      const response = await fetch(baseUrl);
+      const responsehead = await fetch(downloadUrl, { method: 'HEAD' });
+      // console.log(responsehead, 'responsehead');
+      // const lastMod = responsehead.headers.get('Last-Modified');
+      // console.log(lastMod, 'lastMod');
+      // console.log(
+      //   responsehead.headers.get('Content-Length'),
+      //   'responsehead.headers.get(Last-Modified)',
+      // );
+      window.location.href = downloadUrl;
 
       // Check if the request was successful
-      if (response.ok) {
-        // Get the file data as a blob
-        const blob = await response.blob();
-
-        // Create a download link for the file
-        const href = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = href;
-        link.setAttribute(
-          'download',
-          `hotosm_project_${
-            project.projectId
-          }_${title}_${feature_type}_${fileFormat?.toLowerCase()}.zip`,
-        );
-
-        // Add the link to the document body, click it, and then remove it
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        // Set the state to indicate that the file download is complete
+      if (responsehead.ok) {
         setIsDownloadingState({ title: title, fileFormat: fileFormat, isDownloading: false });
       } else {
+        setIsDownloadingState({ title: title, fileFormat: fileFormat, isDownloading: false });
         // Show a popup and throw an error if the request was not successful
         setShowPopup(true);
-        throw new Error(`Request failed with status: ${response.status}`);
+        throw new Error(`Request failed with status: ${responsehead.status}`);
       }
     } catch (error) {
       // Show a popup and log the error if an error occurs during the download
@@ -115,6 +105,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
   const filteredMappingTypes = TITLED_ICONS?.filter((icon) =>
     projectMappingTypes?.includes(icon.value),
   );
+
   return (
     <div className="mb5 w-100 pb5 ph4 flex flex-wrap">
       <Popup modal open={showPopup} closeOnDocumentClick nested onClose={() => setShowPopup(false)}>
@@ -143,84 +134,91 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
           </div>
         )}
       </Popup>
-      {filteredMappingTypes.map((type) => (
-        <div
-          className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex flex-wrap items-center  "
-          style={{
-            width: '560px',
-            gap: '16px',
-          }}
-          key={type.title}
-        >
+      {filteredMappingTypes.map((type) => {
+        const loadingState = isDownloadingState?.isDownloading;
+        return (
           <div
+            className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex flex-wrap items-center  "
             style={{
-              justifyContent: 'center',
-              display: 'flex',
-              alignItems: 'center',
+              width: '560px',
+              gap: '16px',
             }}
+            key={type.title}
           >
-            <type.Icon
-              title={type.title}
-              color="#D73F3F"
-              className="br1 h2 w2 pa1 ma1 ba b--white bw1 dib h-65 w-65"
-              style={{ height: '56px' }}
-            />
-          </div>
-          <div className="flex-column">
             <div
-              className="file-list flex barlow-condensed f3"
-              style={{ display: 'flex', gap: '12px' }}
+              style={{
+                justifyContent: 'center',
+                display: 'flex',
+                alignItems: 'center',
+              }}
             >
-              <p className="fw5 ttc">{type.title}</p>
-              <FileFormatCard
+              <type.Icon
                 title={type.title}
-                fileFormats={type.formats}
-                downloadS3Data={downloadS3File}
-                isDownloadingState={isDownloadingState}
-                selectedCategoryFormat={selectedCategoryFormat}
-                setSelectedCategoryFormat={setSelectedCategoryFormat}
+                color="#D73F3F"
+                className="br1 h2 w2 pa1 ma1 ba b--white bw1 dib h-65 w-65"
+                style={{ height: '56px' }}
               />
             </div>
-            <div
-              className={`flex flex-row ${
-                selectedCategoryFormat && selectedCategoryFormat.title === type.title
-                  ? 'fade-in active'
-                  : 'fade-in'
-              } `}
-              style={{ gap: '20px' }}
-            >
-              {selectedCategoryFormat &&
-                selectedCategoryFormat.title === type.title &&
-                type?.featuretype?.map((typ) => (
-                  <span
-                    key={`${typ}_${selectedCategoryFormat.title}`}
-                    onClick={() =>
-                      downloadS3File(
-                        selectedCategoryFormat.title,
-                        selectedCategoryFormat.format,
-                        typ,
-                      )
-                    }
-                    onKeyUp={() =>
-                      downloadS3File(
-                        selectedCategoryFormat.title,
-                        selectedCategoryFormat.format,
-                        typ,
-                      )
-                    }
-                    className="flex flex-row items-center pointer link hover-red color-inherit categorycard"
-                    style={{ gap: '10px' }}
-                  >
-                    <DownloadIcon style={{ height: '28px' }} color="#D73F3F" />
-                    <p className="ttc">
-                      {typ} {selectedCategoryFormat.format}
-                    </p>
-                  </span>
-                ))}
+            <div className="flex-column">
+              <div
+                className="file-list flex barlow-condensed f3"
+                style={{ display: 'flex', gap: '12px' }}
+              >
+                <p className="fw5 ttc">{type.title}</p>
+                <FileFormatCard
+                  title={type.title}
+                  fileFormats={type.formats}
+                  downloadS3Data={downloadS3File}
+                  isDownloadingState={isDownloadingState}
+                  selectedCategoryFormat={selectedCategoryFormat}
+                  setSelectedCategoryFormat={setSelectedCategoryFormat}
+                />
+              </div>
+              <div
+                className={`flex flex-row ${
+                  selectedCategoryFormat && selectedCategoryFormat.title === type.title
+                    ? 'fade-in active'
+                    : 'fade-in'
+                } `}
+                style={{ gap: '20px' }}
+              >
+                {selectedCategoryFormat &&
+                  selectedCategoryFormat.title === type.title &&
+                  type?.featuretype?.map((typ) => (
+                    <span
+                      key={`${typ}_${selectedCategoryFormat.title}`}
+                      onClick={() =>
+                        downloadS3File(
+                          selectedCategoryFormat.title,
+                          selectedCategoryFormat.format,
+                          typ,
+                        )
+                      }
+                      onKeyUp={() =>
+                        downloadS3File(
+                          selectedCategoryFormat.title,
+                          selectedCategoryFormat.format,
+                          typ,
+                        )
+                      }
+                      style={
+                        loadingState
+                          ? { cursor: 'not-allowed', pointerEvents: 'none', gap: '10px' }
+                          : { cursor: 'pointer', gap: '10px' }
+                      }
+                      className="flex flex-row items-center pointer link hover-red color-inherit categorycard"
+                    >
+                      <DownloadIcon style={{ height: '28px' }} color="#D73F3F" />
+                      <p className="ttc">
+                        {typ} {selectedCategoryFormat.format}
+                      </p>
+                    </span>
+                  ))}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
