@@ -330,7 +330,7 @@ export function ProjectLiveMonitoring() {
             <UnderpassFeatureList
               style={{
                 display: 'flex',
-                'flex-flow': 'column',
+                flexFlow: 'column',
                 height: '100px',
                 flex: '1 1 auto',
               }}
