@@ -67,17 +67,20 @@ nav:
   - Home: index.md
   - About: about.md
   - For Developers:
-#       - Understanding the Code: developers/understanding-the-code.md
       - Contributing Guidelines: developers/contributing-guidelines.md
       - Development Setup: developers/development-setup.md
       - Versions and Releases: developers/versions-and-releases.md
+      - Reviewing PRs: developers/review-pr.md
+      - Submitting a PR: developers/submit-pr.md
+      - Database Schema: developers/tmschema.md
+      - Translations: developers/translations.md
   - For Sysadmins:
-#      - Monitoring and Logging: sysadmins/monitoring-logging.md
-#      - Networking: sysadmins/networking-connectivity.md
       - Deployment: sysadmins/deployment.md
-      - CI: sysadmins/ci-cd.md
       - Architecture: sysadmins/architecture.md
-#      - Security and Reliability: sysadmins/security-reliability-processes.md
+      - Migration: sysadmins/migration.md
+      - Deployment: sysadmins/deployment.md
+      - Customize: sysadmins/customize.md
+      - CI: sysadmins/ci-cd.md
   - Class Hierarchy: apidocs/html/index.html
   - License: LICENSE.md
 #  - Changelog: CHANGELOG.md
