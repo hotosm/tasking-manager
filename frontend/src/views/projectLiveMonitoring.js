@@ -19,6 +19,7 @@ import './projectLiveMonitoring.css';
 import { MAPBOX_TOKEN } from '../config';
 
 const availableImageryOptions = [
+  { label: 'OSM', value: 'osm' },
   { label: 'Bing', value: 'Bing' },
   { label: 'Mapbox Satellite', value: 'Mapbox' },
   { label: 'ESRI World Imagery', value: 'EsriWorldImagery' },
@@ -96,6 +97,7 @@ export function ProjectLiveMonitoring() {
   const [mapConfig, setMapConfig] = useState(config);
   const [realtimeList, setRealtimeList] = useState(false);
   const [realtimeMap, setRealtimeMap] = useState(false);
+  // eslint-disable-next-line
   const [status, setStatus] = useState(statusList.UNSQUARED);
   // eslint-disable-next-line
   const [area, setArea] = useState(null);
@@ -133,7 +135,7 @@ export function ProjectLiveMonitoring() {
       ? 'custom'
       : availableImageryValues.includes(data.imagery)
       ? data.imagery
-      : 'Bing';
+      : 'osm';
     setMapSource(mapSourceValue);
   }, [data]);
 
@@ -235,7 +237,6 @@ export function ProjectLiveMonitoring() {
               <Select
                 classNamePrefix="react-select"
                 isClearable={true}
-                
                 value={imageryOptions.find((item) => item.value === mapSource)}
                 options={imageryOptions}
                 // placeholder={<FormattedMessage {...messages.selectImagery} />}
@@ -268,7 +269,7 @@ export function ProjectLiveMonitoring() {
               backgroundColor: `rgb(${hottheme.colors.white})`,
             }}
           >
-            { project &&
+            {project && (
               <div className="w-100 fl pv1 bg-white blue-dark">
                 <div>
                   <h3
@@ -277,13 +278,18 @@ export function ProjectLiveMonitoring() {
                   >
                     {project.projectInfo && project.projectInfo.name}
                   </h3>
-                  {project.private && <ProjectVisibilityBox className="pv2 ph3 mb3 mr3 v-mid dib" />}
+                  {project.private && (
+                    <ProjectVisibilityBox className="pv2 ph3 mb3 mr3 v-mid dib" />
+                  )}
                   {['DRAFT', 'ARCHIVED'].includes(project.status) && (
-                    <ProjectStatusBox status={project.status} className="pv2 ph3 mb3 v-mid dib mr3" />
+                    <ProjectStatusBox
+                      status={project.status}
+                      className="pv2 ph3 mb3 v-mid dib mr3"
+                    />
                   )}
                 </div>
-              </div> 
-            }
+              </div>
+            )}
             <div className="border-b-2 pb-5 space-y-3">
               <UnderpassFeatureStats
                 tags={tags}
