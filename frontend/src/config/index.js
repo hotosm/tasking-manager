@@ -6,6 +6,7 @@ export const API_URL = process.env.REACT_APP_API_URL
 export const OHSOME_STATS_BASE_URL =
   process.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org/api';
 export const OHSOME_STATS_TOKEN = process.env.REACT_APP_OHSOME_STATS_TOKEN || '';
+export const UNDERPASS_URL = process.env.UNDERPASS_URL || 'https://underpass.hotosm.org';
 
 // APPLICATION SETTINGS
 export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
@@ -59,6 +60,8 @@ export const POTLATCH2_EDITOR_URL =
   'https://www.openstreetmap.org/edit?editor=potlatch2';
 export const RAPID_EDITOR_URL =
   process.env.REACT_APP_RAPID_EDITOR_URL || 'https://mapwith.ai/rapid';
+export const EXPORT_TOOL_S3_URL = process.env.REACT_APP_EXPORT_TOOL_S3_URL || '';
+export const ENABLE_EXPORT_TOOL = process.env.REACT_APP_ENABLE_EXPORT_TOOL || '';
 
 export const TASK_COLOURS = {
   READY: '#fff',
