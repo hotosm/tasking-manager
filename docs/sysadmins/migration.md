@@ -32,8 +32,7 @@ the new Tasking Manager database.
 
 The method by which you install Tasking Manager on your own computer
 will vary, but you should follow the [guide to setup a development
-environment](./setup-development.md) or check out how to [setup a live
-installation](./setup-live.md).
+environment](../developers/development-setup.md).
 
 Ensure everything is met to start the migration: For this lunch the
 new Tasking Manager, go to the main homepage, and click on
