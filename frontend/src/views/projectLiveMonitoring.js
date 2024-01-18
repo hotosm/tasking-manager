@@ -113,7 +113,7 @@ export function ProjectLiveMonitoring() {
     if (!Object.keys(data).length) return;
     setProject(data);
     // add custom to config sources if the project has custom imagery
-    const hasCustomImagery = data.imagery.includes('http');
+    const hasCustomImagery = data.imagery?.includes('http');
     if (hasCustomImagery) {
       setMapConfig((prev) => ({
         ...prev,
