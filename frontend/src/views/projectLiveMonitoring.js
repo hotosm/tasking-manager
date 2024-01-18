@@ -39,6 +39,13 @@ const config = {
       attribution: '&copy; OpenStreetMap Contributors',
       maxzoom: 19,
     },
+    Bing: {
+      type: 'raster',
+      tiles: ['https://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1'],
+      tileSize: 256,
+      attribution: '&copy; OpenStreetMap Contributors',
+      maxzoom: 18,
+    },
     Mapbox: {
       type: 'raster',
       tiles: [
@@ -55,13 +62,6 @@ const config = {
       ],
       tileSize: 256,
       attribution: '&copy; OpenStreetMap Contributors &copy; ESRI',
-      maxzoom: 18,
-    },
-    Bing: {
-      type: 'raster',
-      tiles: ['http://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1'],
-      tileSize: 256,
-      attribution: '&copy; OpenStreetMap Contributors',
       maxzoom: 18,
     },
   },
@@ -330,7 +330,7 @@ export function ProjectLiveMonitoring() {
             <UnderpassFeatureList
               style={{
                 display: 'flex',
-                'flex-flow': 'column',
+                flexFlow: 'column',
                 height: '100px',
                 flex: '1 1 auto',
               }}

@@ -362,8 +362,11 @@ export const ProjectDetail = (props) => {
             className="bg-white blue-dark ba b--grey-light pa3"
           />
 
-          {/* show live view button only when the project has live monitoring feature */}
-          {hasLiveMonitoringFeature && (
+          {/* 
+            show live view button only for published projects &
+            when the project has live monitoring feature 
+          */}
+          {props.project.status === 'PUBLISHED' && hasLiveMonitoringFeature && (
             <LiveViewButton
               projectId={props.project.projectId}
               className="bg-white blue-dark ba b--grey-light pa3"
