@@ -9,7 +9,9 @@ import {
   UnderpassFeatureStats,
   UnderpassValidationStats,
 } from '@hotosm/underpass-ui';
-import { ProjectHeader } from '../components/projectDetail/header';
+
+import { ProjectVisibilityBox } from '../components/projectDetail/visibilityBox';
+import { ProjectStatusBox } from '../components/projectDetail/statusBox';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useParams } from 'react-router-dom';
 import { useFetch } from '../hooks/UseFetch';
@@ -17,6 +19,7 @@ import './projectLiveMonitoring.css';
 import { MAPBOX_TOKEN } from '../config';
 
 const availableImageryOptions = [
+  { label: 'OSM', value: 'osm' },
   { label: 'Bing', value: 'Bing' },
   { label: 'Mapbox Satellite', value: 'Mapbox' },
   { label: 'ESRI World Imagery', value: 'EsriWorldImagery' },
@@ -94,6 +97,7 @@ export function ProjectLiveMonitoring() {
   const [mapConfig, setMapConfig] = useState(config);
   const [realtimeList, setRealtimeList] = useState(false);
   const [realtimeMap, setRealtimeMap] = useState(false);
+  // eslint-disable-next-line
   const [status, setStatus] = useState(statusList.UNSQUARED);
   // eslint-disable-next-line
   const [area, setArea] = useState(null);
@@ -109,7 +113,7 @@ export function ProjectLiveMonitoring() {
     if (!Object.keys(data).length) return;
     setProject(data);
     // add custom to config sources if the project has custom imagery
-    const hasCustomImagery = data.imagery.includes('http');
+    const hasCustomImagery = data.imagery?.includes('http');
     if (hasCustomImagery) {
       setMapConfig((prev) => ({
         ...prev,
@@ -131,7 +135,7 @@ export function ProjectLiveMonitoring() {
       ? 'custom'
       : availableImageryValues.includes(data.imagery)
       ? data.imagery
-      : 'Bing';
+      : 'osm';
     setMapSource(mapSourceValue);
   }, [data]);
 
@@ -211,9 +215,6 @@ export function ProjectLiveMonitoring() {
       className="pr3"
     >
       <div>
-        <div className="w-100 fl pv3 ph2 ph4-ns bg-white blue-dark">
-          <ProjectHeader project={project} showEditLink={true} />
-        </div>
         <div className="flex p-2">
           <div style={{ flex: 2 }}>
             <div className="top">
@@ -240,7 +241,7 @@ export function ProjectLiveMonitoring() {
                 options={imageryOptions}
                 // placeholder={<FormattedMessage {...messages.selectImagery} />}
                 onChange={handleMapSourceSelect}
-                className="w-50 z-2"
+                className="w-60 z-2 mt-2"
               />
             </div>
             <UnderpassMap
@@ -262,12 +263,33 @@ export function ProjectLiveMonitoring() {
           <div
             style={{
               flex: 1,
-              padding: 10,
+              padding: 5,
               display: 'flex',
               flexDirection: 'column',
               backgroundColor: `rgb(${hottheme.colors.white})`,
             }}
           >
+            {project && (
+              <div className="w-100 fl pv1 bg-white blue-dark">
+                <div>
+                  <h3
+                    className="f2 fw5 mt3 mt2-ns mb3 ttu barlow-condensed blue-dark dib mr3"
+                    lang={project.projectInfo.locale}
+                  >
+                    {project.projectInfo && project.projectInfo.name}
+                  </h3>
+                  {project.private && (
+                    <ProjectVisibilityBox className="pv2 ph3 mb3 mr3 v-mid dib" />
+                  )}
+                  {['DRAFT', 'ARCHIVED'].includes(project.status) && (
+                    <ProjectStatusBox
+                      status={project.status}
+                      className="pv2 ph3 mb3 v-mid dib mr3"
+                    />
+                  )}
+                </div>
+              </div>
+            )}
             <div className="border-b-2 pb-5 space-y-3">
               <UnderpassFeatureStats
                 tags={tags}
@@ -303,80 +325,6 @@ export function ProjectLiveMonitoring() {
                   type="checkbox"
                 />
                 <label target="liveMapCheckbox">Live map</label>
-              </form>
-              <form className="space-x-2 py-4">
-                <input
-                  checked={status === statusList.ALL}
-                  onChange={() => {
-                    setStatus(statusList.ALL);
-                  }}
-                  name="allCheckbox"
-                  id="allCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="allCheckbox">All</label>
-                <input
-                  checked={status === statusList.UNSQUARED}
-                  onChange={() => {
-                    setStatus(statusList.UNSQUARED);
-                  }}
-                  name="geospatialCheckbox"
-                  id="geospatialCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="geospatialCheckbox">Geospatial</label>
-                <input
-                  checked={status === statusList.BADVALUE}
-                  onChange={() => {
-                    setStatus(statusList.BADVALUE);
-                  }}
-                  name="semanticCheckbox"
-                  id="semanticCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="semanticCheckbox">Semantic</label>
-              </form>
-              <form className="space-x-2">
-                <input
-                  checked={featureType === 'all'}
-                  onChange={() => {
-                    setFeatureType('all');
-                  }}
-                  name="featureTypeAllCheckbox"
-                  id="featureTypeAllCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="featureTypeAllCheckbox">All</label>
-                <input
-                  checked={featureType === 'polygon'}
-                  onChange={() => {
-                    setFeatureType('polygon');
-                  }}
-                  name="featureTypePolygonCheckbox"
-                  id="featureTypePolygonCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="featureTypePolygonCheckbox">Polygon</label>
-                <input
-                  checked={featureType === 'line'}
-                  onChange={() => {
-                    setFeatureType('line');
-                  }}
-                  name="featureTypeLineCheckbox"
-                  id="featureTypeLineCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="featureTypeLineCheckbox">Line</label>
-                <input
-                  checked={featureType === 'node'}
-                  onChange={() => {
-                    setFeatureType('node');
-                  }}
-                  name="featureTypeNodeCheckbox"
-                  id="featureTypeNodeCheckbox"
-                  type="radio"
-                />
-                <label htmlFor="featureTypeNodeCheckbox">Node</label>
               </form>
             </div>
             <UnderpassFeatureList

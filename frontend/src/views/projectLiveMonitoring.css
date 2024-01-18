@@ -6,8 +6,14 @@
 
 .top {
   position: absolute;
-  top: 390px;
+  top: 150px;
   left: 20px;
   z-index: 999;
 }
 
+svg.pl2 {
+  display: inherit;
+  height: 22px !important;
+  width: 19px !important;
+  margin-left: 0px;
+}
