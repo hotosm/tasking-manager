@@ -23,8 +23,8 @@ communities and organizations.
 ## Get involved!
 
 * Join a Tasking Manager [working group](working-groups.md)
-* Start by reading our [Code of conduct](code_of_conduct.md)
-* Get familiar with our [contributor guidelines](contributing.md)
+* Start by reading our [Code of conduct](developers/code_of_conduct.md)
+* Get familiar with our [contributor guidelines](developers/contributing.md)
   explaining the different ways in which you can support this project!
   We need your help!
 * Read the monthly update blogs on [OSM Discourse](https://community.openstreetmap.org/c/general/38/all).
