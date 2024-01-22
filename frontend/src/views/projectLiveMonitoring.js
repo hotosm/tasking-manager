@@ -9,6 +9,7 @@ import {
   UnderpassFeatureStats,
   UnderpassValidationStats,
 } from '@hotosm/underpass-ui';
+import { Link } from 'react-router-dom';
 
 import { ProjectVisibilityBox } from '../components/projectDetail/visibilityBox';
 import { ProjectStatusBox } from '../components/projectDetail/statusBox';
@@ -270,25 +271,39 @@ export function ProjectLiveMonitoring() {
             }}
           >
             {project && (
-              <div className="w-100 fl pv1 bg-white blue-dark">
-                <div>
-                  <h3
-                    className="f2 fw5 mt3 mt2-ns mb3 ttu barlow-condensed blue-dark dib mr3"
-                    lang={project.projectInfo.locale}
-                  >
-                    {project.projectInfo && project.projectInfo.name}
-                  </h3>
-                  {project.private && (
-                    <ProjectVisibilityBox className="pv2 ph3 mb3 mr3 v-mid dib" />
-                  )}
-                  {['DRAFT', 'ARCHIVED'].includes(project.status) && (
-                    <ProjectStatusBox
-                      status={project.status}
-                      className="pv2 ph3 mb3 v-mid dib mr3"
-                    />
-                  )}
+              <>
+                <div className="flex flex-column flex-row-ns justify-start justify-between-ns items-start items-center-ns flex-wrap">
+                  <div className="pt2">
+                    <span className="blue-light">
+                      <Link to={`/projects/${project.projectId}`} className="no-underline pointer">
+                        <span className="blue-light">#{project.projectId}</span>
+                      </Link>
+                    </span>
+                    {project.organisationName ? (
+                      <span className="blue-dark"> | {project.organisationName}</span>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
+                <div className="w-100 fl pv1 bg-white blue-dark">
+                  <div>
+                    <h3
+                      className="f2 fw5 ttu barlow-condensed blue-dark dib mr3"
+                      lang={project.projectInfo.locale}
+                    >
+                      {project.projectInfo && project.projectInfo.name}
+                    </h3>
+                    {project.private && (
+                      <ProjectVisibilityBox className="pv2 ph3 mb3 mr3 v-mid dib" />
+                    )}
+                    {['DRAFT', 'ARCHIVED'].includes(project.status) && (
+                      <ProjectStatusBox
+                        status={project.status}
+                        className="pv2 ph3 mb3 v-mid dib mr3"
+                      />
+                    )}
+                  </div>
+                </div>
+              </>
             )}
             <div className="border-b-2 pb-5 space-y-3">
               <UnderpassFeatureStats
