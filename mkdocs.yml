@@ -74,6 +74,7 @@ nav:
       - Submitting a PR: developers/submit-pr.md
       - Database Schema: developers/tmschema.md
       - Translations: developers/translations.md
+      - Data Flow Diagrams: dataflow.md
   - For Sysadmins:
       - Deployment: sysadmins/deployment.md
       - Architecture: sysadmins/architecture.md
