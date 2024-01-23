@@ -17,7 +17,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useParams } from 'react-router-dom';
 import { useFetch } from '../hooks/UseFetch';
 import './projectLiveMonitoring.css';
-import { MAPBOX_TOKEN } from '../config';
+import { MAPBOX_TOKEN, UNDERPASS_URL } from '../config';
 
 const availableImageryOptions = [
   { label: 'OSM', value: 'osm' },
@@ -29,7 +29,7 @@ const availableImageryOptions = [
 const availableImageryValues = availableImageryOptions.map((item) => item.value);
 
 const config = {
-  API_URL: `https://underpass.live:8000`,
+  API_URL: UNDERPASS_URL,
   MAPBOX_TOKEN: MAPBOX_TOKEN,
   // set default sources of Tasking Manager
   sources: {
