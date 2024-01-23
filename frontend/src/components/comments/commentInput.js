@@ -48,6 +48,11 @@ export const CommentInputField = ({
     values: async (query, cb) => {
       try {
         if (!query) return cb(contributors.map((username) => ({ username })));
+
+        // do not fetch data if the value comes from suggestions popup click
+        const isValueFromSuggestion = /^\[.*?\]\s$/.test(query);
+        if (isValueFromSuggestion) return;
+
         const res = await fetchLocalJSONAPI(`users/queries/filter/${query}/`, token);
         cb(res.usernames.map((username) => ({ username })));
       } catch (e) {
