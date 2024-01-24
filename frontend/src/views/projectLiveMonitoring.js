@@ -98,6 +98,7 @@ export function ProjectLiveMonitoring() {
   const [mapConfig, setMapConfig] = useState(config);
   const [realtimeList, setRealtimeList] = useState(false);
   const [realtimeMap, setRealtimeMap] = useState(false);
+  const [listAll, setListAll] = useState(false);
   // eslint-disable-next-line
   const [status, setStatus] = useState(statusList.UNSQUARED);
   // eslint-disable-next-line
@@ -340,6 +341,14 @@ export function ProjectLiveMonitoring() {
                   type="checkbox"
                 />
                 <label target="liveMapCheckbox">Live map</label>
+                <input
+                  onChange={() => {
+                    setListAll(!listAll);
+                  }}
+                  name="listAllCheckbox"
+                  type="checkbox"
+                />
+                <label target="listAllCheckbox">List all</label>
               </form>
             </div>
             <UnderpassFeatureList
@@ -362,7 +371,7 @@ export function ProjectLiveMonitoring() {
               }}
               realtime={realtimeList}
               config={config}
-              status={status}
+              status={listAll ? "" : status}
               orderBy="created_at"
               onFetchFirstTime={(mostRecentFeature) => {
                 if (mostRecentFeature) {
