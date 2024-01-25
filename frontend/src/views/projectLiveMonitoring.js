@@ -226,7 +226,7 @@ export function ProjectLiveMonitoring() {
       ready={!error && !loading}
       className="pr3"
     >
-      <div>
+      <div className="cf w-100" style={{ height: 'calc(100vh - 5.5rem)' }}>
         <div className="flex p-2">
           <div style={{ flex: 2 }}>
             <div className="top">
@@ -365,7 +365,7 @@ export function ProjectLiveMonitoring() {
               style={{
                 display: 'flex',
                 flexFlow: 'column',
-                height: '100px',
+                maxHeight: 'calc(100vh - 26rem)',
                 flex: '1 1 auto',
               }}
               tags={tags}

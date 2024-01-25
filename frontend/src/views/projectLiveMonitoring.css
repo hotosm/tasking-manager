@@ -1,7 +1,7 @@
-@import "@hotosm/underpass-ui/dist/index.css";
+@import '@hotosm/underpass-ui/dist/index.css';
 
 .maplibregl-map {
-  height: 100vh;
+  height: calc(100vh - 6.05rem);
 }
 
 .top {
