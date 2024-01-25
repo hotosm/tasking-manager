@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import api from './apiClient';
+import { UNDERPASS_URL } from '../config';
 
 export const useProjectsQuery = (fullProjectsQuery, action) => {
   const token = useSelector((state) => state.auth.token);
@@ -190,7 +191,7 @@ export const submitValidationTask = (projectId, payload, token, locale) => {
 
 export const useAvailableCountriesQuery = () => {
   const fetchGeojsonData = () => {
-    return axios.get(`https://underpass.live/availability.json`);
+    return axios.get(`${UNDERPASS_URL}/availability`);
   };
 
   return useQuery({
