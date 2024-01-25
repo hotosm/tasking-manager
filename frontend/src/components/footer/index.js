@@ -38,6 +38,7 @@ export function Footer() {
     'projects/:id/tasks',
     'projects/:id/map',
     'projects/:id/validate',
+    'projects/:id/live',
     'manage/organisations/new/',
     'manage/teams/new',
     'manage/campaigns/new',

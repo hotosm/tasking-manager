@@ -10,6 +10,7 @@ import {
   UnderpassValidationStats,
 } from '@hotosm/underpass-ui';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 import { ProjectVisibilityBox } from '../components/projectDetail/visibilityBox';
 import { ProjectStatusBox } from '../components/projectDetail/statusBox';
@@ -89,6 +90,7 @@ const mappingTypesFeatureTypes = {
 
 export function ProjectLiveMonitoring() {
   const { id } = useParams();
+  const dispatch = useDispatch();
   const [coords, setCoords] = useState([0, 0]);
   const [activeFeature, setActiveFeature] = useState(null);
   const [tags, setTags] = useState('building');
@@ -169,6 +171,14 @@ export function ProjectLiveMonitoring() {
       setFeatureType(mappingTypesFeatureTypes[project.mappingTypes] || 'polygon');
     }
   }, [project]);
+
+  // set organization bar visibility to false
+  useEffect(() => {
+    dispatch({ type: 'SET_VISIBILITY', isVisible: false });
+    return () => {
+      dispatch({ type: 'SET_VISIBILITY', isVisible: true });
+    };
+  }, [dispatch]);
 
   const hottheme = HOTTheme();
 
