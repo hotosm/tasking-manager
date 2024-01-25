@@ -152,15 +152,22 @@ export const UsersTable = ({ filters, setFilters }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let abort = false;
     const fetchUsers = async (filters) => {
       setLoading(true);
       const url = `users/?${filters}`;
       fetchLocalJSONAPI(url, token)
         .then((res) => {
-          setResponse(res);
-          setLoading(false);
+          if (!abort) {
+            setResponse(res);
+            setLoading(false);
+          }
         })
-        .catch((err) => setError(err));
+        .catch((err) => {
+          if (!abort) {
+            setError(err);
+          }
+        });
     };
 
     // Filter elements according to logic.
@@ -183,6 +190,7 @@ export const UsersTable = ({ filters, setFilters }) => {
       .join('&');
 
     fetchUsers(urlFilters);
+    return () => abort = true;
   }, [filters, token, status]);
 
   return (
