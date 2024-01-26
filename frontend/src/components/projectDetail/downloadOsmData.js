@@ -155,14 +155,14 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
             ...feature,
             ...results[index],
           }));
-          const mergedListData = downloadDataList.map((type) => {
-            if (type.title === selectedCategoryFormat.title) {
+          const mergedListData = downloadDataList.map((list) => {
+            if (list.title === selectedCategoryFormat.title) {
               return {
-                ...type,
+                ...list,
                 featuretype: mergedArray,
               };
             }
-            return type;
+            return list;
           });
           setDownloadDataList(mergedListData);
           setIsDownloadingState({
@@ -189,8 +189,6 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
         });
     };
     multipleHeadCallForFormat();
-
-    console.log('test');
   }, [selectedCategoryFormat]);
 
   return (
@@ -225,7 +223,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
         const loadingState = isDownloadingState?.isDownloading;
         return (
           <div
-            className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex flex-wrap items-center  "
+            className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex flex-wrap items-start justify-start  "
             style={{
               width: '800px',
               gap: '16px',
@@ -248,7 +246,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
             </div>
             <div className="flex-column">
               <div
-                className="file-list flex barlow-condensed f3"
+                className="file-list flex barlow-condensed f3 items-center "
                 style={{ display: 'flex', gap: '12px' }}
               >
                 <p className="fw5 ttc">{type.title}</p>
@@ -273,7 +271,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                   selectedCategoryFormat.title === type.title &&
                   type?.featuretype?.map((typ) => (
                     <span
-                      key={`${typ}_${selectedCategoryFormat.title}`}
+                      key={`${typ.type}_${selectedCategoryFormat.title}`}
                       onClick={() =>
                         downloadS3File(
                           selectedCategoryFormat.title,
@@ -307,7 +305,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                         </p>
                         <span className="f7 mid-gray">{`Last Generated: ${
                           typ.lastmod ? typ.lastmod : '-'
-                        })`}</span>
+                        }`}</span>
                       </div>
                     </span>
                   ))}
