@@ -142,8 +142,6 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
 
         return results;
       }
-      console.log(filterMappingCategory, 'filterMappingCategory');
-      console.log(selectedCategoryFormat, 'selectedCategoryFormat');
       const multipleUrl = filterMappingCategory.featuretype.map((type) => {
         return `${EXPORT_TOOL_S3_URL}/${datasetConfig.dataset_folder}/${
           datasetConfig.dataset_prefix
@@ -157,8 +155,6 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
             ...feature,
             ...results[index],
           }));
-          console.log(mergedArray, 'mergedArray');
-          console.log(results); // Array of results from fetch requests
           const mergedListData = downloadDataList.map((type) => {
             if (type.title === selectedCategoryFormat.title) {
               return {
@@ -168,7 +164,6 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
             }
             return type;
           });
-          console.log(mergedListData, 'mergedListData');
           setDownloadDataList(mergedListData);
           setIsDownloadingState({
             title: selectedCategoryFormat.title,
