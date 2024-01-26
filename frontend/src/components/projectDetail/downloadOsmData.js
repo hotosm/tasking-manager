@@ -7,35 +7,34 @@ import { EXPORT_TOOL_S3_URL } from '../../config';
 import messages from './messages';
 import { FormattedMessage } from 'react-intl';
 import formatBytes from '../../utils/formatBytes';
-import { format } from 'date-fns';
 
 export const TITLED_ICONS = [
   {
     Icon: RoadIcon,
-    title: 'Roads',
+    title: 'roads',
     value: 'ROADS',
-    featuretype: ['lines'],
+    featuretype: [{ type: 'lines' }],
     formats: ['geojson', 'shp', 'kml'],
   },
   {
     Icon: HomeIcon,
-    title: 'Buildings',
+    title: 'buildings',
     value: 'BUILDINGS',
-    featuretype: ['polygons'],
+    featuretype: [{ type: 'polygons' }],
     formats: ['geojson', 'shp', 'kml'],
   },
   {
     Icon: WavesIcon,
-    title: 'Waterways',
+    title: 'waterways',
     value: 'WATERWAYS',
-    featuretype: ['lines', 'polygons'],
+    featuretype: [{ type: 'polygons' }, { type: 'lines' }],
     formats: ['geojson', 'shp', 'kml'],
   },
   {
     Icon: TaskIcon,
-    title: 'Landuse',
+    title: 'landuse',
     value: 'LAND_USE',
-    featuretype: ['points', 'polygons'],
+    featuretype: [{ type: 'points' }, { type: 'polygons' }],
     formats: ['geojson', 'shp', 'kml'],
   },
 ];
@@ -48,10 +47,10 @@ export const TITLED_ICONS = [
  */
 
 export const DownloadOsmData = ({ projectMappingTypes, project }) => {
+  const [downloadDataList, setDownloadDataList] = useState(TITLED_ICONS);
   const [showPopup, setShowPopup] = useState(false);
   const [isDownloadingState, setIsDownloadingState] = useState(null);
   const [selectedCategoryFormat, setSelectedCategoryFormat] = useState(null);
-  const [mergedJSONData, setMergedJSONData] = useState(null);
 
   const datasetConfig = {
     dataset_prefix: `hotosm_project_${project.projectId}`,
@@ -66,55 +65,13 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
    * @param {string} feature_type - The feature type of the  ffile.
    * @return {Promise<void>} Promise that resolves when the download is complete.
    */
-  const fetchMetaJSON = async () => {
-    const metaJSONResponse = await fetch(
-      `https://api-prod.raw-data.hotosm.org/v1/s3/get/${datasetConfig.dataset_folder}/${datasetConfig.dataset_prefix}/meta.json`,
-    );
-    // const metaJSON = null;
-    // const metaJSON = null;
-    const metaJSON = await metaJSONResponse.json();
-    // console.log(metaJSON, 'metaJSON');
-    const filteredMappingTypes = TITLED_ICONS?.filter((icon) =>
-      projectMappingTypes?.includes(icon.value),
-    );
-    const mergedData = filteredMappingTypes.map((category) => {
-      const dataset = metaJSON?.datasets?.find((dataset) => category.title in dataset) || {};
-      const addedMetaJSON = dataset[category.title] || { resources: [] };
-
-      const resources = addedMetaJSON.resources.reduce((mergedResources, resource) => {
-        const formatIndex = category.formats.indexOf(resource.format);
-        if (formatIndex !== -1) {
-          const featureType = resource.name.includes('_polygons') ? 'polygons' : 'lines';
-          if (category.featuretype.includes(featureType)) {
-            if (!mergedResources[featureType]) {
-              mergedResources[featureType] = {};
-            }
-
-            mergedResources[featureType][category.formats[formatIndex]] = {
-              name: resource.name,
-              url: resource.url,
-              description: resource.description,
-              size: resource.size,
-              last_modifed: resource.last_modifed,
-            };
-          }
-        }
-        return mergedResources;
-      }, {});
-
-      return { ...category, resources };
-    });
-    setMergedJSONData(mergedData);
-    console.log(mergedData);
-  };
-
   const downloadS3File = async (title, fileFormat, feature_type) => {
     // Create the base URL for the S3 file
     const downloadUrl = `${EXPORT_TOOL_S3_URL}/${datasetConfig.dataset_folder}/${
       datasetConfig.dataset_prefix
-    }/${title.toLowerCase()}/${feature_type}/${
+    }/${title}/${feature_type}/${
       datasetConfig.dataset_prefix
-    }_${title.toLowerCase()}_${feature_type}_${fileFormat.toLowerCase()}.zip`;
+    }_${title}_${feature_type}_${fileFormat.toLowerCase()}.zip`;
 
     // Set the state to indicate that the file download is in progress
     setIsDownloadingState({ title: title, fileFormat: fileFormat, isDownloading: true });
@@ -147,10 +104,95 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
       console.error('Error:', error.message);
     }
   };
+  useEffect(() => {
+    const filteredMappingTypes = downloadDataList?.filter((icon) =>
+      projectMappingTypes?.includes(icon.value),
+    );
+    setDownloadDataList(filteredMappingTypes);
+  }, [projectMappingTypes]);
 
   useEffect(() => {
-    fetchMetaJSON();
-  }, []);
+    if (!selectedCategoryFormat) return null;
+    async function fetchData(url) {
+      const response = await fetch(url, { method: 'HEAD' });
+      const data = await response;
+      return {
+        size: data.headers.get('Content-Length'),
+        lastmod: data.headers.get('Last-Modified'),
+      };
+    }
+
+    const multipleHeadCallForFormat = async () => {
+      setIsDownloadingState({
+        title: selectedCategoryFormat.title,
+        fileFormat: selectedCategoryFormat.format,
+        isDownloading: true,
+      });
+
+      const filterMappingCategory = downloadDataList.find(
+        (type) => type.title === selectedCategoryFormat.title,
+      );
+      async function fetchAndMap(urls) {
+        const results = await Promise.all(
+          urls.map(async (url) => {
+            const data = await fetchData(url);
+            return data;
+          }),
+        );
+
+        return results;
+      }
+      const multipleUrl = filterMappingCategory.featuretype.map((type) => {
+        return `${EXPORT_TOOL_S3_URL}/${datasetConfig.dataset_folder}/${
+          datasetConfig.dataset_prefix
+        }/${selectedCategoryFormat.title}/${type.type}/${datasetConfig.dataset_prefix}_${
+          selectedCategoryFormat.title
+        }_${type.type}_${selectedCategoryFormat.format.toLowerCase()}.zip`;
+      });
+      fetchAndMap(multipleUrl)
+        .then((results) => {
+          var mergedArray = filterMappingCategory.featuretype.map((feature, index) => ({
+            ...feature,
+            ...results[index],
+          }));
+          const mergedListData = downloadDataList.map((type) => {
+            if (type.title === selectedCategoryFormat.title) {
+              return {
+                ...type,
+                featuretype: mergedArray,
+              };
+            }
+            return type;
+          });
+          setDownloadDataList(mergedListData);
+          setIsDownloadingState({
+            title: selectedCategoryFormat.title,
+            fileFormat: selectedCategoryFormat.fileFormat,
+            isDownloading: false,
+          });
+        })
+
+        .catch((error) => {
+          console.error(error);
+          setIsDownloadingState({
+            title: selectedCategoryFormat.title,
+            fileFormat: selectedCategoryFormat.fileFormat,
+            isDownloading: false,
+          });
+        })
+        .finally(() => {
+          setIsDownloadingState({
+            title: selectedCategoryFormat.title,
+            fileFormat: selectedCategoryFormat.fileFormat,
+            isDownloading: false,
+          });
+        });
+    };
+    multipleHeadCallForFormat();
+
+    console.log('test');
+  }, [selectedCategoryFormat]);
+
   return (
     <div className="mb5 w-100 pb5 ph4 flex flex-wrap">
       <Popup modal open={showPopup} closeOnDocumentClick nested onClose={() => setShowPopup(false)}>
@@ -179,13 +221,13 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
           </div>
         )}
       </Popup>
-      {mergedJSONData?.map((type) => {
+      {downloadDataList.map((type) => {
         const loadingState = isDownloadingState?.isDownloading;
         return (
           <div
             className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex flex-wrap items-center  "
             style={{
-              width: '870px',
+              width: '800px',
               gap: '16px',
             }}
             key={type.title}
@@ -206,8 +248,8 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
             </div>
             <div className="flex-column">
               <div
-                className="file-list flex barlow-condensed f3 "
-                style={{ display: 'flex', gap: '12px', width: 'fit-content' }}
+                className="file-list flex barlow-condensed f3"
+                style={{ display: 'flex', gap: '12px' }}
               >
                 <p className="fw5 ttc">{type.title}</p>
                 <FileFormatCard
@@ -230,59 +272,44 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                 {selectedCategoryFormat &&
                   selectedCategoryFormat.title === type.title &&
                   type?.featuretype?.map((typ) => (
-                    <>
-                      <span
-                        key={`${typ}_${selectedCategoryFormat.title}`}
-                        onClick={() =>
-                          downloadS3File(
-                            selectedCategoryFormat.title,
-                            selectedCategoryFormat.format,
-                            typ,
-                          )
-                        }
-                        onKeyUp={() =>
-                          downloadS3File(
-                            selectedCategoryFormat.title,
-                            selectedCategoryFormat.format,
-                            typ,
-                          )
-                        }
-                        style={
-                          loadingState
-                            ? { cursor: 'not-allowed', pointerEvents: 'none', gap: '10px' }
-                            : { cursor: 'pointer', gap: '10px' }
-                        }
-                        className="flex flex-row items-center pointer link hover-red color-inherit categorycard"
-                      >
-                        <div className="flex flex-column">
-                          <div className="flex flex-row items-center ">
-                            <DownloadIcon style={{ height: '28px' }} color="#D73F3F" />
-                            <p className="ttc ml2">
-                              {typ} {selectedCategoryFormat.format}
-                              <span className="ml1 gray f7">
-                                (
-                                {formatBytes(
-                                  type.resources[typ][selectedCategoryFormat.format].size,
-                                )}
-                                )
-                              </span>
-                            </p>
-                          </div>
-                          <p className="gray f7" style={{ margin: 0 }}>
-                            Last Generated:{' '}
-                            {type.resources[typ][selectedCategoryFormat.format].last_modifed
-                              ? format(
-                                  new Date(
-                                    type.resources[typ][selectedCategoryFormat.format].last_modifed,
-                                  ),
-                                  'MM/dd/yyyy HH:mm:ss z ',
-                                  { timeZone: 'UTC' },
-                                )
-                              : '-'}
-                          </p>
-                        </div>
-                      </span>
-                    </>
+                    <span
+                      key={`${typ}_${selectedCategoryFormat.title}`}
+                      onClick={() =>
+                        downloadS3File(
+                          selectedCategoryFormat.title,
+                          selectedCategoryFormat.format,
+                          typ.type,
+                        )
+                      }
+                      onKeyUp={() =>
+                        downloadS3File(
+                          selectedCategoryFormat.title,
+                          selectedCategoryFormat.format,
+                          typ.type,
+                        )
+                      }
+                      style={
+                        loadingState
+                          ? { cursor: 'not-allowed', pointerEvents: 'none', gap: '10px' }
+                          : { cursor: 'pointer', gap: '10px' }
+                      }
+                      className="flex flex-row items-center pointer link hover-red color-inherit categorycard"
+                    >
+                      <div>
+                        <p className="ttc">
+                          <DownloadIcon cla color="#D73F3F" />
+                          <span className="ml2">
+                            {typ.type} {selectedCategoryFormat.format}
+                          </span>
+                          <span className="ml1 f7 mid-gray">{`(${
+                            typ.size ? formatBytes(typ.size) : '-'
+                          })`}</span>
+                        </p>
+                        <span className="f7 mid-gray">{`Last Generated: ${
+                          typ.lastmod ? typ.lastmod : '-'
+                        })`}</span>
+                      </div>
+                    </span>
                   ))}
               </div>
             </div>
