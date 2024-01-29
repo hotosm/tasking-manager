@@ -1,3 +1,0 @@
-# Monitoring & Logging
-
-TBD

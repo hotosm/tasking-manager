@@ -49,3 +49,7 @@ else
 endif
 
 checkout:down fetch build up tests down
+
+# Run doxygen to make API documentation
+apidocs:
+	-@cd docs && doxygen

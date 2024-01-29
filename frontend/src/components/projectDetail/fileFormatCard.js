@@ -51,7 +51,7 @@ function FileFormatCard({
                 {loadingState ? <AnimatedLoadingIcon /> : null}
               </p>
             </span>
-            {index !== fileFormats.length - 1 && <hr className="file-list-separator" />}
+            {index !== fileFormats.length - 1 && <span className="file-list-separator" />}
           </React.Fragment>
         );
       })}
