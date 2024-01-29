@@ -59,7 +59,7 @@ testing, please comment on the PR directly.
 
 Create pull requests (PRs) for changes that you think are needed. We
 would really appreciate your help! We ask that you follow our [coding
-contribution guidelines](developers/contributing-guidelines.md)
+contribution guidelines](contributing-guidelines.md)
 
 Skills with the following would be beneficial:
 
@@ -76,7 +76,7 @@ Our latest task board can be found
 ## Translating
 
 Review or submit [language
-translations](developers/translations.md). Translations are important
+translations](translations.md). Translations are important
 as it makes Tasking Manager more efficient when it supports local
 languages.
 
