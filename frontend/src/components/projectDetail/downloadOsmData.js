@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon } from '../svgIcons';
 import FileFormatCard from './fileFormatCard';
@@ -6,35 +6,37 @@ import Popup from 'reactjs-popup';
 import { EXPORT_TOOL_S3_URL } from '../../config';
 import messages from './messages';
 import { FormattedMessage } from 'react-intl';
+import formatBytes from '../../utils/formatBytes';
+import { AnimatedLoadingIcon } from '../button';
 
 export const TITLED_ICONS = [
   {
     Icon: RoadIcon,
     title: 'roads',
     value: 'ROADS',
-    featuretype: ['lines'],
-    formats: ['geojson', 'shp', 'kml'],
+    featuretype: [{ type: 'lines' }],
+    formats: ['GeoJSON', 'shp', 'kml'],
   },
   {
     Icon: HomeIcon,
     title: 'buildings',
     value: 'BUILDINGS',
-    featuretype: ['polygons'],
-    formats: ['geojson', 'shp', 'kml'],
+    featuretype: [{ type: 'polygons' }],
+    formats: ['GeoJSON', 'shp', 'kml'],
   },
   {
     Icon: WavesIcon,
     title: 'waterways',
     value: 'WATERWAYS',
-    featuretype: ['lines', 'polygons'],
-    formats: ['geojson', 'shp', 'kml'],
+    featuretype: [{ type: 'polygons' }, { type: 'lines' }],
+    formats: ['GeoJSON', 'shp', 'kml'],
   },
   {
     Icon: TaskIcon,
     title: 'landuse',
     value: 'LAND_USE',
-    featuretype: ['points', 'polygons'],
-    formats: ['geojson', 'shp', 'kml'],
+    featuretype: [{ type: 'points' }, { type: 'polygons' }],
+    formats: ['GeoJSON', 'shp', 'kml'],
   },
 ];
 
@@ -46,6 +48,7 @@ export const TITLED_ICONS = [
  */
 
 export const DownloadOsmData = ({ projectMappingTypes, project }) => {
+  const [downloadDataList, setDownloadDataList] = useState(TITLED_ICONS);
   const [showPopup, setShowPopup] = useState(false);
   const [isDownloadingState, setIsDownloadingState] = useState(null);
   const [selectedCategoryFormat, setSelectedCategoryFormat] = useState(null);
@@ -77,15 +80,9 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
     try {
       // Fetch the file from the S3 URL
       const responsehead = await fetch(downloadUrl, { method: 'HEAD' });
-      // console.log(responsehead, 'responsehead');
-      // const lastMod = responsehead.headers.get('Last-Modified');
-      // console.log(lastMod, 'lastMod');
-      // console.log(
-      //   responsehead.headers.get('Content-Length'),
-      //   'responsehead.headers.get(Last-Modified)',
-      // );
-      window.location.href = downloadUrl;
-
+      var handle = window.open(downloadUrl);
+      handle.blur();
+      window.focus();
       // Check if the request was successful
       if (responsehead.ok) {
         setIsDownloadingState({ title: title, fileFormat: fileFormat, isDownloading: false });
@@ -102,9 +99,94 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
       console.error('Error:', error.message);
     }
   };
-  const filteredMappingTypes = TITLED_ICONS?.filter((icon) =>
-    projectMappingTypes?.includes(icon.value),
-  );
+  useEffect(() => {
+    const filteredMappingTypes = downloadDataList?.filter((icon) =>
+      projectMappingTypes?.includes(icon.value),
+    );
+    setDownloadDataList(filteredMappingTypes);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectMappingTypes]);
+
+  useEffect(() => {
+    if (!selectedCategoryFormat) return null;
+    async function fetchData(url) {
+      const response = await fetch(url, { method: 'HEAD' });
+      const data = await response;
+      return {
+        size: data.headers.get('Content-Length'),
+        lastmod: data.headers.get('Last-Modified'),
+      };
+    }
+
+    const multipleHeadCallForFormat = async () => {
+      setIsDownloadingState({
+        title: selectedCategoryFormat.title,
+        fileFormat: selectedCategoryFormat.format,
+        isDownloading: true,
+      });
+
+      const filterMappingCategory = downloadDataList.find(
+        (type) => type.title === selectedCategoryFormat.title,
+      );
+      async function fetchAndMap(urls) {
+        const results = await Promise.all(
+          urls.map(async (url) => {
+            const data = await fetchData(url);
+            return data;
+          }),
+        );
+
+        return results;
+      }
+      const multipleUrl = filterMappingCategory.featuretype.map((type) => {
+        return `${EXPORT_TOOL_S3_URL}/${datasetConfig.dataset_folder}/${
+          datasetConfig.dataset_prefix
+        }/${selectedCategoryFormat.title}/${type.type}/${datasetConfig.dataset_prefix}_${
+          selectedCategoryFormat.title
+        }_${type.type}_${selectedCategoryFormat.format.toLowerCase()}.zip`;
+      });
+      fetchAndMap(multipleUrl)
+        .then((results) => {
+          var mergedArray = filterMappingCategory.featuretype.map((feature, index) => ({
+            ...feature,
+            ...results[index],
+          }));
+          const mergedListData = downloadDataList.map((list) => {
+            if (list.title === selectedCategoryFormat.title) {
+              return {
+                ...list,
+                featuretype: mergedArray,
+              };
+            }
+            return list;
+          });
+          setDownloadDataList(mergedListData);
+          setIsDownloadingState({
+            title: selectedCategoryFormat.title,
+            fileFormat: selectedCategoryFormat.fileFormat,
+            isDownloading: false,
+          });
+        })
+
+        .catch((error) => {
+          console.error(error);
+          setIsDownloadingState({
+            title: selectedCategoryFormat.title,
+            fileFormat: selectedCategoryFormat.fileFormat,
+            isDownloading: false,
+          });
+        })
+        .finally(() => {
+          setIsDownloadingState({
+            title: selectedCategoryFormat.title,
+            fileFormat: selectedCategoryFormat.fileFormat,
+            isDownloading: false,
+          });
+        });
+    };
+    multipleHeadCallForFormat();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategoryFormat]);
 
   return (
     <div className="mb5 w-100 pb5 ph4 flex flex-wrap">
@@ -134,13 +216,13 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
           </div>
         )}
       </Popup>
-      {filteredMappingTypes.map((type) => {
+      {downloadDataList.map((type) => {
         const loadingState = isDownloadingState?.isDownloading;
         return (
           <div
-            className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex flex-wrap items-center  "
+            className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex flex-wrap items-start justify-start  "
             style={{
-              width: '560px',
+              width: '800px',
               gap: '16px',
             }}
             key={type.title}
@@ -161,7 +243,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
             </div>
             <div className="flex-column">
               <div
-                className="file-list flex barlow-condensed f3"
+                className="file-list flex barlow-condensed f3 items-center "
                 style={{ display: 'flex', gap: '12px' }}
               >
                 <p className="fw5 ttc">{type.title}</p>
@@ -186,32 +268,56 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                   selectedCategoryFormat.title === type.title &&
                   type?.featuretype?.map((typ) => (
                     <span
-                      key={`${typ}_${selectedCategoryFormat.title}`}
+                      key={`${typ.type}_${selectedCategoryFormat.title}`}
                       onClick={() =>
                         downloadS3File(
                           selectedCategoryFormat.title,
                           selectedCategoryFormat.format,
-                          typ,
+                          typ.type,
                         )
                       }
                       onKeyUp={() =>
                         downloadS3File(
                           selectedCategoryFormat.title,
                           selectedCategoryFormat.format,
-                          typ,
+                          typ.type,
                         )
                       }
                       style={
-                        loadingState
+                        loadingState || !typ.lastmod
                           ? { cursor: 'not-allowed', pointerEvents: 'none', gap: '10px' }
                           : { cursor: 'pointer', gap: '10px' }
                       }
                       className="flex flex-row items-center pointer link hover-red color-inherit categorycard"
                     >
-                      <DownloadIcon style={{ height: '28px' }} color="#D73F3F" />
-                      <p className="ttc">
-                        {typ} {selectedCategoryFormat.format}
-                      </p>
+                      <div>
+                        <p className="ttc">
+                          <DownloadIcon color="#D73F3F" />
+                          <span className="ml2">
+                            {typ.type} {selectedCategoryFormat.format}
+                          </span>
+                          <span className="ml1 f7 black">
+                            {loadingState ? (
+                              <AnimatedLoadingIcon />
+                            ) : (
+                              `(${typ.size ? formatBytes(typ.size) : 'N/A'})`
+                            )}
+                          </span>
+                        </p>
+                        <span className="f7 mid-gray">
+                          {`Last Generated:`}
+                          <span className="black">
+                            {' '}
+                            {loadingState ? (
+                              <AnimatedLoadingIcon />
+                            ) : typ.lastmod ? (
+                              typ.lastmod
+                            ) : (
+                              'Download unavailable'
+                            )}
+                          </span>
+                        </span>
+                      </div>
                     </span>
                   ))}
               </div>
