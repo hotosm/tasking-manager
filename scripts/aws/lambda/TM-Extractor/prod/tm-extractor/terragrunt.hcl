@@ -27,8 +27,5 @@ include "envcommon" {
 # For production, we want to specify bigger instance classes and storage, so we specify override parameters here. These
 # inputs get merged with the common inputs from the root and the envcommon lambda.hcl
 inputs = {
-  zip_output_dir = "files"
   active_projects_api_base_url = "https://tasking-manager-tm4-production-api.hotosm.org/api/v2"
-  raw_data_api = "https://api-prod.raw-data.hotosm.org/v1"
-  config_json = "config.json"
 }
