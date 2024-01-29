@@ -14,28 +14,28 @@ export const TITLED_ICONS = [
     title: 'roads',
     value: 'ROADS',
     featuretype: [{ type: 'lines' }],
-    formats: ['geojson', 'shp', 'kml'],
+    formats: ['GeoJSON', 'shp', 'kml'],
   },
   {
     Icon: HomeIcon,
     title: 'buildings',
     value: 'BUILDINGS',
     featuretype: [{ type: 'polygons' }],
-    formats: ['geojson', 'shp', 'kml'],
+    formats: ['GeoJSON', 'shp', 'kml'],
   },
   {
     Icon: WavesIcon,
     title: 'waterways',
     value: 'WATERWAYS',
     featuretype: [{ type: 'polygons' }, { type: 'lines' }],
-    formats: ['geojson', 'shp', 'kml'],
+    formats: ['GeoJSON', 'shp', 'kml'],
   },
   {
     Icon: TaskIcon,
     title: 'landuse',
     value: 'LAND_USE',
     featuretype: [{ type: 'points' }, { type: 'polygons' }],
-    formats: ['geojson', 'shp', 'kml'],
+    formats: ['GeoJSON', 'shp', 'kml'],
   },
 ];
 
@@ -79,13 +79,6 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
     try {
       // Fetch the file from the S3 URL
       const responsehead = await fetch(downloadUrl, { method: 'HEAD' });
-      // console.log(responsehead, 'responsehead');
-      // const lastMod = responsehead.headers.get('Last-Modified');
-      // console.log(lastMod, 'lastMod');
-      // console.log(
-      //   responsehead.headers.get('Content-Length'),
-      //   'responsehead.headers.get(Last-Modified)',
-      // );
       window.location.href = downloadUrl;
 
       // Check if the request was successful
@@ -299,13 +292,17 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                           <span className="ml2">
                             {typ.type} {selectedCategoryFormat.format}
                           </span>
-                          <span className="ml1 f7 mid-gray">{`(${
-                            typ.size ? formatBytes(typ.size) : '-'
+                          <span className="ml1 f7 black">{`(${
+                            typ.size ? formatBytes(typ.size) : 'N/A'
                           })`}</span>
                         </p>
-                        <span className="f7 mid-gray">{`Last Generated: ${
-                          typ.lastmod ? typ.lastmod : '-'
-                        }`}</span>
+                        <span className="f7 mid-gray">
+                          {`Last Generated:`}
+                          <span className="black">
+                            {' '}
+                            {typ.lastmod ? typ.lastmod : 'No data Available'}
+                          </span>
+                        </span>
                       </div>
                     </span>
                   ))}
