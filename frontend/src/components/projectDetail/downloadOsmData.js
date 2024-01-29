@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon } from '../svgIcons';
+import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon, InfoIcon } from '../svgIcons';
 import FileFormatCard from './fileFormatCard';
 import Popup from 'reactjs-popup';
 import { EXPORT_TOOL_S3_URL } from '../../config';
 import messages from './messages';
 import { FormattedMessage } from 'react-intl';
 import formatBytes from '../../utils/formatBytes';
+import { AnimatedLoadingIcon } from '../button';
 
 export const TITLED_ICONS = [
   {
@@ -79,8 +80,9 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
     try {
       // Fetch the file from the S3 URL
       const responsehead = await fetch(downloadUrl, { method: 'HEAD' });
-      window.location.href = downloadUrl;
-
+      var handle = window.open(downloadUrl);
+      handle.blur();
+      window.focus();
       // Check if the request was successful
       if (responsehead.ok) {
         setIsDownloadingState({ title: title, fileFormat: fileFormat, isDownloading: false });
@@ -280,7 +282,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                         )
                       }
                       style={
-                        loadingState
+                        loadingState || !typ.lastmod
                           ? { cursor: 'not-allowed', pointerEvents: 'none', gap: '10px' }
                           : { cursor: 'pointer', gap: '10px' }
                       }
@@ -292,15 +294,25 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                           <span className="ml2">
                             {typ.type} {selectedCategoryFormat.format}
                           </span>
-                          <span className="ml1 f7 black">{`(${
-                            typ.size ? formatBytes(typ.size) : 'N/A'
-                          })`}</span>
+                          <span className="ml1 f7 black">
+                            {loadingState ? (
+                              <AnimatedLoadingIcon />
+                            ) : (
+                              `(${typ.size ? formatBytes(typ.size) : 'N/A'})`
+                            )}
+                          </span>
                         </p>
                         <span className="f7 mid-gray">
                           {`Last Generated:`}
                           <span className="black">
                             {' '}
-                            {typ.lastmod ? typ.lastmod : 'No data Available'}
+                            {loadingState ? (
+                              <AnimatedLoadingIcon />
+                            ) : typ.lastmod ? (
+                              typ.lastmod
+                            ) : (
+                              'No data Available'
+                            )}
                           </span>
                         </span>
                       </div>
