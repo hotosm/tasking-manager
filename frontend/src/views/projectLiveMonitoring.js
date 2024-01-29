@@ -227,16 +227,17 @@ export function ProjectLiveMonitoring() {
       className="pr3"
     >
       <div className="cf w-100" style={{ height: 'calc(100vh - 5.5rem)' }}>
-        <div className="flex p-2">
-          <div style={{ flex: 2 }}>
+        <div className="flex p-2" style={{ gap: '0.685rem' }}>
+          <div style={{ flex: 2, position: 'relative' }}>
             <div className="top">
               <form>
                 <input
-                  className="border px-2 py-2 text-sm"
+                  className="border px-2 py-2 text-sm rounded"
                   type="text"
                   placeholder="key (ex: building=yes)"
                   ref={tagsInputRef}
                   defaultValue="building"
+                  style={{ height: '36px' }}
                 />
                 &nbsp;
                 <button
@@ -284,21 +285,21 @@ export function ProjectLiveMonitoring() {
             {project && (
               <>
                 <div className="flex flex-column flex-row-ns justify-start justify-between-ns items-start items-center-ns flex-wrap">
-                  <div className="pt2">
+                  <div className="pt2 title-text">
                     <span className="blue-light">
                       <Link to={`/projects/${project.projectId}`} className="no-underline pointer">
                         <span className="blue-light">#{project.projectId}</span>
                       </Link>
                     </span>
                     {project.organisationName ? (
-                      <span className="blue-dark"> | {project.organisationName}</span>
+                      <span className="blue-dark"> | {project.organisationName} </span>
                     ) : null}
                   </div>
                 </div>
                 <div className="w-100 fl pv1 bg-white blue-dark">
                   <div>
                     <h3
-                      className="f2 fw5 ttu barlow-condensed blue-dark dib mr3"
+                      className="f2 fw5 ttu barlow-condensed blue-dark dib title-text"
                       lang={project.projectInfo.locale}
                     >
                       {project.projectInfo && project.projectInfo.name}
@@ -365,8 +366,9 @@ export function ProjectLiveMonitoring() {
               style={{
                 display: 'flex',
                 flexFlow: 'column',
-                maxHeight: 'calc(100vh - 26rem)',
+                height: '8px',
                 flex: '1 1 auto',
+                overflowY: 'auto',
               }}
               tags={tags}
               hashtag={'hotosm-project-' + id}
@@ -381,7 +383,7 @@ export function ProjectLiveMonitoring() {
               }}
               realtime={realtimeList}
               config={config}
-              status={listAll ? "" : status}
+              status={listAll ? '' : status}
               orderBy="created_at"
               onFetchFirstTime={(mostRecentFeature) => {
                 if (mostRecentFeature) {
