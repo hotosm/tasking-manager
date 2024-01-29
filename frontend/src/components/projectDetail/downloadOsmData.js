@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon, InfoIcon } from '../svgIcons';
+import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon } from '../svgIcons';
 import FileFormatCard from './fileFormatCard';
 import Popup from 'reactjs-popup';
 import { EXPORT_TOOL_S3_URL } from '../../config';
@@ -104,6 +104,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
       projectMappingTypes?.includes(icon.value),
     );
     setDownloadDataList(filteredMappingTypes);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectMappingTypes]);
 
   useEffect(() => {
@@ -184,6 +185,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
         });
     };
     multipleHeadCallForFormat();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategoryFormat]);
 
   return (
