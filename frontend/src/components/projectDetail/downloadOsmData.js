@@ -290,7 +290,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                     >
                       <div>
                         <p className="ttc">
-                          <DownloadIcon cla color="#D73F3F" />
+                          <DownloadIcon color="#D73F3F" />
                           <span className="ml2">
                             {typ.type} {selectedCategoryFormat.format}
                           </span>
@@ -311,7 +311,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                             ) : typ.lastmod ? (
                               typ.lastmod
                             ) : (
-                              'No data Available'
+                              'Download unavailable'
                             )}
                           </span>
                         </span>
