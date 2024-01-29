@@ -25,6 +25,29 @@ Before running deployment, make sure you have the following environment variable
 - `TF_VAR_active_projects_api_base_url`, Your [tasking-manager](https://github.com/hotosm/tasking-manager) instance. 
 Defaults to https://tasking-manager-staging-api.hotosm.org/api/v2
 
+## Inputs and Local Variables
+`env.hcl` within each deployment environment overrides the input vars. 
+```
+locals {
+  environment = "stag" 
+  # Appends to all the resource names eg: tm-extrator-hotosm-lambda-stag
+
+  account_name   = "hotosm"
+  # Also appends to the resource names for better naming
+
+  aws_profile = "default"
+  # Acts as AWS_PROFILE environment var, If you have multiple profile defined in ~/.aws/credentials, you can set these so each envionment deployment uses its own set of profiles.
+  
+  aws_region = "ap-south-1"
+  # The AWS region the resources should be created on.
+
+  application = "tasking-manager"
+  team  = "HOTOSM"
+  creator = "HOTOSM"
+  owner = "HOTOSM"
+  # Above are used for generating tags for AWS resources.
+}
+```
 
 ## Plan and Apply
 - `cd` into `scripts/aws/lambda/TM-Extractor/<your-environment-here>/tm-extractor`.
