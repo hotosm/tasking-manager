@@ -11,7 +11,7 @@
 # deployed version.
 terraform {
   # Sourcing from https://github.com/hotosm/TM-Extractor/ 
-  source = "${local.base_source_url}?ref=v1.0.0"
+  source = "${local.base_source_url}?ref=v1.0.1"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
