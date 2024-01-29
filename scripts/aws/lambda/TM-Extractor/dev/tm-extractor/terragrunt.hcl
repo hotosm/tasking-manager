@@ -29,6 +29,4 @@ include "envcommon" {
 inputs = {
   zip_output_dir = "files"
   active_projects_api_base_url = "https://tm.naxa.com.np/api/v2"
-  raw_data_api = "https://api-prod.raw-data.hotosm.org/v1"
-  config_json = "config.json"
 }
