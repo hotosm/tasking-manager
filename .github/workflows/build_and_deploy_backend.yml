@@ -1,0 +1,32 @@
+name: Build and Deploy Tasking Manager Backend
+
+on:
+  push:
+    branches:
+      - deployment/naxa
+    paths:
+      - "backend/**"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Recreate Services
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SERVER_IP }}
+          username: ${{ vars.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 20m
+          script: |
+            echo '==In Server=='
+            echo '==Building Backend=='
+            cd /home/ubuntu/Projects/tasking-manager
+            git pull naxa deployment/naxa
+            docker compose build --no-cache backend
+            docker compose up -d --force-recreate

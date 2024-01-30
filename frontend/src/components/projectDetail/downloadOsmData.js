@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon } from '../svgIcons';
+import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon, InfoIcon } from '../svgIcons';
 import FileFormatCard from './fileFormatCard';
 import Popup from 'reactjs-popup';
 import { EXPORT_TOOL_S3_URL } from '../../config';

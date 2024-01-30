@@ -21,8 +21,13 @@ import { PermissionBox } from './permissionBox';
 import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
+import { LiveViewButton } from './liveViewButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
-import { useProjectContributionsQuery, useProjectTimelineQuery } from '../../api/projects';
+import {
+  useProjectContributionsQuery,
+  useProjectTimelineQuery,
+  useAvailableCountriesQuery,
+} from '../../api/projects';
 import { Alert } from '../alert';
 
 import './styles.scss';
@@ -152,6 +157,16 @@ export const ProjectDetail = (props) => {
       {props.project.author}
     </Link>
   );
+
+  const { data } = useAvailableCountriesQuery();
+
+  // check if the project has live monitoring feature enabled
+  // based on the country list provided by available.json
+  const hasLiveMonitoringFeature = !data
+    ? false
+    : props.project.countryTag.some((country) =>
+        data.countries.some((item) => country.toLowerCase() === item.toLowerCase()),
+      );
 
   return (
     <div className={`${props.className || 'blue-dark'}`}>
@@ -346,6 +361,18 @@ export const ProjectDetail = (props) => {
             project={props.project}
             className="bg-white blue-dark ba b--grey-light pa3"
           />
+
+          {/* 
+            show live view button only for published projects &
+            when the project has live monitoring feature 
+          */}
+          {props.project.status === 'PUBLISHED' && hasLiveMonitoringFeature && (
+            <LiveViewButton
+              projectId={props.project.projectId}
+              className="bg-white blue-dark ba b--grey-light pa3"
+            />
+          )}
+
           <DownloadAOIButton
             projectId={props.project.projectId}
             className="bg-white blue-dark ba b--grey-light pa3"
