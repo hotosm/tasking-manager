@@ -10,39 +10,48 @@ import { AddToFavorites } from './favorites';
 import { HorizontalScroll } from '../horizontalScroll';
 
 import './styles.scss';
+import { ENABLE_EXPORT_TOOL } from '../../config';
 
 const menuItems = [
   {
     href: '#top',
     label: <FormattedMessage {...messages.overview} />,
+    isVisibleCondition: true,
   },
   {
     href: '#description',
     label: <FormattedMessage {...messages.description} />,
+    isVisibleCondition: true,
   },
   {
     href: '#coordination',
     label: <FormattedMessage {...messages.coordination} />,
+    isVisibleCondition: true,
   },
   {
     href: '#teams',
     label: <FormattedMessage {...messages.teamsAndPermissions} />,
+    isVisibleCondition: true,
   },
   {
     href: '#questionsAndComments',
     label: <FormattedMessage {...messages.questionsAndComments} />,
+    isVisibleCondition: true,
   },
   {
     href: '#contributions',
     label: <FormattedMessage {...messages.contributions} />,
+    isVisibleCondition: true,
   },
   {
     href: '#downloadOsmData',
     label: <FormattedMessage {...messages.downloadOsmData} />,
+    isVisibleCondition: +ENABLE_EXPORT_TOOL === 1,
   },
   {
     href: '#similarProjects',
     label: <FormattedMessage {...messages.similarProjects} />,
+    isVisibleCondition: true,
   },
 ];
 
@@ -64,14 +73,20 @@ export const ProjectDetailFooter = ({ className, projectId }) => {
         containerClass={'.menu-items-container'}
       >
         <div ref={menuItemsContainerRef} className="menu-items-container nowrap overflow-x-auto">
-          {menuItems.map((menuItem, index) => (
-            <Fragment key={menuItem.href}>
-              <a className="link blue-dark" href={menuItem.href}>
-                {menuItem.label}
-              </a>
-              {index < menuItems.length - 1 && <span className="ph2">&#183;</span>}
-            </Fragment>
-          ))}
+          {menuItems.map((menuItem, index) => {
+            if (menuItem.isVisibleCondition) {
+              return (
+                <Fragment key={menuItem.href}>
+                  <a className="link blue-dark" href={menuItem.href}>
+                    {menuItem.label}
+                  </a>
+                  {index < menuItems.length - 1 && <span className="ph2">&#183;</span>}
+                </Fragment>
+              );
+            } else {
+              return null;
+            }
+          })}
         </div>
       </HorizontalScroll>
       <div className="flex items-center ml-auto gap-1">
