@@ -54,7 +54,7 @@ jobs:
       - run:
           name: black tests
           command: | 
-            pip install black
+            pip install 'black==23.12.1' ## TODO: Update to version 24
             black --check manage.py backend tests migrations
 
   backend-functional-tests:

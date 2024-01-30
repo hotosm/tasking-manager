@@ -55,3 +55,12 @@ venv_aws/
 # Backend coverage generated files
 htmlcov/
 .coverage
+
+# Terraform
+.terraform
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Terragrunt
+.terragrunt-cache
