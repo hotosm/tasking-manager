@@ -187,6 +187,7 @@ directory. To use that last option, follow the below instructions:
   - `TM_CLIENT_SECRET`=oauth-client-secret-key-from-openstreetmap
   - `TM_REDIRECT_URI`=oauth-client-redirect_uri
   - `TM_SCOPE`=oauth-client-scopes
+  - `TM_LOG_DIR=logs`
 
 In order to send email correctly, set these variables as well:
   - `TM_SMTP_HOST`
@@ -196,20 +197,12 @@ In order to send email correctly, set these variables as well:
   - `TM_SMTP_USE_TLS=0`
   - `TM_SMTP_USE_SSL=1` (Either TLS or SSL can be set to 1 but not both)
 
-#### Build
+#### Install Dependencies
 
 * Install project dependencies:
-    * Linux/Mac (Option 1: pep582):
-        * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
-        * ```pip install --upgrade pdm```
-        * ```pdm config --global python.use_venv False```
-        * ```pdm --pep582 >> ~/.bash_profile```
-        * ```source ~/.bash_profile```
-        * ```pdm install```
-    * Linux/Mac (Option 2: pip (system/venv)):
-        * ```pip install --upgrade pdm```
-        * ```pdm export --without-hashes > requirements.txt```
-        * ```pip install requirements.txt```
+  * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
+  * ```pip install --upgrade pdm```
+  * ```pdm install```
 
 #### Tests
 
@@ -265,7 +258,16 @@ on your terminal (with the OS user that is the owner of the database):
 If you plan to only work on the API you only have to build the backend
 architecture. Install the backend dependencies, and run the server:
 
-`flask run --debug --reload` or  `pdm run start`
+```bash
+# Install dependencies
+pdm install
+
+# Run (Option 1)
+pdm run start
+
+# Run (Option 2)
+pdm run flask run --debug --reload
+```
 
 You can access the API documentation on
 [http://localhost:5000/api-docs](http://localhost:5000/api-docs), it
