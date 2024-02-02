@@ -48,7 +48,7 @@ services:
     image: traefik:v2.10
     restart: always
     ports:
-      - "80:80"
+      - "${TM_DEV_PORT:-80}:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
