@@ -221,27 +221,13 @@ describe('Project Detail Page', () => {
     Line: () => null,
   }));
 
-  it('should render component details', async () => {
-    act(() => {
-      store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
-    });
-    renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <ProjectDetailPage />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    await waitFor(() => {
-      expect(screen.getByText(/sample project/i)).toBeInTheDocument();
-      expect(screen.getByText(/hello world/i)).toBeInTheDocument();
-    });
-  });
-
-  it('should display private project error message', async () => {
-    setupFaultyHandlers();
+  /**
+   * Set up a ProjectDetailPage given an initial entry; this avoids issues where there is no project id.
+   * @param {Array<string>} initialEntries The initial entries. This should be in the form of `[projects/:id]`.
+   */
+  function setup(initialEntries) {
     render(
-      <MemoryRouter initialEntries={['/projects/123']}>
+      <MemoryRouter initialEntries={initialEntries}>
         <Routes>
           <Route
             path="projects/:id"
@@ -256,6 +242,22 @@ describe('Project Detail Page', () => {
         </Routes>
       </MemoryRouter>,
     );
+  }
+
+  it('should render component details', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
+    });
+    setup(['/projects/123']);
+    await waitFor(() => {
+      expect(screen.getByText(/sample project/i)).toBeInTheDocument();
+      expect(screen.getByText(/hello world/i)).toBeInTheDocument();
+    });
+  });
+
+  it('should display private project error message', async () => {
+    setupFaultyHandlers();
+    setup(['/projects/123']);
 
     await waitFor(() =>
       expect(

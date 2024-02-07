@@ -370,6 +370,29 @@ export const ProjectDetail = (props) => {
   );
 };
 
+const GeometryPropType = PropTypes.shape({
+  type: PropTypes.oneOf([
+    'Point',
+    'MultiPoint',
+    'LineString',
+    'MultiLineString',
+    'Polygon',
+    'MultiPolygon',
+    'GeometryCollection',
+  ]),
+  coordinates: PropTypes.array,
+  geometries: PropTypes.array,
+});
+const FeaturePropType = PropTypes.shape({
+  type: PropTypes.oneOf(['Feature']),
+  geometry: GeometryPropType,
+  properties: PropTypes.object,
+});
+const FeatureCollectionPropType = PropTypes.shape({
+  type: PropTypes.oneOf(['FeatureCollection']),
+  features: PropTypes.arrayOf(FeaturePropType).isRequired,
+});
+
 ProjectDetail.propTypes = {
   project: PropTypes.shape({
     projectId: PropTypes.number,
@@ -393,10 +416,11 @@ ProjectDetailMap.propTypes = {
     areaOfInterest: PropTypes.object,
     priorityAreas: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,
-  tasks: PropTypes.arrayOf(PropTypes.object),
+  // Tasks are a GeoJSON FeatureCollection
+  tasks: FeatureCollectionPropType,
   navigate: PropTypes.func,
   type: PropTypes.string,
-  tasksError: PropTypes.string,
+  tasksError: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   projectLoading: PropTypes.bool,
 };
 
@@ -406,7 +430,7 @@ ProjectDetailLeft.propTypes = {
       shortDescription: PropTypes.string,
     }),
     projectId: PropTypes.number,
-    tasks: PropTypes.arrayOf(PropTypes.object),
+    tasks: FeatureCollectionPropType,
   }).isRequired,
   contributors: PropTypes.arrayOf(PropTypes.object),
   className: PropTypes.string,
