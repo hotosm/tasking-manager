@@ -24,6 +24,13 @@ import { setupFaultyHandlers } from '../../network/tests/server';
 import { projects } from '../../network/tests/mockData/projects';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
+// This is a late import in a React.lazy call; it takes awhile for date-fns to resolve, so we import it here manually.
+// In the event you remove it, please measure test times before ''and'' after removal.
+import '../../utils/chart';
+
+// scrollTo is not implemented by jsdom; mock to avoid warnings.
+window.scrollTo = jest.fn();
+
 test('CreateProject renders ProjectCreate', async () => {
   renderWithRouter(
     <QueryParamProvider adapter={ReactRouter6Adapter}>
