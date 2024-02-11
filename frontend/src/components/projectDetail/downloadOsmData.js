@@ -83,6 +83,10 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
       var handle = window.open(downloadUrl);
       handle.blur();
       window.focus();
+      if (window._paq) {
+        // Check if Matomo tracking array (_paq) exists
+        window._paq.push(['trackEvent', 'OSMDownloads', 'Click', `${title}_${fileFormat}`]);
+      }
       // Check if the request was successful
       if (responsehead.ok) {
         setIsDownloadingState({ title: title, fileFormat: fileFormat, isDownloading: false });
