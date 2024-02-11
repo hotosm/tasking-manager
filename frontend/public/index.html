@@ -6,20 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- for Google -->
-    <meta name="description" content="Tasking Manager is a the tool for coordination of volunteers and organization of groups to map on OpenStreetMap.">
-    <meta name="keywords" content="OpenStreetMap, Tasking Manager, OSM">
+    <meta
+      name="description"
+      content="Tasking Manager is a the tool for coordination of volunteers and organization of groups to map on OpenStreetMap."
+    />
+    <meta name="keywords" content="OpenStreetMap, Tasking Manager, OSM" />
     <meta name="application-name" content="Tasking Manager" />
 
-  	<!-- for Facebook -->
-  	<meta property="og:title" content="%REACT_APP_ORG_CODE% Tasking Manager" />
-  	<meta property="og:site_name" content="%REACT_APP_ORG_CODE% Tasking Manager" />
-  	<meta property="og:type" content="website" />
-  	<meta property="og:description" content="Collaborative mapping for humanitarian action." />
+    <!-- for Facebook -->
+    <meta property="og:title" content="%REACT_APP_ORG_CODE% Tasking Manager" />
+    <meta property="og:site_name" content="%REACT_APP_ORG_CODE% Tasking Manager" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Collaborative mapping for humanitarian action." />
 
-      <!-- for Twitter -->
-  	<meta name="twitter:card" content="summary" />
-  	<meta name="twitter:title" content="%REACT_APP_ORG_CODE% Tasking Manager" />
-  	<meta name="twitter:description" content="Collaborative mapping for humanitarian action." />
+    <!-- for Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="%REACT_APP_ORG_CODE% Tasking Manager" />
+    <meta name="twitter:description" content="Collaborative mapping for humanitarian action." />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -42,29 +45,32 @@
     <div
       id="action-root"
       class="w-100 h-100 vh-minus-122-ns"
-      style="top: 122px; bottom:0; left:0; right:0; z-index: -1; display: none">
-    </div>
-        <!-- Matomo -->
+      style="top: 122px; bottom: 0; left: 0; right: 0; z-index: -1; display: none"
+    ></div>
+    <!-- Matomo -->
     <script type="text/javascript">
       var _paq = _paq || [];
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
       _paq.push(['requireConsent']);
-      _paq.push(["setDomains", ["*.hotosm.org"]]);
+      _paq.push(['setDomains', ['*.hotosm.org']]);
       _paq.push(['trackPageView']);
-      _paq.push(['enableLinkTracking']);   // Tracks downloads
-      _paq.push(['trackVisibleContentImpressions']);  // Tracks content blocks
-      var site_id = "%REACT_APP_MATOMO_ID%";
-      if (site_id && "%REACT_APP_MATOMO_ENDPOINT%") {
-        (function() {
-          var u="%REACT_APP_MATOMO_ENDPOINT%";
-          _paq.push(['setTrackerUrl', u+'piwik.php']);
+      _paq.push(['enableLinkTracking']); // Tracks downloads
+      _paq.push(['trackVisibleContentImpressions']); // Tracks content blocks
+      var site_id = '%REACT_APP_MATOMO_ID%';
+      if (site_id && '%REACT_APP_MATOMO_ENDPOINT%') {
+        (function () {
+          var u = '%REACT_APP_MATOMO_ENDPOINT%';
+          _paq.push(['setTrackerUrl', u + 'piwik.php']);
           _paq.push(['setSiteId', site_id]);
 
-          var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-          g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+          var d = document,
+            g = d.createElement('script'),
+            s = d.getElementsByTagName('script')[0];
+          g.async = true;
+          g.src = u + 'matomo.js';
+          s.parentNode.insertBefore(g, s);
         })();
       }
-
     </script>
     <!--
       This HTML file is a template.
