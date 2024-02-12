@@ -54,7 +54,7 @@ jobs:
       - run:
           name: black tests
           command: | 
-            pip install black
+            pip install 'black==23.12.1' ## TODO: Update to version 24
             black --check manage.py backend tests migrations
 
   backend-functional-tests:
@@ -81,8 +81,7 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get -y install libgeos-dev # Required for shapely
       - run: sudo apt-get -y install proj-bin libproj-dev
-      - run: pip install --upgrade pip pdm
-      - run: pdm config --global python.use_venv False
+      - run: pip install --upgrade pip pdm==2.7.4
       - run: pdm export --dev --without-hashes > requirements.txt
       - run: pip install -r requirements.txt
       - run: mkdir --mode 766 -p /tmp/logs

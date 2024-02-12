@@ -1,7 +1,7 @@
 
-## Development setup
+# Development setup
 
-### Architecture
+## Architecture
 
 The Tasking Manager is composed of two parts:
 
@@ -10,13 +10,104 @@ The Tasking Manager is composed of two parts:
 
 The two parts can be developed independently of each other.
 
+## OSM Auth
+
+The Tasking Manager uses OAuth2 with OSM to authenticate users.
+
+In order to use the frontend, you may need to create keys for OSM:
+
+1. [Login to OSM][1]
+   (_If you do not have an account yet, click the signup
+   button at the top navigation bar to create one_).
+   
+   Click the drop down arrow on the top right of the navigation bar
+   and select My Settings.
+
+2. Register your Tasking Manager instance to OAuth 2 applications.
+
+   Put your login redirect url as `http://127.0.0.1:880/authorized/`
+
+   > Note: `127.0.0.1` is required for debugging instead of `localhost`
+   > due to OSM restrictions.
+
+3. Permissions required:
+    - Read user preferences (read_prefs).
+    - Modify the map (write_api).
+
+4. Now save your Client ID and Client Secret for the next step.
+
+## Configure The Dot Env File
+
+1. Copy the `example.env` to `tasking-manager.env`.
+
+    ```bash
+    cp example.env tasking-manager.env
+    ```
+
+2. Uncomment or update the following variables
+
+    ```dotenv
+    TM_DEV_PORT=880
+    TM_APP_BASE_URL=http://127.0.0.1:880
+    TM_APP_API_URL=http://127.0.0.1:880/api
+    # 'postgresql' if using docker, else 'localhost' or comment out
+    POSTGRES_ENDPOINT=postgresql
+    TM_REDIRECT_URI=http://127.0.0.1:880/authorized
+    TM_CLIENT_ID=from-previous-step
+    TM_CLIENT_SECRET=from-previous-step
+    ```
+
+    - Note that the port 880 can be swapped to any available port on
+      your system.
+    - If you change this, don't forget to update the OAuth login redirect
+      URL from the step above.
+
+> If you are a frontend developer and do not wish to configure the
+> backend, you can use our staging server API.
+>
+> Update the variable:
+>
+>    `TM_APP_API_URL='https://tasking-manager-staging-api.hotosm.org'`
+>
+> before running the `yarn start` command.
+>
+> Be aware that the staging API can be offline while we are deploying 
+> newer versions to the staging server and that you'll not have access 
+> to some management views due to permissions. Check the 
+> [configuration](#configuration) section to learn more about how 
+> to configure Tasking Manager.
+
+For more details see the [configuration section](#configuration).
+
+## Docker
+
+The easiest option to get started with all components may be using Docker.
+
+### Requirements
+
+[Docker Engine](https://docs.docker.com/engine/install/) must be 
+available locally.
+
+### Running Tasking Manager
+
+Once the steps above have been complete, simply run:
+
+```bash
+docker compose pull
+docker compose build
+docker compose --env-file tasking-manager.env up --detach
+```
+
+Tasking Manager should be available from:
+[http://127.0.0.1:880](http://127.0.0.1:880)
+
+## Running Components Standalone
+
 ### Frontend
 
 The client is the front-end user interface of the Tasking Manager. It is based on the React framework and you can find all files in the `frontend` directory.
 
-If you don't want to setup a backend server, you can work on frontend development using our staging server API. Execute `export TM_APP_API_URL='https://tasking-manager-staging-api.hotosm.org'` before running the `yarn start` command. Be aware that the staging API can be offline while we are deploying newer versions to the staging server and that you'll not have access to some management views due to permissions. Check the [configuration](#configuration) section to learn more about how to configure Tasking Manager.
-
-**Dependencies**
+#### Dependencies
 
 The following dependencies must be available _globally_ on your system:
 * Download and install [NodeJS LTS v12+](https://nodejs.org/en/) and [yarn](https://classic.yarnpkg.com/en/docs/install)
@@ -96,6 +187,7 @@ directory. To use that last option, follow the below instructions:
   - `TM_CLIENT_SECRET`=oauth-client-secret-key-from-openstreetmap
   - `TM_REDIRECT_URI`=oauth-client-redirect_uri
   - `TM_SCOPE`=oauth-client-scopes
+  - `TM_LOG_DIR=logs`
 
 In order to send email correctly, set these variables as well:
   - `TM_SMTP_HOST`
@@ -105,20 +197,12 @@ In order to send email correctly, set these variables as well:
   - `TM_SMTP_USE_TLS=0`
   - `TM_SMTP_USE_SSL=1` (Either TLS or SSL can be set to 1 but not both)
 
-#### Build
+#### Install Dependencies
 
 * Install project dependencies:
-    * Linux/Mac (Option 1: pep582):
-        * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
-        * ```pip install --upgrade pdm```
-        * ```pdm config --global python.use_venv False```
-        * ```pdm --pep582 >> ~/.bash_profile```
-        * ```source ~/.bash_profile```
-        * ```pdm install```
-    * Linux/Mac (Option 2: pip (system/venv)):
-        * ```pip install --upgrade pdm```
-        * ```pdm export --without-hashes > requirements.txt```
-        * ```pip install requirements.txt```
+  * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
+  * ```pip install --upgrade pdm```
+  * ```pdm install```
 
 #### Tests
 
@@ -149,7 +233,7 @@ We use
 create the database from the migrations directory. Check the
 instructions on how to setup a PostGIS database with
 [docker](#creating-a-local-postgis-database-with-docker) or on your
-[local system](#non-docker). Then you can execute the following
+[local system](#creating-a-local-postgis-database-without-docker). Then you can execute the following
 command to apply the migrations:
 
 ```
@@ -169,12 +253,21 @@ on your terminal (with the OS user that is the owner of the database):
 
 `psql -d <your_database> -c "UPDATE users set role = 1 where username = '<your_osm_username>'"`
 
-### API
+## API
 
 If you plan to only work on the API you only have to build the backend
 architecture. Install the backend dependencies, and run the server:
 
-`flask run --debug --reload` or  `pdm run start`
+```bash
+# Install dependencies
+pdm install
+
+# Run (Option 1)
+pdm run start
+
+# Run (Option 2)
+pdm run flask run --debug --reload
+```
 
 You can access the API documentation on
 [http://localhost:5000/api-docs](http://localhost:5000/api-docs), it
@@ -183,7 +276,7 @@ docs is also available on our
 [production](https://tasks.hotosm.org/api-docs) and
 [staging](https://tasks-stage.hotosm.org/api-docs/) instances.
 
-#### API Authentication
+### API Authentication
 
 In order to authenticate on the API, you need to have an Authorization Token.
 
@@ -217,7 +310,7 @@ edit history of your user, selecting a changeset from the list, and
 then at the bottom link `Changeset XML` and it will be in the `uid`
 field of the XML returned.
 
-#### API Authentication on remote instance
+### API Authentication on remote instance
 
 To get your token on the production or staging Tasking Manager
 instances, sign in in the browser and then either:
@@ -227,19 +320,13 @@ instances, sign in in the browser and then either:
 - inspect a network request and search for the `Authorization` field
   in the request headers section.
 
-# Docker
+## Additional Info
 
-## Creating a local PostGIS database with Docker
+### Creating a local PostGIS database with Docker
 
 If you're not able to connect to an existing tasking-manager DB, we
 have a [Dockerfile]() that will allow you to run PostGIS locally as
 follows.
-
-### Dependencies
-
-Following must be available locally:
-
-* [Docker CE](https://www.docker.com/community-edition#/download)
 
 ### Build & Run the PostGIS dockerfile
 
@@ -279,21 +366,21 @@ export TM_DB=postgresql://hottm:hottm@localhost/tasking-manager
 6.  Refer to the rest of the instructions in the README to setup the
     DB and run the app.
 
-# Non-Docker
+## Creating a local PostGIS database without Docker
 
-## Creating the PostGIS database
+### Creating the PostGIS database
 
 It may be the case you would like to set up the database without using
 Docker for one reason or another. This provides you with a set of
 commands to create the database and export the database address to
 allow you to dive into backend development.
 
-### Dependencies
+#### Dependencies
 
 First, ensure that Postgresql and PostGIS are installed and running on
 your computer.
 
-### Create the database user and database
+#### Create the database user and database
 
 Assuming you have sudo access and the unix Postgresql owner is `postgres`:
 
@@ -325,3 +412,4 @@ get a working version of the API running.
 * [Managing CI/CD with CircleCI](../sysadmins/ci-cd.md)
 * [Deployment Guide](../sysadmins/deployment.md)
 
+[1]: https://www.openstreetmap.org/login "Login to OSM"
