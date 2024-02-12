@@ -69,7 +69,7 @@ describe('Contributions Page Index', () => {
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
-    expect(screen.getAllByRole('link', { name: 'test_user' }).length).toBe(4);
+    expect(screen.getAllByRole('link', { name: 'test_user' }).length).toBe(3);
   });
 });
 

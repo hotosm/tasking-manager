@@ -9,7 +9,6 @@ import { NextMappingLevel } from '../user/topBar';
 import { UserOrganisations } from './userTeamsOrgs';
 import { SectionMenu } from '../menu';
 import OsmLogo from '../../assets/img/osm_logo.png';
-import MissingMapsLogo from '../../assets/img/organizations/missingmaps.png';
 import SlackLogo from '../../assets/img/icons/slack.png';
 import OsmChaLogo from '../../assets/img/icons/osm-cha.png';
 import HdycNeisOneLogo from '../../assets/img/icons/hdyc-neis-one.png';
@@ -66,12 +65,6 @@ export const SocialMedia = ({ data }) => {
         <div className="mr2 h2">
           <img className="h1 v-mid" src={OsmLogo} alt="OpenStreetMap" />{' '}
           {createLink('osm', data.username)}
-        </div>
-      </li>
-      <li className="dib mr4-ns mr2 cf f7">
-        <div className="mr2 h2">
-          <img className="h1 v-mid" src={MissingMapsLogo} alt="Missing Maps" />{' '}
-          {createLink('missingmaps', data.username)}
         </div>
       </li>
       <li className="dib mr4-ns mr2 cf f7" title={intl.formatMessage(messages.osmChaUsername)}>
