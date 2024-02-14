@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
@@ -84,7 +84,18 @@ export const ProjectNav = (props) => {
   const encodedParams = stringify(fullProjectsQuery)
     ? ['?', stringify(fullProjectsQuery)].join('')
     : '';
+  const isMapShown = useSelector((state) => state.preferences['mapShown']);
 
+  useEffect(() => {
+    setQuery(
+      {
+        ...fullProjectsQuery,
+        omitMapResults:!isMapShown
+      },
+      'pushIn',
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[isMapShown])
   const linkCombo = 'link ph3 f6 pv2 ba b--tan br1 ph3 fw5';
 
   const moreFiltersAnyActive =
