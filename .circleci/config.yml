@@ -10,7 +10,7 @@ jobs:
   frontend-code-test:
     resource_class: large
     docker:
-      - image: cimg/node:16.20
+      - image: cimg/node:18.19
     working_directory: /home/circleci/tasking-manager
     steps:
       - checkout
@@ -184,7 +184,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
-      - image: cimg/python:3.10.7-node
+      - image: cimg/python:3.10-node
     steps:
       - checkout
       - aws-cli/setup:
@@ -236,7 +236,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
     docker:
-      - image: cimg/python:3.10.7-node
+      - image: cimg/python:3.10-node
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"
