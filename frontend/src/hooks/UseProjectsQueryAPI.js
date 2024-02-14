@@ -38,6 +38,7 @@ const projectQueryAllSpecification = {
   stale: BooleanParam,
   createdFrom: StringParam,
   basedOnMyInterests: BooleanParam,
+  omitMapResults: BooleanParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -70,6 +71,7 @@ const backendToQueryConversion = {
   stale: 'lastUpdatedTo',
   createdFrom: 'createdFrom',
   basedOnMyInterests: 'basedOnMyInterests',
+  omitMapResults:'omitMapResults',
 };
 
 const dataFetchReducer = (state, action) => {
