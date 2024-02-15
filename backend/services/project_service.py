@@ -2,7 +2,7 @@ import threading
 from cachetools import TTLCache, cached
 from flask import current_app
 import geojson
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from backend.exceptions import NotFound
 
