@@ -5,7 +5,6 @@ import geojson
 from datetime import datetime, timedelta, timezone
 
 from backend.exceptions import NotFound
-from sqlalchemy import func
 
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.project_dto import (
@@ -30,13 +29,13 @@ from backend.models.postgis.statuses import (
     EncouragingEmailType,
     MappingLevel,
 )
-from backend.models.postgis.task import Task, TaskHistory, ProjectComment
+from backend.models.postgis.task import Task, TaskHistory
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.users.user_service import UserService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.team_service import TeamService
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 from sqlalchemy.sql.expression import true
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
