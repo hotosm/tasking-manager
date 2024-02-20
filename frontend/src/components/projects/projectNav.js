@@ -90,12 +90,12 @@ export const ProjectNav = (props) => {
     setQuery(
       {
         ...fullProjectsQuery,
-        omitMapResults:!isMapShown
+        omitMapResults: !isMapShown,
       },
       'pushIn',
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[isMapShown])
+  }, [isMapShown]);
   const linkCombo = 'link ph3 f6 pv2 ba b--tan br1 ph3 fw5';
 
   const moreFiltersAnyActive =

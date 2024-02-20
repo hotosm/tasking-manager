@@ -71,7 +71,7 @@ const backendToQueryConversion = {
   stale: 'lastUpdatedTo',
   createdFrom: 'createdFrom',
   basedOnMyInterests: 'basedOnMyInterests',
-  omitMapResults:'omitMapResults',
+  omitMapResults: 'omitMapResults',
 };
 
 const dataFetchReducer = (state, action) => {
