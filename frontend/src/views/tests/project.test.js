@@ -24,6 +24,13 @@ import { setupFaultyHandlers } from '../../network/tests/server';
 import { projects } from '../../network/tests/mockData/projects';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
+// This is a late import in a React.lazy call; it takes awhile for date-fns to resolve, so we import it here manually.
+// In the event you remove it, please measure test times before ''and'' after removal.
+import '../../utils/chart';
+
+// scrollTo is not implemented by jsdom; mock to avoid warnings.
+window.scrollTo = jest.fn();
+
 test('CreateProject renders ProjectCreate', async () => {
   renderWithRouter(
     <QueryParamProvider adapter={ReactRouter6Adapter}>
@@ -221,27 +228,13 @@ describe('Project Detail Page', () => {
     Line: () => null,
   }));
 
-  it('should render component details', async () => {
-    act(() => {
-      store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
-    });
-    renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <ProjectDetailPage />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    await waitFor(() => {
-      expect(screen.getByText(/sample project/i)).toBeInTheDocument();
-      expect(screen.getByText(/hello world/i)).toBeInTheDocument();
-    });
-  });
-
-  it('should display private project error message', async () => {
-    setupFaultyHandlers();
+  /**
+   * Set up a ProjectDetailPage given an initial entry; this avoids issues where there is no project id.
+   * @param {Array<string>} initialEntries The initial entries. This should be in the form of `[projects/:id]`.
+   */
+  function setup(initialEntries) {
     render(
-      <MemoryRouter initialEntries={['/projects/123']}>
+      <MemoryRouter initialEntries={initialEntries}>
         <Routes>
           <Route
             path="projects/:id"
@@ -256,6 +249,22 @@ describe('Project Detail Page', () => {
         </Routes>
       </MemoryRouter>,
     );
+  }
+
+  it('should render component details', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
+    });
+    setup(['/projects/123']);
+    await waitFor(() => {
+      expect(screen.getByText(/sample project/i)).toBeInTheDocument();
+      expect(screen.getByText(/hello world/i)).toBeInTheDocument();
+    });
+  });
+
+  it('should display private project error message', async () => {
+    setupFaultyHandlers();
+    setup(['/projects/123']);
 
     await waitFor(() =>
       expect(

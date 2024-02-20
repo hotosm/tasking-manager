@@ -7,6 +7,10 @@ import { tasksStats } from '../../../network/tests/mockData/tasksStats';
 import { TasksStats } from '../tasksStats';
 import userEvent from '@testing-library/user-event';
 
+// This is a late import in a React.lazy call; it takes awhile for date-fns to resolve, so we import it here manually.
+// In the event you remove it, please measure test times before ''and'' after removal.
+import '../../../utils/chart';
+
 jest.mock('react-chartjs-2', () => ({
   Bar: () => null,
 }));
