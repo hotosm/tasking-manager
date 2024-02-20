@@ -9,10 +9,13 @@ import { Redirect } from './components/redirect';
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Root />} ErrorBoundary={FallbackComponent}>
-      <Route index lazy={async () => {
-        const { Home } = await import('./views/home' /* webpackChunkName: "home" */);
-        return { Component: Home };
-      }} />
+      <Route
+        index
+        lazy={async () => {
+          const { Home } = await import('./views/home' /* webpackChunkName: "home" */);
+          return { Component: Home };
+        }}
+      />
       <Route
         path="explore"
         lazy={async () => {

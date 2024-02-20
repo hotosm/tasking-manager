@@ -78,7 +78,10 @@ export const UserDetail = ({ withHeader = true }) => {
             rows={5}
             ready={!errorDetails && !loadingDetails}
           >
-            <HeaderProfile userDetails={userDetails} changesets={userOsmDetails?.changesets?.count} />
+            <HeaderProfile
+              userDetails={userDetails}
+              changesets={userOsmDetails?.changesets?.count}
+            />
           </ReactPlaceholder>
         </div>
       )}

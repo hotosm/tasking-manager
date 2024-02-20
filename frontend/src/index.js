@@ -21,8 +21,8 @@ if (SENTRY_FRONTEND_DSN) {
         // Additional SDK configuration goes in here, for example:
         maskAllText: true,
         blockAllMedia: true,
-        }),
-      ],
+      }),
+    ],
     tracesSampleRate: 0.1,
 
     // Session Replays integration
@@ -30,7 +30,6 @@ if (SENTRY_FRONTEND_DSN) {
     // If the entire session is not sampled, use the below sample rate to sample
     // sessions when an error occurs.
     replaysOnErrorSampleRate: 1.0,
-    
   });
 }
 
