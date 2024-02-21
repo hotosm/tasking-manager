@@ -17,7 +17,6 @@ dependencies = [
     "Flask-RESTful==0.3.10",
     "Flask-SQLAlchemy==3.0.5",
     "flask-swagger==0.2.14",
-    "flask-swagger-ui==4.11.1",
     "GeoAlchemy2==0.14.1",
     "geojson==3.0.1",
     "itsdangerous==2.1.2",
@@ -44,6 +43,7 @@ dependencies = [
     "importlib-metadata==6.8.0",
     # Dependencies used by hotosm.org for production deployments
     "newrelic==8.8.0",
+    "flask-swagger-ui>=4.11.1",
 ]
 requires-python = ">=3.9,<=3.11.2"
 readme = "README.md"

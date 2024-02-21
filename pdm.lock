@@ -3,10 +3,9 @@
 
 [metadata]
 groups = ["default", "dev", "lint", "test"]
-cross_platform = true
-static_urls = false
-lock_version = "4.3"
-content_hash = "sha256:2accc44cf24a1ed889560e3ba7c4eb43ac6305e8698838ae84ce36974020cf72"
+strategy = ["cross_platform"]
+lock_version = "4.4.1"
+content_hash = "sha256:c6076312c194ff9cf7025f34529e084a67c17c8133f767499268b7873c1440e8"
 
 [[package]]
 name = "alembic"
@@ -415,6 +414,18 @@ dependencies = [
 ]
 files = [
     {file = "flask-swagger-0.2.14.tar.gz", hash = "sha256:b4085f5bc36df4c20b6548cd1413adc9cf35719b0f0695367cd542065145294d"},
+]
+
+[[package]]
+name = "flask-swagger-ui"
+version = "4.11.1"
+summary = "Swagger UI blueprint for Flask"
+dependencies = [
+    "flask",
+]
+files = [
+    {file = "flask-swagger-ui-4.11.1.tar.gz", hash = "sha256:a370199a780d678b32e38f1be10d4d81efa0ee63e9fe2fb766ff1a4b6c37dac8"},
+    {file = "flask_swagger_ui-4.11.1-py3-none-any.whl", hash = "sha256:c951928fe4592d3561b543e0e1ca32703f55d3474de86c894a9d27f795d96c83"},
 ]
 
 [[package]]
@@ -1182,7 +1193,7 @@ version = "2.0.19"
 requires_python = ">=3.7"
 summary = "Database Abstraction Library"
 dependencies = [
-    "greenlet!=0.4.17; platform_machine == \"aarch64\" or (platform_machine == \"ppc64le\" or (platform_machine == \"x86_64\" or (platform_machine == \"amd64\" or (platform_machine == \"AMD64\" or (platform_machine == \"win32\" or platform_machine == \"WIN32\")))))",
+    "greenlet!=0.4.17; platform_machine == \"win32\" or platform_machine == \"WIN32\" or platform_machine == \"AMD64\" or platform_machine == \"amd64\" or platform_machine == \"x86_64\" or platform_machine == \"ppc64le\" or platform_machine == \"aarch64\"",
     "typing-extensions>=4.2.0",
 ]
 files = [
