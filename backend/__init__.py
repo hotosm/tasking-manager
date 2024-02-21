@@ -13,20 +13,20 @@ except ImportError as e:
     logging.warning("Not using gevent")
     logging.info(e)
 
-import os
 import json
+import os
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask, redirect, request
 from flask_cors import CORS
+from flask_mail import Mail
 from flask_migrate import Migrate
-from requests_oauthlib import OAuth2Session
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail
+from flask_swagger_ui import get_swaggerui_blueprint
+from requests_oauthlib import OAuth2Session
 
 from backend.config import EnvironmentConfig
-
 
 # Load error_messages.json and store it so that it is loaded only once at startup (Used in exceptions.py)
 # Construct the path to the JSON file
@@ -41,12 +41,13 @@ def sentry_init():
     """Initialize sentry.io event tracking"""
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
+
     from backend.exceptions import (
         BadRequest,
+        Conflict,
+        Forbidden,
         NotFound,
         Unauthorized,
-        Forbidden,
-        Conflict,
     )
 
     sentry_sdk.init(
@@ -110,6 +111,15 @@ def create_app(env="backend.config.EnvironmentConfig"):
     db.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
+
+    if os.getenv("TM_ENVIRONMENT") == "dev":
+        SWAGGER_URL = "/api/docs"
+        API_URL = f'{os.getenv("TM_APP_API_URL")}/api/{os.getenv("TM_APP_API_VERSION")}/system/docs/json/'
+        swaggerui_blueprint = get_swaggerui_blueprint(
+            SWAGGER_URL,
+            API_URL,
+        )
+        app.register_blueprint(swaggerui_blueprint)
 
     app.logger.debug("Add root redirect route")
 
@@ -203,182 +213,178 @@ def add_api_endpoints(app):
     api = Api(app)
 
     # Projects API import
-    from backend.api.projects.resources import (
-        ProjectsRestAPI,
-        ProjectsAllAPI,
-        ProjectsQueriesBboxAPI,
-        ProjectsQueriesOwnerAPI,
-        ProjectsQueriesTouchedAPI,
-        ProjectsQueriesSummaryAPI,
-        ProjectsQueriesNoGeometriesAPI,
-        ProjectsQueriesNoTasksAPI,
-        ProjectsQueriesAoiAPI,
-        ProjectsQueriesPriorityAreasAPI,
-        ProjectsQueriesFeaturedAPI,
-        ProjectQueriesSimilarProjectsAPI,
-        ProjectQueriesActiveProjectsAPI,
+    # Annotations API import
+    from backend.api.annotations.resources import AnnotationsRestAPI
+
+    # Campaigns API endpoint
+    from backend.api.campaigns.resources import CampaignsAllAPI, CampaignsRestAPI
+
+    # Comments API impor
+    from backend.api.comments.resources import (
+        CommentsProjectsAllAPI,
+        CommentsProjectsRestAPI,
+        CommentsTasksRestAPI,
+    )
+
+    # Countries API endpoint
+    from backend.api.countries.resources import CountriesRestAPI
+
+    # Interests API import
+    from backend.api.interests.resources import InterestsAllAPI, InterestsRestAPI
+
+    # Issues API import
+    from backend.api.issues.resources import IssuesAllAPI, IssuesRestAPI
+    from backend.api.licenses.actions import LicensesActionsAcceptAPI
+
+    # Licenses API import
+    from backend.api.licenses.resources import LicensesAllAPI, LicensesRestAPI
+    from backend.api.notifications.actions import (
+        NotificationsActionsDeleteAllAPI,
+        NotificationsActionsDeleteMultipleAPI,
+        NotificationsActionsMarkAsReadAllAPI,
+        NotificationsActionsMarkAsReadMultipleAPI,
+    )
+
+    # Notifications API endpoint
+    from backend.api.notifications.resources import (
+        NotificationsAllAPI,
+        NotificationsQueriesCountUnreadAPI,
+        NotificationsQueriesPostUnreadAPI,
+        NotificationsRestAPI,
+    )
+    from backend.api.organisations.campaigns import OrganisationsCampaignsAPI
+
+    # Organisations API endpoint
+    from backend.api.organisations.resources import (
+        OrganisationsAllAPI,
+        OrganisationsBySlugRestAPI,
+        OrganisationsRestAPI,
+        OrganisationsStatsAPI,
+    )
+    from backend.api.projects.actions import (
+        ProjectActionsIntersectingTilesAPI,
+        ProjectsActionsFeatureAPI,
+        ProjectsActionsMessageContributorsAPI,
+        ProjectsActionsSetInterestsAPI,
+        ProjectsActionsTransferAPI,
+        ProjectsActionsUnFeatureAPI,
     )
     from backend.api.projects.activities import (
         ProjectsActivitiesAPI,
         ProjectsLastActivitiesAPI,
     )
+    from backend.api.projects.campaigns import ProjectsCampaignsAPI
     from backend.api.projects.contributions import (
         ProjectsContributionsAPI,
         ProjectsContributionsQueriesDayAPI,
     )
+    from backend.api.projects.favorites import ProjectsFavoritesAPI
+    from backend.api.projects.resources import (
+        ProjectQueriesActiveProjectsAPI,
+        ProjectQueriesSimilarProjectsAPI,
+        ProjectsAllAPI,
+        ProjectsQueriesAoiAPI,
+        ProjectsQueriesBboxAPI,
+        ProjectsQueriesFeaturedAPI,
+        ProjectsQueriesNoGeometriesAPI,
+        ProjectsQueriesNoTasksAPI,
+        ProjectsQueriesOwnerAPI,
+        ProjectsQueriesPriorityAreasAPI,
+        ProjectsQueriesSummaryAPI,
+        ProjectsQueriesTouchedAPI,
+        ProjectsRestAPI,
+    )
     from backend.api.projects.statistics import (
         ProjectsStatisticsAPI,
-        ProjectsStatisticsQueriesUsernameAPI,
         ProjectsStatisticsQueriesPopularAPI,
+        ProjectsStatisticsQueriesUsernameAPI,
     )
     from backend.api.projects.teams import ProjectsTeamsAPI
-    from backend.api.projects.campaigns import ProjectsCampaignsAPI
-    from backend.api.projects.actions import (
-        ProjectsActionsTransferAPI,
-        ProjectsActionsMessageContributorsAPI,
-        ProjectsActionsFeatureAPI,
-        ProjectsActionsUnFeatureAPI,
-        ProjectsActionsSetInterestsAPI,
-        ProjectActionsIntersectingTilesAPI,
+    from backend.api.system.applications import SystemApplicationsRestAPI
+    from backend.api.system.authentication import (
+        SystemAuthenticationCallbackAPI,
+        SystemAuthenticationEmailAPI,
+        SystemAuthenticationLoginAPI,
     )
+    from backend.api.system.banner import SystemBannerAPI
 
-    from backend.api.projects.favorites import ProjectsFavoritesAPI
-
-    # Tasks API import
-    from backend.api.tasks.resources import (
-        TasksRestAPI,
-        TasksQueriesJsonAPI,
-        TasksQueriesXmlAPI,
-        TasksQueriesGpxAPI,
-        TasksQueriesAoiAPI,
-        TasksQueriesMappedAPI,
-        TasksQueriesOwnInvalidatedAPI,
+    # System API endpoint
+    from backend.api.system.general import (
+        SystemContactAdminRestAPI,
+        SystemDocsAPI,
+        SystemHeartbeatAPI,
+        SystemLanguagesAPI,
+        SystemReleaseAPI,
     )
+    from backend.api.system.image_upload import SystemImageUploadRestAPI
+    from backend.api.system.statistics import SystemStatisticsAPI
     from backend.api.tasks.actions import (
+        TasksActionsExtendAPI,
+        TasksActionsInvalidateAllAPI,
+        TasksActionsMapAllAPI,
         TasksActionsMappingLockAPI,
         TasksActionsMappingStopAPI,
-        TasksActionsMappingUnlockAPI,
         TasksActionsMappingUndoAPI,
+        TasksActionsMappingUnlockAPI,
+        TasksActionsResetAllAPI,
+        TasksActionsResetBadImageryAllAPI,
+        TasksActionsReverUserTaskstAPI,
+        TasksActionsSplitAPI,
+        TasksActionsValidateAllAPI,
         TasksActionsValidationLockAPI,
         TasksActionsValidationStopAPI,
         TasksActionsValidationUnlockAPI,
-        TasksActionsMapAllAPI,
-        TasksActionsValidateAllAPI,
-        TasksActionsInvalidateAllAPI,
-        TasksActionsResetBadImageryAllAPI,
-        TasksActionsResetAllAPI,
-        TasksActionsSplitAPI,
-        TasksActionsExtendAPI,
-        TasksActionsReverUserTaskstAPI,
-    )
-    from backend.api.tasks.statistics import (
-        TasksStatisticsAPI,
     )
 
-    # Comments API impor
-    from backend.api.comments.resources import (
-        CommentsProjectsRestAPI,
-        CommentsProjectsAllAPI,
-        CommentsTasksRestAPI,
+    # Tasks API import
+    from backend.api.tasks.resources import (
+        TasksQueriesAoiAPI,
+        TasksQueriesGpxAPI,
+        TasksQueriesJsonAPI,
+        TasksQueriesMappedAPI,
+        TasksQueriesOwnInvalidatedAPI,
+        TasksQueriesXmlAPI,
+        TasksRestAPI,
     )
-
-    # Annotations API import
-    from backend.api.annotations.resources import AnnotationsRestAPI
-
-    # Issues API import
-    from backend.api.issues.resources import IssuesRestAPI, IssuesAllAPI
-
-    # Interests API import
-    from backend.api.interests.resources import InterestsRestAPI, InterestsAllAPI
-
-    # Licenses API import
-    from backend.api.licenses.resources import LicensesRestAPI, LicensesAllAPI
-    from backend.api.licenses.actions import LicensesActionsAcceptAPI
-
-    # Campaigns API endpoint
-    from backend.api.campaigns.resources import CampaignsRestAPI, CampaignsAllAPI
-
-    # Organisations API endpoint
-    from backend.api.organisations.resources import (
-        OrganisationsStatsAPI,
-        OrganisationsRestAPI,
-        OrganisationsBySlugRestAPI,
-        OrganisationsAllAPI,
-    )
-    from backend.api.organisations.campaigns import OrganisationsCampaignsAPI
-
-    # Countries API endpoint
-    from backend.api.countries.resources import CountriesRestAPI
-
-    # Teams API endpoint
-    from backend.api.teams.resources import TeamsRestAPI, TeamsAllAPI
+    from backend.api.tasks.statistics import TasksStatisticsAPI
     from backend.api.teams.actions import (
-        TeamsActionsJoinAPI,
         TeamsActionsAddAPI,
+        TeamsActionsJoinAPI,
         TeamsActionsLeaveAPI,
         TeamsActionsMessageMembersAPI,
     )
 
-    # Notifications API endpoint
-    from backend.api.notifications.resources import (
-        NotificationsRestAPI,
-        NotificationsAllAPI,
-        NotificationsQueriesCountUnreadAPI,
-        NotificationsQueriesPostUnreadAPI,
+    # Teams API endpoint
+    from backend.api.teams.resources import TeamsAllAPI, TeamsRestAPI
+    from backend.api.users.actions import (
+        UsersActionsRegisterEmailAPI,
+        UsersActionsSetExpertModeAPI,
+        UsersActionsSetInterestsAPI,
+        UsersActionsSetLevelAPI,
+        UsersActionsSetRoleAPI,
+        UsersActionsSetUsersAPI,
+        UsersActionsVerifyEmailAPI,
     )
-    from backend.api.notifications.actions import (
-        NotificationsActionsDeleteMultipleAPI,
-        NotificationsActionsDeleteAllAPI,
-        NotificationsActionsMarkAsReadAllAPI,
-        NotificationsActionsMarkAsReadMultipleAPI,
-    )
+    from backend.api.users.openstreetmap import UsersOpenStreetMapAPI
 
     # Users API endpoint
     from backend.api.users.resources import (
-        UsersRestAPI,
         UsersAllAPI,
-        UsersQueriesUsernameAPI,
-        UsersQueriesUsernameFilterAPI,
-        UsersQueriesOwnLockedAPI,
-        UsersQueriesOwnLockedDetailsAPI,
         UsersQueriesFavoritesAPI,
         UsersQueriesInterestsAPI,
+        UsersQueriesOwnLockedAPI,
+        UsersQueriesOwnLockedDetailsAPI,
+        UsersQueriesUsernameAPI,
+        UsersQueriesUsernameFilterAPI,
         UsersRecommendedProjectsAPI,
+        UsersRestAPI,
     )
-    from backend.api.users.tasks import UsersTasksAPI
-    from backend.api.users.actions import (
-        UsersActionsSetUsersAPI,
-        UsersActionsSetLevelAPI,
-        UsersActionsSetRoleAPI,
-        UsersActionsSetExpertModeAPI,
-        UsersActionsVerifyEmailAPI,
-        UsersActionsRegisterEmailAPI,
-        UsersActionsSetInterestsAPI,
-    )
-    from backend.api.users.openstreetmap import UsersOpenStreetMapAPI
     from backend.api.users.statistics import (
+        UsersStatisticsAllAPI,
         UsersStatisticsAPI,
         UsersStatisticsInterestsAPI,
-        UsersStatisticsAllAPI,
     )
-
-    # System API endpoint
-    from backend.api.system.general import (
-        SystemDocsAPI,
-        SystemHeartbeatAPI,
-        SystemLanguagesAPI,
-        SystemContactAdminRestAPI,
-        SystemReleaseAPI,
-    )
-    from backend.api.system.banner import SystemBannerAPI
-    from backend.api.system.statistics import SystemStatisticsAPI
-    from backend.api.system.authentication import (
-        SystemAuthenticationEmailAPI,
-        SystemAuthenticationLoginAPI,
-        SystemAuthenticationCallbackAPI,
-    )
-    from backend.api.system.applications import SystemApplicationsRestAPI
-    from backend.api.system.image_upload import SystemImageUploadRestAPI
+    from backend.api.users.tasks import UsersTasksAPI
 
     # Projects REST endpoint
     api.add_resource(ProjectsAllAPI, format_url("projects/"), methods=["GET"])
