@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ReactPlaceholder from 'react-placeholder';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -141,6 +141,32 @@ export const ProjectsPageIndex = (props) => {
 export const MoreFilters = () => {
   const navigate = useNavigate();
   const [fullProjectsQuery] = useExploreProjectsQueryParams();
+  const [componentHeight, setComponentHeight] = useState(`${window.innerHeight}px`);
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
+  useEffect(() => {
+    const contentHeight =
+      document.getElementById('explore-nav').offsetHeight +
+      document.getElementById('top-header').offsetHeight;
+
+    const handleResize = () => {
+      setComponentHeight(window.innerHeight - contentHeight);
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const currentUrl = `/explore${
     stringify(fullProjectsQuery) ? ['?', stringify(fullProjectsQuery)].join('') : ''
@@ -148,8 +174,13 @@ export const MoreFilters = () => {
 
   return (
     <>
-      <div className="absolute left-0 z-4 mt1 w-40-l w-100 h-100 bg-white h4 ph1 ph5-l">
-        <MoreFiltersForm currentUrl={currentUrl} />
+      <div
+        className="absolute left-0 z-4 mt1 w-40-l w-100 bg-white h4 ph1 ph5-l"
+        style={{ height: `${componentHeight}px` }}
+      >
+        <div className="scrollable-container h-100  overflow-x-hidden overflow-y-auto">
+          <MoreFiltersForm currentUrl={currentUrl} />
+        </div>
       </div>
       <div
         onClick={() => navigate(currentUrl)}

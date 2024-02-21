@@ -113,6 +113,8 @@ describe('UserProjectsPage Component', () => {
 });
 
 test('More Filters should close the more filters container when clicked outside the container', async () => {
+  jest.spyOn(document, 'getElementById').mockReturnValue({ offsetHeight: 100 });
+
   const { user, router } = createComponentWithMemoryRouter(
     <QueryParamProvider adapter={ReactRouter6Adapter}>
       <ReduxIntlProviders>
