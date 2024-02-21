@@ -784,6 +784,16 @@ class Task(db.Model):
         self, user_id, new_state=None, comment=None, undo=False, issues=None
     ):
         """Unlock task and ensure duration task locked is saved in History"""
+        #  If not undo, update the duration of the lock
+        if not undo:
+            last_history = TaskHistory.get_last_action(self.project_id, self.id)
+            # To unlock a task the last action must have been either lock or extension
+            last_action = TaskAction[last_history.action]
+            TaskHistory.update_task_locked_with_duration(
+                self.id, self.project_id, last_action, user_id
+            )
+
+        # Only create new history after updating the duration since we need the last action to update the duration.
         if comment:
             self.set_task_history(
                 action=TaskAction.COMMENT,
@@ -822,12 +832,6 @@ class Task(db.Model):
             self.mapped_by = None
             self.validated_by = None
 
-        if not undo:
-            # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-            TaskHistory.update_task_locked_with_duration(
-                self.id, self.project_id, TaskStatus(self.task_status), user_id
-            )
-
         self.task_status = new_state.value
         self.locked_by = None
         self.update()
@@ -835,15 +839,19 @@ class Task(db.Model):
     def reset_lock(self, user_id, comment=None):
         """Removes a current lock from a task, resets to last status and
         updates history with duration of lock"""
+        last_history = TaskHistory.get_last_action(self.project_id, self.id)
+        # To reset a lock the last action must have been either lock or extension
+        last_action = TaskAction[last_history.action]
+        TaskHistory.update_task_locked_with_duration(
+            self.id, self.project_id, last_action, user_id
+        )
+
+        # Only set task history after updating the duration since we need the last action to update the duration.
         if comment:
             self.set_task_history(
                 action=TaskAction.COMMENT, comment=comment, user_id=user_id
             )
 
-        # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-        TaskHistory.update_task_locked_with_duration(
-            self.id, self.project_id, TaskStatus(self.task_status), user_id
-        )
         self.clear_lock()
 
     def clear_lock(self):

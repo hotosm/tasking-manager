@@ -1,4 +1,5 @@
 from unittest.mock import patch, MagicMock
+
 from backend.services.mapping_service import (
     MappingService,
     Task,
@@ -127,6 +128,7 @@ class TestMappingService(BaseTestCase):
         with self.assertRaises(MappingServiceError):
             MappingService.unlock_task_after_mapping(self.mapped_task_dto)
 
+    @patch.object(TaskHistory, "get_last_action")
     @patch.object(ProjectService, "send_email_on_project_progress")
     @patch.object(ProjectInfo, "get_dto_for_locale")
     @patch.object(Task, "get_per_task_instructions")
@@ -147,6 +149,7 @@ class TestMappingService(BaseTestCase):
         mock_state,
         mock_project_name,
         mock_send_email,
+        mock_last_action,
     ):
         # Arrange
         self.task_stub.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
@@ -154,6 +157,10 @@ class TestMappingService(BaseTestCase):
         mock_task.return_value = self.task_stub
         mock_state.return_value = TaskStatus.LOCKED_FOR_MAPPING
         mock_project_name.name.return_value = "Test project"
+        history = TaskHistory(1, 1, 1)
+        history.action = TaskAction.LOCKED_FOR_MAPPING.name
+        mock_last_action.return_value = history
+
         # Act
         test_task = MappingService.unlock_task_after_mapping(self.mapped_task_dto)
 
@@ -163,6 +170,7 @@ class TestMappingService(BaseTestCase):
         self.assertEqual(TaskAction.COMMENT.name, test_task.task_history[0].action)
         self.assertEqual(test_task.task_history[0].action_text, "Test comment")
 
+    @patch.object(TaskHistory, "get_last_action")
     @patch.object(ProjectService, "send_email_on_project_progress")
     @patch.object(Task, "get_per_task_instructions")
     @patch.object(StatsService, "update_stats_after_task_state_change")
@@ -179,11 +187,15 @@ class TestMappingService(BaseTestCase):
         mock_instructions,
         mock_state,
         mock_send_email,
+        mock_last_action,
     ):
         # Arrange
         self.task_stub.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
         mock_task.return_value = self.task_stub
         mock_state.return_value = TaskStatus.LOCKED_FOR_MAPPING
+        history = TaskHistory(1, 1, 1)
+        history.action = TaskAction.LOCKED_FOR_MAPPING.name
+        mock_last_action.return_value = history
 
         # Act
         test_task = MappingService.unlock_task_after_mapping(self.mapped_task_dto)
