@@ -202,7 +202,7 @@ const Conditions = {
 
 const Resources = {
   TaskingManagerASG: {
-    DependsOn: 'TaskingManagerLaunchConfiguration',
+    DependsOn: 'TaskingManagerLaunchTemplate',
     Type: 'AWS::AutoScaling::AutoScalingGroup',
     Properties: {
       AutoScalingGroupName: cf.stackName,
@@ -211,7 +211,7 @@ const Resources = {
       DesiredCapacity: cf.if('IsTaskingManagerProduction', 3, 1),
       MaxSize: cf.if('IsTaskingManagerProduction', 9, cf.if('IsTaskingManagerDemo', 3, 1)),
       HealthCheckGracePeriod: 600,
-      LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
+      LaunchTemplate: cf.ref('TaskingManagerLaunchTemplate'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
       AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f'],
@@ -247,8 +247,8 @@ const Resources = {
         Cooldown: 300
       }
   },
-  TaskingManagerLaunchConfiguration: {
-    Type: "AWS::AutoScaling::LaunchConfiguration",
+  TaskingManagerLaunchTemplate: {
+    Type: 'AWS::EC2::LaunchTemplate',
     Metadata: {
       "AWS::CloudFormation::Init": {
         "configSets": {
@@ -359,80 +359,125 @@ const Resources = {
       }
     },
     Properties: {
-      IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-      ImageId: cf.ref('TaskingManagerBackendAMI'),
-      InstanceType: cf.ref('TaskingManagerBackendInstanceType'),
-      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
-      UserData: cf.userData([
-        '#!/bin/bash',
-        'set -x',
-        'sleep 10',
-        'export DEBIAN_FRONTEND=noninteractive',
-        'export LC_ALL="en_US.UTF-8"',
-        'export LC_CTYPE="en_US.UTF-8"',
-        'dpkg-reconfigure --frontend=noninteractive locales',
-        'sudo apt-get -q -y update',
-        'sudo DEBIAN_FRONTEND=noninteractive apt-get -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
-        'sudo apt-get -q -y install awscli curl git gnupg ruby wget',
-        'sudo apt-get -q -y install python3.9 python3-pip python3-psycopg2 python-is-python3',
-        'sudo apt-get -q -y install postgresql-client postgis libpq-dev',
-        'sudo apt-get -q -y install libxml2 libxml2-dev',
-        'sudo apt-get -q -y install libgeos-3.9.0 libgeos-dev',
-        'sudo apt-get -q -y install libproj19 libproj-dev',
-        'sudo apt-get -q -y install libjson-c-dev',
-        'git clone --recursive https://github.com/hotosm/tasking-manager.git /opt/tasking-manager',
-        'cd /opt/tasking-manager/',
-        cf.sub('git reset --hard ${GitSha}'),
-        'pip install --upgrade pip pdm==2.7.4',
-        'wget -4 https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz -O /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
-        'pip install /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
-        'pdm install',
-        'eval "$(pdm venv activate)"',
-        'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf',
-        'export LC_ALL=C',
-        'wget -4 --quiet https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
-        'dpkg -i /tmp/amazon-cloudwatch-agent.deb',
-        'echo "Exporting environment variables:"',
-        cf.sub('export NEW_RELIC_LICENSE=${NewRelicLicense}'),
-        cf.join('', ['export POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address')]),
-        cf.sub('export POSTGRES_DB=${PostgresDB}'),
-        cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
-        cf.sub('export POSTGRES_USER="${PostgresUser}"'),
-        cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
-        cf.sub('export TM_ENVIRONMENT="${AWS::StackName}"'),
-        cf.sub('export TM_CLIENT_ID="${TaskingManagerOAuthClientID}"'),
-        cf.sub('export TM_CLIENT_SECRET="${TaskingManagerOAuthClientSecret}"'),
-        cf.sub('export TM_REDIRECT_URI="${TaskingManagerAppBaseUrl}/authorized"'),
-        'export TM_SCOPE="read_prefs write_api"',
-        cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
-        cf.sub('export TM_SMTP_HOST="${TaskingManagerSMTPHost}"'),
-        cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),
-        cf.sub('export TM_SMTP_PORT="${TaskingManagerSMTPPort}"'),
-        cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
-        cf.sub('export TM_SMTP_USE_SSL="${TaskingManagerSMTPSSL}"'),
-        cf.sub('export TM_SMTP_USE_TLS="${TaskingManagerSMTPTLS}"'),
-        cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
-        cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),
-        cf.sub('export TM_EMAIL_CONTACT_ADDRESS="${TaskingManagerEmailContactAddress}"'),
-        cf.sub('export TM_LOG_LEVEL="${TaskingManagerLogLevel}"'),
-        cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
-        cf.sub('export TM_ORG_NAME="${TaskingManagerOrgName}"'),
-        cf.sub('export TM_ORG_CODE="${TaskingManagerOrgCode}"'),
-        cf.sub('export TM_ORG_LOGO="${TaskingManagerLogo}"'),
-        cf.sub('export TM_IMAGE_UPLOAD_API_URL="${TaskingManagerImageUploadAPIURL}"'),
-        cf.sub('export TM_IMAGE_UPLOAD_API_KEY="${TaskingManagerImageUploadAPIKey}"'),
-        'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
-        cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
-        'pdm run flask db upgrade',
-        'echo "------------------------------------------------------------"',
-        cf.sub('export NEW_RELIC_LICENSE_KEY="${NewRelicLicense}"'),
-        cf.sub('export TM_SENTRY_BACKEND_DSN="${SentryBackendDSN}"'),
-        'export NEW_RELIC_ENVIRONMENT=$TM_ENVIRONMENT',
-        cf.sub('NEW_RELIC_CONFIG_FILE=./scripts/aws/cloudformation/newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 5 --timeout 179 --access-logfile ${TaskingManagerLogDirectory}/gunicorn-access.log --access-logformat \'%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s %(T)s \"%(f)s\" \"%(a)s\"\' manage:application &'),
-        cf.sub('sudo /usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
-        cf.sub('/usr/local/bin/cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
-      ]),
-      KeyName: 'mbtiles'
+      LaunchTemplateData: {
+        IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
+        ImageId: cf.ref('TaskingManagerBackendAMI'),
+        InstanceType: cf.ref('TaskingManagerBackendInstanceType'),
+        KeyName: 'mbtiles',
+        Monitoring: {
+            Enabled: true
+          },
+        NetworkInterfaces: [ {
+          AssociatePublicIpAddress: false, //true?
+          DeleteOnTermination: true,
+          // "Groups" : [ String, ... ], //needed?
+          PrimaryIpv6: true,
+        }],
+        PrivateDnsNameOptions: {
+          EnableResourceNameDnsAAAARecord: true,
+          EnableResourceNameDnsARecord: false, //true?
+          HostnameType: 'resource-name'
+        },
+        SecurityGroupIds: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))], //TODO: does this import IDs or names?
+        // "TagSpecifications" : [ TagSpecification, ... ],
+        UserData: cf.userData([
+          '#!/bin/bash',
+          'set -x',
+          'sleep 10',
+          'export DEBIAN_FRONTEND=noninteractive',
+          'export LC_ALL="en_US.UTF-8"',
+          'export LC_CTYPE="en_US.UTF-8"',
+          'dpkg-reconfigure --frontend=noninteractive locales',
+          'sudo apt-get -q -y update',
+          'sudo DEBIAN_FRONTEND=noninteractive apt-get -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
+          'sudo apt-get -q -y install awscli curl git gnupg ruby wget',
+          'sudo apt-get -q -y install python3.9 python3-pip python3-psycopg2 python-is-python3',
+          'sudo apt-get -q -y install postgresql-client postgis libpq-dev',
+          'sudo apt-get -q -y install libxml2 libxml2-dev',
+          'sudo apt-get -q -y install libgeos-3.9.0 libgeos-dev',
+          'sudo apt-get -q -y install libproj19 libproj-dev',
+          'sudo apt-get -q -y install libjson-c-dev',
+          'git clone --recursive https://github.com/hotosm/tasking-manager.git /opt/tasking-manager',
+          'cd /opt/tasking-manager/',
+          cf.sub('git reset --hard ${GitSha}'),
+          'pip install --upgrade pip pdm==2.7.4',
+          'wget -4 https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz -O /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
+          'pip install /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
+          'pdm install',
+          'eval "$(pdm venv activate)"',
+          'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf',
+          'export LC_ALL=C',
+          'wget -4 --quiet https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
+          'dpkg -i /tmp/amazon-cloudwatch-agent.deb',
+          'echo "Exporting environment variables:"',
+          cf.sub('export NEW_RELIC_LICENSE=${NewRelicLicense}'),
+          cf.join('', ['export POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address')]),
+          cf.sub('export POSTGRES_DB=${PostgresDB}'),
+          cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
+          cf.sub('export POSTGRES_USER="${PostgresUser}"'),
+          cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
+          cf.sub('export TM_ENVIRONMENT="${AWS::StackName}"'),
+          cf.sub('export TM_CLIENT_ID="${TaskingManagerOAuthClientID}"'),
+          cf.sub('export TM_CLIENT_SECRET="${TaskingManagerOAuthClientSecret}"'),
+          cf.sub('export TM_REDIRECT_URI="${TaskingManagerAppBaseUrl}/authorized"'),
+          'export TM_SCOPE="read_prefs write_api"',
+          cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
+          cf.sub('export TM_SMTP_HOST="${TaskingManagerSMTPHost}"'),
+          cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),
+          cf.sub('export TM_SMTP_PORT="${TaskingManagerSMTPPort}"'),
+          cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
+          cf.sub('export TM_SMTP_USE_SSL="${TaskingManagerSMTPSSL}"'),
+          cf.sub('export TM_SMTP_USE_TLS="${TaskingManagerSMTPTLS}"'),
+          cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
+          cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),
+          cf.sub('export TM_EMAIL_CONTACT_ADDRESS="${TaskingManagerEmailContactAddress}"'),
+          cf.sub('export TM_LOG_LEVEL="${TaskingManagerLogLevel}"'),
+          cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
+          cf.sub('export TM_ORG_NAME="${TaskingManagerOrgName}"'),
+          cf.sub('export TM_ORG_CODE="${TaskingManagerOrgCode}"'),
+          cf.sub('export TM_ORG_LOGO="${TaskingManagerLogo}"'),
+          cf.sub('export TM_IMAGE_UPLOAD_API_URL="${TaskingManagerImageUploadAPIURL}"'),
+          cf.sub('export TM_IMAGE_UPLOAD_API_KEY="${TaskingManagerImageUploadAPIKey}"'),
+          'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
+          cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
+          'pdm run flask db upgrade',
+          'echo "------------------------------------------------------------"',
+          cf.sub('export NEW_RELIC_LICENSE_KEY="${NewRelicLicense}"'),
+          cf.sub('export TM_SENTRY_BACKEND_DSN="${SentryBackendDSN}"'),
+          'export NEW_RELIC_ENVIRONMENT=$TM_ENVIRONMENT',
+          cf.sub('NEW_RELIC_CONFIG_FILE=./scripts/aws/cloudformation/newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 5 --timeout 179 --access-logfile ${TaskingManagerLogDirectory}/gunicorn-access.log --access-logformat \'%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s %(T)s \"%(f)s\" \"%(a)s\"\' manage:application &'),
+          cf.sub('sudo /usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchTemplate --region ${AWS::Region} --configsets default'),
+          cf.sub('/usr/local/bin/cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
+        ]),
+      },
+      LaunchTemplateName: cf.stackName,
+      TagSpecifications: [
+        {
+          ResourceType: 'instance',
+          Tags: [
+            {
+              Key: 'Name',
+              Value: cf.stackName
+            },
+            {
+              Key: 'Project',
+              Value: 'Tasking Manager'
+            },
+            {
+              Key: 'Tool',
+              Value: 'Tasking Manager'
+            },
+            {
+              Key: 'Maintainers',
+              Value: 'dakota.benjamin and yogeshgirikumar'
+            },
+            {
+              Key: 'environment',
+              Value: cf.ref('NetworkEnvironment')
+            },
+          ]
+        }
+      ]
     }
   },
   TaskingManagerEC2Role: {
