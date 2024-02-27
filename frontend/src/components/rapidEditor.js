@@ -7,9 +7,9 @@ import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } fr
 import { types } from '../store/actions/editor';
 
 // We import from a CDN using a SEMVER minor version range
-import { version as rapidVersion, name as rapidName } from '@rapideditor/rapid/package.json';
+import rapidPackage from '@rapideditor/rapid/package.json';
 
-const baseCdnUrl = `https://cdn.jsdelivr.net/npm/${rapidName}@~${rapidVersion}/dist/`;
+const baseCdnUrl = `https://cdn.jsdelivr.net/npm/${rapidPackage.name}@~${rapidPackage.version}/dist/`;
 // We currently copy rapid files to the public/static/rapid directory. This should probably remain,
 // since it can be useful for debugging rapid issues in the TM.
 // const baseCdnUrl = '/static/rapid/';
