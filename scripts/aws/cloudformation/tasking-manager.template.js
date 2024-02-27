@@ -223,7 +223,7 @@ const Resources = {
     },
     UpdatePolicy: {
       AutoScalingRollingUpdate: {
-        PauseTime: 'PT10M',
+        PauseTime: 'PT15M',
         MaxBatchSize: 2,
         WaitOnResourceSignals: true
       }
