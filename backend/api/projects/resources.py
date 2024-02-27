@@ -477,6 +477,9 @@ class ProjectSearchBase(Resource):
         search_dto.omit_map_results = strtobool(
             request.args.get("omitMapResults", "false")
         )
+        search_dto.omit_results = strtobool(
+            request.args.get("omitResults", "false")
+        )
         search_dto.last_updated_gte = request.args.get("lastUpdatedFrom")
         search_dto.last_updated_lte = request.args.get("lastUpdatedTo")
         search_dto.created_gte = request.args.get("createdFrom")

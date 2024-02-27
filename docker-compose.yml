@@ -42,6 +42,10 @@ services:
     container_name: tm-postgresql
     restart: always
     env_file: ${ENV_FILE:-tasking-manager.env}
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql
     networks:
       - tm-web
 
