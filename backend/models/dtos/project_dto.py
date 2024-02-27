@@ -330,6 +330,7 @@ class ProjectSearchDTO(Model):
     last_updated_gte = StringType(required=False)
     created_lte = StringType(required=False)
     created_gte = StringType(required=False)
+    omit_results = BooleanType(required=False)
 
     def __hash__(self):
         """Make object hashable so we can cache user searches"""
