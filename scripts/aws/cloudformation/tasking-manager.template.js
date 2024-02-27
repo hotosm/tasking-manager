@@ -211,7 +211,10 @@ const Resources = {
       DesiredCapacity: cf.if('IsTaskingManagerProduction', 3, 1),
       MaxSize: cf.if('IsTaskingManagerProduction', 9, cf.if('IsTaskingManagerDemo', 3, 1)),
       HealthCheckGracePeriod: 600,
-      LaunchTemplate: cf.ref('TaskingManagerLaunchTemplate'),
+      LaunchTemplate: {
+        "LaunchTemplateId" : cf.ref('TaskingManagerLaunchTemplate'),
+        "Version" : cf.getAtt('TaskingManagerLaunchTemplate', 'LatestVersionNumber')
+      },
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
       AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f'],
@@ -360,26 +363,56 @@ const Resources = {
     },
     Properties: {
       LaunchTemplateData: {
-        IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
+        IamInstanceProfile: {
+          Name: cf.ref('TaskingManagerEC2InstanceProfile'),
+        }, 
         ImageId: cf.ref('TaskingManagerBackendAMI'),
         InstanceType: cf.ref('TaskingManagerBackendInstanceType'),
         KeyName: 'mbtiles',
         Monitoring: {
             Enabled: true
           },
-        NetworkInterfaces: [ {
-          AssociatePublicIpAddress: false, //true?
-          DeleteOnTermination: true,
-          // "Groups" : [ String, ... ], //needed?
-          PrimaryIpv6: true,
-        }],
+        // NetworkInterfaces: [{
+        //   AssociatePublicIpAddress: false, //true?
+        //   DeleteOnTermination: true,
+        //   // "Groups" : [ String, ... ], //needed?
+        //   PrimaryIpv6: true,
+        //   DeviceIndex: 0,
+        //   Groups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))]
+        // }],
         PrivateDnsNameOptions: {
           EnableResourceNameDnsAAAARecord: true,
           EnableResourceNameDnsARecord: false, //true?
           HostnameType: 'resource-name'
         },
         SecurityGroupIds: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))], //TODO: does this import IDs or names?
-        // "TagSpecifications" : [ TagSpecification, ... ],
+        TagSpecifications: [
+          {
+            ResourceType: 'instance',
+            Tags: [
+              {
+                Key: 'Name',
+                Value: cf.stackName
+              },
+              {
+                Key: 'Project',
+                Value: 'Tasking Manager'
+              },
+              {
+                Key: 'Tool',
+                Value: 'Tasking Manager'
+              },
+              {
+                Key: 'Maintainers',
+                Value: 'dakota.benjamin and yogeshgirikumar'
+              },
+              {
+                Key: 'environment',
+                Value: cf.ref('NetworkEnvironment')
+              },
+            ]
+          }
+        ],
         UserData: cf.userData([
           '#!/bin/bash',
           'set -x',
@@ -453,7 +486,7 @@ const Resources = {
       LaunchTemplateName: cf.stackName,
       TagSpecifications: [
         {
-          ResourceType: 'instance',
+          ResourceType: 'launch-template',
           Tags: [
             {
               Key: 'Name',
