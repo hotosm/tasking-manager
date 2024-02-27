@@ -383,8 +383,8 @@ const Resources = {
         'git clone --recursive https://github.com/hotosm/tasking-manager.git /opt/tasking-manager',
         'cd /opt/tasking-manager/',
         cf.sub('git reset --hard ${GitSha}'),
-        'pip install --quiet --upgrade pip pdm',
-        'wget --quiet https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz -O /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
+        'pip install --upgrade pip pdm==2.7.4',
+        'wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz -O /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
         'pip install /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
         'pdm install',
         'eval "$(pdm venv activate)"',
@@ -584,7 +584,7 @@ const Resources = {
       HostedZoneId: 'Z05223682CWA7KUW593DH', // NOTE: tasks.hotosm.org HostedZone ID on Route53
       RecordSets: [
         {
-          Name: cf.join('.', [ cf.join('-', ['api', cf.ref('NetworkEnvironment')]), 'tasks.hotosm.org']),
+          Name: cf.join('.', [ cf.join('-', ['api', cf.stackName]), 'tasks.hotosm.org']),
           Type: 'A',
           AliasTarget: {
             DNSName: cf.getAtt('TaskingManagerLoadBalancer', 'DNSName'),
@@ -592,7 +592,7 @@ const Resources = {
           }
         },
         {
-          Name: cf.join('.', [ cf.join('-', ['api', cf.ref('NetworkEnvironment')]), 'tasks.hotosm.org']),
+          Name: cf.join('.', [ cf.join('-', ['api', cf.stackName]), 'tasks.hotosm.org']),
           Type: 'AAAA',
           AliasTarget: {
             DNSName: cf.getAtt('TaskingManagerLoadBalancer', 'DNSName'),
@@ -703,6 +703,7 @@ const Resources = {
     }
   },
   TaskingManagerReactBucketPolicy: {
+    DependsOn: 'TaskingManagerReactCloudfront',
     Type: 'AWS::S3::BucketPolicy',
     Metadata: {
       TODO: "Condition: { StringEquals: { AWS:SourceArn: arn:aws:cloudfront::6000000:distribution/EH2ANTHENTH } }"
@@ -713,26 +714,45 @@ const Resources = {
         Version: "2012-10-17",
         Statement: [
           {
-            Action: [ "s3:GetObject" ],
-            Effect: 'Allow',
-            Principal: "*",
-            Resource: [
+            "Sid": "AllowCloudFrontServicePrincipalReadOnly",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "cloudfront.amazonaws.com"
+            },
+            "Action": "s3:GetObject",
+            "Resource": [
               cf.join("/", [
-                  cf.getAtt("TaskingManagerReactBucket", "Arn"),
+                cf.getAtt("TaskingManagerReactBucket", "Arn"),
                   "*"
               ])
             ],
-            Sid: "PublicGetObject"
-          },
-          {
-            Action: [ "s3:ListBucket" ],
-            Effect: "Allow",
-            Principal: "*",
-            Resource: [
-              cf.getAtt("TaskingManagerReactBucket", "Arn")
-            ],
-            Sid: "PublicListBucket"
-          }
+            "Condition": {
+              "StringEquals": {
+                "AWS:SourceArn": cf.sub("arn:aws:cloudfront::${AWS::AccountId}:distribution/${TaskingManagerReactCloudfront}")
+              }
+            }
+          } //,
+          // {
+          //   Action: [ "s3:GetObject" ],
+          //   Effect: 'Allow',
+          //   Principal: "*",
+          //   Resource: [
+          //     cf.join("/", [
+          //         cf.getAtt("TaskingManagerReactBucket", "Arn"),
+          //         "*"
+          //     ])
+          //   ],
+          //   Sid: "PublicGetObject"
+          // },
+          // {
+          //   Action: [ "s3:ListBucket" ],
+          //   Effect: "Allow",
+          //   Principal: "*",
+          //   Resource: [
+          //     cf.getAtt("TaskingManagerReactBucket", "Arn")
+          //   ],
+          //   Sid: "PublicListBucket"
+          // }
         ]
       }
     }
