@@ -1,62 +1,103 @@
-# To use this file, run `docker-compose up`.
-version: "3.4"
+version: "3"
 
-x-backend-config: &backend
-  image: hotosm-tasking-manager:backend
-  env_file: ${ENV_FILE:-tasking-manager.env}
-  depends_on:
-    - postgresql
-  links:
-    - postgresql
-  networks:
-    - tm-web
+name: tasking-manager-main
+
+volumes:
+  tm_db_data:
+    name: tm-db-data-main
+
+networks:
+  tm-net: 
+    name: tm-net
 
 services:
-  # Main application
-  backend:
-    <<: *backend
-    container_name: tm-backend
-    restart: always
+  tm-db:
+    image: "postgis/postgis:${POSTGIS_TAG:-14-3.3}"
+    volumes:
+      - tm_db_data:/var/lib/postgresql/data/
+    ports:
+      - 5433:5432
+    env_file:
+      - tasking-manager.env
+    restart: unless-stopped
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      start_period: 35s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - tm-net
+
+  tm-backend:
+    image: ghcr.io/hotosm/tm/backend:main
+    build:
+      context: .
+    depends_on:
+      tm-db:
+        condition: service_healthy
+      tm-migration:
+        condition: service_completed_successfully
+    ports:
+      - 8001:5000
+    env_file:
+      - tasking-manager.env
+    restart: unless-stopped
+    healthcheck:
+      test: curl --fail http://localhost:5000 || exit 1
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 3s
+    deploy:
+      replicas: ${API_REPLICAS:-1}
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1500M
+        reservations:
+          cpus: "1"
+          memory: 100M
     labels:
       - traefik.http.routers.backend.rule=(Host(`127.0.0.1`) || Host(`localhost`)) && PathPrefix(`/api/`)
       - traefik.http.services.backend.loadbalancer.server.port=5000
-
-  migration:
-    <<: *backend
-    container_name: tm-migration
-    restart: on-failure
-    command: flask db upgrade
-
-  frontend:
-    image: hotosm-tasking-manager:frontend
-    container_name: tm-frontend
-    restart: always
     networks:
-      - tm-web
-    labels:
-      - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
-      - traefik.http.services.frontend.loadbalancer.server.port=3000
+      - tm-net
+
+  tm-migration:
+    image: ghcr.io/hotosm/tm/backend:main
+    build:
+      context: .
+    entrypoint: ["python", "manage.py", "db", "upgrade"]
+    depends_on:
+      tm-db:
+        condition: service_healthy
+    env_file:
+      - tasking-manager.env
+    deploy:
+      replicas: ${API_REPLICAS:-1}
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1500M
+        reservations:
+          cpus: "1"
+          memory: 100M
+    networks:
+      - tm-net
 
   swagger:
     image: swaggerapi/swagger-ui:v5.11.10
     container_name: tm-swagger-docs
     restart: always
-    networks:
-      - tm-web
     environment:
       - BASE_URL=/docs
       - SWAGGER_JSON_URL=http://127.0.0.1:${TM_DEV_PORT:-3000}/api/v2/system/docs/json/
     labels:
       - traefik.http.routers.swagger.rule=(Host(`127.0.0.1`) || Host(`localhost`)) && PathPrefix(`/docs/`)
       - traefik.http.services.swagger.loadbalancer.server.port=8080
-
-  postgresql:
-    image: postgis/postgis:14-3.3
-    container_name: tm-postgresql
-    restart: always
-    env_file: ${ENV_FILE:-tasking-manager.env}
     networks:
-      - tm-web
+      - tm-net
 
   traefik:
     image: traefik:v2.10
@@ -70,8 +111,19 @@ services:
       - --entrypoints.web.address=:80
       - --providers.docker=true
     networks:
-      - tm-web
+      - tm-net
 
-networks:
-  tm-web:
-    external: false
+  tm-frontend:
+    image: ghcr.io/hotosm/tm/frontend:main
+    build:
+      context: .
+      dockerfile: "./scripts/docker/Dockerfile.frontend"
+    ports:
+      - 8002:80
+    env_file:
+      - tasking-manager.env
+    labels:
+      - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
+      - traefik.http.services.frontend.loadbalancer.server.port=3000
+    networks:
+      - tm-net
