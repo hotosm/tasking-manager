@@ -731,28 +731,7 @@ const Resources = {
                 "AWS:SourceArn": cf.sub("arn:aws:cloudfront::${AWS::AccountId}:distribution/${TaskingManagerReactCloudfront}")
               }
             }
-          } //,
-          // {
-          //   Action: [ "s3:GetObject" ],
-          //   Effect: 'Allow',
-          //   Principal: "*",
-          //   Resource: [
-          //     cf.join("/", [
-          //         cf.getAtt("TaskingManagerReactBucket", "Arn"),
-          //         "*"
-          //     ])
-          //   ],
-          //   Sid: "PublicGetObject"
-          // },
-          // {
-          //   Action: [ "s3:ListBucket" ],
-          //   Effect: "Allow",
-          //   Principal: "*",
-          //   Resource: [
-          //     cf.getAtt("TaskingManagerReactBucket", "Arn")
-          //   ],
-          //   Sid: "PublicListBucket"
-          // }
+          }
         ]
       }
     }
