@@ -74,12 +74,16 @@ The easiest option to get started with all components may be using Docker.
 
 ### Requirements
 
-[Docker Engine](https://docs.docker.com/engine/install/) must be 
-available locally.
+[Docker Engine](https://docs.docker.com/engine/install/) must be available locally.
 
 ### Running Tasking Manager
 
-Once the steps above have been complete, simply run:
+Once you have the docke engine running, Quickly generate an environment file from an existing `example.env`.
+```bash
+cp example.env tasking-manager.env
+```
+
+Now you can proceed with starting the services.
 
 ```bash
 docker compose pull
@@ -102,7 +106,67 @@ The default dotenv file can also be changed.
 ```bash
 TM_DEV_PORT=9000 ENV_FILE=.env docker compose up --detach
 ```
+```bash
+docker compose build
+docker compose up --detach
+```
+### External or Self Hosted Database
 
+If you want to use your local postgresql server or some other exter database service.
+Find these sets of environment variables in `tasking-manager.env` 
+```bash
+POSTGRES_DB=tasking-manager
+POSTGRES_USER=tm
+POSTGRES_PASSWORD=tm
+POSTGRES_ENDPOINT=<replace-with-your-database-endpoint>
+POSTGRES_PORT=5432
+```
+> **_NOTE:_**  If database server is self managed on your local machine, Use your machine's ip address. Also make sure it can be reachable from `tm-backend` container.
+
+Once Updated, recreate containers with 
+```
+docker compose up -d
+```
+
+### Frontend Only Deployment
+If you are looking to deploy only Frontend service with docker, You will need to make sure the following env vars are corrent in `tasking-manager.env`
+
+```
+TM_APP_API_URL=http://127.0.0.1:5000
+```
+This refers to the backend service that you are going to consume, If you don't have a Tasking Manager backend instance you can use the staging server hosted by hotosm.
+```
+TM_APP_API_URL=https://tasking-manager-staging-api.hotosm.org
+```
+Then proceed with starting only frontend service with docker.
+```
+docker compose up -d tm-frontend
+```
+
+Check server logs with
+```
+docker logs tasking-manager-main-tm-frontend-1 -f
+
+> TaskingManager-frontend@0.1.0 patch-rapid
+> bash -c "cp patch/rapid-imagery.min.json public/static/rapid/data/imagery.min.json"
+
+ℹ ｢wds｣: Project is running at http://172.22.0.2/
+ℹ ｢wds｣: webpack output is served from
+ℹ ｢wds｣: Content not from webpack is served from /usr/src/app/public
+ℹ ｢wds｣: 404s will fallback to /
+Starting the development server...
+
+Compiled successfully!
+
+You can now view TaskingManager-frontend in the browser.
+
+  Local:            http://localhost:3000
+  On Your Network:  http://172.22.0.2:3000
+
+Note that the development build is not optimized.
+To create a production build, use yarn build.
+```
+For OSM related `CLIENT_ID` and `SECRETS` check [OSM AUTH](#osm-auth) section.
 ## Running Components Standalone
 
 ### Frontend
