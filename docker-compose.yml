@@ -16,7 +16,7 @@ services:
     volumes:
       - tm_db_data:/var/lib/postgresql/data/
     ports:
-      - 5433:5432
+      - 5432:5432
     env_file:
       - tasking-manager.env
     restart: unless-stopped
@@ -39,7 +39,7 @@ services:
       tm-migration:
         condition: service_completed_successfully
     ports:
-      - 8001:5000
+      - 5000:5000
     env_file:
       - tasking-manager.env
     restart: unless-stopped
@@ -119,7 +119,7 @@ services:
       context: .
       dockerfile: "./scripts/docker/Dockerfile.frontend"
     ports:
-      - 8002:80
+      - 3000:80
     env_file:
       - tasking-manager.env
     labels:
