@@ -434,7 +434,7 @@ const Resources = {
           'cd /opt/tasking-manager/',
           cf.sub('git reset --hard ${GitSha}'),
           'pip install --upgrade pip pdm==2.7.4',
-          'wget -6 https://s3.dualstack.us-east-1.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz',
+          'wget -6 https://s3.dualstack.us-east-1.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz -O /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
           'pip install /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
           'pdm install',
           'eval "$(pdm venv activate)"',
