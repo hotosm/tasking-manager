@@ -30,7 +30,7 @@ services:
       - tm-net
 
   tm-backend:
-    image: ghcr.io/hotosm/tm/backend:main
+    image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
     depends_on:
@@ -65,7 +65,7 @@ services:
       - tm-net
 
   tm-migration:
-    image: ghcr.io/hotosm/tm/backend:main
+    image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
     entrypoint: ["python", "manage.py", "db", "upgrade"]
@@ -114,7 +114,7 @@ services:
       - tm-net
 
   tm-frontend:
-    image: ghcr.io/hotosm/tm/frontend:main
+    image: ghcr.io/hotosm/tasking-manager/frontend:main
     build:
       context: .
       dockerfile: "./scripts/docker/Dockerfile.frontend"
