@@ -64,3 +64,6 @@ htmlcov/
 
 # Terragrunt
 .terragrunt-cache
+
+# Docker & Docker compose
+docker-compose.override.yml
