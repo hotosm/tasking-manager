@@ -1,25 +1,10 @@
-FROM alpine/git as base
-
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-# Get the Tasking Manager
-ARG branch=develop
-RUN git clone --depth=1 git://github.com/hotosm/tasking-manager.git \
-	--branch $branch /usr/src/app
-
-RUN rm -rf backend/ migrations/
-
-FROM node:16 as build
+FROM node:16
 
 WORKDIR /usr/src/app
 
-COPY tasking-manager.env ..
-COPY frontend .
-
+COPY ./frontend .
 ## SETUP
 RUN npm install
 
 # SERVE
 CMD ["npm", "start"]
-
