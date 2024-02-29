@@ -814,7 +814,7 @@ const Resources = {
             "Sid": "s3allowbucketobjectaccess",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect"
+                "AWS": cf.sub("arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect")
             },
             "Action": [
                 "s3:PutObject",
@@ -834,7 +834,7 @@ const Resources = {
             "Sid": "s3allowbucketaccess",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect"
+                "AWS": cf.sub("arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect")
             },
             "Action": "s3:ListBucket",
             "Resource": cf.getAtt("TaskingManagerReactBucket", "Arn")
