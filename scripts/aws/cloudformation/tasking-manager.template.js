@@ -809,35 +809,35 @@ const Resources = {
                 "AWS:SourceArn": cf.sub("arn:aws:cloudfront::${AWS::AccountId}:distribution/${TaskingManagerReactCloudfront}")
               }
             }
-          },
-          {
-            "Sid": "s3allowbucketobjectaccess",
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect"
-            },
-            "Action": [
-                "s3:PutObject",
-                "s3:PutObjectAcl",
-                "s3:GetObject",
-                "s3:DeleteObject"
-            ],
-            "Resource": [
-              cf.join("/", [
-                cf.getAtt("TaskingManagerReactBucket", "Arn"),
-                  "*"
-              ])
-            ]
-        },
-        {
-            "Sid": "s3allowbucketaccess",
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect" //todo: add oidc role param?
-            },
-            "Action": "s3:ListBucket",
-            "Resource": cf.getAtt("TaskingManagerReactBucket", "Arn")
-        }
+          } //,
+        //   {
+        //     "Sid": "s3allowbucketobjectaccess",
+        //     "Effect": "Allow",
+        //     "Principal": {
+        //         "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect"
+        //     },
+        //     "Action": [
+        //         "s3:PutObject",
+        //         "s3:PutObjectAcl",
+        //         "s3:GetObject",
+        //         "s3:DeleteObject"
+        //     ],
+        //     "Resource": [
+        //       cf.join("/", [
+        //         cf.getAtt("TaskingManagerReactBucket", "Arn"),
+        //           "*"
+        //       ])
+        //     ]
+        // },
+        // {
+        //     "Sid": "s3allowbucketaccess",
+        //     "Effect": "Allow",
+        //     "Principal": {
+        //         "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect"
+        //     },
+        //     "Action": "s3:ListBucket",
+        //     "Resource": cf.getAtt("TaskingManagerReactBucket", "Arn")
+        // }
         ]
       }
     }
@@ -867,10 +867,11 @@ const Resources = {
           {
             Id: cf.join('-', [cf.stackName, 'react-app']),
             DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'), // NOTE: Can also be WebsiteURL
-            CustomOriginConfig: {
-              OriginProtocolPolicy: "https-only",
-              OriginSSLProtocols: [ "TLSv1.2" ]
-            },
+            // CustomOriginConfig: {
+            //   OriginProtocolPolicy: "https-only",
+            //   OriginSSLProtocols: [ "TLSv1.2" ]
+            // },
+            S3OriginConfig: {},
             OriginAccessControlId: cf.getAtt('TaskingManagerReactCloudfrontOAC', 'Id')
           }
         ],
@@ -898,6 +899,7 @@ const Resources = {
           Compress: true,
           TargetOriginId: cf.join('-', [cf.stackName, 'react-app']),
           ViewerProtocolPolicy: "redirect-to-https"
+          // ResponseHeadersPolicyId: cf.ref("TaskingManagerReactCloudfrontHeaders")
         },
         ViewerCertificate: {
           AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
@@ -907,6 +909,44 @@ const Resources = {
       }
     }
   },
+
+  // TaskingManagerReactCloudfrontHeaders: { // TODO: Create a sensible content security policy
+  //   Type: "AWS::CloudFront::ResponseHeadersPolicy",
+  //   Properties: {
+  //     ResponseHeadersPolicyConfig: {
+  //       Name: cf.sub("${AWS::StackName}-static-site-security-headers"),
+  //       SecurityHeadersConfig: {
+  //         StrictTransportSecurity: {
+  //           AccessControlMaxAgeSec: 63072000,
+  //           IncludeSubdomains: true,
+  //           Override: true,
+  //           Preload: true
+  //         },
+  //         ContentSecurityPolicy: {
+  //           ContentSecurityPolicy: "default-src 'self'; img-src '*'; script-src '*.hotosm.org'; style-src '*.hotosm.org'; object-src 'none'",
+  //           Override: true
+  //         },
+  //         ContentTypeOptions: {
+  //           Override: true
+  //         },
+  //         FrameOptions: {
+  //           FrameOption: "DENY",
+  //           Override: true
+  //         },
+  //         ReferrerPolicy: {
+  //           ReferrerPolicy: 'same-origin',
+  //           Override: true
+  //         },
+  //         XSSProtection: {
+  //           ModeBlock: true,
+  //           Override: true,
+  //           Protection: true
+  //         }
+  //       }
+  //     }
+  //   }
+  // },
+
   TaskingManagerDNSEntries: {
     Type: "AWS::Route53::RecordSetGroup",
     Condition: "IsHOTOSMUrl",
