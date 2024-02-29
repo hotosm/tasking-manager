@@ -851,6 +851,7 @@ const Resources = {
         SigningBehavior: "always",
         SigningProtocol: "sigv4"
       }
+    }
   },
   TaskingManagerReactCloudfront: {
     Type: "AWS::CloudFront::Distribution",
