@@ -820,7 +820,8 @@ const Resources = {
                 "s3:PutObject",
                 "s3:PutObjectAcl",
                 "s3:GetObject",
-                "s3:DeleteObject"
+                "s3:DeleteObject",
+                "s3:ListObjects"
             ],
             "Resource": [
               cf.join("/", [
