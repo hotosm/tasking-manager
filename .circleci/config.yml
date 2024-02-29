@@ -497,9 +497,12 @@ workflows:
   build-only-all:
     when:
       not:
-        matches:
-          pattern: "^deployment/.*"
-          value: << pipeline.git.branch >>
+        or: # don't run this workflow for deployment branches
+          - matches:
+              pattern: "^deployment/.*"
+              value: << pipeline.git.branch >>
+          - equal: [ develop, << pipeline.git.branch >> ]
+          - equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - frontend-code-test
       - backend-code-check-PEP8
