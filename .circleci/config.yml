@@ -394,16 +394,14 @@ workflows:
             - backend-functional-tests
           context: tasking-manager-teachosm
 
-  development-staging-all:
+  staging-all:
     when:
       and:
         - not:
             matches:
               pattern: "^deployment/.*"
               value: << pipeline.git.branch >>
-        - or:
-          - equal: [ develop, << pipeline.git.branch >> ]
-          - equal: [ staging-test, << pipeline.git.branch >> ]
+        - equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - database-backup:
           name: Backup staging database
@@ -420,7 +418,7 @@ workflows:
       - backend-code-check-Black
       - backend-functional-tests
       - backend_deploy:
-          name: Deploy development/staging backend
+          name: Deploy staging backend
           gitsha: $CIRCLE_SHA1
           stack_name: "staging"
           host_ami: "ami-01e5ff16fd6e8c542"
@@ -437,13 +435,64 @@ workflows:
             - org-global
             - tasking-manager-staging
       - frontend_deploy:
-          name: Deploy development/staging frontend
+          name: Deploy staging frontend
           stack_name: "staging"
           requires:
             - frontend-code-test
           context:
             - org-global
             - tasking-manager-staging
+
+  development-all:
+    when:
+      and:
+        - not:
+            matches:
+              pattern: "^deployment/.*"
+              value: << pipeline.git.branch >>
+        - or:
+          - equal: [ develop, << pipeline.git.branch >> ]
+          - equal: [ fix/febdeployment, << pipeline.git.branch >> ] # change this to the branch you wish to test
+    jobs:
+      - database-backup:
+          name: Backup development database
+          stack_name: "dev"
+          requires:
+            - backend-code-check-PEP8
+            - backend-code-check-Black
+            - backend-functional-tests
+          context:
+            - org-global
+            - tasking-manager-dev
+      - frontend-code-test
+      - backend-code-check-PEP8
+      - backend-code-check-Black
+      - backend-functional-tests
+      - backend_deploy:
+          name: Deploy development backend
+          gitsha: $CIRCLE_SHA1
+          stack_name: "dev"
+          host_ami: "ami-01e5ff16fd6e8c542"
+          pg_version: "14.8"
+          pg_param_group: "default.postgres14"
+          db_instance_type: "db.t4g.small"
+          backend_instance_type: "t3.medium"
+          requires:
+            - Backup development database
+            - backend-code-check-PEP8
+            - backend-code-check-Black
+            - backend-functional-tests
+          context:
+            - org-global
+            - tasking-manager-dev
+      - frontend_deploy:
+          name: Deploy development frontend
+          stack_name: "dev"
+          requires:
+            - frontend-code-test
+          context:
+            - org-global
+            - tasking-manager-dev
 
   build-only-all:
     when:
