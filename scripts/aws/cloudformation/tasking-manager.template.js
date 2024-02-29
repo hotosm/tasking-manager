@@ -809,35 +809,35 @@ const Resources = {
                 "AWS:SourceArn": cf.sub("arn:aws:cloudfront::${AWS::AccountId}:distribution/${TaskingManagerReactCloudfront}")
               }
             }
-          } //,
-        //   {
-        //     "Sid": "s3allowbucketobjectaccess",
-        //     "Effect": "Allow",
-        //     "Principal": {
-        //         "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect"
-        //     },
-        //     "Action": [
-        //         "s3:PutObject",
-        //         "s3:PutObjectAcl",
-        //         "s3:GetObject",
-        //         "s3:DeleteObject"
-        //     ],
-        //     "Resource": [
-        //       cf.join("/", [
-        //         cf.getAtt("TaskingManagerReactBucket", "Arn"),
-        //           "*"
-        //       ])
-        //     ]
-        // },
-        // {
-        //     "Sid": "s3allowbucketaccess",
-        //     "Effect": "Allow",
-        //     "Principal": {
-        //         "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect"
-        //     },
-        //     "Action": "s3:ListBucket",
-        //     "Resource": cf.getAtt("TaskingManagerReactBucket", "Arn")
-        // }
+          },
+          {
+            "Sid": "s3allowbucketobjectaccess",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect"
+            },
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectAcl",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+              cf.join("/", [
+                cf.getAtt("TaskingManagerReactBucket", "Arn"),
+                  "*"
+              ])
+            ]
+        },
+        {
+            "Sid": "s3allowbucketaccess",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect"
+            },
+            "Action": "s3:ListBucket",
+            "Resource": cf.getAtt("TaskingManagerReactBucket", "Arn")
+        }
         ]
       }
     }
