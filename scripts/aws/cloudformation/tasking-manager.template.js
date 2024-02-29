@@ -809,31 +809,48 @@ const Resources = {
                 "AWS:SourceArn": cf.sub("arn:aws:cloudfront::${AWS::AccountId}:distribution/${TaskingManagerReactCloudfront}")
               }
             }
-          } //,
-          // {
-          //   Action: [ "s3:GetObject" ],
-          //   Effect: 'Allow',
-          //   Principal: "*",
-          //   Resource: [
-          //     cf.join("/", [
-          //         cf.getAtt("TaskingManagerReactBucket", "Arn"),
-          //         "*"
-          //     ])
-          //   ],
-          //   Sid: "PublicGetObject"
-          // },
-          // {
-          //   Action: [ "s3:ListBucket" ],
-          //   Effect: "Allow",
-          //   Principal: "*",
-          //   Resource: [
-          //     cf.getAtt("TaskingManagerReactBucket", "Arn")
-          //   ],
-          //   Sid: "PublicListBucket"
-          // }
+          },
+          {
+            "Sid": "s3allowbucketobjectaccess",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect"
+            },
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectAcl",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+              cf.join("/", [
+                cf.getAtt("TaskingManagerReactBucket", "Arn"),
+                  "*"
+              ])
+            ]
+        },
+        {
+            "Sid": "s3allowbucketaccess",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::${AWS::AccountId}:role/CircleCI-OIDC-Connect" //todo: add oidc role param?
+            },
+            "Action": "s3:ListBucket",
+            "Resource": cf.getAtt("TaskingManagerReactBucket", "Arn")
+        }
         ]
       }
     }
+  },
+  TaskingManagerReactCloudfrontOAC: {
+  Type: "AWS::CloudFront::OriginAccessControl",
+  Properties: {
+      "OriginAccessControlConfig" : {
+        Name:  cf.join('-', [cf.stackName, 'react-app']),
+        OriginAccessControlOriginType: "s3",
+        SigningBehavior: "always",
+        SigningProtocol: "sigv4"
+      }
   },
   TaskingManagerReactCloudfront: {
     Type: "AWS::CloudFront::Distribution",
@@ -852,7 +869,8 @@ const Resources = {
             CustomOriginConfig: {
               OriginProtocolPolicy: "https-only",
               OriginSSLProtocols: [ "TLSv1.2" ]
-            }
+            },
+            OriginAccessControlId: cf.getAtt('TaskingManagerReactCloudfrontOAC', 'Id')
           }
         ],
         CustomErrorResponses: [{
