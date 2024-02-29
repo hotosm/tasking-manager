@@ -382,7 +382,7 @@ const Resources = {
         // }],
         PrivateDnsNameOptions: {
           EnableResourceNameDnsAAAARecord: true,
-          EnableResourceNameDnsARecord: false, //true?
+          EnableResourceNameDnsARecord: true, //false?
           HostnameType: 'resource-name'
         },
         SecurityGroupIds: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))], //TODO: does this import IDs or names?
