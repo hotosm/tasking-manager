@@ -39,6 +39,8 @@ const EditsByNumbers = ({ osmStats }) => {
     },
   ];
 
+  if (!osmStats) return '';
+
   const data = formatChartData(reference, osmStats);
 
   return (

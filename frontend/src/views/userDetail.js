@@ -12,10 +12,11 @@ import { CountriesMapped } from '../components/userDetail/countriesMapped';
 import { TopProjects } from '../components/userDetail/topProjects';
 import { ContributionTimeline } from '../components/userDetail/contributionTimeline';
 import { NotFound } from './notFound';
-import { OHSOME_STATS_BASE_URL, OSM_SERVER_URL } from '../config';
+import { OSM_SERVER_URL } from '../config';
 import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { useUserOsmStatsQuery } from '../api/stats';
 
 const TopCauses = React.lazy(() =>
   import('../components/userDetail/topCauses' /* webpackChunkName: "topCauses" */),
@@ -32,7 +33,6 @@ export const UserDetail = ({ withHeader = true }) => {
   useSetTitleTag(username);
   const token = useSelector((state) => state.auth.token);
   const currentUser = useSelector((state) => state.auth.userDetails);
-  const [osmStats, setOsmStats] = useState({});
   const [userOsmDetails, setUserOsmDetails] = useState({});
   const [errorDetails, loadingDetails, userDetails] = useFetch(
     `users/queries/${username}/`,
@@ -46,6 +46,7 @@ export const UserDetail = ({ withHeader = true }) => {
     `projects/queries/${username}/touched/`,
     username !== undefined,
   );
+  const { data: osmStats } = useUserOsmStatsQuery(userDetails.id);
 
   useEffect(() => {
     if (!token) {
@@ -57,9 +58,6 @@ export const UserDetail = ({ withHeader = true }) => {
     if (userDetails.id) {
       fetchExternalJSONAPI(`${OSM_SERVER_URL}/api/0.6/user/${userDetails.id}.json`, false)
         .then((res) => setUserOsmDetails(res?.user))
-        .catch((e) => console.log(e));
-      fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/hot-tm-user?userId=${userDetails.id}`, true)
-        .then((res) => setOsmStats(res.result))
         .catch((e) => console.log(e));
     }
   }, [userDetails.id]);
@@ -78,7 +76,10 @@ export const UserDetail = ({ withHeader = true }) => {
             rows={5}
             ready={!errorDetails && !loadingDetails}
           >
-            <HeaderProfile userDetails={userDetails} changesets={userOsmDetails?.changesets?.count} />
+            <HeaderProfile
+              userDetails={userDetails}
+              changesets={userOsmDetails?.changesets?.count}
+            />
           </ReactPlaceholder>
         </div>
       )}

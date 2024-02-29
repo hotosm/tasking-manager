@@ -12,7 +12,7 @@ import {
   MappedIcon,
   ValidatedIcon,
 } from '../svgIcons';
-import { StatsCard } from '../statsCard';
+import { StatsCard, DetailedStatsCard } from '../statsCard';
 import StatsTimestamp from '../statsTimestamp';
 
 export const TaskStats = ({ userStats, username }) => {
@@ -133,25 +133,37 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
           description={<FormattedMessage {...messages.timeSpentMapping} />}
           value={duration}
         />
-        <StatsCard
+        <DetailedStatsCard
           icon={<HomeIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.buildingsMapped} />}
-          value={osmStats.buildings || 0}
+          mapped={osmStats?.building?.value}
+          created={osmStats?.building?.added}
+          modified={osmStats?.building?.modified?.count_modified}
+          deleted={osmStats?.building?.deleted}
         />
-        <StatsCard
+        <DetailedStatsCard
           icon={<RoadIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.roadMapped} />}
-          value={osmStats.roads || 0}
+          mapped={osmStats?.highway?.value}
+          created={osmStats?.highway?.added}
+          modified={osmStats?.highway?.modified?.count_modified}
+          deleted={osmStats?.highway?.deleted}
         />
-        <StatsCard
+        <DetailedStatsCard
           icon={<MarkerIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.poiMapped} />}
-          value={osmStats.total_poi_count_add || '-'}
+          mapped={osmStats?.poi?.value}
+          created={osmStats?.poi?.added}
+          modified={osmStats?.poi?.modified?.count_modified}
+          deleted={osmStats?.poi?.deleted}
         />
-        <StatsCard
+        <DetailedStatsCard
           icon={<WavesIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.waterwaysMapped} />}
-          value={osmStats.total_waterway_km_add || '-'}
+          mapped={osmStats?.waterway?.value}
+          created={osmStats?.waterway?.added}
+          modified={osmStats?.waterway?.modified?.count_modified}
+          deleted={osmStats?.waterway?.deleted}
         />
       </div>
       <div className="cf w-100 relative tr pt3 pr3">
