@@ -209,7 +209,7 @@ jobs:
               --arg DBPARAMG "<< parameters.pg_param_group >>" \
               '.GitSha = $GITSHA | .TaskingManagerBackendAMI = $AMI | .DatabaseEngineVersion = $PGVERSION | .DatabaseInstanceType = $DBTYPE | .DatabaseParameterGroupName = $DBPARAMG | .TaskingManagerBackendInstanceType = $EC2TYPE' \
               /tmp/tasking-manager.cfn.json > "$tmpfile" && mv "$tmpfile" $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
-      - deploy:
+      - run:
           name: Deploy to << parameters.stack_name >>
           command: |
             export NODE_PATH=/usr/local/share/.config/yarn/global/node_modules/
