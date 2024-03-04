@@ -211,6 +211,7 @@ jobs:
               /tmp/tasking-manager.cfn.json > "$tmpfile" && mv "$tmpfile" $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
       - run:
           name: Deploy to << parameters.stack_name >>
+          no_output_timeout: 15m
           command: |
             export NODE_PATH=/usr/local/share/.config/yarn/global/node_modules/
             validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
