@@ -22,9 +22,11 @@ describe('User Detail Component', () => {
     });
 
     const { router } = createComponentWithMemoryRouter(
-      <ReduxIntlProviders>
-        <UserDetail username="test_user" />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <UserDetail username="test_user" />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/login'));
@@ -102,9 +104,11 @@ describe('User Detail Component', () => {
     });
 
     renderWithRouter(
-      <ReduxIntlProviders>
-        <UserDetail username="somebodyUsername" />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <UserDetail username="somebodyUsername" />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
 
     expect(
@@ -116,9 +120,11 @@ describe('User Detail Component', () => {
 
   it('should not display header when the prop is falsy', () => {
     renderWithRouter(
-      <ReduxIntlProviders>
-        <UserDetail username="somebodyUsername" withHeader={false} />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <UserDetail username="somebodyUsername" withHeader={false} />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     expect(screen.queryByText('Somebody')).not.toBeInTheDocument();
   });

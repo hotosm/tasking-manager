@@ -11,10 +11,38 @@ describe('ElementsMapped & TaskStats components', () => {
       timeSpentMapping: 3000,
     };
     const osmStats = {
-      total_building_count_add: 10,
-      roads: 229.113,
-      total_poi_count_add: 15,
-      total_waterway_count_add: 20,
+      poi: {
+        added: 4,
+        modified: {
+          count_modified: 1,
+        },
+        deleted: 0,
+        value: 4,
+      },
+      highway: {
+        added: 6,
+        modified: {
+          count_modified: 21,
+        },
+        deleted: 0,
+        value: 229,
+      },
+      building: {
+        added: 293,
+        modified: {
+          count_modified: 83,
+        },
+        deleted: 44,
+        value: 249,
+      },
+      waterway: {
+        added: 16,
+        modified: {
+          count_modified: 27,
+        },
+        deleted: 0,
+        value: 17,
+      },
     };
     const { getByText } = render(
       <ReduxIntlProviders>

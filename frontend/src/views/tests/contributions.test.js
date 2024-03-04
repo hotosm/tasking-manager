@@ -76,9 +76,12 @@ describe('Contributions Page Index', () => {
 describe('User Stats Page', () => {
   it('should render the child component', async () => {
     renderWithRouter(
-      <ReduxIntlProviders>
-        <UserStats />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <UserStats />
+        </ReduxIntlProviders>
+        ,
+      </QueryClientProviders>,
     );
     expect(screen.getByRole('heading', { name: 'Contribution Timeline' })).toBeInTheDocument();
   });
