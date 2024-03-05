@@ -1,6 +1,7 @@
 from flask import current_app
 from sqlalchemy import text
 from multiprocessing.dummy import Pool as ThreadPool
+from sqlalchemy.orm import scoped_session, sessionmaker
 import os
 
 from backend import db
@@ -148,7 +149,10 @@ class ValidatorService:
             dtos,
         ) = args
         with app_context:
+            Session = scoped_session(sessionmaker(bind=db.engine))
+            local_session = Session()
             task = task_to_unlock["task"]
+            task = local_session.query(Task).filter_by(id=task.id, project_id=project_id).one()
 
             if task_to_unlock["comment"]:
                 # Parses comment to see if any users have been @'d
@@ -186,6 +190,7 @@ class ValidatorService:
                     validated_dto.user_id,
                     prev_status,
                     task_to_unlock["new_state"],
+                    local_session=local_session,
                 )
             task_mapping_issues = ValidatorService.get_task_mapping_issues(
                 task_to_unlock
@@ -195,8 +200,11 @@ class ValidatorService:
                 task_to_unlock["new_state"],
                 task_to_unlock["comment"],
                 issues=task_mapping_issues,
+                local_session=local_session,
             )
             dtos.append(task.as_dto_with_instructions(validated_dto.preferred_locale))
+            local_session.commit()
+            Session.remove()
 
     @staticmethod
     def unlock_tasks_after_validation(
@@ -235,7 +243,6 @@ class ValidatorService:
         # Close the pool and wait for the threads to finish
         pool.close()
         pool.join()
-        db.session.commit()
 
         # Send email on project progress
         ProjectService.send_email_on_project_progress(validated_dto.project_id)

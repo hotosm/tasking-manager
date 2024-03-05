@@ -1068,10 +1068,20 @@ class TestTasksActionsValidationUnlockAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         TestTasksActionsValidationUnlockAPI.assert_validated_task_response(
-            response.json["tasks"][0], 1, "VALIDATED", self.test_user.username
+            next(
+                (task for task in response.json["tasks"] if task["taskId"] == 1), None
+            ),
+            1,
+            "VALIDATED",
+            self.test_user.username,
         )
         TestTasksActionsValidationUnlockAPI.assert_validated_task_response(
-            response.json["tasks"][1], 2, "INVALIDATED", self.test_user.username
+            next(
+                (task for task in response.json["tasks"] if task["taskId"] == 2), None
+            ),
+            2,
+            "INVALIDATED",
+            self.test_user.username,
         )
 
     def test_validation_unlock_returns_200_if_validated_with_comment(self):
