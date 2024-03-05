@@ -21,9 +21,6 @@ import { useUserOsmStatsQuery } from '../api/stats';
 const TopCauses = React.lazy(() =>
   import('../components/userDetail/topCauses' /* webpackChunkName: "topCauses" */),
 );
-const EditsByNumbers = React.lazy(() =>
-  import('../components/userDetail/editsByNumbers' /* webpackChunkName: "editsByNumbers" */),
-);
 
 export const UserDetail = ({ withHeader = true }) => {
   const navigate = useNavigate();
@@ -126,11 +123,6 @@ export const UserDetail = ({ withHeader = true }) => {
                   <TopCauses userStats={userStats} />
                 </Suspense>
               </ReactPlaceholder>
-            </div>
-            <div>
-              <Suspense fallback={<div />}>
-                <EditsByNumbers osmStats={osmStats} />
-              </Suspense>
             </div>
           </div>
         </div>
