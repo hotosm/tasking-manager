@@ -152,7 +152,11 @@ class ValidatorService:
             Session = scoped_session(sessionmaker(bind=db.engine))
             local_session = Session()
             task = task_to_unlock["task"]
-            task = local_session.query(Task).filter_by(id=task.id, project_id=project_id).one()
+            task = (
+                local_session.query(Task)
+                .filter_by(id=task.id, project_id=project_id)
+                .one()
+            )
 
             if task_to_unlock["comment"]:
                 # Parses comment to see if any users have been @'d

@@ -99,9 +99,11 @@ class TaskInvalidationHistory(db.Model):
     @staticmethod
     def get_open_for_task(project_id, task_id, local_session=None):
         if local_session:
-            return local_session.query(TaskInvalidationHistory).filter_by(
-                task_id=task_id, project_id=project_id, is_closed=False
-            ).one_or_none()
+            return (
+                local_session.query(TaskInvalidationHistory)
+                .filter_by(task_id=task_id, project_id=project_id, is_closed=False)
+                .one_or_none()
+            )
         return TaskInvalidationHistory.query.filter_by(
             task_id=task_id, project_id=project_id, is_closed=False
         ).one_or_none()
@@ -109,17 +111,23 @@ class TaskInvalidationHistory(db.Model):
     @staticmethod
     def close_all_for_task(project_id, task_id, local_session=None):
         if local_session:
-            return local_session.query(TaskInvalidationHistory).filter_by(
-                task_id=task_id, project_id=project_id, is_closed=False
-            ).update({"is_closed": True})
+            return (
+                local_session.query(TaskInvalidationHistory)
+                .filter_by(task_id=task_id, project_id=project_id, is_closed=False)
+                .update({"is_closed": True})
+            )
         TaskInvalidationHistory.query.filter_by(
             task_id=task_id, project_id=project_id, is_closed=False
         ).update({"is_closed": True})
 
     @staticmethod
-    def record_invalidation(project_id, task_id, invalidator_id, history, local_session=None):
+    def record_invalidation(
+        project_id, task_id, invalidator_id, history, local_session=None
+    ):
         # Invalidation always kicks off a new entry for a task, so close any existing ones.
-        TaskInvalidationHistory.close_all_for_task(project_id, task_id, local_session=local_session)
+        TaskInvalidationHistory.close_all_for_task(
+            project_id, task_id, local_session=local_session
+        )
 
         last_mapped = TaskHistory.get_last_mapped_action(project_id, task_id)
         if last_mapped is None:
@@ -137,10 +145,13 @@ class TaskInvalidationHistory(db.Model):
         else:
             db.session.add(entry)
 
-
     @staticmethod
-    def record_validation(project_id, task_id, validator_id, history, local_session=None):
-        entry = TaskInvalidationHistory.get_open_for_task(project_id, task_id, local_session=local_session)
+    def record_validation(
+        project_id, task_id, validator_id, history, local_session=None
+    ):
+        entry = TaskInvalidationHistory.get_open_for_task(
+            project_id, task_id, local_session=local_session
+        )
 
         # If no open invalidation to update, then nothing to do
         if entry is None:
@@ -283,13 +294,17 @@ class TaskHistory(db.Model):
         """
         try:
             if local_session:
-                last_locked = local_session.query(TaskHistory).filter_by(
-                    task_id=task_id,
-                    project_id=project_id,
-                    action=lock_action.name,
-                    action_text=None,
-                    user_id=user_id,
-                ).one()
+                last_locked = (
+                    local_session.query(TaskHistory)
+                    .filter_by(
+                        task_id=task_id,
+                        project_id=project_id,
+                        action=lock_action.name,
+                        action_text=None,
+                        user_id=user_id,
+                    )
+                    .one()
+                )
             else:
                 last_locked = TaskHistory.query.filter_by(
                     task_id=task_id,
@@ -628,9 +643,11 @@ class Task(db.Model):
         """
         # LIKELY PROBLEM AREA
         if local_session:
-            return local_session.query(Task).filter_by(
-                id=task_id, project_id=project_id
-            ).one_or_none()
+            return (
+                local_session.query(Task)
+                .filter_by(id=task_id, project_id=project_id)
+                .one_or_none()
+            )
         return Task.query.filter_by(id=task_id, project_id=project_id).one_or_none()
 
     @staticmethod
@@ -811,7 +828,13 @@ class Task(db.Model):
         self.update()
 
     def unlock_task(
-        self, user_id, new_state=None, comment=None, undo=False, issues=None, local_session=None
+        self,
+        user_id,
+        new_state=None,
+        comment=None,
+        undo=False,
+        issues=None,
+        local_session=None,
     ):
         """Unlock task and ensure duration task locked is saved in History"""
         if comment:
@@ -855,7 +878,11 @@ class Task(db.Model):
         if not undo:
             # Using a slightly evil side effect of Actions and Statuses having the same name here :)
             TaskHistory.update_task_locked_with_duration(
-                self.id, self.project_id, TaskStatus(self.task_status), user_id, local_session=local_session
+                self.id,
+                self.project_id,
+                TaskStatus(self.task_status),
+                user_id,
+                local_session=local_session,
             )
 
         self.task_status = new_state.value

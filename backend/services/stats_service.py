@@ -63,7 +63,9 @@ class StatsService:
         project, user = StatsService._update_tasks_stats(
             project, user, last_state, new_state, action
         )
-        UserService.upsert_mapped_projects(user_id, project_id, local_session=local_session)
+        UserService.upsert_mapped_projects(
+            user_id, project_id, local_session=local_session
+        )
         project.last_updated = timestamp()
 
         # Transaction will be saved when task is saved
