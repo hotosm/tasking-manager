@@ -136,6 +136,7 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
         <DetailedStatsCard
           icon={<HomeIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.buildingsMapped} />}
+          subDescription="Created - Deleted"
           mapped={osmStats?.building?.value}
           created={osmStats?.building?.added}
           modified={osmStats?.building?.modified?.count_modified}
@@ -144,14 +145,18 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
         <DetailedStatsCard
           icon={<RoadIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.roadMapped} />}
+          subDescription="Created + Modified - Deleted"
           mapped={osmStats?.highway?.value}
           created={osmStats?.highway?.added}
           modified={osmStats?.highway?.modified?.count_modified}
           deleted={osmStats?.highway?.deleted}
+          unitMore={osmStats?.highway?.modified?.unit_more}
+          unitLess={osmStats?.highway?.modified?.unit_less}
         />
         <DetailedStatsCard
           icon={<MarkerIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.poiMapped} />}
+          subDescription="Created - Deleted"
           mapped={osmStats?.poi?.value}
           created={osmStats?.poi?.added}
           modified={osmStats?.poi?.modified?.count_modified}
@@ -160,10 +165,13 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
         <DetailedStatsCard
           icon={<WavesIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.waterwaysMapped} />}
+          subDescription="Created + Modified - Deleted"
           mapped={osmStats?.waterway?.value}
           created={osmStats?.waterway?.added}
           modified={osmStats?.waterway?.modified?.count_modified}
           deleted={osmStats?.waterway?.deleted}
+          unitMore={osmStats?.waterway?.modified?.unit_more}
+          unitLess={osmStats?.waterway?.modified?.unit_less}
         />
       </div>
       <div className="cf w-100 relative tr pt3 pr3">
