@@ -47,6 +47,7 @@ class StatsService:
         last_state: TaskStatus,
         new_state: TaskStatus,
         action="change",
+        local_session=None,
     ):
         """Update stats when a task has had a state change"""
 
@@ -62,7 +63,9 @@ class StatsService:
         project, user = StatsService._update_tasks_stats(
             project, user, last_state, new_state, action
         )
-        UserService.upsert_mapped_projects(user_id, project_id)
+        UserService.upsert_mapped_projects(
+            user_id, project_id, local_session=local_session
+        )
         project.last_updated = timestamp()
 
         # Transaction will be saved when task is saved
