@@ -1,0 +1,28 @@
+name: TM Backend Container Image Build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - deployment/hot-tasking-manager
+      - deployment/container-tasking-manager
+      - deployment/demo-tasking-manager
+
+  pull_request:
+    branches:
+      - main
+      - develop
+      - develop
+      - deployment/hot-tasking-manager
+      - deployment/container-tasking-manager
+      - deployment/demo-tasking-manager
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build TM Backend container image
+        run: docker build . --tag tasking-manager-backend:$(date +%Y%m%d%H%M)
