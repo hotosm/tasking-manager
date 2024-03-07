@@ -3,6 +3,7 @@ name: TM Backend Container Image Build
 on:
   push:
     branches:
+      - main
       - develop
       - deployment/hot-tasking-manager
       - deployment/container-tasking-manager
@@ -10,6 +11,8 @@ on:
 
   pull_request:
     branches:
+      - main
+      - develop
       - develop
       - deployment/hot-tasking-manager
       - deployment/container-tasking-manager
