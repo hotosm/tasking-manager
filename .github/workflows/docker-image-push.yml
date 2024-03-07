@@ -1,7 +1,6 @@
 #
-name: Create and publish a Docker image
+name: Create and publish Tasking Manager backend container image
 
-# Configures this workflow to run every time a change is pushed to the branch called `release`.
 on:
   push:
     branches:
@@ -10,12 +9,20 @@ on:
       - deployment/hot-tasking-manager
       - deployment/demo-tasking-manager
       - deployment/container-tasking-manager
-# Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
+
+  pull_request:
+      - main
+      - develop
+      - deployment/hot-tasking-manager
+      - deployment/demo-tasking-manager
+      - deployment/container-tasking-manager
+
+
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: tasking-manager-backend
 
-# There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
+
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
@@ -23,7 +30,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-      # 
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,9 +46,20 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5.5.1
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
-      # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
+          images: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=ref,event=tag
+            type=semver,pattern=raw
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+            type=raw,value=dev-latest
+            
       - name: Build and push Docker image
         uses: docker/build-push-action@v5.1.0
         with:
