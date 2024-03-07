@@ -21,7 +21,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: tasking-manager-backend
+  IMAGE_NAME: ${{ github.repository }}
 
 
 jobs:
@@ -47,11 +47,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5.5.1
         with:
-          images: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
           tags: |
-            type=ref,event=branch
             type=ref,event=pr
             type=ref,event=tag
             type=semver,pattern=raw
@@ -60,7 +58,7 @@ jobs:
             type=semver,pattern={{major}}
             type=sha
             type=raw,value=dev-latest
-            
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5.1.0
         with:
