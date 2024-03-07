@@ -11,6 +11,7 @@ on:
       - deployment/container-tasking-manager
 
   pull_request:
+    branches:
       - main
       - develop
       - deployment/hot-tasking-manager
