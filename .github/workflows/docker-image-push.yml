@@ -5,6 +5,7 @@ name: Create and publish a Docker image
 on:
   push:
     branches:
+      - main
       - develop
       - deployment/hot-tasking-manager
       - deployment/demo-tasking-manager
