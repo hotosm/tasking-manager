@@ -96,7 +96,7 @@ Tasking Manager should be available from:
 
 #### (Optional) Changing the dev port or dotenv file
 
-You change the default port from 3000 to any other port.
+You change the default port from `3000` to any other port.
 
 However, you must change your OAuth redirect URL to reflect this,
 in addition to any variables including a port, e.g. TM_APP_BASE_URL.
@@ -110,6 +110,14 @@ TM_DEV_PORT=9000 ENV_FILE=.env docker compose up --detach
 docker compose build
 docker compose up --detach
 ```
+#### (Optional) Overriding `docker-compose.yml`
+If you want to add custom configuration for the docker services. You can make a copy of `docker-compose.override.sample.yml` which you can edit as per your need.
+
+Create an override file from sample.
+```
+cp docker-compose.override.sample.yml docker-compose.override.yml
+```
+
 ### External or Self Hosted Database
 
 If you want to use your local postgresql server or some other exter database service.

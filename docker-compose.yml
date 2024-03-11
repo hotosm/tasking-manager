@@ -15,8 +15,6 @@ services:
     image: "postgis/postgis:${POSTGIS_TAG:-14-3.3}"
     volumes:
       - tm_db_data:/var/lib/postgresql/data/
-    ports:
-      - 5432:5432
     env_file:
       - tasking-manager.env
     restart: unless-stopped
@@ -38,8 +36,6 @@ services:
         condition: service_healthy
       tm-migration:
         condition: service_completed_successfully
-    ports:
-      - 5000:5000
     env_file:
       - tasking-manager.env
     restart: unless-stopped
@@ -119,7 +115,7 @@ services:
       context: .
       dockerfile: "./scripts/docker/Dockerfile.frontend"
     ports:
-      - 3000:80
+      - ${DOCKER_TM_FRONTEND_PORT:-3000}:80
     env_file:
       - tasking-manager.env
     labels:
