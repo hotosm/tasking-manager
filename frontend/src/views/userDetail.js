@@ -53,7 +53,7 @@ export const UserDetail = ({ withHeader = true }) => {
 
   useEffect(() => {
     if (userDetails.id) {
-      fetchExternalJSONAPI(`${OSM_SERVER_URL}/api/0.6/user/${userDetails.id}.json`, false)
+      fetchExternalJSONAPI(`${OSM_SERVER_URL}/api/0.6/user/${userDetails.id}.json`)
         .then((res) => setUserOsmDetails(res?.user))
         .catch((e) => console.log(e));
     }
