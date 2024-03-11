@@ -12,11 +12,15 @@ function StatsTimestamp({ messageType }) {
   const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
-    fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/metadata`)
+    const controller = new AbortController();
+    fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/metadata`, false, { signal: controller.signal })
       .then((res) => {
         setLastUpdated(res.result.max_timestamp);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        if (!controller.signal.aborted) console.error(error);
+      });
+    return () => controller.abort();
   }, []);
 
   const dateOptions = {
