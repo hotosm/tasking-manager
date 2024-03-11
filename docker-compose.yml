@@ -113,9 +113,9 @@ services:
     image: ghcr.io/hotosm/tasking-manager/frontend:main
     build:
       context: .
-      dockerfile: "./scripts/docker/Dockerfile.frontend"
+      dockerfile: "./scripts/docker/Dockerfile.frontend_development"
     ports:
-      - ${DOCKER_TM_FRONTEND_PORT:-3000}:80
+      - ${DOCKER_TM_FRONTEND_PORT:-3000}:3000
     env_file:
       - tasking-manager.env
     labels:
