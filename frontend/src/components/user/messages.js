@@ -148,7 +148,7 @@ export default defineMessages({
   },
   taskUpdates: {
     id: 'user.notifications.tasks',
-    defaultMessage: 'Tasks validation emails',
+    defaultMessage: 'Tasks invalidation emails',
   },
   required: {
     id: 'user.settings.required',
@@ -160,7 +160,7 @@ export default defineMessages({
   },
   taskUpdatesDescription: {
     id: 'user.notifications.task.description',
-    defaultMessage: 'Receive an email when a task you have contributed to is validated.',
+    defaultMessage: 'Receive an email when a task you have contributed to requires more mapping.',
   },
   questionsAndComments: {
     id: 'user.notifications.questionsAndComments',
