@@ -382,10 +382,10 @@ const Resources = {
         // }],
         PrivateDnsNameOptions: {
           EnableResourceNameDnsAAAARecord: true,
-          EnableResourceNameDnsARecord: true, //false?
+          EnableResourceNameDnsARecord: true, 
           HostnameType: 'resource-name'
         },
-        SecurityGroupIds: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))], //TODO: does this import IDs or names?
+        SecurityGroupIds: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))], 
         TagSpecifications: [
           {
             ResourceType: 'instance',
@@ -416,7 +416,6 @@ const Resources = {
         UserData: cf.userData([
           '#!/bin/bash',
           'set -x',
-          'sleep 10',
           'export DEBIAN_FRONTEND=noninteractive',
           'export LC_ALL="en_US.UTF-8"',
           'export LC_CTYPE="en_US.UTF-8"',
@@ -443,7 +442,6 @@ const Resources = {
           'wget -6 https://s3.dualstack.us-east-1.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
           'dpkg -i /tmp/amazon-cloudwatch-agent.deb',
           'echo "Exporting environment variables:"',
-          cf.sub('export NEW_RELIC_LICENSE=${NewRelicLicense}'),
           cf.join('', ['export POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address')]),
           cf.sub('export POSTGRES_DB=${PostgresDB}'),
           cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
@@ -453,7 +451,6 @@ const Resources = {
           cf.sub('export TM_CLIENT_ID="${TaskingManagerOAuthClientID}"'),
           cf.sub('export TM_CLIENT_SECRET="${TaskingManagerOAuthClientSecret}"'),
           cf.sub('export TM_REDIRECT_URI="${TaskingManagerAppBaseUrl}/authorized"'),
-          'export TM_SCOPE="read_prefs write_api"',
           cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
           cf.sub('export TM_SMTP_HOST="${TaskingManagerSMTPHost}"'),
           cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),
