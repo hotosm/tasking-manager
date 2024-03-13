@@ -25,7 +25,7 @@ In order to use the frontend, you may need to create keys for OSM:
 
 2. Register your Tasking Manager instance to OAuth 2 applications.
 
-   Put your login redirect url as `http://127.0.0.1:880/authorized/`
+   Put your login redirect url as `http://127.0.0.1:3000/authorized/`
 
    > Note: `127.0.0.1` is required for debugging instead of `localhost`
    > due to OSM restrictions.
@@ -44,23 +44,12 @@ In order to use the frontend, you may need to create keys for OSM:
     cp example.env tasking-manager.env
     ```
 
-2. Uncomment or update the following variables
+2. Update the following variables
 
     ```dotenv
-    TM_DEV_PORT=880
-    TM_APP_BASE_URL=http://127.0.0.1:880
-    TM_APP_API_URL=http://127.0.0.1:880/api
-    # 'postgresql' if using docker, else 'localhost' or comment out
-    POSTGRES_ENDPOINT=postgresql
-    TM_REDIRECT_URI=http://127.0.0.1:880/authorized
     TM_CLIENT_ID=from-previous-step
     TM_CLIENT_SECRET=from-previous-step
     ```
-
-    - Note that the port 880 can be swapped to any available port on
-      your system.
-    - If you change this, don't forget to update the OAuth login redirect
-      URL from the step above.
 
 > If you are a frontend developer and do not wish to configure the
 > backend, you can use our staging server API.
@@ -95,11 +84,24 @@ Once the steps above have been complete, simply run:
 ```bash
 docker compose pull
 docker compose build
-docker compose --env-file tasking-manager.env up --detach
+docker compose up --detach
 ```
 
 Tasking Manager should be available from:
-[http://127.0.0.1:880](http://127.0.0.1:880)
+[http://127.0.0.1:3000](http://127.0.0.1:3000)
+
+#### (Optional) Changing the dev port or dotenv file
+
+You change the default port from 3000 to any other port.
+
+However, you must change your OAuth redirect URL to reflect this,
+in addition to any variables including a port, e.g. TM_APP_BASE_URL.
+
+The default dotenv file can also be changed.
+
+```bash
+TM_DEV_PORT=9000 ENV_FILE=.env docker compose up --detach
+```
 
 ## Running Components Standalone
 
