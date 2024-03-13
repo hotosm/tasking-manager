@@ -37,6 +37,19 @@ services:
       - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
       - traefik.http.services.frontend.loadbalancer.server.port=3000
 
+  swagger:
+    image: swaggerapi/swagger-ui:v5.11.10
+    container_name: tm-swagger-docs
+    restart: always
+    networks:
+      - tm-web
+    environment:
+      - BASE_URL=/docs
+      - SWAGGER_JSON_URL=http://127.0.0.1:${TM_DEV_PORT:-3000}/api/v2/system/docs/json/
+    labels:
+      - traefik.http.routers.swagger.rule=(Host(`127.0.0.1`) || Host(`localhost`)) && PathPrefix(`/docs/`)
+      - traefik.http.services.swagger.loadbalancer.server.port=8080
+
   postgresql:
     image: postgis/postgis:14-3.3
     container_name: tm-postgresql
@@ -50,7 +63,7 @@ services:
     container_name: tm-traefik
     restart: always
     ports:
-      - "${TM_DEV_PORT:-80}:80"
+      - "${TM_DEV_PORT:-3000}:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
