@@ -27,15 +27,18 @@ function StatsTimestamp({ messageType }) {
     minute: 'numeric',
   };
 
+  const message = intl.formatMessage(messages[messageType], {
+    formattedDate: intl.formatDate(lastUpdated, dateOptions),
+    timeZone: intl.timeZone,
+  });
+
   return (
     <div>
       <InfoIcon
         className="blue-grey h1 w1 v-mid ml2 pointer"
-        data-tip={intl.formatMessage(messages[messageType], {
-          formattedDate: intl.formatDate(lastUpdated, dateOptions),
-          timeZone: intl.timeZone,
-        })}
+        data-tip={message}
         data-for="ohsome-timestamp"
+        aria-label={message}
       />
       <ReactTooltip id="ohsome-timestamp" place="top" className="mw6" effect="solid" />
     </div>

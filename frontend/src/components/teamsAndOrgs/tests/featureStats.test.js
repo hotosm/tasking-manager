@@ -26,4 +26,7 @@ test('FeatureStats renders the correct values and labels', async () => {
   // Uncomment the following when POIs and waterways become available
   // expect(screen.getByText('183,011')).toBeInTheDocument();
   // expect(screen.getByText('350,906')).toBeInTheDocument();
+  // We need to wait for network requests to complete -- otherwise, logging the errors to console may cause jest to fail
+  // Note: The time is 2023-10-03T15:47:49Z, but time zones may mess things up (+- 12 hours).
+  await waitFor(() => expect(screen.getByLabelText(/These statistics come from ohsomeNow Stats and were last updated at Oct 0[34], 2023, .{10,}. Missing fields will be made available soon!/)).toBeInTheDocument());
 });

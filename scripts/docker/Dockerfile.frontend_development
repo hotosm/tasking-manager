@@ -10,7 +10,7 @@ RUN git clone --depth=1 git://github.com/hotosm/tasking-manager.git \
 
 RUN rm -rf backend/ migrations/
 
-FROM node:16 as build
+FROM node:18 as build
 
 WORKDIR /usr/src/app
 
