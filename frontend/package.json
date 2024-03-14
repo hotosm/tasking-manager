@@ -14,7 +14,7 @@
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@mapbox/mapbox-gl-language": "^0.10.1",
     "@placemarkio/geo-viewport": "^1.0.1",
-    "@rapideditor/rapid": "^2.1.1",
+    "@rapideditor/rapid": "^2.2.4",
     "@sentry/react": "^7.60.1",
     "@tmcw/togeojson": "^4.7.0",
     "@tanstack/react-query": "^4.29.7",
