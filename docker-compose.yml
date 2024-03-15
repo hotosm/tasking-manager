@@ -112,8 +112,6 @@ services:
     build:
       context: .
       dockerfile: "./scripts/docker/Dockerfile.frontend_development"
-    ports:
-      - ${DOCKER_TM_FRONTEND_PORT:-3000}:3000
     env_file:
       - tasking-manager.env
     labels:
