@@ -49,9 +49,10 @@ export const CommentInputField = ({
       try {
         if (!query) return cb(contributors.map((username) => ({ username })));
 
-        // do not fetch data if the value comes from suggestions popup click
-        const isValueFromSuggestion = /^\[.*?\]\s$/.test(query);
-        if (isValueFromSuggestion) return;
+        // address trigger js allowSpaces=true issue
+        // which triggers this function every keystroke
+        const isUsernameAlreadyFetched = /^\[.*?\]\s/.test(query);
+        if (isUsernameAlreadyFetched) return;
 
         const res = await fetchLocalJSONAPI(`users/queries/filter/${query}/`, token);
         cb(res.usernames.map((username) => ({ username })));
