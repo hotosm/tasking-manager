@@ -9,6 +9,9 @@ import { store } from '../../store';
 import { QueryClientProviders, ReduxIntlProviders } from '../../utils/testWithIntl';
 import { SelectTask } from '../taskSelection';
 
+// Import lazy imports to avoid timeout issues with jest
+import '../../components/taskSelection/footer';
+
 describe('Task Selection Page', () => {
   const setup = () => {
     return {
