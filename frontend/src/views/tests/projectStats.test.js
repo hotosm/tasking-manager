@@ -6,6 +6,11 @@ import { store } from '../../store';
 import { QueryClientProviders, ReduxIntlProviders } from '../../utils/testWithIntl';
 import { ProjectStats } from '../projectStats';
 
+// Lazy imports from ProjectStats (these can cause timeouts on slow disks)
+import '../../components/projectStats/contributorsStats';
+import '../../components/projectStats/taskStatus';
+import '../../components/projectDetail/timeline';
+
 jest.mock('react-chartjs-2', () => ({
   Doughnut: () => null,
   Bar: () => null,
