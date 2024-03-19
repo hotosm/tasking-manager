@@ -89,7 +89,6 @@ CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678",
 
 FROM runtime as prod
 USER root
-# Get the necessary bits for the health check
 RUN apt-get update && \
 	apt-get install -y curl && \
 	apt-get clean && \
@@ -97,8 +96,7 @@ RUN apt-get update && \
 # Pre-compile packages to .pyc (init speed gains)
 RUN python -c "import compileall; compileall.compile_path(maxlevels=10, quiet=1)"
 RUN python -m compileall .
-EXPOSE 8000/tcp
-HEALTHCHECK --interval=60s --start-period=15s CMD ["curl", "-f", "http://localhost:8000/api/v2/system/heartbeat/", "||", "exit", "1"]
+EXPOSE 5000/tcp
 USER appuser:appuser
 CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
     "--workers", "1", "--log-level", "error"]
