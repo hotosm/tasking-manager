@@ -5,7 +5,7 @@ updates:
   schedule:
     interval: daily
     time: "13:00"
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 0
   ignore:
   - dependency-name: python-dotenv
     versions:
@@ -31,7 +31,7 @@ updates:
   schedule:
     interval: daily
     time: "13:00"
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 0
   ignore:
   - dependency-name: "@testing-library/user-event"
     versions:
@@ -275,7 +275,7 @@ updates:
   schedule:
     interval: daily
     time: "13:00"
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 0
   ignore:
   - dependency-name: python-dotenv
     versions:
