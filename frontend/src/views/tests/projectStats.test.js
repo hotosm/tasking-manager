@@ -47,7 +47,7 @@ describe('ProjectStats dashboard', () => {
     expect(screen.getByText('123,456,789')).toBeInTheDocument();
     expect(screen.getByText('Changesets')).toBeInTheDocument();
     expect(screen.getByText('Total map edits')).toBeInTheDocument();
-    expect(screen.getByText('Tasks by status')).toBeInTheDocument();
+    expect(await screen.findByText('Tasks by status')).toBeInTheDocument();
     expect(screen.getByText('Project timeline')).toBeInTheDocument();
     await waitFor(() => screen.getByText('Time statistics'));
     expect(screen.getByText('Time statistics')).toBeInTheDocument();
