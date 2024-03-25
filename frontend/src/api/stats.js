@@ -79,3 +79,16 @@ export const useUserOsmStatsQuery = (id) => {
     enabled: !!id,
   });
 };
+
+export const useOsmStatsMetadataQuery = () => {
+  const fetchOsmStatsMetadata = () => {
+    return fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/metadata`, true);
+  };
+
+  return useQuery({
+    queryKey: ['osm-stats-metadata'],
+    queryFn: fetchOsmStatsMetadata,
+    useErrorBoundary: true,
+    select: (data) => data.result,
+  });
+};

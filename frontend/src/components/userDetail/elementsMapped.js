@@ -1,6 +1,6 @@
 import React from 'react';
 import humanizeDuration from 'humanize-duration';
-import { FormattedMessage } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import {
@@ -13,7 +13,8 @@ import {
   ValidatedIcon,
 } from '../svgIcons';
 import { StatsCard, DetailedStatsCard } from '../statsCard';
-import StatsTimestamp from '../statsTimestamp';
+import { useOsmStatsMetadataQuery } from '../../api/stats';
+import { dateOptions } from '../statsTimestamp';
 
 export const TaskStats = ({ userStats, username }) => {
   const {
@@ -114,6 +115,7 @@ export const shortEnglishHumanizer = humanizeDuration.humanizer({
 });
 
 export const ElementsMapped = ({ userStats, osmStats }) => {
+  const intl = useIntl();
   const duration = shortEnglishHumanizer(userStats.timeSpentMapping * 1000, {
     round: true,
     delimiter: ' ',
@@ -123,6 +125,8 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
 
   const iconClass = 'h-50 w-50';
   const iconStyle = { height: '45px' };
+
+  const { data: osmStatsMetadata } = useOsmStatsMetadataQuery();
 
   return (
     <div>
@@ -174,8 +178,21 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
           unitLess={osmStats?.waterway?.modified?.unit_less}
         />
       </div>
-      <div className="cf w-100 relative tr pt3 pr3">
-        <StatsTimestamp messageType="generic" />
+      <div className="cf w-100 relative tr pt3">
+        <span className="ma0 f7 fw4 blue-grey mb1 i">
+          These statistics come from{' '}
+          <a
+            className="blue-grey fw7"
+            href="https://stats.now.ohsome.org/about"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ohsomeNow Stats
+          </a>{' '}
+          and were last updated at{' '}
+          <strong>{intl.formatDate(osmStatsMetadata?.max_timestamp, dateOptions)}</strong> (
+          {intl.timeZone}).
+        </span>
       </div>
     </div>
   );
