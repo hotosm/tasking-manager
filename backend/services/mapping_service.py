@@ -1,7 +1,7 @@
 import datetime
 import xml.etree.ElementTree as ET
 
-from flask import current_app
+# from flask import current_app
 from geoalchemy2 import shape
 
 from backend.exceptions import NotFound

@@ -1,19 +1,18 @@
-from schematics.types import BaseType, BooleanType, IntType, StringType
-from schematics import Model
+from pydantic import BaseModel, Field
 
 
-class GridDTO(Model):
+class GridDTO(BaseModel):
     """Describes JSON model used for creating grids"""
 
-    area_of_interest = BaseType(required=True, serialized_name="areaOfInterest")
-    grid = BaseType(required=True)
-    clip_to_aoi = BooleanType(required=True, serialized_name="clipToAoi")
+    area_of_interest: str = Field(..., alias="areaOfInterest")
+    grid: str = Field(..., alias="grid")
+    clip_to_aoi: bool = Field(..., alias="clipToAoi")
 
 
-class SplitTaskDTO(Model):
+class SplitTaskDTO(BaseModel):
     """DTO used to split a task"""
 
-    user_id = IntType(required=True)
-    task_id = IntType(required=True)
-    project_id = IntType(required=True)
-    preferred_locale = StringType(default="en")
+    user_id: int = Field(..., alias="userId")
+    task_id: int = Field(..., alias="taskId")
+    project_id: int = Field(..., alias="projectId")
+    preferred_locale: str = "en"

@@ -1,15 +1,17 @@
 import urllib.parse
-from itsdangerous import URLSafeTimedSerializer
-from flask import current_app
-from flask_mail import Message
+# from itsdangerous import URLSafeTimedSerializer
+# # from flask import current_app
+# from flask_mail import Message
 
-from backend import mail, create_app
+# from backend import mail, create_app
+from backend import create_app
 from backend.models.postgis.message import Message as PostgisMessage
 from backend.models.postgis.statuses import EncouragingEmailType
 from backend.services.messaging.template_service import (
     get_template,
     format_username_link,
 )
+from backend.config import settings
 
 
 class SMTPService:
@@ -44,7 +46,7 @@ class SMTPService:
 
     @staticmethod
     def send_contact_admin_email(data):
-        email_to = current_app.config["EMAIL_CONTACT_ADDRESS"]
+        email_to = settings.EMAIL_CONTACT_ADDRESS
         if email_to is None:
             raise ValueError(
                 "This feature is not implemented due to missing variable TM_EMAIL_CONTACT_ADDRESS."
@@ -143,11 +145,11 @@ class SMTPService:
             return False
 
         current_app.logger.debug(f"Test if email required {to_address}")
-        from_user_link = f"{current_app.config['APP_BASE_URL']}/users/{from_username}"
-        project_link = f"{current_app.config['APP_BASE_URL']}/projects/{project_id}"
-        task_link = f"{current_app.config['APP_BASE_URL']}/projects/{project_id}/tasks/?search={task_id}"
+        from_user_link = f"{settings.APP_BASE_URL}/users/{from_username}"
+        project_link = f"{settings.APP_BASE_URL}/projects/{project_id}"
+        task_link = f"{settings.APP_BASE_URL}/projects/{project_id}/tasks/?search={task_id}"
         settings_url = "{}/settings#notifications".format(
-            current_app.config["APP_BASE_URL"]
+            settings.APP_BASE_URL
         )
 
         if not to_address:
@@ -156,7 +158,7 @@ class SMTPService:
         if message_id is not None:
             message_path = f"/message/{message_id}"
 
-        inbox_url = f"{current_app.config['APP_BASE_URL']}/inbox{message_path}"
+        inbox_url = f"{settings.APP_BASE_URL}/inbox{message_path}"
         values = {
             "FROM_USER_LINK": from_user_link,
             "FROM_USERNAME": from_username,
@@ -180,13 +182,13 @@ class SMTPService:
         to_address: str, subject: str, html_message: str, text_message: str = None
     ):
         """Helper sends SMTP message"""
-        from_address = current_app.config["MAIL_DEFAULT_SENDER"]
+        from_address = settings.MAIL_DEFAULT_SENDER
         if from_address is None:
             raise ValueError("Missing TM_EMAIL_FROM_ADDRESS environment variable")
         msg = Message()
         msg.subject = subject
         msg.sender = "{} Tasking Manager <{}>".format(
-            current_app.config["ORG_CODE"], from_address
+            settings.ORG_CODE, from_address
         )
         msg.add_recipient(to_address)
 
@@ -194,7 +196,7 @@ class SMTPService:
         msg.html = html_message
 
         current_app.logger.debug(f"Sending email via SMTP {to_address}")
-        if current_app.config["LOG_LEVEL"] == "DEBUG":
+        if settings.LOG_LEVEL == "DEBUG":
             current_app.logger.debug(msg.as_string())
         else:
             try:
@@ -214,7 +216,7 @@ class SMTPService:
         serializer = URLSafeTimedSerializer(entropy)
         token = serializer.dumps(email_address)
 
-        base_url = current_app.config["APP_BASE_URL"]
+        base_url = settings.APP_BASE_URL
 
         verification_params = {"token": token, "username": user_name}
         verification_url = "{0}/verify-email/?{1}".format(

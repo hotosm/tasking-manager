@@ -1,30 +1,30 @@
-from flask import current_app
+# # from flask import current_app
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from typing import List
-from backend import db
+from sqlalchemy import Column, String, Integer, ForeignKey, Index
 from backend.models.dtos.project_dto import ProjectInfoDTO
+from backend.db.database import Base, session
 
-
-class ProjectInfo(db.Model):
+class ProjectInfo(Base):
     """Contains all project info localized into supported languages"""
 
     __tablename__ = "project_info"
 
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), primary_key=True)
-    locale = db.Column(db.String(10), primary_key=True)
-    name = db.Column(db.String(512))
-    short_description = db.Column(db.String)
-    description = db.Column(db.String)
-    instructions = db.Column(db.String)
-    project_id_str = db.Column(db.String)
-    text_searchable = db.Column(
+    project_id = Column(Integer, ForeignKey("projects.id"), primary_key=True)
+    locale = Column(String(10), primary_key=True)
+    name = Column(String(512))
+    short_description = Column(String)
+    description = Column(String)
+    instructions = Column(String)
+    project_id_str = Column(String)
+    text_searchable = Column(
         TSVECTOR
     )  # This contains searchable text and is populated by a DB Trigger
-    per_task_instructions = db.Column(db.String)
+    per_task_instructions = Column(String)
 
     __table_args__ = (
-        db.Index("idx_project_info_composite", "locale", "project_id"),
-        db.Index("textsearch_idx", "text_searchable"),
+        Index("idx_project_info_composite", "locale", "project_id"),
+        Index("textsearch_idx", "text_searchable"),
         {},
     )
 
@@ -64,13 +64,13 @@ class ProjectInfo(db.Model):
         :param default_locale: default locale of project
         :raises: ValueError if no info found for Default Locale
         """
-        project_info = ProjectInfo.query.filter_by(
+        project_info = session.query(ProjectInfo).filter_by(
             project_id=project_id, locale=locale
         ).one_or_none()
 
         if project_info is None:
             # If project is none, get default locale and don't worry about empty translations
-            project_info = ProjectInfo.query.filter_by(
+            project_info = session.query(ProjectInfo).filter_by(
                 project_id=project_id, locale=default_locale
             ).one_or_none()
             return project_info.get_dto()
@@ -79,7 +79,7 @@ class ProjectInfo(db.Model):
             # If locale == default_locale don't need to worry about empty translations
             return project_info.get_dto()
 
-        default_locale = ProjectInfo.query.filter_by(
+        default_locale = session.query(ProjectInfo).filter_by(
             project_id=project_id, locale=default_locale
         ).one_or_none()
 

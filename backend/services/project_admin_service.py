@@ -1,7 +1,7 @@
 import json
 import threading
 import geojson
-from flask import current_app
+# # from flask import current_app
 
 from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import (

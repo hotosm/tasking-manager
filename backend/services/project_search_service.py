@@ -1,10 +1,11 @@
-from flask import current_app
+# # from flask import current_app
 import math
 import geojson
 from geoalchemy2 import shape
 from sqlalchemy import func, distinct, desc, or_, and_
 from shapely.geometry import Polygon, box
 from cachetools import TTLCache, cached
+from loguru import logger
 
 from backend import db
 from backend.exceptions import NotFound
@@ -39,6 +40,7 @@ from backend.models.postgis.utils import (
 )
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
+from backend.db.database import session
 
 
 search_cache = TTLCache(maxsize=128, ttl=300)
@@ -68,7 +70,7 @@ class ProjectSearchService:
     @staticmethod
     def create_search_query(user=None):
         query = (
-            db.session.query(
+            session.query(
                 Project.id.label("id"),
                 Project.difficulty,
                 Project.priority,
@@ -152,7 +154,7 @@ class ProjectSearchService:
 
         # We need to make a join to return projects without contributors.
         project_contributors_count = (
-            Project.query.with_entities(
+            session.query(Project).with_entities(
                 Project.id, func.count(distinct(TaskHistory.user_id)).label("total")
             )
             .filter(Project.id.in_(paginated_projects_ids))
@@ -321,7 +323,7 @@ class ProjectSearchService:
 
         if search_dto.country:
             # Unnest country column array.
-            sq = Project.query.with_entities(
+            sq = session.query(Project).with_entities(
                 Project.id, func.unnest(Project.country).label("country")
             ).subquery()
             query = query.filter(
@@ -385,7 +387,7 @@ class ProjectSearchService:
             all_results = query_result.all()
 
         paginated_results = query.paginate(
-            page=search_dto.page, per_page=14, error_out=True
+            page=search_dto.page, per_page=14, error_out=False
         )
 
         return all_results, paginated_results
@@ -520,7 +522,7 @@ class ProjectSearchService:
     def _get_intersecting_projects(search_polygon: Polygon, author_id: int):
         """Executes a database query to get the intersecting projects created by the author if provided"""
 
-        query = db.session.query(
+        query = session.query(
             Project.id,
             Project.status,
             Project.default_locale,
@@ -554,7 +556,7 @@ class ProjectSearchService:
                     geom_4326 = conn.execute(ST_Transform(geometry, 4326)).scalar()
                 polygon = shape.to_shape(geom_4326)
         except Exception as e:
-            current_app.logger.error(f"InvalidData- error making polygon: {e}")
+            logger.error(f"InvalidData- error making polygon: {e}")
             raise ProjectSearchServiceError(f"InvalidData- error making polygon: {e}")
         return polygon
 

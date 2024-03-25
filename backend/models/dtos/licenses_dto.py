@@ -1,22 +1,21 @@
-from schematics import Model
-from schematics.types import StringType, IntType
-from schematics.types.compound import ListType, ModelType
+from pydantic import BaseModel, Field
+from typing import List, Optional
 
 
-class LicenseDTO(Model):
+class LicenseDTO(BaseModel):
     """DTO used to define a mapping license"""
 
-    license_id = IntType(serialized_name="licenseId")
-    name = StringType(required=True)
-    description = StringType(required=True)
-    plain_text = StringType(required=True, serialized_name="plainText")
+    license_id: Optional[int] = Field(None, alias="licenseId")
+    name: Optional[str] = None
+    description: Optional[str] = None
+    plain_text: Optional[str] = Field(None, alias="plainText")
 
 
-class LicenseListDTO(Model):
+class LicenseListDTO(BaseModel):
     """DTO for all mapping licenses"""
 
     def __init__(self):
         super().__init__()
         self.licenses = []
 
-    licenses = ListType(ModelType(LicenseDTO))
+    licenses: Optional[List[LicenseDTO]] = None
