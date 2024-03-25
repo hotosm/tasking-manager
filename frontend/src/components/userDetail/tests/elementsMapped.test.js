@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, QueryClientProviders } from '../../../utils/testWithIntl';
 import { TaskStats, ElementsMapped } from '../elementsMapped';
 
 describe('ElementsMapped & TaskStats components', () => {
@@ -45,9 +45,11 @@ describe('ElementsMapped & TaskStats components', () => {
       },
     };
     const { getByText } = render(
-      <ReduxIntlProviders>
-        <ElementsMapped userStats={userStats} osmStats={osmStats} />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <ElementsMapped userStats={userStats} osmStats={osmStats} />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
 
     expect(getByText('Time spent mapping')).toBeInTheDocument();
