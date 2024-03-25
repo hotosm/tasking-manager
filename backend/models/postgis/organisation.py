@@ -1,6 +1,7 @@
 from slugify import slugify
 
-from backend import db
+from sqlalchemy import Column, Integer, String, DateTime, BigInteger, ForeignKey, Table, UniqueConstraint
+from sqlalchemy.orm import relationship, backref
 from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import (
     OrganisationDTO,
@@ -10,17 +11,17 @@ from backend.models.dtos.organisation_dto import (
 from backend.models.postgis.user import User
 from backend.models.postgis.campaign import Campaign, campaign_organisations
 from backend.models.postgis.statuses import OrganisationType
-
+from backend.db.database import Base, session
 
 # Secondary table defining many-to-many relationship between organisations and managers
-organisation_managers = db.Table(
+organisation_managers = Table(
     "organisation_managers",
-    db.metadata,
-    db.Column(
-        "organisation_id", db.Integer, db.ForeignKey("organisations.id"), nullable=False
+    Base.metadata,
+    Column(
+        "organisation_id", Integer, ForeignKey("organisations.id"), nullable=False
     ),
-    db.Column("user_id", db.BigInteger, db.ForeignKey("users.id"), nullable=False),
-    db.UniqueConstraint("organisation_id", "user_id", name="organisation_user_key"),
+    Column("user_id", BigInteger, ForeignKey("users.id"), nullable=False),
+    UniqueConstraint("organisation_id", "user_id", name="organisation_user_key"),
 )
 
 
@@ -28,37 +29,37 @@ class InvalidRoleException(Exception):
     pass
 
 
-class Organisation(db.Model):
+class Organisation(Base):
     """Describes an Organisation"""
 
     __tablename__ = "organisations"
 
     # Columns
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(512), nullable=False, unique=True)
-    slug = db.Column(db.String(255), nullable=False, unique=True)
-    logo = db.Column(db.String)  # URL of a logo
-    description = db.Column(db.String)
-    url = db.Column(db.String)
-    type = db.Column(db.Integer, default=OrganisationType.FREE.value, nullable=False)
-    subscription_tier = db.Column(db.Integer)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(512), nullable=False, unique=True)
+    slug = Column(String(255), nullable=False, unique=True)
+    logo = Column(String)  # URL of a logo
+    description = Column(String)
+    url = Column(String)
+    type = Column(Integer, default=OrganisationType.FREE.value, nullable=False)
+    subscription_tier = Column(Integer)
 
-    managers = db.relationship(
+    managers = relationship(
         User,
         secondary=organisation_managers,
-        backref=db.backref("organisations", lazy="joined"),
+        backref=backref("organisations", lazy="joined"),
     )
-    campaign = db.relationship(
+    campaign = relationship(
         Campaign, secondary=campaign_organisations, backref="organisation"
     )
 
     def create(self):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     def save(self):
-        db.session.commit()
+        session.commit()
 
     @classmethod
     def create_from_dto(cls, new_organisation_dto: NewOrganisationDTO):
@@ -113,12 +114,12 @@ class Organisation(db.Model):
 
                 self.managers.append(new_manager)
 
-        db.session.commit()
+        session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     def can_be_deleted(self) -> bool:
         """An Organisation can be deleted if it doesn't have any projects or teams"""
@@ -131,7 +132,7 @@ class Organisation(db.Model):
         :param organisation_id: organisation ID in scope
         :return: Organisation if found otherwise None
         """
-        return db.session.get(Organisation, organisation_id)
+        return session.get(Organisation, organisation_id)
 
     @staticmethod
     def get_organisation_by_name(organisation_name: str):
@@ -139,7 +140,7 @@ class Organisation(db.Model):
         :param organisation_name: name of organisation
         :return: Organisation if found else None
         """
-        return Organisation.query.filter_by(name=organisation_name).first()
+        return session.query(Organisation).filter_by(name=organisation_name).first()
 
     @staticmethod
     def get_organisation_name_by_id(organisation_id: int):
@@ -147,18 +148,18 @@ class Organisation(db.Model):
         :param organisation_id:
         :return: Organisation name
         """
-        return Organisation.query.get(organisation_id).name
+        return session.query(Organisation).get(organisation_id).name
 
     @staticmethod
     def get_all_organisations():
         """Gets all organisations"""
-        return Organisation.query.order_by(Organisation.name).all()
+        return session.query(Organisation).order_by(Organisation.name).all()
 
     @staticmethod
     def get_organisations_managed_by_user(user_id: int):
         """Gets organisations a user can manage"""
         query_results = (
-            Organisation.query.join(organisation_managers)
+            session.query(Organisation).join(organisation_managers)
             .filter(
                 (organisation_managers.c.organisation_id == Organisation.id)
                 & (organisation_managers.c.user_id == user_id)

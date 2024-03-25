@@ -1,4 +1,5 @@
-from backend import db
+from sqlalchemy import Column, Integer, BigInteger, Boolean, ForeignKey, String
+from sqlalchemy.orm import relationship, backref
 from backend.exceptions import NotFound
 from backend.models.dtos.team_dto import (
     TeamDTO,
@@ -15,41 +16,41 @@ from backend.models.postgis.statuses import (
     TeamRoles,
 )
 from backend.models.postgis.user import User
+from backend.db.database import Base, session
 
-
-class TeamMembers(db.Model):
+class TeamMembers(Base):
     __tablename__ = "team_members"
-    team_id = db.Column(
-        db.Integer, db.ForeignKey("teams.id", name="fk_teams"), primary_key=True
+    team_id = Column(
+        Integer, ForeignKey("teams.id", name="fk_teams"), primary_key=True
     )
-    user_id = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", name="fk_users"), primary_key=True
+    user_id = Column(
+        BigInteger, ForeignKey("users.id", name="fk_users"), primary_key=True
     )
-    function = db.Column(db.Integer, nullable=False)  # either 'editor' or 'manager'
-    active = db.Column(db.Boolean, default=False)
-    join_request_notifications = db.Column(
-        db.Boolean, nullable=False, default=False
+    function = Column(Integer, nullable=False)  # either 'editor' or 'manager'
+    active = Column(Boolean, default=False)
+    join_request_notifications = Column(
+        Boolean, nullable=False, default=False
     )  # Managers can turn notifications on/off for team join requests
-    member = db.relationship(
-        User, backref=db.backref("teams", cascade="all, delete-orphan")
+    member = relationship(
+        User, backref=backref("teams", cascade="all, delete-orphan")
     )
-    team = db.relationship(
-        "Team", backref=db.backref("members", cascade="all, delete-orphan")
+    team = relationship(
+        "Team", backref=backref("members", cascade="all, delete-orphan")
     )
 
     def create(self):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     def update(self):
         """Updates the current model in the DB"""
-        db.session.commit()
+        session.commit()
 
     @staticmethod
     def get(team_id: int, user_id: int):
@@ -57,34 +58,34 @@ class TeamMembers(db.Model):
         return TeamMembers.query.filter_by(team_id=team_id, user_id=user_id).first()
 
 
-class Team(db.Model):
+class Team(Base):
     """Describes a team"""
 
     __tablename__ = "teams"
 
     # Columns
-    id = db.Column(db.Integer, primary_key=True)
-    organisation_id = db.Column(
-        db.Integer,
-        db.ForeignKey("organisations.id", name="fk_organisations"),
+    id = Column(Integer, primary_key=True)
+    organisation_id = Column(
+        Integer,
+        ForeignKey("organisations.id", name="fk_organisations"),
         nullable=False,
     )
-    name = db.Column(db.String(512), nullable=False)
-    logo = db.Column(db.String)  # URL of a logo
-    description = db.Column(db.String)
-    join_method = db.Column(
-        db.Integer, default=TeamJoinMethod.ANY.value, nullable=False
+    name = Column(String(512), nullable=False)
+    logo = Column(String)  # URL of a logo
+    description = Column(String)
+    join_method = Column(
+        Integer, default=TeamJoinMethod.ANY.value, nullable=False
     )
-    visibility = db.Column(
-        db.Integer, default=TeamVisibility.PUBLIC.value, nullable=False
+    visibility = Column(
+        Integer, default=TeamVisibility.PUBLIC.value, nullable=False
     )
 
-    organisation = db.relationship(Organisation, backref="teams")
+    organisation = relationship(Organisation, backref="teams")
 
     def create(self):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     @classmethod
     def create_from_dto(cls, new_team_dto: NewTeamDTO):
@@ -160,12 +161,12 @@ class Team(db.Model):
                         member["function"]
                     ].value
 
-        db.session.commit()
+        session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     def can_be_deleted(self) -> bool:
         """A Team can be deleted if it doesn't have any projects"""
@@ -177,7 +178,7 @@ class Team(db.Model):
         :param team_id: team ID in scope
         :return: Team if found otherwise None
         """
-        return db.session.get(Team, team_id)
+        return session.get(Team, team_id)
 
     def get_team_by_name(team_name: str):
         """

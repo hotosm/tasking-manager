@@ -1,14 +1,24 @@
-from flask_restful import Resource, current_app, request
-from schematics.exceptions import DataError
 from backend.models.postgis.task import Task
 from backend.models.postgis.task_annotation import TaskAnnotation
 from backend.services.project_service import ProjectService
 from backend.services.task_annotations_service import TaskAnnotationsService
 from backend.services.application_service import ApplicationService
+from fastapi import APIRouter, Depends, Request
+from backend.db.database import get_db
+from starlette.authentication import requires
+from loguru import logger
 
+router = APIRouter(
+    prefix="/projects",
+    tags=["projects"],
+    dependencies=[Depends(get_db)],
+    responses={404: {"description": "Not found"}},
+)
 
-class AnnotationsRestAPI(Resource):
-    def get(self, project_id: int, annotation_type: str = None):
+# class AnnotationsRestAPI(Resource):
+@router.get("/{project_id}/annotations/{annotation_type}/")
+@router.get("/{project_id}/annotations/")
+async def get(request: Request, project_id: int, annotation_type: str = None):
         """
         Get all task annotations for a project
         ---
@@ -42,9 +52,11 @@ class AnnotationsRestAPI(Resource):
             )
         else:
             annotations = TaskAnnotation.get_task_annotations_by_project_id(project_id)
-        return annotations.to_primitive(), 200
+        return annotations.model_dump(by_alias=True), 200
 
-    def post(self, project_id: int, annotation_type: str):
+@router.post("/{project_id}/annotations/{annotation_type}/")
+@requires("authenticated")
+async def post(request: Request, project_id: int, annotation_type: str):
         """
         Store new task annotations for tasks of a project
         ---
@@ -110,17 +122,17 @@ class AnnotationsRestAPI(Resource):
                 description: Internal Server Error
         """
 
-        if "Application-Token" in request.headers:
-            application_token = request.headers["Application-Token"]
-            is_valid_token = ApplicationService.check_token(application_token)  # noqa
-        else:
-            current_app.logger.error("No token supplied")
-            return {"Error": "No token supplied", "SubCode": "NotFound"}, 500
+        # if "Application-Token" in request.headers:
+        #     application_token = request.headers["Application-Token"]
+        #     is_valid_token = ApplicationService.check_token(application_token)  # noqa
+        # else:
+        #     logger.error("No token supplied")
+        #     return {"Error": "No token supplied", "SubCode": "NotFound"}, 500
 
         try:
-            annotations = request.get_json() or {}
-        except DataError as e:
-            current_app.logger.error(f"Error validating request: {str(e)}")
+            annotations = await request.json() or {}
+        except Exception as e:
+            logger.error(f"Error validating request: {str(e)}")
 
         ProjectService.exists(project_id)
 
@@ -137,8 +149,8 @@ class AnnotationsRestAPI(Resource):
                 TaskAnnotationsService.add_or_update_annotation(
                     annotation, project_id, annotation_type
                 )
-            except DataError as e:
-                current_app.logger.error(f"Error creating annotations: {str(e)}")
+            except Exception as e:
+                logger.error(f"Error creating annotations: {str(e)}")
                 return {
                     "Error": "Error creating annotations",
                     "SubCode": "InvalidData",
@@ -146,8 +158,3 @@ class AnnotationsRestAPI(Resource):
 
         return project_id, 200
 
-    def put(self, project_id: int, task_id: int):
-        """
-        Update a single task's annotations
-        """
-        pass

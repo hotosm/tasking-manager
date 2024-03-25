@@ -1,16 +1,27 @@
-from flask import current_app
-from flask_restful import Resource, request
-from schematics.exceptions import DataError
+# from flask import current_app
+# from flask_restful import Resource, request
+# from schematics.exceptions import DataError
 
 from backend.models.postgis.banner import Banner
 from backend.models.dtos.banner_dto import BannerDTO
 from backend.models.postgis.statuses import UserRole
-from backend.services.users.authentication_service import token_auth
+# from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService
+from fastapi import APIRouter, Depends, Request
+from backend.db.database import get_db
+from starlette.authentication import requires
+from fastapi.logger import logger
 
+router = APIRouter(
+    prefix="/system",
+    tags=["system"],
+    dependencies=[Depends(get_db)],
+    responses={404: {"description": "Not found"}},
+)
 
-class SystemBannerAPI(Resource):
-    def get(self):
+# class SystemBannerAPI(Resource):
+@router.get("/banner/")
+async def get():
         """
         Returns a banner
         ---
@@ -26,10 +37,12 @@ class SystemBannerAPI(Resource):
         """
 
         banner = Banner.get()
-        return banner.as_dto().to_primitive(), 200
+        return banner.as_dto().model_dump(by_alias=True), 200
 
-    @token_auth.login_required
-    def patch(self):
+    # @token_auth.login_required
+@router.patch("/banner/")
+@requires("authenticated")
+async def patch(request: Request):
         """
         Updates the current banner in the DB
         ---
@@ -76,11 +89,11 @@ class SystemBannerAPI(Resource):
             banner_dto = BannerDTO(request.get_json())
             banner_dto.validate()
         except DataError as e:
-            current_app.logger.error(f"error validating request: {str(e)}")
+            logger.error(f"error validating request: {str(e)}")
             return {"Error": "Unable to create project", "SubCode": "InvalidData"}, 400
 
         # Check user permission for this action
-        authenticated_user_id = token_auth.current_user()
+        authenticated_user_id = request.user.display_name
         authenticated_user = UserService.get_user_by_id(authenticated_user_id)
         if authenticated_user.role != UserRole.ADMIN.value:
             return {
@@ -93,4 +106,4 @@ class SystemBannerAPI(Resource):
         )  # Convert the markdown message to html
         banner = Banner.get()
         banner.update_from_dto(banner_dto)
-        return banner.as_dto().to_primitive(), 200
+        return banner.as_dto().model_dump(by_alias=True), 200

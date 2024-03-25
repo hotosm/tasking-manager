@@ -1,14 +1,25 @@
 import requests
 import json
 
-from flask_restful import Resource, request, current_app
 
-from backend.services.users.authentication_service import token_auth
+from fastapi import APIRouter, Depends, Request
+from backend.db.database import get_db
+from starlette.authentication import requires
+from backend.config import settings
+
+router = APIRouter(
+    prefix="/system",
+    tags=["system"],
+    dependencies=[Depends(get_db)],
+    responses={404: {"description": "Not found"}},
+)
 
 
-class SystemImageUploadRestAPI(Resource):
-    @token_auth.login_required
-    def post(self):
+# class SystemImageUploadRestAPI(Resource):
+    # @token_auth.login_required
+@router.post("/image-upload")
+@requires("authenticated")
+async def post(request: Request):
         """
         Uploads an image using the image upload service
         ---
@@ -51,15 +62,15 @@ class SystemImageUploadRestAPI(Resource):
             description: Image upload service not defined
         """
         if (
-            current_app.config["IMAGE_UPLOAD_API_URL"] is None
-            or current_app.config["IMAGE_UPLOAD_API_KEY"] is None
+            settings.IMAGE_UPLOAD_API_URL is None
+            or settings.IMAGE_UPLOAD_API_KEY is None
         ):
             return {
                 "Error": "Image upload service not defined",
                 "SubCode": "UndefinedImageService",
             }, 501
 
-        data = request.get_json()
+        data = await request.json()
         if data.get("filename") is None:
             return {
                 "Error": "Missing filename parameter",
@@ -72,11 +83,11 @@ class SystemImageUploadRestAPI(Resource):
             "image/gif",
         ]:
             headers = {
-                "x-api-key": current_app.config["IMAGE_UPLOAD_API_KEY"],
+                "x-api-key": settings.IMAGE_UPLOAD_API_KEY,
                 "Content-Type": "application/json",
             }
             url = "{}?filename={}".format(
-                current_app.config["IMAGE_UPLOAD_API_URL"], data.get("filename")
+                settings.IMAGE_UPLOAD_API_URL, data.get("filename")
             )
             result = requests.post(
                 url, headers=headers, data=json.dumps({"image": data})

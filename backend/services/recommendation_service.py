@@ -5,13 +5,13 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import func
 from cachetools import TTLCache, cached
 
-from backend import db
 from backend.exceptions import NotFound
 from backend.models.postgis.project import Project, Interest, project_interests
 from backend.models.postgis.statuses import ProjectStatus
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
+from backend.db.database import session
 
 similar_projects_cache = TTLCache(maxsize=1000, ttl=60 * 60 * 24)  # 24 hours
 
@@ -46,7 +46,7 @@ class ProjectRecommendationService:
         """
         #  Create a subquery to fetch the interests of the projects
         subquery = (
-            db.session.query(
+            session.query(
                 project_interests.c.project_id, Interest.id.label("interest_id")
             )
             .join(Interest)
@@ -55,7 +55,7 @@ class ProjectRecommendationService:
 
         # Only fetch the columns required for recommendation
         # Should be in order of the columns defined in the project_columns line 13
-        query = Project.query.options(joinedload(Project.interests)).with_entities(
+        query = session.query(Project).options(joinedload(Project.interests)).with_entities(
             Project.id,
             Project.default_locale,
             Project.difficulty,
@@ -194,7 +194,7 @@ class ProjectRecommendationService:
         :param preferred_locale: preferred locale
         :return: list of similar projects in the order of similarity
         """
-        target_project = Project.query.get(project_id)
+        target_project = session.query(Project).get(project_id)
         # Check if the project exists and is published
         project_is_published = (
             target_project and target_project.status == ProjectStatus.PUBLISHED.value

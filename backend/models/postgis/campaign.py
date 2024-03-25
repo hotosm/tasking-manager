@@ -1,48 +1,48 @@
-from backend import db
+from sqlalchemy import Column, String, Integer, ForeignKey, Table, UniqueConstraint
 from backend.models.dtos.campaign_dto import CampaignDTO, CampaignListDTO
+from backend.db.database import Base, session
 
-
-campaign_projects = db.Table(
+campaign_projects = Table(
     "campaign_projects",
-    db.metadata,
-    db.Column("campaign_id", db.Integer, db.ForeignKey("campaigns.id")),
-    db.Column("project_id", db.Integer, db.ForeignKey("projects.id")),
+    Base.metadata,
+    Column("campaign_id", Integer, ForeignKey("campaigns.id")),
+    Column("project_id", Integer, ForeignKey("projects.id")),
 )
 
-campaign_organisations = db.Table(
+campaign_organisations = Table(
     "campaign_organisations",
-    db.metadata,
-    db.Column("campaign_id", db.Integer, db.ForeignKey("campaigns.id")),
-    db.Column("organisation_id", db.Integer, db.ForeignKey("organisations.id")),
-    db.UniqueConstraint(
+    Base.metadata,
+    Column("campaign_id", Integer, ForeignKey("campaigns.id")),
+    Column("organisation_id", Integer, ForeignKey("organisations.id")),
+    UniqueConstraint(
         "campaign_id", "organisation_id", name="campaign_organisation_key"
     ),
 )
 
 
-class Campaign(db.Model):
+class Campaign(Base):
     """Describes an Campaign"""
 
     __tablename__ = "campaigns"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False, unique=True)
-    logo = db.Column(db.String)
-    url = db.Column(db.String)
-    description = db.Column(db.String)
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False, unique=True)
+    logo = Column(String)
+    url = Column(String)
+    description = Column(String)
 
     def create(self):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     def save(self):
-        db.session.commit()
+        session.commit()
 
     def update(self, dto: CampaignDTO):
         """Update the user details"""
@@ -50,7 +50,7 @@ class Campaign(db.Model):
         self.logo = dto.logo if dto.logo else self.logo
         self.url = dto.url if dto.url else self.url
         self.description = dto.description if dto.description else self.description
-        db.session.commit()
+        session.commit()
 
     @classmethod
     def from_dto(cls, dto: CampaignDTO):
