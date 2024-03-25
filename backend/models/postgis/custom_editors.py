@@ -1,29 +1,29 @@
-from backend import db
+from sqlalchemy import Column, Integer, String, ForeignKey
 from backend.models.dtos.project_dto import CustomEditorDTO
+from backend.db.database import Base, session
 
-
-class CustomEditor(db.Model):
+class CustomEditor(Base):
     """Model for user defined editors for a project"""
 
     __tablename__ = "project_custom_editors"
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    description = db.Column(db.String)
-    url = db.Column(db.String, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), primary_key=True)
+    name = Column(String(50), nullable=False)
+    description = Column(String)
+    url = Column(String, nullable=False)
 
     def create(self):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     def save(self):
         """Save changes to db"""
-        db.session.commit()
+        session.commit()
 
     @staticmethod
     def get_by_project_id(project_id: int):
         """Get custom editor by it's project id"""
-        return db.session.get(CustomEditor, project_id)
+        return session.get(CustomEditor, project_id)
 
     @classmethod
     def create_from_dto(cls, project_id: int, dto: CustomEditorDTO):
@@ -42,8 +42,8 @@ class CustomEditor(db.Model):
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     def as_dto(self) -> CustomEditorDTO:
         """Returns the CustomEditor as a DTO"""

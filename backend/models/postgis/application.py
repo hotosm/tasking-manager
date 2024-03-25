@@ -1,20 +1,20 @@
-from backend import db
+from sqlalchemy import Column, BigInteger, String, DateTime, ForeignKey
 from backend.models.dtos.application_dto import ApplicationDTO, ApplicationsDTO
 from backend.models.postgis.utils import timestamp
 from backend.services.users.authentication_service import AuthenticationService
+from backend.db.database import Base, session
 
-
-class Application(db.Model):
+class Application(Base):
     """Describes an application that is authorized to access the TM"""
 
     __tablename__ = "application_keys"
 
-    id = db.Column(db.BigInteger, primary_key=True)
-    user = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", name="fk_users"), nullable=False
+    id = Column(BigInteger, primary_key=True)
+    user = Column(
+        BigInteger, ForeignKey("users.id", name="fk_users"), nullable=False
     )
-    app_key = db.Column(db.String, nullable=False)
-    created = db.Column(db.DateTime, default=timestamp)
+    app_key = Column(String, nullable=False)
+    created = Column(DateTime, default=timestamp)
 
     def generate_application_key(self, user_id):
         """
@@ -27,29 +27,29 @@ class Application(db.Model):
         application = Application()
         application.app_key = self.generate_application_key(user_id)
         application.user = user_id
-        db.session.add(application)
-        db.session.commit()
+        session.add(application)
+        session.commit()
 
         return application
 
     def save(self):
-        db.session.commit()
+        session.commit()
 
     def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     @staticmethod
     def get_token(appkey: str):
         return (
-            db.session.query(Application)
+            session.query(Application)
             .filter(Application.app_key == appkey)
             .one_or_none()
         )
 
     @staticmethod
     def get_all_for_user(user: int):
-        query = db.session.query(Application).filter(Application.user == user)
+        query = session.query(Application).filter(Application.user == user)
         applications_dto = ApplicationsDTO()
         for r in query:
             application_dto = ApplicationDTO()

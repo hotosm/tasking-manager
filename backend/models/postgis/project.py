@@ -5,7 +5,6 @@ from cachetools import TTLCache, cached
 
 import geojson
 import datetime
-from flask import current_app
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
 from sqlalchemy.sql.expression import cast, or_
@@ -14,7 +13,8 @@ from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 import requests
 
-from backend import db
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Table, BigInteger, Index
+from sqlalchemy.orm import relationship, backref
 from backend.exceptions import NotFound
 from backend.models.dtos.campaign_dto import CampaignDTO
 from backend.models.dtos.project_dto import (
@@ -61,118 +61,119 @@ from backend.models.postgis.utils import (
 )
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.interests import Interest, project_interests
+from backend.db.database import Base, session
 
 # Secondary table defining many-to-many join for projects that were favorited by users.
-project_favorites = db.Table(
+project_favorites = Table(
     "project_favorites",
-    db.metadata,
-    db.Column("project_id", db.Integer, db.ForeignKey("projects.id")),
-    db.Column("user_id", db.BigInteger, db.ForeignKey("users.id")),
+    Base.metadata,
+    Column("project_id", Integer, ForeignKey("projects.id")),
+    Column("user_id", BigInteger, ForeignKey("users.id")),
 )
 
 # Secondary table defining many-to-many join for private projects that only defined users can map on
-project_allowed_users = db.Table(
+project_allowed_users = Table(
     "project_allowed_users",
-    db.metadata,
-    db.Column("project_id", db.Integer, db.ForeignKey("projects.id")),
-    db.Column("user_id", db.BigInteger, db.ForeignKey("users.id")),
+    Base.metadata,
+    Column("project_id", Integer, ForeignKey("projects.id")),
+    Column("user_id", BigInteger, ForeignKey("users.id")),
 )
 
 
-class ProjectTeams(db.Model):
+class ProjectTeams(Base):
     __tablename__ = "project_teams"
-    team_id = db.Column(db.Integer, db.ForeignKey("teams.id"), primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), primary_key=True)
-    role = db.Column(db.Integer, nullable=False)
+    team_id = Column(Integer, ForeignKey("teams.id"), primary_key=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), primary_key=True)
+    role = Column(Integer, nullable=False)
 
-    project = db.relationship(
-        "Project", backref=db.backref("teams", cascade="all, delete-orphan")
+    project = relationship(
+        "Project", backref=backref("teams", cascade="all, delete-orphan")
     )
-    team = db.relationship(
-        Team, backref=db.backref("projects", cascade="all, delete-orphan")
+    team = relationship(
+        Team, backref=backref("projects", cascade="all, delete-orphan")
     )
 
     def create(self):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     def save(self):
         """Save changes to db"""
-        db.session.commit()
+        session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
 
 # cache mapper counts for 30 seconds
 active_mappers_cache = TTLCache(maxsize=1024, ttl=30)
 
 
-class Project(db.Model):
+class Project(Base):
     """Describes a HOT Mapping Project"""
 
     __tablename__ = "projects"
 
     # Columns
-    id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.Integer, default=ProjectStatus.DRAFT.value, nullable=False)
-    created = db.Column(db.DateTime, default=timestamp, nullable=False)
-    priority = db.Column(db.Integer, default=ProjectPriority.MEDIUM.value)
-    default_locale = db.Column(
-        db.String(10), default="en"
+    id = Column(Integer, primary_key=True)
+    status = Column(Integer, default=ProjectStatus.DRAFT.value, nullable=False)
+    created = Column(DateTime, default=timestamp, nullable=False)
+    priority = Column(Integer, default=ProjectPriority.MEDIUM.value)
+    default_locale = Column(
+        String(10), default="en"
     )  # The locale that is returned if requested locale not available
-    author_id = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", name="fk_users"), nullable=False
+    author_id = Column(
+        BigInteger, ForeignKey("users.id", name="fk_users"), nullable=False
     )
-    difficulty = db.Column(
-        db.Integer, default=2, nullable=False, index=True
+    difficulty = Column(
+        Integer, default=2, nullable=False, index=True
     )  # Mapper level project is suitable for
-    mapping_permission = db.Column(db.Integer, default=MappingPermission.ANY.value)
-    validation_permission = db.Column(
-        db.Integer, default=ValidationPermission.LEVEL.value
+    mapping_permission = Column(Integer, default=MappingPermission.ANY.value)
+    validation_permission = Column(
+        Integer, default=ValidationPermission.LEVEL.value
     )  # Means only users with validator role can validate
-    enforce_random_task_selection = db.Column(
-        db.Boolean, default=False
+    enforce_random_task_selection = Column(
+        Boolean, default=False
     )  # Force users to edit at random to avoid mapping "easy" tasks
-    private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
-    featured = db.Column(
-        db.Boolean, default=False
+    private = Column(Boolean, default=False)  # Only allowed users can validate
+    featured = Column(
+        Boolean, default=False
     )  # Only PMs can set a project as featured
-    changeset_comment = db.Column(db.String)
-    osmcha_filter_id = db.Column(
-        db.String
+    changeset_comment = Column(String)
+    osmcha_filter_id = Column(
+        String
     )  # Optional custom filter id for filtering on OSMCha
-    due_date = db.Column(db.DateTime)
-    imagery = db.Column(db.String)
-    josm_preset = db.Column(db.String)
-    id_presets = db.Column(ARRAY(db.String))
-    extra_id_params = db.Column(db.String)
-    rapid_power_user = db.Column(db.Boolean, default=False)
-    last_updated = db.Column(db.DateTime, default=timestamp)
-    progress_email_sent = db.Column(db.Boolean, default=False)
-    license_id = db.Column(db.Integer, db.ForeignKey("licenses.id", name="fk_licenses"))
-    geometry = db.Column(Geometry("MULTIPOLYGON", srid=4326), nullable=False)
-    centroid = db.Column(Geometry("POINT", srid=4326), nullable=False)
-    country = db.Column(ARRAY(db.String), default=[])
-    task_creation_mode = db.Column(
-        db.Integer, default=TaskCreationMode.GRID.value, nullable=False
+    due_date = Column(DateTime)
+    imagery = Column(String)
+    josm_preset = Column(String)
+    id_presets = Column(ARRAY(String))
+    extra_id_params = Column(String)
+    rapid_power_user = Column(Boolean, default=False)
+    last_updated = Column(DateTime, default=timestamp)
+    progress_email_sent = Column(Boolean, default=False)
+    license_id = Column(Integer, ForeignKey("licenses.id", name="fk_licenses"))
+    geometry = Column(Geometry("MULTIPOLYGON", srid=4326), nullable=False)
+    centroid = Column(Geometry("POINT", srid=4326), nullable=False)
+    country = Column(ARRAY(String), default=[])
+    task_creation_mode = Column(
+        Integer, default=TaskCreationMode.GRID.value, nullable=False
     )
 
-    organisation_id = db.Column(
-        db.Integer,
-        db.ForeignKey("organisations.id", name="fk_organisations"),
+    organisation_id = Column(
+        Integer,
+        ForeignKey("organisations.id", name="fk_organisations"),
         index=True,
     )
 
     # Tags
-    mapping_types = db.Column(ARRAY(db.Integer), index=True)
+    mapping_types = Column(ARRAY(Integer), index=True)
 
     # Editors
-    mapping_editors = db.Column(
-        ARRAY(db.Integer),
+    mapping_editors = Column(
+        ARRAY(Integer),
         default=[
             Editors.ID.value,
             Editors.JOSM.value,
@@ -181,8 +182,8 @@ class Project(db.Model):
         index=True,
         nullable=False,
     )
-    validation_editors = db.Column(
-        ARRAY(db.Integer),
+    validation_editors = Column(
+        ARRAY(Integer),
         default=[
             Editors.ID.value,
             Editors.JOSM.value,
@@ -193,34 +194,34 @@ class Project(db.Model):
     )
 
     # Stats
-    total_tasks = db.Column(db.Integer, nullable=False)
-    tasks_mapped = db.Column(db.Integer, default=0, nullable=False)
-    tasks_validated = db.Column(db.Integer, default=0, nullable=False)
-    tasks_bad_imagery = db.Column(db.Integer, default=0, nullable=False)
+    total_tasks = Column(Integer, nullable=False)
+    tasks_mapped = Column(Integer, default=0, nullable=False)
+    tasks_validated = Column(Integer, default=0, nullable=False)
+    tasks_bad_imagery = Column(Integer, default=0, nullable=False)
 
     # Mapped Objects
-    tasks = db.relationship(
+    tasks = orm.relationship(
         Task, backref="projects", cascade="all, delete, delete-orphan", lazy="dynamic"
     )
-    project_info = db.relationship(ProjectInfo, lazy="dynamic", cascade="all")
-    project_chat = db.relationship(ProjectChat, lazy="dynamic", cascade="all")
-    author = db.relationship(User)
-    allowed_users = db.relationship(User, secondary=project_allowed_users)
-    priority_areas = db.relationship(
+    project_info = orm.relationship(ProjectInfo, lazy="dynamic", cascade="all")
+    project_chat = orm.relationship(ProjectChat, lazy="dynamic", cascade="all")
+    author = orm.relationship(User)
+    allowed_users = orm.relationship(User, secondary=project_allowed_users)
+    priority_areas = orm.relationship(
         PriorityArea,
         secondary=project_priority_areas,
         cascade="all, delete-orphan",
         single_parent=True,
     )
-    custom_editor = db.relationship(
+    custom_editor = orm.relationship(
         CustomEditor, cascade="all, delete-orphan", uselist=False
     )
-    favorited = db.relationship(User, secondary=project_favorites, backref="favorites")
-    organisation = db.relationship(Organisation, backref="projects")
-    campaign = db.relationship(
+    favorited = orm.relationship(User, secondary=project_favorites, backref="favorites")
+    organisation = orm.relationship(Organisation, backref="projects")
+    campaign = orm.relationship(
         Campaign, secondary=campaign_projects, backref="projects"
     )
-    interests = db.relationship(
+    interests = orm.relationship(
         Interest, secondary=project_interests, backref="projects"
     )
 
@@ -284,18 +285,18 @@ class Project(db.Model):
 
     def create(self):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     def save(self):
         """Save changes to db"""
-        db.session.commit()
+        session.commit()
 
     @staticmethod
     def clone(project_id: int, author_id: int):
         """Clone project"""
 
-        orig = db.session.get(Project, project_id)
+        orig = session.get(Project, project_id)
         if orig is None:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
@@ -321,7 +322,7 @@ class Project(db.Model):
         )
 
         new_proj = Project(**orig_metadata)
-        db.session.add(new_proj)
+        session.add(new_proj)
 
         proj_info = []
         for info in orig.project_info.all():
@@ -367,7 +368,7 @@ class Project(db.Model):
         :param project_id: project ID in scope
         :return: Project if found otherwise None
         """
-        return db.session.get(
+        return session.get(
             Project,
             project_id,
             options=[
@@ -376,6 +377,7 @@ class Project(db.Model):
                 orm.noload(Project.project_chat),
             ],
         )
+    
 
     def update(self, project_dto: ProjectDTO):
         """Updates project from DTO"""
@@ -453,7 +455,7 @@ class Project(db.Model):
 
                 role = TeamRoles[team_dto.role].value
                 project_team = ProjectTeams(project=self, team=team, role=role)
-                db.session.add(project_team)
+                session.add(project_team)
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
@@ -520,49 +522,49 @@ class Project(db.Model):
         if not self.country:
             self.set_country_info()
 
-        db.session.commit()
+        session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     @staticmethod
     def exists(project_id):
-        query = Project.query.filter(Project.id == project_id).exists()
+        query = session.query(Project).filter(Project.id == project_id).exists()
 
-        return db.session.query(literal(True)).filter(query).scalar()
+        return session.query(literal(True)).filter(query).scalar()
 
     def is_favorited(self, user_id: int) -> bool:
-        user = db.session.get(User, user_id)
+        user = session.get(User, user_id)
         if user not in self.favorited:
             return False
 
         return True
 
     def favorite(self, user_id: int):
-        user = db.session.get(User, user_id)
+        user = session.get(User, user_id)
         self.favorited.append(user)
-        db.session.commit()
+        session.commit()
 
     def unfavorite(self, user_id: int):
-        user = db.session.get(User, user_id)
+        user = session.get(User, user_id)
         if user not in self.favorited:
             raise ValueError("NotFeatured- Project not been favorited by user")
         self.favorited.remove(user)
-        db.session.commit()
+        session.commit()
 
     def set_as_featured(self):
         if self.featured is True:
             raise ValueError("AlreadyFeatured- Project is already featured")
         self.featured = True
-        db.session.commit()
+        session.commit()
 
     def unset_as_featured(self):
         if self.featured is False:
             raise ValueError("NotFeatured- Project is not featured")
         self.featured = False
-        db.session.commit()
+        session.commit()
 
     def can_be_deleted(self) -> bool:
         """Projects can be deleted if they have no mapped work"""
@@ -579,7 +581,7 @@ class Project(db.Model):
         admin_id: int, preferred_locale: str, search_dto: ProjectSearchDTO
     ) -> PMDashboardDTO:
         """Get projects for admin"""
-        query = Project.query.filter(Project.author_id == admin_id)
+        query = session.query(Project).filter(Project.author_id == admin_id)
         # Do Filtering Here
 
         if search_dto.order_by:
@@ -617,7 +619,7 @@ class Project(db.Model):
         stats_dto.total_time_spent = 0
 
         total_mapping_time = (
-            db.session.query(
+            session.query(
                 func.sum(
                     cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
                 )
@@ -638,7 +640,7 @@ class Project(db.Model):
                 stats_dto.total_time_spent += stats_dto.time_spent_mapping
 
         query = (
-            TaskHistory.query.with_entities(
+            session.query(TaskHistory).with_entities(
                 func.date_trunc("minute", TaskHistory.action_date).label("trn"),
                 func.max(TaskHistory.action_text).label("tm"),
             )
@@ -648,7 +650,7 @@ class Project(db.Model):
             .group_by("trn")
             .subquery()
         )
-        total_validation_time = db.session.query(
+        total_validation_time = session.query(
             func.sum(cast(func.to_timestamp(query.c.tm, "HH24:MI:SS"), Time))
         ).all()
 
@@ -665,25 +667,25 @@ class Project(db.Model):
         project_stats = ProjectStatsDTO()
         project_stats.project_id = self.id
         project_stats.area = (
-            db.session.query(func.ST_Area(Project.geometry, True))
+            session.query(func.ST_Area(Project.geometry, True))
             .where(Project.id == self.id)
             .first()[0]
             / 1000000
         )
 
         project_stats.total_mappers = (
-            db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
+            session.query(User).filter(User.projects_mapped.any(self.id)).count()
         )
         project_stats.total_tasks = self.total_tasks
         project_stats.total_comments = (
-            db.session.query(ProjectChat)
+            session.query(ProjectChat)
             .filter(ProjectChat.project_id == self.id)
             .count()
         )
         project_stats.percent_mapped = self.calculate_tasks_percent("mapped")
         project_stats.percent_validated = self.calculate_tasks_percent("validated")
         project_stats.percent_bad_imagery = self.calculate_tasks_percent("bad_imagery")
-        centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
+        centroid_geojson = session.scalar(self.centroid.ST_AsGeoJSON())
         project_stats.aoi_centroid = geojson.loads(centroid_geojson)
         project_stats.total_time_spent = 0
         project_stats.total_mapping_time = 0
@@ -692,7 +694,7 @@ class Project(db.Model):
         project_stats.average_validation_time = 0
 
         total_mapping_time, total_mapping_tasks = (
-            db.session.query(
+            session.query(
                 func.sum(
                     cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
                 ),
@@ -717,7 +719,7 @@ class Project(db.Model):
             project_stats.total_time_spent += total_mapping_time
 
         total_validation_time, total_validation_tasks = (
-            db.session.query(
+            session.query(
                 func.sum(
                     cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
                 ),
@@ -751,7 +753,7 @@ class Project(db.Model):
         # Check that averages are non-zero.
         if len(actions) != 0:
             zoom_levels = (
-                Task.query.with_entities(Task.zoom.distinct())
+                session.query(Task).with_entities(Task.zoom.distinct())
                 .filter(Task.project_id == self.id)
                 .all()
             )
@@ -762,7 +764,7 @@ class Project(db.Model):
         if None in zoom_levels:
             is_square = False
         sq = (
-            TaskHistory.query.with_entities(
+            session.query(TaskHistory).with_entities(
                 Task.zoom,
                 TaskHistory.action,
                 (
@@ -780,7 +782,7 @@ class Project(db.Model):
         sq = sq.subquery()
 
         nz = (
-            db.session.query(sq.c.zoom, sq.c.action, sq.c.ts)
+            session.query(sq.c.zoom, sq.c.action, sq.c.ts)
             .filter(sq.c.ts > datetime.time(0))
             .limit(10000)
             .subquery()
@@ -788,7 +790,7 @@ class Project(db.Model):
 
         if project_stats.average_mapping_time <= 0:
             mapped_avg = (
-                db.session.query(nz.c.zoom, (func.avg(nz.c.ts)).label("avg"))
+                session.query(nz.c.zoom, (func.avg(nz.c.ts)).label("avg"))
                 .filter(nz.c.action == TaskStatus.LOCKED_FOR_MAPPING.name)
                 .group_by(nz.c.zoom)
                 .all()
@@ -801,7 +803,7 @@ class Project(db.Model):
 
         if project_stats.average_validation_time <= 0:
             val_avg = (
-                db.session.query(nz.c.zoom, (func.avg(nz.c.ts)).label("avg"))
+                session.query(nz.c.zoom, (func.avg(nz.c.ts)).label("avg"))
                 .filter(nz.c.action == TaskStatus.LOCKED_FOR_VALIDATION.name)
                 .group_by(nz.c.zoom)
                 .all()
@@ -899,7 +901,7 @@ class Project(db.Model):
                 allowed_users.append(user.username)
             summary.allowed_users = allowed_users
 
-        centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
+        centroid_geojson = session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
         if calculate_completion:
@@ -934,7 +936,7 @@ class Project(db.Model):
     @staticmethod
     def get_project_total_contributions(project_id: int) -> int:
         project_contributors_count = (
-            TaskHistory.query.with_entities(TaskHistory.user_id)
+            session.query(TaskHistory).with_entities(TaskHistory.user_id)
             .filter(
                 TaskHistory.project_id == project_id, TaskHistory.action != "COMMENT"
             )
@@ -945,8 +947,9 @@ class Project(db.Model):
         return project_contributors_count
 
     def get_aoi_geometry_as_geojson(self):
+        from backend.db.database import engine
         """Helper which returns the AOI geometry as a geojson object"""
-        with db.engine.connect() as conn:
+        with engine.connect() as conn:
             aoi_geojson = conn.execute(self.geometry.ST_AsGeoJSON()).scalar()
         return geojson.loads(aoi_geojson)
 
@@ -970,7 +973,7 @@ class Project(db.Model):
         """Get count of Locked tasks as a proxy for users who are currently active on the project"""
 
         return (
-            Task.query.filter(
+            session.query(Task).filter(
                 Task.task_status.in_(
                     (
                         TaskStatus.LOCKED_FOR_MAPPING.value,
@@ -1072,9 +1075,10 @@ class Project(db.Model):
 
             base_dto.priority_areas = geojson_areas
 
-        base_dto.interests = [
-            InterestDTO(dict(id=i.id, name=i.name)) for i in self.interests
-        ]
+        # base_dto.interests = [
+        #     InterestDTO(dict(id=i.id, name=i.name)) for i in self.interests
+        # ]
+        base_dto.interests = []
 
         return self, base_dto
 
@@ -1083,24 +1087,24 @@ class Project(db.Model):
     ) -> Optional[ProjectDTO]:
         """Creates a Project DTO suitable for transmitting to mapper users"""
         project, project_dto = self._get_project_and_base_dto()
-        if abbrev is False:
-            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(
-                self.id, None
-            )
-        else:
-            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection_no_geom(
-                self.id
-            )
-        project_dto.project_info = ProjectInfo.get_dto_for_locale(
-            self.id, locale, project.default_locale
-        )
-        if project.organisation_id:
-            project_dto.organisation = project.organisation.id
-            project_dto.organisation_name = project.organisation.name
-            project_dto.organisation_logo = project.organisation.logo
-            project_dto.organisation_slug = project.organisation.slug
+        # if abbrev is False:
+        #     project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(
+        #         self.id, None
+        #     )
+        # else:
+        #     project_dto.tasks = Task.get_tasks_as_geojson_feature_collection_no_geom(
+        #         self.id
+        #     )
+        # project_dto.project_info = ProjectInfo.get_dto_for_locale(
+        #     self.id, locale, project.default_locale
+        # )
+        # if project.organisation_id:
+        #     project_dto.organisation = project.organisation.id
+        #     project_dto.organisation_name = project.organisation.name
+        #     project_dto.organisation_logo = project.organisation.logo
+        #     project_dto.organisation_slug = project.organisation.slug
 
-        project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(self.id)
+        # project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(self.id)
         return project_dto
 
     def tasks_as_geojson(
@@ -1116,7 +1120,7 @@ class Project(db.Model):
     @staticmethod
     def get_all_countries():
         query = (
-            db.session.query(func.unnest(Project.country).label("country"))
+            session.query(func.unnest(Project.country).label("country"))
             .distinct()
             .order_by("country")
             .all()
@@ -1170,12 +1174,12 @@ class Project(db.Model):
         self.interests = []
         objs = [Interest.get_by_id(i) for i in interests_ids]
         self.interests.extend(objs)
-        db.session.commit()
+        session.commit()
 
     @staticmethod
     def get_project_campaigns(project_id: int):
         query = (
-            Campaign.query.join(campaign_projects)
+            session.query(Campaign).join(campaign_projects)
             .filter(campaign_projects.c.project_id == project_id)
             .all()
         )
@@ -1191,4 +1195,4 @@ class Project(db.Model):
 
 
 # Add index on project geometry
-db.Index("idx_geometry", Project.geometry, postgresql_using="gist")
+Index("idx_geometry", Project.geometry, postgresql_using="gist")

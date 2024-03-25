@@ -35,6 +35,7 @@ from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
 from backend.services.campaign_service import CampaignService
+from backend.db.database import session
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
@@ -47,7 +48,6 @@ class StatsService:
         last_state: TaskStatus,
         new_state: TaskStatus,
         action="change",
-        local_session=None,
     ):
         """Update stats when a task has had a state change"""
 
@@ -63,9 +63,7 @@ class StatsService:
         project, user = StatsService._update_tasks_stats(
             project, user, last_state, new_state, action
         )
-        UserService.upsert_mapped_projects(
-            user_id, project_id, local_session=local_session
-        )
+        UserService.upsert_mapped_projects(user_id, project_id)
         project.last_updated = timestamp()
 
         # Transaction will be saved when task is saved
@@ -126,7 +124,7 @@ class StatsService:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
         results = (
-            db.session.query(
+            session.query(
                 TaskHistory.id,
                 TaskHistory.task_id,
                 TaskHistory.action,
@@ -166,7 +164,7 @@ class StatsService:
         )
 
         query = (
-            TaskHistory.query.with_entities(
+            session.query(TaskHistory).with_entities(
                 TaskHistory.project_id.label("id"), rate_func.label("rate")
             )
             .filter(TaskHistory.action_date >= date.today() - timedelta(days=90))
@@ -201,7 +199,7 @@ class StatsService:
     def get_last_activity(project_id: int) -> ProjectLastActivityDTO:
         """Gets the last activity for a project's tasks"""
         sq = (
-            TaskHistory.query.with_entities(
+            session.query(TaskHistory).with_entities(
                 TaskHistory.task_id,
                 TaskHistory.action_date,
                 TaskHistory.user_id,
@@ -214,12 +212,12 @@ class StatsService:
         )
 
         sq_statuses = (
-            Task.query.with_entities(Task.id, Task.task_status)
+            session.query(Task).with_entities(Task.id, Task.task_status)
             .filter(Task.project_id == project_id)
             .subquery()
         )
         results = (
-            db.session.query(
+            session.query(
                 sq_statuses.c.id,
                 sq.c.action_date,
                 sq_statuses.c.task_status,
@@ -251,7 +249,7 @@ class StatsService:
         """Get all user contributions on a project"""
 
         mapped_stmt = (
-            Task.query.with_entities(
+            session.query(Task).with_entities(
                 Task.mapped_by,
                 func.count(Task.mapped_by).label("count"),
                 func.array_agg(Task.id).label("task_ids"),
@@ -262,7 +260,7 @@ class StatsService:
             .subquery()
         )
         badimagery_stmt = (
-            Task.query.with_entities(
+            session.query(Task).with_entities(
                 Task.mapped_by,
                 func.count(Task.mapped_by).label("count"),
                 func.array_agg(Task.id).label("task_ids"),
@@ -273,7 +271,7 @@ class StatsService:
             .subquery()
         )
         validated_stmt = (
-            Task.query.with_entities(
+            session.query(Task).with_entities(
                 Task.validated_by,
                 func.count(Task.validated_by).label("count"),
                 func.array_agg(Task.id).label("task_ids"),
@@ -284,7 +282,7 @@ class StatsService:
         )
 
         project_contributions = (
-            TaskHistory.query.with_entities(TaskHistory.user_id)
+            session.query(TaskHistory).with_entities(TaskHistory.user_id)
             .filter(
                 TaskHistory.project_id == project_id, TaskHistory.action != "COMMENT"
             )
@@ -293,7 +291,7 @@ class StatsService:
         )
 
         results = (
-            db.session.query(
+            session.query(
                 User.id,
                 User.username,
                 User.name,
@@ -367,17 +365,17 @@ class StatsService:
     def get_homepage_stats(abbrev=True) -> HomePageStatsDTO:
         """Get overall TM stats to give community a feel for progress that's being made"""
         dto = HomePageStatsDTO()
-        dto.total_projects = Project.query.with_entities(
+        dto.total_projects = session.query(Project).with_entities(
             func.count(Project.id)
         ).scalar()
         dto.mappers_online = (
-            Task.query.with_entities(func.count(Task.locked_by.distinct()))
+            session.query(Task).with_entities(func.count(Task.locked_by.distinct()))
             .filter(Task.locked_by.isnot(None))
             .scalar()
         )
-        dto.total_mappers = User.query.with_entities(func.count(User.id)).scalar()
+        dto.total_mappers = session.query(User).with_entities(func.count(User.id)).scalar()
         dto.tasks_mapped = (
-            Task.query.with_entities(func.count())
+            session.query(Task).with_entities(func.count())
             .filter(
                 Task.task_status.in_(
                     (TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value)
@@ -387,20 +385,20 @@ class StatsService:
         )
         if not abbrev:
             dto.total_validators = (
-                Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value)
+                session.query(Task).filter(Task.task_status == TaskStatus.VALIDATED.value)
                 .distinct(Task.validated_by)
                 .count()
             )
-            dto.tasks_validated = Task.query.filter(
+            dto.tasks_validated = session.query(Task).filter(
                 Task.task_status == TaskStatus.VALIDATED.value
             ).count()
 
-            dto.total_area = Project.query.with_entities(
+            dto.total_area = session.query(Project).with_entities(
                 func.coalesce(func.sum(func.ST_Area(Project.geometry, True) / 1000000))
             ).scalar()
 
             dto.total_mapped_area = (
-                Task.query.with_entities(
+                session.query(Task).with_entities(
                     func.coalesce(func.sum(func.ST_Area(Task.geometry, True) / 1000000))
                 )
                 .filter(Task.task_status == TaskStatus.MAPPED.value)
@@ -408,7 +406,7 @@ class StatsService:
             )
 
             dto.total_validated_area = (
-                Task.query.with_entities(
+                session.query(Task).with_entities(
                     func.coalesce(func.sum(func.ST_Area(Task.geometry, True) / 1000000))
                 )
                 .filter(Task.task_status == TaskStatus.VALIDATED.value)
@@ -431,12 +429,12 @@ class StatsService:
             )
 
             subquery = (
-                db.session.query(campaign_projects.c.project_id.distinct())
+                session.query(campaign_projects.c.project_id.distinct())
                 .order_by(campaign_projects.c.project_id)
                 .subquery()
             )
             no_campaign_count = (
-                Project.query.with_entities(func.count())
+                session.query(Project).with_entities(func.count())
                 .filter(~Project.id.in_(subquery))
                 .scalar()
             )
@@ -452,14 +450,14 @@ class StatsService:
             ).scalar()
 
             linked_orgs_count = (
-                db.session.query(Organisation.name, func.count(Project.organisation_id))
+                session.query(Organisation.name, func.count(Project.organisation_id))
                 .join(Project.organisation)
                 .group_by(Organisation.id)
                 .all()
             )
 
             subquery = (
-                db.session.query(Project.organisation_id.distinct())
+                session.query(Project.organisation_id.distinct())
                 .order_by(Project.organisation_id)
                 .subquery()
             )
@@ -500,14 +498,14 @@ class StatsService:
 
     @staticmethod
     def update_all_project_stats():
-        projects = db.session.query(Project.id)
+        projects = session.query(Project.id)
         for project_id in projects.all():
             StatsService.update_project_stats(project_id)
 
     @staticmethod
     def update_project_stats(project_id: int):
         project = ProjectService.get_project_by_id(project_id)
-        tasks = Task.query.filter(Task.project_id == project_id)
+        tasks = session.query(Task).filter(Task.project_id == project_id)
 
         project.total_tasks = tasks.count()
         project.tasks_mapped = tasks.filter(
@@ -523,7 +521,7 @@ class StatsService:
 
     @staticmethod
     def get_all_users_statistics(start_date: date, end_date: date):
-        users = User.query.filter(
+        users = session.query(User).filter(
             User.date_registered >= start_date,
             User.date_registered <= end_date,
         )
@@ -578,7 +576,7 @@ class StatsService:
         """Creates tasks stats for a period using the TaskStatsDTO"""
 
         query = (
-            db.session.query(
+            session.query(
                 TaskHistory.task_id,
                 TaskHistory.project_id,
                 TaskHistory.action_text,
@@ -630,7 +628,7 @@ class StatsService:
             query = query.filter(TaskHistory.project_id.in_(project_id))
         if country:
             # Unnest country column array.
-            sq = Project.query.with_entities(
+            sq = session.query(Project).with_entities(
                 Project.id, func.unnest(Project.country).label("country")
             ).subquery()
 
@@ -640,14 +638,14 @@ class StatsService:
 
         query = query.subquery()
 
-        date_query = db.session.query(
+        date_query = session.query(
             func.DATE(
                 func.generate_series(start_date, end_date, timedelta(days=1))
             ).label("d_day")
         ).subquery()
 
         grouped_dates = (
-            db.session.query(
+            session.query(
                 date_query.c.d_day,
                 query.c.action_text,
                 func.count(query.c.action_text).label("cnt"),
@@ -658,7 +656,7 @@ class StatsService:
         ).subquery()
 
         mapped = (
-            db.session.query(
+            session.query(
                 grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
             )
             .select_from(grouped_dates)
@@ -666,7 +664,7 @@ class StatsService:
             .subquery()
         )
         validated = (
-            db.session.query(
+            session.query(
                 grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
             )
             .select_from(grouped_dates)
@@ -674,7 +672,7 @@ class StatsService:
             .subquery()
         )
         badimagery = (
-            db.session.query(
+            session.query(
                 grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
             )
             .select_from(grouped_dates)
@@ -683,7 +681,7 @@ class StatsService:
         )
 
         result = (
-            db.session.query(
+            session.query(
                 func.to_char(grouped_dates.c.d_day, "YYYY-MM-DD"),
                 func.coalesce(mapped.c.cnt, 0).label("mapped"),
                 func.coalesce(validated.c.cnt, 0).label("validated"),

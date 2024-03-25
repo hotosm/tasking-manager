@@ -1,7 +1,8 @@
 from sqlalchemy.sql.expression import false
 
-from backend import db
-from flask import current_app
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, BigInteger, Boolean, ForeignKeyConstraint
+from sqlalchemy.orm import relationship
+from loguru import logger
 from enum import Enum
 
 from backend.exceptions import NotFound
@@ -10,7 +11,7 @@ from backend.models.postgis.user import User
 from backend.models.postgis.task import Task, TaskHistory, TaskAction
 from backend.models.postgis.project import Project
 from backend.models.postgis.utils import timestamp
-
+from backend.db.database import Base, session
 
 class MessageType(Enum):
     """Describes the various kinds of messages a user might receive"""
@@ -30,33 +31,33 @@ class MessageType(Enum):
     TEAM_BROADCAST = 11  # Broadcast message from a team manager
 
 
-class Message(db.Model):
+class Message(Base):
     """Describes an individual Message a user can send"""
 
     __tablename__ = "messages"
 
     __table_args__ = (
-        db.ForeignKeyConstraint(
+        ForeignKeyConstraint(
             ["task_id", "project_id"], ["tasks.id", "tasks.project_id"]
         ),
     )
 
-    id = db.Column(db.Integer, primary_key=True)
-    message = db.Column(db.String)
-    subject = db.Column(db.String)
-    from_user_id = db.Column(db.BigInteger, db.ForeignKey("users.id"))
-    to_user_id = db.Column(db.BigInteger, db.ForeignKey("users.id"), index=True)
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), index=True)
-    task_id = db.Column(db.Integer, index=True)
-    message_type = db.Column(db.Integer, index=True)
-    date = db.Column(db.DateTime, default=timestamp)
-    read = db.Column(db.Boolean, default=False)
+    id = Column(Integer, primary_key=True)
+    message = Column(String)
+    subject = Column(String)
+    from_user_id = Column(BigInteger, ForeignKey("users.id"))
+    to_user_id = Column(BigInteger, ForeignKey("users.id"), index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), index=True)
+    task_id = Column(Integer, index=True)
+    message_type = Column(Integer, index=True)
+    date = Column(DateTime, default=timestamp)
+    read = Column(Boolean, default=False)
 
     # Relationships
-    from_user = db.relationship(User, foreign_keys=[from_user_id])
-    to_user = db.relationship(User, foreign_keys=[to_user_id], backref="messages")
-    project = db.relationship(Project, foreign_keys=[project_id], backref="messages")
-    task = db.relationship(
+    from_user = relationship(User, foreign_keys=[from_user_id])
+    to_user = relationship(User, foreign_keys=[to_user_id], backref="messages")
+    project = relationship(Project, foreign_keys=[project_id], backref="messages")
+    task = relationship(
         Task,
         primaryjoin="and_(Task.id == foreign(Message.task_id), Task.project_id == Message.project_id)",
         backref="messages",
@@ -100,24 +101,24 @@ class Message(db.Model):
 
     def add_message(self):
         """Add message into current transaction - DO NOT COMMIT HERE AS MESSAGES ARE PART OF LARGER TRANSACTIONS"""
-        current_app.logger.debug("Adding message to session")
-        db.session.add(self)
+        logger.debug("Adding message to session")
+        session.add(self)
 
     def save(self):
         """Save"""
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     @staticmethod
     def get_all_contributors(project_id: int):
         """Get all contributors to a project"""
 
         contributors = (
-            db.session.query(Task.mapped_by)
+            session.query(Task.mapped_by)
             .filter(Task.project_id == project_id)
             .filter(Task.mapped_by.isnot(None))
             .union(
-                db.session.query(Task.validated_by)
+                session.query(Task.validated_by)
                 .filter(Task.project_id == project_id)
                 .filter(Task.validated_by.isnot(None))
             )
@@ -143,7 +144,7 @@ class Message(db.Model):
     def mark_as_read(self):
         """Mark the message in scope as Read"""
         self.read = True
-        db.session.commit()
+        session.commit()
 
     @staticmethod
     def get_unread_message_count(user_id: int):
@@ -175,7 +176,7 @@ class Message(db.Model):
         Message.query.filter(
             Message.to_user_id == user_id, Message.id.in_(message_ids)
         ).delete(synchronize_session=False)
-        db.session.commit()
+        session.commit()
 
     @staticmethod
     def delete_all_messages(user_id: int, message_type_filters: list = None):
@@ -189,12 +190,12 @@ class Message(db.Model):
         if message_type_filters:
             query = query.filter(Message.message_type.in_(message_type_filters))
         query.delete(synchronize_session=False)
-        db.session.commit()
+        session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     @staticmethod
     def mark_multiple_messages_read(message_ids: list, user_id: int):
@@ -206,7 +207,7 @@ class Message(db.Model):
         Message.query.filter(
             Message.to_user_id == user_id, Message.id.in_(message_ids)
         ).update({Message.read: True}, synchronize_session=False)
-        db.session.commit()
+        session.commit()
 
     @staticmethod
     def mark_all_messages_read(user_id: int, message_type_filters: list = None):
@@ -222,4 +223,4 @@ class Message(db.Model):
         if message_type_filters:
             query = query.filter(Message.message_type.in_(message_type_filters))
         query.update({Message.read: True}, synchronize_session=False)
-        db.session.commit()
+        session.commit()

@@ -1,15 +1,5 @@
-from schematics import Model
-from schematics.exceptions import ValidationError
-from schematics.types import (
-    StringType,
-    BaseType,
-    IntType,
-    BooleanType,
-    FloatType,
-    UTCDateTimeType,
-    DateType,
-)
-from schematics.types.compound import ListType, ModelType
+# from schematics import Model
+# from schematics.exceptions import ValidationError
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.dtos.team_dto import ProjectTeamDTO
@@ -25,6 +15,11 @@ from backend.models.postgis.statuses import (
     ProjectDifficulty,
 )
 from backend.models.dtos.campaign_dto import CampaignDTO
+
+from pydantic import BaseModel, Field, ValidationError
+from typing import List, Optional
+from datetime import datetime
+from typing_extensions import Annotated
 
 
 def is_known_project_status(value):
@@ -134,202 +129,143 @@ def is_known_project_difficulty(value):
         )
 
 
-class DraftProjectDTO(Model):
+class DraftProjectDTO(BaseModel):
     """Describes JSON model used for creating draft project"""
 
-    cloneFromProjectId = IntType(serialized_name="cloneFromProjectId")
-    project_name = StringType(required=True, serialized_name="projectName")
-    organisation = IntType(required=True)
-    area_of_interest = BaseType(required=True, serialized_name="areaOfInterest")
-    tasks = BaseType(required=False)
-    has_arbitrary_tasks = BooleanType(required=True, serialized_name="arbitraryTasks")
-    user_id = IntType(required=True)
+    cloneFromProjectId: int = Field(alias="cloneFromProjectId")
+    project_name: str = Field(required=True, alias="projectName")
+    organisation: int = Field(required=True)
+    area_of_interest: dict = Field(required=True, alias="areaOfInterest")
+    tasks: Optional[dict]
+    has_arbitrary_tasks: bool = Field(required=True, alias="arbitraryTasks")
+    user_id: int = Field(required=True)
 
 
-class ProjectInfoDTO(Model):
+class ProjectInfoDTO(BaseModel):
     """Contains the localized project info"""
 
-    locale = StringType(required=True)
-    name = StringType(default="")
-    short_description = StringType(serialized_name="shortDescription", default="")
-    description = StringType(default="")
-    instructions = StringType(default="")
-    per_task_instructions = StringType(
-        default="", serialized_name="perTaskInstructions"
-    )
+    locale: str = None
+    name: str = ""
+    short_description: str = ""
+    description: str = ""
+    instructions: str = ""
+    per_task_instructions: str = ""
 
-
-class CustomEditorDTO(Model):
+class CustomEditorDTO(BaseModel):
     """DTO to define a custom editor"""
 
-    name = StringType(required=True)
-    description = StringType()
-    url = StringType(required=True)
+    name: str = Field(required=True)
+    description: Optional[str]
+    url: str = Field(required=True)
 
-
-class ProjectDTO(Model):
+class ProjectDTO(BaseModel):
     """Describes JSON model for a tasking manager project"""
+    
+    project_id: Optional[int] = Field(alias="projectId", default=None)
+    project_status: Optional[str] = None
+    project_priority: Optional[str] = None
+    area_of_interest: Optional[dict] = Field(alias="areaOfInterest", default={})
+    aoi_bbox: List[float] = Field(alias="aoiBBOX", default=[])
+    tasks: Optional[dict] = None  # Replace with the actual type for tasks
+    default_locale: Optional[str] = Field(alias="defaultLocale", default=None)
+    project_info: Optional[ProjectInfoDTO] = None
+    project_info_locales: List[ProjectInfoDTO] = Field(alias="projectInfoLocales", default=[])
+    difficulty: Optional[str] = None
+    mapping_permission: Optional[str] = Field(alias="mappingPermission", default=None)
+    validation_permission: Optional[str] = Field(alias="validationPermission", default=None)
+    enforce_random_task_selection: Optional[bool] = Field(alias="enforceRandomTaskSelection", default=False)
+    private: Optional[bool] = None
+    changeset_comment: Optional[str] = Field(alias="changesetComment", default=None)
+    osmcha_filter_id: Optional[str] = Field(alias="osmchaFilterId", default=None)
+    due_date: Optional[str] = Field(alias="dueDate", default=None)
+    imagery: Optional[str] = None
+    josm_preset: Optional[str] = Field(alias="josmPreset", default=None)
+    id_presets: Optional[List[str]] = Field(alias="idPresets", default=[])
+    extra_id_params: Optional[str] = Field(alias="extraIdParams", default=None)
+    rapid_power_user: Optional[bool] = Field(alias="rapidPowerUser", default=False)
+    mapping_types: List[str] = Field(alias="mappingTypes", default=[], validators=[is_known_mapping_type])
+    campaigns: List[CampaignDTO] = Field(default=[])
+    organisation: Optional[int] = None
+    organisation_name: Optional[str] = Field(alias="organisationName", default=None)
+    organisation_slug: Optional[str] = Field(alias="organisationSlug", default=None)
+    organisation_logo: Optional[str] = Field(alias="organisationLogo", default=None)
+    country_tag: List[str] = Field(alias="countryTag", default=[])
 
-    project_id = IntType(serialized_name="projectId")
-    project_status = StringType(
-        required=True,
-        serialized_name="status",
-        validators=[is_known_project_status],
-        serialize_when_none=False,
-    )
-    project_priority = StringType(
-        required=True,
-        serialized_name="projectPriority",
-        validators=[is_known_project_priority],
-        serialize_when_none=False,
-    )
-    area_of_interest = BaseType(serialized_name="areaOfInterest")
-    aoi_bbox = ListType(FloatType, serialized_name="aoiBBOX")
-    tasks = BaseType(serialize_when_none=False)
-    default_locale = StringType(
-        required=True, serialized_name="defaultLocale", serialize_when_none=False
-    )
-    project_info = ModelType(
-        ProjectInfoDTO, serialized_name="projectInfo", serialize_when_none=False
-    )
-    project_info_locales = ListType(
-        ModelType(ProjectInfoDTO),
-        serialized_name="projectInfoLocales",
-        serialize_when_none=False,
-    )
-    difficulty = StringType(
-        required=True,
-        serialized_name="difficulty",
-        validators=[is_known_project_difficulty],
-    )
-    mapping_permission = StringType(
-        required=True,
-        serialized_name="mappingPermission",
-        validators=[is_known_mapping_permission],
-    )
-    validation_permission = StringType(
-        required=True,
-        serialized_name="validationPermission",
-        validators=[is_known_validation_permission],
-    )
-    enforce_random_task_selection = BooleanType(
-        required=False, default=False, serialized_name="enforceRandomTaskSelection"
-    )
-
-    private = BooleanType(required=True)
-    changeset_comment = StringType(serialized_name="changesetComment")
-    osmcha_filter_id = StringType(serialized_name="osmchaFilterId")
-    due_date = UTCDateTimeType(serialized_name="dueDate")
-    imagery = StringType()
-    josm_preset = StringType(serialized_name="josmPreset", serialize_when_none=False)
-    id_presets = ListType(StringType, serialized_name="idPresets", default=[])
-    extra_id_params = StringType(serialized_name="extraIdParams")
-    rapid_power_user = BooleanType(
-        serialized_name="rapidPowerUser", default=False, required=False
-    )
-    mapping_types = ListType(
-        StringType,
-        serialized_name="mappingTypes",
-        default=[],
-        validators=[is_known_mapping_type],
-    )
-    campaigns = ListType(ModelType(CampaignDTO), default=[])
-    organisation = IntType(required=True)
-    organisation_name = StringType(serialized_name="organisationName")
-    organisation_slug = StringType(serialized_name="organisationSlug")
-    organisation_logo = StringType(serialized_name="organisationLogo")
-    country_tag = ListType(StringType, serialized_name="countryTag")
-
-    license_id = IntType(serialized_name="licenseId")
-    allowed_usernames = ListType(
-        StringType(), serialized_name="allowedUsernames", default=[]
-    )
-    priority_areas = BaseType(serialized_name="priorityAreas")
-    created = UTCDateTimeType()
-    last_updated = UTCDateTimeType(serialized_name="lastUpdated")
-    author = StringType()
-    active_mappers = IntType(serialized_name="activeMappers")
-    percent_mapped = IntType(serialized_name="percentMapped")
-    percent_validated = IntType(serialized_name="percentValidated")
-    percent_bad_imagery = IntType(serialized_name="percentBadImagery")
-    task_creation_mode = StringType(
-        required=True,
-        serialized_name="taskCreationMode",
-        validators=[is_known_task_creation_mode],
-        serialize_when_none=False,
-    )
-    project_teams = ListType(ModelType(ProjectTeamDTO), serialized_name="teams")
-    mapping_editors = ListType(
-        StringType,
-        min_size=1,
-        required=True,
-        serialized_name="mappingEditors",
-        validators=[is_known_editor],
-    )
-    validation_editors = ListType(
-        StringType,
-        min_size=1,
-        required=True,
-        serialized_name="validationEditors",
-        validators=[is_known_editor],
-    )
-    custom_editor = ModelType(
-        CustomEditorDTO, serialized_name="customEditor", serialize_when_none=False
-    )
-    interests = ListType(ModelType(InterestDTO))
+    license_id: Optional[int] = Field(alias="licenseId", default=None)
+    allowed_usernames: List[str] = Field(alias="allowedUsernames", default=[])
+    priority_areas: Optional[dict] = Field(alias="priorityAreas", default={})
+    created: Optional[str] = None
+    last_updated: Optional[str] = Field(alias="lastUpdated", default=None)
+    author: Optional[str] = None
+    active_mappers: Optional[int] = Field(alias="activeMappers", default=None)
+    percent_mapped: Optional[int] = Field(alias="percentMapped", default=None)
+    percent_validated: Optional[int] = Field(alias="percentValidated", default=None)
+    percent_bad_imagery: Optional[int] = Field(alias="percentBadImagery", default=None)
+    task_creation_mode: Optional[str] = Field(alias="taskCreationMode", validators=[is_known_task_creation_mode], default=None)
+    project_teams: List[ProjectTeamDTO] = Field(alias="teams", default=[])
+    mapping_editors: Optional[List[str]] = Field(alias="mappingEditors", min_items=1, validators=[is_known_editor], default=[])
+    validation_editors: Optional[List[str]] = Field(alias="validationEditors", min_items=1, validators=[is_known_editor], default=[])
+    custom_editor: Optional[CustomEditorDTO] = Field(alias="customEditor", default=None)
+    interests: Optional[List[InterestDTO]] = None
 
 
-class ProjectFavoriteDTO(Model):
+class ProjectFavoriteDTO(BaseModel):
     """DTO used to favorite a project"""
 
-    project_id = IntType(required=True)
-    user_id = IntType(required=True)
+    project_id: int
+    user_id: int
 
 
-class ProjectFavoritesDTO(Model):
-    """DTO to retrieve favorited projects"""
+# class ProjectFavoritesDTO(Model):
+#     """DTO to retrieve favorited projects"""
 
-    def __init__(self):
-        super().__init__()
-        self.favorited_projects = []
+#     def __init__(self):
+#         super().__init__()
+#         self.favorited_projects = []
 
-    favorited_projects = ListType(
-        ModelType(ProjectDTO), serialized_name="favoritedProjects"
-    )
+#     favorited_projects = ListType(
+#         ModelType(ProjectDTO), serialized_name="favoritedProjects"
+#     )
+class ProjectFavoritesDTO(BaseModel):
+    def __init__(self, favorited_projects: List[ProjectDTO] = None, **kwargs):
+        super().__init__(**kwargs)
+        self.favorited_projects = favorited_projects or []
+
+    favorited_projects: List[ProjectDTO] = Field(default=[], alias="favoritedProjects")
 
 
-class ProjectSearchDTO(Model):
+class ProjectSearchDTO(BaseModel):
     """Describes the criteria users use to filter active projects"""
 
-    preferred_locale = StringType(default="en")
-    difficulty = StringType(validators=[is_known_project_difficulty])
-    action = StringType()
-    mapping_types = ListType(StringType, validators=[is_known_mapping_type])
-    mapping_types_exact = BooleanType(required=False)
-    project_statuses = ListType(StringType, validators=[is_known_project_status])
-    organisation_name = StringType()
-    organisation_id = IntType()
-    team_id = IntType()
-    campaign = StringType()
-    order_by = StringType()
-    order_by_type = StringType()
-    country = StringType()
-    page = IntType(required=True)
-    text_search = StringType()
-    mapping_editors = ListType(StringType, validators=[is_known_editor])
-    validation_editors = ListType(StringType, validators=[is_known_editor])
-    teams = ListType(StringType())
-    interests = ListType(IntType())
-    created_by = IntType(required=False)
-    mapped_by = IntType(required=False)
-    favorited_by = IntType(required=False)
-    managed_by = IntType(required=False)
-    based_on_user_interests = IntType(required=False)
-    omit_map_results = BooleanType(required=False)
-    last_updated_lte = StringType(required=False)
-    last_updated_gte = StringType(required=False)
-    created_lte = StringType(required=False)
-    created_gte = StringType(required=False)
+    preferred_locale: Optional[str] = "en"
+    difficulty: Optional[str] = Field(None, validators=[is_known_project_difficulty])
+    action: Optional[str] = None
+    mapping_types: List[str] = Field(None, validators=[is_known_mapping_type])
+    mapping_types_exact: Optional[bool] = None
+    project_statuses: List[str] = Field(None, validators=[is_known_project_status])
+    organisation_name: Optional[str] = None
+    organisation_id: Optional[int] = None
+    team_id: Optional[int] = None
+    campaign: Optional[str] = None
+    order_by: Optional[str] = None
+    order_by_type: Optional[str] = None
+    country: Optional[str] = None
+    page: Optional[int] = None
+    text_search: Optional[str] = None
+    mapping_editors: Optional[List] = Field(None, validators=[is_known_editor])
+    validation_editors: Optional[List] = Field(None, validators=[is_known_editor])
+    teams: List[str] = None
+    interests: List[int] = None
+    created_by: Optional[int] = None
+    mapped_by: Optional[int] = None
+    favorited_by: Optional[int] = None
+    managed_by: Optional[int] = None
+    based_on_user_interests: Optional[int] = None
+    omit_map_results: Optional[bool] = None
+    last_updated_lte: Optional[str] = None
+    last_updated_gte: Optional[str] = None
+    created_lte: Optional[str] = None
+    created_gte: Optional[str] = None
 
     def __hash__(self):
         """Make object hashable so we can cache user searches"""
@@ -374,50 +310,79 @@ class ProjectSearchDTO(Model):
         )
 
 
-class ProjectSearchBBoxDTO(Model):
-    bbox = ListType(FloatType, required=True, min_size=4, max_size=4)
-    input_srid = IntType(required=True, choices=[4326])
-    preferred_locale = StringType(required=False, default="en")
-    project_author = IntType(required=False, serialized_name="projectAuthor")
+class ProjectSearchBBoxDTO(BaseModel):
+    bbox: List[float] = Field(required=True, min_size=4, max_size=4)
+    input_srid: int = Field(required=True, choices=[4326])
+    preferred_locale: str = Field(required=False, default="en")
+    project_author: int = Field(required=False, alias="projectAuthor")
 
 
-class ListSearchResultDTO(Model):
-    """Describes one search result"""
+# class ListSearchResultDTO(Model):
+#     """Describes one search result"""
 
-    project_id = IntType(required=True, serialized_name="projectId")
-    locale = StringType(required=True)
-    name = StringType(default="")
-    short_description = StringType(serialized_name="shortDescription", default="")
-    difficulty = StringType(required=True, serialized_name="difficulty")
-    priority = StringType(required=True)
-    organisation_name = StringType(serialized_name="organisationName")
-    organisation_logo = StringType(serialized_name="organisationLogo")
-    campaigns = ListType(ModelType(CampaignDTO), default=[])
-    percent_mapped = IntType(serialized_name="percentMapped")
-    percent_validated = IntType(serialized_name="percentValidated")
-    status = StringType(serialized_name="status")
-    active_mappers = IntType(serialized_name="activeMappers")
-    last_updated = UTCDateTimeType(serialized_name="lastUpdated")
-    due_date = UTCDateTimeType(serialized_name="dueDate")
-    total_contributors = IntType(serialized_name="totalContributors")
-    country = StringType(serialize_when_none=False)
+#     project_id = IntType(required=True, serialized_name="projectId")
+#     locale = StringType(required=True)
+#     name = StringType(default="")
+#     short_description = StringType(serialized_name="shortDescription", default="")
+#     difficulty = StringType(required=True, serialized_name="difficulty")
+#     priority = StringType(required=True)
+#     organisation_name = StringType(serialized_name="organisationName")
+#     organisation_logo = StringType(serialized_name="organisationLogo")
+#     campaigns = ListType(ModelType(CampaignDTO), default=[])
+#     percent_mapped = IntType(serialized_name="percentMapped")
+#     percent_validated = IntType(serialized_name="percentValidated")
+#     status = StringType(serialized_name="status")
+#     active_mappers = IntType(serialized_name="activeMappers")
+#     last_updated = UTCDateTimeType(serialized_name="lastUpdated")
+#     due_date = UTCDateTimeType(serialized_name="dueDate")
+#     total_contributors = IntType(serialized_name="totalContributors")
+#     country = StringType(serialize_when_none=False)
+class ListSearchResultDTO(BaseModel):
+    project_id: Optional[int] = Field(alias="projectId", default=None)
+    locale: Optional[str] = None
+    name: Optional[str] = Field(default="")
+    short_description: str = Field(default="", alias="shortDescription")
+    difficulty: Optional[str] = None
+    priority: Optional[str] = None
+    organisation_name: Optional[str] = Field(alias="organisationName", default=None)
+    organisation_logo: Optional[str] = Field(alias="organisationLogo", default=None)
+    campaigns: Optional[List[CampaignDTO]] = Field(default=[])
+    percent_mapped: Optional[int] = Field(alias="percentMapped", default=None)
+    percent_validated: Optional[int] = Field(alias="percentValidated", default=None)
+    status: Optional[str] = None
+    active_mappers: Optional[int] = Field(alias="activeMappers", default=None)
+    last_updated: Optional[str] = Field(alias="lastUpdated", default=None)
+    due_date: Optional[str] = Field(alias="dueDate", default=None)
+    total_contributors: Optional[int] = Field(alias="totalContributors", default=None)
+    country: Optional[str] = Field(default="", serialize=False)
 
 
-class ProjectSearchResultsDTO(Model):
-    """Contains all results for the search criteria"""
+# class ProjectSearchResultsDTO(Model):
+#     """Contains all results for the search criteria"""
 
-    def __init__(self):
-        """DTO constructor initialise all arrays to empty"""
-        super().__init__()
-        self.results = []
-        self.map_results = []
+#     def __init__(self):
+#         """DTO constructor initialise all arrays to empty"""
+#         super().__init__()
+#         self.results = []
+#         self.map_results = []
 
-    map_results = BaseType(serialized_name="mapResults")
-    results = ListType(ModelType(ListSearchResultDTO))
-    pagination = ModelType(Pagination)
+#     map_results = BaseType(serialized_name="mapResults")
+#     results = ListType(ModelType(ListSearchResultDTO))
+#     pagination = ModelType(Pagination)
+class ProjectSearchResultsDTO(BaseModel):
+    # def __init__(self, results: List[ListSearchResultDTO] = None, map_results: List = None, pagination: Pagination = None, **kwargs):
+    #     """DTO constructor initialise all arrays to empty"""
+    #     super().__init__(**kwargs)
+    #     self.results = results or []
+    #     self.map_results = map_results or []
+    #     self.pagination = pagination or Pagination()
+
+    map_results: Optional[List] = []
+    results: Optional[List[ListSearchResultDTO]] = []
+    pagination: Optional[Pagination] = {}
 
 
-class LockedTasksForUser(Model):
+class LockedTasksForUser(BaseModel):
     """Describes all tasks locked by an individual user"""
 
     def __init__(self):
@@ -425,21 +390,21 @@ class LockedTasksForUser(Model):
         super().__init__()
         self.locked_tasks = []
 
-    locked_tasks = ListType(IntType, serialized_name="lockedTasks")
-    project = IntType(serialized_name="projectId")
-    task_status = StringType(serialized_name="taskStatus")
+    locked_tasks: Optional[List[int]] = Field([], alias="lockedTasks")
+    project: Optional[int] = Field(None, alias="projectId")
+    task_status: Optional[str] = Field(None, alias="taskStatus")
 
 
-class ProjectComment(Model):
+class ProjectComment(BaseModel):
     """Describes an individual user comment on a project task"""
 
-    comment = StringType()
-    comment_date = UTCDateTimeType(serialized_name="commentDate")
-    user_name = StringType(serialized_name="userName")
-    task_id = IntType(serialized_name="taskId")
+    comment: str
+    comment_date: datetime = Field(alias="commentDate")
+    user_name: str = Field(alias="userName")
+    task_id: int = Field(alias="taskId")
 
 
-class ProjectCommentsDTO(Model):
+class ProjectCommentsDTO(BaseModel):
     """Contains all comments on a project"""
 
     def __init__(self):
@@ -447,105 +412,91 @@ class ProjectCommentsDTO(Model):
         super().__init__()
         self.comments = []
 
-    comments = ListType(ModelType(ProjectComment))
+    comments: List[ProjectComment]
 
 
-class ProjectContribDTO(Model):
-    date = DateType(required=True)
-    mapped = IntType(required=True)
-    validated = IntType(required=True)
-    cumulative_mapped = IntType(required=False)
-    cumulative_validated = IntType(required=False)
-    total_tasks = IntType(required=False)
+class ProjectContribDTO(BaseModel):
+    date: datetime
+    mapped: int
+    validated: int
+    cumulative_mapped: Optional[int]
+    cumulative_validated: Optional[int]
+    total_tasks: Optional[int]
 
 
-class ProjectContribsDTO(Model):
+class ProjectContribsDTO(BaseModel):
     """Contains all contributions on a project by day"""
 
-    def __init__(self):
-        """DTO constructor initialise all arrays to empty"""
-        super().__init__()
-        self.mapping = []
-        self.validation = []
-
-    stats = ListType(ModelType(ProjectContribDTO))
+    stats: Optional[List[ProjectContribDTO]] = None
 
 
-class ProjectSummary(Model):
+class ProjectSummary(BaseModel):
     """Model used for PM dashboard"""
 
-    project_id = IntType(required=True, serialized_name="projectId")
-    default_locale = StringType(serialized_name="defaultLocale")
-    author = StringType()
-    created = UTCDateTimeType()
-    due_date = UTCDateTimeType(serialized_name="dueDate")
-    last_updated = UTCDateTimeType(serialized_name="lastUpdated")
-    priority = StringType(serialized_name="projectPriority")
-    campaigns = ListType(ModelType(CampaignDTO), default=[])
-    organisation = IntType()
-    organisation_name = StringType(serialized_name="organisationName")
-    organisation_slug = StringType(serialized_name="organisationSlug")
-    organisation_logo = StringType(serialized_name="organisationLogo")
-    country_tag = ListType(StringType, serialized_name="countryTag")
-    osmcha_filter_id = StringType(serialized_name="osmchaFilterId")
-    mapping_types = ListType(
-        StringType, serialized_name="mappingTypes", validators=[is_known_mapping_type]
-    )
+    project_id: int = Field(required=True, alias="projectId")
+    default_locale: str = Field(alias="defaultLocale")
+    author: str
+    created: datetime
+    due_date: datetime = Field(alias="dueDate")
+    last_updated: datetime = Field(alias="lastUpdated")
+    priority: str = Field(alias="projectPriority")
+    campaigns: List[CampaignDTO] = []
+    organisation: int
+    organisation_name: str = Field(alias="organisationName")
+    organisation_slug: str = Field(alias="organisationSlug")
+    organisation_logo: str = Field(alias="organisationLogo")
+    country_tag: List[str] = Field(alias="countryTag")
+    osmcha_filter_id: str = Field(alias="osmchaFilterId")
+    mapping_types: List[str] = Field(alias="mappingTypes", validators=[is_known_mapping_type])
 
-    changeset_comment = StringType(serialized_name="changesetComment")
-    percent_mapped = IntType(serialized_name="percentMapped")
-    percent_validated = IntType(serialized_name="percentValidated")
-    percent_bad_imagery = IntType(serialized_name="percentBadImagery")
-    aoi_centroid = BaseType(serialized_name="aoiCentroid")
-    difficulty = StringType(serialized_name="difficulty")
-    mapping_permission = IntType(
-        serialized_name="mappingPermission", validators=[is_known_mapping_permission]
+    changeset_comment: str = Field(alias="changesetComment")
+    percent_mapped: int = Field(alias="percentMapped")
+    percent_validated: int = Field(alias="percentValidated")
+    percent_bad_imagery: int = Field(alias="percentBadImagery")
+    aoi_centroid: str = Field(alias="aoiCentroid")
+    difficulty: str = Field(alias="difficulty")
+    mapping_permission: int = Field(
+        alias="mappingPermission", validators=[is_known_mapping_permission]
     )
-    validation_permission = IntType(
-        serialized_name="validationPermission",
+    validation_permission: int = Field(
+        alias="validationPermission",
         validators=[is_known_validation_permission],
     )
-    allowed_usernames = ListType(
-        StringType(), serialized_name="allowedUsernames", default=[]
+    allowed_usernames: List[str] = Field(
+        alias="allowedUsernames", default=[]
     )
-    random_task_selection_enforced = BooleanType(
-        required=False, default=False, serialized_name="enforceRandomTaskSelection"
+    random_task_selection_enforced: bool = Field(
+        required=False, default=False, alias="enforceRandomTaskSelection"
     )
-    private = BooleanType(serialized_name="private")
-    allowed_users = ListType(StringType, serialized_name="allowedUsernames", default=[])
-    project_teams = ListType(ModelType(ProjectTeamDTO), serialized_name="teams")
-    project_info = ModelType(
-        ProjectInfoDTO, serialized_name="projectInfo", serialize_when_none=False
+    private: bool = Field(alias="private")
+    allowed_users: List[str] = Field(alias="allowedUsernames", default=[])
+    project_teams: List[ProjectTeamDTO] = Field(alias="teams")
+    project_info: ProjectInfoDTO = Field(alias="projectInfo", serialize_when_none=False)
+    short_description: str = Field(alias="shortDescription")
+    status: str
+    imagery: str
+    license_id: int = Field(alias="licenseId")
+    id_presets: List[str] = Field(alias="idPresets", default=[])
+    extra_id_params: str = Field(alias="extraIdParams")
+    rapid_power_user: bool = Field(
+        alias="rapidPowerUser", default=False, required=False
     )
-    short_description = StringType(serialized_name="shortDescription")
-    status = StringType()
-    imagery = StringType()
-    license_id = IntType(serialized_name="licenseId")
-    id_presets = ListType(StringType, serialized_name="idPresets", default=[])
-    extra_id_params = StringType(serialized_name="extraIdParams")
-    rapid_power_user = BooleanType(
-        serialized_name="rapidPowerUser", default=False, required=False
-    )
-    mapping_editors = ListType(
-        StringType,
+    mapping_editors: List[str] = Field(
         min_size=1,
         required=True,
-        serialized_name="mappingEditors",
+        alias="mappingEditors",
         validators=[is_known_editor],
     )
-    validation_editors = ListType(
-        StringType,
+    validation_editors: List[str] = Field(
         min_size=1,
         required=True,
-        serialized_name="validationEditors",
+        alias="validationEditors",
         validators=[is_known_editor],
     )
-    custom_editor = ModelType(
-        CustomEditorDTO, serialized_name="customEditor", serialize_when_none=False
-    )
+    custom_editor: CustomEditorDTO = Field(alias="customEditor", serialize_when_none=False)
 
 
-class PMDashboardDTO(Model):
+class PMDashboardDTO(BaseModel):
     """DTO for constructing the PM Dashboard"""
 
     def __init__(self):
@@ -555,18 +506,12 @@ class PMDashboardDTO(Model):
         self.archived_projects = []
         self.active_projects = []
 
-    draft_projects = ListType(
-        ModelType(ProjectSummary), serialized_name="draftProjects"
-    )
-    active_projects = ListType(
-        ModelType(ProjectSummary), serialized_name="activeProjects"
-    )
-    archived_projects = ListType(
-        ModelType(ProjectSummary), serialized_name="archivedProjects"
-    )
+    draft_projects: List[ProjectSummary] = Field(alias="draftProjects")
+    active_projects: List[ProjectSummary] = Field(alias="activeProjects")
+    archived_projects: List[ProjectSummary] = Field(alias="archivedProjects")
 
 
-class ProjectTaskAnnotationsDTO(Model):
+class ProjectTaskAnnotationsDTO(BaseModel):
     """DTO for task annotations of a project"""
 
     def __init__(self):
@@ -574,36 +519,34 @@ class ProjectTaskAnnotationsDTO(Model):
         super().__init__()
         self.tasks = []
 
-    project_id = IntType(required=True, serialized_name="projectId")
-    tasks = ListType(
-        ModelType(TaskAnnotationDTO), required=True, serialized_name="tasks"
-    )
+    project_id: Optional[int] = Field(None, alias="projectId")
+    tasks: Optional[List[TaskAnnotationDTO]] = Field(None, alias="tasks")
 
 
-class ProjectStatsDTO(Model):
+class ProjectStatsDTO(BaseModel):
     """DTO for detailed stats on a project"""
 
-    project_id = IntType(required=True, serialized_name="projectId")
-    area = FloatType(serialized_name="projectArea(in sq.km)")
-    total_mappers = IntType(serialized_name="totalMappers")
-    total_tasks = IntType(serialized_name="totalTasks")
-    total_comments = IntType(serialized_name="totalComments")
-    total_mapping_time = IntType(serialized_name="totalMappingTime")
-    total_validation_time = IntType(serialized_name="totalValidationTime")
-    total_time_spent = IntType(serialized_name="totalTimeSpent")
-    average_mapping_time = IntType(serialized_name="averageMappingTime")
-    average_validation_time = IntType(serialized_name="averageValidationTime")
-    percent_mapped = IntType(serialized_name="percentMapped")
-    percent_validated = IntType(serialized_name="percentValidated")
-    percent_bad_imagery = IntType(serialized_name="percentBadImagery")
-    aoi_centroid = BaseType(serialized_name="aoiCentroid")
-    time_to_finish_mapping = IntType(serialized_name="timeToFinishMapping")
-    time_to_finish_validating = IntType(serialized_name="timeToFinishValidating")
+    project_id: Optional[int] = Field(alias="projectId", default=None)
+    area: float = Field(None, alias="projectArea(in sq.km)")
+    total_mappers: int = Field(None, alias="totalMappers")
+    total_tasks: int = Field(None, alias="totalTasks")
+    total_comments: int = Field(None, alias="totalComments")
+    total_mapping_time: int = Field(None, alias="totalMappingTime")
+    total_validation_time: int = Field(None, alias="totalValidationTime")
+    total_time_spent: int = Field(None, alias="totalTimeSpent")
+    average_mapping_time: int = Field(None, alias="averageMappingTime")
+    average_validation_time: int = Field(None, alias="averageValidationTime")
+    percent_mapped: int = Field(None, alias="percentMapped")
+    percent_validated: int = Field(None, alias="percentValidated")
+    percent_bad_imagery: int = Field(None, alias="percentBadImagery")
+    aoi_centroid: str = Field(None, alias="aoiCentroid")
+    time_to_finish_mapping: int = Field(None, alias="timeToFinishMapping")
+    time_to_finish_validating: int = Field(None, alias="timeToFinishValidating")
 
 
-class ProjectUserStatsDTO(Model):
+class ProjectUserStatsDTO(BaseModel):
     """DTO for time spent by users on a project"""
 
-    time_spent_mapping = IntType(serialized_name="timeSpentMapping")
-    time_spent_validating = IntType(serialized_name="timeSpentValidating")
-    total_time_spent = IntType(serialized_name="totalTimeSpent")
+    time_spent_mapping: int = Field(alias="timeSpentMapping")
+    time_spent_validating: int = Field(alias="timeSpentValidating")
+    total_time_spent: int = Field(alias="totalTimeSpent")

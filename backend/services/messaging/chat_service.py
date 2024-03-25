@@ -1,5 +1,5 @@
 import threading
-from flask import current_app
+# from flask import current_app
 
 from backend import db
 from backend.exceptions import NotFound
@@ -64,7 +64,7 @@ class ChatService:
 
         if is_manager_permission or is_team_member or is_allowed_user:
             chat_message = ProjectChat.create_from_dto(chat_dto)
-            db.session.commit()
+            session.commit()
             threading.Thread(
                 target=MessageService.send_message_after_chat,
                 args=(
@@ -142,8 +142,8 @@ class ChatService:
             )
         )
         if is_user_allowed:
-            db.session.delete(chat_message)
-            db.session.commit()
+            session.delete(chat_message)
+            session.commit()
         else:
             raise ValueError(
                 "DeletePermissionError- User not allowed to delete message"

@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import current_app
+# from flask import current_app
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
 from sqlalchemy.sql import extract
@@ -25,6 +25,7 @@ from backend.models.postgis.task import Task
 from backend.models.postgis.team import TeamVisibility
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.services.users.user_service import UserService
+from backend.db.database import session
 
 
 class OrganisationServiceError(Exception):
@@ -56,7 +57,7 @@ class OrganisationService:
 
     @staticmethod
     def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool):
-        org = Organisation.query.filter_by(slug=slug).first()
+        org = session.query(Organisation).filter_by(slug=slug).first()
         if org is None:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND", slug=slug)
         return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
@@ -191,7 +192,7 @@ class OrganisationService:
     @staticmethod
     def get_projects_by_organisation_id(organisation_id: int) -> Organisation:
         projects = (
-            db.session.query(Project.id, ProjectInfo.name)
+            session.query(Project.id, ProjectInfo.name)
             .join(ProjectInfo)
             .filter(Project.organisation_id == organisation_id)
             .all()
@@ -208,7 +209,7 @@ class OrganisationService:
     def get_organisation_stats(
         organisation_id: int, year: int = None
     ) -> OrganizationStatsDTO:
-        projects = db.session.query(
+        projects = session.query(
             Project.id, Project.status, Project.last_updated, Project.created
         ).filter(Project.organisation_id == organisation_id)
         if year:
@@ -218,7 +219,7 @@ class OrganisationService:
         published_projects = projects.filter(
             Project.status == ProjectStatus.PUBLISHED.value
         )
-        active_tasks = db.session.query(
+        active_tasks = session.query(
             Task.id, Task.project_id, Task.task_status
         ).filter(Task.project_id.in_([i.id for i in published_projects.all()]))
 
@@ -329,7 +330,7 @@ class OrganisationService:
         """
         organisation_list_dto = ListOrganisationsDTO()
         orgs = (
-            Organisation.query.join(campaign_organisations)
+            session.query(Organisation).join(campaign_organisations)
             .filter(campaign_organisations.c.campaign_id == campaign_id)
             .all()
         )
