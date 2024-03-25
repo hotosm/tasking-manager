@@ -1,12 +1,11 @@
-import pandas as pd
-from backend.models.postgis.user import User
-from flask import current_app
+# # from flask import current_app
 import math
 import geojson
 from geoalchemy2 import shape
 from sqlalchemy import func, distinct, desc, or_, and_
 from shapely.geometry import Polygon, box
 from cachetools import TTLCache, cached
+from loguru import logger
 
 from backend import db
 from backend.exceptions import NotFound
@@ -43,6 +42,7 @@ from backend.models.postgis.utils import (
 )
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
+from backend.db.database import session
 
 search_cache = TTLCache(maxsize=128, ttl=300)
 csv_download_cache = TTLCache(maxsize=16, ttl=600)
@@ -70,71 +70,26 @@ class BBoxTooBigError(Exception):
 
 class ProjectSearchService:
     @staticmethod
-    def create_search_query(user=None, as_csv: bool = False):
-        if as_csv:
-            query = (
-                db.session.query(
-                    Project.id.label("id"),
-                    ProjectInfo.name.label("project_name"),
-                    Project.difficulty,
-                    Project.priority,
-                    Project.default_locale,
-                    Project.centroid.ST_AsGeoJSON().label("centroid"),
-                    Project.organisation_id,
-                    Project.tasks_bad_imagery,
-                    Project.tasks_mapped,
-                    Project.tasks_validated,
-                    Project.percent_mapped,
-                    Project.percent_validated,
-                    Project.status,
-                    Project.total_tasks,
-                    Project.last_updated,
-                    Project.due_date,
-                    Project.country,
-                    Organisation.name.label("organisation_name"),
-                    Organisation.logo.label("organisation_logo"),
-                    User.name.label("author_name"),
-                    User.username.label("author_username"),
-                    Project.created.label("creation_date"),
-                    func.coalesce(
-                        func.sum(func.ST_Area(Project.geometry, True) / 1000000)
-                    ).label("total_area"),
-                )
-                .filter(Project.geometry is not None)
-                .outerjoin(Organisation, Organisation.id == Project.organisation_id)
-                .outerjoin(User, User.id == Project.author_id)
-                .group_by(
-                    Organisation.id,
-                    Project.id,
-                    ProjectInfo.name,
-                    User.username,
-                    User.name,
-                )
-            )
-        else:
-            query = (
-                db.session.query(
-                    Project.id.label("id"),
-                    Project.difficulty,
-                    Project.priority,
-                    Project.default_locale,
-                    Project.centroid.ST_AsGeoJSON().label("centroid"),
-                    Project.organisation_id,
-                    Project.tasks_bad_imagery,
-                    Project.tasks_mapped,
-                    Project.tasks_validated,
-                    Project.status,
-                    Project.total_tasks,
-                    Project.last_updated,
-                    Project.due_date,
-                    Project.country,
-                    Organisation.name.label("organisation_name"),
-                    Organisation.logo.label("organisation_logo"),
-                )
-                .filter(Project.geometry is not None)
-                .outerjoin(Organisation, Organisation.id == Project.organisation_id)
-                .group_by(Organisation.id, Project.id)
-            )
+    def create_search_query(user=None):
+        query = (
+            session.query(
+                Project.id.label("id"),
+                Project.difficulty,
+                Project.priority,
+                Project.default_locale,
+                Project.centroid.ST_AsGeoJSON().label("centroid"),
+                Project.organisation_id,
+                Project.tasks_bad_imagery,
+                Project.tasks_mapped,
+                Project.tasks_validated,
+                Project.status,
+                Project.total_tasks,
+                Project.last_updated,
+                Project.due_date,
+                Project.country,
+                Organisation.name.label("organisation_name"),
+                Organisation.logo.label("organisation_logo"),
+            ))
 
         # Get public projects only for anonymous user.
         if user is None:
@@ -224,7 +179,7 @@ class ProjectSearchService:
 
         # We need to make a join to return projects without contributors.
         project_contributors_count = (
-            Project.query.with_entities(
+            session.query(Project).with_entities(
                 Project.id, func.count(distinct(TaskHistory.user_id)).label("total")
             )
             .filter(Project.id.in_(paginated_projects_ids))
@@ -461,7 +416,7 @@ class ProjectSearchService:
 
         if search_dto.country:
             # Unnest country column array.
-            sq = Project.query.with_entities(
+            sq = session.query(Project).with_entities(
                 Project.id, func.unnest(Project.country).label("country")
             ).subquery()
             query = query.filter(
@@ -554,7 +509,7 @@ class ProjectSearchService:
             all_results = query_result.all()
 
         paginated_results = query.paginate(
-            page=search_dto.page, per_page=14, error_out=True
+            page=search_dto.page, per_page=14, error_out=False
         )
 
         return all_results, paginated_results
@@ -689,7 +644,7 @@ class ProjectSearchService:
     def _get_intersecting_projects(search_polygon: Polygon, author_id: int):
         """Executes a database query to get the intersecting projects created by the author if provided"""
 
-        query = db.session.query(
+        query = session.query(
             Project.id,
             Project.status,
             Project.default_locale,
@@ -723,7 +678,7 @@ class ProjectSearchService:
                     geom_4326 = conn.execute(ST_Transform(geometry, 4326)).scalar()
                 polygon = shape.to_shape(geom_4326)
         except Exception as e:
-            current_app.logger.error(f"InvalidData- error making polygon: {e}")
+            logger.error(f"InvalidData- error making polygon: {e}")
             raise ProjectSearchServiceError(f"InvalidData- error making polygon: {e}")
         return polygon
 

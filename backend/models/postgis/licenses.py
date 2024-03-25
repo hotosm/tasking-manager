@@ -1,35 +1,37 @@
-from backend import db
+from sqlalchemy import Column, String, Integer, BigInteger, Table, ForeignKey
+from sqlalchemy.orm import relationship
 from backend.exceptions import NotFound
 from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
+from backend.db.database import Base, session
 
 # Secondary table defining the many-to-many join
-user_licenses_table = db.Table(
+user_licenses_table = Table(
     "user_licenses",
-    db.metadata,
-    db.Column("user", db.BigInteger, db.ForeignKey("users.id")),
-    db.Column("license", db.Integer, db.ForeignKey("licenses.id")),
+    Base.metadata,
+    Column("user", BigInteger, ForeignKey("users.id")),
+    Column("license", Integer, ForeignKey("licenses.id")),
 )
 
 
-class License(db.Model):
+class License(Base):
     """Describes an individual license"""
 
     __tablename__ = "licenses"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True)
-    description = db.Column(db.String)
-    plain_text = db.Column(db.String)
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
+    description = Column(String)
+    plain_text = Column(String)
 
-    projects = db.relationship("Project", backref="license")
-    users = db.relationship(
+    projects = relationship("Project", backref="license")
+    users = relationship(
         "License", secondary=user_licenses_table
     )  # Many to Many relationship
 
     @staticmethod
     def get_by_id(license_id: int):
         """Get license by id"""
-        map_license = db.session.get(License, license_id)
+        map_license = session.get(License, license_id)
 
         if map_license is None:
             raise NotFound(sub_code="LICENSE_NOT_FOUND", license_id=license_id)
@@ -44,8 +46,8 @@ class License(db.Model):
         new_license.description = dto.description
         new_license.plain_text = dto.plain_text
 
-        db.session.add(new_license)
-        db.session.commit()
+        session.add(new_license)
+        session.commit()
 
         return new_license.id
 
@@ -54,17 +56,17 @@ class License(db.Model):
         self.name = dto.name
         self.description = dto.description
         self.plain_text = dto.plain_text
-        db.session.commit()
+        session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     @staticmethod
     def get_all() -> LicenseListDTO:
         """Gets all licenses currently stored"""
-        results = License.query.all()
+        results = session.query(License).all()
 
         dto = LicenseListDTO()
         for result in results:

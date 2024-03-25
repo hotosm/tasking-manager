@@ -1,25 +1,26 @@
-from backend import db
+from sqlalchemy import Column, Integer, BigInteger, DateTime, ForeignKey, ForeignKeyConstraint
+from sqlalchemy.orm import relationship
 from backend.models.postgis.user import User
 from backend.models.postgis.message import Message
 from backend.models.postgis.utils import timestamp
 from backend.models.dtos.notification_dto import NotificationDTO
 from datetime import datetime, timedelta
+from backend.db.database import Base, session
 
-
-class Notification(db.Model):
+class Notification(Base):
     """Describes a Notification for a user"""
 
     __tablename__ = "notifications"
 
-    __table_args__ = (db.ForeignKeyConstraint(["user_id"], ["users.id"]),)
+    __table_args__ = (ForeignKeyConstraint(["user_id"], ["users.id"]),)
 
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.BigInteger, db.ForeignKey("users.id"), index=True)
-    unread_count = db.Column(db.Integer)
-    date = db.Column(db.DateTime, default=timestamp)
+    id = Column(Integer, primary_key=True)
+    user_id = Column(BigInteger, ForeignKey("users.id"), index=True)
+    unread_count = Column(Integer)
+    date = Column(DateTime, default=timestamp)
 
     # Relationships
-    user = db.relationship(User, foreign_keys=[user_id], backref="notifications")
+    user = relationship(User, foreign_keys=[user_id], backref="notifications")
 
     def as_dto(self) -> NotificationDTO:
         """Casts notification object to DTO"""
@@ -31,12 +32,12 @@ class Notification(db.Model):
         return dto
 
     def save(self):
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     def update(self):
         self.date = timestamp()
-        db.session.commit()
+        session.commit()
 
     @staticmethod
     def get_unread_message_count(user_id: int) -> int:

@@ -1,8 +1,7 @@
-from schematics import Model
-from schematics.types import StringType, IntType, ListType, ModelType
 from backend.models.dtos.organisation_dto import OrganisationDTO
-from schematics.exceptions import ValidationError
-
+# from schematics.exceptions import ValidationError
+from pydantic import BaseModel, Field
+from typing import List, Optional
 
 def is_existent(value):
     if value.strip() == "":
@@ -10,42 +9,50 @@ def is_existent(value):
     return value
 
 
-class NewCampaignDTO(Model):
+class NewCampaignDTO(BaseModel):
     """Describes JSON model to create a campaign"""
 
-    name = StringType(serialize_when_none=False, validators=[is_existent])
-    logo = StringType(serialize_when_none=False)
-    url = StringType(serialize_when_none=False)
-    description = StringType(serialize_when_none=False)
-    organisations = ListType(IntType, serialize_when_none=False)
+    name: str = Field(serialize_when_none=False, validators=[is_existent])
+    logo: str = Field(serialize_when_none=False)
+    url: str = Field(serialize_when_none=False)
+    description: str = Field(serialize_when_none=False)
+    organisations: List[int] = Field(serialize_when_none=False)
 
 
-class CampaignDTO(Model):
-    """Describes JSON model for an existing campaign"""
+# class CampaignDTO(Model):
+#     """Describes JSON model for an existing campaign"""
 
-    id = IntType(serialize_when_none=False)
-    name = StringType(serialize_when_none=False)
-    logo = StringType(serialize_when_none=False)
-    url = StringType(serialize_when_none=False)
-    description = StringType(serialize_when_none=False)
-    organisations = ListType(ModelType(OrganisationDTO), serialize_when_none=False)
+#     id = IntType(serialize_when_none=False)
+#     name = StringType(serialize_when_none=False)
+#     logo = StringType(serialize_when_none=False)
+#     url = StringType(serialize_when_none=False)
+#     description = StringType(serialize_when_none=False)
+#     organisations = ListType(ModelType(OrganisationDTO), serialize_when_none=False)
+
+class CampaignDTO(BaseModel):
+    id: Optional[int] = Field(serialize=False, default=None)
+    name: Optional[str] = Field(serialize=False, default=None)
+    logo: Optional[str] = Field(serialize=False, default=None)
+    url: Optional[str] = Field(serialize=False, default=None)
+    description: Optional[str] = Field(serialize=False, default=None)
+    organisations: List[OrganisationDTO] = Field(default=[], alias="organisations")
 
 
-class CampaignProjectDTO(Model):
+class CampaignProjectDTO(BaseModel):
     """DTO used to define available campaign connected projects"""
 
-    project_id = IntType()
-    campaign_id = IntType()
+    project_id: int
+    campaign_id: int
 
 
-class CampaignOrganisationDTO(Model):
+class CampaignOrganisationDTO(BaseModel):
     """DTO used to define available campaign connected projects"""
 
-    organisation_id = IntType()
-    campaign_id = IntType()
+    organisation_id: int
+    campaign_id: int
 
 
-class CampaignListDTO(Model):
+class CampaignListDTO(BaseModel):
     """DTO used to define available campaigns"""
 
     def __init__(self):
@@ -53,4 +60,4 @@ class CampaignListDTO(Model):
         super().__init__()
         self.campaigns = []
 
-    campaigns = ListType(ModelType(CampaignDTO))
+    campaigns: Optional[List[CampaignDTO]] = None

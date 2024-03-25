@@ -1,4 +1,4 @@
-from flask import current_app
+# from flask import current_app
 from sqlalchemy import and_, or_
 from markdown import markdown
 
@@ -29,6 +29,7 @@ from backend.models.postgis.statuses import (
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
 from backend.services.messaging.message_service import MessageService
+from backend.db.database import session
 
 
 class TeamServiceError(Exception):
@@ -204,14 +205,14 @@ class TeamService:
 
     @staticmethod
     def delete_team_project(team_id, project_id):
-        project = ProjectTeams.query.filter(
+        project = session.query(ProjectTeams).filter(
             and_(ProjectTeams.team_id == team_id, ProjectTeams.project_id == project_id)
         ).one()
         project.delete()
 
     @staticmethod
     def get_all_teams(search_dto: TeamSearchDTO) -> TeamsListDTO:
-        query = db.session.query(Team)
+        query = session.query(Team)
 
         orgs_query = None
         user = UserService.get_user_by_id(search_dto.user_id)
@@ -248,7 +249,7 @@ class TeamService:
             try:
                 role = TeamRoles[search_dto.team_role.upper()].value
                 project_teams = (
-                    db.session.query(ProjectTeams)
+                    session.query(ProjectTeams)
                     .filter(ProjectTeams.role == role)
                     .subquery()
                 )
@@ -258,7 +259,7 @@ class TeamService:
 
         if search_dto.member:
             team_member = (
-                db.session.query(TeamMembers)
+                session.query(TeamMembers)
                 .filter(
                     TeamMembers.user_id == search_dto.member,
                     TeamMembers.active.is_(True),
@@ -269,7 +270,7 @@ class TeamService:
 
         if search_dto.member_request:
             team_member = (
-                db.session.query(TeamMembers)
+                session.query(TeamMembers)
                 .filter(
                     TeamMembers.user_id == search_dto.member_request,
                     TeamMembers.active.is_(False),
@@ -378,7 +379,7 @@ class TeamService:
     @staticmethod
     def get_projects_by_team_id(team_id: int):
         projects = (
-            db.session.query(
+            session.query(
                 ProjectInfo.name, ProjectTeams.project_id, ProjectTeams.role
             )
             .join(ProjectTeams, ProjectInfo.project_id == ProjectTeams.project_id)
@@ -394,7 +395,7 @@ class TeamService:
     @staticmethod
     def get_project_teams_as_dto(project_id: int) -> TeamsListDTO:
         """Gets all the teams for a specified project"""
-        project_teams = ProjectTeams.query.filter(
+        project_teams = session.query(ProjectTeams).filter(
             ProjectTeams.project_id == project_id
         ).all()
         teams_list_dto = TeamsListDTO()
@@ -412,7 +413,7 @@ class TeamService:
 
     @staticmethod
     def change_team_role(team_id: int, project_id: int, role: str):
-        project = ProjectTeams.query.filter(
+        project = session.query(ProjectTeams).filter(
             and_(ProjectTeams.team_id == team_id, ProjectTeams.project_id == project_id)
         ).one()
         project.role = TeamRoles[role].value
@@ -511,8 +512,8 @@ class TeamService:
             TeamMembers.team_id == team_id, TeamMembers.user_id == user_id
         ).first()
         member.active = True
-        db.session.add(member)
-        db.session.commit()
+        session.add(member)
+        session.commit()
 
     @staticmethod
     def delete_invite(team_id: int, user_id: int):
@@ -527,7 +528,7 @@ class TeamService:
             TeamMembers.team_id == team_id,
             TeamMembers.user_id == user_id,
         ).exists()
-        return db.session.query(query).scalar()
+        return session.query(query).scalar()
 
     @staticmethod
     def is_user_an_active_team_member(team_id: int, user_id: int):
@@ -536,7 +537,7 @@ class TeamService:
             TeamMembers.user_id == user_id,
             TeamMembers.active.is_(True),
         ).exists()
-        return db.session.query(query).scalar()
+        return session.query(query).scalar()
 
     @staticmethod
     def is_user_team_manager(team_id: int, user_id: int):

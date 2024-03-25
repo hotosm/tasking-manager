@@ -1,20 +1,20 @@
-from backend import db
+from sqlalchemy import Column, String, DateTime
+from backend.db.database import Base, session
 
-
-class ReleaseVersion(db.Model):
+class ReleaseVersion(Base):
     """Describes an current release version of TM (i.e. github.com/hotosm/tasking-manager)"""
 
     __tablename__ = "release_version"
-    tag_name = db.Column(db.String(64), nullable=False, primary_key=True)
-    published_at = db.Column(db.DateTime, nullable=False)
+    tag_name = Column(String(64), nullable=False, primary_key=True)
+    published_at = Column(DateTime, nullable=False)
 
     def update(self):
-        db.session.commit()
+        session.commit()
 
     def save(self):
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     @staticmethod
     def get():
-        return ReleaseVersion.query.first()
+        return session.query(ReleaseVersion).first()

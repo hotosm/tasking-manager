@@ -1,51 +1,65 @@
-from flask_restful import Resource, request, current_app
-from schematics.exceptions import DataError
+# from flask_restful import Resource, request, current_app
+# from schematics.exceptions import DataError
 
 from backend.services.team_service import TeamService, TeamServiceError
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
-from backend.services.users.authentication_service import token_auth
+# from backend.services.users.authentication_service import token_auth
+from fastapi import APIRouter, Depends, Request
+from backend.db.database import get_db
+from starlette.authentication import requires
+
+router = APIRouter(
+    prefix="/projects",
+    tags=["projects"],
+    dependencies=[Depends(get_db)],
+    responses={404: {"description": "Not found"}},
+)
 
 
-class ProjectsTeamsAPI(Resource):
-    @token_auth.login_required
-    def get(self, project_id):
-        """Get teams assigned with a project
-        ---
-        tags:
-          - teams
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: project_id
-              in: path
-              description: Unique project ID
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: Teams listed successfully
-            403:
-                description: Forbidden, if user is not authenticated
-            404:
-                description: Not found
-            500:
-                description: Internal Server Error
-        """
-        # Check if project exists
-        ProjectService.exists(project_id)
-        teams_dto = TeamService.get_project_teams_as_dto(project_id)
-        return teams_dto.to_primitive(), 200
+# class ProjectsTeamsAPI(Resource):
+    # @token_auth.login_required
+@router.get("/{project_id}/teams/")
+@requires("authenticated")
+async def get(request: Request, project_id):
+    """Get teams assigned with a project
+    ---
+    tags:
+        - teams
+    produces:
+        - application/json
+    parameters:
+        - in: header
+            name: Authorization
+            description: Base64 encoded session token
+            required: true
+            type: string
+            default: Token sessionTokenHere==
+        - name: project_id
+            in: path
+            description: Unique project ID
+            required: true
+            type: integer
+            default: 1
+    responses:
+        200:
+            description: Teams listed successfully
+        403:
+            description: Forbidden, if user is not authenticated
+        404:
+            description: Not found
+        500:
+            description: Internal Server Error
+    """
+    # Check if project exists
+    ProjectService.exists(project_id)
+    teams_dto = TeamService.get_project_teams_as_dto(project_id)
+    return teams_dto.model_dump(by_alias=True), 200
 
-    @token_auth.login_required
-    def post(self, team_id, project_id):
+    # @token_auth.login_required
+@router.post("/{project_id}/teams/{team_id}/")
+@requires("authenticated")
+async def post(request: Request, team_id, project_id):
         """Assign a team to a project
         ---
         tags:
@@ -91,7 +105,7 @@ class ProjectsTeamsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
+        if not TeamService.is_user_team_manager(team_id, request.user.display_name):
             return {
                 "Error": "User is not an admin or a manager for the team",
                 "SubCode": "UserPermissionError",
@@ -123,8 +137,9 @@ class ProjectsTeamsAPI(Resource):
                 "SubCode": "UserPermissionError",
             }, 403
 
-    @token_auth.login_required
-    def patch(self, team_id, project_id):
+@router.patch("/<int:team_id>/projects/<int:project_id>/")
+@requires("authenticated")
+async def patch(request: Request, team_id: int, project_id: int):
         """Update role of a team on a project
         ---
         tags:
@@ -191,49 +206,50 @@ class ProjectsTeamsAPI(Resource):
         except TeamServiceError as e:
             return str(e), 402
 
-    @token_auth.login_required
-    def delete(self, team_id, project_id):
-        """
-        Deletes the specified team project assignment
-        ---
-        tags:
-          - teams
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: message_id
-              in: path
-              description: Unique message ID
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: Team unassigned of the project
-            401:
-                description: Forbidden, if user is not a manager of the project
-            403:
-                description: Forbidden, if user is not authenticated
-            404:
-                description: Not found
-            500:
-                description: Internal Server Error
-        """
-        try:
-            if not ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user, project_id
-            ):
-                raise ValueError()
-            TeamService.delete_team_project(team_id, project_id)
-            return {"Success": True}, 200
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+@router.delete("/<int:team_id>/projects/<int:project_id>/")
+@requires("authenticated")
+async def delete(request: Request, team_id: int, project_id: int):
+    """
+    Deletes the specified team project assignment
+    ---
+    tags:
+        - teams
+    produces:
+        - application/json
+    parameters:
+        - in: header
+            name: Authorization
+            description: Base64 encoded session token
+            required: true
+            type: string
+            default: Token sessionTokenHere==
+        - name: message_id
+            in: path
+            description: Unique message ID
+            required: true
+            type: integer
+            default: 1
+    responses:
+        200:
+            description: Team unassigned of the project
+        401:
+            description: Forbidden, if user is not a manager of the project
+        403:
+            description: Forbidden, if user is not authenticated
+        404:
+            description: Not found
+        500:
+            description: Internal Server Error
+    """
+    try:
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            request.user.display_name, project_id
+        ):
+            raise ValueError()
+        TeamService.delete_team_project(team_id, project_id)
+        return {"Success": True}, 200
+    except ValueError:
+        return {
+            "Error": "User is not a manager of the project",
+            "SubCode": "UserPermissionError",
+        }, 403

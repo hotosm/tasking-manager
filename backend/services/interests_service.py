@@ -86,7 +86,7 @@ class InterestService:
         )
 
         res = (
-            db.session.query(
+            session.query(
                 Interest.name,
                 func.count(project_interests.c.interest_id)
                 / func.sum(func.count(project_interests.c.interest_id)).over(),
