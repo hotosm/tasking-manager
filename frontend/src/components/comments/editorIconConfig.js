@@ -1,10 +1,18 @@
-import { commands, selectWord } from '@uiw/react-md-editor';
+import {
+  bold,
+  italic,
+  quote,
+  link,
+  unorderedListCommand,
+  selectWord,
+  orderedListCommand,
+} from '@uiw/react-md-editor';
 
 const ICON_SIZE = 14;
 
 export const iconConfig = {
   bold: {
-    ...commands.bold,
+    ...bold,
     icon: (
       <svg role="img" width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 384 512">
         <path
@@ -15,7 +23,7 @@ export const iconConfig = {
     ),
   },
   italic: {
-    ...commands.italic,
+    ...italic,
     icon: (
       <svg data-name="italic" width={ICON_SIZE} height={ICON_SIZE} role="img" viewBox="0 0 320 512">
         <path
@@ -26,7 +34,7 @@ export const iconConfig = {
     ),
   },
   quote: {
-    ...commands.quote,
+    ...quote,
     icon: (
       <svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 520 520">
         <path
@@ -37,7 +45,7 @@ export const iconConfig = {
     ),
   },
   link: {
-    ...commands.link,
+    ...link,
     icon: (
       <svg data-name="italic" width={ICON_SIZE} height={ICON_SIZE} role="img" viewBox="0 0 520 520">
         <path
@@ -48,7 +56,7 @@ export const iconConfig = {
     ),
   },
   unorderedListCommand: {
-    ...commands.unorderedListCommand,
+    ...unorderedListCommand,
     icon: (
       <svg data-name="unordered-list" width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 512 512">
         <path
@@ -59,7 +67,7 @@ export const iconConfig = {
     ),
   },
   orderedListCommand: {
-    ...commands.orderedListCommand,
+    ...orderedListCommand,
     icon: (
       <svg
         data-name="ordered-list"

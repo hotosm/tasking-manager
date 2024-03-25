@@ -12,6 +12,8 @@ import {
   renderWithRouter,
 } from '../../../utils/testWithIntl';
 import { TaskFilter, TaskItem } from '../taskList';
+// This is a late import in a React.lazy call; it takes awhile for commentInput to load
+import '../../comments/commentInput';
 
 describe('Task Item', () => {
   const task = {
@@ -84,7 +86,7 @@ describe('Task Item', () => {
     );
     await user.click(screen.getByTitle(/See task history/i));
     expect(
-      within(screen.getByRole('dialog')).getByRole('radio', { name: /activities/i }),
+      await within(screen.getByRole('dialog')).findByRole('radio', { name: /activities/i }),
     ).toBeInTheDocument();
   });
 });

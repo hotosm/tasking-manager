@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import { createRef, useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import bbox from '@turf/bbox';
 import mapboxgl from 'mapbox-gl';
@@ -41,7 +41,7 @@ export const TasksMap = ({
   selected: selectedOnMap,
 }) => {
   const intl = useIntl();
-  const mapRef = React.createRef();
+  const mapRef = createRef();
   const locale = useSelector((state) => state.preferences['locale']);
   const authDetails = useSelector((state) => state.auth.userDetails);
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
@@ -386,14 +386,21 @@ export const TasksMap = ({
       });
 
       if (taskBordersOnly && navigate) {
+        let navigateInProgress = false;
+        const navigateToTasks = () => {
+          if (!navigateInProgress) {
+            navigateInProgress = true;
+            navigate('./tasks');
+          }
+        };
         map.on('mouseenter', 'point-tasks-centroid', function (e) {
           map.getCanvas().style.cursor = 'pointer';
         });
         map.on('mouseleave', 'point-tasks-centroid', function (e) {
           map.getCanvas().style.cursor = '';
         });
-        map.on('click', 'point-tasks-centroid', () => navigate('./tasks'));
-        map.on('click', 'point-tasks-centroid-inner', () => navigate('./tasks'));
+        map.on('click', 'point-tasks-centroid', navigateToTasks);
+        map.on('click', 'point-tasks-centroid-inner', navigateToTasks);
       }
 
       map.on('click', 'tasks-fill', onSelectTaskClick);

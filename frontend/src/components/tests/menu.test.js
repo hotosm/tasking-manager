@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, MemoryRouter } from 'react-router-dom';
 import TestRenderer from 'react-test-renderer';
 

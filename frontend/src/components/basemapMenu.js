@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { MAPBOX_TOKEN, BASEMAP_OPTIONS } from '../config';
 

@@ -11,7 +11,7 @@ import {
 } from '../../../utils/testWithIntl';
 import { ProjectNav } from '../projectNav';
 import messages from '../messages';
-import { parse } from 'query-string';
+import queryString from 'query-string';
 
 describe('Project Navigation Bar', () => {
   it('should render component details', () => {
@@ -40,7 +40,9 @@ describe('Project Navigation Bar', () => {
       { route: '?text=something' },
     );
 
-    expect(decodeQueryParams({ text: StringParam }, parse(router.state.location.search))).toEqual({
+    expect(
+      decodeQueryParams({ text: StringParam }, queryString.parse(router.state.location.search)),
+    ).toEqual({
       text: 'something',
     });
   });

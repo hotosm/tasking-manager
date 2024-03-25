@@ -1,8 +1,8 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
 // Icons produced by FontAwesome project: https://github.com/FortAwesome/Font-Awesome/
 // License: CC-By 4.0
-export class FullStarIcon extends React.PureComponent {
+export class FullStarIcon extends PureComponent {
   render() {
     return (
       <svg viewBox="0 0 576 512" {...this.props}>
@@ -15,7 +15,7 @@ export class FullStarIcon extends React.PureComponent {
   }
 }
 
-export class StarIcon extends React.PureComponent {
+export class StarIcon extends PureComponent {
   render() {
     return (
       <svg viewBox="0 0 576 512" {...this.props}>
@@ -28,7 +28,7 @@ export class StarIcon extends React.PureComponent {
   }
 }
 
-export class HalfStarIcon extends React.PureComponent {
+export class HalfStarIcon extends PureComponent {
   render() {
     return (
       <svg viewBox="0 0 536 512" {...this.props}>

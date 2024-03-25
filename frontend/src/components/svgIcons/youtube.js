@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class YoutubeIcon extends React.PureComponent {
+export class YoutubeIcon extends PureComponent {
   render() {
     return (
       <svg width="20" height="14" viewBox="0 0 20 14" {...this.props} aria-label="YouTube">

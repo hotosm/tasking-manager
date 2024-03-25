@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { createRef, forwardRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, CheckIcon } from './svgIcons';
 import { CustomButton } from './button';
 
-const DropdownContent = React.forwardRef((props, ref) => {
+const DropdownContent = forwardRef((props, ref) => {
   const navigate = useNavigate();
   const isActive = (obj) => {
     return props.value === obj.value;
@@ -119,8 +119,8 @@ const DropdownContent = React.forwardRef((props, ref) => {
 export function Dropdown(props) {
   const [display, setDisplay] = useState(false);
 
-  const contentRef = React.createRef();
-  const buttonRef = React.createRef();
+  const contentRef = createRef();
+  const buttonRef = createRef();
 
   useEffect(() => {
     const handleClickOutside = (event) => {

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useLayoutEffect } from 'react';
+import { useState, useContext, useLayoutEffect, createRef } from 'react';
 import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -36,7 +36,7 @@ try {
 export const PriorityAreasForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
   const locale = useSelector((state) => state.preferences['locale']);
-  const mapRef = React.createRef();
+  const mapRef = createRef();
   const [error, setError] = useState({ error: false, message: null });
 
   const modes = MapboxDraw.modes;

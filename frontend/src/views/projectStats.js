@@ -1,4 +1,4 @@
-import React from 'react';
+import { lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
@@ -20,9 +20,9 @@ import {
 import { useOsmHashtagStatsQuery } from '../api/stats';
 import { Alert } from '../components/alert';
 
-const ContributorsStats = React.lazy(() => import('../components/projectStats/contributorsStats'));
-const TasksByStatus = React.lazy(() => import('../components/projectStats/taskStatus'));
-const ProjectTimeline = React.lazy(() => import('../components/projectDetail/timeline'));
+const ContributorsStats = lazy(() => import('../components/projectStats/contributorsStats'));
+const TasksByStatus = lazy(() => import('../components/projectStats/taskStatus'));
+const ProjectTimeline = lazy(() => import('../components/projectDetail/timeline'));
 
 export function ProjectStats() {
   const { id } = useParams();
@@ -58,9 +58,9 @@ export function ProjectStats() {
             </Alert>
           )}
           {tasksStatus === 'success' && (
-            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+            <Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
               <TasksByStatus stats={tasksByStatus} />
-            </React.Suspense>
+            </Suspense>
           )}
         </div>
         {defaultComment?.[0] && (
@@ -74,9 +74,9 @@ export function ProjectStats() {
               </Alert>
             )}
             {editsStatus === 'success' && (
-              <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+              <Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
                 <EditsStats data={edits} />
-              </React.Suspense>
+              </Suspense>
             )}
           </div>
         )}
@@ -90,9 +90,9 @@ export function ProjectStats() {
             <ReactPlaceholder showLoadingAnimation={true} rows={7} delay={500} ready={false} />
           )}
           {contributionsStatus === 'success' && (
-            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+            <Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
               <ContributorsStats contributors={contributions} />
-            </React.Suspense>
+            </Suspense>
           )}
         </div>
         <div className="w-100 mb2 fl ph2 ph4-ns">
@@ -115,9 +115,9 @@ export function ProjectStats() {
                 </Alert>
               )}
               {timelineDataStatus === 'success' && (
-                <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+                <Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
                   <ProjectTimeline tasksByDay={timelineData} />
-                </React.Suspense>
+                </Suspense>
               )}
             </div>
             <div className="w-100 w-50-l fl">

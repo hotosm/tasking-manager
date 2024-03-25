@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class ResumeIcon extends React.PureComponent {
+export class ResumeIcon extends PureComponent {
   render() {
     return (
       <svg width="12" height="12" viewBox="0 0 12 12" {...this.props}>

@@ -364,6 +364,15 @@ const handlers = [
   rest.get('http://127.0.0.1:8111/version', (req, res, ctx) => {
     return res(ctx.json(josmRemote));
   }),
+  rest.get('http://127.0.0.1:8111/load_data', (req, res, ctx) => {
+    return res(ctx.text('OK'));
+  }),
+  rest.get('http://127.0.0.1:8111/load_and_zoom', (req, res, ctx) => {
+    return res(ctx.text('OK'));
+  }),
+  rest.get('http://127.0.0.1:8111/import', (req, res, ctx) => {
+    return res(ctx.text('OK'));
+  }),
 ];
 
 const failedToConnectError = (req, res, ctx) => {

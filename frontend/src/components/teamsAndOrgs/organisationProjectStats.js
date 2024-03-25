@@ -1,4 +1,3 @@
-import React from 'react';
 import { setDayOfYear, format } from 'date-fns';
 import { FormattedMessage } from 'react-intl';
 

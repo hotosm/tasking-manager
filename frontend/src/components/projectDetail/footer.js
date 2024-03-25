@@ -1,4 +1,4 @@
-import React, { useRef, Fragment } from 'react';
+import { useRef, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';

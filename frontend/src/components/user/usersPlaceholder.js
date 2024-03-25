@@ -1,4 +1,3 @@
-import React from 'react';
 import { TextRow, RoundShape } from 'react-placeholder/lib/placeholders';
 
 export const userCardPlaceholderTemplate = () => (_n, i) =>

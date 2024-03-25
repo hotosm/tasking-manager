@@ -1,4 +1,3 @@
-import React from 'react';
 import { CheckIcon } from './svgIcons';
 
 export const CheckCircle = ({ className }: Object) => (

@@ -1,8 +1,8 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
 // Icon produced by FontAwesome project: https://github.com/FortAwesome/Font-Awesome/
 // License: CC-By 4.0
-export class ClipboardIcon extends React.PureComponent {
+export class ClipboardIcon extends PureComponent {
   render() {
     return (
       <svg viewBox="0 0 384 512" role="img" {...this.props}>

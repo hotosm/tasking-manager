@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormattedNumber } from 'react-intl';
 
 export const StatsCard = ({ icon, description, value, className, invertColors = false }) => {

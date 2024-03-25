@@ -10,7 +10,7 @@ ENV PATH="/usr/src/app/__pypackages__/${PYTHON_IMG_TAG}/bin:$PATH" \
 # INSTALLATION
 
 # Add repository for node
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
+RUN curl --fail --silent --show-error --location https://deb.nodesource.com/setup_18.x | bash -
 
 # Install dependencies
 RUN apt-get update \

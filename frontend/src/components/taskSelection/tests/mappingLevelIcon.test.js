@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { createComponentWithIntl } from '../../../utils/testWithIntl';
@@ -38,7 +37,7 @@ describe('if user is BEGINNER, MappingLevelIcon should not return', () => {
       new Error('No instances found with node type: "HalfStarIcon"'),
     );
     expect(() => instance.findByType(FormattedMessage)).toThrow(
-      new Error('No instances found with node type: "FormattedMessage"'),
+      new Error('No instances found with node type: "MemoizedFormattedMessage"'),
     );
   });
 });
