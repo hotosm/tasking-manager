@@ -47,7 +47,7 @@ export const DetailedStatsCard = ({
   return (
     <div
       className="cf pa3 br1 flex bg-white red shadow-6 flex-column justify-between"
-      style={{ height: '10.5rem', cursor: 'default' }}
+      style={{ cursor: 'default' }}
     >
       <div className="flex items-center mb-auto">
         <div className="w-25 fl ml2">{icon}</div>
