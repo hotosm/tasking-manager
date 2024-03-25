@@ -1808,9 +1808,10 @@
   dependencies:
     prettier "^2.0.5"
 
-"@hotosm/underpass-ui@https://github.com/hotosm/underpass-ui.git#61a2d9f9e8d3ed60b6f32121b61e8c8e243750ce":
-  version "0.0.3"
-  resolved "https://github.com/hotosm/underpass-ui.git#61a2d9f9e8d3ed60b6f32121b61e8c8e243750ce"
+"@hotosm/underpass-ui@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@hotosm/underpass-ui/-/underpass-ui-0.0.4.tgz#3b44f83e7737d550074e9842e8c8873a7e9af01c"
+  integrity sha512-X8sZgfpWKiuGTq3gNeBgLRAH3z33T906Cvgd2fOSfc/MACdXX6Qd8tJ1byX3qkgmd6J0EJsmbZ/KIC/X7oIwCQ==
   dependencies:
     autoprefixer "^9"
     maplibre-gl "^3.3.1"
