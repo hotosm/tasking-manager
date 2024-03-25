@@ -1,25 +1,25 @@
 import geojson
 import json
-from backend import db
+from sqlalchemy import Column, Integer, ForeignKey, Table
 from geoalchemy2 import Geometry
 from backend.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON
+from backend.db.database import Base, session
 
 # Priority areas aren't shared, however, this arch was taken from TM2 to ease data migration
-project_priority_areas = db.Table(
+project_priority_areas = Table(
     "project_priority_areas",
-    db.metadata,
-    db.Column("project_id", db.Integer, db.ForeignKey("projects.id")),
-    db.Column("priority_area_id", db.Integer, db.ForeignKey("priority_areas.id")),
+    Base.metadata,
+    Column("project_id", Integer, ForeignKey("projects.id")),
+    Column("priority_area_id", Integer, ForeignKey("priority_areas.id")),
 )
 
-
-class PriorityArea(db.Model):
+class PriorityArea(Base):
     """Describes an individual priority area"""
 
     __tablename__ = "priority_areas"
 
-    id = db.Column(db.Integer, primary_key=True)
-    geometry = db.Column(Geometry("POLYGON", srid=4326))
+    id = Column(Integer, primary_key=True)
+    geometry = Column(Geometry("POLYGON", srid=4326))
 
     @classmethod
     def from_dict(cls, area_poly: dict):

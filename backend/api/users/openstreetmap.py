@@ -1,12 +1,20 @@
-from flask_restful import Resource
-
-from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService, OSMServiceError
+from fastapi import APIRouter, Depends, Request
+from backend.db.database import get_db
+from starlette.authentication import requires
 
+router = APIRouter(
+    prefix="/users",
+    tags=["users"],
+    dependencies=[Depends(get_db)],
+    responses={404: {"description": "Not found"}},
+)
 
-class UsersOpenStreetMapAPI(Resource):
-    @token_auth.login_required
-    def get(self, username):
+# class UsersOpenStreetMapAPI(Resource):
+    # @token_auth.login_required
+@router.get("/{username}/openstreetmap/")
+@requires("authenticated")
+async def get(request: Request, username):
         """
         Get details from OpenStreetMap for a specified username
         ---
@@ -41,6 +49,6 @@ class UsersOpenStreetMapAPI(Resource):
         """
         try:
             osm_dto = UserService.get_osm_details_for_user(username)
-            return osm_dto.to_primitive(), 200
+            return osm_dto.model_dump(by_alias=True), 200
         except OSMServiceError as e:
             return {"Error": str(e)}, 502

@@ -1,12 +1,19 @@
-from flask_restful import Resource
-
 from backend.services.application_service import ApplicationService
-from backend.services.users.authentication_service import token_auth
+from fastapi import APIRouter, Depends, Request
+from backend.db.database import get_db
+from starlette.authentication import requires
+
+router = APIRouter(
+    prefix="/system",
+    tags=["system"],
+    dependencies=[Depends(get_db)],
+    responses={404: {"description": "Not found"}},
+)
 
 
-class SystemApplicationsRestAPI(Resource):
-    @token_auth.login_required
-    def get(self):
+@router.get("/authentication/applications/")
+@requires("authenticated")
+async def get(request: Request):
         """
         Gets application keys for a user
         ---
@@ -30,14 +37,15 @@ class SystemApplicationsRestAPI(Resource):
             description: A problem occurred
         """
         tokens = ApplicationService.get_all_tokens_for_logged_in_user(
-            token_auth.current_user()
+            request.user.dispaly_name
         )
         if len(tokens) == 0:
             return 400
-        return tokens.to_primitive(), 200
+        return tokens.model_dump(by_alias=True), 200
 
-    @token_auth.login_required
-    def post(self):
+@router.post("/authentication/applications/")
+@requires("authenticated")
+async def post(request: Request):
         """
         Creates an application key for the user
         ---
@@ -60,10 +68,11 @@ class SystemApplicationsRestAPI(Resource):
           500:
             description: A problem occurred
         """
-        token = ApplicationService.create_token(token_auth.current_user())
-        return token.to_primitive(), 200
+        token = ApplicationService.create_token(request.user.dispaly_name)
+        return token.model_dump(by_alias=True), 200
 
-    def patch(self, application_key):
+@router.patch("/authentication/applications/{application_key}/")
+async def patch(request: Request, application_key):
         """
         Checks the validity of an application key
         ---
@@ -92,8 +101,8 @@ class SystemApplicationsRestAPI(Resource):
         else:
             return 302
 
-    @token_auth.login_required
-    def delete(self, application_key):
+@router.delete("/authentication/applications/{application_key}/")
+async def delete(request: Request, application_key):
         """
         Deletes an application key for a user
         ---
@@ -125,7 +134,7 @@ class SystemApplicationsRestAPI(Resource):
             description: A problem occurred
         """
         token = ApplicationService.get_token(application_key)
-        if token.user == token_auth.current_user():
+        if token.user == request.user.dispaly_name:
             token.delete()
             return 200
         else:

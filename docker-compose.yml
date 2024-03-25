@@ -9,119 +9,24 @@ networks:
     name: tm-net
 
 services:
-  tm-db:
-    image: "postgis/postgis:${POSTGIS_TAG:-14-3.3}"
-    volumes:
-      - tm_db_data:/var/lib/postgresql/data/
-    env_file:
-      - tasking-manager.env
-    restart: unless-stopped
-    healthcheck:
-      test: psql -h 0.0.0.0 -U ${POSTGRES_USER:-tm} -d ${POSTGRES_DB:-tasking-manager} -c 'SELECT 1;'
-      start_period: 5s
-      interval: 10s
-      timeout: 5s
-      retries: 3
-    networks:
-      - tm-net
-
-  tm-backend:
-    image: ghcr.io/hotosm/tasking-manager/backend:main
+  fastapi:
     build:
       context: .
-    depends_on:
-      tm-db:
-        condition: service_healthy
-      tm-migration:
-        condition: service_completed_successfully
-    env_file:
-      - tasking-manager.env
-    volumes:
-      - ./pyproject.toml:/usr/src/app/pyproject.toml:ro
-      - ./backend:/usr/src/app/backend:ro
-      - ./tests:/usr/src/app/tests:ro
-      - ./migrations:/src/migrations
-    restart: unless-stopped
-    healthcheck:
-      test: curl --fail http://localhost:5000 || exit 1
-      interval: 10s
-      retries: 5
-      timeout: 3s
-    deploy:
-      replicas: ${API_REPLICAS:-1}
-      resources:
-        limits:
-          cpus: "1"
-          memory: 1500M
-        reservations:
-          cpus: "1"
-          memory: 100M
-    labels:
-      - traefik.http.routers.backend.rule=(Host(`127.0.0.1`) || Host(`localhost`)) && PathPrefix(`/api/`)
-      - traefik.http.services.backend.loadbalancer.server.port=5000
-    networks:
-      - tm-net
-
-  tm-migration:
-    image: ghcr.io/hotosm/tasking-manager/backend:main
-    build:
-      context: .
-    entrypoint: ["python", "manage.py", "db"]
-    command: "upgrade"
-    depends_on:
-      tm-db:
-        condition: service_healthy
-    env_file:
-      - tasking-manager.env
-    volumes:
-      - ./pyproject.toml:/usr/src/app/pyproject.toml:ro
-      - ./backend:/usr/src/app/backend:ro
-      - ./migrations:/usr/src/app/migrations:ro
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 1500M
-        reservations:
-          cpus: "1"
-          memory: 100M
-    networks:
-      - tm-net
-
-  swagger:
-    image: swaggerapi/swagger-ui:v5.11.10
+      dockerfile: Dockerfile
     restart: always
-    environment:
-      - BASE_URL=/docs
-      - SWAGGER_JSON_URL=http://127.0.0.1:${TM_DEV_PORT:-3000}/api/v2/system/docs/json/
-    labels:
-      - traefik.http.routers.swagger.rule=(Host(`127.0.0.1`) || Host(`localhost`)) && PathPrefix(`/docs/`)
-      - traefik.http.services.swagger.loadbalancer.server.port=8080
-    networks:
-      - tm-net
-
-  traefik:
-    image: traefik:v2.10
-    restart: always
+    volumes:
+      - .:/code
+      - ./logs/:/logs/
     ports:
-      - "${TM_DEV_PORT:-3000}:80"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    command:
-      - --entrypoints.web.address=:80
-      - --providers.docker=true
-    networks:
-      - tm-net
+      - 80:80
+    entrypoint: uvicorn backend.main:api --host 0.0.0.0 --port 80 --reload
 
-  tm-frontend:
-    image: ghcr.io/hotosm/tasking-manager/frontend:main
-    build:
-      context: .
-      dockerfile: "./scripts/docker/Dockerfile.frontend_development"
-    env_file:
-      - tasking-manager.env
-    labels:
-      - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
-      - traefik.http.services.frontend.loadbalancer.server.port=3000
-    networks:
-      - tm-net
+  postgresql:
+    image: postgis/postgis:14-3.3
+    container_name: postgresql
+    restart: always
+    env_file: ${ENV_FILE:-tasking-manager.env}
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data

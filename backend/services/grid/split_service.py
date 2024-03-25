@@ -2,7 +2,7 @@ import geojson
 from shapely.geometry import Polygon, MultiPolygon, LineString, shape as shapely_shape
 from shapely.ops import split
 from backend import db
-from flask import current_app
+# from flask import current_app
 from geoalchemy2 import shape
 
 from backend.exceptions import NotFound
@@ -103,7 +103,7 @@ class SplitService:
         :return: list of {geojson.Feature}
         """
         # Load the task's geometry and calculate its centroid and bbox
-        query = db.session.query(
+        query = session.query(
             Task.id, Task.geometry.ST_AsGeoJSON().label("geometry")
         ).filter(Task.id == task.id, Task.project_id == task.project_id)
         task_geojson = geojson.loads(query[0].geometry)
@@ -245,11 +245,11 @@ class SplitService:
         try:
             original_task.delete()
         except Exception:
-            db.session.rollback()
+            session.rollback()
             # Ensure the new tasks are cleaned up
             for new_task in new_tasks:
                 new_task.delete()
-            db.session.commit()
+            session.commit()
             raise
 
         # update project task counts

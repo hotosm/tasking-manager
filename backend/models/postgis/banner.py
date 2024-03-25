@@ -1,34 +1,34 @@
 import bleach
 from markdown import markdown
 
-from backend import db
+from sqlalchemy import Column, Integer, String, Boolean
 from backend.models.dtos.banner_dto import BannerDTO
+from backend.db.database import Base, session
 
-
-class Banner(db.Model):
+class Banner(Base):
     """Model for Banners"""
 
     __tablename__ = "banner"
 
     # Columns
-    id = db.Column(db.Integer, primary_key=True)
-    message = db.Column(db.String(255), nullable=False)
-    visible = db.Column(db.Boolean, default=False, nullable=False)
+    id = Column(Integer, primary_key=True)
+    message = Column(String(255), nullable=False)
+    visible = Column(Boolean, default=False, nullable=False)
 
     def create(self):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     def update(self):
         """Updates the current model in the DB"""
-        db.session.commit()
+        session.commit()
 
     def update_from_dto(self, dto: BannerDTO):
         """Updates the current model in the DB"""
         self.message = dto.message
         self.visible = dto.visible
-        db.session.commit()
+        session.commit()
 
     def as_dto(self):
         """Returns a dto for the banner"""
@@ -40,7 +40,7 @@ class Banner(db.Model):
     @staticmethod
     def get():
         """Returns a banner and creates one if it doesn't exist"""
-        banner = Banner.query.first()
+        banner = session.query(Banner).first()
         if banner is None:
             banner = Banner()
             banner.message = "Welcome to the API"

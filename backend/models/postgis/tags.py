@@ -1,15 +1,15 @@
-from backend import db
+from sqlalchemy import Column, String, Integer
 from backend.models.dtos.tags_dto import TagsDTO
+from backend.db.database import Base, session
 
-
-class Tags(db.Model):
+class Tags(Base):
     """Describes an individual mapping Task"""
 
     __tablename__ = "tags"
 
-    id = db.Column(db.Integer, primary_key=True)
-    organisations = db.Column(db.String, unique=True)
-    campaigns = db.Column(db.String, unique=True)
+    id = Column(Integer, primary_key=True)
+    organisations = Column(String, unique=True)
+    campaigns = Column(String, unique=True)
 
     @staticmethod
     def upsert_organisation_tag(organisation_tag: str) -> str:
@@ -21,7 +21,7 @@ class Tags(db.Model):
 
         tag = Tags()
         tag.organisations = organisation_tag
-        db.session.add(
+        session.add(
             tag
         )  # Note no commit here, done as part of project update transaction
         return organisation_tag
@@ -36,7 +36,7 @@ class Tags(db.Model):
 
         tag = Tags()
         tag.campaigns = campaign_tag
-        db.session.add(
+        session.add(
             tag
         )  # Note no commit here, done as part of project update transaction
         return campaign_tag
@@ -44,7 +44,7 @@ class Tags(db.Model):
     @staticmethod
     def get_all_organisations():
         """Get all org tags in DB"""
-        result = db.session.query(Tags.organisations).filter(
+        result = session.query(Tags.organisations).filter(
             Tags.organisations.isnot(None)
         )
 
@@ -55,7 +55,7 @@ class Tags(db.Model):
     @staticmethod
     def get_all_campaigns():
         """Get all campaign tags in DB"""
-        result = db.session.query(Tags.campaigns).filter(Tags.campaigns.isnot(None))
+        result = session.query(Tags.campaigns).filter(Tags.campaigns.isnot(None))
 
         dto = TagsDTO()
         dto.tags = [r for (r,) in result]

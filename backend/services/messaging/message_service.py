@@ -5,7 +5,7 @@ import bleach
 
 from cachetools import TTLCache, cached
 from typing import List
-from flask import current_app
+# # from flask import current_app
 from sqlalchemy import text, func
 from markdown import markdown
 
@@ -222,9 +222,9 @@ class MessageService:
 
         # Flush messages to the database.
         if len(messages_objs) > 0:
-            db.session.add_all(messages_objs)
-            db.session.flush()
-            db.session.commit()
+            session.add_all(messages_objs)
+            session.flush()
+            session.commit()
 
     @staticmethod
     def send_message_after_comment(
@@ -415,7 +415,7 @@ class MessageService:
         message.message = f"{user_link} has requested to join the {team_link} team.\
             Access the team management page to accept or reject that request."
         MessageService._push_messages(
-            [dict(message=message, user=db.session.get(User, to_user))]
+            [dict(message=message, user=session.get(User, to_user))]
         )
 
     @staticmethod
@@ -650,7 +650,7 @@ class MessageService:
         parsed = parser.findall(message)
 
         usernames = []
-        project = db.session.get(Project, project_id)
+        project = session.get(Project, project_id)
 
         if project is None:
             return usernames
@@ -777,7 +777,7 @@ class MessageService:
     @staticmethod
     def get_message(message_id: int, user_id: int) -> Message:
         """Gets the specified message"""
-        message = db.session.get(Message, message_id)
+        message = session.get(Message, message_id)
 
         if message is None:
             raise NotFound(sub_code="MESSAGE_NOT_FOUND", message_id=message_id)

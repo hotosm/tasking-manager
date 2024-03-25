@@ -1,18 +1,18 @@
-from backend import db
+from sqlalchemy import Column, Integer, String, Boolean
 from backend.models.dtos.mapping_issues_dto import (
     MappingIssueCategoryDTO,
     MappingIssueCategoriesDTO,
 )
+from backend.db.database import Base, session
 
-
-class MappingIssueCategory(db.Model):
+class MappingIssueCategory(Base):
     """Represents a category of task mapping issues identified during validaton"""
 
     __tablename__ = "mapping_issue_categories"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False, unique=True)
-    description = db.Column(db.String, nullable=True)
-    archived = db.Column(db.Boolean, default=False, nullable=False)
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False, unique=True)
+    description = Column(String, nullable=True)
+    archived = Column(Boolean, default=False, nullable=False)
 
     def __init__(self, name):
         self.name = name
@@ -20,7 +20,7 @@ class MappingIssueCategory(db.Model):
     @staticmethod
     def get_by_id(category_id: int):
         """Get category by id"""
-        return db.session.get(MappingIssueCategory, category_id)
+        return session.get(MappingIssueCategory, category_id)
 
     @classmethod
     def create_from_dto(cls, dto: MappingIssueCategoryDTO) -> int:
@@ -28,8 +28,8 @@ class MappingIssueCategory(db.Model):
         new_category = cls(dto.name)
         new_category.description = dto.description
 
-        db.session.add(new_category)
-        db.session.commit()
+        session.add(new_category)
+        session.commit()
 
         return new_category.id
 
@@ -39,12 +39,12 @@ class MappingIssueCategory(db.Model):
         self.description = dto.description
         if dto.archived is not None:
             self.archived = dto.archived
-        db.session.commit()
+        session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     @staticmethod
     def get_all_categories(include_archived):

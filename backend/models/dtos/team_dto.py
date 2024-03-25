@@ -1,21 +1,11 @@
-from schematics import Model
-from schematics.exceptions import ValidationError
-from schematics.types import (
-    BooleanType,
-    IntType,
-    StringType,
-    LongType,
-    ListType,
-    ModelType,
-    UTCDateTimeType,
-)
-
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.statuses import (
     TeamMemberFunctions,
     TeamVisibility,
     TeamJoinMethod,
 )
+from pydantic import BaseModel, Field
+from typing import List, Optional
 
 
 def validate_team_visibility(value):
@@ -55,145 +45,175 @@ def validate_team_member_function(value):
         )
 
 
-class TeamMembersDTO(Model):
-    """Describe a JSON model for team members"""
+# class TeamMembersDTO(Model):
+#     """Describe a JSON model for team members"""
 
-    username = StringType(required=True)
-    function = StringType(required=True, validators=[validate_team_member_function])
-    active = BooleanType()
-    join_request_notifications = BooleanType(
-        default=False, serialized_name="joinRequestNotifications"
-    )
-    picture_url = StringType(serialized_name="pictureUrl")
-    joined_date = UTCDateTimeType(serialized_name="joinedDate")
+#     username = StringType(required=True)
+#     function = StringType(required=True, validators=[validate_team_member_function])
+#     active = BooleanType()
+#     join_request_notifications = BooleanType(
+#         default=False, serialized_name="joinRequestNotifications"
+#     )
+#     picture_url = StringType(serialized_name="pictureUrl")
+class TeamMembersDTO(BaseModel):
+    username: str = Field(required=True)
+    function: str = Field(required=True, validators=[validate_team_member_function])
+    active: bool
+    join_request_notifications: bool = Field(default=False, alias="joinRequestNotifications")
+    picture_url: Optional[str] = Field(alias="pictureUrl")
 
 
-class TeamProjectDTO(Model):
+class TeamProjectDTO(BaseModel):
     """Describes a JSON model to create a project team"""
 
-    project_name = StringType(required=True)
-    project_id = IntType(required=True)
-    role = StringType(required=True)
+    project_name: str
+    project_id: int
+    role: str
 
 
-class ProjectTeamDTO(Model):
-    """Describes a JSON model to create a project team"""
+# class ProjectTeamDTO(Model):
+#     """Describes a JSON model to create a project team"""
 
-    team_id = IntType(required=True, serialized_name="teamId")
-    team_name = StringType(serialized_name="name")
-    role = StringType(required=True)
+#     team_id = IntType(required=True, serialized_name="teamId")
+#     team_name = StringType(serialized_name="name")
+#     role = StringType(required=True)
+    
+class ProjectTeamDTO(BaseModel):
+    team_id: int = Field(alias="teamId", required=True)
+    team_name: str = Field(alias="name")
+    role: str = Field(required=True)
 
 
-class TeamDetailsDTO(Model):
-    def __init__(self):
+# class TeamDetailsDTO(Model):
+#     def __init__(self):
+#         """DTO constructor initialise all arrays to empty"""
+#         super().__init__()
+#         self.members = []
+#         self.team_projects = []
+
+#     """ Describes JSON model for a team """
+#     team_id = IntType(serialized_name="teamId")
+#     organisation_id = IntType(required=True)
+#     organisation = StringType(required=True)
+#     organisation_slug = StringType(serialized_name="organisationSlug")
+#     name = StringType(required=True)
+#     logo = StringType()
+#     description = StringType()
+#     join_method = StringType(
+#         required=True,
+#         validators=[validate_team_join_method],
+#         serialized_name="joinMethod",
+#     )
+#     visibility = StringType(
+#         required=True, validators=[validate_team_visibility], serialize_when_none=False
+#     )
+#     is_org_admin = BooleanType(default=False)
+#     is_general_admin = BooleanType(default=False)
+#     members = ListType(ModelType(TeamMembersDTO))
+#     team_projects = ListType(ModelType(ProjectTeamDTO))
+class TeamDetailsDTO(BaseModel):
+    def __init__(self, members: Optional[List[TeamMembersDTO]] = None, team_projects: Optional[List[ProjectTeamDTO]] = None, **kwargs):
         """DTO constructor initialise all arrays to empty"""
-        super().__init__()
-        self.members = []
-        self.team_projects = []
+        super().__init__(**kwargs)
+        self.members = members or []
+        self.team_projects = team_projects or []
 
-    """ Describes JSON model for a team """
-    team_id = IntType(serialized_name="teamId")
-    organisation_id = IntType(required=True)
-    organisation = StringType(required=True)
-    organisation_slug = StringType(serialized_name="organisationSlug")
-    name = StringType(required=True)
-    logo = StringType()
-    description = StringType()
-    join_method = StringType(
-        required=True,
-        validators=[validate_team_join_method],
-        serialized_name="joinMethod",
-    )
-    visibility = StringType(
-        required=True, validators=[validate_team_visibility], serialize_when_none=False
-    )
-    is_org_admin = BooleanType(default=False)
-    is_general_admin = BooleanType(default=False)
-    members = ListType(ModelType(TeamMembersDTO))
-    team_projects = ListType(ModelType(ProjectTeamDTO))
+    team_id: Optional[int] = Field(alias="teamId")
+    organisation_id: int
+    organisation: str
+    organisation_slug: Optional[str] = Field(alias="organisationSlug")
+    name: str
+    logo: Optional[str]
+    description: Optional[str]
+    join_method: str = Field(validators=[validate_team_join_method], alias="joinMethod")
+    visibility: str = Field(validators=[validate_team_visibility], default="", alias="visibility")
+    is_org_admin: bool = False
+    is_general_admin: bool = False
+    members: List[TeamMembersDTO]
+    team_projects: List[ProjectTeamDTO]
 
 
-class TeamDTO(Model):
+class TeamDTO(BaseModel):
     """Describes JSON model for a team"""
 
-    team_id = IntType(serialized_name="teamId")
-    organisation_id = IntType(required=True, serialized_name="organisationId")
-    organisation = StringType(required=True)
-    name = StringType(required=True)
-    logo = StringType()
-    description = StringType()
-    join_method = StringType(
+    team_id: int = Field(alias="teamId")
+    organisation_id: int = Field(required=True, alias="organisationId")
+    organisation: str = Field(required=True)
+    name: str = Field(required=True)
+    logo: str
+    description: str
+    join_method: str = Field(
         required=True,
         validators=[validate_team_join_method],
-        serialized_name="joinMethod",
+        alias="joinMethod",
     )
-    visibility = StringType(
+    visibility: str = Field(
         required=True, validators=[validate_team_visibility], serialize_when_none=False
     )
-    members = ListType(ModelType(TeamMembersDTO))
-    members_count = IntType(serialized_name="membersCount", required=False)
-    managers_count = IntType(serialized_name="managersCount", required=False)
+    members: List[TeamMembersDTO]
+    members_count: int = Field(alias="membersCount", required=False)
+    managers_count: int = Field(alias="managersCount", required=False)
 
 
-class TeamsListDTO(Model):
+class TeamsListDTO(BaseModel):
     def __init__(self):
         """DTO constructor initialise all arrays to empty"""
         super().__init__()
         self.teams = []
 
     """ Returns List of all teams"""
-    teams = ListType(ModelType(TeamDTO))
-    pagination = ModelType(Pagination)
+    teams: Optional[List[TeamDTO]] = None
+    pagination: Optional[Pagination] = None
 
 
-class NewTeamDTO(Model):
+class NewTeamDTO(BaseModel):
     """Describes a JSON model to create a new team"""
 
-    creator = LongType(required=True)
-    organisation_id = IntType(required=True)
-    name = StringType(required=True)
-    description = StringType()
-    join_method = StringType(
+    creator: float
+    organisation_id: int
+    name: str
+    description: Optional[str]
+    join_method: str = Field(
         required=True,
         validators=[validate_team_join_method],
-        serialized_name="joinMethod",
+        alias="joinMethod",
     )
-    visibility = StringType(
+    visibility: str = Field(
         required=True, validators=[validate_team_visibility], serialize_when_none=False
     )
 
 
-class UpdateTeamDTO(Model):
+class UpdateTeamDTO(BaseModel):
     """Describes a JSON model to update a team"""
 
-    creator = LongType()
-    team_id = IntType()
-    organisation = StringType()
-    organisation_id = IntType()
-    name = StringType()
-    logo = StringType()
-    description = StringType()
-    join_method = StringType(
-        validators=[validate_team_join_method], serialized_name="joinMethod"
+    creator: float
+    team_id: int
+    organisation: str
+    organisation_id: int
+    name: str
+    logo: str
+    description: str
+    join_method: str = Field(
+        validators=[validate_team_join_method], alias="joinMethod"
     )
-    visibility = StringType(
+    visibility: str = Field(
         validators=[validate_team_visibility], serialize_when_none=False
     )
-    members = ListType(ModelType(TeamMembersDTO), serialize_when_none=False)
+    # members = ListType(ModelType(TeamMembersDTO), serialize_when_none=False)
 
 
-class TeamSearchDTO(Model):
+class TeamSearchDTO(BaseModel):
     """Describes a JSON model to search for a team"""
 
-    user_id = LongType(serialized_name="userId")
-    organisation = IntType(serialized_name="organisation")
-    team_name = StringType(serialized_name="team_name")
-    omit_members = BooleanType(serialized_name="omitMemberList", default=False)
-    full_members_list = BooleanType(serialized_name="fullMemberList", default=True)
-    member = LongType(serialized_name="member")
-    manager = LongType(serialized_name="manager")
-    team_role = StringType(serialized_name="team_role")
-    member_request = LongType(serialized_name="member_request")
-    paginate = BooleanType(serialized_name="paginate", default=False)
-    page = IntType(serialized_name="page", default=1)
-    per_page = IntType(serialized_name="perPage", default=10)
+    user_id: float = Field(alias="userId")
+    organisation: int = Field(alias="organisation")
+    team_name: str = Field(alias="team_name")
+    omit_members: bool = Field(alias="omitMemberList", default=False)
+    full_members_list: bool = Field(alias="fullMemberList", default=True)
+    member: float = Field(alias="member")
+    manager: float = Field(alias="manager")
+    team_role: str = Field(alias="team_role")
+    member_request: float = Field(alias="member_request")
+    paginate: bool = Field(alias="paginate", default=False)
+    page: int = Field(alias="page", default=1)
+    per_page: int = Field(alias="perPage", default=10)
