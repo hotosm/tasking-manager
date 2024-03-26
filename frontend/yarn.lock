@@ -1808,13 +1808,6 @@
   dependencies:
     prettier "^2.0.5"
 
-"@hotosm/underpass-ui@hotosm/underpass-ui":
-  version "0.0.3"
-  resolved "https://codeload.github.com/hotosm/underpass-ui/tar.gz/cb6ce9d784c36f8669b8d417be1e7424edb56ee1"
-  dependencies:
-    maplibre-gl "^3.3.1"
-    react-timeago "^7.1.0"
-
 "@humanwhocodes/config-array@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.5.0.tgz#1407967d4c6eecd7388f83acf1eaf4d0c6e58ef9"
@@ -13637,11 +13630,6 @@ react-test-renderer@^17.0.2:
     react-is "^17.0.2"
     react-shallow-renderer "^16.13.1"
     scheduler "^0.20.2"
-
-react-timeago@^7.1.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/react-timeago/-/react-timeago-7.2.0.tgz#ae929d7423a63cbc3dc228e49d22fbf586d459ca"
-  integrity sha512-2KsBEEs+qRhKx/kekUVNSTIpop3Jwd7SRBm0R4Eiq3mPeswRGSsftY9FpKsE/lXLdURyQFiHeHFrIUxLYskG5g==
 
 react-tooltip@^4.2.21:
   version "4.5.1"
