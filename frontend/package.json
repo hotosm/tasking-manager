@@ -9,7 +9,6 @@
     "@formatjs/intl-relativetimeformat": "^11.2.4",
     "@formatjs/macro": "^0.2.8",
     "@hotosm/id": "^2.21.1",
-    "@hotosm/underpass-ui": "hotosm/underpass-ui",
     "@hotosm/iso-countries-languages": "^1.1.2",
     "@mapbox/mapbox-gl-draw": "^1.4.1",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
