@@ -180,15 +180,22 @@ class ProjectSearchService:
             raise NotFound(sub_code="PROJECTS_NOT_FOUND")
 
         dto = ProjectSearchResultsDTO()
-        dto.results = [
-            ProjectSearchService.create_result_dto(
-                p,
-                search_dto.preferred_locale,
-                Project.get_project_total_contributions(p[0]),
-            )
-            for p in paginated_results.items
-        ]
-        dto.pagination = Pagination(paginated_results)
+
+        if search_dto.omit_results:
+            # If omit_results is True, return dto with map_results only
+            dto.results = []
+
+        else:
+            dto.results = [
+                ProjectSearchService.create_result_dto(
+                    p,
+                    search_dto.preferred_locale,
+                    Project.get_project_total_contributions(p[0]),
+                )
+                for p in paginated_results.items
+            ]
+            dto.pagination = Pagination(paginated_results)
+
         if search_dto.omit_map_results:
             return dto
 
