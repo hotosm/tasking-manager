@@ -1,8 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 
+import { fetchLocalJSONAPI, fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
 import { OHSOME_STATS_BASE_URL } from '../config';
+
+const ohsomeProxyAPI = (url) => {
+  const token = localStorage.getItem('token');
+  return fetchLocalJSONAPI(`users/statistics/ohsome/?url=${url}`, token);
+};
 
 export const useSystemStatisticsQuery = () => {
   const fetchSystemStats = ({ signal }) => {
@@ -65,9 +70,8 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
 
 export const useUserOsmStatsQuery = (id) => {
   const fetchUserOsmStats = () => {
-    return fetchExternalJSONAPI(
+    return ohsomeProxyAPI(
       `${OHSOME_STATS_BASE_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
-      true,
     );
   };
 
