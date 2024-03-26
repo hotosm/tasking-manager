@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 
 import api from './apiClient';
 import { OHSOME_STATS_BASE_URL } from '../config';
@@ -42,7 +43,7 @@ export const useOsmStatsQuery = () => {
     queryKey: ['osm-stats'],
     queryFn: fetchOsmStats,
     useErrorBoundary: true,
-    select: (data) => data.data.result
+    select: (data) => data.data.result,
   });
 };
 
@@ -59,5 +60,35 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
     useErrorBoundary: true,
     enabled: Boolean(defaultComment?.[0]),
     select: (data) => data.data.result,
+  });
+};
+
+export const useUserOsmStatsQuery = (id) => {
+  const fetchUserOsmStats = () => {
+    return fetchExternalJSONAPI(
+      `${OHSOME_STATS_BASE_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
+      true,
+    );
+  };
+
+  return useQuery({
+    queryKey: ['user-osm-stats'],
+    queryFn: fetchUserOsmStats,
+    useErrorBoundary: true,
+    select: (data) => data.result,
+    enabled: !!id,
+  });
+};
+
+export const useOsmStatsMetadataQuery = () => {
+  const fetchOsmStatsMetadata = () => {
+    return fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/metadata`, true);
+  };
+
+  return useQuery({
+    queryKey: ['osm-stats-metadata'],
+    queryFn: fetchOsmStatsMetadata,
+    useErrorBoundary: true,
+    select: (data) => data.result,
   });
 };
