@@ -1,8 +1,14 @@
+import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
-import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 
+import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
 import { OHSOME_STATS_BASE_URL } from '../config';
+
+const ohsomeProxyAPI = (url) => {
+  const token = localStorage.getItem('token');
+  return api(token).get(`users/statistics/ohsome/?url=${url}`);
+};
 
 export const useSystemStatisticsQuery = () => {
   const fetchSystemStats = ({ signal }) => {
@@ -65,9 +71,18 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
 
 export const useUserOsmStatsQuery = (id) => {
   const fetchUserOsmStats = () => {
-    return fetchExternalJSONAPI(
-      `${OHSOME_STATS_BASE_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
-      true,
+    const token = localStorage.getItem('token');
+    // return ohsomeProxyAPI(
+    //   `${OHSOME_STATS_BASE_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
+    // );
+    return axios.get(
+      `https://tm.naxa.com.np/api/v2/users/statistics/ohsome/?url=${OHSOME_STATS_BASE_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
+      {
+        headers: {
+          Authorization: `Token ${token}`,
+          'Content-Type': 'application/json',
+        },
+      },
     );
   };
 
@@ -75,7 +90,7 @@ export const useUserOsmStatsQuery = (id) => {
     queryKey: ['user-osm-stats'],
     queryFn: fetchUserOsmStats,
     useErrorBoundary: true,
-    select: (data) => data.result,
+    select: (data) => data.data.result,
     enabled: !!id,
   });
 };
