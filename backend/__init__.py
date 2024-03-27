@@ -360,6 +360,7 @@ def add_api_endpoints(app):
         UsersStatisticsAPI,
         UsersStatisticsInterestsAPI,
         UsersStatisticsAllAPI,
+        OhsomeProxyAPI,
     )
 
     # System API endpoint
@@ -899,6 +900,9 @@ def add_api_endpoints(app):
     api.add_resource(
         UsersStatisticsAllAPI,
         format_url("users/statistics/"),
+    )
+    api.add_resource(
+        OhsomeProxyAPI, format_url("users/statistics/ohsome/"), methods=["GET"]
     )
     # User RecommendedProjects endpoint
     api.add_resource(
