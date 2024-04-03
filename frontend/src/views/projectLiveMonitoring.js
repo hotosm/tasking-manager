@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import Select from 'react-select';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import centroid from '@turf/centroid';
 import {
   UnderpassFeatureList,
@@ -9,14 +11,12 @@ import {
   UnderpassFeatureStats,
   UnderpassValidationStats,
 } from '@hotosm/underpass-ui';
-import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 
 import { ProjectVisibilityBox } from '../components/projectDetail/visibilityBox';
 import { ProjectStatusBox } from '../components/projectDetail/statusBox';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { useParams } from 'react-router-dom';
 import { useFetch } from '../hooks/UseFetch';
+import useHasLiveMonitoringFeature from '../hooks/UseHasLiveMonitoringFeature';
 import './projectLiveMonitoring.css';
 import { MAPBOX_TOKEN, UNDERPASS_URL } from '../config';
 
@@ -91,6 +91,7 @@ const mappingTypesFeatureTypes = {
 export function ProjectLiveMonitoring() {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [coords, setCoords] = useState([0, 0]);
   const [activeFeature, setActiveFeature] = useState(null);
   const [tags, setTags] = useState('building');
@@ -112,6 +113,15 @@ export function ProjectLiveMonitoring() {
 
   const [areaOfInterest, setAreaOfInterest] = useState(null);
   const [project, setProject] = useState(null);
+
+  const hasLiveMonitoringFeature = useHasLiveMonitoringFeature();
+
+  // navigate to homepage when a project without live monitoring feature
+  // is accessed directly from the route
+  useEffect(() => {
+    if (hasLiveMonitoringFeature === null || hasLiveMonitoringFeature) return;
+    navigate('/');
+  }, [navigate, hasLiveMonitoringFeature]);
 
   useEffect(() => {
     if (!Object.keys(data).length) return;
