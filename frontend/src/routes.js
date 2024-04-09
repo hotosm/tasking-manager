@@ -81,6 +81,16 @@ export const router = createBrowserRouter(
         ErrorBoundary={FallbackComponent}
       />
       <Route
+        path="projects/:id/live"
+        lazy={async () => {
+          const { ProjectLiveMonitoring } = await import(
+            './views/projectLiveMonitoring' /* webpackChunkName: "projectLiveMonitoring" */
+          );
+          return { Component: ProjectLiveMonitoring };
+        }}
+        ErrorBoundary={FallbackComponent}
+      />
+      <Route
         path="projects/:id/stats"
         lazy={async () => {
           const { ProjectStats } = await import(
