@@ -1,6 +1,7 @@
 import re
 import time
 import datetime
+import bleach
 
 from cachetools import TTLCache, cached
 from typing import List
@@ -243,6 +244,34 @@ class MessageService:
             task_link = MessageService.get_task_link(project_id, task_id)
             project_link = MessageService.get_project_link(project_id, project_name)
 
+            # Clean comment and convert to html
+            allowed_tags = [
+                "a",
+                "b",
+                "blockquote",
+                "br",
+                "code",
+                "em",
+                "h1",
+                "h2",
+                "h3",
+                "img",
+                "i",
+                "li",
+                "ol",
+                "p",
+                "pre",
+                "strong",
+                "ul",
+            ]
+            allowed_atrributes = {"a": ["href", "rel"], "img": ["src", "alt"]}
+            clean_comment = bleach.clean(
+                markdown(comment, output_format="html"),
+                tags=allowed_tags,
+                attributes=allowed_atrributes,
+            )  # Bleach input to ensure no nefarious script tags etc
+            clean_comment = bleach.linkify(clean_comment)
+
             messages = []
             for username in usernames:
                 try:
@@ -260,7 +289,7 @@ class MessageService:
                     f"You were mentioned in a comment in {task_link} "
                     + f"of Project {project_link}"
                 )
-                message.message = comment
+                message.message = clean_comment
                 messages.append(
                     dict(message=message, user=user, project_name=project_name)
                 )
