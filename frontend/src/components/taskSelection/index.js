@@ -260,7 +260,7 @@ export function TaskSelection({ project }: Object) {
           )}
         <div className="w-100 w-50-ns fl pt3 overflow-y-auto-ns vh-minus-200-ns h-100">
           <div className="pl4-l pl2 pr4">
-            <ProjectHeader project={project} />
+            <ProjectHeader project={project} showEditLink />
             <div className="mt3">
               <TabSelector activeSection={activeSection} setActiveSection={setActiveSection} />
               <div className="pt3">
