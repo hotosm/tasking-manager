@@ -13,9 +13,7 @@ export const FeatureStats = () => {
   const [stats, setStats] = useState({ edits: 0, buildings: 0, roads: 0, pois: 0, waterways: 0 });
   const getStats = async () => {
     try {
-      const response = await axios.get(
-        `${OHSOME_STATS_BASE_URL}/stats/hotosm-project-%2A`,
-      );
+      const response = await axios.get(`${OHSOME_STATS_BASE_URL}/stats/hotosm-project-%2A`);
       const { edits, buildings, roads } = response.data.result;
       setStats({
         edits,

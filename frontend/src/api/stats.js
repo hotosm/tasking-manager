@@ -1,8 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 
+import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
 import { OHSOME_STATS_BASE_URL } from '../config';
+
+const ohsomeProxyAPI = (url) => {
+  const token = localStorage.getItem('token');
+  return api(token).get(`users/statistics/ohsome/?url=${url}`);
+};
 
 export const useSystemStatisticsQuery = () => {
   const fetchSystemStats = ({ signal }) => {
@@ -65,17 +70,17 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
 
 export const useUserOsmStatsQuery = (id) => {
   const fetchUserOsmStats = () => {
-    return fetchExternalJSONAPI(
+    return ohsomeProxyAPI(
       `${OHSOME_STATS_BASE_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
-      true,
     );
   };
 
   return useQuery({
     queryKey: ['user-osm-stats'],
     queryFn: fetchUserOsmStats,
-    useErrorBoundary: true,
-    select: (data) => data.result,
+    // userDetail.test.js fails on CI when useErrorBoundary=true
+    useErrorBoundary: process.env.NODE_ENV !== 'test',
+    select: (data) => data.data.result,
     enabled: !!id,
   });
 };

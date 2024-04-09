@@ -1,12 +1,14 @@
 from json import JSONEncoder
 from datetime import date, timedelta
 from flask_restful import Resource, request
+import requests
 
 from backend.services.users.user_service import UserService
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
 from backend.services.users.authentication_service import token_auth
 from backend.api.utils import validate_date_input
+from backend.config import EnvironmentConfig
 
 
 class UsersStatisticsAPI(Resource, JSONEncoder):
@@ -138,3 +140,43 @@ class UsersStatisticsAllAPI(Resource):
             return stats.to_primitive(), 200
         except (KeyError, ValueError) as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+
+
+class OhsomeProxyAPI(Resource):
+    @token_auth.login_required
+    def get(self):
+        """
+        Get HomePage Stats
+        ---
+        tags:
+          - system
+        produces:
+          - application/json
+        parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - in: query
+          name: url
+          type: string
+          description: get user stats for osm contributions
+        responses:
+            200:
+                description: User stats
+            500:
+                description: Internal Server Error
+        """
+        url = request.args.get("url")
+        if not url:
+            return {"Error": "URL is None", "SubCode": "URL not provided"}, 400
+        try:
+            headers = {"Authorization": f"Basic {EnvironmentConfig.OHSOME_STATS_TOKEN}"}
+
+            # Make the GET request with headers
+            response = requests.get(url, headers=headers)
+            return response.json(), 200
+        except Exception as e:
+            return {"Error": str(e), "SubCode": "Error fetching data"}, 400
