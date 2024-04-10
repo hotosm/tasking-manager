@@ -1,0 +1,48 @@
+version: "3"
+
+networks:
+  tm-net: 
+    name: tm-net
+
+volumes:
+  osm-tmp:
+  osm-storage:
+  osm-db-data:
+
+services:
+  osm:
+    image: ghcr.io/hotosm/openstreetmap:2024-04-08
+    build:
+      dockerfile: openstreetmap.dockerfile
+    environment:
+      PIDFILE: /tmp/pids/server.pid
+      REDIRECT_URI: http://127.0.0.1:9000/authorized
+    volumes:
+      # Mount a tmp directory that will persist between runs
+      - osm-tmp:/app/tmp
+      # Mount a storage directory that will persist between runs
+      - osm-storage:/app/storage
+    tmpfs:
+      /tmp/pids/
+    ports:
+      - "4433:3000"
+    networks:
+      - tm-net
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    depends_on:
+      - osm-db
+
+  osm-db:
+    image: docker.io/postgres:14
+    ports:
+      - "54321:5432"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: openstreetmap
+    volumes:
+      # Mount the Postgres data directory so it persists between runs
+      - osm-db-data:/var/lib/postgresql/data
+      # Mount init script from https://github.com/openstreetmap/openstreetmap-website/blob/master/docker/postgres/openstreetmap-postgres-init.sh
+      - ./contrib/tm-training/openstreetmap-postgres-init.sh:/docker-entrypoint-initdb.d/openstreetmap-postgres-init.sh:ro
+    networks:
+      - tm-net
