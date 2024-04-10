@@ -42,6 +42,7 @@ class EnvironmentConfig:
 
     # OSM API, Nomimatim URLs
     OSM_SERVER_URL = os.getenv("OSM_SERVER_URL", "https://www.openstreetmap.org")
+    OSM_SERVER_URL_BACKEND = os.getenv("OSM_SERVER_URL_BACKEND", "https://www.openstreetmap.org")
     OSM_NOMINATIM_SERVER_URL = os.getenv(
         "OSM_NOMINATIM_SERVER_URL", "https://nominatim.openstreetmap.org"
     )
@@ -192,7 +193,7 @@ class EnvironmentConfig:
     }
 
     # Connection to OSM authentification system
-    OAUTH_API_URL = "{}/api/0.6/".format(OSM_SERVER_URL)
+    OAUTH_API_URL = "{}/api/0.6/".format(OSM_SERVER_URL_BACKEND)
     OAUTH_CLIENT_ID = os.getenv("TM_CLIENT_ID", None)
     OAUTH_CLIENT_SECRET = os.getenv("TM_CLIENT_SECRET", None)
     OAUTH_SCOPE = os.getenv("TM_SCOPE", "read_prefs write_api")

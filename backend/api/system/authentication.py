@@ -79,7 +79,7 @@ class SystemAuthenticationCallbackAPI(Resource):
             description: A problem occurred negotiating with the OSM API
         """
 
-        token_url = f"{EnvironmentConfig.OSM_SERVER_URL}/oauth2/token"
+        token_url = f"{EnvironmentConfig.OSM_SERVER_URL_BACKEND}/oauth2/token"
         authorization_code = request.args.get("code", None)
         if authorization_code is None:
             return {"SubCode": "InvalidData", "Error": "Missing code parameter"}, 400
