@@ -13,3 +13,7 @@ class TestOsmService(BaseTestCase):
         dto = OSMService.get_osm_details_for_user(13526430)
         # Assert
         self.assertEqual(dto.account_created, "2021-06-10T01:27:18Z")
+
+    def test_is_user_deleted(self):
+        self.assertTrue(OSMService.is_osm_user_gone(535043))
+        self.assertFalse(OSMService.is_osm_user_gone(2078753))

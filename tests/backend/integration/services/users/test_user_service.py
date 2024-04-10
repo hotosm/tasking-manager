@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from tests.backend.base import BaseTestCase
 from backend.models.postgis.message import Message
+from backend.models.postgis.statuses import UserRole, UserGender
 from backend.services.users.user_service import (
     UserService,
     MappingLevel,
@@ -97,3 +98,67 @@ class TestUserService(BaseTestCase):
         # Assert
         self.assertEqual(expected_user.username, test_user.username)
         self.assertEqual(expected_user.mapping_level, MappingLevel.INTERMEDIATE.value)
+
+    @staticmethod
+    def add_user_identifying_information(user: User) -> User:
+        user.username = "Test User"
+        user.email_address = "test@example.com"
+        user.twitter_id = "@Test"
+        user.facebook_id = "@FBTest"
+        user.linkedin_id = "@LinkedIn"
+        user.slack_id = "@Slack"
+        user.skype_id = "@Skype"
+        user.irc_id = "IRC"
+        user.name = "Some name here"
+        user.city = "Some city"
+        user.country = "Some country"
+        user.picture_url = "https://test.com/path/to/picture.png"
+        user.gender = UserGender.MALE.value
+        user.self_description_gender = "I am male"
+        user.default_editor = "ID"
+        user.save()
+        return user
+
+    def check_user_details_deleted(self, user: User, deleted: bool):
+        if deleted:
+            check = self.assertIsNone
+            self.assertNotEquals(UserRole.ADMIN.value, user.role)
+            self.assertEqual(f"user_{user.id}", user.username)
+        else:
+            self.assertNotEquals(f"user_{user.id}", user.username)
+            check = self.assertIsNotNone
+        check(user.email_address)
+        check(user.twitter_id)
+        check(user.facebook_id)
+        check(user.linkedin_id)
+        check(user.slack_id)
+        check(user.skype_id)
+        check(user.irc_id)
+        check(user.name)
+        check(user.city)
+        check(user.country)
+        check(user.picture_url)
+        check(user.gender)
+        check(user.self_description_gender)
+        self.assertEqual([], user.accepted_licenses)
+        self.assertEqual([], user.interests)
+
+    def test_delete_user_same_user(self):
+        test_user = self.add_user_identifying_information(create_canned_user())
+        UserService.delete_user_by_id(test_user.id, test_user.id)
+        self.check_user_details_deleted(User().get_by_id(test_user.id), deleted=True)
+
+    def test_delete_user_different_user(self):
+        test_user = self.add_user_identifying_information(create_canned_user())
+        other_user = return_canned_user("someone", test_user.id + 1)
+        other_user.create()
+        UserService.delete_user_by_id(test_user.id, other_user.id)
+        self.check_user_details_deleted(User().get_by_id(test_user.id), deleted=False)
+
+    def test_delete_user_different_admin_user(self):
+        test_user = self.add_user_identifying_information(create_canned_user())
+        other_user = return_canned_user("someone", test_user.id + 1)
+        other_user.set_user_role(UserRole.ADMIN)
+        other_user.create()
+        UserService.delete_user_by_id(test_user.id, other_user.id)
+        self.check_user_details_deleted(User().get_by_id(test_user.id), deleted=True)

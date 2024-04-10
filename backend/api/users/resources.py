@@ -1,11 +1,17 @@
 from distutils.util import strtobool
+from typing import Optional
+
+from flask import stream_with_context, Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
 from backend.models.dtos.user_dto import UserSearchQuery
+from backend.models.postgis.user import User
 from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService
 from backend.services.project_service import ProjectService
+from backend.services.users.osm_service import OSMService
+from backend.exceptions import Unauthorized
 
 
 class UsersRestAPI(Resource):
@@ -43,6 +49,28 @@ class UsersRestAPI(Resource):
         """
         user_dto = UserService.get_user_dto_by_id(user_id, token_auth.current_user())
         return user_dto.to_primitive(), 200
+
+    @token_auth.login_required
+    def delete(self, user_id: Optional[int] = None):
+        """
+        Delete user information by id.
+        :param user_id: The user to delete
+        :return: RFC7464 compliant sequence of user objects deleted
+            200: User deleted
+            401: Unauthorized - Invalid credentials
+            404: User not found
+            500: Internal Server Error
+        """
+        if user_id == token_auth.current_user() or UserService.is_user_an_admin(
+            token_auth.current_user()
+        ):
+            return (
+                UserService.delete_user_by_id(
+                    user_id, token_auth.current_user()
+                ).to_primitive(),
+                200,
+            )
+        raise Unauthorized()
 
 
 class UsersAllAPI(Resource):
@@ -114,6 +142,25 @@ class UsersAllAPI(Resource):
 
         users_dto = UserService.get_all_users(query)
         return users_dto.to_primitive(), 200
+
+    @token_auth.login_required
+    def delete(self):
+        if UserService.is_user_an_admin(token_auth.current_user()):
+
+            def delete_users():
+                for user in User.get_all_users_not_paginated():
+                    # We specifically want to remove users that have deleted their OSM accounts.
+                    if OSMService.is_osm_user_gone(user.id):
+                        data = UserService.delete_user_by_id(
+                            user.id, token_auth.current_user()
+                        ).to_primitive()
+                        yield f"\u001e{data}\n"
+
+            return Response(
+                stream_with_context(delete_users()),
+                headers={"Content-Type": "application/json-seq"},
+            )
+        raise Unauthorized()
 
 
 class UsersQueriesUsernameAPI(Resource):
