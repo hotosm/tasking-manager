@@ -81,9 +81,11 @@ FROM runtime as debug
 RUN pip install --user --no-warn-script-location \
     --no-cache-dir debugpy==1.6.7
 EXPOSE 5678/tcp
-CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678", \
+# Required for debugpy and gevent to work nicely together
+ENV GEVENT_SUPPORT=True
+CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", \
     "-m", "gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
-    "--reload", "--log-level", "error"]
+    "--workers", "1", "--reload", "--log-level", "error"]
 
 
 

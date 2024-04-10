@@ -31,11 +31,14 @@ services:
     image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
+      # target: debug
     depends_on:
       tm-db:
         condition: service_healthy
       tm-migration:
         condition: service_completed_successfully
+    volumes:
+      - ./backend:/usr/src/app/backend:ro
     env_file:
       - tasking-manager.env
     restart: unless-stopped
@@ -103,6 +106,8 @@ services:
     build:
       context: .
       dockerfile: "./scripts/docker/Dockerfile.frontend_development"
+    volumes:
+      - ./frontend/src:/usr/src/app/src:ro
     env_file:
       - tasking-manager.env
     labels:

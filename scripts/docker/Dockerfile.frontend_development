@@ -1,5 +1,6 @@
 FROM node:16
 
+ENV CHOKIDAR_USEPOLLING=true
 WORKDIR /usr/src/app
 
 COPY ./frontend .
