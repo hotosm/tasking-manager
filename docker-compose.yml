@@ -70,15 +70,6 @@ services:
         condition: service_healthy
     env_file:
       - tasking-manager.env
-    deploy:
-      replicas: ${API_REPLICAS:-1}
-      resources:
-        limits:
-          cpus: "1"
-          memory: 1500M
-        reservations:
-          cpus: "1"
-          memory: 100M
     networks:
       - tm-net
 
