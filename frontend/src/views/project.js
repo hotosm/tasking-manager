@@ -29,12 +29,20 @@ export const CreateProject = () => {
 
 export const ProjectsPage = () => {
   useSetTitleTag('Explore projects');
+  const { pathname } = useLocation();
   const action = useSelector((state) => state.preferences['action']);
   const [fullProjectsQuery, setProjectQuery] = useExploreProjectsQueryParams();
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
   const searchResultWidth = isMapShown ? 'two-column' : 'one-column';
 
-  const { data: projects, status, refetch } = useProjectsQuery(fullProjectsQuery, action);
+  const {
+    data: projects,
+    status,
+    refetch,
+  } = useProjectsQuery(fullProjectsQuery, action, {
+    // prevent api call until the filters are applied
+    enabled: !pathname.includes('/explore/filters/'),
+  });
 
   return (
     <div className="pull-center">

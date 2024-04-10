@@ -7,7 +7,7 @@ import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import api from './apiClient';
 import { UNDERPASS_URL } from '../config';
 
-export const useProjectsQuery = (fullProjectsQuery, action) => {
+export const useProjectsQuery = (fullProjectsQuery, action, queryOptions) => {
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
 
@@ -35,6 +35,7 @@ export const useProjectsQuery = (fullProjectsQuery, action) => {
     queryKey: ['projects', fullProjectsQuery, action],
     queryFn: ({ signal, queryKey }) => fetchProjects(signal, queryKey),
     keepPreviousData: true,
+    ...queryOptions,
   });
 };
 
