@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import ReactTooltip from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { CheckBoxInput } from '../formInputs';
@@ -25,10 +27,16 @@ import {
 import { getEditors } from '../../utils/editorsList';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { getTaskContributors } from '../../utils/getTaskContributors';
-import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { CommentInputField } from '../comments/commentInput';
 import { useFetchLockedTasks, useClearLockedTasks } from '../../hooks/UseLockedTasks';
-import { useAsync } from '../../hooks/UseAsync';
+import {
+  submitMappingTask,
+  splitTask,
+  stopMapping,
+  stopValidation,
+  submitValidationTask,
+} from '../../api/projects';
 
 export function CompletionTabForMapping({
   project,
@@ -46,6 +54,8 @@ export function CompletionTabForMapping({
 }: Object) {
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences['locale']);
+  const queryClient = useQueryClient();
   const [showHelp, setShowHelp] = useState(false);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const [splitTaskError, setSplitTaskError] = useState(false);
@@ -54,96 +64,100 @@ export function CompletionTabForMapping({
   const fetchLockedTasks = useFetchLockedTasks();
   const clearLockedTasks = useClearLockedTasks();
   const directedFrom = localStorage.getItem('lastProjectPathname');
+  const { projectId } = project;
 
-  const splitTask = () => {
-    if (!disabled) {
-      return fetchLocalJSONAPI(
-        `projects/${project.projectId}/tasks/actions/split/${tasksIds[0]}/`,
-        token,
-        'POST',
-      )
-        .then((res) => {
-          clearLockedTasks();
-          navigate(
-            (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
-            {
-              state: {
-                lastLockedTasksIds: res.tasks.map((task) => task.taskId),
-                lastLockedProjectId: project.projectId,
-              },
-            },
-          );
-        })
-        .catch((e) => {
-          setSplitTaskError(true);
-        });
-    } else {
-      // we need to return a promise in order to be called by useAsync
-      return new Promise((resolve, reject) => {
-        setShowMapChangesModal('split');
-        resolve();
-      });
-    }
-  };
-  const splitTaskAsync = useAsync(splitTask);
+  const splitTaskMutation = useMutation({
+    mutationFn: () => splitTask(projectId, tasksIds[0], token, locale),
+    onSuccess: ({ data: { tasks } }) => {
+      invalidateProjectData();
+      clearLockedTasks();
+      navigateToTasksPage(tasks.map((task) => task.taskId));
+    },
+    onError: (err) => {
+      if (err.response?.data?.SubCode === 'SmallToSplit') {
+        setSplitTaskError(true);
+      } else {
+        toast.error(<FormattedMessage {...messages.splitTaskGenericError} />);
+      }
+    },
+  });
 
-  const stopMapping = () => {
-    if (!disabled) {
-      return pushToLocalJSONAPI(
-        `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`,
-        JSON.stringify({ comment: taskComment }),
-        token,
-      ).then((r) => {
-        clearLockedTasks();
-        navigate(
-          (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
-          {
-            state: {
-              lastLockedTasksIds: tasksIds,
-              lastLockedProjectId: project.projectId,
-            },
-          },
-        );
-      });
-    } else {
+  const stopMappingMutation = useMutation({
+    mutationFn: () => stopMapping(projectId, tasksIds[0], taskComment, token, locale),
+    onSuccess: () => {
+      invalidateProjectData();
+      clearLockedTasks();
+      navigateToTasksPage(tasksIds);
+    },
+    onError: () => {
+      toast.error(<FormattedMessage {...messages.stopMappingError} />);
+    },
+  });
+
+  const submitTaskMutation = useMutation({
+    mutationFn: (formData) => {
+      const { url, payload } = formData;
+      return submitMappingTask(url, payload, token, locale);
+    },
+    onSuccess: () => {
+      invalidateProjectData();
+      fetchLockedTasks();
+      navigateToTasksPage(tasksIds);
+    },
+    onError: () => {
+      toast.error(
+        <FormattedMessage {...messages.submitTaskError} values={{ numTasks: tasksIds.length }} />,
+      );
+    },
+  });
+
+  const onStopMapping = () => {
+    if (disabled) {
       return new Promise((resolve, reject) => {
         setShowMapChangesModal('unlock');
         resolve();
       });
     }
+    stopMappingMutation.mutate();
   };
-  const stopMappingAsync = useAsync(stopMapping);
 
-  const submitTask = () => {
-    if (!disabled && selectedStatus) {
-      let url;
-      let payload = { comment: taskComment };
-      if (selectedStatus === 'MAPPED') {
-        url = `projects/${project.projectId}/tasks/actions/unlock-after-mapping/${tasksIds[0]}/`;
-        payload.status = 'MAPPED';
-      }
-      if (selectedStatus === 'READY') {
-        url = `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`;
-      }
-      if (selectedStatus === 'BADIMAGERY') {
-        url = `projects/${project.projectId}/tasks/actions/unlock-after-mapping/${tasksIds[0]}/`;
-        payload.status = 'BADIMAGERY';
-      }
-      return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
-        fetchLockedTasks();
-        navigate(
-          (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
-          {
-            state: {
-              lastLockedTasksIds: tasksIds,
-              lastLockedProjectId: project.projectId,
-            },
-          },
-        );
+  const onSplitTask = () => {
+    if (disabled) {
+      return new Promise((resolve, reject) => {
+        setShowMapChangesModal('unlock');
+        resolve();
       });
     }
+    splitTaskMutation.mutate();
   };
-  const submitTaskAsync = useAsync(submitTask);
+
+  const onSubmitTask = () => {
+    const url =
+      selectedStatus === 'READY'
+        ? `projects/${projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`
+        : `projects/${projectId}/tasks/actions/unlock-after-mapping/${tasksIds[0]}/`;
+    const payload = {
+      comment: taskComment,
+    };
+    if (selectedStatus !== 'READY') {
+      payload.status = selectedStatus;
+    }
+    submitTaskMutation.mutate({ url, payload });
+  };
+
+  const invalidateProjectData = () => {
+    queryClient.invalidateQueries(['project-tasks', projectId]);
+    queryClient.invalidateQueries(['project-activities', projectId]);
+  };
+
+  const navigateToTasksPage = (taskIds) => {
+    navigate((redirectToPreviousProject && directedFrom) || `/projects/${projectId}/tasks/`, {
+      state: {
+        lastLockedTasksIds: taskIds,
+        lastLockedProjectId: projectId,
+      },
+    });
+  };
 
   return (
     <div>
@@ -171,9 +185,10 @@ export function CompletionTabForMapping({
       )}
       {showReadCommentsAlert && (
         <div
-          className="tc pa2 mb1 bg-grey-light blue-dark pointer"
           role="button"
+          className="tc pa2 mb1 bg-grey-light blue-dark pointer"
           onClick={() => historyTabSwitch()}
+          onKeyDown={() => {}}
         >
           <InfoIcon className="v-mid h1 w1" />
           <span className="ml2 fw1 pa1">
@@ -277,13 +292,13 @@ export function CompletionTabForMapping({
       <div className="cf mv2" data-tip>
         <Button
           className="bg-red white w-100 fl"
-          onClick={() => submitTaskAsync.execute()}
+          onClick={onSubmitTask}
           disabled={
             disabled ||
             !selectedStatus ||
-            [stopMappingAsync.status, splitTaskAsync.status].includes('pending')
+            [stopMappingMutation.status, splitTaskMutation.status].includes('loading')
           }
-          loading={submitTaskAsync.status === 'pending'}
+          loading={submitTaskMutation.status === 'loading'}
         >
           <FormattedMessage {...messages.submitTask} />
         </Button>
@@ -296,17 +311,17 @@ export function CompletionTabForMapping({
       <div className="cf pb1">
         <Button
           className="bg-blue-dark white w-50 fl"
-          onClick={() => splitTaskAsync.execute()}
-          loading={splitTaskAsync.status === 'pending'}
-          disabled={[submitTaskAsync.status, stopMappingAsync.status].includes('pending')}
+          onClick={onSplitTask}
+          loading={splitTaskMutation.status === 'loading'}
+          disabled={[submitTaskMutation.status, splitTaskMutation.status].includes('loading')}
         >
           <FormattedMessage {...messages.splitTask} />
         </Button>
         <Button
           className="blue-dark bg-white w-50 fl"
-          onClick={() => stopMappingAsync.execute()}
-          loading={stopMapping.status === 'pending'}
-          disabled={[submitTaskAsync.status, splitTaskAsync.status].includes('pending')}
+          onClick={onStopMapping}
+          loading={stopMappingMutation.status === 'loading'}
+          disabled={[submitTaskMutation.status, splitTaskMutation.status].includes('loading')}
         >
           <FormattedMessage {...messages.selectAnotherTask} />
         </Button>
@@ -329,16 +344,47 @@ export function CompletionTabForValidation({
 }: Object) {
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences.locale);
+  const queryClient = useQueryClient();
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const [redirectToPreviousProject, setRedirectToPreviousProject] = useState(true);
   const fetchLockedTasks = useFetchLockedTasks();
   const clearLockedTasks = useClearLockedTasks();
   const directedFrom = localStorage.getItem('lastProjectPathname');
+  const { projectId } = project;
+
+  const stopValidationMutation = useMutation({
+    mutationFn: (formData) => stopValidation(projectId, formData, token, locale),
+    onSuccess: () => {
+      clearLockedTasks();
+      invalidateProjectData();
+      navigateToTasksPage();
+    },
+    onError: () => {
+      toast.error(<FormattedMessage {...messages.stopValidationError} />);
+    },
+  });
+
+  const submitTaskMutation = useMutation({
+    mutationFn: (formData) => submitValidationTask(projectId, formData, token, locale),
+    onSuccess: () => {
+      fetchLockedTasks();
+      invalidateProjectData();
+      navigateToTasksPage(true);
+    },
+    onError: () => {
+      toast.error(
+        <FormattedMessage {...messages.submitTaskError} values={{ numTasks: tasksIds.length }} />,
+      );
+    },
+  });
 
   const updateStatus = (id, newStatus) =>
     setValidationStatus({ ...validationStatus, [id]: newStatus });
+
   const updateComment = (id, newComment) =>
     setValidationComments({ ...validationComments, [id]: newComment });
+
   const copyCommentToTasks = (id, statusFilter) => {
     const comment = validationComments[id];
     let tasks = tasksIds.filter((task) => task !== id);
@@ -349,66 +395,56 @@ export function CompletionTabForValidation({
     tasks.forEach((task) => (payload[task] = comment));
     setValidationComments({ ...validationComments, ...payload });
   };
+
   const areAllTasksVerified = Object.keys(validationStatus).length === tasksIds.length;
 
-  const stopValidation = () => {
-    if (!disabled) {
-      return pushToLocalJSONAPI(
-        `projects/${project.projectId}/tasks/actions/stop-validation/`,
-        JSON.stringify({
-          resetTasks: tasksIds.map((taskId) => ({
-            taskId: taskId,
-            comment: validationComments[taskId],
-          })),
-        }),
-        token,
-      ).then((r) => {
-        clearLockedTasks();
-        navigate(
-          (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
-          {
-            state: {
-              lastLockedTasksIds: tasksIds,
-              lastLockedProjectId: project.projectId,
-            },
-          },
-        );
-      });
-    } else {
+  const onStopValidation = () => {
+    if (disabled) {
       return new Promise((resolve, reject) => {
         setShowMapChangesModal('unlock');
         resolve();
       });
     }
+    const payload = {
+      resetTasks: tasksIds.map((taskId) => ({
+        taskId: taskId,
+        comment: validationComments[taskId],
+      })),
+    };
+    stopValidationMutation.mutate(payload);
   };
-  const stopValidationAsync = useAsync(stopValidation);
 
-  const submitTask = () => {
-    if (!disabled && areAllTasksVerified) {
-      const url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
-      let payload = {
-        validatedTasks: tasksIds.map((taskId) => ({
-          taskId: taskId,
-          comment: validationComments[taskId],
-          status: validationStatus[taskId],
-        })),
-      };
-      return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
-        fetchLockedTasks();
-        navigate(
-          (redirectToPreviousProject && directedFrom) ||
-            `/projects/${project.projectId}/tasks/?filter=MAPPED`,
-          {
-            state: {
-              lastLockedTasksIds: tasksIds,
-              lastLockedProjectId: project.projectId,
-            },
-          },
-        );
-      });
-    }
+  const onSubmitTask = () => {
+    const payload = {
+      validatedTasks: tasksIds.map((taskId) => ({
+        taskId: taskId,
+        comment: validationComments[taskId],
+        status: validationStatus[taskId],
+      })),
+    };
+    submitTaskMutation.mutate(payload);
   };
-  const submitTaskAsync = useAsync(submitTask);
+
+  const navigateToTasksPage = (applyFilter = false) => {
+    let filterParam = '';
+    if (applyFilter) {
+      filterParam = '?filter=MAPPED';
+    }
+    navigate(
+      (redirectToPreviousProject && directedFrom) || `/projects/${projectId}/tasks/${filterParam}`,
+      {
+        state: {
+          lastLockedTasksIds: tasksIds,
+          lastLockedProjectId: projectId,
+        },
+      },
+    );
+  };
+
+  const invalidateProjectData = () => {
+    queryClient.invalidateQueries(['project-tasks', projectId]);
+    queryClient.invalidateQueries(['project-activities', projectId]);
+  };
 
   return (
     <div>
@@ -474,7 +510,7 @@ export function CompletionTabForValidation({
           <TaskValidationSelector
             key={id}
             id={id}
-            projectId={project.projectId}
+            projectId={projectId}
             contributors={contributors}
             currentStatus={validationStatus[id]}
             updateStatus={updateStatus}
@@ -504,9 +540,9 @@ export function CompletionTabForValidation({
       <div className="cf mv3" data-tip>
         <Button
           className="bg-red white w-100 fl"
-          onClick={() => submitTaskAsync.execute()}
-          disabled={disabled || !areAllTasksVerified || stopValidationAsync.status === 'pending'}
-          loading={submitTaskAsync.status === 'pending'}
+          onClick={onSubmitTask}
+          disabled={disabled || !areAllTasksVerified || stopValidationMutation.status === 'loading'}
+          loading={submitTaskMutation.status === 'loading'}
         >
           <FormattedMessage {...messages[tasksIds.length > 1 ? 'submitTasks' : 'submitTask']} />
         </Button>
@@ -519,9 +555,9 @@ export function CompletionTabForValidation({
       <div className="cf">
         <Button
           className="blue-dark bg-white w-100 fl"
-          onClick={() => stopValidationAsync.execute()}
-          loading={stopValidationAsync.status === 'pending'}
-          disabled={submitTaskAsync.status === 'pending'}
+          onClick={onStopValidation}
+          loading={stopValidationMutation.status === 'loading'}
+          disabled={submitTaskMutation.status === 'loading'}
         >
           <FormattedMessage {...messages.stopValidation} />
         </Button>
@@ -551,19 +587,12 @@ const TaskValidationSelector = ({
   // the contributors is filled only on the case of single task validation,
   // so we need to fetch the task history in the case of multiple task validation
   useEffect(() => {
-    if (showCommentInput && isValidatingMultipleTasks && !contributors.length) {
+    if (showCommentInput && isValidatingMultipleTasks) {
       fetchLocalJSONAPI(`projects/${projectId}/tasks/${id}/`).then((response) =>
         setContributorsList(getTaskContributors(response.taskHistory, userDetails.username)),
       );
     }
-  }, [
-    isValidatingMultipleTasks,
-    showCommentInput,
-    contributors,
-    id,
-    projectId,
-    userDetails.username,
-  ]);
+  }, [isValidatingMultipleTasks, showCommentInput, id, projectId, userDetails.username]);
 
   return (
     <div className="cf w-100 db pt1 pv2 blue-dark">
@@ -615,7 +644,7 @@ const TaskValidationSelector = ({
             <CommentInputField
               comment={comment}
               setComment={setComment}
-              contributors={contributors.length ? contributors : contributorsList}
+              contributors={isValidatingMultipleTasks ? contributorsList : contributors}
               enableHashtagPaste
               enableContributorsHashtag
               isShowTabNavs
@@ -678,6 +707,7 @@ function CompletionInstructions({ setVisibility }: Object) {
       <span
         className="br-100 bg-grey-light white h1 w1 fr pointer tc v-mid di"
         onClick={() => setVisibility(false)}
+        onKeyDown={() => {}}
       >
         <CloseIcon className="pv1" aria-label="hide instructions" />
       </span>
@@ -728,7 +758,6 @@ export function ReopenEditor({ project, action, editor, callEditor }: Object) {
 
 export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
   const iDContext = useSelector((state) => state.editor.context);
-  const rapidContext = useSelector((state) => state.editor.rapidContext);
 
   return (
     <div>
@@ -741,7 +770,6 @@ export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
               onClick={() => {
                 setShowSidebar(false);
                 activeEditor === 'ID' && iDContext.ui().restart();
-                activeEditor === 'RAPID' && rapidContext.ui().restart();
               }}
             />
           </div>
@@ -801,6 +829,7 @@ function TaskSpecificInstructions({ instructions, open = true }: Object) {
         className="ttu blue-grey mt1 mb0 pointer"
         role="button"
         onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={() => {}}
       >
         {isOpen ? (
           <ChevronDownIcon style={{ height: '14px' }} className="pr1 pb1 v-mid" />

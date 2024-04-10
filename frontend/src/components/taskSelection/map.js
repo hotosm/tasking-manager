@@ -83,11 +83,8 @@ export const TasksMap = ({
 
   useLayoutEffect(() => {
     const onSelectTaskClick = (e) => {
-      const { mappedBy, taskStatus } = e.features[0].properties;
-      const task = e.features && e.features[0].properties;
-      if (!(mappedBy === authDetails.id && taskStatus === 'MAPPED')) {
-        selectTask && selectTask(task.taskId, task.taskStatus);
-      }
+      const task = e.features?.[0].properties;
+      selectTask?.(task.taskId, task.taskStatus);
     };
 
     const countryMapLayers = [
@@ -374,7 +371,6 @@ export const TasksMap = ({
           e.features[0].properties.taskStatus === 'MAPPED'
         ) {
           popup.addTo(map);
-          map.getCanvas().style.cursor = 'not-allowed';
         } else {
           map.getCanvas().style.cursor = 'pointer';
           popup.isOpen() && popup.remove();

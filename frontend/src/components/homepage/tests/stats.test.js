@@ -3,7 +3,11 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { FormattedNumber } from 'react-intl';
 
 import { StatsNumber, StatsSection } from '../stats';
-import { IntlProviders, createComponentWithIntl } from '../../../utils/testWithIntl';
+import {
+  IntlProviders,
+  QueryClientProviders,
+  createComponentWithIntl,
+} from '../../../utils/testWithIntl';
 
 it('test number formatting in English', () => {
   const testNumber = createComponentWithIntl(<StatsNumber value={744531} />);
@@ -22,9 +26,11 @@ it('test number formatting smaller than 1000', () => {
 describe('Stats Section', () => {
   it('should display OSM and TM stats', async () => {
     render(
-      <IntlProviders>
-        <StatsSection />
-      </IntlProviders>,
+      <QueryClientProviders>
+        <IntlProviders>
+          <StatsSection />
+        </IntlProviders>
+      </QueryClientProviders>,
     );
     // A stat from OSM's TM Stat
     await waitFor(() => expect(screen.getByText('101.4M')).toBeInTheDocument());

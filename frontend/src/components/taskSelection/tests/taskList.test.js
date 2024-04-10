@@ -7,6 +7,7 @@ import tasksGeojson from '../../../utils/tests/snippets/tasksGeometry';
 import {
   createComponentWithMemoryRouter,
   IntlProviders,
+  QueryClientProviders,
   ReduxIntlProviders,
   renderWithRouter,
 } from '../../../utils/testWithIntl';
@@ -69,15 +70,17 @@ describe('Task Item', () => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
     const { user } = renderWithRouter(
-      <ReduxIntlProviders>
-        <TaskItem
-          taskId={1}
-          data={task}
-          tasks={[tasksGeojson.features[7]]}
-          selectTask={jest.fn()}
-          project={getProjectSummary(123)}
-        />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <TaskItem
+            taskId={1}
+            data={task}
+            tasks={[tasksGeojson.features[7]]}
+            selectTask={jest.fn()}
+            project={getProjectSummary(123)}
+          />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     await user.click(screen.getByTitle(/See task history/i));
     expect(

@@ -17,8 +17,8 @@ export const NotificationResultsMini = (props) => {
 
 export const NotificationResults = ({
   className,
-  error,
-  loading,
+  isError,
+  isLoading,
   notifications,
   retryFn,
   useMiniCard,
@@ -31,19 +31,19 @@ export const NotificationResults = ({
 
   const showRefreshButton =
     useMiniCard &&
-    !error &&
+    !isError &&
     notifications.userMessages &&
     liveUnreadCount !== notifications.userMessages.filter((n) => !n.read).length;
 
   return (
     <div className={className || ''}>
       {!stateNotifications && <span>&nbsp;</span>}
-      {notifications?.userMessages && !error && !useMiniCard && (
+      {notifications?.userMessages && !isError && !useMiniCard && (
         <p className="blue-grey pt2 f7">
           <FormattedMessage
             {...messages.paginationCount}
             values={{
-              number: stateNotifications && stateNotifications.length,
+              number: stateNotifications?.length,
               total: (
                 <FormattedNumber
                   value={
@@ -58,7 +58,7 @@ export const NotificationResults = ({
         </p>
       )}
 
-      {error && (
+      {isError && (
         <div className="bg-tan pa4 mt3">
           <FormattedMessage {...messages.errorLoadingNotifications} />
           <div className="pa2">
@@ -70,7 +70,7 @@ export const NotificationResults = ({
       )}
       <div className={`cf`}>
         <ReactPlaceholder
-          ready={!loading && stateNotifications}
+          ready={!isLoading && stateNotifications}
           customPlaceholder={<NotificationPlaceholder />}
           type="media"
           rows={10}

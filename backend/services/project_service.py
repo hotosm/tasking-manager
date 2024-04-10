@@ -1,8 +1,11 @@
 import threading
 from cachetools import TTLCache, cached
 from flask import current_app
+import geojson
+from datetime import datetime, timedelta
 
 from backend.exceptions import NotFound
+
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.project_dto import (
     ProjectDTO,
@@ -13,6 +16,7 @@ from backend.models.dtos.project_dto import (
     ProjectContribDTO,
     ProjectSearchResultsDTO,
 )
+from backend.models.postgis.project_chat import ProjectChat
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.project import Project, ProjectStatus
@@ -615,3 +619,45 @@ class ProjectService:
                     project_completion,
                 ),
             ).start()
+
+    @staticmethod
+    def get_active_projects(interval):
+        action_date = datetime.utcnow() - timedelta(hours=interval)
+        history_result = (
+            TaskHistory.query.with_entities(TaskHistory.project_id)
+            .distinct()
+            .filter((TaskHistory.action_date) >= action_date)
+            .all()
+        )
+        project_ids = [row.project_id for row in history_result]
+        chat_result = (
+            ProjectChat.query.with_entities(ProjectChat.project_id)
+            .distinct()
+            .filter((ProjectChat.time_stamp) >= action_date)
+            .all()
+        )
+        chat_project_ids = [row.project_id for row in chat_result]
+        project_ids.extend(chat_project_ids)
+        project_ids = list(set(project_ids))
+        projects = (
+            Project.query.with_entities(
+                Project.id,
+                Project.mapping_types,
+                Project.geometry.ST_AsGeoJSON().label("geometry"),
+            )
+            .filter(
+                Project.id.in_(project_ids),
+            )
+            .all()
+        )
+        features = []
+        for project in projects:
+            properties = {
+                "project_id": project.id,
+                "mapping_types": project.mapping_types,
+            }
+            feature = geojson.Feature(
+                geometry=geojson.loads(project.geometry), properties=properties
+            )
+            features.append(feature)
+        return geojson.FeatureCollection(features)

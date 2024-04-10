@@ -2,11 +2,13 @@ import { handleErrors } from '../utils/promise';
 import { API_URL } from '../config';
 
 export function fetchExternalJSONAPI(url): Promise<*> {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
   return fetch(url, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: headers,
   })
     .then(handleErrors)
     .then((res) => {

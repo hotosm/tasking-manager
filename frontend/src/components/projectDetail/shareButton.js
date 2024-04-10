@@ -6,7 +6,7 @@ import messages from './messages';
 import { ORG_CODE } from '../../config';
 import { createPopup } from '../../utils/login';
 import { getTwitterLink, getLinkedInLink, getFacebookLink } from '../../utils/shareFunctions';
-import { TwitterIconNoBg, FacebookIcon, LinkedinIcon, ShareIcon } from '../svgIcons';
+import { TwitterIcon, FacebookIcon, LinkedinIcon, ShareIcon } from '../svgIcons';
 
 export function ShareButton({ projectId }: Object) {
   const iconStyle = { width: '1.4em', height: '1.4em' };
@@ -41,7 +41,7 @@ export function ShareButton({ projectId }: Object) {
                 className="link no-underline base-font f6 pointer pv1"
                 onClick={() => twitterPopup(msg)}
               >
-                <TwitterIconNoBg style={iconStyle} className="light-blue v-mid pb1 pr2" />
+                <TwitterIcon style={iconStyle} className="light-blue v-mid pb1 pr2" />
                 Tweet
               </div>
               <div

@@ -15,6 +15,7 @@ import {
 } from '../project';
 import {
   createComponentWithMemoryRouter,
+  QueryClientProviders,
   ReduxIntlProviders,
   renderWithRouter,
 } from '../../utils/testWithIntl';
@@ -22,6 +23,13 @@ import { setupFaultyHandlers } from '../../network/tests/server';
 
 import { projects } from '../../network/tests/mockData/projects';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+
+// This is a late import in a React.lazy call; it takes awhile for date-fns to resolve, so we import it here manually.
+// In the event you remove it, please measure test times before ''and'' after removal.
+import '../../utils/chart';
+
+// scrollTo is not implemented by jsdom; mock to avoid warnings.
+window.scrollTo = jest.fn();
 
 test('CreateProject renders ProjectCreate', async () => {
   renderWithRouter(
@@ -41,11 +49,13 @@ describe('UserProjectsPage Component', () => {
     });
 
     const { router } = createComponentWithMemoryRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <UserProjectsPage management={false} />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <UserProjectsPage management={false} />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
 
     await waitFor(() => expect(router.state.location.pathname).toBe('/login'));
@@ -57,11 +67,13 @@ describe('UserProjectsPage Component', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <UserProjectsPage management={false} location={{ pathname: '/manage' }} />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <UserProjectsPage management={false} location={{ pathname: '/manage' }} />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
     await waitFor(() =>
       expect(screen.getByRole('heading', { name: projects.results[0].name })).toBeInTheDocument(),
@@ -85,11 +97,13 @@ describe('UserProjectsPage Component', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <UserProjectsPage management={false} />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <UserProjectsPage management={false} />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
     await screen.findByRole('heading', { name: projects.results[0].name });
     // Since WebGL is not supported by Node, we'll assume that the map context will be loaded
@@ -126,11 +140,13 @@ describe('ManageProjectsPage', () => {
     });
 
     renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <ManageProjectsPage />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <ManageProjectsPage />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
 
     await screen.findByRole('heading', { name: projects.results[0].name });
@@ -146,11 +162,13 @@ describe('ManageProjectsPage', () => {
       store.dispatch({ type: 'TOGGLE_MAP' });
     });
     const { user } = renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <ManageProjectsPage />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <ManageProjectsPage />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
 
     await user.click(screen.getByRole('checkbox'));
@@ -168,11 +186,13 @@ test('ProjectsPageIndex is a null DOM element', () => {
 describe('Projects Page', () => {
   const setup = () => {
     renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <ProjectsPage />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <ProjectsPage />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
   };
 
@@ -210,15 +230,34 @@ describe('Project Detail Page', () => {
     Line: () => null,
   }));
 
+  /**
+   * Set up a ProjectDetailPage given an initial entry; this avoids issues where there is no project id.
+   * @param {Array<string>} initialEntries The initial entries. This should be in the form of `[projects/:id]`.
+   */
+  function setup(initialEntries) {
+    render(
+      <MemoryRouter initialEntries={initialEntries}>
+        <Routes>
+          <Route
+            path="projects/:id"
+            element={
+              <QueryClientProviders>
+                <ReduxIntlProviders>
+                  <ProjectDetailPage />
+                </ReduxIntlProviders>
+              </QueryClientProviders>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+  }
+
   it('should render component details', async () => {
     act(() => {
       store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
     });
-    renderWithRouter(
-      <ReduxIntlProviders>
-        <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-      </ReduxIntlProviders>,
-    );
+    setup(['/projects/123']);
     await waitFor(() => {
       expect(screen.getByText(/sample project/i)).toBeInTheDocument();
       expect(screen.getByText(/hello world/i)).toBeInTheDocument();
@@ -227,20 +266,7 @@ describe('Project Detail Page', () => {
 
   it('should display private project error message', async () => {
     setupFaultyHandlers();
-    render(
-      <MemoryRouter initialEntries={['/projects/123']}>
-        <Routes>
-          <Route
-            path="projects/:id"
-            element={
-              <ReduxIntlProviders>
-                <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-              </ReduxIntlProviders>
-            }
-          />
-        </Routes>
-      </MemoryRouter>,
-    );
+    setup(['/projects/123']);
 
     await waitFor(() =>
       expect(
@@ -257,9 +283,11 @@ describe('Project Detail Page', () => {
           <Route
             path="projects/:id"
             element={
-              <ReduxIntlProviders>
-                <ProjectDetailPage id={123} navigate={() => jest.fn()} />
-              </ReduxIntlProviders>
+              <QueryClientProviders>
+                <ReduxIntlProviders>
+                  <ProjectDetailPage />
+                </ReduxIntlProviders>
+              </QueryClientProviders>
             }
           />
         </Routes>

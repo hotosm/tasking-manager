@@ -36,15 +36,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
   }, [customImageryIsSet, imagery, iDContext, customSource]);
 
   useEffect(() => {
-    return () => {
-      dispatch({ type: 'SET_VISIBILITY', isVisible: true });
-    };
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
     if (windowInit) {
-      dispatch({ type: 'SET_VISIBILITY', isVisible: false });
       if (iDContext === null) {
         // we need to keep iD context on redux store because iD works better if
         // the context is not restarted while running in the same browser session

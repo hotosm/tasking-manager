@@ -17,7 +17,7 @@ describe('Contributions', () => {
         <Contributions
           project={{ projectId: 1, osmchaFilterId: 'abc1234' }}
           tasks={tasks}
-          contribsData={projectContributions}
+          contribsData={projectContributions.userContributions}
           activeUser={null}
           activeStatus={null}
           selectTask={selectTask}
@@ -72,7 +72,7 @@ describe('Contributions', () => {
         <Contributions
           project={{ projectId: 1, osmchaFilterId: 'abc1234' }}
           tasks={tasks}
-          contribsData={projectContributions}
+          contribsData={projectContributions.userContributions}
           activeUser={'test_1'}
           activeStatus={'MAPPED'}
           selectTask={selectTask}

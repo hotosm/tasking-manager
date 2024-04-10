@@ -34,3 +34,10 @@ export const systemStats = {
   totalMappers: 3,
   totalProjects: 10,
 };
+
+export const ohsomeNowMetadata = {
+  result: {
+    max_timestamp: '2023-10-03T15:47:49Z',
+    min_timestamp: '2009-04-21T20:02:04Z',
+  },
+};

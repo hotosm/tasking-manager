@@ -1,14 +1,13 @@
 import React from 'react';
-import ReactTooltip from 'react-tooltip';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import projectMessages from './messages';
 import userDetailMessages from '../userDetail/messages';
-import { MappingIcon, HomeIcon, RoadIcon, EditIcon, InfoIcon } from '../svgIcons';
+import { MappingIcon, HomeIcon, RoadIcon, EditIcon } from '../svgIcons';
 import { StatsCard } from '../statsCard';
+import StatsTimestamp from '../statsTimestamp';
 
 export const EditsStats = ({ data }) => {
-  const intl = useIntl();
   const { changesets, buildings, roads, edits } = data;
 
   const iconClass = 'h-50 w-50';
@@ -16,14 +15,12 @@ export const EditsStats = ({ data }) => {
 
   return (
     <div className="cf w-100 pb4 ph2 ph4-ns blue-dark">
-      <h3 className="barlow-condensed ttu f3">
-        <FormattedMessage {...projectMessages.edits} />
-        <InfoIcon
-          data-tip={intl.formatMessage(projectMessages.editsStats)}
-          className="blue-grey h1 w1 v-mid pb1 ml2"
-        />
-      </h3>
-      <ReactTooltip place="top" className="mw6" effect="solid" />
+      <div className="flex items-center">
+        <h3 className="barlow-condensed ttu f3">
+          <FormattedMessage {...projectMessages.edits} />
+        </h3>
+        <StatsTimestamp messageType="project" />
+      </div>
       <div className="db pb2 project-edit-stats">
         <StatsCard
           field={'changesets'}

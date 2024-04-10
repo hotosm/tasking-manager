@@ -5,6 +5,10 @@ export default defineMessages({
     id: 'projects.stats.title',
     defaultMessage: 'Time statistics',
   },
+  projectStatsError: {
+    id: 'project.stats.timeline.fetching.error',
+    defaultMessage: 'An error occured while loading project stats',
+  },
   averageMappingTime: {
     id: 'projects.stats.average_mapping_time',
     defaultMessage: 'Average mapping time per Task',
@@ -88,9 +92,5 @@ export default defineMessages({
   edits: {
     id: 'project.stats.edits',
     defaultMessage: 'Edits',
-  },
-  editsStats: {
-    id: 'project.stats.edits.info',
-    defaultMessage: 'These stats are retrieved using the default changeset comment of the project',
   },
 });

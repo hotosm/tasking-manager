@@ -1,0 +1,27 @@
+version: "3"
+
+name: tasking-manager-main
+
+services:
+  tm-db:
+    # Database container binds to host's 5433 port, update to use any other port.
+    ports:
+      - 5432:5432
+
+  tm-backend:
+    # Backend binds to 8001 by default, change to use other ports.
+    # Make sure to update, TM_APP_API_URL=http://127.0.0.1:8001 in tasking-manager.env accordingly.
+    ports:
+      - 5000:5000
+
+  tm-frontend:
+    build:
+      context: .
+      dockerfile: "./scripts/docker/Dockerfile.frontend_development"
+    # Frontend development server is binded to host's 8000 port by default, update to use any other port.
+    # Make sure to update, TM_APP_BASE_URL=http://127.0.0.1:8000 in tasking-manager.env accordingly.
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules

@@ -35,7 +35,7 @@ describe('Notifications Results', () => {
   it('should display error message for fetching notifications', () => {
     createComponentWithMemoryRouter(
       <ReduxIntlProviders>
-        <NotificationResults notifications={notifications} error inboxQuery={{}} />
+        <NotificationResults notifications={notifications} isError inboxQuery={{}} />
       </ReduxIntlProviders>,
     );
     expect(screen.getByText(messages.errorLoadingNotifications.defaultMessage)).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe('Notifications Results', () => {
       <ReduxIntlProviders>
         <NotificationResults
           notifications={notifications}
-          error
+          isError
           inboxQuery={{}}
           retryFn={retryFnMock}
         />

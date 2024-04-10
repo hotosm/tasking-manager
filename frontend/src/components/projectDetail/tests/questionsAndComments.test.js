@@ -4,7 +4,11 @@ import { render, screen, act, waitFor, within } from '@testing-library/react';
 
 import { store } from '../../../store';
 
-import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+import {
+  QueryClientProviders,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 import { getProjectSummary, projectComments } from '../../../network/tests/mockData/projects';
 import { QuestionsAndComments, PostProjectComment, CommentList } from '../questionsAndComments';
 
@@ -12,9 +16,11 @@ describe('test if QuestionsAndComments component', () => {
   const project = getProjectSummary(1);
   it('only renders text asking user to log in for non-logged in user', () => {
     render(
-      <ReduxIntlProviders store={store}>
-        <QuestionsAndComments project={project} />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders store={store}>
+          <QuestionsAndComments project={project} />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     expect(screen.getByText('Log in to be able to post comments.')).toBeInTheDocument();
   });
@@ -22,9 +28,11 @@ describe('test if QuestionsAndComments component', () => {
   it('renders tabs for writing and previewing comments', async () => {
     const user = userEvent.setup();
     render(
-      <ReduxIntlProviders store={store}>
-        <PostProjectComment projectId={1} />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders store={store}>
+          <PostProjectComment projectId={1} />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     const previewBtn = screen.getByRole('button', { name: /preview/i });
     expect(screen.getAllByRole('button').length).toBe(11);
@@ -41,9 +49,11 @@ describe('test if QuestionsAndComments component', () => {
       store.dispatch({ type: 'SET_TOKEN', token: '123456', role: 'ADMIN' });
     });
     const { user } = renderWithRouter(
-      <ReduxIntlProviders store={store}>
-        <QuestionsAndComments project={project} />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders store={store}>
+          <QuestionsAndComments project={project} />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
     await waitFor(() => expect(screen.getByText('hello world')).toBeInTheDocument());
     const textarea = screen.getByRole('textbox');

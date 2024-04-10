@@ -10,7 +10,7 @@ ifndef DOCKER_COMPOSE_VERSION
 endif
 
 build:
-	docker-compose build --no-cache app
+	docker-compose build --no-cache backend frontend
 
 up:
 	docker network inspect tm-web >/dev/null 2>&1 || \
@@ -24,21 +24,21 @@ list:
 	docker-compose ps
 
 refresh-frontend:
-	docker-compose exec app sh -c "cd frontend && npm run build"
+	docker-compose exec frontend sh -c "cd frontend && npm run build"
 
 refresh-translatables:
-	docker-compose exec app sh -c "cd frontend && yarn build-locales"
+	docker-compose exec frontend sh -c "cd frontend && yarn build-locales"
 
 refresh-translations:
-	docker-compose exec app sh -c "tx pull -af"
+	docker-compose exec frontend sh -c "tx pull -af"
 
 tests:test-frontend test-backend
 
 test-frontend:
-	docker-compose exec app sh -c "cd /usr/src/app/frontend && CI=true npm test"
+	docker-compose exec frontend sh -c "cd /usr/src/app/frontend && CI=true npm test"
 
 test-backend:
-	docker-compose exec app sh -c "python -m unittest discover tests/backend"
+	docker-compose exec backend sh -c "python -m unittest discover tests/backend"
 
 fetch:
 ifndef PRNUMBER
@@ -49,3 +49,7 @@ else
 endif
 
 checkout:down fetch build up tests down
+
+# Run doxygen to make API documentation
+apidocs:
+	-@cd docs && doxygen

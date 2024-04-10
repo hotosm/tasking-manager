@@ -2,7 +2,12 @@ import '@testing-library/jest-dom';
 import { screen, fireEvent, act, within, waitFor, render } from '@testing-library/react';
 
 import '../../../utils/mockMatchMedia';
-import { IntlProviders, ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+import {
+  IntlProviders,
+  QueryClientProviders,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 import { ORG_NAME, ORG_URL, ORG_LOGO, SERVICE_DESK } from '../../../config';
 import { AuthButtons, getMenuItemsForUser, Header, PopupItems } from '..';
 import messages from '../messages';
@@ -110,9 +115,11 @@ describe('Header', () => {
 describe('Right side action items', () => {
   const setup = () => {
     renderWithRouter(
-      <ReduxIntlProviders>
-        <Header />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <Header />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
   };
   test('when the user is logged in', () => {
@@ -158,9 +165,11 @@ describe('Right side action items', () => {
 describe('Dropdown menu of logged in user', () => {
   const setup = () =>
     renderWithRouter(
-      <ReduxIntlProviders>
-        <Header />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <Header />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
     );
 
   it('should render dropdown menu when clicked', async () => {
@@ -332,9 +341,11 @@ test('users should be prompted to update their email', () => {
     });
   });
   renderWithRouter(
-    <ReduxIntlProviders>
-      <Header />
-    </ReduxIntlProviders>,
+    <QueryClientProviders>
+      <ReduxIntlProviders>
+        <Header />
+      </ReduxIntlProviders>
+    </QueryClientProviders>,
   );
   expect(
     screen.getByRole('heading', {

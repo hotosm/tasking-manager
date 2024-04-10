@@ -6,7 +6,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 
 import { store } from '../../store';
-import { ReduxIntlProviders } from '../../utils/testWithIntl';
+import { QueryClientProviders, ReduxIntlProviders } from '../../utils/testWithIntl';
 import { SelectTask } from '../taskSelection';
 
 describe('Task Selection Page', () => {
@@ -19,13 +19,16 @@ describe('Task Selection Page', () => {
             <Route
               path="projects/:id/tasks"
               element={
-                <QueryParamProvider adapter={ReactRouter6Adapter}>
-                  <ReduxIntlProviders>
-                    <SelectTask />
-                  </ReduxIntlProviders>
-                </QueryParamProvider>
+                <QueryClientProviders>
+                  <QueryParamProvider adapter={ReactRouter6Adapter}>
+                    <ReduxIntlProviders>
+                      <SelectTask />
+                    </ReduxIntlProviders>
+                  </QueryParamProvider>
+                </QueryClientProviders>
               }
             />
+            <Route path="/login" element={<div>Login Page</div>} />
           </Routes>
         </MemoryRouter>,
       ),
@@ -38,11 +41,7 @@ describe('Task Selection Page', () => {
       store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
     });
     setup();
-    expect(
-      screen.getByRole('button', {
-        name: /log in/i,
-      }),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Login Page')).toBeInTheDocument();
   });
 
   it('should display message hinting users that they are not ready to work on the project', async () => {
@@ -241,11 +240,13 @@ describe('Random Task Selection', () => {
             <Route
               path="projects/:id/tasks"
               element={
-                <QueryParamProvider adapter={ReactRouter6Adapter}>
-                  <ReduxIntlProviders>
-                    <SelectTask />
-                  </ReduxIntlProviders>
-                </QueryParamProvider>
+                <QueryClientProviders>
+                  <QueryParamProvider adapter={ReactRouter6Adapter}>
+                    <ReduxIntlProviders>
+                      <SelectTask />
+                    </ReduxIntlProviders>
+                  </QueryParamProvider>
+                </QueryClientProviders>
               }
             />
           </Routes>
@@ -306,11 +307,13 @@ describe('Complete Project', () => {
           <Route
             path="projects/:id/tasks"
             element={
-              <QueryParamProvider adapter={ReactRouter6Adapter}>
-                <ReduxIntlProviders>
-                  <SelectTask />
-                </ReduxIntlProviders>
-              </QueryParamProvider>
+              <QueryClientProviders>
+                <QueryParamProvider adapter={ReactRouter6Adapter}>
+                  <ReduxIntlProviders>
+                    <SelectTask />
+                  </ReduxIntlProviders>
+                </QueryParamProvider>
+              </QueryClientProviders>
             }
           />
         </Routes>
@@ -336,11 +339,13 @@ describe('Mapped Project', () => {
           <Route
             path="projects/:id/tasks"
             element={
-              <QueryParamProvider adapter={ReactRouter6Adapter}>
-                <ReduxIntlProviders>
-                  <SelectTask />
-                </ReduxIntlProviders>
-              </QueryParamProvider>
+              <QueryClientProviders>
+                <QueryParamProvider adapter={ReactRouter6Adapter}>
+                  <ReduxIntlProviders>
+                    <SelectTask />
+                  </ReduxIntlProviders>
+                </QueryParamProvider>
+              </QueryClientProviders>
             }
           />
         </Routes>
@@ -372,11 +377,13 @@ describe('Resume Mapping', () => {
           <Route
             path="projects/:id/tasks"
             element={
-              <QueryParamProvider adapter={ReactRouter6Adapter}>
-                <ReduxIntlProviders>
-                  <SelectTask />
-                </ReduxIntlProviders>
-              </QueryParamProvider>
+              <QueryClientProviders>
+                <QueryParamProvider adapter={ReactRouter6Adapter}>
+                  <ReduxIntlProviders>
+                    <SelectTask />
+                  </ReduxIntlProviders>
+                </QueryParamProvider>
+              </QueryClientProviders>
             }
           />
         </Routes>
@@ -416,11 +423,13 @@ test('it should pre select task from the list from URL params', async () => {
         <Route
           path="projects/:id/tasks"
           element={
-            <QueryParamProvider adapter={ReactRouter6Adapter}>
-              <ReduxIntlProviders>
-                <SelectTask />
-              </ReduxIntlProviders>
-            </QueryParamProvider>
+            <QueryClientProviders>
+              <QueryParamProvider adapter={ReactRouter6Adapter}>
+                <ReduxIntlProviders>
+                  <SelectTask />
+                </ReduxIntlProviders>
+              </QueryParamProvider>
+            </QueryClientProviders>
           }
         />
       </Routes>

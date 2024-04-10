@@ -4,8 +4,10 @@ import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
 import { supported } from 'mapbox-gl';
+import PropTypes from 'prop-types';
 
 import messages from './messages';
+import viewsMessages from '../../views/messages';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { TasksMap } from '../taskSelection/map.js';
 import { ProjectHeader } from './header';
@@ -19,11 +21,16 @@ import { PermissionBox } from './permissionBox';
 import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
+import { LiveViewButton } from './liveViewButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
-import { useFetch } from '../../hooks/UseFetch';
+import useHasLiveMonitoringFeature from '../../hooks/UseHasLiveMonitoringFeature';
+import { useProjectContributionsQuery, useProjectTimelineQuery } from '../../api/projects';
+import { Alert } from '../alert';
 
 import './styles.scss';
 import { useWindowSize } from '../../hooks/UseWindowSize';
+import { DownloadOsmData } from './downloadOsmData.js';
+import { ENABLE_EXPORT_TOOL } from '../../config/index.js';
 
 /* lazy imports must be last import */
 const ProjectTimeline = React.lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
@@ -76,7 +83,13 @@ const ProjectDetailMap = (props) => {
           }}
         >
           <div className="cf ttu bg-white barlow-condensed f4 pv2">
-            <span onClick={(e) => setTaskBordersOnly(false)} className="pb2 mh2 pointer ph2">
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={() => setTaskBordersOnly(false)}
+              onKeyDown={() => setTaskBordersOnly(false)}
+              className="pb2 mh2 pointer ph2 "
+            >
               <FormattedMessage {...messages.zoomToTasks} />
             </span>
           </div>
@@ -86,7 +99,7 @@ const ProjectDetailMap = (props) => {
   );
 };
 
-export const ProjectDetailLeft = ({ project, contributors, className, type }: Object) => {
+export const ProjectDetailLeft = ({ project, contributors, className, type }) => {
   const htmlShortDescription =
     project.projectInfo && htmlFromMarkdown(project.projectInfo.shortDescription);
 
@@ -126,16 +139,14 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
 export const ProjectDetail = (props) => {
   useSetProjectPageTitleTag(props.project);
   const size = useWindowSize();
-  /* eslint-disable-next-line */
-  const [visualError, visualLoading, visualData] = useFetch(
-    `projects/${props.project.projectId}/contributions/queries/day/`,
-    props.project?.projectId,
+  const { data: contributors, status: contributorsStatus } = useProjectContributionsQuery(
+    props.project.projectId,
   );
-  /* eslint-disable-next-line */
-  const [contributorsError, contributorsLoading, contributors] = useFetch(
-    `projects/${props.project.projectId}/contributions/`,
-    props.project?.projectId,
+  const { data: timelineData, status: timelineDataStatus } = useProjectTimelineQuery(
+    props.project.projectId,
   );
+
+  const hasLiveMonitoringFeature = useHasLiveMonitoringFeature();
 
   const htmlDescription =
     props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
@@ -152,21 +163,11 @@ export const ProjectDetail = (props) => {
         <ProjectDetailLeft
           className="w-100 w-60-l ph4 ph2 pv3 blue-dark"
           project={props.project}
-          contributors={
-            contributors.hasOwnProperty('userContributions') ? contributors.userContributions : []
-          }
+          contributors={contributorsStatus === 'success' ? contributors : []}
           type="detail"
         />
         <div className="w-100 w-40-l">
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            type={'media'}
-            rows={26}
-            delay={200}
-            ready={typeof props.project.projectId === 'number'}
-          >
-            <ProjectDetailMap {...props} />
-          </ReactPlaceholder>
+          <ProjectDetailMap {...props} />
         </div>
       </div>
 
@@ -272,69 +273,101 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.contributors} />
       </h3>
       <div className="cf db mb3 ph4">
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          type={'media'}
-          rows={1}
-          delay={200}
-          ready={contributors?.userContributions}
-        >
-          {contributors && (
-            <UserAvatarList
-              size={'large'}
-              textColor="white"
-              users={contributors.userContributions}
-              maxLength={parseInt(size[0] / 75) > 12 ? 12 : parseInt(size[0] / 75)}
-            />
-          )}
-        </ReactPlaceholder>
+        {contributorsStatus === 'loading' && (
+          <ReactPlaceholder
+            showLoadingAnimation={true}
+            type={'media'}
+            rows={1}
+            delay={200}
+            ready={contributorsStatus === 'success'}
+          />
+        )}
+        {contributorsStatus === 'error' && (
+          <div className="w-100 w-60-l">
+            <Alert type="error">
+              <FormattedMessage {...messages.contributorsError} />
+            </Alert>
+          </div>
+        )}
+        {contributorsStatus === 'success' && (
+          <UserAvatarList
+            size={'large'}
+            textColor="white"
+            users={contributors}
+            maxLength={parseInt(size[0] / 75) > 12 ? 12 : parseInt(size[0] / 75)}
+          />
+        )}
       </div>
+
+      {/* Download OSM Data section Start */}
+      {/* Converted String to Integer */}
+      {+ENABLE_EXPORT_TOOL === 1 && (
+        <div className="bg-tan-dim">
+          <a href="#downloadOsmData" name="downloadOsmData" style={{ visibility: 'hidden' }}>
+            <FormattedMessage {...messages.downloadOsmData} />
+          </a>
+          <h3 className={`${h2Classes}`}>
+            <FormattedMessage {...messages.downloadOsmData} />
+          </h3>
+          <DownloadOsmData
+            projectMappingTypes={props?.project?.mappingTypes}
+            project={props.project}
+          />
+        </div>
+      )}
+
+      {/* Download OSM Data section End */}
+
       <a href="#contributionTimeline" style={{ visibility: 'hidden' }} name="contributionTimeline">
         <FormattedMessage {...messages.contributionsTimeline} />
       </a>
       <h3 className={`${h2Classes}`}>
         <FormattedMessage {...messages.contributionsTimeline} />
       </h3>
-      <div className="ph4 w-100 w-60-l">
-        <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            rows={3}
-            delay={500}
-            ready={typeof visualData === 'object' && visualData.stats !== undefined}
-          >
-            <div className="pt2 pb4">
-              <ProjectTimeline tasksByDay={visualData.stats} />
-            </div>
-          </ReactPlaceholder>
-        </React.Suspense>
-        <ReactPlaceholder
-          delay={100}
-          showLoadingAnimation={true}
-          type="rect"
-          style={{ width: 150, height: 30 }}
-          ready={typeof props.project === 'object'}
-        >
-          <div className="flex gap-1 nowrap flex-wrap">
-            <Link to={`/projects/${props.project.projectId}/stats`} className="link">
-              <CustomButton className="bg-red white bn pa3">
-                <FormattedMessage {...messages.moreStats} />
-              </CustomButton>
-            </Link>
-            <OSMChaButton
-              project={props.project}
-              className="bg-white blue-dark ba b--grey-light pa3"
-            />
-            <DownloadAOIButton
+      <div className="mb5 ph4 w-100 w-60-l">
+        <div className="pt2 pb4">
+          {timelineDataStatus === 'loading' && (
+            <ReactPlaceholder showLoadingAnimation rows={3} ready={false} />
+          )}
+          {timelineDataStatus === 'error' && (
+            <Alert type="error">
+              <FormattedMessage {...viewsMessages.timelineDataError} />
+            </Alert>
+          )}
+          {timelineDataStatus === 'success' && (
+            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+              <ProjectTimeline tasksByDay={timelineData} />
+            </React.Suspense>
+          )}
+        </div>
+        <div className="flex gap-1 nowrap flex-wrap">
+          <Link to={`/projects/${props.project.projectId}/stats`} className="link">
+            <CustomButton className="bg-red white bn pa3">
+              <FormattedMessage {...messages.moreStats} />
+            </CustomButton>
+          </Link>
+          <OSMChaButton
+            project={props.project}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
+
+          {/* show live view button only when the project has live monitoring feature */}
+          {hasLiveMonitoringFeature && (
+            <LiveViewButton
               projectId={props.project.projectId}
               className="bg-white blue-dark ba b--grey-light pa3"
             />
-            <DownloadTaskGridButton
-              projectId={props.project.projectId}
-              className="bg-white blue-dark ba b--grey-light pa3"
-            />
-          </div>
-        </ReactPlaceholder>
+          )}
+
+          <DownloadAOIButton
+            projectId={props.project.projectId}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
+          <DownloadTaskGridButton
+            projectId={props.project.projectId}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
+        </div>
       </div>
       <a href="#similarProjects" style={{ visibility: 'hidden' }} name="similarProjects">
         <FormattedMessage {...messages.similarProjects} />
@@ -348,4 +381,71 @@ export const ProjectDetail = (props) => {
       <ProjectDetailFooter projectId={props.project.projectId} />
     </div>
   );
+};
+
+const GeometryPropType = PropTypes.shape({
+  type: PropTypes.oneOf([
+    'Point',
+    'MultiPoint',
+    'LineString',
+    'MultiLineString',
+    'Polygon',
+    'MultiPolygon',
+    'GeometryCollection',
+  ]),
+  coordinates: PropTypes.array,
+  geometries: PropTypes.array,
+});
+const FeaturePropType = PropTypes.shape({
+  type: PropTypes.oneOf(['Feature']),
+  geometry: GeometryPropType,
+  properties: PropTypes.object,
+});
+const FeatureCollectionPropType = PropTypes.shape({
+  type: PropTypes.oneOf(['FeatureCollection']),
+  features: PropTypes.arrayOf(FeaturePropType).isRequired,
+});
+
+ProjectDetail.propTypes = {
+  project: PropTypes.shape({
+    projectId: PropTypes.number,
+    projectInfo: PropTypes.shape({
+      description: PropTypes.string,
+    }),
+    mappingTypes: PropTypes.arrayOf(PropTypes.any).isRequired,
+    author: PropTypes.string,
+    organisationName: PropTypes.string,
+    organisationSlug: PropTypes.string,
+    organisationLogo: PropTypes.string,
+    mappingPermission: PropTypes.string,
+    validationPermission: PropTypes.string,
+    teams: PropTypes.arrayOf(PropTypes.object),
+  }).isRequired,
+  className: PropTypes.string,
+};
+
+ProjectDetailMap.propTypes = {
+  project: PropTypes.shape({
+    areaOfInterest: PropTypes.object,
+    priorityAreas: PropTypes.arrayOf(PropTypes.object),
+  }).isRequired,
+  // Tasks are a GeoJSON FeatureCollection
+  tasks: FeatureCollectionPropType,
+  navigate: PropTypes.func,
+  type: PropTypes.string,
+  tasksError: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  projectLoading: PropTypes.bool,
+};
+
+ProjectDetailLeft.propTypes = {
+  project: PropTypes.shape({
+    projectInfo: PropTypes.shape({
+      shortDescription: PropTypes.string,
+    }),
+    projectId: PropTypes.number,
+    tasks: FeatureCollectionPropType,
+  }).isRequired,
+  contributors: PropTypes.arrayOf(PropTypes.object),
+  className: PropTypes.string,
+  type: PropTypes.string,
 };

@@ -58,6 +58,7 @@ export const router = createBrowserRouter(
           );
           return { Component: SelectTask };
         }}
+        ErrorBoundary={FallbackComponent}
       />
       <Route
         path="projects/:id/map"
@@ -67,6 +68,7 @@ export const router = createBrowserRouter(
           );
           return { Component: MapTask };
         }}
+        ErrorBoundary={FallbackComponent}
       />
       <Route
         path="projects/:id/validate"
@@ -76,6 +78,17 @@ export const router = createBrowserRouter(
           );
           return { Component: ValidateTask };
         }}
+        ErrorBoundary={FallbackComponent}
+      />
+      <Route
+        path="projects/:id/live"
+        lazy={async () => {
+          const { ProjectLiveMonitoring } = await import(
+            './views/projectLiveMonitoring' /* webpackChunkName: "projectLiveMonitoring" */
+          );
+          return { Component: ProjectLiveMonitoring };
+        }}
+        ErrorBoundary={FallbackComponent}
       />
       <Route
         path="projects/:id/stats"
@@ -85,6 +98,7 @@ export const router = createBrowserRouter(
           );
           return { Component: ProjectStats };
         }}
+        ErrorBoundary={FallbackComponent}
       />
       <Route
         path="organisations/:id/stats/"

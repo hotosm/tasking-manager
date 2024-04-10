@@ -46,7 +46,12 @@ export const ContributionsPage = () => {
     <section className="pb5 pt180 pull-center">
       <MyTasksNav />
       <TaskResults retryFn={forceUpdate} state={state} />
-      <ProjectCardPaginator projectAPIstate={state} setQueryParam={setContributionsQuery} />
+      <ProjectCardPaginator
+        projectAPIstate={state}
+        status={state.isLoading ? 'pending' : 'success'}
+        pagination={state?.pagination}
+        setQueryParam={setContributionsQuery}
+      />
     </section>
   );
 };

@@ -32,6 +32,22 @@ export default defineMessages({
     id: 'project.stats.timeline',
     defaultMessage: 'Project timeline',
   },
+  timelineDataError: {
+    id: 'project.stats.contributions.timeline.fetching.error',
+    defaultMessage: 'An error occured while loading contributions data',
+  },
+  editsStatsError: {
+    id: 'project.detail.stats.timeline.fetching.error',
+    defaultMessage: 'An error occured while loading edits stats',
+  },
+  tasksStatsError: {
+    id: 'project.detail.stats.tasks.error',
+    defaultMessage: 'An error occured while loading tasks stats',
+  },
+  contributionsStatsError: {
+    id: 'project.detail.stats.contributions.error',
+    defaultMessage: 'An error occured while loading contributions stats',
+  },
   sectionNotAllowed: {
     id: 'management.forbiddenAccess.title',
     defaultMessage: 'You are not allowed to access the management area.',
@@ -67,10 +83,6 @@ export default defineMessages({
   newUsers: {
     id: 'management.stats.users.title',
     defaultMessage: 'New users',
-  },
-  totalFeatures: {
-    id: 'management.stats.features',
-    defaultMessage: 'Total features',
   },
   newOrganisation: {
     id: 'teamsAndOrgs.management.organisation.creation',
@@ -242,6 +254,10 @@ export default defineMessages({
   goToProjectButton: {
     id: 'taskAction.go_to_project.button',
     defaultMessage: 'Go to Project #{project}',
+  },
+  lockedTasksLoadingError: {
+    id: 'taskAction.locked_tasks.fetching.error',
+    defaultMessage: 'An error occurred when loading your tasks.',
   },
   profileSettings: {
     id: 'EmailVerification.link.profileSettings',

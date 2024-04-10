@@ -95,13 +95,7 @@ export const mapboxLayerDefn = (map, mapResults, clickOnProjectID, disablePoiCli
   });
 };
 
-export const ProjectsMap = ({
-  state,
-  state: { mapResults },
-  fullProjectsQuery,
-  setQuery,
-  className,
-}) => {
+export const ProjectsMap = ({ mapResults, fullProjectsQuery, setQuery, className }) => {
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
   const [map, setMapObj] = useState(null);

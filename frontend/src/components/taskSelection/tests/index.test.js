@@ -5,7 +5,11 @@ import { QueryParamProvider } from 'use-query-params';
 
 import { TaskSelection } from '..';
 import { getProjectSummary } from '../../../network/tests/mockData/projects';
-import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+import {
+  QueryClientProviders,
+  ReduxIntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
 import { store } from '../../../store';
 
 describe('Contributions', () => {
@@ -20,11 +24,13 @@ describe('Contributions', () => {
     });
 
     const { user } = renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <TaskSelection project={getProjectSummary(123)} />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <TaskSelection project={getProjectSummary(123)} />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
 
     await waitFor(() =>
@@ -49,11 +55,13 @@ describe('Contributions', () => {
 
   it('should select tasks validated by the selected user', async () => {
     const { user } = renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <TaskSelection project={getProjectSummary(123)} />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <TaskSelection project={getProjectSummary(123)} />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
 
     await waitFor(() =>
@@ -78,11 +86,13 @@ describe('Contributions', () => {
 
   it('should sort tasks by their task number', async () => {
     const { user } = renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <TaskSelection project={getProjectSummary(123)} />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <TaskSelection project={getProjectSummary(123)} />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
 
     await waitFor(() =>
@@ -111,11 +121,13 @@ describe('Contributions', () => {
 
   it('should clear text when close icon is clicked', async () => {
     const { user } = renderWithRouter(
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <TaskSelection project={getProjectSummary(123)} />
-        </ReduxIntlProviders>
-      </QueryParamProvider>,
+      <QueryClientProviders>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <ReduxIntlProviders>
+            <TaskSelection project={getProjectSummary(123)} />
+          </ReduxIntlProviders>
+        </QueryParamProvider>
+      </QueryClientProviders>,
     );
 
     await waitFor(() =>

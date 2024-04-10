@@ -28,9 +28,17 @@ export default defineMessages({
     id: 'project.tasks.unsaved_map_changes.actions.close_modal',
     defaultMessage: 'Close',
   },
+  deselectAndValidate: {
+    id: 'project.tasks.validation.cannot_validate_mapped_tasks.deselect_and_validate',
+    defaultMessage: 'Deselect and validate',
+  },
   cantValidateMappedTask: {
     id: 'project.tasks.select.cantValidateMappedTask',
-    defaultMessage: 'You cannot validate tasks that you mapped',
+    defaultMessage: 'This task was mapped by you',
+  },
+  priorityAreasLoadingError: {
+    id: 'project.tasks.selection.map.priorityAreas.loading.error',
+    defaultMessage: 'An error occured while loading the priority areas for the project',
   },
   noMappedTasksSelectedError: {
     id: 'project.tasks.no_mapped_tasks_selected',
@@ -575,13 +583,25 @@ export default defineMessages({
     id: 'project.tasks.action.split_task.error.description',
     defaultMessage: 'This task is already too small and can not be split.',
   },
+  splitTaskGenericError: {
+    id: 'project.tasks.action.split_task.error.generic',
+    defaultMessage: 'An error occured while splitting the task.',
+  },
   selectAnotherTask: {
     id: 'project.tasks.action.select_another_task',
     defaultMessage: 'Select another task',
   },
+  stopMappingError: {
+    id: 'project.tasks.action.stop_mapping.error',
+    defaultMessage: 'An error occured while stopping mapping.',
+  },
   stopValidation: {
     id: 'project.tasks.action.stop_validation',
     defaultMessage: 'Stop validation',
+  },
+  stopValidationError: {
+    id: 'project.tasks.action.stop_validation.error',
+    defaultMessage: 'An error occured while stopping validation.',
   },
   tasksMap: {
     id: 'project.tasks.action.tasks_map',
@@ -594,6 +614,11 @@ export default defineMessages({
   submitTasks: {
     id: 'project.tasks.action.submit_tasks',
     defaultMessage: 'Submit tasks',
+  },
+  submitTaskError: {
+    id: 'project.tasks.action.submit_task.error',
+    defaultMessage:
+      'An error occured while submitting your {numTasks, plural, =1 {task} other {tasks}}.',
   },
   taskActivity: {
     id: 'project.tasks.history.title',
@@ -650,6 +675,18 @@ export default defineMessages({
   taskHistoryComment: {
     id: 'project.tasks.history.comment',
     defaultMessage: 'commented',
+  },
+  taskDetailFetchError: {
+    id: 'project.tasks.history.taskDetailFetchError',
+    defaultMessage: 'An error occured while fetching the task details.',
+  },
+  noCommentsYet: {
+    id: 'project.tasks.history.noCommentsYet',
+    defaultMessage: 'No comments have been made on the task yet.',
+  },
+  noActivitiesToDisplay: {
+    id: 'project.tasks.history.nothingToDisplay',
+    defaultMessage: 'No comments/activities have been made on this task yet.',
   },
   taskHistoryLockedMapping: {
     id: 'project.tasks.history.lockedmapping',

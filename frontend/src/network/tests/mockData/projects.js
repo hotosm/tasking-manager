@@ -323,6 +323,7 @@ export const taskDetail = (taskId) => ({
 export const projectComments = {
   chat: [
     {
+      id: 1,
       message:
         "<p>@happy_me we do want 'significant' roads that lead to houses. Rule of thumb I use for picking classification is the usage over condition/what it looks like. If it's the main 'path' to one or maybe several homes, I would pick service; even if a vehicle can't drive it, that can be reflected with additional tags, but the road still functions as access to the home(s).</p>",
       pictureUrl:
@@ -331,6 +332,7 @@ export const projectComments = {
       username: 'helnershingthapa',
     },
     {
+      id: 2,
       message: '<p>hello world</p>',
       pictureUrl:
         'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXQ2Q3c9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--fe41f1b2a5d6cf492a7133f15c81f105dec06ff7/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBPZ2h3Ym1jNkZISmxjMmw2WlY5MGIxOXNhVzFwZEZzSGFXbHBhUT09IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--058ac785867b32287d598a314311e2253bd879a3/unnamed.webp',
@@ -338,6 +340,7 @@ export const projectComments = {
       username: 'helnershingthapa',
     },
     {
+      id: 3,
       message: '<p>asdadadasdasdasd</p>',
       pictureUrl:
         'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBeFJheFE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--a765e2377a288bccae85da6604300251d9de6d39/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJYW5CbkJqb0dSVlE2RkhKbGMybDZaVjkwYjE5c2FXMXBkRnNIYVdscGFRPT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--1d22b8d446683a272d1a9ff04340453ca7c374b4/bitmoji.jpg',
@@ -345,6 +348,7 @@ export const projectComments = {
       username: 'Hel Nershing Thapa',
     },
     {
+      id: 4,
       message:
         '<p><code>test of \ncode block\nhmmm\npreview showed it as a block\nand monospace font\nbut not indented</code></p>',
       pictureUrl:
@@ -353,6 +357,7 @@ export const projectComments = {
       username: 'wireguy',
     },
     {
+      id: 5,
       message:
         '<p><code>this is a code\nblock\nshould it\nbe indented\nby 4 space?\nminor...</code></p>',
       pictureUrl:

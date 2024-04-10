@@ -24,7 +24,7 @@ export const MultipleTaskHistoriesAccordion = ({ tasks, projectId }) => {
               </AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel className="ph2 pb2 accordion_panel">
-              <TaskHistory projectId={projectId} taskId={t.taskId} commentPayload={undefined} />
+              <TaskHistory projectId={projectId} taskId={t.taskId} />
             </AccordionItemPanel>
           </AccordionItem>
         ))}

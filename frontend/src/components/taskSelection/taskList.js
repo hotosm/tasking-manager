@@ -16,6 +16,7 @@ import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon, InternalLinkIcon } from '.
 import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
 import { TextField } from '../formInputs';
+import useCloseOnDocumentClick from '../../hooks/UseCloseOnDocumentClick';
 
 export function TaskStatus({ status, lockHolder }: Object) {
   const isReadyOrLockedForMapping = ['READY', 'LOCKED_FOR_MAPPING'].includes(status);
@@ -62,6 +63,8 @@ export function TaskItem({
   const [isCopied, setIsCopied] = useState(false);
   const location = useLocation();
   const { value, unit } = selectUnit(new Date(data.actionDate));
+
+  const closeOnDocumentClick = useCloseOnDocumentClick();
 
   const handleCopyToClipboard = () =>
     navigator.clipboard
@@ -117,6 +120,7 @@ export function TaskItem({
                   <ListIcon width="18px" height="18px" className="pointer hover-blue-grey" />
                 </div>
               }
+              closeOnDocumentClick={closeOnDocumentClick}
             >
               {(close) => (
                 <TaskActivityDetail

@@ -15,7 +15,14 @@ import { Imagery } from './imagery';
 import { MappingTypes } from '../mappingTypes';
 import { LockedTaskModalContent } from './lockedTasks';
 
-const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, selectedTasks }) => {
+const TaskSelectionFooter = ({
+  defaultUserEditor,
+  project,
+  tasks,
+  taskAction,
+  selectedTasks,
+  setSelectedTasks,
+}) => {
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences.locale);
@@ -178,6 +185,9 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
               error={lockError}
               close={close}
               lockTasks={lockTasks}
+              tasks={tasks}
+              selectedTasks={selectedTasks}
+              setSelectedTasks={setSelectedTasks}
             />
           )}
         </Popup>

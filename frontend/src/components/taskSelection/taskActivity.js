@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { viewport } from '@placemarkio/geo-viewport';
 import { FormattedMessage } from 'react-intl';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
-import { useInterval } from '../../hooks/UseInterval';
 import useFirstTaskActionDate from '../../hooks/UseFirstTaskActionDate';
 import useGetContributors from '../../hooks/UseGetContributors';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
@@ -14,36 +15,38 @@ import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMar
 import { getTaskContributors } from '../../utils/getTaskContributors';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
-import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { UserAvatar } from '../user/avatar';
 import { CloseIcon } from '../svgIcons';
 import { ID_EDITOR_URL } from '../../config';
 import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { CommentInputField } from '../comments/commentInput';
+import { useTaskDetail } from '../../api/projects';
+import { Alert } from '../alert';
+import { MessageStatus } from '../comments/status';
+import { postTaskComment } from '../../api/questionsAndComments';
 
 import './styles.scss';
 
 const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => {
   const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences['locale']);
   const [comment, setComment] = useState('');
-
-  const pushComment = () => {
-    pushToLocalJSONAPI(
-      `projects/${projectId}/comments/tasks/${taskId}/`,
-      JSON.stringify({ comment: comment }),
-      token,
-    ).then((res) => {
-      setCommentPayload(res);
-      setComment('');
-    });
-  };
 
   const saveComment = () => {
     if (comment) {
-      pushComment();
+      mutation.mutate({ message: comment });
     }
   };
+
+  const mutation = useMutation({
+    mutationFn: () => postTaskComment(projectId, taskId, comment, token, locale),
+    onSuccess: (res) => {
+      setCommentPayload(res.data);
+      setComment('');
+    },
+  });
 
   return (
     <div className="w-100 pt3 ph3-ns ph1 flex flex-column">
@@ -56,113 +59,37 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
         isShowUserPicture
         isShowTabNavs
       />
-      <div className="ml-auto mb5">
-        <Button onClick={() => saveComment()} className="bg-red white f6">
+      <div className="ml-auto mb5 flex flex-column gap-1 items-end">
+        <Button
+          onClick={() => saveComment()}
+          className="bg-red white f6"
+          loading={mutation.isLoading}
+          disabled={!comment}
+        >
           <FormattedMessage {...messages.comment} />
         </Button>
+        <MessageStatus status={mutation.status} comment={comment} />
       </div>
     </div>
   );
 };
 
-export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
-  const token = useSelector((state) => state.auth.token);
-  const [history, setHistory] = useState([]);
-  const [taskComments, setTaskComments] = useState([]);
-  const [taskChanges, setTaskChanges] = useState([]);
+export const TaskHistory = ({ projectId, taskId }) => {
   const [historyOption, setHistoryOption] = useState('Comments');
-  const [shownHistory, setShownHistory] = useState([]);
+  const { data: commentPayload, status } = useTaskDetail(projectId, taskId);
 
-  useEffect(() => {
-    if (commentPayload && commentPayload.taskHistory) {
-      setHistory(commentPayload.taskHistory);
-      setTaskComments(commentPayload.taskHistory.filter((t) => t.action === 'COMMENT'));
-      setTaskChanges(commentPayload.taskHistory.filter((t) => t.action !== 'COMMENT'));
-    }
-  }, [commentPayload]);
+  const history = commentPayload?.taskHistory;
+  const taskComments = commentPayload?.taskHistory.filter((t) => t.action === 'COMMENT');
+  const taskChanges = commentPayload?.taskHistory.filter((t) => t.action !== 'COMMENT');
 
-  const getTaskInfo = useCallback(
-    (projectId, taskId, token) =>
-      fetchLocalJSONAPI(`projects/${projectId}/tasks/${taskId}/`, token).then((res) => {
-        setHistory(res.taskHistory);
-        setTaskComments(res.taskHistory.filter((t) => t.action === 'COMMENT'));
-        setTaskChanges(res.taskHistory.filter((t) => t.action !== 'COMMENT'));
-      }),
-    [],
-  );
-
-  useEffect(() => {
-    if (commentPayload === undefined && projectId && taskId && token) {
-      getTaskInfo(projectId, taskId, token);
-    }
-  }, [projectId, taskId, token, commentPayload, getTaskInfo]);
-
-  useEffect(() => {
-    if (historyOption === 'Comments') {
-      setShownHistory(taskComments);
-    } else if (historyOption === 'Activities') {
-      setShownHistory(taskChanges);
-    } else {
-      setShownHistory(history);
-    }
-  }, [historyOption, taskComments, taskChanges, history]);
-
-  const getTaskActionMessage = (action, actionText) => {
-    let message = '';
-    switch (action) {
-      case 'COMMENT':
-        message = messages.taskHistoryComment;
-        break;
-      case 'LOCKED_FOR_MAPPING':
-        message = messages.taskHistoryLockedMapping;
-        break;
-      case 'LOCKED_FOR_VALIDATION':
-        message = messages.taskHistoryLockedValidation;
-        break;
-      case 'AUTO_UNLOCKED_FOR_MAPPING':
-        message = messages.taskHistoryAutoUnlockedMapping;
-        break;
-      case 'AUTO_UNLOCKED_FOR_VALIDATION':
-        message = messages.taskHistoryAutoUnlockedValidation;
-        break;
-      case 'EXTENDED_FOR_MAPPING':
-        message = messages.taskHistoryExtendedForMapping;
-        break;
-      case 'EXTENDED_FOR_VALIDATION':
-        message = messages.taskHistoryExtendedForValidation;
-        break;
-      case 'STATE_CHANGE':
-        switch (actionText) {
-          case 'BADIMAGERY':
-            message = messages.taskHistoryBadImagery;
-            break;
-          case 'MAPPED':
-            message = messages.taskHistoryMapped;
-            break;
-          case 'VALIDATED':
-            message = messages.taskHistoryValidated;
-            break;
-
-          case 'INVALIDATED':
-            message = messages.taskHistoryInvalidated;
-            break;
-          case 'SPLIT':
-            message = messages.taskHistorySplit;
-            break;
-          case 'READY':
-            message = messages.taskHistoryReady;
-            break;
-          default:
-            break;
-        }
-        break;
-      default:
-        break;
-    }
-    if (message) {
-      return <FormattedMessage {...message} />;
-    }
-  };
+  let shownHistory;
+  if (historyOption === 'Comments') {
+    shownHistory = taskComments;
+  } else if (historyOption === 'Activities') {
+    shownHistory = taskChanges;
+  } else {
+    shownHistory = history;
+  }
 
   const taskHistoryOptions = [
     { value: 'Comments', label: 'Comments' },
@@ -186,30 +113,56 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
     return res;
   };
 
-  if (!history) {
-    return null;
-  } else {
+  if (status === 'loading') {
     return (
-      <>
-        <div
-          className="ml3 pl1 pv2 blue-dark flex flex-wrap"
-          aria-label="view task history options"
-        >
-          {taskHistoryOptions.map((option) => (
-            <label className="pt1 pr3 fl w-15" key={option.value}>
-              <input
-                value={option.value}
-                checked={historyOption === option.value}
-                onChange={() => setHistoryOption(option.value)}
-                type="radio"
-                className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
-              />
-              <FormattedMessage {...messages[`taskHistory${option.label}`]} />
-            </label>
-          ))}
-        </div>
-        <div className="timeline-container">
-          {groupBySession()?.map((grouped, n) => (
+      <div className="ma4">
+        <ReactPlaceholder type="media" showLoadingAnimation delay={300} />
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="ma4 gray">
+        <Alert type="error">
+          <FormattedMessage {...messages.taskDetailFetchError} />
+        </Alert>
+      </div>
+    );
+  }
+
+  if (history.length === 0) {
+    return (
+      <div className="ma4 dark-gray tc">
+        <FormattedMessage {...messages.noActivitiesToDisplay} />
+      </div>
+    );
+  }
+  return (
+    <>
+      <div className="ml3 pl1 pv2 blue-dark flex flex-wrap" aria-label="view task history options">
+        {taskHistoryOptions.map((option) => (
+          <label className="pt1 pr3 fl w-15" key={option.value}>
+            <input
+              value={option.value}
+              checked={historyOption === option.value}
+              onChange={() => setHistoryOption(option.value)}
+              type="radio"
+              className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
+            />
+            <FormattedMessage {...messages[`taskHistory${option.label}`]} />
+          </label>
+        ))}
+      </div>
+      <div className="timeline-container">
+        {/* This can handle displaying a messaage for the no comments section 
+        because no activities will be handled earlier */}
+        {shownHistory.length === 0 ? (
+          <div className="ma4 dark-gray tc">
+            <FormattedMessage {...messages.noCommentsYet} />
+          </div>
+        ) : (
+          groupBySession()?.map((grouped, n) => (
             <div
               key={grouped[0].historyId}
               className={`grouped-ctr session ph3 mt4 bb b--grey-light`}
@@ -255,11 +208,11 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
                 </div>
               ))}
             </div>
-          ))}
-        </div>
-      </>
-    );
-  }
+          ))
+        )}
+      </div>
+    </>
+  );
 };
 
 export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) => {
@@ -276,7 +229,7 @@ export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) =>
     [bbox, firstDate, contributors, changesetComment],
   );
 
-  if (history && history.taskHistory && history.taskHistory.length > 0) {
+  if (history?.taskHistory?.length > 0) {
     return (
       <Dropdown
         value={null}
@@ -313,28 +266,17 @@ export const TaskActivity = ({
   const userDetails = useSelector((state) => state.auth.userDetails);
   // use it to hide the reset task action button
   const [resetSuccess, setResetSuccess] = useState(false);
-  const [commentPayload, setCommentPayload] = useState(null);
+  const queryClient = useQueryClient();
+
+  const { data: commentPayload } = useTaskDetail(project.projectId, taskId, true);
 
   const uniqueContributors =
-    commentPayload &&
-    commentPayload.taskHistory &&
+    commentPayload?.taskHistory &&
     getTaskContributors(commentPayload.taskHistory, userDetails.username);
 
-  const getHistory = useCallback(
-    () =>
-      fetchLocalJSONAPI(`projects/${project.projectId}/tasks/${taskId}/`, token)
-        .then((res) => setCommentPayload(res))
-        .catch((e) => console.log(e)),
-    [project.projectId, taskId, token],
-  );
-
-  useEffect(() => {
-    if (token && project.projectId && taskId) {
-      getHistory();
-    }
-  }, [project.projectId, taskId, token, getHistory]);
-  // update the task history each 60 seconds
-  useInterval(() => getHistory(), 60000);
+  const setCommentPayload = (payload) => {
+    queryClient.setQueryData(['task-detail', project.projectId, taskId], { data: payload });
+  };
 
   const resetTask = () => {
     pushToLocalJSONAPI(
@@ -357,7 +299,7 @@ export const TaskActivity = ({
             <p className="ttu f3 pa0 ma0 barlow-condensed b mb2">
               <FormattedMessage {...messages.taskActivity} values={{ n: taskId }} />
             </p>
-            {project.projectInfo && project.projectInfo.name ? (
+            {project.projectInfo?.name ? (
               <span>
                 <b>#{project.projectId}</b>: {project.projectInfo.name}
               </span>
@@ -391,11 +333,7 @@ export const TaskActivity = ({
         </div>
       </div>
       <div className="blue-dark overflow-y-auto vh-50">
-        <TaskHistory
-          projectId={project.projectId}
-          taskId={taskId}
-          commentPayload={commentPayload}
-        />
+        <TaskHistory projectId={project.projectId} taskId={taskId} />
       </div>
       <PostComment
         projectId={project.projectId}
@@ -480,3 +418,60 @@ function UndoLastTaskAction({ status, resetFn }: Object) {
     </>
   );
 }
+
+const getTaskActionMessage = (action, actionText) => {
+  let message = '';
+  switch (action) {
+    case 'COMMENT':
+      message = messages.taskHistoryComment;
+      break;
+    case 'LOCKED_FOR_MAPPING':
+      message = messages.taskHistoryLockedMapping;
+      break;
+    case 'LOCKED_FOR_VALIDATION':
+      message = messages.taskHistoryLockedValidation;
+      break;
+    case 'AUTO_UNLOCKED_FOR_MAPPING':
+      message = messages.taskHistoryAutoUnlockedMapping;
+      break;
+    case 'AUTO_UNLOCKED_FOR_VALIDATION':
+      message = messages.taskHistoryAutoUnlockedValidation;
+      break;
+    case 'EXTENDED_FOR_MAPPING':
+      message = messages.taskHistoryExtendedForMapping;
+      break;
+    case 'EXTENDED_FOR_VALIDATION':
+      message = messages.taskHistoryExtendedForValidation;
+      break;
+    case 'STATE_CHANGE':
+      switch (actionText) {
+        case 'BADIMAGERY':
+          message = messages.taskHistoryBadImagery;
+          break;
+        case 'MAPPED':
+          message = messages.taskHistoryMapped;
+          break;
+        case 'VALIDATED':
+          message = messages.taskHistoryValidated;
+          break;
+
+        case 'INVALIDATED':
+          message = messages.taskHistoryInvalidated;
+          break;
+        case 'SPLIT':
+          message = messages.taskHistorySplit;
+          break;
+        case 'READY':
+          message = messages.taskHistoryReady;
+          break;
+        default:
+          break;
+      }
+      break;
+    default:
+      break;
+  }
+  if (message) {
+    return <FormattedMessage {...message} />;
+  }
+};

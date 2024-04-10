@@ -3,12 +3,8 @@ export const API_VERSION = process.env.REACT_APP_API_VERSION || 'v2';
 export const API_URL = process.env.REACT_APP_API_URL
   ? new URL('/api/' + API_VERSION + '/', process.env.REACT_APP_API_URL)
   : 'http://127.0.0.1:5000/api/' + API_VERSION + '/';
-export const HOMEPAGE_STATS_API_URL =
-  process.env.REACT_APP_HOMEPAGE_STATS_API_URL ||
-  'https://osmstats-api.hotosm.org/wildcard/?key=hotosm-project-*';
-export const USER_STATS_API_URL =
-  process.env.REACT_APP_USER_STATS_API_URL ||
-  'https://osm-stats-production-api.azurewebsites.net/users/';
+export const OHSOME_STATS_BASE_URL =
+  process.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org/api';
 
 // APPLICATION SETTINGS
 export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
@@ -62,6 +58,8 @@ export const POTLATCH2_EDITOR_URL =
   'https://www.openstreetmap.org/edit?editor=potlatch2';
 export const RAPID_EDITOR_URL =
   process.env.REACT_APP_RAPID_EDITOR_URL || 'https://mapwith.ai/rapid';
+export const EXPORT_TOOL_S3_URL = process.env.REACT_APP_EXPORT_TOOL_S3_URL || '';
+export const ENABLE_EXPORT_TOOL = process.env.REACT_APP_ENABLE_EXPORT_TOOL || '';
 
 export const TASK_COLOURS = {
   READY: '#fff',
@@ -173,6 +171,8 @@ export const MAP_STYLE = MAPBOX_TOKEN
   : BASEMAP_OPTIONS[1].value;
 export const MAPBOX_RTL_PLUGIN_URL =
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';
+
+export const UNDERPASS_URL = process.env.REACT_APP_UNDERPASS_URL || 'https://underpass.hotosm.org';
 
 export const DROPZONE_SETTINGS = {
   accept: {

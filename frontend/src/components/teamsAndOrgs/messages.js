@@ -200,6 +200,10 @@ export default defineMessages({
     id: 'management.myTeams',
     defaultMessage: 'My teams',
   },
+  errorLoadingTeams: {
+    id: 'teams.loading.error',
+    defaultMessage: 'An error occured while loading teams.',
+  },
   new: {
     id: 'management.buttons.new',
     defaultMessage: 'New',
@@ -548,5 +552,9 @@ export default defineMessages({
   overview: {
     id: 'management.stats.overview',
     defaultMessage: 'Overview',
+  },
+  totalFeatures: {
+    id: 'management.stats.features',
+    defaultMessage: 'Total features',
   },
 });

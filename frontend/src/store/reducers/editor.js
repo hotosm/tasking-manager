@@ -2,7 +2,7 @@ import { types } from '../actions/editor';
 
 const initialState = {
   context: null,
-  rapidContext: null,
+  rapidContext: { context: null, dom: null },
 };
 
 export function editorReducer(state = initialState, action) {

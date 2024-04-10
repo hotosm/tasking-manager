@@ -133,6 +133,10 @@ export default defineMessages({
     id: 'project.detail.questionsAndComments.login',
     defaultMessage: 'Log in to be able to post comments.',
   },
+  errorLoadingComments: {
+    id: 'project.detail.questionsAndComments.fetching.error',
+    defaultMessage: 'An error occured while loading questions and comments.',
+  },
   post: {
     id: 'project.detail.questionsAndComments.button',
     defaultMessage: 'Post',
@@ -219,9 +223,30 @@ export default defineMessages({
     id: 'project.detail.sections.contributionsTimeline',
     defaultMessage: 'Contributions timeline',
   },
+  downloadOsmData: {
+    id: 'project.detail.sections.downloadOsmData',
+    defaultMessage: 'Download OSM Data',
+  },
+  errorDownloadOsmData: {
+    id: 'project.detail.sections.errorDownloadOsmData',
+    defaultMessage: 'Data Extraction Unavailable',
+  },
+  errorDownloadOsmDataDescription: {
+    id: 'project.detail.sections.errorDownloadOsmDataDescription',
+    defaultMessage:
+      'The data extract you are attempting to download is currently inactive or unavailable. Please ensure that the extract is active and try again later.',
+  },
   viewInOsmcha: {
     id: 'project.detail.sections.contributions.osmcha',
     defaultMessage: 'Changesets in OSMCha',
+  },
+  live: {
+    id: 'project.detail.sections.contributions.live',
+    defaultMessage: 'Live',
+  },
+  liveMonitoring: {
+    id: 'project.detail.sections.contributions.liveMonitoring',
+    defaultMessage: 'Live monitoring',
   },
   changesets: {
     id: 'project.detail.sections.contributions.changesets',
@@ -234,6 +259,10 @@ export default defineMessages({
   similarProjects: {
     id: 'project.detail.sections.similarProjects',
     defaultMessage: 'Similar projects',
+  },
+  contributorsError: {
+    id: 'project.detail.sections.contributors.error',
+    defaultMessage: 'An error occured while loading contributors',
   },
   timelineNotAvailable: {
     id: 'project.detail.sections.contributions.timelineError',

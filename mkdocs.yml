@@ -1,0 +1,93 @@
+site_name: tasking-manager
+site_description: The HOT Tasking Manager
+# strict: true
+site_url: "https://www.hotosm.org"
+
+repo_name: "hotosm/tasking-manager"
+repo_url: "https://github.com/hotosm/tasking-manager/"
+edit_uri: "edit/main/docs/"
+
+extra:
+  social:
+    - icon: "fontawesome/brands/github"
+      link: "https://github.com/hotosm/"
+    - icon: "fontawesome/brands/twitter"
+      link: "https://twitter.com/hotosm"
+    - icon: "fontawesome/solid/globe"
+      link: "https://www.hotosm.org"
+  copyright: Copyright &copy; 2010 HOTOSM
+  generator: false
+
+theme:
+  name: material
+  palette:
+    primary: custom
+  favicon: images/favicon.png
+  logo: images/hot_logo.png
+  # custom_dir: docs/overrides
+
+extra_css:
+  - css/extra.css
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+      title: Page contents
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.extra
+  - pymdownx.emoji:
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+#  - mkdocs_protobuf:
+#      proto_dir: */*.proto *.proto
+  - search
+  - exclude:
+      glob:
+        - plugins/*
+        - __pycache__/*
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            members_order: source
+            separate_signature: true
+            filters: ["!^_"]
+            docstring_options:
+              ignore_init_summary: true
+            merge_init_into_class: true
+
+nav:
+  - Home: index.md
+  - About: about.md
+  - For Developers:
+      - Contributing: developers/contributing.md
+      - Code Of Conduct: developers/code_of_conduct.md
+      - Contributing Guidelines: developers/contributing-guidelines.md
+      - Development Setup: developers/development-setup.md
+      - Reviewing PRs: developers/review-pr.md
+      - Submitting a PR: developers/submit-pr.md
+      - Translations: developers/translations.md
+      - Versions and Releases: developers/versions-and-releases.md
+      - Error Codes: developers/error_code.md
+  - Deep Tech Dives:
+      - Data Flow Diagrams: dataflow.md
+      - Database Schema: developers/tmschema.md
+      - Class Hierarchy: apidocs/html/index.html
+  - For Sysadmins:
+      - Deployment: sysadmins/deployment.md
+      - Architecture: sysadmins/architecture.md
+      - Migration: sysadmins/migration.md
+      - Deployment: sysadmins/deployment.md
+      - Customize: sysadmins/customize.md
+      - CI: sysadmins/ci-cd.md
+  - Working Groups: working-groups.md
+  - Validation: validation.md
+  - License: LICENSE.md
+#  - Changelog: CHANGELOG.md

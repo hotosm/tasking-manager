@@ -2,33 +2,25 @@ import React from 'react';
 
 import { PaginatorLine } from '../paginator';
 
-/*
-  projectAPIstate,
-  projectAPIstate: {pagination: 'paginationProps',
-  activePage,
-  pageNum,
-  setPageFn,
-*/
-export const ProjectCardPaginator = (props) => {
-  const apiIsFetched = !props.projectAPIstate.isError && !props.projectAPIstate.isLoading;
+export const ProjectCardPaginator = ({ status, pagination, fullProjectsQuery, setQueryParam }) => {
+  const apiIsFetched = status === 'success';
   const changeToPage = (value) => {
     apiIsFetched &&
-      props.setQueryParam(
+      setQueryParam(
         {
-          ...props.projectAPIstate.queryParamsState,
+          ...fullProjectsQuery,
           page: value,
         },
         'pushIn',
       );
   };
 
-  /* the pagination state is needed to create paginator component */
-
-  if (!props.projectAPIstate.pagination) {
+  // do not show pagination when the data is being fetched or it has zero results
+  if (!apiIsFetched || !pagination?.total) {
     return null;
   }
-  const activePage = (apiIsFetched && props.projectAPIstate.pagination.page) || 1;
-  const maxPage = (apiIsFetched && props.projectAPIstate.pagination.pages) || 1;
+  const activePage = (apiIsFetched && pagination?.page) || 1;
+  const maxPage = (apiIsFetched && pagination?.pages) || 1;
 
   /* TODO(tdk): redo this logic once we figure out what happens with ...*/
   return (

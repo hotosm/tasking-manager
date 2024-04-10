@@ -118,7 +118,9 @@ export const LicenseError = ({ id, close, lockTasks }) => {
   );
 };
 
-export function LockError({ error, close }) {
+export function LockError({ error, close, tasks, selectedTasks, setSelectedTasks, lockTasks }) {
+  const shouldShowDeselectButton = error === 'CannotValidateMappedTask' && selectedTasks.length > 1;
+
   return (
     <>
       <h3 className="barlow-condensed f3 fw6 mv0">
@@ -135,16 +137,77 @@ export function LockError({ error, close }) {
           <FormattedMessage {...messages.lockErrorDescription} />
         )}
       </div>
-      <div className="w-100 pt3">
-        <Button onClick={() => close()} className="bg-red white mr2">
-          <FormattedMessage {...messages.closeModal} />
-        </Button>
-      </div>
+      <LockErrorButtons
+        close={close}
+        shouldShowDeselectButton={shouldShowDeselectButton}
+        tasks={tasks}
+        selectedTasks={selectedTasks}
+        setSelectedTasks={setSelectedTasks}
+        lockTasks={lockTasks}
+      />
     </>
   );
 }
 
-export function LockedTaskModalContent({ project, error, close, lockTasks }: Object) {
+function LockErrorButtons({
+  close,
+  shouldShowDeselectButton,
+  lockTasks,
+  tasks,
+  selectedTasks,
+  setSelectedTasks,
+}) {
+  const user = useSelector((state) => state.auth.userDetails);
+  const [hasTasksChanged, setHasTasksChanged] = useState(false);
+
+  const handleDeselectAndValidate = () => {
+    const userMappedTaskIds = tasks.features
+      .filter((feature) => feature.properties.mappedBy === user.id)
+      .map((feature) => feature.properties.taskId);
+
+    const remainingSelectedTasks = selectedTasks.filter(
+      (selectedTask) => !userMappedTaskIds.includes(selectedTask),
+    );
+    setSelectedTasks(remainingSelectedTasks);
+    // Set the flag to indicate that tasks have changed.
+    // Note: The introduction of useEffect pattern might benefit
+    // from future optimization.
+    setHasTasksChanged(true);
+  };
+
+  useEffect(() => {
+    if (hasTasksChanged) {
+      lockTasks();
+      setHasTasksChanged(false);
+    }
+  }, [hasTasksChanged, lockTasks]);
+
+  return (
+    <div className="w-100 pt3 flex justify-end">
+      <Button
+        onClick={close}
+        className={`mr2 ${shouldShowDeselectButton ? 'bg-transparent black' : 'bg-red white'}`}
+      >
+        <FormattedMessage {...messages.closeModal} />
+      </Button>
+      {shouldShowDeselectButton && (
+        <Button onClick={handleDeselectAndValidate} className="bg-red white mr2">
+          <FormattedMessage {...messages.deselectAndValidate} />
+        </Button>
+      )}
+    </div>
+  );
+}
+
+export function LockedTaskModalContent({
+  project,
+  error,
+  close,
+  lockTasks,
+  tasks,
+  selectedTasks,
+  setSelectedTasks,
+}: Object) {
   const lockedTasks = useGetLockedTasks();
   const action = lockedTasks.status === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
   const licenseError = error === 'UserLicenseError' && !lockedTasks.project;
@@ -155,7 +218,14 @@ export function LockedTaskModalContent({ project, error, close, lockTasks }: Obj
       {/* Other error happened */}
       {error === 'JOSM' && <LockError error={error} close={close} />}
       {!lockedTasks.project && !licenseError && error !== 'JOSM' && (
-        <LockError error={error} close={close} />
+        <LockError
+          error={error}
+          close={close}
+          lockTasks={lockTasks}
+          tasks={tasks}
+          selectedTasks={selectedTasks}
+          setSelectedTasks={setSelectedTasks}
+        />
       )}
       {/* User has tasks locked on another project */}
       {lockedTasks.project && lockedTasks.project !== project.projectId && error !== 'JOSM' && (

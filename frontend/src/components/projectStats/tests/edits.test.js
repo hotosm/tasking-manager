@@ -5,6 +5,7 @@ import '@testing-library/jest-dom';
 
 import { EditsStats } from '../edits';
 import { ConnectedIntl } from '../../../utils/internationalization';
+import { QueryClientProviders } from '../../../utils/testWithIntl';
 import { store } from '../../../store';
 
 describe('EditsStats component', () => {
@@ -17,11 +18,13 @@ describe('EditsStats component', () => {
 
   it('render contents', () => {
     const { getByText } = render(
-      <Provider store={store}>
-        <ConnectedIntl>
-          <EditsStats data={data} />
-        </ConnectedIntl>
-      </Provider>,
+      <QueryClientProviders>
+        <Provider store={store}>
+          <ConnectedIntl>
+            <EditsStats data={data} />
+          </ConnectedIntl>
+        </Provider>
+      </QueryClientProviders>,
     );
 
     expect(getByText('Changesets')).toBeInTheDocument();

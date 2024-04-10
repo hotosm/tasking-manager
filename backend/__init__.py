@@ -216,6 +216,7 @@ def add_api_endpoints(app):
         ProjectsQueriesPriorityAreasAPI,
         ProjectsQueriesFeaturedAPI,
         ProjectQueriesSimilarProjectsAPI,
+        ProjectQueriesActiveProjectsAPI,
     )
     from backend.api.projects.activities import (
         ProjectsActivitiesAPI,
@@ -359,6 +360,7 @@ def add_api_endpoints(app):
         UsersStatisticsAPI,
         UsersStatisticsInterestsAPI,
         UsersStatisticsAllAPI,
+        OhsomeProxyAPI,
     )
 
     # System API endpoint
@@ -427,6 +429,10 @@ def add_api_endpoints(app):
     api.add_resource(
         ProjectQueriesSimilarProjectsAPI,
         format_url("projects/queries/<int:project_id>/similar-projects/"),
+    )
+    api.add_resource(
+        ProjectQueriesActiveProjectsAPI,
+        format_url("projects/queries/active/"),
     )
 
     # Projects' addtional resources
@@ -894,6 +900,9 @@ def add_api_endpoints(app):
     api.add_resource(
         UsersStatisticsAllAPI,
         format_url("users/statistics/"),
+    )
+    api.add_resource(
+        OhsomeProxyAPI, format_url("users/statistics/ohsome/"), methods=["GET"]
     )
     # User RecommendedProjects endpoint
     api.add_resource(
