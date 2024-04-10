@@ -90,11 +90,11 @@ class TestUsersQueriesUsernameAPI(BaseTestCase):
     @staticmethod
     def assert_user_detail_response(
         response,
-        user_id=TEST_USER_ID,
-        username=TEST_USERNAME,
-        email=TEST_EMAIL,
-        gender=None,
-        own_info=True,
+        user_id: Optional[int] = TEST_USER_ID,
+        username: Optional[str] = TEST_USERNAME,
+        email: Optional[str] = TEST_EMAIL,
+        gender: Optional[str] = None,
+        own_info: bool = True,
     ):
         assert response.status_code == 200
         assert response.json["id"] == user_id
@@ -552,4 +552,140 @@ class TestUsersRestAPI(BaseTestCase):
         # Assert
         TestUsersQueriesUsernameAPI.assert_user_detail_response(
             response, TEST_USER_ID, TEST_USERNAME, None, None, False
+        )
+
+    def test_user_can_delete_self(self):
+        """Check that a user can delete (redact personal information) themselves"""
+        # Arrange
+        self.user.email_address = TEST_EMAIL
+        self.user.gender = UserGender.FEMALE.value
+        self.user.save()
+        # Act
+        response = self.client.delete(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        next_response = self.client.get(
+            f"/api/v2/users/{TEST_USER_ID}/",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        # Note that we return the deleted user information at this time
+        TestUsersQueriesUsernameAPI.assert_user_detail_response(
+            response,
+            TEST_USER_ID,
+            TEST_USERNAME,
+            TEST_EMAIL,
+            UserGender.FEMALE.name,
+            True,
+        )
+        TestUsersQueriesUsernameAPI.assert_user_detail_response(
+            next_response, TEST_USER_ID, f"user_{TEST_USER_ID}", None, None, True
+        )
+
+    def test_other_user_cannot_delete_self(self):
+        """Check that another user cannot delete (redact personal information) about a different user"""
+        # Arrange
+        self.user.email_address = TEST_EMAIL
+        self.user.gender = UserGender.FEMALE.value
+        self.user.save()
+        user_2 = return_canned_user("user_2", 2222222)
+        user_2.create()
+        user_2_session_token = generate_encoded_token(user_2.id)
+        # Act
+        response = self.client.delete(
+            self.url, headers={"Authorization": user_2_session_token}
+        )
+        # Assert
+        self.assertEqual(401, response.status_code)
+        rjson = response.json
+        self.assertDictEqual(
+            rjson,
+            {
+                "error": {
+                    "code": 401,
+                    "details": {},
+                    "message": "Authentication credentials were missing or incorrect.",
+                    "sub_code": "UNAUTHORIZED",
+                }
+            },
+        )
+
+    def test_other_admin_user_can_delete_self(self):
+        """Check that another user cannot delete (redact personal information) about a different user"""
+        # Arrange
+        self.user.email_address = TEST_EMAIL
+        self.user.gender = UserGender.FEMALE.value
+        self.user.save()
+        user_2 = return_canned_user("user_2", 2222222)
+        user_2.set_user_role(UserRole.ADMIN)
+        user_2.create()
+        user_2_session_token = generate_encoded_token(user_2.id)
+        # Act
+        response = self.client.delete(
+            self.url, headers={"Authorization": user_2_session_token}
+        )
+        next_response = self.client.get(
+            f"/api/v2/users/{TEST_USER_ID}/",
+            headers={"Authorization": user_2_session_token},
+        )
+        # Assert
+        # Note that we return the deleted user information at this time
+        TestUsersQueriesUsernameAPI.assert_user_detail_response(
+            response,
+            TEST_USER_ID,
+            TEST_USERNAME,
+            TEST_EMAIL,
+            UserGender.FEMALE.name,
+            False,
+        )
+        TestUsersQueriesUsernameAPI.assert_user_detail_response(
+            next_response, TEST_USER_ID, f"user_{TEST_USER_ID}", None, None, False
+        )
+
+    def test_admin_user_can_remove_redacted_osm_accounts(self):
+        """Check that an admin can redact redacted OSM accounts"""
+        # Arrange
+        self.user.email_address = TEST_EMAIL
+        self.user.gender = UserGender.FEMALE.value
+        self.user.id = 4
+        self.user.save()
+        user_2 = return_canned_user("user_2", 2222222)
+        user_2.set_user_role(UserRole.ADMIN)
+        user_2.create()
+        user_2_session_token = generate_encoded_token(user_2.id)
+        # Act
+        response = self.client.delete(
+            "/api/v2/users/", headers={"Authorization": user_2_session_token}
+        )
+        next_response = self.client.get(
+            "/api/v2/users/4/", headers={"Authorization": user_2_session_token}
+        )
+        # Assert
+        self.assertEqual(200, response.status_code)
+        TestUsersQueriesUsernameAPI.assert_user_detail_response(
+            next_response, 4, "user_4", None, None, False
+        )
+
+    def test_user_cannot_remove_redacted_osm_accounts(self):
+        """Check that a user cannot redact redacted OSM accounts"""
+        # Arrange
+        self.user.email_address = TEST_EMAIL
+        self.user.gender = UserGender.FEMALE.value
+        self.user.id = 4
+        self.user.save()
+        user_2 = return_canned_user("user_2", 2222222)
+        user_2.set_user_role(UserRole.MAPPER)
+        user_2.create()
+        user_2_session_token = generate_encoded_token(user_2.id)
+        # Act
+        response = self.client.delete(
+            "/api/v2/users/", headers={"Authorization": user_2_session_token}
+        )
+        next_response = self.client.get(
+            "/api/v2/users/4/", headers={"Authorization": user_2_session_token}
+        )
+        # Assert
+        self.assertEqual(401, response.status_code)
+        TestUsersQueriesUsernameAPI.assert_user_detail_response(
+            next_response, 4, TEST_USERNAME, None, None, False
         )

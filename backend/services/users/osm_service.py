@@ -14,6 +14,25 @@ class OSMServiceError(Exception):
 
 class OSMService:
     @staticmethod
+    def is_osm_user_gone(user_id: int) -> bool:
+        """
+        Check if OSM details for the user from OSM API are available
+        :param user_id: user_id in scope
+        :raises OSMServiceError
+        """
+        osm_user_details_url = (
+            f"{current_app.config['OSM_SERVER_URL']}/api/0.6/user/{user_id}.json"
+        )
+        response = requests.head(osm_user_details_url)
+
+        if response.status_code == 410:
+            return True
+        if response.status_code != 200:
+            raise OSMServiceError("Bad response from OSM")
+
+        return False
+
+    @staticmethod
     def get_osm_details_for_user(user_id: int) -> UserOSMDTO:
         """
         Gets OSM details for the user from OSM API
@@ -23,6 +42,8 @@ class OSMService:
         osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
         response = requests.get(osm_user_details_url)
 
+        if response.status_code == 410:
+            raise OSMServiceError("User no longer exists on OSM")
         if response.status_code != 200:
             raise OSMServiceError("Bad response from OSM")
 

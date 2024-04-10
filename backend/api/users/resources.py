@@ -58,6 +58,28 @@ async def get_user(
     user_dto = await UserService.get_user_dto_by_id(user_id, user.id, db)
     return user_dto
 
+    @token_auth.login_required
+    def delete(self, user_id: Optional[int] = None):
+        """
+        Delete user information by id.
+        :param user_id: The user to delete
+        :return: RFC7464 compliant sequence of user objects deleted
+            200: User deleted
+            401: Unauthorized - Invalid credentials
+            404: User not found
+            500: Internal Server Error
+        """
+        if user_id == token_auth.current_user() or UserService.is_user_an_admin(
+            token_auth.current_user()
+        ):
+            return (
+                UserService.delete_user_by_id(
+                    user_id, token_auth.current_user()
+                ).to_primitive(),
+                200,
+            )
+        raise Unauthorized()
+
 
 @router.get("/")
 async def list_users(

@@ -68,6 +68,12 @@ class Application(Base):
             applications_dto.applications.append(application_dto)
         return applications_dto
 
+    @staticmethod
+    def delete_all_for_user(user: int):
+        for r in db.session.query(Application).filter(Application.user == user):
+            db.session.delete(r)
+        db.session.commit()
+
     def as_dto(self):
         app_dto = ApplicationDTO()
         app_dto.user = self.user
