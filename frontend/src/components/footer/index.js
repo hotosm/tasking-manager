@@ -23,7 +23,7 @@ import {
 import './styles.scss';
 
 const socialNetworks = [
-  { link: ORG_TWITTER, icon: <TwitterIcon style={{ height: '20px', width: '20px' }} /> },
+  { link: ORG_TWITTER, icon: <TwitterIcon style={{ height: '20px', width: '20px' }} noBg /> },
   { link: ORG_FB, icon: <FacebookIcon style={{ height: '20px', width: '20px' }} /> },
   { link: ORG_YOUTUBE, icon: <YoutubeIcon style={{ height: '20px', width: '20px' }} /> },
   { link: ORG_INSTAGRAM, icon: <InstagramIcon style={{ height: '20px', width: '20px' }} /> },
@@ -38,6 +38,7 @@ export function Footer() {
     'projects/:id/tasks',
     'projects/:id/map',
     'projects/:id/validate',
+    'projects/:id/live',
     'manage/organisations/new/',
     'manage/teams/new',
     'manage/campaigns/new',

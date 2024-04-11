@@ -237,6 +237,9 @@ class EnvironmentConfig:
     # Sentry backend DSN
     SENTRY_BACKEND_DSN = os.getenv("TM_SENTRY_BACKEND_DSN", None)
 
+    # Ohsome Stats Token
+    OHSOME_STATS_TOKEN = os.getenv("OHSOME_STATS_TOKEN", None)
+
 
 class TestEnvironmentConfig(EnvironmentConfig):
     POSTGRES_TEST_DB = os.getenv("POSTGRES_TEST_DB", None)

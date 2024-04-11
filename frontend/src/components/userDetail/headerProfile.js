@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from '../user/messages';
-import { TwitterIconNoBg, FacebookIcon, LinkedinIcon, ProfilePictureIcon } from '../svgIcons';
+import { TwitterIcon, FacebookIcon, LinkedinIcon, ProfilePictureIcon } from '../svgIcons';
 import { MappingLevelMessage } from '../mappingLevel';
 import { NextMappingLevel } from '../user/topBar';
 import { UserOrganisations } from './userTeamsOrgs';
@@ -26,7 +26,7 @@ export const SocialMedia = ({ data }) => {
 
     switch (field) {
       case 'twitterId':
-        return <TwitterIconNoBg style={iconStyle} className="light-blue v-mid" />;
+        return <TwitterIcon style={iconStyle} className="light-blue v-mid" />;
       case 'facebookId':
         return <FacebookIcon style={iconStyle} className="dark-blue v-mid" />;
       case 'linkedinId':
