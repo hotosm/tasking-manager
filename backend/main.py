@@ -16,7 +16,7 @@ def get_application() -> FastAPI:
         version="0.1.0",
         license_info={
             "name": "GPL-3.0-only",
-            "url": "https://raw.githubusercontent.com/hotosm/fmtm/main/LICENSE",
+            "url": "https://raw.githubusercontent.com/hotosm/tasking-manager/develop/LICENSE.md",
         },
         debug=settings.DEBUG,
         root_path=settings.APP_BASE_URL,
