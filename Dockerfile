@@ -1,6 +1,7 @@
-FROM python:3.10-slim
-# Uses naxa/python:3.9-slim instead of python:3.9-slim so that
-# apt/requirement doesn't have to reinstall everytime
+ARG DEBIAN_IMG_TAG=slim-bookworm
+ARG PYTHON_IMG_TAG=3.12.3
+
+FROM python:${PYTHON_IMG_TAG}-${DEBIAN_IMG_TAG} as base
 
 ENV PYTHONUNBUFFERED 1
 RUN mkdir -p /code
@@ -25,4 +26,4 @@ RUN pip install --no-cache-dir setuptools==57.5.0
 RUN pip install --no-cache-dir -r requirements.txt
 RUN rm /code/requirements.txt /code/apt_requirements.txt
 
-COPY . /code
+COPY ./backend /code/backend
