@@ -1,3 +1,7 @@
+import re
+from collections.abc import Generator
+from typing import Optional
+
 import requests
 from flask import current_app
 
@@ -31,6 +35,32 @@ class OSMService:
             raise OSMServiceError("Bad response from OSM")
 
         return False
+
+    @staticmethod
+    def get_deleted_users() -> Optional[Generator[int, None, None]]:
+        """
+        Get the list of deleted users from OpenStreetMap.
+        This only returns users from the https://www.openstreetmap.org instance.
+        :return: The deleted users
+        """
+        if current_app.config["OSM_SERVER_URL"] == "https://www.openstreetmap.org":
+
+            def get_planet_osm_deleted_users() -> Generator[int, None, None]:
+                response = requests.get(
+                    "https://planet.openstreetmap.org/users_deleted/users_deleted.txt",
+                    stream=True,
+                )
+                username = re.compile(r"^\s*(\d+)\s*$")
+                try:
+                    for line in response.iter_lines(decode_unicode=True):
+                        match = username.fullmatch(line)
+                        if match:
+                            yield int(match.group(1))
+                finally:
+                    response.close()
+
+            return get_planet_osm_deleted_users()
+        return None
 
     @staticmethod
     def get_osm_details_for_user(user_id: int) -> UserOSMDTO:
