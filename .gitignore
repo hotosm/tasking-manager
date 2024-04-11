@@ -68,3 +68,4 @@ htmlcov/
 
 # Docker & Docker compose
 docker-compose.override.yml
+postgres_data/

@@ -27,6 +27,6 @@ services:
     restart: always
     env_file: ${ENV_FILE:-tasking-manager.env}
     ports:
-      - "5436:5432"
+      - "5434:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
