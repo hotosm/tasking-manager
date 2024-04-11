@@ -1,4 +1,5 @@
 from typing import Optional
+from collections.abc import Generator
 
 from databases import Database
 from fastapi import APIRouter, Depends, Request, Query, Path
