@@ -116,7 +116,7 @@ export const MoreFiltersForm = (props) => {
           />
         </fieldset>
       )}
-      <div className="tr w-100 mt3">
+      <div className="tr w-100 mt3 pb3 ph2">
         <Link to="/explore">
           <Button className="bg-white blue-dark mr1 f6 pv2">
             <FormattedMessage {...messages.clear} />
