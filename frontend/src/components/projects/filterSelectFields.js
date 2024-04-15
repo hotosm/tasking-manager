@@ -201,7 +201,6 @@ export const TagFilterPickerAutocomplete = ({
 
   return (
     <Select
-      menuPosition={'fixed'}
       isLoading={tagOptions.isLoading}
       onChange={handleTagChange}
       classNamePrefix="react-select"
