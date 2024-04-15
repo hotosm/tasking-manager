@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState, useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import ReactPlaceholder from 'react-placeholder';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -16,6 +16,10 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { NotFound } from './notFound';
 import { ProjectDetailPlaceholder } from '../components/projectDetail/projectDetailPlaceholder';
 import { useProjectsQuery, useProjectQuery } from '../api/projects';
+import { useWindowSize } from '../hooks/UseWindowSize';
+import { useOnClickOutside } from '../hooks/UseOnClickOutside';
+
+const smallScreenSize = 960;
 
 const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
 
@@ -152,6 +156,7 @@ export const MoreFilters = () => {
   const [fullProjectsQuery] = useExploreProjectsQueryParams();
   const [componentHeight, setComponentHeight] = useState(`${window.innerHeight}px`);
   const filterElement = document?.getElementById('more-filter-id');
+  const [width] = useWindowSize();
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -188,6 +193,14 @@ export const MoreFilters = () => {
   const currentUrl = `/explore${
     stringify(fullProjectsQuery) ? ['?', stringify(fullProjectsQuery)].join('') : ''
   }`;
+  const moreFilterRef = useRef(null);
+
+  useOnClickOutside(moreFilterRef, (e) => {
+    if (e.target.id === 'more-filter-id') return;
+    navigate(currentUrl);
+  });
+
+  const isSmallScreen = width < smallScreenSize;
 
   return (
     <>
