@@ -147,9 +147,11 @@ export const ProjectsPageIndex = (props) => {
 };
 
 export const MoreFilters = () => {
+  const [position, setPosition] = useState({ top: 0, left: 0, height: 0, width: 0 });
   const navigate = useNavigate();
   const [fullProjectsQuery] = useExploreProjectsQueryParams();
   const [componentHeight, setComponentHeight] = useState(`${window.innerHeight}px`);
+  const filterElement = document?.getElementById('more-filter-id');
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -157,6 +159,13 @@ export const MoreFilters = () => {
       document.body.style.overflow = 'auto';
     };
   }, []);
+
+  // calculate position of more filter button for layout
+  useLayoutEffect(() => {
+    if (!filterElement) return;
+    const { top, left, height, width } = filterElement.getBoundingClientRect();
+    setPosition({ top, left, height, width });
+  }, [filterElement, width]);
 
   useEffect(() => {
     const contentHeight =
@@ -183,15 +192,40 @@ export const MoreFilters = () => {
   return (
     <>
       <div
-        className="absolute left-0 z-4 mt1 w-40-l w-100 bg-white h4 ph1 ph5-l"
-        style={{ height: `${componentHeight}px` }}
+        ref={moreFilterRef}
+        className={`absolute z-4 bg-white ${
+          // compare screen size for two different design in small screen and large screen of filter section
+          isSmallScreen ? ' left-0  mt1 w-40-l w-100  h4 ph1 ph5-l' : 'pa2 ba b--light-gray'
+        }`}
+        style={
+          isSmallScreen
+            ? { height: `${componentHeight}px` }
+            : {
+                // 250 is half the width of filter component to place filter exactly center of more-filter button
+                left: position.left - 250 + position.width / 2,
+                top: position.top + position.height + 10,
+                width: '31.25em',
+                boxShadow: '2px 1px 23px -1px rgba(143,130,130,0.75)',
+              }
+        }
       >
-        <div className="scrollable-container h-100  overflow-x-hidden overflow-y-auto">
+        <div
+          className={`${
+            isSmallScreen ? 'scrollable-container h-100  overflow-x-hidden overflow-y-auto' : ''
+          }`}
+        >
           <MoreFiltersForm currentUrl={currentUrl} />
         </div>
       </div>
-      <div
-        onClick={() => navigate(currentUrl)}
+      {!isSmallScreen && (
+        <div
+          style={{
+            left: `${position.left + position.width / 2}px`,
+            top: position.top + position.height + 2,
+          }}
+          className={`absolute w1 h1 bg-white bl bt b--grey-light rotate-45 z-5`}
+        />
+      )}
         role="button"
         className="absolute right-0 z-4 br w-60-l w-0 h-100 bg-blue-dark o-70 h6"
       />
