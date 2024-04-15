@@ -226,8 +226,10 @@ export const MoreFilters = () => {
           className={`absolute w1 h1 bg-white bl bt b--grey-light rotate-45 z-5`}
         />
       )}
+
+      <div
         role="button"
-        className="absolute right-0 z-4 br w-60-l w-0 h-100 bg-blue-dark o-70 h6"
+        className="absolute right-0 z-2 br w-100-l w-0 h-100 bg-blue-dark o-70 h6"
       />
     </>
   );
