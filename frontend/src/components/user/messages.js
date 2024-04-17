@@ -334,6 +334,10 @@ export default defineMessages({
     id: 'users.list.actions.setLevel',
     defaultMessage: 'Set mapper level',
   },
+  redactUser: {
+    id: 'users.list.actions.redact',
+    defaultMessage: 'Redact user information',
+  },
   userAttributeUpdationSuccess: {
     id: 'users.list.attribute.updation.success',
     defaultMessage:
