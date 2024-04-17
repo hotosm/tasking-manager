@@ -31,6 +31,7 @@ coverage==7.2.7
 flake8==6.1.0
 psycopg2-binary>=2.9.6
 pytest==7.4.0
+pyinstrument==4.6.2
 
 # Indirect, but required dependencies (often required for efficient deployments)
 gevent==22.10.2
