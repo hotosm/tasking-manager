@@ -2,8 +2,10 @@ import logging
 import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from loguru import logger as log
 from starlette.middleware.authentication import AuthenticationMiddleware
+from pyinstrument import Profiler
 from backend.routes import add_api_end_points
 from backend.services.users.authentication_service import TokenAuthBackend
 from backend.config import settings
@@ -15,7 +17,7 @@ def get_application() -> FastAPI:
         description="HOTOSM Field Tasking Manager",
         version="0.1.0",
         license_info={
-            "name": "GPL-3.0-only",
+            "name": "BSD 2-Clause",
             "url": "https://raw.githubusercontent.com/hotosm/tasking-manager/develop/LICENSE.md",
         },
         debug=settings.DEBUG,
@@ -24,6 +26,21 @@ def get_application() -> FastAPI:
 
     # Set custom logger
     # _app.logger = get_logger()
+
+    PROFILING = True  # Set this from a settings model
+
+    if PROFILING:
+        @_app.middleware("http")
+        async def pyinstrument_middleware(request, call_next):
+            profiling = request.query_params.get("profile", False)
+            if profiling:
+                profiler = Profiler(async_mode=True)
+                profiler.start()
+                await call_next(request)
+                profiler.stop()
+                return HTMLResponse(profiler.output_html())
+            else:
+                return await call_next(request)
 
     _app.add_middleware(
         CORSMiddleware,
