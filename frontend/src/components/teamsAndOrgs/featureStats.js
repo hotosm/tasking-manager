@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import userDetailMessages from '../userDetail/messages';
-import { OHSOME_STATS_BASE_URL } from '../../config';
+import { OHSOME_STATS_BASE_URL, defaultChangesetComment } from '../../config';
 import { RoadIcon, HomeIcon, WavesIcon, MarkerIcon } from '../svgIcons';
 import { StatsCard } from '../statsCard';
 import StatsTimestamp from '../statsTimestamp';
@@ -13,7 +13,9 @@ export const FeatureStats = () => {
   const [stats, setStats] = useState({ edits: 0, buildings: 0, roads: 0, pois: 0, waterways: 0 });
   const getStats = async () => {
     try {
-      const response = await axios.get(`${OHSOME_STATS_BASE_URL}/stats/hotosm-project-%2A`);
+      const response = await axios.get(
+        `${OHSOME_STATS_BASE_URL}/stats/${defaultChangesetComment}-%2A`,
+      );
       const { edits, buildings, roads } = response.data.result;
       setStats({
         edits,
