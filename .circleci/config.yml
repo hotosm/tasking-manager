@@ -375,25 +375,25 @@ workflows:
     jobs:
       - database-backup:
           name: Backup TeachOSM database
-          stack_name: "teachosm"
+          stack_name: "tm4-teachosm"
           context:
             - org-global
-            - tasking-manager-teachosm
+            - tasking-manager-tm4-teachosm
       - backend-functional-tests
       - backend_deploy:
           name: Deploy TeachOSM Backend
           gitsha: $CIRCLECI_SHA1
-          stack_name: "teachosm"
+          stack_name: "tm4-teachosm"
           host_ami: "ami-01e5ff16fd6e8c542"
           requires:
             - backend-functional-tests
-          context: tasking-manager-teachosm
+          context: tasking-manager-tm4-teachosm
       - frontend_deploy:
           name: Deploy TeachOSM Frontend
-          stack_name: "teachosm"
+          stack_name: "tm4-teachosm"
           requires:
             - backend-functional-tests
-          context: tasking-manager-teachosm
+          context: tasking-manager-tm4-teachosm
 
   staging-all:
     when:
