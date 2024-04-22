@@ -53,8 +53,11 @@ export const useProjectQuery = (projectId) => {
   });
 };
 export const useProjectSummaryQuery = (projectId, otherOptions = {}) => {
+  const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences['locale']);
+
   const fetchProjectSummary = ({ signal }) => {
-    return api().get(`projects/${projectId}/queries/summary/`, {
+    return api(token, locale).get(`projects/${projectId}/queries/summary/`, {
       signal,
     });
   };
