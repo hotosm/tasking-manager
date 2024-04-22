@@ -21,6 +21,13 @@ import { useOnClickOutside } from '../hooks/UseOnClickOutside';
 
 const smallScreenSize = 960;
 
+// returns true if the element or one of its parents has the classname
+function hasSomeParentClass(element, classname) {
+  if (typeof element.className === 'string' && element.className.split(' ').indexOf(classname) >= 0)
+    return true;
+  return element.parentNode && hasSomeParentClass(element.parentNode, classname);
+}
+
 const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
 
 export const CreateProject = () => {
@@ -46,6 +53,7 @@ export const ProjectsPage = () => {
   } = useProjectsQuery(fullProjectsQuery, action, {
     // prevent api call until the filters are applied
     enabled: !pathname.includes('/explore/filters/'),
+    cacheTime: 0,
   });
 
   return (
@@ -196,7 +204,13 @@ export const MoreFilters = () => {
   const moreFilterRef = useRef(null);
 
   useOnClickOutside(moreFilterRef, (e) => {
-    if (e.target.id === 'more-filter-id') return;
+    const clickedElement = e.target;
+    const isClearSelectButton = hasSomeParentClass(clickedElement, 'react-select__clear-indicator');
+    if (
+      e.target.id === 'more-filter-id' ||
+      isClearSelectButton //prevent popup close on clicking clear button of select component
+    )
+      return;
     navigate(currentUrl);
   });
 
