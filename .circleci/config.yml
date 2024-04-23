@@ -380,20 +380,28 @@ workflows:
             - org-global
             - tasking-manager-tm4-teachosm
       - backend-functional-tests
+      - backend_wait_for_approval:
+          type: approval
+          requires:
+            - Backup TeachOSM database
       - backend_deploy:
           name: Deploy TeachOSM Backend
           gitsha: $CIRCLECI_SHA1
           stack_name: "tm4-teachosm"
           host_ami: "ami-01e5ff16fd6e8c542"
           requires:
-            - backend-functional-tests
-          context: tasking-manager-tm4-teachosm
+            - backend_wait_for_approval
+          context: 
+            - org-global
+            - tasking-manager-tm4-teachosm
       - frontend_deploy:
           name: Deploy TeachOSM Frontend
           stack_name: "tm4-teachosm"
           requires:
-            - backend-functional-tests
-          context: tasking-manager-tm4-teachosm
+            - backend_wait_for_approval
+          context: 
+            - org-global
+            - tasking-manager-tm4-teachosm
 
   staging-all:
     when:
