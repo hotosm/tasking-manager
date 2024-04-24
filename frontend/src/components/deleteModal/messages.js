@@ -97,6 +97,10 @@ export default defineMessages({
     id: 'deleteModal.title.organisation',
     defaultMessage: 'Are you sure you want to delete this organization?',
   },
+  confirmDeleteTitle_partners: {
+    id: 'deleteModal.title.partners',
+    defaultMessage: 'Are you sure you want to delete this partner?',
+  },
   confirmDeleteTitle_licenses: {
     id: 'deleteModal.title.licenses',
     defaultMessage: 'Are you sure you want to delete this license?',

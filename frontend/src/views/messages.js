@@ -84,6 +84,10 @@ export default defineMessages({
     id: 'management.stats.users.title',
     defaultMessage: 'New users',
   },
+  newPartner: {
+    id: 'management.partner.creation',
+    defaultMessage: 'Create new partner',
+  },
   newOrganisation: {
     id: 'teamsAndOrgs.management.organisation.creation',
     defaultMessage: 'Create new organization',
@@ -107,6 +111,18 @@ export default defineMessages({
   createOrganisation: {
     id: 'teamsAndOrgs.management.organisation.button.create',
     defaultMessage: 'Create organization',
+  },
+  createPartner: {
+    id: 'management.partner.button.create',
+    defaultMessage: 'Create Partner',
+  },
+  activity: {
+    id: 'management.partner.activity',
+    defaultMessage: 'Activity',
+  },
+  resources: {
+    id: 'management.partner.resources',
+    defaultMessage: 'Resources',
   },
   entityCreationSuccess: {
     id: 'management.entity.creation.success',
@@ -197,6 +213,10 @@ export default defineMessages({
   manageOrganisation: {
     id: 'teamsAndOrgs.management.organisation.manage',
     defaultMessage: 'Manage organization',
+  },
+  managePartner: {
+    id: 'management.partner.manage',
+    defaultMessage: 'Manage partner',
   },
   manageTeam: {
     id: 'teamsAndOrgs.management.team.manage',

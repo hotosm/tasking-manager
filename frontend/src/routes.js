@@ -9,10 +9,13 @@ import { Redirect } from './components/redirect';
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Root />} ErrorBoundary={FallbackComponent}>
-      <Route index lazy={async () => {
-        const { Home } = await import('./views/home' /* webpackChunkName: "home" */);
-        return { Component: Home };
-      }} />
+      <Route
+        index
+        lazy={async () => {
+          const { Home } = await import('./views/home' /* webpackChunkName: "home" */);
+          return { Component: Home };
+        }}
+      />
       <Route
         path="explore"
         lazy={async () => {
@@ -446,6 +449,42 @@ export const router = createBrowserRouter(
         }}
       />
       <Route path="project/:id" element={<Redirect to="/projects/:id" />} />
+      <Route
+        path="partners/"
+        lazy={async () => {
+          const { ListPartners } = await import(
+            './views/partnersManagement' /* webpackChunkName: "partnersManagement" */
+          );
+          return { Component: ListPartners };
+        }}
+      />
+      <Route
+        path="partners/new/"
+        lazy={async () => {
+          const { CreatePartner } = await import(
+            './views/partnersManagement' /* webpackChunkName: "partnersManagement" */
+          );
+          return { Component: CreatePartner };
+        }}
+      />
+      <Route
+        path="partners/:id/"
+        lazy={async () => {
+          const { EditPartners } = await import(
+            './views/partnersManagement' /* webpackChunkName: "partnersManagement" */
+          );
+          return { Component: EditPartners };
+        }}
+      />
+      <Route
+        path="partners/:id/stats/"
+        lazy={async () => {
+          const { PartnersStats } = await import(
+            './views/partnersStats' /* webpackChunkName: "organisationStats" */
+          );
+          return { Component: PartnersStats };
+        }}
+      />
       <Route path="*" element={<NotFound />} />
     </Route>,
   ),

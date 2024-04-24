@@ -1,0 +1,68 @@
+[
+  {
+    "name": "Accenture",
+    "primaryHashtag": "#Accenture",
+    "secondaryHashtag": "#InnovateTogether",
+    "logo": "https://s32519.pcdn.co/es/wp-content/uploads/sites/3/2020/08/accenture-logo-672x284px-336x142.png.webp",
+    "metaLink": "https://example.com/accenture-meta",
+    "xLink": "https://example.com/accenture-x",
+    "instagramLink": "https://www.instagram.com/accenture/",
+    "webpageLink": "https://www.accenture.com/",
+    "feedbackLink": "https://example.com/accenture-feedback"
+  },
+  {
+    "name": "ACN*",
+    "primaryHashtag": "#ACN",
+    "secondaryHashtag": "#NewEra",
+    "logo": "https://s32519.pcdn.co/es/wp-content/uploads/sites/3/2020/08/accenture-logo-672x284px-336x142.png.webp",
+    "metaLink": "https://example.com/acn-meta",
+    "xLink": "https://example.com/acn-x",
+    "instagramLink": "https://www.instagram.com/acn/",
+    "webpageLink": "https://www.acn.com/",
+    "feedbackLink": "https://example.com/acn-feedback"
+  },
+  {
+    "name": "DublinACN19",
+    "primaryHashtag": "#DublinACN19",
+    "secondaryHashtag": "#FutureTech",
+    "logo": "https://s32519.pcdn.co/es/wp-content/uploads/sites/3/2020/08/accenture-logo-672x284px-336x142.png.webp",
+    "metaLink": "https://example.com/dublinacn19-meta",
+    "xLink": "https://example.com/dublinacn19-x",
+    "instagramLink": "https://www.instagram.com/dublinacn19/",
+    "webpageLink": "https://www.dublinacn19.com/",
+    "feedbackLink": "https://example.com/dublinacn19-feedback"
+  },
+  {
+    "name": "ACNGradDublin19",
+    "primaryHashtag": "#ACNGradDublin19",
+    "secondaryHashtag": "#FutureLeaders",
+    "logo": "https://s32519.pcdn.co/es/wp-content/uploads/sites/3/2020/08/accenture-logo-672x284px-336x142.png.webp",
+    "metaLink": "https://example.com/acngraddublin19-meta",
+    "xLink": "https://example.com/acngraddublin19-x",
+    "instagramLink": "https://www.instagram.com/acngraddublin19/",
+    "webpageLink": "https://www.acngraddublin19.com/",
+    "feedbackLink": "https://example.com/acngraddublin19-feedback"
+  },
+  {
+    "name": "ACNFY22",
+    "primaryHashtag": "#ACNFY22",
+    "secondaryHashtag": "#InnovationFuture",
+    "logo": "https://s32519.pcdn.co/es/wp-content/uploads/sites/3/2020/08/accenture-logo-672x284px-336x142.png.webp",
+    "metaLink": "https://example.com/acnfy22-meta",
+    "xLink": "https://example.com/acnfy22-x",
+    "instagramLink": "https://www.instagram.com/acnfy22/",
+    "webpageLink": "https://www.acnfy22.com/",
+    "feedbackLink": "https://example.com/acnfy22-feedback"
+  },
+  {
+    "name": "ACNFY23",
+    "primaryHashtag": "#ACNFY23",
+    "secondaryHashtag": "#Innovation23",
+    "logo": "https://s32519.pcdn.co/es/wp-content/uploads/sites/3/2020/08/accenture-logo-672x284px-336x142.png.webp",
+    "metaLink": "https://example.com/acnfy23-meta",
+    "xLink": "https://example.com/acnfy23-x",
+    "instagramLink": "https://www.instagram.com/acnfy23/",
+    "webpageLink": "https://www.acnfy23.com/",
+    "feedbackLink": "https://example.com/acnfy23-feedback"
+  }
+]

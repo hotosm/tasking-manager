@@ -28,6 +28,22 @@ export default defineMessages({
     id: 'management.link.edit.team',
     defaultMessage: 'Edit team',
   },
+  edits: {
+    id: 'management.partnersActivity.edits',
+    defaultMessage: 'Edits',
+  },
+  buildings: {
+    id: 'management.partnersActivity.buildings',
+    defaultMessage: 'Buildings',
+  },
+  roads: {
+    id: 'management.partnersActivity.roads',
+    defaultMessage: 'Roads',
+  },
+  users: {
+    id: 'management.partnersActivity.users',
+    defaultMessage: 'Users',
+  },
   edit: {
     id: 'management.members.edit',
     defaultMessage: 'Edit',
@@ -176,6 +192,38 @@ export default defineMessages({
     id: 'management.filter.textarea.searchOrganisations',
     defaultMessage: 'Search organisations...',
   },
+  myPartners: {
+    id: 'management.filter.buttons.myPartners',
+    defaultMessage: 'My Partners',
+  },
+  searchPartners: {
+    id: 'management.filter.textarea.searchPartners',
+    defaultMessage: 'Search partners...',
+  },
+  buildingsStats:{
+    id: 'management.filter.stats.buildingsStats',
+    defaultMessage: 'Building Edits',
+  },
+  changesets:{
+    id: 'management.filter.stats.changesets',
+    defaultMessage: 'Change sets',
+  },
+  roadsStats:{
+    id: 'management.filter.stats.roadsStats',
+    defaultMessage: 'km of Roads',
+  },
+  editsStats:{
+    id: 'management.filter.stats.editsStats',
+    defaultMessage: 'Total Edits',
+  },
+  communityStats:{
+    id: 'management.filter.stats.communityStats',
+    defaultMessage: 'Community stats',
+  },
+  mappersStats:{
+    id: 'management.filter.stats.mappersStats',
+    defaultMessage: 'Contributors',
+  },
   searchTeams: {
     id: 'management.filter.textarea.searchTeams',
     defaultMessage: 'Search teams...',
@@ -231,6 +279,14 @@ export default defineMessages({
   organisations: {
     id: 'management.organisations',
     defaultMessage: 'Organizations',
+  },
+  partner: {
+    id: 'management.partner',
+    defaultMessage: 'Partner',
+  },
+  partners: {
+    id: 'management.partners',
+    defaultMessage: 'Partners',
   },
   type: {
     id: 'management.organisations.type',
@@ -385,6 +441,10 @@ export default defineMessages({
     id: 'management.titles.organisation_information',
     defaultMessage: 'Organization information',
   },
+  partnersInfo: {
+    id: 'management.titles.partner_information',
+    defaultMessage: 'Partner information',
+  },
   teamInfo: {
     id: 'management.titles.team_information',
     defaultMessage: 'Team information',
@@ -424,6 +484,25 @@ export default defineMessages({
   website: {
     id: 'management.fields.website',
     defaultMessage: 'Website',
+  },
+  primaryhashtag: {
+    id: 'management.titles.partner_primaryhashtag',
+    defaultMessage: 'Primaryhashtag',
+  },
+  secondaryhashtag: {
+    id: 'management.titles.partner_secondaryhashtag',
+    defaultMessage: 'Secondaryhashtag',
+  },
+  logo: { id: 'management.titles.partner_logo', defaultMessage: 'Logo' },
+  metaLink: { id: 'management.titles.partner_metaLink', defaultMessage: 'Meta Link' },
+  xLink: { id: 'management.titles.partner_xLink', defaultMessage: 'X Link' },
+  instagramLink: {
+    id: 'management.titles.partner_instagramLink',
+    defaultMessage: 'Instagram Link',
+  },
+  feedbackLink: {
+    id: 'management.titles.partner_feedbackLink',
+    defaultMessage: 'Feedback Link',
   },
   settings: {
     id: 'management.settings',

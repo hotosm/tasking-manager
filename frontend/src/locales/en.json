@@ -854,6 +854,8 @@
   "management.edit_members": "You will be able to add more users after you save for the first time.",
   "management.filter.buttons.myOrganisations": "My Organizations",
   "management.filter.textarea.searchOrganisations": "Search organisations...",
+  "management.filter.buttons.myPartners": "My Partners",
+  "management.filter.textarea.searchPartners": "Search partners...",
   "management.filter.textarea.searchTeams": "Search teams...",
   "management.filter.textarea.searchCampaigns": "Search campaigns...",
   "management.filter.textarea.searchCategories": "Search categories...",
