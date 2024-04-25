@@ -11,7 +11,8 @@ from backend.models.dtos.organisation_dto import (
 from backend.models.postgis.user import User
 from backend.models.postgis.campaign import Campaign, campaign_organisations
 from backend.models.postgis.statuses import OrganisationType
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 # Secondary table defining many-to-many relationship between organisations and managers
 organisation_managers = Table(

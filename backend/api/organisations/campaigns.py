@@ -1,13 +1,13 @@
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
 from fastapi import APIRouter, Depends, Request
-from backend.db.database import get_db
+from backend.db import get_session
 from starlette.authentication import requires
 
 router = APIRouter(
     prefix="/organisations",
     tags=["organisations"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

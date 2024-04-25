@@ -18,7 +18,8 @@ from backend.models.postgis.campaign import (
 from backend.models.postgis.organisation import Organisation
 from backend.services.organisation_service import OrganisationService
 from backend.services.project_service import ProjectService
-from backend.db.database import session
+from backend.db import get_session
+session = get_session()
 
 
 class CampaignService:

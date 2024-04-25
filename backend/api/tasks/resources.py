@@ -13,14 +13,14 @@ from backend.services.grid.grid_service import GridService
 from backend.models.postgis.statuses import UserRole
 from backend.models.postgis.utils import InvalidGeoJson
 from fastapi import APIRouter, Depends, Request
-from backend.db.database import get_db
+from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

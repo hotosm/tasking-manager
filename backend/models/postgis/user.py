@@ -26,7 +26,8 @@ from backend.models.postgis.statuses import (
 )
 from backend.models.postgis.utils import timestamp
 from backend.models.postgis.interests import Interest, user_interests
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 class User(Base):
     """Describes the history associated with a task"""
@@ -87,7 +88,8 @@ class User(Base):
 
     @staticmethod
     def get_by_id(user_id: int):
-        from backend.db.database import session
+        from backend.db import get_session
+        session = get_session()
         """Return the user for the specified id, or None if not found"""
         return session.get(User, user_id)
 

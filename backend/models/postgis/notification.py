@@ -5,7 +5,8 @@ from backend.models.postgis.message import Message
 from backend.models.postgis.utils import timestamp
 from backend.models.dtos.notification_dto import NotificationDTO
 from datetime import datetime, timedelta
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 class Notification(Base):
     """Describes a Notification for a user"""

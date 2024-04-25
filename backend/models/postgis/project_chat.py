@@ -6,7 +6,8 @@ from sqlalchemy.orm import relationship
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
 from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO, Pagination
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 class ProjectChat(Base):
     """Contains all project info localized into supported languages"""

@@ -6,12 +6,13 @@ from math import ceil
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from sqlalchemy.orm import Query
+from sqlalchemy.sql.selectable import Select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 def abort(code):
     raise Exception
 
-
+ 
 class Pagination:
     """Apply an offset and limit to the query based on the current page and number of
     items per page.
@@ -72,9 +73,11 @@ class Pagination:
         self.max_per_page: int | None = max_per_page
         """The maximum allowed value for ``per_page``."""
 
-        items = self._query_items()
+    @staticmethod
+    async def get(self, count):
+        items = await self._query_items()
 
-        if not items and page != 1 and error_out:
+        if not items and self.page != 1 and self.error_out:
             abort(404)
 
         self.items: list[t.Any] = items
@@ -83,12 +86,13 @@ class Pagination:
         """
 
         if count:
-            total = self._query_count()
+            total = await self._query_count()
         else:
             total = None
 
         self.total: int | None = total
         """The total number of items across all pages."""
+        return self
 
     @staticmethod
     def _prepare_page_args(
@@ -337,20 +341,23 @@ class QueryPagination(Pagination):
     .. versionadded:: 3.0
     """
 
-    def _query_items(self) -> list[t.Any]:
+    async def _query_items(self) -> list[t.Any]:
         query = self._query_args["query"]
-        out = query.limit(self.per_page).offset(self._query_offset).all()
+        session = self._query_args["session"]
+        out = await session.execute(query.limit(self.per_page).offset(self._query_offset))
         return out  # type: ignore[no-any-return]
 
-    def _query_count(self) -> int:
+    async def _query_count(self) -> int:
         # Query.count automatically disables eager loads
-        out = self._query_args["query"].order_by(None).count()
+        session = self._query_args["session"]
+        out = await session.scalar(sa.select(sa.func.count()).select_from(self._query_args["query"]))
         return out  # type: ignore[no-any-return]
     
-class CustomQuery(Query):
-    def paginate(
+class CustomQuery(Select):
+    async def paginate(
             self,
             *,
+            session: AsyncSession,
             page: Optional[int] = None,
             per_page: Optional[int] = None,
             max_per_page: Optional[int] = None,
@@ -383,11 +390,13 @@ class CustomQuery(Query):
         .. versionchanged:: 3.0
             ``max_per_page`` defaults to 100.
         """
-        return QueryPagination(
+        query = QueryPagination(
             query=self,
+            session=session,
             page=page,
             per_page=per_page,
             max_per_page=max_per_page,
             error_out=error_out,
             count=count,
         )
+        return await query.get(query, count)

@@ -5,14 +5,14 @@ from backend.services.settings_service import SettingsService
 from backend.services.messaging.smtp_service import SMTPService
 from backend.models.postgis.release_version import ReleaseVersion
 from fastapi import APIRouter, Depends, Request
-from backend.db.database import get_db
+from backend.db import get_session
 from fastapi.openapi.utils import get_openapi
 from fastapi import FastAPI
 
 router = APIRouter(
     prefix="/system",
     tags=["system"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

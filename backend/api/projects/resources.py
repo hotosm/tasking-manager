@@ -30,15 +30,16 @@ from backend.services.project_admin_service import (
 from backend.services.recommendation_service import ProjectRecommendationService
 from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
-from backend.db.database import get_db
+from backend.db import get_session
 from backend.models.dtos.project_dto import ProjectSearchDTO
 from starlette.authentication import requires
 import json
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -142,7 +143,7 @@ async def get_project(
 
 router.post("/")
 @requires("authenticated")
-async def post(request: Request, db: Session = Depends(get_db)):
+async def post(request: Request, db: Session = Depends(get_session)):
     """
     Creates a tasking-manager project
     ---
@@ -275,7 +276,7 @@ def head(request: Request, project_id):
 
 @router.patch("/{project_id}/")
 @requires('authenticated')
-def patch(request: Request, project_id: int, db: Session = Depends(get_db) ):
+def patch(request: Request, project_id: int, db: Session = Depends(get_session) ):
     """
     Updates a Tasking-Manager project
     ---
@@ -423,7 +424,7 @@ def patch(request: Request, project_id: int, db: Session = Depends(get_db) ):
 
 @router.delete("/{project_id}/")
 @requires("authenticated")
-def delete(request: Request, project_id: int, db: Session = Depends(get_db)):
+def delete(request: Request, project_id: int, db: Session = Depends(get_session)):
     """
     Deletes a Tasking-Manager project
     ---
@@ -539,7 +540,7 @@ def setup_search_dto(request) -> ProjectSearchDTO:
 
 
 @router.get("/")
-async def get(request: Request):
+async def get(request: Request, session: AsyncSession = Depends(get_session)):
     """
     List and search for projects
     ---
@@ -685,7 +686,7 @@ async def get(request: Request):
         if user_id:
             user = UserService.get_user_by_id(user_id)
         search_dto = setup_search_dto(request)
-        results_dto = ProjectSearchService.search_projects(search_dto, user)
+        results_dto = await ProjectSearchService.search_projects(search_dto, user, session)
         return results_dto.model_dump(by_alias=True), 200
     except NotFound:
         return {"mapResults": {}, "results": []}, 200 

@@ -2,7 +2,8 @@ from sqlalchemy import Column, BigInteger, String, DateTime, ForeignKey
 from backend.models.dtos.application_dto import ApplicationDTO, ApplicationsDTO
 from backend.models.postgis.utils import timestamp
 from backend.services.users.authentication_service import AuthenticationService
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 class Application(Base):
     """Describes an application that is authorized to access the TM"""

@@ -1,11 +1,11 @@
 from backend.services.tags_service import TagsService
 from fastapi import APIRouter, Depends
-from backend.db.database import get_db
+from backend.db import get_session
 
 router = APIRouter(
     prefix="/countries",
     tags=["countries"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 
