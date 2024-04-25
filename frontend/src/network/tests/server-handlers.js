@@ -69,7 +69,7 @@ import {
   ohsomeNowMetadata,
 } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
-import { API_URL, OHSOME_STATS_BASE_URL } from '../../config';
+import { API_URL, OHSOME_STATS_BASE_URL, defaultChangesetComment } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
 import { authLogin, setUser, userRegister } from './mockData/auth';
 import {
@@ -349,7 +349,7 @@ const handlers = [
     return res(ctx.json(systemStats));
   }),
   // EXTERNAL API
-  rest.get(`${OHSOME_STATS_BASE_URL}/stats/hotosm-project-%2A`, (req, res, ctx) => {
+  rest.get(`${OHSOME_STATS_BASE_URL}/stats/${defaultChangesetComment}-%2A`, (req, res, ctx) => {
     return res(ctx.json(homepageStats));
   }),
   rest.get(`${OHSOME_STATS_BASE_URL}/hot-tm-user`, (req, res, ctx) => {
