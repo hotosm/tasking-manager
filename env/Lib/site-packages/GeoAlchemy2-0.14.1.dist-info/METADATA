@@ -1,0 +1,48 @@
+Metadata-Version: 2.1
+Name: GeoAlchemy2
+Version: 0.14.1
+Summary: Using SQLAlchemy with Spatial Databases
+Home-page: https://geoalchemy-2.readthedocs.io/en/stable/
+Author: Eric Lemoine
+Author-email: eric.lemoine@gmail.com
+License: MIT
+Project-URL: Tracker, https://github.com/geoalchemy/geoalchemy2/issues
+Project-URL: Source, https://github.com/geoalchemy/geoalchemy2
+Keywords: geo,gis,sqlalchemy,orm
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Plugins
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Intended Audience :: Information Technology
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Scientific/Engineering :: GIS
+Requires-Python: >=3.7
+License-File: COPYING.rst
+Requires-Dist: SQLAlchemy (>=1.4)
+Requires-Dist: packaging
+Provides-Extra: shapely
+Requires-Dist: Shapely (>=1.7) ; extra == 'shapely'
+
+============
+GeoAlchemy 2
+============
+
+.. image:: https://github.com/geoalchemy/geoalchemy2/actions/workflows/test_and_publish.yml/badge.svg?branch=master
+   :target: https://github.com/geoalchemy/geoalchemy2/actions
+
+.. image:: https://coveralls.io/repos/geoalchemy/geoalchemy2/badge.png?branch=master
+   :target: https://coveralls.io/r/geoalchemy/geoalchemy2
+
+.. image:: https://readthedocs.org/projects/geoalchemy-2/badge/?version=latest
+   :target: https://geoalchemy-2.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
+GeoAlchemy 2 is a Python toolkit for working with spatial databases. It is
+based on the gorgeous `SQLAlchemy <http://www.sqlalchemy.org/>`_.
+
+Documentation is on Read the Docs: https://geoalchemy-2.readthedocs.io/en/stable.
