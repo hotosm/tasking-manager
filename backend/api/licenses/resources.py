@@ -2,14 +2,14 @@ from backend.models.dtos.licenses_dto import LicenseDTO
 from backend.services.license_service import LicenseService
 from backend.services.users.authentication_service import tm
 from fastapi import APIRouter, Depends, Request
-from backend.db.database import get_db
+from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
 
 router = APIRouter(
     prefix="/licenses",
     tags=["licenses"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

@@ -34,7 +34,8 @@ from backend.services.messaging.template_service import (
     get_txt_template,
     template_var_replacing,
 )
-from backend.db.database import session
+from backend.db import get_session
+session = get_session()
 
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)

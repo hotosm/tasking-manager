@@ -35,7 +35,8 @@ from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
 from backend.services.campaign_service import CampaignService
-from backend.db.database import session
+from backend.db import get_session
+session = get_session()
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 

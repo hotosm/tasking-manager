@@ -2,7 +2,8 @@ from sqlalchemy import Column, String, Integer, BigInteger, Table, ForeignKey
 from sqlalchemy.orm import relationship
 from backend.exceptions import NotFound
 from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 # Secondary table defining the many-to-many join
 user_licenses_table = Table(

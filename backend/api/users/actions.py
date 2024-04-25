@@ -7,13 +7,13 @@ from backend.services.users.authentication_service import tm
 from backend.services.users.user_service import UserService, UserServiceError
 from backend.services.interests_service import InterestService
 from fastapi import APIRouter, Depends, Request
-from backend.db.database import get_db
+from backend.db import get_session
 from starlette.authentication import requires
 
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

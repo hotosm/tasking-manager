@@ -7,6 +7,7 @@ import geojson
 import datetime
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
+import sqlalchemy as sa
 from sqlalchemy.sql.expression import cast, or_
 from sqlalchemy import desc, func, Time, orm, literal
 from shapely.geometry import shape
@@ -64,7 +65,8 @@ from backend.models.postgis.utils import (
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.interests import Interest, project_interests
 import os
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 # Secondary table defining many-to-many join for projects that were favorited by users.
 project_favorites = Table(
@@ -959,20 +961,21 @@ class Project(Base):
         return project_info.name
 
     @staticmethod
-    def get_project_total_contributions(project_id: int) -> int:
-        project_contributors_count = (
-            session.query(TaskHistory).with_entities(TaskHistory.user_id)
+    async def get_project_total_contributions(project_id: int, session) -> int:
+        project_contributors_count = await (
+            session.scalar(sa.select(TaskHistory.user_id, sa.func.count()).select_from(TaskHistory)
             .filter(
                 TaskHistory.project_id == project_id, TaskHistory.action != "COMMENT"
             )
             .distinct(TaskHistory.user_id)
-            .count()
+            .group_by(TaskHistory.user_id)
+            )
         )
 
         return project_contributors_count
 
     def get_aoi_geometry_as_geojson(self):
-        from backend.db.database import engine
+        from backend.db import engine
         """Helper which returns the AOI geometry as a geojson object"""
         with engine.connect() as conn:
             aoi_geojson = conn.execute(self.geometry.ST_AsGeoJSON()).scalar()
