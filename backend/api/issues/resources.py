@@ -2,14 +2,14 @@ from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
 from backend.services.mapping_issues_service import MappingIssueCategoryService
 from backend.services.users.authentication_service import tm
 from fastapi import APIRouter, Depends, Request
-from backend.db.database import get_db
+from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
 
 router = APIRouter(
     prefix="/tasks",
     tags=["tasks"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

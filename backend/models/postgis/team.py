@@ -16,7 +16,8 @@ from backend.models.postgis.statuses import (
     TeamRoles,
 )
 from backend.models.postgis.user import User
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 class TeamMembers(Base):
     __tablename__ = "team_members"

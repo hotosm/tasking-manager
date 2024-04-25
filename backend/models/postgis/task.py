@@ -33,7 +33,8 @@ from backend.models.postgis.utils import (
     parse_duration,
 )
 from backend.models.postgis.task_annotation import TaskAnnotation
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 from backend.config import settings
 
 class TaskAction(Enum):

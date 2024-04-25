@@ -1,12 +1,12 @@
 from backend.services.stats_service import StatsService
 from distutils.util import strtobool
 from fastapi import APIRouter, Depends, Request
-from backend.db.database import get_db
+from backend.db import get_session
 
 router = APIRouter(
     prefix="/system",
     tags=["system"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

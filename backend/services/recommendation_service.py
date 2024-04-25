@@ -11,7 +11,8 @@ from backend.models.postgis.statuses import ProjectStatus
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
-from backend.db.database import session
+from backend.db import get_session
+session = get_session()
 
 similar_projects_cache = TTLCache(maxsize=1000, ttl=60 * 60 * 24)  # 24 hours
 

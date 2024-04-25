@@ -3,7 +3,8 @@ import json
 from sqlalchemy import Column, Integer, ForeignKey, Table
 from geoalchemy2 import Geometry
 from backend.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 # Priority areas aren't shared, however, this arch was taken from TM2 to ease data migration
 project_priority_areas = Table(

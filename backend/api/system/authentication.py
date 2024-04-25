@@ -9,13 +9,13 @@ from backend.services.users.authentication_service import (
     AuthServiceError,
 )
 from fastapi import APIRouter, Depends, Request
-from backend.db.database import get_db
+from backend.db import get_session
 from fastapi.logger import logger
 
 router = APIRouter(
     prefix="/system",
     tags=["system"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

@@ -25,7 +25,8 @@ from backend.models.postgis.task import Task
 from backend.models.postgis.team import TeamVisibility
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.services.users.user_service import UserService
-from backend.db.database import session
+from backend.db import get_session
+session = get_session()
 
 
 class OrganisationServiceError(Exception):
