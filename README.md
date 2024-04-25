@@ -4,7 +4,7 @@
 [![TM Backend on Quay](https://quay.io/repository/hotosm/tasking-manager/status "Tasking Manager Backend Build")](https://quay.io/repository/hotosm/tasking-manager)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=hotosm_tasking-manager&metric=alert_status)](https://sonarcloud.io/dashboard?id=hotosm_tasking-manager)
 
-[<img src="screenshot.jpg" />](./screenshot.jpg)
+![tm-landing-page](./docs/images/screenshot.jpg)
 
 The most popular tool for teams to coordinate mapping on OpenStreetMap. With this web application, an area of interest can be defined and divided up into smaller tasks that can be completed rapidly. It shows which areas need to be mapped and which areas need a review for quality assurance. You can see the tool in action: log into the widely used [HOT Tasking Manager](https://tasks.hotosm.org/) and start mapping.
 
