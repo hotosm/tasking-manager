@@ -27,3 +27,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN rm /code/requirements.txt /code/apt_requirements.txt
 
 COPY ./backend /code/backend
+COPY ./migrations /code/migrations
