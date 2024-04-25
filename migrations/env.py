@@ -1,13 +1,7 @@
-# from __future__ import with_statement
-# from alembic import context
-# from sqlalchemy import engine_from_config, pool
 from geoalchemy2 import alembic_helpers
-# from logging.config import fileConfig
-# from flask import current_app
 import logging
 
 import asyncio
-import os
 from logging.config import fileConfig
 
 from alembic import context
@@ -31,9 +25,9 @@ logger = logging.getLogger("alembic.env")
 # from myapp import mymodel
 target_metadata = Base.metadata
 
-# config.set_main_option(
-#     "sqlalchemy.url", backend.config.get("SQLALCHEMY_DATABASE_URI")
-# )
+config.set_main_option(
+    "sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI
+)
 # target_metadata = current_app.extensions["migrate"].db.metadata
 def get_url():
     return settings.SQLALCHEMY_DATABASE_URI
@@ -147,4 +141,4 @@ async def run_migrations_online():
 if context.is_offline_mode():
     run_migrations_offline()
 else:
-    run_migrations_online()
+    asyncio.run(run_migrations_online())
