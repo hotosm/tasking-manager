@@ -42,7 +42,8 @@ from backend.models.postgis.utils import (
 )
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
-from backend.db.database import session
+from backend.db import get_session
+session = get_session()
 
 search_cache = TTLCache(maxsize=128, ttl=300)
 csv_download_cache = TTLCache(maxsize=16, ttl=600)
@@ -70,9 +71,10 @@ class BBoxTooBigError(Exception):
 
 class ProjectSearchService:
     @staticmethod
-    def create_search_query(user=None):
+    async def create_search_query(user=None):
+        from backend.pagination import CustomQuery
         query = (
-            session.query(
+            CustomQuery(
                 Project.id.label("id"),
                 Project.difficulty,
                 Project.priority,
@@ -116,15 +118,9 @@ class ProjectSearchService:
         return query
 
     @staticmethod
-    def create_result_dto(
-        project: Project,
-        preferred_locale: str,
-        total_contributors: int,
-        with_partner_names: bool = False,
-        with_author_name: bool = True,
-    ) -> ListSearchResultDTO:
-        project_info_dto = ProjectInfo.get_dto_for_locale(
-            project.id, preferred_locale, project.default_locale
+    async def create_result_dto(project, preferred_locale, total_contributors, session):
+        project_info_dto = await ProjectInfo.get_dto_for_locale(
+            project.id, preferred_locale, project.default_locale, session
         )
         project_obj = Project.get(project.id)
         list_dto = ListSearchResultDTO()
@@ -259,24 +255,21 @@ class ProjectSearchService:
 
     @staticmethod
     @cached(search_cache)
-    def search_projects(search_dto: ProjectSearchDTO, user) -> ProjectSearchResultsDTO:
+    async def search_projects(search_dto: ProjectSearchDTO, user, session) -> ProjectSearchResultsDTO:
         """Searches all projects for matches to the criteria provided by the user"""
-        all_results, paginated_results = ProjectSearchService._filter_projects(
-            search_dto, user
+        all_results, paginated_results = await ProjectSearchService._filter_projects(
+            search_dto, user, session
         )
         if paginated_results.total == 0:
             raise NotFound(sub_code="PROJECTS_NOT_FOUND")
 
         dto = ProjectSearchResultsDTO()
         dto.results = [
-            ProjectSearchService.create_result_dto(
+            await ProjectSearchService.create_result_dto(
                 p,
                 search_dto.preferred_locale,
-                Project.get_project_total_contributions(p[0]),
-                with_partner_names=(
-                    user is not None and user.role == UserRole.ADMIN.value
-                ),
-                with_author_name=True,
+                await Project.get_project_total_contributions(p[0], session),
+                session
             )
             for p in paginated_results.items
         ]
@@ -302,10 +295,10 @@ class ProjectSearchService:
         return dto
 
     @staticmethod
-    def _filter_projects(search_dto: ProjectSearchDTO, user, as_csv=False):
+    async def _filter_projects(search_dto: ProjectSearchDTO, user, session):
         """Filters all projects based on criteria provided by user"""
 
-        query = ProjectSearchService.create_search_query(user, as_csv)
+        query = await ProjectSearchService.create_search_query(user)
 
         query = query.join(ProjectInfo).filter(
             ProjectInfo.locale.in_([search_dto.preferred_locale, "en"])
@@ -503,11 +496,12 @@ class ProjectSearchService:
                 Project.centroid.ST_AsGeoJSON().label("centroid"),
                 Project.priority,
             )
-            all_results = query_result.all()
+            all_results = await session.execute(query_result)
 
-        paginated_results = query.paginate(
-            page=search_dto.page, per_page=14, error_out=False
+        paginated_results = await query.paginate(
+            session=session, page=search_dto.page, per_page=14, error_out=False
         )
+        print(paginated_results.__dict__)
 
         return all_results, paginated_results
 

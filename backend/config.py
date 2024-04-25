@@ -72,7 +72,7 @@ class Settings(BaseSettings):
 
         _params: dict = json.loads(os.getenv("DB_CONNECT_PARAM_JSON", None))
         SQLALCHEMY_DATABASE_URI: str = (
-            f"postgresql://{_params.get('username')}"
+            f"postgresql+asyncpg://{_params.get('username')}"
             + f":{_params.get('password')}"
             + f"@{_params.get('host')}"
             + f":{_params.get('port')}"
@@ -80,7 +80,7 @@ class Settings(BaseSettings):
         )
     else:
         SQLALCHEMY_DATABASE_URI: str = (
-            f"postgresql://{POSTGRES_USER}"
+            f"postgresql+asyncpg://{POSTGRES_USER}"
             + f":{POSTGRES_PASSWORD}"
             + f"@{POSTGRES_ENDPOINT}:"
             + f"{POSTGRES_PORT}"

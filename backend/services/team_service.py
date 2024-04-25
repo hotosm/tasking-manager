@@ -29,7 +29,8 @@ from backend.models.postgis.statuses import (
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
 from backend.services.messaging.message_service import MessageService
-from backend.db.database import session
+from backend.db import get_session
+session = get_session()
 
 
 class TeamServiceError(Exception):
