@@ -1,11 +1,14 @@
 version: '3'
 
 services:
-  fastapi:
+  tm-backend:
+    image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
       dockerfile: Dockerfile
-    restart: always
+    env_file:
+      - tasking-manager.env
+    restart: unless-stopped
     volumes:
       - .:/code
       - ./logs/:/logs/
@@ -22,3 +25,14 @@ services:
       - "5434:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+
+  # tm-migration:
+  #   image: ghcr.io/hotosm/tasking-manager/backend:main
+  #   build:
+  #     context: .
+  #   entrypoint: ["alembic", "upgrade", "head"]
+  #   depends_on:
+  #     tm-db:
+  #       condition: service_healthy
+  #   env_file:
+  #     - tasking-manager.env
