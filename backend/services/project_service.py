@@ -35,7 +35,8 @@ from backend.services.project_admin_service import ProjectAdminService
 from backend.services.team_service import TeamService
 from sqlalchemy import func, or_
 from sqlalchemy.sql.expression import true
-from backend.db.database import session
+from backend.db import get_session
+session = get_session()
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 

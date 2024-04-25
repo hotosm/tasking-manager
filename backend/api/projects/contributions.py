@@ -3,12 +3,12 @@
 from backend.services.project_service import ProjectService
 from backend.services.stats_service import StatsService
 from fastapi import APIRouter, Depends
-from backend.db.database import get_db
+from backend.db import get_session
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

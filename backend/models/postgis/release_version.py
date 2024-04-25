@@ -1,5 +1,6 @@
 from sqlalchemy import Column, String, DateTime
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 class ReleaseVersion(Base):
     """Describes an current release version of TM (i.e. github.com/hotosm/tasking-manager)"""

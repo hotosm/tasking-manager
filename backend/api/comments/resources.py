@@ -9,14 +9,14 @@ from backend.services.project_service import ProjectService
 from backend.services.mapping_service import MappingService, MappingServiceError
 from backend.services.users.authentication_service import tm
 from fastapi import APIRouter, Depends, Request
-from backend.db.database import get_db
+from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

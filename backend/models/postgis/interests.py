@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, BigInteger, Table, ForeignKey
 from backend.exceptions import NotFound
 from backend.models.dtos.interests_dto import InterestDTO, InterestsListDTO
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 # Secondary table defining many-to-many join for interests of a user.
 user_interests = Table(

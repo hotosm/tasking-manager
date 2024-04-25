@@ -17,7 +17,8 @@ from backend.models.postgis.statuses import (
 )
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 class TeamMembers(Base):
     __tablename__ = "team_members"

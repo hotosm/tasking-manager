@@ -10,13 +10,13 @@ from backend.services.users.authentication_service import token_auth
 from backend.api.utils import validate_date_input
 from backend.config import EnvironmentConfig
 from fastapi import APIRouter, Depends, Request
-from backend.db.database import get_db
+from backend.db import get_session
 from starlette.authentication import requires
 
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    dependencies=[Depends(get_db)],
+    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

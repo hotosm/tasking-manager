@@ -1,9 +1,11 @@
 # # from flask import current_app
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from typing import List
+import sqlalchemy as sa
 from sqlalchemy import Column, String, Integer, ForeignKey, Index
 from backend.models.dtos.project_dto import ProjectInfoDTO
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 class ProjectInfo(Base):
     """Contains all project info localized into supported languages"""
@@ -56,7 +58,7 @@ class ProjectInfo(Base):
         self.per_task_instructions = dto.per_task_instructions
 
     @staticmethod
-    def get_dto_for_locale(project_id, locale, default_locale="en") -> ProjectInfoDTO:
+    async def get_dto_for_locale(project_id, locale, default_locale="en", session=None) -> ProjectInfoDTO:
         """
         Gets the projectInfoDTO for the project for the requested locale. If not found, then the default locale is used
         :param project_id: ProjectID in scope
@@ -64,9 +66,9 @@ class ProjectInfo(Base):
         :param default_locale: default locale of project
         :raises: ValueError if no info found for Default Locale
         """
-        project_info = session.query(ProjectInfo).filter_by(
+        project_info = await session.execute(sa.select(ProjectInfo).filter_by(
             project_id=project_id, locale=locale
-        ).one_or_none()
+        ))
 
         if project_info is None:
             # If project is none, get default locale and don't worry about empty translations
@@ -79,9 +81,9 @@ class ProjectInfo(Base):
             # If locale == default_locale don't need to worry about empty translations
             return project_info.get_dto()
 
-        default_locale = session.query(ProjectInfo).filter_by(
+        default_locale = await session.execute(sa.select(ProjectInfo).filter_by(
             project_id=project_id, locale=default_locale
-        ).one_or_none()
+        ))
 
         if default_locale is None:
             error_message = f"BAD DATA: no info for project {project_id}, locale: {locale}, default {default_locale}"

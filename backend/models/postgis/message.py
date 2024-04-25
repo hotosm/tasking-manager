@@ -11,7 +11,8 @@ from backend.models.postgis.user import User
 from backend.models.postgis.task import Task, TaskHistory, TaskAction
 from backend.models.postgis.project import Project
 from backend.models.postgis.utils import timestamp
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 class MessageType(Enum):
     """Describes the various kinds of messages a user might receive"""

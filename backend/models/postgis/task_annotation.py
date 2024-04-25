@@ -2,7 +2,8 @@ from backend.models.postgis.utils import timestamp
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, JSON, Index, ForeignKeyConstraint
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from backend.models.dtos.project_dto import ProjectTaskAnnotationsDTO
-from backend.db.database import Base, session
+from backend.db import Base, get_session
+session = get_session()
 
 class TaskAnnotation(Base):
     """Describes Task annotaions like derived ML attributes"""
