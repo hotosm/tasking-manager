@@ -175,12 +175,12 @@ export const MoreFilters = () => {
 
     const { top, left, height, width } = filterElement.getBoundingClientRect();
     const { height: containerHeight } = projectContainerElement.getBoundingClientRect();
-    setScrollHeight(window.scrollY);
-    setProjectContainerHeight(containerHeight);
+    const navbarHeight = document.getElementById('explore-nav').offsetHeight;
+    // calculate difference between explore project page and navbar to set popover overlay height
+    setProjectContainerHeight(containerHeight - navbarHeight);
     setPosition({ top, left, height, width });
+    setScrollHeight(window.scrollY);
   }, [filterElement, width, projectContainerElement]);
-
-  console.log(scrollHeight, 'scroll height');
 
   useEffect(() => {
     const contentHeight =
