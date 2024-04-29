@@ -1,5 +1,5 @@
 #
-name: Create and publish Tasking Manager backend container image
+name: Build & publish TM backend container image
 
 on:
   push:
