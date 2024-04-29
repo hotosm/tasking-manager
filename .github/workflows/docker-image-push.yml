@@ -21,7 +21,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: tasking-manager-backend
+  IMAGE_NAME: ${{ github.repository }}
 
 
 jobs:
