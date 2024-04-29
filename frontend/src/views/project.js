@@ -57,7 +57,7 @@ export const ProjectsPage = () => {
   });
 
   return (
-    <div className="pull-center">
+    <div className="pull-center" id="projects-container">
       <ProjectNav>
         <Outlet />
       </ProjectNav>
@@ -160,25 +160,23 @@ export const ProjectsPageIndex = (props) => {
 
 export const MoreFilters = () => {
   const [position, setPosition] = useState({ top: 0, left: 0, height: 0, width: 0 });
+  const [projectContainerHeight, setProjectContainerHeight] = useState({ height: 0 });
   const navigate = useNavigate();
   const [fullProjectsQuery] = useExploreProjectsQueryParams();
   const [componentHeight, setComponentHeight] = useState(`${window.innerHeight}px`);
   const filterElement = document?.getElementById('more-filter-id');
+  const projectContainerElement = document?.getElementById('projects-container');
   const [width] = useWindowSize();
-
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, []);
 
   // calculate position of more filter button for layout
   useLayoutEffect(() => {
-    if (!filterElement) return;
+    if (!filterElement || !projectContainerElement) return;
+
     const { top, left, height, width } = filterElement.getBoundingClientRect();
+    const { height: containerHeight } = projectContainerElement.getBoundingClientRect();
+    setProjectContainerHeight(containerHeight);
     setPosition({ top, left, height, width });
-  }, [filterElement, width]);
+  }, [filterElement, width, projectContainerElement]);
 
   useEffect(() => {
     const contentHeight =
@@ -256,7 +254,10 @@ export const MoreFilters = () => {
 
       <div
         role="button"
-        className="absolute right-0 z-2 br w-100-l w-0 h-100 bg-blue-dark o-70 h6"
+        className="absolute right-0 z-2 br w-100-l w-0 bg-blue-dark o-70"
+        style={{
+          height: `${projectContainerHeight}px`,
+        }}
       />
     </>
   );
