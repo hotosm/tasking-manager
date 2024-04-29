@@ -52,12 +52,12 @@ jobs:
           tags: |
             type=ref,event=pr
             type=ref,event=tag
+            type=ref,event=branch
             type=semver,pattern=raw
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=sha
-            type=raw,value=dev-latest
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5.1.0
