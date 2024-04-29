@@ -161,6 +161,7 @@ export const ProjectsPageIndex = (props) => {
 export const MoreFilters = () => {
   const [position, setPosition] = useState({ top: 0, left: 0, height: 0, width: 0 });
   const [projectContainerHeight, setProjectContainerHeight] = useState({ height: 0 });
+  const [scrollHeight, setScrollHeight] = useState(0);
   const navigate = useNavigate();
   const [fullProjectsQuery] = useExploreProjectsQueryParams();
   const [componentHeight, setComponentHeight] = useState(`${window.innerHeight}px`);
@@ -174,9 +175,12 @@ export const MoreFilters = () => {
 
     const { top, left, height, width } = filterElement.getBoundingClientRect();
     const { height: containerHeight } = projectContainerElement.getBoundingClientRect();
+    setScrollHeight(window.scrollY);
     setProjectContainerHeight(containerHeight);
     setPosition({ top, left, height, width });
   }, [filterElement, width, projectContainerElement]);
+
+  console.log(scrollHeight, 'scroll height');
 
   useEffect(() => {
     const contentHeight =
@@ -228,7 +232,7 @@ export const MoreFilters = () => {
             : {
                 // 250 is half the width of filter component to place filter exactly center of more-filter button
                 left: position.left - 250 + position.width / 2,
-                top: position.top + position.height + 10,
+                top: position.top + position.height + 10 + scrollHeight,
                 width: '31.25em',
                 boxShadow: '2px 1px 23px -1px rgba(143,130,130,0.75)',
               }
@@ -246,7 +250,7 @@ export const MoreFilters = () => {
         <div
           style={{
             left: `${position.left + position.width / 2}px`,
-            top: position.top + position.height + 2,
+            top: position.top + position.height + 2 + scrollHeight,
           }}
           className={`absolute w1 h1 bg-white bl bt b--grey-light rotate-45 z-5`}
         />
