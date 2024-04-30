@@ -33,3 +33,12 @@
 .socials {
   gap: .75rem
 }
+
+.react-tooltip#shareProjectTooltip {
+  border: 1px solid #2c3038;
+}
+
+.react-tooltip__place-top#shareProjectTooltip > .react-tooltip-arrow {
+  border-bottom: 1px solid #2c3038;
+  border-right: 1px solid #2c3038;
+}

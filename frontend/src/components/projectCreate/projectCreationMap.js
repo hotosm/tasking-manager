@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useEffect, useCallback, useState } from 'react';
+import { useLayoutEffect, useEffect, useCallback, useState, createRef } from 'react';
 import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -30,7 +30,7 @@ try {
 }
 
 const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step, uploadFile }) => {
-  const mapRef = React.createRef();
+  const mapRef = createRef();
   const locale = useSelector((state) => state.preferences['locale']);
   const token = useSelector((state) => state.auth.token);
   const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(true);

@@ -1,8 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import MDEditor from '@uiw/react-md-editor';
 import Tribute from 'tributejs';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useDropzone } from 'react-dropzone';
 
 import 'tributejs/tribute.css';
@@ -18,7 +18,7 @@ import { iconConfig } from './editorIconConfig';
 import messages from './messages';
 import { CurrentUserAvatar } from '../user/avatar';
 
-export const CommentInputField = ({
+function CommentInputField({
   comment,
   setComment,
   contributors,
@@ -29,7 +29,7 @@ export const CommentInputField = ({
   isShowUserPicture = false,
   placeholderMsg = messages.leaveAComment,
   markdownTextareaProps = {},
-}: Object) => {
+}: Object) {
   const token = useSelector((state) => state.auth.token);
   const textareaRef = useRef();
   const isBundle = useRef(false);
@@ -115,26 +115,22 @@ export const CommentInputField = ({
         </div>
       )}
       <div className={`${isShowPreview ? 'dn' : ''} bg-white`} data-color-mode="light">
-        <FormattedMessage {...placeholderMsg}>
-          {(val) => (
-            <MDEditor
-              ref={textareaRef}
-              preview="edit"
-              commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
-              extraCommands={[]}
-              height={200}
-              value={comment}
-              onChange={setComment}
-              textareaProps={{
-                ...getInputProps(),
-                spellCheck: 'true',
-                placeholder: val,
-                ...markdownTextareaProps,
-              }}
-              defaultTabEnable
-            />
-          )}
-        </FormattedMessage>
+        <MDEditor
+          ref={textareaRef}
+          preview="edit"
+          commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
+          extraCommands={[]}
+          height={200}
+          value={comment}
+          onChange={setComment}
+          textareaProps={{
+            ...getInputProps(),
+            spellCheck: 'true',
+            placeholder: useIntl().formatMessage(placeholderMsg),
+            ...markdownTextareaProps,
+          }}
+          defaultTabEnable
+        />
         <input
           type="file"
           id="image_picker"
@@ -189,4 +185,6 @@ export const CommentInputField = ({
       <FileRejections files={fileRejections} />
     </div>
   );
-};
+}
+
+export default CommentInputField;

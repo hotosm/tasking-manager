@@ -87,7 +87,7 @@ export const useUserOsmStatsQuery = (id) => {
 
 export const useOsmStatsMetadataQuery = () => {
   const fetchOsmStatsMetadata = () => {
-    return fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/metadata`, true);
+    return fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/metadata`);
   };
 
   return useQuery({

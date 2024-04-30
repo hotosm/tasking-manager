@@ -1,5 +1,5 @@
 import { useIntl } from 'react-intl';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 
 import { InfoIcon } from '../svgIcons';
 import messages from './messages';
@@ -22,13 +22,13 @@ function StatsTimestamp({ messageType }) {
     <div>
       <InfoIcon
         className="blue-grey h1 w1 v-mid ml2 pointer"
-        data-tip={intl.formatMessage(messages[messageType], {
+        data-tooltip-content={intl.formatMessage(messages[messageType], {
           formattedDate: intl.formatDate(osmStatsMetadata?.max_timestamp, dateOptions, dateOptions),
           timeZone: intl.timeZone,
         })}
-        data-for="ohsome-timestamp"
+        data-tooltip-id="ohsome-timestamp"
       />
-      <ReactTooltip id="ohsome-timestamp" place="top" className="mw6" effect="solid" />
+      <Tooltip id="ohsome-timestamp" place="top" className="mw6" effect="solid" />
     </div>
   );
 }
