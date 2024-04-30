@@ -93,14 +93,14 @@ export function CreatePartner() {
   };
 
   return (
-    <div style={{ backgroundColor: '#b2b2b2b2' }}>
+    <div style={{ backgroundColor: '#f1f1f1' }}>
       <Form
         onSubmit={(values) => createPartner(values)}
         render={({ handleSubmit, pristine, form, submitting, values }) => {
           return (
             <form
               onSubmit={handleSubmit}
-              style={{ margin: 'auto', width: 400 }}
+              style={{ margin: 'auto', maxWidth: '50%' }}
               className="blue-grey"
             >
               <div className="w-100 cf pv4 pb5">

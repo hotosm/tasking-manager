@@ -103,16 +103,15 @@ export function PartnersCard({ details }) {
         flexWrap: 'wrap',
       }}
     >
-      <div style={{ flex: '1 1 100%' }}>
-        {details.logo && <img src={details.logo} alt={`${details.name} logo`} className="w-20" />}
-      </div>
-
       <div style={{ flex: '2 1 100%', textAlign: 'center' }}>
+        <div style={{ flex: '1 1 100%' }}>
+          {details.logo && <img src={details.logo} alt={`${details.name} logo`} className="w-40" />}
+        </div>
         <div>
           <h3 className="barlow-condensed ttu f3 mb2 mt2 truncate" lang="en">
-            {details.primaryHashtag}
+            {details.name}
           </h3>
-          <h4 className="ttu blue-grey f6">{details.secondaryHashtag}</h4>
+          <h4 className="ttu blue-grey f6">{details.primaryHashtag}</h4>
         </div>
       </div>
 
@@ -127,9 +126,10 @@ export function PartnersCard({ details }) {
         </Link>
       </div>
       <div style={{ flex: '1 1 100%', textAlign: 'center', paddingTop: '1rem' }}>
-        <Link to={`/partners/${details.name}/stats/`} style={{ textDecoration: 'none' }}>
+        <Link to={`/partners/${details.name.toLowerCase()}/stats/`} style={{ textDecoration: 'none' }}>
           <CustomButton
-            className="bg-red ba b--red white pv2 ph3"
+            style={{ backgroundColor: '#e2e2e2' }}
+            className="blue-dark ba b--grey-light pa2 br1 f5 pointer"
             icon={<ChartLineIcon className="h1 v-mid" />}
           >
             <FormattedMessage {...messages.statistics} />
@@ -230,8 +230,9 @@ export function PartnersInformation({ hasSlug, formState }) {
   const intl = useIntl();
   //eslint-disable-next-line
   const labelClasses = 'db pt3 pb2';
-  const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
-
+  const fieldClasses = 'blue-grey w-100 pv3 p2 ph2 input-reset ba b--grey-light bg-transparent';
+  const rowClass = 'flex flex-wrap justify-start';
+  const containerClases = 'w-40 mh3'
   const getTypePlaceholder = (value) => {
     const selected = TYPE_OPTIONS.filter((type) => value === type.value);
     return selected.length ? selected[0].label : <FormattedMessage {...messages.selectType} />;
@@ -249,89 +250,95 @@ export function PartnersInformation({ hasSlug, formState }) {
 
   return (
     <>
-      <div className="cf">
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.name} />
-        </label>
-        <Field name="name" component="input" type="text" className={fieldClasses} required />
-      </div>
-      {hasSlug ? (
-        <div className="cf">
+      <div className={rowClass}>
+        <div className="cf w-100 mh3">
           <label className={labelClasses}>
-            <FormattedMessage {...messages.publicUrl} />
+            <FormattedMessage {...messages.name} />
           </label>
-          <Field name="slug" component="input" className={fieldClasses} required>
-            {(props) => (
-              <>
-                <pre className="f6 di bg-tan blue-grey pa2">/organisations/{props.input.value}</pre>
-                <Link
-                  to={`/organisations/${props.input.value}/`}
-                  className="link blue-light ph2 hover-blue-dark"
-                >
-                  <InternalLinkIcon className="h1 w1 v-mid" />
-                </Link>
-                <span
-                  className="pointer blue-light hover-blue-dark"
-                  title={intl.formatMessage(messages.copyPublicUrl)}
-                >
-                  <ClipboardIcon
-                    role="button"
-                    className="h1 w1 ph1 v-mid"
-                    onClick={() =>
-                      handleCopyToClipboard(
-                        `${window.location.origin}/organisations/${props.input.value}/`,
-                      )
-                    }
-                  />
-                </span>
-              </>
-            )}
-          </Field>
+          <Field name="name" component="input" type="text" className={fieldClasses} required />
+        {hasSlug ? (
+          <div className="cf">
+            <label className={labelClasses}>
+              <FormattedMessage {...messages.publicUrl} />
+            </label>
+            <Field name="slug" component="input" className={fieldClasses} required>
+              {(props) => (
+                <>
+                  <pre className="f6 di bg-tan blue-grey pa2">
+                    /organisations/{props.input.value}
+                  </pre>
+                  <Link
+                    to={`/organisations/${props.input.value}/`}
+                    className="link blue-light ph2 hover-blue-dark"
+                  >
+                    <InternalLinkIcon className="h1 w1 v-mid" />
+                  </Link>
+                  <span
+                    className="pointer blue-light hover-blue-dark"
+                    title={intl.formatMessage(messages.copyPublicUrl)}
+                  >
+                    <ClipboardIcon
+                      role="button"
+                      className="h1 w1 ph1 v-mid"
+                      onClick={() =>
+                        handleCopyToClipboard(
+                          `${window.location.origin}/organisations/${props.input.value}/`,
+                        )
+                      }
+                    />
+                  </span>
+                </>
+              )}
+            </Field>
+          </div>
+        ) : (
+          <></>
+        )}
         </div>
-      ) : (
-        <></>
-      )}
-      <div className="cf">
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.primaryhashtag} />
-        </label>
-        <Field name="PrimaryHashtag" component="input" type="text" className={fieldClasses} />
+        <div className={containerClases}>
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.primaryhashtag} />
+          </label>
+          <Field name="PrimaryHashtag" component="input" type="text" className={fieldClasses} />
+        </div>
+        <div className={containerClases}>
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.secondaryhashtag} />
+          </label>
+          <Field name="SecondaryHashtag" component="input" type="text" className={fieldClasses} />
+        </div>
       </div>
-      <div className="cf">
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.secondaryhashtag} />
-        </label>
-        <Field name="SecondaryHashtag" component="input" type="text" className={fieldClasses} />
-      </div>
-      <div className="cf">
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.metaLink} />
-        </label>
-        <Field name="MetaLink" component="input" type="text" className={fieldClasses} />
-      </div>
-      <div className="cf">
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.xLink} />
-        </label>
-        <Field name="XLink" component="input" type="text" className={fieldClasses} />
-      </div>
-      <div className="cf">
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.instagramLink} />
-        </label>
-        <Field name="InstagramLink" component="input" type="text" className={fieldClasses} />
-      </div>
-      <div className="cf">
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.website} />
-        </label>
-        <Field name="WebpageLink" component="input" type="text" className={fieldClasses} />
-      </div>
-      <div className="cf">
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.feedbackLink} />
-        </label>
-        <Field name="FeedbackLink" component="input" type="text" className={fieldClasses} />
+      <div className={rowClass}>
+        <div className={containerClases}>
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.metaLink} />
+          </label>
+          <Field name="MetaLink" component="input" type="text" className={fieldClasses} />
+        </div>
+        <div className={containerClases}>
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.xLink} />
+          </label>
+          <Field name="XLink" component="input" type="text" className={fieldClasses} />
+        </div>
+        <div className={containerClases}>
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.instagramLink} />
+          </label>
+          <Field name="InstagramLink" component="input" type="text" className={fieldClasses} />
+        </div>
+        <div className={containerClases}>
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.website} />
+          </label>
+          <Field name="WebpageLink" component="input" type="text" className={fieldClasses} />
+        </div>
+        <div className={containerClases}>
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.feedbackLink} />
+          </label>
+          <Field name="FeedbackLink" component="input" type="text" className={fieldClasses} />
+        </div>
       </div>
       {userDetails &&
         userDetails.role === 'ADMIN' && ( // only admin users can edit the org type and subscribed tier
@@ -384,7 +391,7 @@ export function PartnersInformation({ hasSlug, formState }) {
             )}
           </>
         )}
-      <div className="cf">
+      <div className="cf mh3">
         <label className={labelClasses}>
           <FormattedMessage {...messages.image} />
         </label>

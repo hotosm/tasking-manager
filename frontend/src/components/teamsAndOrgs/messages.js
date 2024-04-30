@@ -34,11 +34,11 @@ export default defineMessages({
   },
   buildings: {
     id: 'management.partnersActivity.buildings',
-    defaultMessage: 'Buildings',
+    defaultMessage: 'Buildings Added',
   },
   roads: {
     id: 'management.partnersActivity.roads',
-    defaultMessage: 'Roads',
+    defaultMessage: 'km of Roads Added',
   },
   users: {
     id: 'management.partnersActivity.users',
@@ -164,10 +164,6 @@ export default defineMessages({
     id: 'management.licenses',
     defaultMessage: 'Licenses',
   },
-  users: {
-    id: 'management.users',
-    defaultMessage: 'Users',
-  },
   user: {
     id: 'management.user',
     defaultMessage: 'User',
@@ -204,9 +200,9 @@ export default defineMessages({
     id: 'management.filter.stats.buildingsStats',
     defaultMessage: 'Building Edits',
   },
-  changesets:{
-    id: 'management.filter.stats.changesets',
-    defaultMessage: 'Change sets',
+  contributors: {
+    id: 'management.contributors',
+    defaultMessage: 'Contributors',
   },
   roadsStats:{
     id: 'management.filter.stats.roadsStats',

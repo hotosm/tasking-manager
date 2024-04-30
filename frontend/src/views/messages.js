@@ -116,6 +116,18 @@ export default defineMessages({
     id: 'management.partner.button.create',
     defaultMessage: 'Create Partner',
   },
+  learnToMap:{
+    id: 'management.partner.learnToMap',
+    defaultMessage: 'Learn to Map',
+  },
+  currentProjects:{
+    id: 'management.partner.currentProjects',
+    defaultMessage: 'Current Projects',
+  },
+  newToMapping:{
+    id: 'management.partner.newToMapping',
+    defaultMessage: '¿New to Mapping?',
+  },
   activity: {
     id: 'management.partner.activity',
     defaultMessage: 'Activity',

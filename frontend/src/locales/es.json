@@ -55,6 +55,8 @@
   "deleteModal.title.teams": "¿Está seguro que desea eliminar este equipo?",
   "header.nav.projects": "Explorar proyectos",
   "header.nav.partners": "Socios",
+  "management.partner.newToMapping":"¿Nuevo en cartografía?",
+  "management.partner.currentProjects":"Proyectos actuales",
   "management.partner.activity":"Actividad",
   "management.partner.resources":"Recursos",
   "header.nav.learn": "Aprender",
