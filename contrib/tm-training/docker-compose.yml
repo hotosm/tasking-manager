@@ -8,41 +8,108 @@ volumes:
   osm-tmp:
   osm-storage:
   osm-db-data:
+  certs:
+  certbot_data:
 
 services:
-  osm:
-    image: ghcr.io/hotosm/openstreetmap:2024-04-08
-    build:
-      dockerfile: openstreetmap.dockerfile
+services:
+  proxy:
+    image: "ghcr.io/hotosm/osm-sandbox/proxy:2024-04-29"
+    profiles: [""]
+    depends_on:
+      osm:
+        condition: service_started
+    ports:
+      - ${OSM_DEV_PORT:-4433}:80
+    networks:
+      - tm-net
+    restart: "unless-stopped"
+
+  proxy-ssl:
+    image: "ghcr.io/hotosm/osm-sandbox/proxy:latest"
+    profiles: [public]
+    depends_on:
+      osm:
+        condition: service_started
+      certbot:
+        condition: service_completed_successfully
+    volumes:
+      - certs:/etc/letsencrypt
+      - certbot_data:/var/www/certbot
     environment:
-      PIDFILE: /tmp/pids/server.pid
-      REDIRECT_URI: http://127.0.0.1:9000/authorized
+      DOMAIN: ${DOMAIN}
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - tm-net
+    restart: "unless-stopped"
+
+  osm:
+    image: ghcr.io/hotosm/osm-sandbox:2024-04-29
+    environment:
+      PROTOCOL: http${DOMAIN:+s}
+      DOMAIN: ${DOMAIN:-127.0.0.1:4433}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@hotosm.org}
+      ADMIN_PASS: ${ADMIN_PASS:-Password1234}
+      ID_EDITOR_REDIRECT_URI: http${DOMAIN:+s}://${DOMAIN:-127.0.0.1:4433}
     volumes:
       # Mount a tmp directory that will persist between runs
       - osm-tmp:/app/tmp
       # Mount a storage directory that will persist between runs
       - osm-storage:/app/storage
+      # Mount local setting overrides
+      # - ./settings.local.yml:/app/config/settings.local.yml:ro
     tmpfs:
       /tmp/pids/
-    ports:
-      - "4433:3000"
     networks:
       - tm-net
-    command: bundle exec rails s -p 3000 -b '0.0.0.0'
     depends_on:
-      - osm-db
+      osm-db:
+        condition: service_healthy
+    restart: unless-stopped
 
   osm-db:
     image: docker.io/postgres:14
-    ports:
-      - "54321:5432"
     environment:
-      POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: openstreetmap
+      POSTGRES_PASSWORD: openstreetmap
+      POSTGRES_USER: openstreetmap
     volumes:
-      # Mount the Postgres data directory so it persists between runs
       - osm-db-data:/var/lib/postgresql/data
-      # Mount init script from https://github.com/openstreetmap/openstreetmap-website/blob/master/docker/postgres/openstreetmap-postgres-init.sh
-      - ./contrib/tm-training/openstreetmap-postgres-init.sh:/docker-entrypoint-initdb.d/openstreetmap-postgres-init.sh:ro
     networks:
       - tm-net
+    restart: unless-stopped
+    healthcheck:
+      test: pg_isready -U openstreetmap -d openstreetmap
+      start_period: 5s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mail:
+    image: "ixdotai/smtp:v0.5.2"
+    volumes:
+      - ./rsa.private:/etc/exim4/dkim.key.temp:ro
+    environment:
+      - MAILNAME=${DOMAIN:-hotosm.org}
+      - DKIM_KEY_PATH=/etc/exim4/dkim.key.temp
+    networks:
+      - tm-net
+    restart: unless-stopped
+
+  certbot:
+    image: "ghcr.io/hotosm/osm-sandbox/proxy:certs-init"
+    profiles: [public]
+    volumes:
+      - certs:/etc/letsencrypt
+      - certbot_data:/var/www/certbot
+    environment:
+      DOMAIN: ${DOMAIN}
+      CERT_EMAIL: ${CERT_EMAIL}
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - osm-net
+    restart: "on-failure:2"
