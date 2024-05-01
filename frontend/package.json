@@ -41,7 +41,7 @@
     "osmtogeojson": "^3.0.0-beta.5",
     "prop-types": "^15.8.1",
     "query-string": "^8.2.0",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-accessible-accordion": "^5.0.0",
     "react-calendar-heatmap": "^1.9.0",
     "react-chartjs-2": "^5.2.0",
