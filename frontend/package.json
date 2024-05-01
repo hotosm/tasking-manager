@@ -9,7 +9,7 @@
     "@hotosm/iso-countries-languages": "^1.1.2",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@mapbox/mapbox-gl-geocoder": "^5.0.2",
-    "@mapbox/mapbox-gl-language": "^0.10.1",
+    "@mapbox/mapbox-gl-language": "^1.0.1",
     "@placemarkio/geo-viewport": "^1.0.2",
     "@rapideditor/rapid": "^2.1.1",
     "@sentry/react": "^7.102.0",
