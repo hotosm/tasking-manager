@@ -70,7 +70,7 @@
     "tributejs": "^5.1.3",
     "use-query-params": "^2.2.1",
     "webfontloader": "^1.6.28",
-    "workbox-core": "^7.0.0",
+    "workbox-core": "^7.1.0",
     "workbox-expiration": "^7.0.0",
     "workbox-precaching": "^7.0.0",
     "workbox-recipes": "^7.0.0",
