@@ -90,6 +90,18 @@ export function Footer() {
             ))}
           </div>
         </div>
+
+        {/* AWS logo */}
+        <div className="flex justify-end-ns">
+          <a href="https://aws.amazon.com/what-is-cloud-computing" target="_blank" rel="noreferrer">
+            <img
+              src="https://d0.awsstatic.com/logos/powered-by-aws-white.png"
+              alt="Powered by AWS Cloud Computing"
+              style={{ height: '3rem' }}
+            />
+          </a>
+        </div>
+
         <div className="flex justify-between flex-column flex-row-ns">
           <div className="pt2 mb2 f6 w-50-l w-100">
             <div className="pb3 lh-title mw6">
