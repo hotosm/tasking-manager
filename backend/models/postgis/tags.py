@@ -49,7 +49,7 @@ class Tags(db.Model):
         )
 
         dto = TagsDTO()
-        dto.tags = [r for r, in result]
+        dto.tags = [r for (r,) in result]
         return dto
 
     @staticmethod
@@ -58,5 +58,5 @@ class Tags(db.Model):
         result = db.session.query(Tags.campaigns).filter(Tags.campaigns.isnot(None))
 
         dto = TagsDTO()
-        dto.tags = [r for r, in result]
+        dto.tags = [r for (r,) in result]
         return dto
