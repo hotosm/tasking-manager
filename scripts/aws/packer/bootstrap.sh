@@ -14,7 +14,7 @@ export LC_ALL=C
 sudo dpkg-reconfigure --frontend=noninteractive locales
 
 
-# Add Third-party repository for Python 3.6 distribution 
+# Add Third-party repository for Python 3.6 distribution
 # Ubuntu 16.04 does not provide via repos.
 sudo add-apt-repository ppa:jonathonf/python-3.6 -y
 sudo apt-get -y update

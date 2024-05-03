@@ -10,7 +10,7 @@ Currently, HOT has been collaborating with the developers at
 [Naxa](https://www.naxa.com.np/) to help maintain and support
 community development on the project. Their role as leaders on the
 project and in the development community has greatly benefitted the
-Tasking Manager development and sustainability of the project. 
+Tasking Manager development and sustainability of the project.
 Previously [Kathmandu Living Labs](https://kathmandulivinglabs.org/)
 has been maintained the Tasking Manager.
 
@@ -42,7 +42,7 @@ we work on shall be related to and documented in issues of the related
 [cheatsheet](https://danielkummer.github.io/git-flow-cheatsheet/) if
 you aren’t familiar with it yet. You probably want to install a
 [helper application](https://github.com/nvie/gitflow/wiki/Installation) to
-facilitate the flow a bit.* 
+facilitate the flow a bit.*
 
 * Use branches in the tasking-manager project. This allows others to
   rebase your branch when they are reviewing or to continue started
@@ -57,16 +57,16 @@ facilitate the flow a bit.*
   release. (e.g. for a normal feature
   feature/893-restrict-available-editors).
 * Make sure your PR is always up to date and rebased with the latest
-  develop branch. 
+  develop branch.
 * Try to build a nice and understandable commit history of the
   project. Please use [meaningful commit
   messages](https://medium.com/@nawarpianist/git-commit-best-practices-dab8d722de99)
   and try to unite/squash related work into one commit. Eventually we
   will squash commits before merging a new feature or hotfix into the
-  main branches (develop and master). 
+  main branches (develop and master).
 * Give meaningful and understandable testing instructions in your
   PR. Highlight important preconditions and try to make life easier
-  for the reviewer. 
+  for the reviewer.
 
 ### Comments
 
@@ -157,4 +157,3 @@ it's much easier to read.
 We welcome community members to review Pull Request. The process to
 review a PR  is by adding a comment if already reviewed and everything
 looks good, or specifying what change is needed.
-

@@ -44,7 +44,7 @@ insert into taskingmanager.users (id,username,role,mapping_level, tasks_mapped, 
         end,
 	1,0,0,0, FALSE, current_timestamp, current_timestamp
 	 from tm2.users);
-	 
+
 -- update sequence  (commented out as not needed. ID comes from OSM not from the sequence.)
 -- select setval('taskingmanager.users_id_seq',(select max(id) from taskingmanager.users));
 
@@ -53,7 +53,7 @@ INSERT INTO taskingmanager.licenses(
             id, name, description, plain_text)
     (SELECT id, name, description, plain_text
 	from tm2.licenses);
-	
+
 -- update sequence
 select setval('taskingmanager.licenses_id_seq',(select max(id) from taskingmanager.licenses));
 
@@ -68,7 +68,7 @@ INSERT INTO taskingmanager.users_licenses ("user", license)
 --populate areas of interest with details from old
 --insert into taskingmanager.areas_of_interest (id, geometry, centroid)
 --  (select id, geometry, centroid from tm2.areas);
- 
+
 --select setval('taskingmanager.areas_of_interest_id_seq',(select max(id) from taskingmanager.areas_of_interest));
 
 -- PROJECTS
@@ -132,10 +132,10 @@ CREATE INDEX textsearch_idx ON taskingmanager.project_info USING GIN (text_searc
 -- default any null zoom levels to 13
 INSERT INTO taskingmanager.tasks(
             id, project_id, x, y, zoom, geometry, task_status)
-    (SELECT t.id, t.project_id, 
-	t.x, 
-    t.y, 
-    t.zoom, 
+    (SELECT t.id, t.project_id,
+	t.x,
+    t.y,
+    t.zoom,
     t.geometry,
 	0
     from tm2.task t
@@ -154,7 +154,7 @@ update taskingmanager.project_info p
 update taskingmanager.tasks nt
 	set task_status = 2,
 	mapped_by = val.user_id
-    from 
+    from
 		(select * from tm2.task_state where state = 2) as val
 	where val.task_id = nt.id
 	and val.project_id = nt.project_id;
@@ -164,7 +164,7 @@ update taskingmanager.tasks nt
 update taskingmanager.tasks nt
 	set task_status = 4,
 	validated_by = val.user_id
-    from 
+    from
 		(select * from tm2.task_state where state = 3) as val
 	where val.task_id = nt.id
 	and val.project_id = nt.project_id;
@@ -199,17 +199,17 @@ WHERE taskingmanager.projects.id=subquery.project_id
 
 -- TASK HISTORY
 --  State Changes
---   only insert state changes where user_id exists, and only for tasks that have been migrated	
+--   only insert state changes where user_id exists, and only for tasks that have been migrated
 INSERT INTO taskingmanager.task_history(
             project_id, task_id, action, action_text, action_date, user_id)
-    (SELECT project_id, task_id, 'STATE_CHANGE', 
-	CASE state 
+    (SELECT project_id, task_id, 'STATE_CHANGE',
+	CASE state
 		when 0 then 'READY'
 		when 1 then 'INVALIDATED'
 		when 2 then 'MAPPED'
 		when 3 then 'VALIDATED'
 	end,
-	date, 
+	date,
 	user_id
 	from tm2.task_state ts
 	where user_id is not null
@@ -218,12 +218,12 @@ INSERT INTO taskingmanager.task_history(
 --  Locking
 --   assuming all the lock events in the old system are locked_for_mapping events not for validation
 --   not attempting to calculate the length of time task locked
---   only insert lock events where user_id exists, and only for tasks that have been migrated	
+--   only insert lock events where user_id exists, and only for tasks that have been migrated
 INSERT INTO taskingmanager.task_history(
             project_id, task_id, action, action_text, action_date, user_id)
-    (SELECT project_id, task_id, 'LOCKED_FOR_MAPPING', 
+    (SELECT project_id, task_id, 'LOCKED_FOR_MAPPING',
 	'',
-	date, 
+	date,
 	user_id
 	from tm2.task_lock ts
 	where user_id is not null
@@ -231,12 +231,12 @@ INSERT INTO taskingmanager.task_history(
 	and exists(select id from taskingmanager.tasks t where t.project_id = ts.project_id and t.id = ts.task_id ));
 
 --  Comments
---   only insert comments where author_id exists, and only for tasks that have been migrated	
+--   only insert comments where author_id exists, and only for tasks that have been migrated
 INSERT INTO taskingmanager.task_history(
             project_id, task_id, action, action_text, action_date, user_id)
-    (SELECT project_id, task_id, 'COMMENT', 
+    (SELECT project_id, task_id, 'COMMENT',
 	comment,
-	date, 
+	date,
 	author_id
 	from tm2.task_comment tc
 	where author_id is not null
@@ -253,17 +253,17 @@ update taskingmanager.users
           group by user_id) old
  where id = old.user_id;
 
-	
+
 -- Update USER STATISTICS
 -- User Task stats
-with 
+with
    m as
      (select user_id, count(id) as mapped
 	from taskingmanager.task_history
-	where action = 'STATE_CHANGE' 
+	where action = 'STATE_CHANGE'
 	and action_text = 'MAPPED'
-	group by user_id), 
-   v as 
+	group by user_id),
+   v as
      (select user_id, count(id) as validated
 	from taskingmanager.task_history
 	where action = 'STATE_CHANGE'
@@ -277,7 +277,7 @@ with
 	group by user_id)
 update taskingmanager.users us
    set tasks_mapped = coalesce(m.mapped,0),
-   tasks_validated = coalesce(v.validated,0), 
+   tasks_validated = coalesce(v.validated,0),
    tasks_invalidated = coalesce(i.invalidated,0)
 from taskingmanager.users u
   left join m on m.user_id = u.id
@@ -285,7 +285,7 @@ from taskingmanager.users u
   left join i on i.user_id = u.id
  where us.id = u.id;
 
--- User Project List 
+-- User Project List
 with p as
   (select user_id, array_agg(distinct project_id) as projects
 	from taskingmanager.task_history
@@ -294,7 +294,7 @@ with p as
 update taskingmanager.users u
   set projects_mapped = p.projects
 from p
-where u.id = p.user_id;	
+where u.id = p.user_id;
 
 
 -- MESSAGES
@@ -305,7 +305,7 @@ INSERT INTO taskingmanager.messages(
      from tm2.message
      where read = false);
 
-	 
+
 -- PRIORITY_AREAS
 --  migrate all areas
 INSERT INTO taskingmanager.priority_areas(
@@ -316,7 +316,7 @@ INSERT INTO taskingmanager.priority_areas(
 -- Update sequence
 select setval('taskingmanager.priority_areas_id_seq',(select max(id) from taskingmanager.priority_areas));
 
--- Migrate project_priority areas link but only where a matching project exists.  
+-- Migrate project_priority areas link but only where a matching project exists.
 -- Remove duplicate records
 INSERT INTO taskingmanager.project_priority_areas(
             project_id, priority_area_id)
@@ -336,7 +336,7 @@ INSERT INTO taskingmanager.project_allowed_users(
 UPDATE taskingmanager.tasks SET is_square = (x IS NOT NULL AND y IS NOT NULL AND zoom IS NOT NULL);
 
 
---------------------------------------------------	
+--------------------------------------------------
 --  Migration Results 28/04/2017
 --
 --  Projects:  Old = 2500   New = 2426      (97%)
@@ -345,5 +345,3 @@ UPDATE taskingmanager.tasks SET is_square = (x IS NOT NULL AND y IS NOT NULL AND
 --  Areas   :  Old = 2500   New = 2500     (100%)
 --  Licences:  Old = 6      New = 6        (100%)
 --------------------------------------------------
-
-

@@ -10,7 +10,7 @@
 # needs to deploy a different module version, it should redefine this block with a different ref to override the
 # deployed version.
 terraform {
-  # Sourcing from https://github.com/hotosm/TM-Extractor/ 
+  # Sourcing from https://github.com/hotosm/TM-Extractor/
   source = "${local.base_source_url}?ref=v1.0.1"
 }
 
@@ -38,9 +38,9 @@ locals {
 
 inputs = {
   iam_lambda_role_name    = "tm-extractor-role"
-  cw_retention_in_days    = "14"  
+  cw_retention_in_days    = "14"
   lambda_environment    = "dev"
-  lambda_memory_size    = "128"  
+  lambda_memory_size    = "128"
   lambda_timeout    = "14"
   lambda_cron_expression = "cron(0 0 * * ? *)"
   raw_data_api = "https://api-prod.raw-data.hotosm.org/v1"

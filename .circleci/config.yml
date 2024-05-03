@@ -42,7 +42,7 @@ jobs:
       - checkout
       - run:
           name: flake8 tests
-          command: | 
+          command: |
             pip install flake8
             flake8 manage.py backend tests migrations
 
@@ -53,7 +53,7 @@ jobs:
       - checkout
       - run:
           name: black tests
-          command: | 
+          command: |
             pip install 'black==23.12.1' ## TODO: Update to version 24
             black --check manage.py backend tests migrations
 
@@ -509,5 +509,3 @@ workflows:
       - backend-code-check-PEP8
       - backend-code-check-Black
       - backend-functional-tests
-
-
