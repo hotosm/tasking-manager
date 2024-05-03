@@ -19,7 +19,7 @@ In order to use the frontend, you may need to create keys for OSM:
 1. [Login to OSM][1]
    (_If you do not have an account yet, click the signup
    button at the top navigation bar to create one_).
-   
+
    Click the drop down arrow on the top right of the navigation bar
    and select My Settings.
 
@@ -60,10 +60,10 @@ In order to use the frontend, you may need to create keys for OSM:
 >
 > before running the `yarn start` command.
 >
-> Be aware that the staging API can be offline while we are deploying 
-> newer versions to the staging server and that you'll not have access 
-> to some management views due to permissions. Check the 
-> [configuration](#configuration) section to learn more about how 
+> Be aware that the staging API can be offline while we are deploying
+> newer versions to the staging server and that you'll not have access
+> to some management views due to permissions. Check the
+> [configuration](#configuration) section to learn more about how
 > to configure Tasking Manager.
 
 For more details see the [configuration section](#configuration).
@@ -121,7 +121,7 @@ cp docker-compose.override.sample.yml docker-compose.override.yml
 ### External or Self Hosted Database
 
 If you want to use your local postgresql server or some other exter database service.
-Find these sets of environment variables in `tasking-manager.env` 
+Find these sets of environment variables in `tasking-manager.env`
 ```bash
 POSTGRES_DB=tasking-manager
 POSTGRES_USER=tm
@@ -131,7 +131,7 @@ POSTGRES_PORT=5432
 ```
 > **_NOTE:_**  If database server is self managed on your local machine, Use your machine's ip address. Also make sure it can be reachable from `tm-backend` container.
 
-Once Updated, recreate containers with 
+Once Updated, recreate containers with
 ```
 docker compose up -d
 ```
@@ -286,7 +286,7 @@ should run after any changes.
 ```
 python3 -m unittest discover tests/backend
 ```
-or 
+or
 ```
 pdm run test
 ```
@@ -330,7 +330,7 @@ command to apply the migrations:
 ```
 flask db upgrade
 ```
-or 
+or
 ```
 pdm run upgrade
 ```

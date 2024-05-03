@@ -369,7 +369,7 @@ const Resources = {
       LaunchTemplateData: {
         IamInstanceProfile: {
           Name: cf.ref('TaskingManagerEC2InstanceProfile'),
-        }, 
+        },
         ImageId: cf.ref('TaskingManagerBackendAMI'),
         InstanceType: cf.ref('TaskingManagerBackendInstanceType'),
         KeyName: 'mbtiles',
@@ -386,10 +386,10 @@ const Resources = {
         // }],
         PrivateDnsNameOptions: {
           EnableResourceNameDnsAAAARecord: true,
-          EnableResourceNameDnsARecord: true, 
+          EnableResourceNameDnsARecord: true,
           HostnameType: 'resource-name'
         },
-        SecurityGroupIds: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))], 
+        SecurityGroupIds: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
         TagSpecifications: [
           {
             ResourceType: 'instance',

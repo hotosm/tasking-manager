@@ -42,7 +42,7 @@ should not be approved until all issues with the PR are resolved.
 3 . Merge a PR
 
   * On the github page for the PR, click the *Merge pull request*
-    button. 
+    button.
   * Delete the PR branch
 
 	git push origin --delete BRANCHNAME

@@ -3,7 +3,7 @@
 Validation is the final step of the mapping process. It is necessary
 to ensure good quality data. Validation requires a slightly different
 skill set than just being a good mapper. Being an experienced mapper is
-a good start of course. 
+a good start of course.
 
 For Tasking Manager, validators review the work of the remote
 mappers. It is not unusual that features get misidentified by the
@@ -14,7 +14,7 @@ Being a validator is more than being a mapper. As a person dealing
 with quality issues, a validator is also a mentor to other mappers,
 improving their skills as well. Mentoring of course requires an
 ability to communicate mistakes with empathy and understanding, as we
-all make mistakes... 
+all make mistakes...
 
 ## References
 
@@ -42,5 +42,3 @@ correcting other contributors work. [/MissingMaps_validation_faq_en.pdf](https:/
   interpretation skills, a positive attitude and manner towards other
   users, and a willingness to learn new software. [Validation
   hub](https://www.youthmappers.org/validation-hub)
-
- 

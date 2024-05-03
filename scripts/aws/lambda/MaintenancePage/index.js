@@ -1,10 +1,10 @@
 /**
  * BASIC Authentication
  *
- * Simple maintenance page script that displays a message when users attempt to access a site served via CloudFront. 
- * 
+ * Simple maintenance page script that displays a message when users attempt to access a site served via CloudFront.
+ *
  * To deploy, add this script to a new Lambda function using Nodejs 12.x and permissions using the maintenancepage-role.json file.
- * Then add a CloudFront Lambda@Edge trigger with the Cloudfront distribution, and selecting Viewer Request for Cloudfront event. 
+ * Then add a CloudFront Lambda@Edge trigger with the Cloudfront distribution, and selecting Viewer Request for Cloudfront event.
  */
 
 'use strict';
@@ -22,8 +22,8 @@ const content = `
       <h1 class="f4 bg-dark-red white mv0 pv2 ph3">Tasking Manager Maintenance</h1>
       <div class="pa3 bt">
         <p class="f6 f5-ns lh-copy measure mv0">
-          Tasking Manager is temporarily unavailable while we perform scheduled maintenance. 
-          Refer to the HOTOSM <a href="https://status.hotosm.org/" class="link b black bg-animate hover-bg-dark-red">Status Page</a> for more details. We appreciate 
+          Tasking Manager is temporarily unavailable while we perform scheduled maintenance.
+          Refer to the HOTOSM <a href="https://status.hotosm.org/" class="link b black bg-animate hover-bg-dark-red">Status Page</a> for more details. We appreciate
           your patience and understanding and will do our best to keep the downtime to a minimum.
         </p>
       </div>

@@ -27,7 +27,7 @@ extended by a project manager, for example, adding a new license.
 ## Campaign Tables
 
 The campaigns table is for mapping campaigns. A single campaign can
-involve multiple organizations and TM projects. 
+involve multiple organizations and TM projects.
 
 * campaigns - Primary table
 * campaign_organisations - Utility table to relate organizations with
@@ -111,6 +111,6 @@ This is for OSM Team support.
 
 ## Notification Table
 
-This is a simple system for notifications. 
+This is a simple system for notifications.
 
 * notifications - Primary table

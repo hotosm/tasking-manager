@@ -68,7 +68,7 @@ the new database to something more intuitive or meaningful:
 
 You can remove the temporary TM2 database:
 
-	# PLEASE ONLY RUN THIS IF YOU HAVE FOLLOWED THE 
+	# PLEASE ONLY RUN THIS IF YOU HAVE FOLLOWED THE
 	#   INSTRUCTIONS IN THE MIGRATION SCRIPT!
 	psql -U my-user -c "DROP DATABASE tm2;"
 
