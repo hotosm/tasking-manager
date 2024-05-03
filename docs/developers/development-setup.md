@@ -184,7 +184,7 @@ The client is the front-end user interface of the Tasking Manager. It is based o
 #### Dependencies
 
 The following dependencies must be available _globally_ on your system:
-* Download and install [NodeJS LTS v12+](https://nodejs.org/en/) and [yarn](https://classic.yarnpkg.com/en/docs/install)
+* Download and install [Node 18.xx](https://nodejs.org/en/download) and [yarn](https://classic.yarnpkg.com/en/docs/install)
 * Go into the `frontend` directory and execute `yarn`.
 
 #### Available Scripts

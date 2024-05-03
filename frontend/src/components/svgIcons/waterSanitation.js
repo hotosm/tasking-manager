@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class WaterSanitationIcon extends React.PureComponent {
+export class WaterSanitationIcon extends PureComponent {
   render() {
     return (
       <svg width="71" height="60" viewBox="0 0 71 60" {...this.props}>

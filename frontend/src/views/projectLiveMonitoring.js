@@ -267,80 +267,74 @@ export function ProjectLiveMonitoring() {
                 </div>
               </>
             )}
-            <div className="border-b-2 pb-5 space-y-3">
-              <UnderpassFeatureStats
-                tags={tags}
-                hashtag={'hotosm-project-' + id}
-                featureType={featureType}
-                apiUrl={underpassConfig.API_URL}
-                area={areaOfInterest}
-              />
-              <UnderpassValidationStats
-                tags={tags}
-                hashtag={'hotosm-project-' + id}
-                featureType={featureType}
-                apiUrl={underpassConfig.API_URL}
-                status="badgeom"
-                area={areaOfInterest}
-              />
-            </div>
-            <div className="border-b-2 py-5 mb-4">
-              <form className="space-x-2">
-                <input
-                  onChange={() => {
-                    setRealtimeList(!realtimeList);
+            {project && areaOfInterest && (
+              <><div className="border-b-2 pb-5 space-y-3">
+                <UnderpassFeatureStats
+                  tags={tags}
+                  hashtag={'hotosm-project-' + id}
+                  featureType={featureType}
+                  apiUrl={underpassConfig.API_URL}
+                  area={areaOfInterest} />
+                <UnderpassValidationStats
+                  tags={tags}
+                  hashtag={'hotosm-project-' + id}
+                  featureType={featureType}
+                  apiUrl={underpassConfig.API_URL}
+                  status="badgeom"
+                  area={areaOfInterest} />
+              </div><div className="border-b-2 py-5 mb-4">
+                  <form className="space-x-2">
+                    <input
+                      onChange={() => {
+                        setRealtimeList(!realtimeList);
+                      } }
+                      name="liveListCheckbox"
+                      type="checkbox" />
+                    <label target="liveListCheckbox">Live list</label>
+                    <input
+                      onChange={() => {
+                        setRealtimeMap(!realtimeMap);
+                      } }
+                      name="liveMapCheckbox"
+                      type="checkbox" />
+                    <label target="liveMapCheckbox">Live map</label>
+                    <input
+                      onChange={() => {
+                        setListAll(!listAll);
+                      } }
+                      name="listAllCheckbox"
+                      type="checkbox" />
+                    <label target="listAllCheckbox">List all</label>
+                  </form>
+                </div><UnderpassFeatureList
+                  style={{
+                    display: 'flex',
+                    flexFlow: 'column',
+                    height: '8px',
+                    flex: '1 1 auto',
+                    overflowY: 'auto',
                   }}
-                  name="liveListCheckbox"
-                  type="checkbox"
-                />
-                <label target="liveListCheckbox">Live list</label>
-                <input
-                  onChange={() => {
-                    setRealtimeMap(!realtimeMap);
-                  }}
-                  name="liveMapCheckbox"
-                  type="checkbox"
-                />
-                <label target="liveMapCheckbox">Live map</label>
-                <input
-                  onChange={() => {
-                    setListAll(!listAll);
-                  }}
-                  name="listAllCheckbox"
-                  type="checkbox"
-                />
-                <label target="listAllCheckbox">List all</label>
-              </form>
-            </div>
-            <UnderpassFeatureList
-              style={{
-                display: 'flex',
-                flexFlow: 'column',
-                height: '8px',
-                flex: '1 1 auto',
-                overflowY: 'auto',
-              }}
-              tags={tags}
-              hashtag={'hotosm-project-' + id}
-              featureType={featureType}
-              page={0}
-              area={areaOfInterest}
-              onSelect={(feature) => {
-                setCoords([feature.lat, feature.lon]);
-                const tags = JSON.stringify(feature.tags);
-                const status = feature.status;
-                setActiveFeature({ properties: { tags, status }, ...feature });
-              }}
-              realtime={realtimeList}
-              config={underpassConfig}
-              status={listAll ? '' : status}
-              orderBy="created_at"
-              onFetchFirstTime={(mostRecentFeature) => {
-                if (mostRecentFeature) {
-                  setCoords([mostRecentFeature.lat, mostRecentFeature.lon]);
-                }
-              }}
-            />
+                  tags={tags}
+                  hashtag={'hotosm-project-' + id}
+                  featureType={featureType}
+                  page={0}
+                  area={areaOfInterest}
+                  onSelect={(feature) => {
+                    setCoords([feature.lat, feature.lon]);
+                    const tags = JSON.stringify(feature.tags);
+                    const status = feature.status;
+                    setActiveFeature({ properties: { tags, status }, ...feature });
+                  } }
+                  realtime={realtimeList}
+                  config={underpassConfig}
+                  status={listAll ? '' : status}
+                  orderBy="created_at"
+                  onFetchFirstTime={(mostRecentFeature) => {
+                    if (mostRecentFeature) {
+                      setCoords([mostRecentFeature.lat, mostRecentFeature.lon]);
+                    }
+                  } } /></>
+            )}
           </div>
         </div>
       </div>

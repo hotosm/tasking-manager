@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState, useLayoutEffect, useRef } from 'react';
+import React, { Suspense, lazy, useEffect, useState, useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import ReactPlaceholder from 'react-placeholder';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -28,7 +28,7 @@ function hasSomeParentClass(element, classname) {
   return element.parentNode && hasSomeParentClass(element.parentNode, classname);
 }
 
-const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
+const ProjectCreate = lazy(() => import('../components/projectCreate/index'));
 
 export const CreateProject = () => {
   return (
