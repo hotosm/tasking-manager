@@ -24,6 +24,7 @@ import {
   mappingTypesTags,
   mappingTypesFeatureTypes,
 } from '../config/underpass';
+import { TM_DEFAULT_CHANGESET_COMMENT } from '../config';
 import './projectLiveMonitoring.css';
 
 const availableImageryValues = availableImageryOptions.map((item) => item.value);
@@ -53,6 +54,7 @@ export function ProjectLiveMonitoring() {
 
   const [areaOfInterest, setAreaOfInterest] = useState(null);
   const [project, setProject] = useState(null);
+  const defaultComment = `${TM_DEFAULT_CHANGESET_COMMENT}-${id}`.replace("#","");
 
   const hasLiveMonitoringFeature = useHasLiveMonitoringFeature();
 
@@ -210,7 +212,7 @@ export function ProjectLiveMonitoring() {
             <UnderpassMap
               center={coords}
               tags={tags}
-              hashtag={'hotosm-project-' + id}
+              hashtag={defaultComment}
               featureType={featureType}
               highlightDataQualityIssues
               popupFeature={activeFeature}
@@ -271,13 +273,13 @@ export function ProjectLiveMonitoring() {
               <><div className="border-b-2 pb-5 space-y-3">
                 <UnderpassFeatureStats
                   tags={tags}
-                  hashtag={'hotosm-project-' + id}
+                  hashtag={defaultComment}
                   featureType={featureType}
                   apiUrl={underpassConfig.API_URL}
                   area={areaOfInterest} />
                 <UnderpassValidationStats
                   tags={tags}
-                  hashtag={'hotosm-project-' + id}
+                  hashtag={defaultComment}
                   featureType={featureType}
                   apiUrl={underpassConfig.API_URL}
                   status="badgeom"
@@ -315,7 +317,7 @@ export function ProjectLiveMonitoring() {
                     overflowY: 'auto',
                   }}
                   tags={tags}
-                  hashtag={'hotosm-project-' + id}
+                  hashtag={defaultComment}
                   featureType={featureType}
                   page={0}
                   area={areaOfInterest}
