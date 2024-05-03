@@ -1,10 +1,10 @@
 const fromEntries = require('fromentries');
-/* read about it at MDN's Object.fromEntries – this is a tiny polyfill/ponyfill. 
+/* read about it at MDN's Object.fromEntries – this is a tiny polyfill/ponyfill.
 
 /* The API uses slightly different JSON keys than the queryParams,
    this fn takes an object with queryparam keys and outputs JSON keys
-   while maintaining the same values 
-   
+   while maintaining the same values
+
    left key is client query param, right value is what backend calls the parameter
    */
 

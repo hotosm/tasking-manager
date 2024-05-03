@@ -21,7 +21,7 @@ same tests the CI support runs. To run all the tests, do this:
 
 To run a specific test case, you can do it like this:
 
-	python -m unittest tests/backend/integration/services/test_license_service.py 
+	python -m unittest tests/backend/integration/services/test_license_service.py
 
 Whenever you add a new endpoint in the backend, you should add a test
 case for it.

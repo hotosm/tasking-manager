@@ -86,4 +86,4 @@ In addition to descriptive error text, error messages also contains SubCodes. Wh
 | 403  | MustHaveAdmin            | Must have at least one admin                                                       |
 | 403  | LoginToFilterManager     | Filter by manager\_user\_id is not allowed to unauthenticated requests             |
 | 400  | SelfIntersectingAOI      | Invalid geometry. Polygon is self-intersecting                                     |
-| 400  | TransferPermissionError  | Project ownership transfer is only allowed to TM Admin, Organization admin and project author|               
+| 400  | TransferPermissionError  | Project ownership transfer is only allowed to TM Admin, Organization admin and project author|

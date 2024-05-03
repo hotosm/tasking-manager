@@ -7,7 +7,7 @@ volumes:
     name: tm-db-data-main
 
 networks:
-  tm-net: 
+  tm-net:
     name: tm-net
 
 services:

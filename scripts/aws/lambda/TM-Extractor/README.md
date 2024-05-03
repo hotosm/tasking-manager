@@ -9,8 +9,8 @@ To get it running on your environment follow the following.
 
 ### Prerequisites
 
-This are list of things you will need. 
-* AWS IAM User with permission for creating resources such as lambda function, cloudwatch group, cloudwatch event etc. 
+This are list of things you will need.
+* AWS IAM User with permission for creating resources such as lambda function, cloudwatch group, cloudwatch event etc.
 See all resource [here](https://github.com/hotosm/TM-Extractor/blob/ec37c1318325c534b4ac47f057263050e6e92f03/main.tf).
 * [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) or (OpenTofu)[https://opentofu.org/docs/intro/install/]
 * [Terragrunt](https://terragrunt.gruntwork.io/docs/getting-started/install/#install-terragrunt)
@@ -22,14 +22,14 @@ Tested on: Terraform v1.5.5 & terragrunt version v0.54.9.
 Before running deployment, make sure you have the following environment variables exported.
 - `TF_VAR_rawdata_api_auth_token`, Auth token for raw data api, Request [here](https://github.com/hotosm/raw-data-api/).
 - `TF_VAR_raw_data_api`, API endpoint. Defaults to https://api-prod.raw-data.hotosm.org/v1
-- `TF_VAR_active_projects_api_base_url`, Your [tasking-manager](https://github.com/hotosm/tasking-manager) instance. 
+- `TF_VAR_active_projects_api_base_url`, Your [tasking-manager](https://github.com/hotosm/tasking-manager) instance.
 Defaults to https://tasking-manager-staging-api.hotosm.org/api/v2
 
 ## Inputs and Local Variables
-`env.hcl` within each deployment environment overrides the input vars. 
+`env.hcl` within each deployment environment overrides the input vars.
 ```
 locals {
-  environment = "stag" 
+  environment = "stag"
   # Appends to all the resource names eg: tm-extrator-hotosm-lambda-stag
 
   account_name   = "hotosm"
@@ -37,7 +37,7 @@ locals {
 
   aws_profile = "default"
   # Acts as AWS_PROFILE environment var, If you have multiple profile defined in ~/.aws/credentials, you can set these so each envionment deployment uses its own set of profiles.
-  
+
   aws_region = "ap-south-1"
   # The AWS region the resources should be created on.
 
