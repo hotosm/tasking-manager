@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import { useTotalTasksStats } from '../UseTotalTasksStats';
 import { tasksStats } from '../../network/tests/mockData/tasksStats';

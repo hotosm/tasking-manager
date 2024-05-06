@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class LoadingIcon extends React.PureComponent {
+export class LoadingIcon extends PureComponent {
   render() {
     return (
       <svg aria-hidden="true" focusable="false" viewBox="0 0 1024 1024" role="img" {...this.props}>

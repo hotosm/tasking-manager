@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import ReactPlaceholder from 'react-placeholder';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -17,7 +17,7 @@ import { NotFound } from './notFound';
 import { ProjectDetailPlaceholder } from '../components/projectDetail/projectDetailPlaceholder';
 import { useProjectsQuery, useProjectQuery } from '../api/projects';
 
-const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
+const ProjectCreate = lazy(() => import('../components/projectCreate/index'));
 
 export const CreateProject = () => {
   return (
