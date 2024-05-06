@@ -13,7 +13,6 @@ on:
   pull_request:
     branches:
       - main
-      - develop
       - deployment/hot-tasking-manager
       - deployment/demo-tasking-manager
       - deployment/container-tasking-manager
