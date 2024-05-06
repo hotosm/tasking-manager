@@ -2,9 +2,9 @@ from flask_restful import Resource, request
 import json
 from backend.services.partner_service import PartnerService
 from backend.services.users.authentication_service import token_auth, tm
-from backend.models.new_models.partner.partner_dto import (UpdatePartnerDTO)
-from backend.models.new_models.partner.partner import Partner
-from backend.services.partner_service import PartnerServiceError
+from backend.models.new_models.partners.partner_dto import (UpdatePartnerDTO)
+from backend.services.partner_service import 
+
 
 
 class PartnerRestAPI(Resource):
@@ -15,24 +15,15 @@ class PartnerRestAPI(Resource):
             return partner_dict, 200
         else:
             return {"message": "Partner not found"}, 404
-        
+   
 
-    def put(self, partner_id):
+    def delete(self, partner_id):
         try:
-            data = request.json
-            PartnerService.update_partner(partner_id, data)
-            return {"message": "Partner updated successfully"}, 200
+            PartnerService.delete_partner(partner_id)
+            return {"message": "Partner deleted successfully"}, 200
         except PartnerServiceError as e:
             return {"message": str(e)}, 500
         
-
-    def delete(self, partner_id):
-        partner = PartnerService.get_partner_by_id(partner_id)
-        if partner:
-            partner.delete()
-            return {"message": "Partner deleted successfully"}, 200
-        else:
-            return {"message": "Partner not found"}, 404
   
 class PartnersAllAPI(Resource):
     def get(self):
