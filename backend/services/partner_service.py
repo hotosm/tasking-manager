@@ -2,13 +2,11 @@ from flask import current_app
 from backend import db
 import json
 from backend.exceptions import NotFound
-from backend.models.new_models.partner.partner_dto import (
+from backend.models.dtos.partner_dto import (
     PartnerDTO,
     UpdatePartnerDTO
 )
-from backend.models.new_models.partner.partner import (
-    Partner
-)
+from backend.models.postgis.partner import Partner
 
 
 class PartnerServiceError(Exception):

@@ -24,7 +24,7 @@ class PartnerRestAPI(Resource):
             return {"message": str(e)}, 500
         
   
-class PartnersAllAPI(Resource):
+class PartnersAllRestAPI(Resource):
     def get(self):
         partner_ids = PartnerService.get_all_partners()
         partners = []

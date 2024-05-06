@@ -83,6 +83,8 @@ osm = OAuth2Session(
 
 # Import all models so that they are registered with SQLAlchemy
 from backend.models.postgis import *  # noqa
+from backend.models.postgis import partner
+from backend.models.dtos import partner_dto
 
 
 def create_app(env="backend.config.EnvironmentConfig"):
