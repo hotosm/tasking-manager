@@ -121,7 +121,9 @@ export function ProjectEdit() {
       });
     } else {
       const mandatoryFieldsMissing = mandatoryFields.filter(
-        (m) => Object.keys(defaultLocaleInfo).includes(m) === false || defaultLocaleInfo[m] === '',
+        (m) =>
+          Object.keys(defaultLocaleInfo).includes(m) === false ||
+          defaultLocaleInfo[m].trim() === '',
       );
       if (mandatoryFieldsMissing.length) {
         missingFields.push({
@@ -130,7 +132,6 @@ export function ProjectEdit() {
         });
       }
     }
-
     const nonLocaleMissingFields = [];
     if (projectInfo.mappingTypes.length === 0) nonLocaleMissingFields.push('mappingTypes');
     const { mappingEditors, validationEditors, customEditor } = projectInfo;
