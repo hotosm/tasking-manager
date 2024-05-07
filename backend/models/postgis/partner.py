@@ -1,10 +1,10 @@
 from backend import db
 import json
+from backend.exceptions import NotFound
 from backend.models.dtos.partner_dto import (
     PartnerDTO,
     UpdatePartnerDTO
 )
-from backend.models.dtos.partner_dto import PartnerDTO, PartnerListDTO
 
 
 class Partner(db.Model):
@@ -31,6 +31,8 @@ class Partner(db.Model):
     def update_from_dto(self, dto: UpdatePartnerDTO):
         """Updates the current model in the DB"""
         self.name = dto.name if dto.name else self.name
+        self.primary_hashtag = dto.primary_hashtag if dto.primary_hashtag else self.primary_hashtag
+        self.secondary_hashtag = dto.secondary_hashtag if dto.secondary_hashtag else self.secondary_hashtag
         self.logo_url = dto.logo_url if dto.logo_url else self.logo_url
         self.link_x = dto.link_x if dto.link_x else self.link_x
         self.link_meta = dto.link_meta if dto.link_meta else self.link_meta
@@ -52,17 +54,28 @@ class Partner(db.Model):
     def get_by_name(name: str):
         """Return the user for the specified username, or None if not found"""
         return Partner.query.filter_by(name=name).one_or_none()
-
-
+    
     @staticmethod
-    def partner_list_as_dto(partners):
-        """Converts a collection of partners into DTO"""
-        partner_list_dto = PartnerListDTO()
-        for partner in partners:
-            partner_dto = PartnerDTO()
-            partner_dto.id = partner.id
-            partner_dto.name = partner.name
+    def get_by_id(partner_id: int):
+        """Get partner by id"""
 
-            partner_list_dto.partners.append(partner_dto)
+        partner = db.session.get(Partner, partner_id)
 
-        return partner_list_dto
+        if partner is None:
+            raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id) 
+        
+        return partner
+    
+    def as_dto(self) -> PartnerDTO:
+        partner_dto = PartnerDTO()
+        partner_dto.id = self.id
+        partner_dto.name = self.name
+        partner_dto.primary_hashtag = self.id
+        partner_dto.secondary_hashtag = self.secondary_hashtag
+        partner_dto.logo_url = self.logo
+        partner_dto.link_x = self.link_x 
+        partner_dto.link_meta = self.link_meta
+        partner_dto.link_instagram = self.link_instagram
+        partner_dto.website_links = self.website_links_json
+
+        return partner_dto
