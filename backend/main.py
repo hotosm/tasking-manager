@@ -2,7 +2,7 @@ import logging
 import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from loguru import logger as log
 from starlette.middleware.authentication import AuthenticationMiddleware
 from pyinstrument import Profiler
@@ -14,7 +14,7 @@ def get_application() -> FastAPI:
     """Get the FastAPI app instance, with settings."""
     _app = FastAPI(
         title=settings.APP_NAME,
-        description="HOTOSM Field Tasking Manager",
+        description="HOTOSM Tasking Manager",
         version="0.1.0",
         license_info={
             "name": "BSD 2-Clause",
@@ -22,6 +22,8 @@ def get_application() -> FastAPI:
         },
         debug=settings.DEBUG,
         root_path=settings.APP_BASE_URL,
+        openapi_url="/api/openapi.json",
+        docs_url="/api/docs",
     )
 
     # Set custom logger
@@ -120,6 +122,7 @@ def get_logger():
 
 api = get_application()
 
-
-
-
+@api.get("/")
+async def home():
+    """Redirect home to docs."""
+    return RedirectResponse("/api/docs")
