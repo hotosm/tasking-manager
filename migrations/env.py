@@ -1,3 +1,9 @@
+import os
+import sys
+
+project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_dir)
+
 from geoalchemy2 import alembic_helpers
 import logging
 
@@ -103,27 +109,6 @@ async def run_migrations_online():
                 directives[:] = []
                 logger.info("No changes in schema detected.")
 
-    # engine = engine_from_config(
-    #     config.get_section(config.config_ini_section),
-    #     prefix="sqlalchemy.",
-    #     poolclass=pool.NullPool,
-    # )
-
-    # connection = engine.connect()
-    # context.configure(
-    #     connection=connection,
-    #     target_metadata=target_metadata,
-    #     process_revision_directives=process_revision_directives,
-    #     include_object=include_object,
-    #     render_item=alembic_helpers.render_item,
-    #     **current_app.extensions["migrate"].configure_args,
-    # )
-
-    # try:
-    #     with context.begin_transaction():
-    #         context.run_migrations()
-    # finally:
-    #     connection.close()
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = get_url()
     connectable = async_engine_from_config(
