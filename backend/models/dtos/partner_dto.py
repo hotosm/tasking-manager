@@ -10,6 +10,7 @@ class PartnerDTO(Model):
     """DTO for Partner"""
     id = LongType()
     name = StringType(serialized_name="name")
+    role = StringType()
     primary_hashtag = StringType(serialized_name="primaryHashtag")
     secondary_hashtag = StringType(serialized_name="secondaryHashtag")
     link_x = StringType(serialized_name="linkTwitter")
@@ -23,6 +24,7 @@ class ListedPartner(Model):
     """Describes a partner within the Partner List"""
     id = LongType()
     name = StringType(serialized_name="name")
+    role = StringType()
     primary_hashtag = StringType(serialized_name="primaryHashtag")
     logo_url = StringType(serialized_name="pictureUrl")
 

@@ -6,7 +6,10 @@ from backend.models.dtos.partner_dto import (
     PartnerDTO,
     UpdatePartnerDTO
 )
-from backend.models.postgis.partner import Partner
+from backend.models.postgis.partner import (
+    Partner,
+    PartnerRole
+)
 
 
 class PartnerServiceError(Exception):
@@ -62,8 +65,16 @@ class PartnerService:
         partner.update_from_dto(UpdatePartnerDTO(data))
 
     @staticmethod
-    def delete_partner():
-        pass
+    def delete_partner(partner_id: int):
+        partner = Partner.get_by_id(partner_id)
+
+        if partner:
+            partner.delete()
+            return {"Success": "Team deleted"}, 200
+        else:
+            return {
+                "Error": "Partner cannot be deleted",
+            }, 400
 
     @staticmethod
     def get_partner_dto_by_id(partner: int, request_partner: int) -> PartnerDTO:
@@ -77,3 +88,23 @@ class PartnerService:
     def get_all_partners():
         """Get all partners"""
         return Partner.get_all_partners()
+    
+    @staticmethod
+    def is_partner_an_admin(partner_id: int) -> bool:
+        """Is the partner an admin"""
+        partner = PartnerService.get_partner_by_id(partner_id)
+        if PartnerRole(partner.role) == PartnerRole.ADMIN:
+            return True
+
+        return False
+    
+    @staticmethod
+    def is_partner_validator(partner_id: int) -> bool:
+        """Determines if partner is a validator"""
+        partner = PartnerService.get_partner_by_id(partner_id)
+        if PartnerRole(partner.role) in [
+            PartnerRole.ADMIN,
+        ]:
+            return True
+
+        return False

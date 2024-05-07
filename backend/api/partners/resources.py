@@ -14,6 +14,15 @@ class PartnerRestAPI(Resource):
             return partner_dict, 200
         else:
             return {"message": "Partner not found"}, 404
+        
+
+    def delete(self, partner_id):
+        try:
+            PartnerService.delete_partner(partner_id)
+            return {"Success": "Comment deleted"}, 200
+        
+        except PartnerServiceError as e:
+            return {"message": str(e)}, 500
    
   
 class PartnersAllRestAPI(Resource):
