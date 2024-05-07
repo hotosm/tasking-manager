@@ -1,7 +1,7 @@
 from backend import db
 # from flask import current_app
 from sqlalchemy.exc import IntegrityError
-from psycopg2.errors import UniqueViolation, NotNullViolation
+# from psycopg2.errors import UniqueViolation, NotNullViolation
 
 from backend.exceptions import NotFound
 from backend.models.dtos.campaign_dto import (
