@@ -1,9 +1,0 @@
-curl
-python3-dev
-proj-bin
-libffi-dev
-libgeos-dev
-libgeos3.11.1
-postgresql-server-dev-15
-postgresql-client
-gcc

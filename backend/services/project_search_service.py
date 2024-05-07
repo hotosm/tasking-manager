@@ -392,7 +392,6 @@ class ProjectSearchService:
         paginated_results = await query.paginate(
             session=session, page=search_dto.page, per_page=14, error_out=False
         )
-        print(paginated_results.__dict__)
 
         return all_results, paginated_results
 
