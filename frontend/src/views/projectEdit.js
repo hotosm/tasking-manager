@@ -161,7 +161,17 @@ export function ProjectEdit() {
     ) {
       missingFields.push({ type: 'noTeamsAssigned' });
     }
-
+    // validate name
+    if (!missingFields?.[0]?.fields?.includes('name')) {
+      const projectName = defaultLocaleInfo.name;
+      if (!/^[a-zA-Z]/.test(projectName)) {
+        missingFields.push({
+          locale: projectInfo.defaultLocale,
+          fields: ['projectNameValidationError'],
+          type: 'nameValidationError',
+        });
+      }
+    }
     if (missingFields.length > 0) {
       setError(missingFields);
       return new Promise((resolve, reject) => reject());
@@ -348,6 +358,14 @@ const ErrorTitle = ({ locale, numberOfMissingFields, type, projectInfo }) => {
           mapping: doesMappingTeamNotExist(teams, mappingPermission),
           validation: doesValidationTeamNotExist(teams, validationPermission),
         }}
+      />
+    );
+  }
+  if (type === 'nameValidationError') {
+    return (
+      <FormattedMessage
+        id="management.projects.create.errors.project_name_validation_error"
+        defaultMessage="Project Name Validation Error"
       />
     );
   }
