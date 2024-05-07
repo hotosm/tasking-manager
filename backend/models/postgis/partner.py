@@ -18,6 +18,7 @@ class Partner(db.Model):
     link_meta = db.Column(db.String(50), nullable=False)
     link_x = db.Column(db.String(50), nullable=False)
     link_instagram = db.Column(db.String(50), nullable=False)
+    current_projects = db.Column(db.String, nullable=False)
     website_links_json = db.Column(db.String)
 
     def create(self):
@@ -37,6 +38,7 @@ class Partner(db.Model):
         self.link_x = dto.link_x if dto.link_x else self.link_x
         self.link_meta = dto.link_meta if dto.link_meta else self.link_meta
         self.link_instagram = dto.link_instagram if dto.link_instagram else self.link_instagram
+        self.current_projects = dto.current_projects if dto.current_projects else self.current_projects
         self.website_links_json = json.dumps(dto.website_links)
         db.session.commit()
 
@@ -70,12 +72,13 @@ class Partner(db.Model):
         partner_dto = PartnerDTO()
         partner_dto.id = self.id
         partner_dto.name = self.name
-        partner_dto.primary_hashtag = self.id
+        partner_dto.primary_hashtag = self.primary_hashtag
         partner_dto.secondary_hashtag = self.secondary_hashtag
-        partner_dto.logo_url = self.logo
+        partner_dto.logo_url = self.logo_url
         partner_dto.link_x = self.link_x 
         partner_dto.link_meta = self.link_meta
         partner_dto.link_instagram = self.link_instagram
+        partner_dto.current_projects = self.current_projects
         partner_dto.website_links = self.website_links_json
 
         return partner_dto

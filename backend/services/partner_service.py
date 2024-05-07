@@ -47,6 +47,7 @@ class PartnerService:
             link_meta=data.get("link_meta"),
             link_x=data.get("link_x"),
             link_instagram=data.get("link_instagram"),
+            current_projects=data.get("current_projects"),
             website_links_json=json.dumps(data.get("website_links"))
         )
         new_partner.create()
@@ -59,6 +60,10 @@ class PartnerService:
             raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
         
         partner.update_from_dto(UpdatePartnerDTO(data))
+
+    @staticmethod
+    def delete_partner():
+        pass
 
     @staticmethod
     def get_partner_dto_by_id(partner: int, request_partner: int) -> PartnerDTO:
