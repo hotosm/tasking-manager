@@ -124,7 +124,7 @@ class ProjectSearchService:
         project_info_dto = await ProjectInfo.get_dto_for_locale(
             project.id, preferred_locale, project.default_locale, session
         )
-        project_obj = Project.get(project.id)
+        project_obj = await Project.get(project.id, session)
         list_dto = ListSearchResultDTO()
         list_dto.project_id = project.id
         list_dto.locale = project_info_dto.locale
@@ -141,12 +141,12 @@ class ProjectSearchService:
             "validated",
         )
         list_dto.status = ProjectStatus(project.status).name
-        list_dto.active_mappers = Project.get_active_mappers(project.id)
+        list_dto.active_mappers = await Project.get_active_mappers(project.id, session)
         list_dto.total_contributors = total_contributors
         list_dto.country = project.country
         list_dto.organisation_name = project.organisation_name
         list_dto.organisation_logo = project.organisation_logo
-        list_dto.campaigns = Project.get_project_campaigns(project.id)
+        list_dto.campaigns = await Project.get_project_campaigns(project.id, session)
 
         return list_dto
 
