@@ -373,21 +373,21 @@ class Project(Base):
         return new_proj
 
     @staticmethod
-    def get(project_id: int) -> Optional["Project"]:
+    async def get(project_id: int, session) -> Optional["Project"]:
         """
         Gets specified project
         :param project_id: project ID in scope
         :return: Project if found otherwise None
         """
-        return session.get(
-            Project,
-            project_id,
-            options=[
+        result = await session.execute(
+            sa.select(Project).filter_by(id=project_id).options(
                 orm.noload(Project.tasks),
                 orm.noload(Project.messages),
                 orm.noload(Project.project_chat),
-            ],
+            )
         )
+        project = result.scalars().first()
+        return project
     
 
     def update(self, project_dto: ProjectDTO):
@@ -981,23 +981,25 @@ class Project(Base):
 
     @staticmethod
     @cached(active_mappers_cache)
-    def get_active_mappers(project_id) -> int:
+    async def get_active_mappers(project_id, session) -> int:
         """Get count of Locked tasks as a proxy for users who are currently active on the project"""
-
-        return (
-            session.query(Task).filter(
-                Task.task_status.in_(
-                    (
-                        TaskStatus.LOCKED_FOR_MAPPING.value,
-                        TaskStatus.LOCKED_FOR_VALIDATION.value,
+        result = await session.execute(
+            sa.select(func.count()).select_from(
+                sa.select(Task.locked_by).distinct(Task.locked_by)
+                .filter(
+                    Task.task_status.in_(
+                        (
+                            TaskStatus.LOCKED_FOR_MAPPING.value,
+                            TaskStatus.LOCKED_FOR_VALIDATION.value,
+                        )
                     )
                 )
+                .filter(Task.project_id == project_id)
             )
-            .filter(Task.project_id == project_id)
-            .distinct(Task.locked_by)
-            .count()
         )
-
+        count = result.scalar()
+        return count
+    
     def _get_project_and_base_dto(self):
         """Populates a project DTO with properties common to all roles"""
         base_dto = ProjectDTO()
@@ -1189,14 +1191,15 @@ class Project(Base):
         session.commit()
 
     @staticmethod
-    def get_project_campaigns(project_id: int):
-        query = (
-            session.query(Campaign).join(campaign_projects)
+    async def get_project_campaigns(project_id: int, session):
+        result = await session.execute(
+            sa.select(Campaign)
+            .join(campaign_projects)
             .filter(campaign_projects.c.project_id == project_id)
-            .all()
         )
+        campaigns = result.scalars().all()
         campaign_list = []
-        for campaign in query:
+        for campaign in campaigns:
             campaign_dto = CampaignDTO()
             campaign_dto.id = campaign.id
             campaign_dto.name = campaign.name
