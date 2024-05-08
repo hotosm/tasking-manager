@@ -69,12 +69,14 @@ class ProjectInfo(Base):
         project_info = await session.execute(sa.select(ProjectInfo).filter_by(
             project_id=project_id, locale=locale
         ))
+        project_info = project_info.scalars().one_or_none()
 
         if project_info is None:
             # If project is none, get default locale and don't worry about empty translations
-            project_info = session.query(ProjectInfo).filter_by(
+            project_info = await session.execute(sa.select(ProjectInfo).filter_by(
                 project_id=project_id, locale=default_locale
-            ).one_or_none()
+            ))
+            project_info = project_info.scalars().one_or_none()
             return project_info.get_dto()
 
         if locale == default_locale:
@@ -84,10 +86,11 @@ class ProjectInfo(Base):
         default_locale = await session.execute(sa.select(ProjectInfo).filter_by(
             project_id=project_id, locale=default_locale
         ))
+        default_locale = default_locale.scalars().one_or_none()
 
         if default_locale is None:
             error_message = f"BAD DATA: no info for project {project_id}, locale: {locale}, default {default_locale}"
-            current_app.logger.critical(error_message)
+            # current_app.logger.critical(error_message)
             raise ValueError(error_message)
 
         # Pass thru default_locale in case of partial translation
