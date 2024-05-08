@@ -5,9 +5,6 @@ from backend.models.dtos.partner_dto import (
     PartnerDTO,
     UpdatePartnerDTO
 )
-from backend.models.postgis.statuses import (
-    PartnerRole
-)
 
 
 class Partner(db.Model):
@@ -15,7 +12,6 @@ class Partner(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
-    role = db.Column(db.Integer, default=1, nullable=False)
     primary_hashtag = db.Column(db.String(50), nullable=False)
     secondary_hashtag = db.Column(db.String(50), nullable=False)
     logo_url = db.Column(db.String(100))
@@ -56,11 +52,6 @@ class Partner(db.Model):
         """Get all partners in DB"""
         return db.session.query(Partner.id).all()
     
-    def set_user_role(self, role: PartnerRole):
-        """Sets the supplied role on the partner"""
-        self.role = role.value
-        db.session.commit()
-
     @staticmethod
     def get_by_name(name: str):
         """Return the user for the specified username, or None if not found"""
@@ -81,7 +72,6 @@ class Partner(db.Model):
         partner_dto = PartnerDTO()
         partner_dto.id = self.id
         partner_dto.name = self.name
-        partner_dto.role = PartnerRole(self.role).name
         partner_dto.primary_hashtag = self.primary_hashtag
         partner_dto.secondary_hashtag = self.secondary_hashtag
         partner_dto.logo_url = self.logo_url

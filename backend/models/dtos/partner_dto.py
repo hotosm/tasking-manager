@@ -1,16 +1,13 @@
 from schematics import Model
-from schematics.types import StringType, IntType, ListType, ModelType, LongType
-from schematics.types.compound import ListType, ModelType, BaseType
+from schematics.types import StringType, ListType, ModelType, LongType
+from schematics.types.compound import ListType, ModelType
 from backend.models.dtos.stats_dto import Pagination
-from schematics.exceptions import ValidationError
-
 
 
 class PartnerDTO(Model):
     """DTO for Partner"""
     id = LongType()
     name = StringType(serialized_name="name")
-    role = StringType()
     primary_hashtag = StringType(serialized_name="primaryHashtag")
     secondary_hashtag = StringType(serialized_name="secondaryHashtag")
     link_x = StringType(serialized_name="linkTwitter")
@@ -24,7 +21,6 @@ class ListedPartner(Model):
     """Describes a partner within the Partner List"""
     id = LongType()
     name = StringType(serialized_name="name")
-    role = StringType()
     primary_hashtag = StringType(serialized_name="primaryHashtag")
     logo_url = StringType(serialized_name="pictureUrl")
 
@@ -47,7 +43,7 @@ class PartnerListDTO(Model):
     partners = ListType(ModelType(PartnerDTO))
 
 class UpdatePartnerDTO(Model):
-    """Describes a JSON model to update a team"""
+    """Describes a JSON model to update a partner"""
     name = StringType(serialized_name="name")
     primary_hashtag = StringType(serialized_name="primaryHashtag")
     secondary_hashtag = StringType(serialized_name="secondaryHashtag")

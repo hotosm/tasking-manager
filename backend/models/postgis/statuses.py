@@ -104,14 +104,7 @@ class UserRole(Enum):
     READ_ONLY = -1
     MAPPER = 0
     ADMIN = 1
-
-class PartnerRole(Enum):
-    """Describes the role a partner can be assigned, app doesn't support multiple roles"""
-
-    READ_ONLY = -1
-    MAPPER = 0
-    ADMIN = 1
-
+    
 
 class Editors(Enum):
     """Enum describing the possible editors for projects"""

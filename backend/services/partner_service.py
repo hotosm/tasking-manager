@@ -1,15 +1,12 @@
 from flask import current_app
-from backend import db
 import json
 from backend.exceptions import NotFound
-from sqlalchemy.exc import IntegrityError
 from backend.models.dtos.partner_dto import (
     PartnerDTO,
     UpdatePartnerDTO
 )
 from backend.models.postgis.partner import (
-    Partner,
-    PartnerRole
+    Partner
 )
 
 
@@ -100,22 +97,3 @@ class PartnerService:
         """Get all partners"""
         return Partner.get_all_partners()
     
-    @staticmethod
-    def is_partner_an_admin(partner_id: int) -> bool:
-        """Is the partner an admin"""
-        partner = PartnerService.get_partner_by_id(partner_id)
-        if PartnerRole(partner.role) == PartnerRole.ADMIN:
-            return True
-
-        return False
-    
-    @staticmethod
-    def is_partner_validator(partner_id: int) -> bool:
-        """Determines if partner is a validator"""
-        partner = PartnerService.get_partner_by_id(partner_id)
-        if PartnerRole(partner.role) in [
-            PartnerRole.ADMIN,
-        ]:
-            return True
-
-        return False

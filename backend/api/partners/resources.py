@@ -1,5 +1,4 @@
 from flask_restful import Resource, request
-import json
 from backend.services.partner_service import PartnerService
 from backend.services.users.authentication_service import token_auth, tm
 from backend.services.partner_service import PartnerServiceError
