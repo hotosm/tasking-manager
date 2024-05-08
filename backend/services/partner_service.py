@@ -2,6 +2,7 @@ from flask import current_app
 from backend import db
 import json
 from backend.exceptions import NotFound
+from sqlalchemy.exc import IntegrityError
 from backend.models.dtos.partner_dto import (
     PartnerDTO,
     UpdatePartnerDTO
@@ -42,6 +43,15 @@ class PartnerService:
     @staticmethod
     def create_partner(data):
         """Create a new partner in database"""
+        website_links = []
+        for i in range(1, 6):
+            name_key = f"name_{i}"
+            url_key = f"url_{i}"
+            name = data.get(name_key)
+            url = data.get(url_key)
+            if name and url:
+                website_links.append({"name": name, "url": url})
+
         new_partner = Partner(
             name=data.get("name"),
             primary_hashtag=data.get("primary_hashtag"),
@@ -51,18 +61,19 @@ class PartnerService:
             link_x=data.get("link_x"),
             link_instagram=data.get("link_instagram"),
             current_projects=data.get("current_projects"),
-            website_links_json=json.dumps(data.get("website_links"))
+            website_links_json=json.dumps(website_links)
         )
         new_partner.create()
         return new_partner
 
     @staticmethod
-    def update_partner(partner_id: int, data: dict):
+    def update_partner(partner_id: int):
         partner = Partner.get_by_id(partner_id)
         if partner is None:
             raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
         
-        partner.update_from_dto(UpdatePartnerDTO(data))
+        partner.update_from_dto(UpdatePartnerDTO())
+
 
     @staticmethod
     def delete_partner(partner_id: int):

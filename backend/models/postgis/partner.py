@@ -89,6 +89,6 @@ class Partner(db.Model):
         partner_dto.link_meta = self.link_meta
         partner_dto.link_instagram = self.link_instagram
         partner_dto.current_projects = self.current_projects
-        partner_dto.website_links = self.website_links_json
+        partner_dto.website_links = json.loads(self.website_links_json)
 
         return partner_dto
