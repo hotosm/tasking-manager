@@ -191,6 +191,14 @@ const ProjectCreate = () => {
 
   const handleCreate = useCallback(
     (cloneProjectData) => {
+      if (!metadata.projectName.trim()) {
+        setErr({ error: true, message: intl.formatMessage(messages.noProjectName) });
+        throw new Error('Missing project name.');
+      }
+      if (!/^[a-zA-Z]/.test(metadata.projectName)) {
+        setErr({ error: true, message: intl.formatMessage(messages.projectNameValidationError) });
+        throw new Error('Project name validation error.');
+      }
       if (!metadata.geom) {
         setErr({ error: true, message: intl.formatMessage(messages.noGeometry) });
         throw new Error('Missing geom.');
