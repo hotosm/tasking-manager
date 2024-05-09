@@ -8,14 +8,14 @@ class PartnerDTO(Model):
     """DTO for Partner"""
     id = LongType()
     name = StringType(serialized_name="name")
-    primary_hashtag = StringType(serialized_name="primaryHashtag")
-    secondary_hashtag = StringType(serialized_name="secondaryHashtag")
-    link_x = StringType(serialized_name="linkTwitter")
-    link_meta = StringType(serialized_name="linkFacebook")
-    link_instagram = StringType(serialized_name="linkInstagram")
-    logo_url = StringType(serialized_name="logoUrl")
-    current_projects = StringType(serialized_name="currentProjects")
-    website_links = ListType(StringType, serialized_name="websiteLinks")
+    primary_hashtag = StringType(serialized_name="primary_hashtag")
+    secondary_hashtag = StringType(serialized_name="secondary_hashtag")
+    link_x = StringType(serialized_name="link_x")
+    link_meta = StringType(serialized_name="link_meta")
+    link_instagram = StringType(serialized_name="link_instagram")
+    logo_url = StringType(serialized_name="logou_url")
+    current_projects = StringType(serialized_name="current_projects")
+    website_links = ListType(StringType, serialized_name="website_links")
 
 class ListedPartner(Model):
     """Describes a partner within the Partner List"""
@@ -45,11 +45,11 @@ class PartnerListDTO(Model):
 class UpdatePartnerDTO(Model):
     """Describes a JSON model to update a partner"""
     name = StringType(serialized_name="name")
-    primary_hashtag = StringType(serialized_name="primaryHashtag")
-    secondary_hashtag = StringType(serialized_name="secondaryHashtag")
-    link_x = StringType(serialized_name="linkTwitter")
-    link_meta = StringType(serialized_name="linkFacebook")
-    link_instagram = StringType(serialized_name="linkInstagram")
-    logo_url = StringType(serialized_name="logoUrl")
-    current_projects = StringType(serialized_name="currentProjects")
-    website_links = ListType(StringType, serialized_name="websiteLinks")
+    primary_hashtag = StringType(serialized_name="primary_hashtag")
+    secondary_hashtag = StringType(serialized_name="secondary_hashtag")
+    link_x = StringType(serialized_name="link_x")
+    link_meta = StringType(serialized_name="link_meta")
+    link_instagram = StringType(serialized_name="link_instagram")
+    logo_url = StringType(serialized_name="logo_url")
+    current_projects = StringType(serialized_name="current_projects")
+    website_links = ListType(StringType, serialized_name="website_links")
