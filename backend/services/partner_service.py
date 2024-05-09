@@ -80,7 +80,6 @@ class PartnerService:
         if not partner:
             raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
 
-        # Actualizar campos del socio
         for key, value in data.items():
             if hasattr(partner, key):
                 setattr(partner, key, value)

@@ -20,21 +20,6 @@ class Partner(db.Model):
     current_projects = db.Column(db.String)
     website_links = db.Column(db.String)
 
-    def as_dict(self):
-        website_links = json.loads(self.website_links)
-        return {
-            "id": self.id,
-            "name": self.name,
-            "primary_hashtag": self.primary_hashtag,
-            "secondary_hashtag": self.secondary_hashtag,
-            "logo_url": self.logo_url,
-            "link_meta": self.link_meta,
-            "link_x": self.link_x,
-            "link_instagram": self.link_instagram,
-            "current_projects": self.current_projects,
-            "website_links": website_links
-        }
-
     def create(self):
         """Creates and saves the current model to the DB"""
         db.session.add(self)
@@ -80,8 +65,6 @@ class Partner(db.Model):
         partner_dto.link_meta = self.link_meta
         partner_dto.link_instagram = self.link_instagram
         partner_dto.current_projects = self.current_projects
-        
-        website_links = json.loads(self.website_links)
-        partner_dto.website_links = [{"name": link['name'], "url": link['url']} for link in website_links]
+        partner_dto.website_links = json.loads(self.website_links)
 
         return partner_dto
