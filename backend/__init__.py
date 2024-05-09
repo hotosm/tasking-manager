@@ -567,7 +567,7 @@ def add_api_endpoints(app):
     api.add_resource(
         PartnerRestAPI, 
         format_url("partners/<int:partner_id>/"),
-        methods=["GET", "PUT", "DELETE"],
+        methods=["GET", "DELETE", "PUT"],
         )
 
     # Tasks REST endpoint

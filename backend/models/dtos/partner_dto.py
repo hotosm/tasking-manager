@@ -1,5 +1,5 @@
 from schematics import Model
-from schematics.types import StringType, ListType, ModelType, LongType
+from schematics.types import StringType, ListType, ModelType, LongType, BooleanType
 from schematics.types.compound import ListType, ModelType
 from backend.models.dtos.stats_dto import Pagination
 
@@ -13,7 +13,7 @@ class PartnerDTO(Model):
     link_x = StringType(serialized_name="link_x")
     link_meta = StringType(serialized_name="link_meta")
     link_instagram = StringType(serialized_name="link_instagram")
-    logo_url = StringType(serialized_name="logou_url")
+    logo_url = StringType(serialized_name="logo_url")
     current_projects = StringType(serialized_name="current_projects")
     website_links = ListType(StringType, serialized_name="website_links")
 
@@ -41,15 +41,3 @@ class PartnerListDTO(Model):
         self.partners = []
 
     partners = ListType(ModelType(PartnerDTO))
-
-class UpdatePartnerDTO(Model):
-    """Describes a JSON model to update a partner"""
-    name = StringType(serialized_name="name")
-    primary_hashtag = StringType(serialized_name="primary_hashtag")
-    secondary_hashtag = StringType(serialized_name="secondary_hashtag")
-    link_x = StringType(serialized_name="link_x")
-    link_meta = StringType(serialized_name="link_meta")
-    link_instagram = StringType(serialized_name="link_instagram")
-    logo_url = StringType(serialized_name="logo_url")
-    current_projects = StringType(serialized_name="current_projects")
-    website_links = ListType(StringType, serialized_name="website_links")

@@ -2,8 +2,7 @@ from flask import current_app
 import json
 from backend.exceptions import NotFound
 from backend.models.dtos.partner_dto import (
-    PartnerDTO,
-    UpdatePartnerDTO
+    PartnerDTO
 )
 from backend.models.postgis.partner import (
     Partner
@@ -25,7 +24,8 @@ class PartnerService:
         if partner is None:
             raise NotFound(
                 sub_code="PARTNER_NOT_FOUND", partner_id=partner_id
-            )        
+            )     
+      
         return partner
     
     @staticmethod
@@ -58,19 +58,10 @@ class PartnerService:
             link_x=data.get("link_x"),
             link_instagram=data.get("link_instagram"),
             current_projects=data.get("current_projects"),
-            website_links_json=json.dumps(website_links)
+            website_links=json.dumps(website_links)
         )
         new_partner.create()
         return new_partner
-
-    @staticmethod
-    def update_partner(partner_id: int):
-        partner = Partner.get_by_id(partner_id)
-        if partner is None:
-            raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
-        
-        partner.update_from_dto(UpdatePartnerDTO())
-
 
     @staticmethod
     def delete_partner(partner_id: int):
@@ -83,6 +74,19 @@ class PartnerService:
             return {
                 "Error": "Partner cannot be deleted",
             }, 400
+        
+    def update_partner(partner_id: int, data: dict) -> Partner:
+        partner = Partner.get_by_id(partner_id)
+        if not partner:
+            raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
+
+        # Actualizar campos del socio
+        for key, value in data.items():
+            if hasattr(partner, key):
+                setattr(partner, key, value)
+
+        partner.save()
+        return partner
 
     @staticmethod
     def get_partner_dto_by_id(partner: int, request_partner: int) -> PartnerDTO:

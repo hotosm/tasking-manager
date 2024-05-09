@@ -2,8 +2,7 @@ from backend import db
 import json
 from backend.exceptions import NotFound
 from backend.models.dtos.partner_dto import (
-    PartnerDTO,
-    UpdatePartnerDTO
+    PartnerDTO
 )
 
 
@@ -13,13 +12,28 @@ class Partner(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
     primary_hashtag = db.Column(db.String(50), nullable=False)
-    secondary_hashtag = db.Column(db.String(50), nullable=False)
+    secondary_hashtag = db.Column(db.String(50))
     logo_url = db.Column(db.String(100))
-    link_meta = db.Column(db.String(50), nullable=False)
-    link_x = db.Column(db.String(50), nullable=False)
-    link_instagram = db.Column(db.String(50), nullable=False)
-    current_projects = db.Column(db.String, nullable=False)
-    website_links_json = db.Column(db.String)
+    link_meta = db.Column(db.String(50))
+    link_x = db.Column(db.String(50))
+    link_instagram = db.Column(db.String(50))
+    current_projects = db.Column(db.String)
+    website_links = db.Column(db.String)
+
+    def as_dict(self):
+        website_links = json.loads(self.website_links)
+        return {
+            "id": self.id,
+            "name": self.name,
+            "primary_hashtag": self.primary_hashtag,
+            "secondary_hashtag": self.secondary_hashtag,
+            "logo_url": self.logo_url,
+            "link_meta": self.link_meta,
+            "link_x": self.link_x,
+            "link_instagram": self.link_instagram,
+            "current_projects": self.current_projects,
+            "website_links": website_links
+        }
 
     def create(self):
         """Creates and saves the current model to the DB"""
@@ -27,19 +41,6 @@ class Partner(db.Model):
         db.session.commit()
 
     def save(self):
-        db.session.commit()
-
-    def update_from_dto(self, dto: UpdatePartnerDTO):
-        """Updates the current model in the DB"""
-        self.name = dto.name if dto.name else self.name
-        self.primary_hashtag = dto.primary_hashtag if dto.primary_hashtag else self.primary_hashtag
-        self.secondary_hashtag = dto.secondary_hashtag if dto.secondary_hashtag else self.secondary_hashtag
-        self.logo_url = dto.logo_url if dto.logo_url else self.logo_url
-        self.link_x = dto.link_x if dto.link_x else self.link_x
-        self.link_meta = dto.link_meta if dto.link_meta else self.link_meta
-        self.link_instagram = dto.link_instagram if dto.link_instagram else self.link_instagram
-        self.current_projects = dto.current_projects if dto.current_projects else self.current_projects
-        self.website_links_json = json.dumps(dto.website_links)
         db.session.commit()
 
     def delete(self):
@@ -79,6 +80,8 @@ class Partner(db.Model):
         partner_dto.link_meta = self.link_meta
         partner_dto.link_instagram = self.link_instagram
         partner_dto.current_projects = self.current_projects
-        partner_dto.website_links = json.loads(self.website_links_json)
+        
+        website_links = json.loads(self.website_links)
+        partner_dto.website_links = [{"name": link['name'], "url": link['url']} for link in website_links]
 
         return partner_dto
