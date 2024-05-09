@@ -91,21 +91,26 @@ export function CreatePartner() {
   } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
   const [error, setError] = useState(null);
   const createPartner = (payload) => {
-    pushToLocalJSONAPI('partners/', JSON.stringify(payload), token, 'POST')
-      .then((result) => {
-        toast.success(
-          <FormattedMessage
-            {...messages.entityCreationSuccess}
-            values={{
-              entity: 'partner',
-            }}
-          />,
-        );
-        navigate(`manage/partners/`);
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
+    if (payload.name.length > 3 && payload.primary_hashtag.length > 3){
+
+      pushToLocalJSONAPI('partners/', JSON.stringify(payload), token, 'POST')
+        .then((result) => {
+          toast.success(
+            <FormattedMessage
+              {...messages.entityCreationSuccess}
+              values={{
+                entity: 'partner',
+              }}
+            />,
+          );
+          navigate(`/manage/partners/`);
+        })
+        .catch((err) => {
+          setError(err.message);
+        });
+    }else{
+      setError("Name and Primary_hashtag are required")
+    }
   };
 
   return (
