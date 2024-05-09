@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Chart } from 'react-charts';
 import ReactPlaceholder from 'react-placeholder';
-import { nCardPlaceholders } from './partnersActivityPlaceholder';
-import result from './activity.json';
 import PartnersProgresBar from './partnersProgresBar';
 import messages from './messages';
 import { FormattedMessage } from 'react-intl';
@@ -71,7 +68,7 @@ export const Activity = ({ activity }) => {
                 <h3>
                   <FormattedMessage {...messages[series.label]} />
                 </h3>
-                <div style={{ maxHeight: 400, overflowY: 'scroll' }}>
+                <div style={{ maxHeight: 400, overflowY: 'scroll',overflowX:'hidden' }}>
                   {series.data.map((dataItem, dataIndex) => (
                     <>
                       <div className="blue-grey">

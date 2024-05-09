@@ -198,6 +198,11 @@ export default defineMessages({
     defaultMessage:
       'You are not a manager of this organization, so you are not allowed to edit it.',
   },
+  editPartnerNotAllowed: {
+    id: 'teamsAndOrgs.management.partner.manage.error',
+    defaultMessage:
+      'You are not a manager of this partner, so you are not allowed to edit it.',
+  },
   tasksStatistics: {
     id: 'teamsAndOrgs.management.organisation.stats',
     defaultMessage: 'Tasks statistics',

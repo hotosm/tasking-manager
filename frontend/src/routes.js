@@ -450,7 +450,7 @@ export const router = createBrowserRouter(
       />
       <Route path="project/:id" element={<Redirect to="/projects/:id" />} />
       <Route
-        path="partners/"
+        path="manage/partners/"
         lazy={async () => {
           const { ListPartners } = await import(
             './views/partnersManagement' /* webpackChunkName: "partnersManagement" */
@@ -459,7 +459,7 @@ export const router = createBrowserRouter(
         }}
       />
       <Route
-        path="partners/new/"
+        path="manage/partners/new/"
         lazy={async () => {
           const { CreatePartner } = await import(
             './views/partnersManagement' /* webpackChunkName: "partnersManagement" */
@@ -468,7 +468,7 @@ export const router = createBrowserRouter(
         }}
       />
       <Route
-        path="partners/:id/"
+        path="manage/partners/:id/"
         lazy={async () => {
           const { EditPartners } = await import(
             './views/partnersManagement' /* webpackChunkName: "partnersManagement" */
@@ -485,6 +485,7 @@ export const router = createBrowserRouter(
           return { Component: PartnersStats };
         }}
       />
+
       <Route path="*" element={<NotFound />} />
     </Route>,
   ),

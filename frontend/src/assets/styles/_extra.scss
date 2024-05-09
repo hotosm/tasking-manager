@@ -450,8 +450,12 @@ a[href="https://www.mapbox.com/map-feedback/"]
 }
 .graphics-container{
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 600px));
   gap: 1rem;
+}
+.input-container{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 600px));
 }
 .cards-container {
   display: grid;

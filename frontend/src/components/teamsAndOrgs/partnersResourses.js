@@ -1,55 +1,65 @@
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import shortNumber from 'short-number';
-import {
-  TwitterIcon,
-  FacebookIcon,
-  GithubIcon,
-  InstagramIcon,
-  ExternalLinkIcon,
-} from '../svgIcons';
-import { CustomButton } from '../button';
+import { TwitterIcon, FacebookIcon, InstagramIcon } from '../svgIcons';
+import { Button } from '../button';
 import messages from './messages';
 
 export const Resources = ({ partner }) => {
-  const socialNetworks = [
-    {
-      link: 'X Link',
-      icon: <TwitterIcon style={{ height: '20px', width: '20px', color: 'red' }} noBg />,
-    },
-    {
-      link: 'Meta Link',
-      icon: <FacebookIcon style={{ height: '20px', width: '20px', color: 'red' }} />,
-    },
-    {
-      link: 'Instagram Link',
-      icon: <InstagramIcon style={{ height: '20px', width: '20px', color: 'red' }} />,
-    },
-    {
-      link: 'Webpage Link',
-      icon: <ExternalLinkIcon style={{ height: '20px', width: '20px', color: 'red' }} />,
-    },
-    {
-      link: 'Feedback Link',
-      icon: <GithubIcon style={{ height: '20px', width: '20px', color: 'red' }} />,
-    },
-  ];
+  const renderSocialButtons = () => {
+    const socialLinks = [
+      { name: 'link_x', label: 'link ', icon: <TwitterIcon noBg className="white v-mid mb1" /> },
+      { name: 'link_meta', label: 'link', icon: <FacebookIcon className=" v-mid mb1" /> },
+      { name: 'link_instagram', label: 'link', icon: <InstagramIcon className=" v-mid mb1" /> },
+    ];
+
+    return (
+      <div className="pt5 pb2 ph6-l ph4 flex flex-wrap flex-nowrap-ns stats-container">
+        {socialLinks.map(
+          (link, index) =>
+            partner[link.name] && (
+              <a
+                key={index}
+                href={partner[link.name]}
+                target="_blank"
+                rel="noreferrer"
+                className="link ttu di-l dib center"
+              >
+                <Button className="bg-red ba b--red white pv2 ph3 mv2 mh2" icon={link.icon}>
+                  {link.label}
+                </Button>
+              </a>
+            ),
+        )}
+      </div>
+    );
+  };
+
+  const renderWebsiteLinks = () => {
+    if (!partner.website_links || !Array.isArray(partner.website_links)) {
+      return null;
+    }
+
+    return (
+      <div className="pt5 pb2 ph6-l ph4 flex flex-wrap flex-nowrap-ns stats-container">
+        {partner.website_links.map((link, index) => (
+          <a
+            key={index}
+            href={link.url}
+            target="_blank"
+            rel="noreferrer"
+            className="link ttu di-l dib center"
+          >
+            <Button className="bg-red ba b--red white pv2 ph3 mv2 mh2">{link.name}</Button>
+          </a>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <>
-      <div className="pt5 pb2 ph6-l ph4 flex flex-wrap flex-nowrap-ns stats-container">
-        {socialNetworks
-          .filter((item) => item.link)
-          .map((item, n) => (
-            <a
-              key={n}
-              href={item.link}
-              className="link barlow-condensed white f4 ttu di-l dib center"
-            >
-              <CustomButton className=" flex center ba b--none bg-transparent red pv2 ph3" icon={item.icon}>
-                <span className="v-mid f4 fw6 ttu pl2">{item.link}</span>
-              </CustomButton>
-            </a>
-          ))}
-      </div>
+      {renderSocialButtons()}
+      {renderWebsiteLinks()}
     </>
   );
 };

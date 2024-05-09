@@ -16,6 +16,9 @@ export default defineMessages({
     id: 'management.fields.managers',
     defaultMessage: 'Managers',
   },
+  remove: { id: 'management.fields.managers.remove', defaultMessage: 'Remove' },
+  add: { id: 'management.fields.managers.add', defaultMessage: 'Add' },
+  link: { id: 'management.fields.managers.link', defaultMessage: 'Link' },
   noManagers: {
     id: 'management.fields.managers.empty',
     defaultMessage: 'There are no managers yet.',
@@ -43,6 +46,34 @@ export default defineMessages({
   users: {
     id: 'management.partnersActivity.users',
     defaultMessage: 'Users',
+  },
+  readMore: {
+    id: 'project.readMoreButton',
+    defaultMessage: 'Read more',
+  },
+  startMapping: {
+    id: 'management.partnersCurrentProjects.startMapping',
+    defaultMessage: 'Start mapping',
+  },
+  learnToMap: {
+    id: 'management.partner.learnToMap',
+    defaultMessage: 'Learn to Map',
+  },
+  connectOnMSTeams: {
+    id: 'management.partner.resources.connectOnMSTeams',
+    defaultMessage: 'Connect on MS Teams',
+  },
+  hostAMapathonEvent: {
+    id: 'management.partner.resources.hostAMapathonEvent',
+    defaultMessage: 'Host a mapathon event',
+  },
+  supportEmail: {
+    id: 'management.partner.resources.supportEmail',
+    defaultMessage: 'Support Email',
+  },
+  logYourVolunteerHours: {
+    id: 'management.partner.resources.logYourVolunteerHours',
+    defaultMessage: 'Log your volunteer hours',
   },
   edit: {
     id: 'management.members.edit',
@@ -196,7 +227,7 @@ export default defineMessages({
     id: 'management.filter.textarea.searchPartners',
     defaultMessage: 'Search partners...',
   },
-  buildingsStats:{
+  buildingsStats: {
     id: 'management.filter.stats.buildingsStats',
     defaultMessage: 'Building Edits',
   },
@@ -204,19 +235,19 @@ export default defineMessages({
     id: 'management.contributors',
     defaultMessage: 'Contributors',
   },
-  roadsStats:{
+  roadsStats: {
     id: 'management.filter.stats.roadsStats',
     defaultMessage: 'km of Roads',
   },
-  editsStats:{
+  editsStats: {
     id: 'management.filter.stats.editsStats',
     defaultMessage: 'Total Edits',
   },
-  communityStats:{
+  communityStats: {
     id: 'management.filter.stats.communityStats',
     defaultMessage: 'Community stats',
   },
-  mappersStats:{
+  mappersStats: {
     id: 'management.filter.stats.mappersStats',
     defaultMessage: 'Contributors',
   },
@@ -323,6 +354,10 @@ export default defineMessages({
   noOrganisationsFound: {
     id: 'management.organisations.list.empty',
     defaultMessage: 'No organizations were found.',
+  },
+  noPartnersFound: {
+    id: 'management.partners.list.empty',
+    defaultMessage: 'No partners were found.',
   },
   retry: {
     id: 'management.organisations.stats.retry',
@@ -496,9 +531,9 @@ export default defineMessages({
     id: 'management.titles.partner_instagramLink',
     defaultMessage: 'Instagram Link',
   },
-  feedbackLink: {
-    id: 'management.titles.partner_feedbackLink',
-    defaultMessage: 'Feedback Link',
+  currentProjects: {
+    id: 'management.titles.partner.currentProjects',
+    defaultMessage: 'Current projects',
   },
   settings: {
     id: 'management.settings',

@@ -2,23 +2,24 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
-import Select from 'react-select';
+
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import viewsMessages from '../../views/messages';
-import { IMAGE_UPLOAD_SERVICE } from '../../config';
+
 import { useUploadImage } from '../../hooks/UseUploadImage';
-import { levels } from '../../hooks/UseOrganisationLevel';
+
 import { Management } from './management';
-import { InternalLinkIcon, ClipboardIcon } from '../svgIcons';
+
 import { Button, CustomButton } from '../button';
 import { EditIcon } from '../svgIcons';
 import { ChartLineIcon } from '../svgIcons';
 import { nCardPlaceholders } from './organisationsPlaceholder';
 import { Alert } from '../alert';
 import { TextField } from '../formInputs';
+import { SectionMenu } from '../menu';
 
 export function PartnersManagement({
   partners,
@@ -26,11 +27,11 @@ export function PartnersManagement({
   isAdmin,
   userOrgsOnly,
   setUserOrgsOnly,
-  isOrganisationsFetched,
+  isPartnersFetched,
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const onSearchInputChange = (e) => setSearchQuery(e.target.value);
-  const filteredOrganisations = partners?.filter((partner) =>
+  const filteredPartners = partners?.filter((partner) =>
     partner.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
@@ -39,40 +40,40 @@ export function PartnersManagement({
       <Management
         title={
           <FormattedMessage
-            {...messages.manage}
-            values={{ entity: <FormattedMessage {...messages.partners} /> }}
+          {...messages.manage}
+          values={{ entity: <FormattedMessage {...messages.partners} /> }}
           />
         }
         showAddButton={true}
-        managementView={false}
+        managementView={true}
         userOnlyLabel={<FormattedMessage {...messages.myPartners} />}
-        userOnly={userOrgsOnly}
-        setUserOnly={setUserOrgsOnly}
+        userOnly={true}
+        setUserOnly={true}
         isAdmin={false}
-      >
+        >
         <ReactPlaceholder
           showLoadingAnimation={true}
           customPlaceholder={nCardPlaceholders(4)}
           delay={10}
-          ready={isOrganisationsFetched}
-        >
+          ready={isPartnersFetched}
+          >
           <div style={{ margin: 'auto', marginBottom: 20 }} className="w-20-l w-25-m ">
             <TextField
               value={searchQuery}
               placeholderMsg={messages.searchPartners}
               onChange={onSearchInputChange}
               onCloseIconClick={() => setSearchQuery('')}
-            />
+              />
           </div>
           <div className="ph4 cards-container">
             {isOrgManager ? (
-              filteredOrganisations?.length ? (
-                filteredOrganisations.map((org, index) => (
-                  <PartnersCard details={org} key={index} />
+              filteredPartners?.length ? (
+                filteredPartners.map((partner, index) => (
+                  <PartnersCard details={partner} key={index} />
                 ))
               ) : (
                 <div className="pb5">
-                  <FormattedMessage {...messages.noOrganisationsFound} />
+                  <FormattedMessage {...messages.noPartnersFound} />
                 </div>
               )
             ) : (
@@ -105,18 +106,20 @@ export function PartnersCard({ details }) {
     >
       <div style={{ flex: '2 1 100%', textAlign: 'center' }}>
         <div style={{ flex: '1 1 100%' }}>
-          {details.logo && <img src={details.logo} alt={`${details.name} logo`} className="w-40" />}
+          {details.logo_url && (
+            <img src={details.logo_url} alt={`${details.name} logo`} className="w-40" />
+          )}
         </div>
         <div>
           <h3 className="barlow-condensed ttu f3 mb2 mt2 truncate" lang="en">
             {details.name}
           </h3>
-          <h4 className="ttu blue-grey f6">{details.primaryHashtag}</h4>
+          <h4 className="ttu blue-grey f6">{details.primary_hashtag}</h4>
         </div>
       </div>
 
       <div style={{ flex: '1 1 100%', textAlign: 'center', paddingTop: '1rem' }}>
-        <Link to={`${details.name}/`} style={{ textDecoration: 'none', flex: 1 }}>
+        <Link to={`${details.id}/`} style={{ textDecoration: 'none', flex: 1 }}>
           <CustomButton
             className="bg-red ba b--red white pv2 ph3"
             icon={<EditIcon className="h1 v-mid" />}
@@ -126,7 +129,7 @@ export function PartnersCard({ details }) {
         </Link>
       </div>
       <div style={{ flex: '1 1 100%', textAlign: 'center', paddingTop: '1rem' }}>
-        <Link to={`/partners/${details.name.toLowerCase()}/stats/`} style={{ textDecoration: 'none' }}>
+        <Link to={`/partners/${details.id}/stats/`} style={{ textDecoration: 'none' }}>
           <CustomButton
             style={{ backgroundColor: '#e2e2e2' }}
             className="blue-dark ba b--grey-light pa2 br1 f5 pointer"
@@ -141,6 +144,7 @@ export function PartnersCard({ details }) {
 }
 
 export function PartnersForm(props) {
+
   return (
     <Form
       onSubmit={(values) => props.updatePartner(values)}
@@ -165,6 +169,7 @@ export function PartnersForm(props) {
                 <fieldset className="bn pa0" disabled={submitting}>
                   <PartnersInformation
                     //hasSlug={props.partner && props.organisation.slug}
+                    partnerWebpageLink={props.partner.website_links}
                     formState={values}
                   />
                 </fieldset>
@@ -213,99 +218,58 @@ export function PartnersForm(props) {
   );
 }
 
-const TYPE_OPTIONS = [
-  { label: <FormattedMessage {...messages.free} />, value: 'FREE' },
-  { label: <FormattedMessage {...messages.discounted} />, value: 'DISCOUNTED' },
-  { label: <FormattedMessage {...messages.defaultFee} />, value: 'FULL_FEE' },
-];
-const TIER_OPTIONS = levels.map((level) => ({
-  label: <FormattedMessage {...messages[`${level.tier}Tier`]} />,
-  value: level.level,
-}));
-
-export function PartnersInformation({ hasSlug, formState }) {
+export function PartnersInformation({ hasSlug, formState, partnerWebpageLink }) {
   const token = useSelector((state) => state.auth.token);
   const userDetails = useSelector((state) => state.auth.userDetails);
   const [uploadError, uploading, uploadImg] = useUploadImage();
+  const [webLinks, setWebLinks] = useState(
+    partnerWebpageLink ? partnerWebpageLink : [{ name: '', url: '' }],
+  );
+  const addWebLink = () => {
+    setWebLinks([...webLinks, { name: '', url: '' }]);
+  };
+  const handleNameChange = (event, index) => {
+    const updatedWebLinks = [...webLinks];
+    updatedWebLinks[index].name = event.target.value;
+    setWebLinks(updatedWebLinks);
+  };
+
+  const handleLinkChange = (event, index) => {
+    const updatedWebLinks = [...webLinks];
+    updatedWebLinks[index].url = event.target.value;
+    setWebLinks(updatedWebLinks);
+  };
   const intl = useIntl();
   //eslint-disable-next-line
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 p2 ph2 input-reset ba b--grey-light bg-transparent';
   const rowClass = 'flex flex-wrap justify-start';
-  const containerClases = 'w-40 mh3'
-  const getTypePlaceholder = (value) => {
-    const selected = TYPE_OPTIONS.filter((type) => value === type.value);
-    return selected.length ? selected[0].label : <FormattedMessage {...messages.selectType} />;
+  const containerClases = 'mh3 w-40-l w-100-sm  w-100';
+  const removeWebLink = (index) => {
+    const updatedWebLinks = [...webLinks];
+    updatedWebLinks.splice(index, 1);
+    setWebLinks(updatedWebLinks);
   };
-
-  const getTierPlaceholder = (value) => {
-    const selected = TIER_OPTIONS.filter((tier) => value === tier.value);
-    return selected.length ? selected[0].label : <FormattedMessage {...messages.selectTier} />;
-  };
-
-  const validateRequired = (value) =>
-    value ? undefined : <FormattedMessage {...messages.requiredField} />;
-
-  const handleCopyToClipboard = (text) => navigator.clipboard.writeText(text);
-
   return (
     <>
       <div className={rowClass}>
-        <div className="cf w-100 mh3">
+        <div className={containerClases}>
           <label className={labelClasses}>
             <FormattedMessage {...messages.name} />
           </label>
           <Field name="name" component="input" type="text" className={fieldClasses} required />
-        {hasSlug ? (
-          <div className="cf">
-            <label className={labelClasses}>
-              <FormattedMessage {...messages.publicUrl} />
-            </label>
-            <Field name="slug" component="input" className={fieldClasses} required>
-              {(props) => (
-                <>
-                  <pre className="f6 di bg-tan blue-grey pa2">
-                    /organisations/{props.input.value}
-                  </pre>
-                  <Link
-                    to={`/organisations/${props.input.value}/`}
-                    className="link blue-light ph2 hover-blue-dark"
-                  >
-                    <InternalLinkIcon className="h1 w1 v-mid" />
-                  </Link>
-                  <span
-                    className="pointer blue-light hover-blue-dark"
-                    title={intl.formatMessage(messages.copyPublicUrl)}
-                  >
-                    <ClipboardIcon
-                      role="button"
-                      className="h1 w1 ph1 v-mid"
-                      onClick={() =>
-                        handleCopyToClipboard(
-                          `${window.location.origin}/organisations/${props.input.value}/`,
-                        )
-                      }
-                    />
-                  </span>
-                </>
-              )}
-            </Field>
-          </div>
-        ) : (
-          <></>
-        )}
         </div>
         <div className={containerClases}>
           <label className={labelClasses}>
             <FormattedMessage {...messages.primaryhashtag} />
           </label>
-          <Field name="PrimaryHashtag" component="input" type="text" className={fieldClasses} />
+          <Field name="primary_hashtag" component="input" type="text" className={fieldClasses} />
         </div>
         <div className={containerClases}>
           <label className={labelClasses}>
             <FormattedMessage {...messages.secondaryhashtag} />
           </label>
-          <Field name="SecondaryHashtag" component="input" type="text" className={fieldClasses} />
+          <Field name="secondary_hashtag" component="input" type="text" className={fieldClasses} />
         </div>
       </div>
       <div className={rowClass}>
@@ -313,118 +277,89 @@ export function PartnersInformation({ hasSlug, formState }) {
           <label className={labelClasses}>
             <FormattedMessage {...messages.metaLink} />
           </label>
-          <Field name="MetaLink" component="input" type="text" className={fieldClasses} />
+          <Field name="link_meta" component="input" type="text" className={fieldClasses} />
         </div>
         <div className={containerClases}>
           <label className={labelClasses}>
             <FormattedMessage {...messages.xLink} />
           </label>
-          <Field name="XLink" component="input" type="text" className={fieldClasses} />
+          <Field name="link_x" component="input" type="text" className={fieldClasses} />
         </div>
         <div className={containerClases}>
           <label className={labelClasses}>
             <FormattedMessage {...messages.instagramLink} />
           </label>
-          <Field name="InstagramLink" component="input" type="text" className={fieldClasses} />
+          <Field name="link_instagram" component="input" type="text" className={fieldClasses} />
         </div>
         <div className={containerClases}>
           <label className={labelClasses}>
-            <FormattedMessage {...messages.website} />
+            <FormattedMessage {...messages.currentProjects} />
           </label>
-          <Field name="WebpageLink" component="input" type="text" className={fieldClasses} />
+          <Field name="current_projects" component="input" type="text" className={fieldClasses} />
         </div>
-        <div className={containerClases}>
-          <label className={labelClasses}>
-            <FormattedMessage {...messages.feedbackLink} />
-          </label>
-          <Field name="FeedbackLink" component="input" type="text" className={fieldClasses} />
+        <div className="w-100">
+          <div className="flex mv2 mh3">
+            <label className={labelClasses}>
+              <FormattedMessage {...messages.website} />
+            </label>
+            <Button
+              disabled={webLinks.length > 4}
+              className="bg-blue-dark white ml1 v-mid br1 f5 bn pointer mh2"
+              onClick={(e) => {
+                e.stopPropagation();
+                addWebLink();
+              }}
+            >
+              <FormattedMessage {...messages.add} />
+            </Button>
+          </div>
+          {webLinks.map((webLink, index) => (
+            <div className="w-100 flex flex-wrap">
+              <div className={containerClases}>
+                <label className={labelClasses}>
+                  <FormattedMessage {...messages.name} />
+                </label>
+                <input
+                  name={`name_${index + 1}`}
+                  component="input"
+                  type="text"
+                  value={webLink.name}
+                  onChange={(e) => handleNameChange(e, index)}
+                  className={fieldClasses}
+                />
+              </div>
+              <div className={containerClases}>
+                <label className={labelClasses}>
+                  <FormattedMessage {...messages.link} />
+                </label>
+                <input
+                  name={`url_${index + 1}`}
+                  component="input"
+                  type="text"
+                  value={webLink.url}
+                  onChange={(e) => handleLinkChange(e, index)}
+                  className={fieldClasses}
+                />
+                <Button
+                  className="bg-blue-dark white v-mid br1 f5 bn pointer mv2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeWebLink(index);
+                  }}
+                >
+                  <FormattedMessage {...messages.remove} />
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-      {userDetails &&
-        userDetails.role === 'ADMIN' && ( // only admin users can edit the org type and subscribed tier
-          <>
-            <div className="cf">
-              <label className={labelClasses}>
-                <FormattedMessage {...messages.type} />
-              </label>
-              <Field name="type" className={fieldClasses} validate={validateRequired}>
-                {(props) => (
-                  <>
-                    <Select
-                      classNamePrefix="react-select"
-                      isClearable={false}
-                      options={TYPE_OPTIONS}
-                      placeholder={getTypePlaceholder(props.input.value)}
-                      onChange={(value) => props.input.onChange(value.value)}
-                      className="z-5"
-                    />
-                    {props.meta.error && props.meta.touched && (
-                      <span className="mt3 red">{props.meta.error}</span>
-                    )}
-                  </>
-                )}
-              </Field>
-            </div>
-            {['DISCOUNTED', 'FULL_FEE'].includes(formState.type) && (
-              <div className="cf">
-                <label className={labelClasses}>
-                  <FormattedMessage {...messages.subscribedTier} />
-                </label>
-                <Field name="subscriptionTier" className={fieldClasses} validate={validateRequired}>
-                  {(props) => (
-                    <>
-                      <Select
-                        classNamePrefix="react-select"
-                        isClearable={false}
-                        options={TIER_OPTIONS}
-                        placeholder={getTierPlaceholder(props.input.value)}
-                        onChange={(value) => props.input.onChange(value.value)}
-                        className="z-4"
-                      />
-                      {props.meta.error && props.meta.touched && (
-                        <span className="mt3 red">{props.meta.error}</span>
-                      )}
-                    </>
-                  )}
-                </Field>
-              </div>
-            )}
-          </>
-        )}
+
       <div className="cf mh3">
         <label className={labelClasses}>
           <FormattedMessage {...messages.image} />
         </label>
-        {IMAGE_UPLOAD_SERVICE ? (
-          <Field name="logo" className={fieldClasses}>
-            {(fieldProps) => (
-              <>
-                <input
-                  type="file"
-                  multiple={false}
-                  accept="image/png, image/jpeg, image/webp"
-                  onChange={(e) => uploadImg(e.target.files[0], fieldProps.input.onChange, token)}
-                />
-                <ReactPlaceholder
-                  type="media"
-                  className="pt2"
-                  rows={0}
-                  showLoadingAnimation={true}
-                  ready={!uploading}
-                >
-                  <img
-                    src={fieldProps.input.value}
-                    alt={fieldProps.input.value}
-                    className="h3 db pt2"
-                  />
-                  {uploadError && <FormattedMessage {...messages.imageUploadFailed} />}
-                </ReactPlaceholder>
-              </>
-            )}
-          </Field>
-        ) : (
-          <Field name="logo" component="input" type="text" className={fieldClasses} />
-        )}
+        <Field name="logo_url" component="input" type="text" className={fieldClasses} />
       </div>
     </>
   );

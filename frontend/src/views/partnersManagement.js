@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, redirect, useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
@@ -26,6 +26,7 @@ import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Alert } from '../components/alert';
 import { updateEntity } from '../utils/management';
+import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 
 export function ListPartners() {
   useSetTitleTag('Manage partners');
@@ -45,12 +46,24 @@ export function ListPartners() {
     //eslint-disable-next-line
   }, [userOrgsOnly]);
 
-  useEffect(() => {
+  /*   useEffect(() => {
     if (true) {
       setLoading(true);
       setPartners(data);
       setLoading(false);
     }
+  }, [userDetails, token, userOrgsOnly]); */
+
+  useEffect(() => {
+    /*     if (token && userDetails?.id) { */
+    setLoading(true);
+    fetchLocalJSONAPI(`partners/`, true)
+      .then((data) => {
+        setPartners(data);
+        setLoading(false);
+      })
+      .catch((err) => setError(err));
+    /* } */
   }, [userDetails, token, userOrgsOnly]);
 
   return (
@@ -60,36 +73,39 @@ export function ListPartners() {
       setUserOrgsOnly={setUserOrgsOnly}
       isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
       isAdmin={userDetails.role === 'ADMIN'}
-      isOrganisationsFetched={!loading && !error}
+      isPartnersFetched={!loading && !error}
     />
   );
 }
 
 export function CreatePartner() {
-  useSetTitleTag('Create new organization');
+  useSetTitleTag('Create new partner');
   const navigate = useNavigate();
-  const userDetails = true; //useSelector((state) => state.auth.userDetails);
-  const token = true; //useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
+  const {
+    members: managers,
+    setMembers: setManagers,
+    addMember: addManagers,
+    removeMember: removeManagers,
+  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
   const [error, setError] = useState(null);
-
   const createPartner = (payload) => {
-    console.log(payload);
-    /*  payload.managers = managers.map((user) => user.username);
-    pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST')
+    pushToLocalJSONAPI('partners/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
         toast.success(
           <FormattedMessage
             {...messages.entityCreationSuccess}
             values={{
-              entity: 'organization',
+              entity: 'partner',
             }}
           />,
         );
-        navigate(`/manage/organisations/${result.organisationId}`);
+        navigate(`manage/partners/`);
       })
       .catch((err) => {
         setError(err.message);
-      }); */
+      });
   };
 
   return (
@@ -100,13 +116,13 @@ export function CreatePartner() {
           return (
             <form
               onSubmit={handleSubmit}
-              style={{ margin: 'auto', maxWidth: '50%' }}
-              className="blue-grey"
+              style={{ margin: 'auto' }}
+              className="blue-grey  w-50-l w-50-m "
             >
-              <div className="w-100 cf pv4 pb5">
+              <div className="w-100 cf pv4 pb5 ">
                 <h3
                   style={{ textAlign: 'center' }}
-                  className="f2 mb3 ttu blue-dark fw7 ma0 barlow-condensed"
+                  className="f2 mb3 ttu blue-dark fw7 ma0 barlow-condensed "
                 >
                   <FormattedMessage {...messages.newPartner} />
                 </h3>
@@ -115,7 +131,7 @@ export function CreatePartner() {
                   <div className="cf pv2 ml2">
                     {error && (
                       <Alert type="error" compact>
-                        {messages[`orgCreation${error}Error`] ? (
+                        {messages[`partnerCreation${error}Error`] ? (
                           <FormattedMessage {...messages[`partnerCreation${error}Error`]} />
                         ) : (
                           <FormattedMessage
@@ -132,7 +148,7 @@ export function CreatePartner() {
               </div>
               <div className="bottom-0 right-0 left-0 cf bg-white h3 fixed">
                 <div className="w-80-ns w-60-m w-50 h-100 fl tr">
-                  <Link to={'/partners'}>
+                  <Link to={'/manage/partners'}>
                     <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
                       <FormattedMessage {...messages.cancel} />
                     </CustomButton>
@@ -158,94 +174,63 @@ export function CreatePartner() {
 
 export function EditPartners() {
   const { id } = useParams();
-  const result = {
-    name: 'Accenture',
-    primaryHashtag: '#Accenture',
-    secondaryHashtag: '#InnovateTogether',
-    logo: 'https://s32519.pcdn.co/es/wp-content/uploads/sites/3/2020/08/accenture-logo-672x284px-336x142.png.webp',
-    metaLink: 'https://example.com/accenture-meta',
-    xLink: 'https://example.com/accenture-x',
-    instagramLink: 'https://www.instagram.com/accenture/',
-    webpageLink: 'https://www.accenture.com/',
-    feedbackLink: 'https://example.com/accenture-feedback',
-  };
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
 
   const [error, loading, partner] = useFetch(`partners/${id}/`, id);
-  const [isUserAllowed] = useEditOrgAllowed(partner);
 
   const [errorMessage, setErrorMessage] = useState(null);
   useSetTitleTag(`Edit ${partner.name}`);
-
-  const updateManagers = () => {
-    //let payload = JSON.stringify({ managers: managers.map((i) => i.username) });
-    /* pushToLocalJSONAPI(`organisations/${id}/`, payload, token, 'PATCH')
-      .then(() =>
-        toast.success(
-          <FormattedMessage
-            {...messages.affiliationUpdationSuccess}
-            values={{
-              affiliation: 'managers',
-            }}
-          />,
-        ),
-      )
-      .catch(() =>
-        toast.error(
-          <FormattedMessage
-            {...messages.affiliationUpdationFailure}
-            values={{
-              affiliation: 'managers',
-            }}
-          />,
-        ),
-      ); */
-  };
-
+  const navigate = useNavigate();
   const updatePartner = (payload) => {
+    console.log(payload);
     const onSuccess = () => setErrorMessage(null);
     const onFailure = (error) => setErrorMessage(error.message);
     updateEntity(`partners/${id}/`, 'partner', payload, token, onSuccess, onFailure);
   };
+  useEffect(() => {
+    if (error) {
+      navigate('*');
+    }
+  }, [error]);
 
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={false}
-      type={'media'}
-      rows={26}
-      delay={100}
-      ready={typeof result === 'object'}
-    >
-      {true ? (
-        <div style={{ margin: 'auto'}} className="cf">
-          <div className="cf pv4 ">
-            <div className="w-auto fl" >
+    <div style={{ backgroundColor: '#f1f1f1' }}>
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        type={'media'}
+        rows={26}
+        delay={100}
+        ready={!error && loading === false && typeof partner === 'object'}
+      >
+        {true ? (
+          <div style={{ margin: 'auto' }} className="cf w-50-l w-50-m ">
+            <div style={{ textAlign: 'center' }} className="cf pv4 ">
               <h3 className="f2 ttu blue-dark fw7 ma0 barlow-condensed v-mid dib">
                 <FormattedMessage {...messages.managePartner} />
               </h3>
               <DeleteModal id={id} name={id} type="partners" />
             </div>
+            <div className="w-100 mt4 fl">
+              <PartnersForm
+                userDetails={userDetails}
+                partner={partner}
+                updatePartner={updatePartner}
+                disabledForm={error || loading}
+                errorMessage={errorMessage}
+              />
+            </div>
           </div>
-          <div className="w-100 mt4 fl">
-            <PartnersForm
-              userDetails={userDetails}
-              partner={result}
-              updatePartner={updatePartner}
-              disabledForm={error || loading}
-              errorMessage={errorMessage}
-            />
+        ) : (
+          <div className="cf w-100 pv5">
+            <div className="tc">
+              <h3 className="f3 fw8 mb4 barlow-condensed">
+                <FormattedMessage {...messages.editPartnerNotAllowed} />
+              </h3>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="cf w-100 pv5">
-          <div className="tc">
-            <h3 className="f3 fw8 mb4 barlow-condensed">
-              <FormattedMessage {...messages.editOrgNotAllowed} />
-            </h3>
-          </div>
-        </div>
-      )}
-    </ReactPlaceholder>
+        )}
+      </ReactPlaceholder>
+    </div>
   );
 }

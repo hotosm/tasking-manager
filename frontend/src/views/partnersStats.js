@@ -1,31 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link,  useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
-import { FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { useTasksStatsQueryParams, useTasksStatsQueryAPI } from '../hooks/UseTasksStatsQueryAPI';
 import { useTotalTasksStats } from '../hooks/UseTotalTasksStats';
 import { useCurrentYearStats } from '../hooks/UseOrgYearStats';
 import { useFetch } from '../hooks/UseFetch';
-import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { StatsSection } from '../components/teamsAndOrgs/partnersStats';
-import { CustomButton } from '../components/button';
+import LearnMapNowLogo from '../assets/img/learn-MapNow.svg';
 import { Resources } from '../components/teamsAndOrgs/partnersResourses';
 import { Activity } from '../components/teamsAndOrgs/partnersActivity';
 import { CurrentProjects } from '../components/teamsAndOrgs/currentProjects';
+import { Button } from '../components/button';
 
 export const PartnersStats = () => {
-  const navigate = useNavigate();
+
   const { id } = useParams();
-  const [partner, setPartners] = useState();
-  const fetchData = async () => {
+  const [partnerStats, setPartnerStats] = useState(null);
+  const [error,loading, partner] = useFetch(`partners/${id}/`);
+
+  const fetchData = async (name) => {
     try {
-      const response = await fetch('https://stats.now.ohsome.org/api/stats/hashtags/' + id);
+      const response = await fetch('https://stats.now.ohsome.org/api/stats/hashtags/' + name);
 
       if (response.ok) {
         const jsonData = await response.json();
-        setPartners(jsonData.result[id]);
+        if (jsonData.result) setPartnerStats(jsonData.result[name]);
       } else {
         console.error('Error al obtener los datos:', response.statusText);
       }
@@ -35,9 +37,11 @@ export const PartnersStats = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
-  const token = useSelector((state) => state.auth.token);
+    if (partner) {
+      fetchData(partner.name);
+    }
+  }, [partner]);
+/*   const token = useSelector((state) => state.auth.token);
   const isOrgManager = useSelector(
     (state) =>
       state.auth.userDetails.role === 'ADMIN' || state.auth.organisations?.includes(Number(id)),
@@ -49,41 +53,24 @@ export const PartnersStats = () => {
     query,
     `organisationId=${id}`,
   );
-  const [error, loading, organisation] = useFetch(`organisations/${id}/?omitManagerList=true`, id);
-  const [errorOrgStats, loadingOrgStats, orgStats] = useFetch(
-    `organisations/${id}/statistics/`,
-    id,
-  );
   const currentYearStats = useCurrentYearStats(id, query, apiState.stats);
-  const totalStats = useTotalTasksStats(currentYearStats);
-  const completedActions = totalStats.mapped + totalStats.validated;
-  const showTierInfo =
-    ['DISCOUNTED', 'FULL_FEE'].includes(organisation.type) &&
-    organisation.subscriptionTier &&
-    isOrgManager;
-  useSetTitleTag(`${organisation.name || 'Organization'} stats`);
-  /* 
-  useEffect(() => {
-    if (!token) {
-      navigate('/login');
-    }
-  }); */
+  const totalStats = useTotalTasksStats(currentYearStats); */
+
   return (
     <ReactPlaceholder
       showLoadingAnimation={true}
       rows={26}
-      ready={partner}
+      ready={!error && partnerStats !== null}
       className="pv3 ph2 ph4-ns"
     >
-      <div style={{ flex: '2 1 100%', backgroundColor: '#F0EFEF' }}>
-        <div className="w-100 ph4 ph2 pv3 blue-dark flex ">
-          <div>
-            <h1 className="f2 fw5 mt3 mt2-ns mb3 ttu barlow-condensed blue-dark dib mr3">{id}</h1>
-            <span className="ttu blue-grey f6">{partner?.secondaryHashtag}</span>
-          </div>
-
+      <div style={{ flex: '2 1 100%', backgroundColor: '#F0EFEF', padding: '0px 20px' }}>
+        <div className="flex flex-column mt3 mt2-ns mb3 ml4">
+          <h1 className="f2 fw5  ttu barlow-condensed blue-dark dib mr3">{partner.name}</h1>
+          <span className="ttu blue-grey f6">{partner.primary_hashtag}</span>
+        </div>
+        <div className="w-100 ph4 pv1 blue-dark flex ">
           <div className="flex w-100">
-            <StatsSection partner={partner} />
+            <StatsSection partner={partnerStats} />
           </div>
         </div>
 
@@ -91,29 +78,30 @@ export const PartnersStats = () => {
           <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
             <FormattedMessage {...messages.currentProjects} />
           </h4>
-          <div className="w-100 flex">
-          <CurrentProjects/>
-          <div className="w-25 flex flex-column justify-center items-center ">
-          <FormattedMessage {...messages.newToMapping} />
-          <a href="/learn/map" className="link base-font f6 mt3 bn pn red pointer">
-              <span className="pr2 ttu f6 fw6">
-              <FormattedMessage {...messages.learnToMap} />
-              </span>
-            </a>
+          <div className="w-100 pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container ">
+            <CurrentProjects currentProjects={partner.current_projects} />
+            <div className="w-25 flex flex-column items-center text-center mt2">
+              <FormattedMessage {...messages.newToMapping} />
+              <img src={LearnMapNowLogo} height="100" alt="" className="mv2" />
+              <Link to={`/learn/map/`}>
+                <Button className="bg-red ba b--red white pv2 ph3">
+                  <FormattedMessage {...messages.learnToMap} />
+                </Button>
+              </Link>
+            </div>
           </div>
-          </div>
+        </div>
+        <div className="w-80 fl cf">
+          <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3 self-center">
+            <FormattedMessage {...messages.resources} />
+          </h4>
+          <Resources partner={partner} />
         </div>
         <div className="w-100 fl cf">
           <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
             <FormattedMessage {...messages.activity} />
           </h4>
           <Activity partner={partner} />
-        </div>
-        <div className="w-100 fl cf">
-          <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb1 mt4">
-            <FormattedMessage {...messages.resources} />
-          </h4>
-          <Resources partner={partner} />
         </div>
       </div>
     </ReactPlaceholder>

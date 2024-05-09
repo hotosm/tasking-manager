@@ -170,7 +170,6 @@ export function getMenuItemsForUser(userDetails, organisations) {
       link: `contributions`,
       authenticated: true,
     },
-    { label: messages.partners, link: 'partners/',  showAlways: true },
     { label: messages.manage, link: 'manage', authenticated: true, manager: true },
     { label: messages.learn, link: 'learn/map', showAlways: true },
     { label: messages.about, link: 'about', showAlways: true },

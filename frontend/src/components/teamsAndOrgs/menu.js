@@ -10,6 +10,7 @@ export function ManagementMenu({ isAdmin }: Object) {
     'organisations',
     'teams',
     'campaigns',
+    'partners',
     'categories',
     'users',
     'licenses',
@@ -32,6 +33,5 @@ export function ManagementMenu({ isAdmin }: Object) {
     url: '/manage',
     label: <FormattedMessage {...messages.overview} />,
   });
-
   return <SectionMenu items={items} />;
 }
