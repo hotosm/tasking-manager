@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link,  useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
@@ -16,18 +16,22 @@ import { CurrentProjects } from '../components/teamsAndOrgs/currentProjects';
 import { Button } from '../components/button';
 
 export const PartnersStats = () => {
-
   const { id } = useParams();
   const [partnerStats, setPartnerStats] = useState(null);
-  const [error,loading, partner] = useFetch(`partners/${id}/`);
+  const [error, loading, partner] = useFetch(`partners/${id}/`);
 
   const fetchData = async (name) => {
     try {
-      const response = await fetch('https://stats.now.ohsome.org/api/stats/hashtags/' + name);
+      let hashtag = name.trim();
+      if (hashtag.startsWith('#')) {
+        hashtag = hashtag.slice(1);
+      }
+      hashtag = hashtag.toLowerCase();
+      const response = await fetch('https://stats.now.ohsome.org/api/stats/hashtags/' + hashtag);
 
       if (response.ok) {
         const jsonData = await response.json();
-        if (jsonData.result) setPartnerStats(jsonData.result[name]);
+        if (jsonData.result) setPartnerStats(jsonData.result[hashtag]);
       } else {
         console.error('Error al obtener los datos:', response.statusText);
       }
@@ -38,23 +42,9 @@ export const PartnersStats = () => {
 
   useEffect(() => {
     if (partner) {
-      fetchData(partner.name);
+      fetchData(partner.primary_hashtag);
     }
   }, [partner]);
-/*   const token = useSelector((state) => state.auth.token);
-  const isOrgManager = useSelector(
-    (state) =>
-      state.auth.userDetails.role === 'ADMIN' || state.auth.organisations?.includes(Number(id)),
-  );
-  const [query, setQuery] = useTasksStatsQueryParams();
-
-  const [apiState, fetchTasksStatistics] = useTasksStatsQueryAPI(
-    { taskStats: [] },
-    query,
-    `organisationId=${id}`,
-  );
-  const currentYearStats = useCurrentYearStats(id, query, apiState.stats);
-  const totalStats = useTotalTasksStats(currentYearStats); */
 
   return (
     <ReactPlaceholder

@@ -14,7 +14,7 @@ export const Activity = ({ activity }) => {
 
       if (response.ok) {
         const jsonData = await response.json();
-        const formattedData = formatData(jsonData.result); // Limitar a las primeras 10 empresas
+        const formattedData = formatData(jsonData.result);
         setData(formattedData);
       } else {
         console.error('Error al obtener los datos:', response.statusText);
@@ -45,10 +45,15 @@ export const Activity = ({ activity }) => {
 
     const formattedData = Object.entries(groupedData).map(([action, values]) => ({
       label: action,
-      data: values,
+      data: sortBySecondaryDescending(values), 
     }));
-
+  
     return formattedData;
+  };
+  
+  
+  function sortBySecondaryDescending(data) {
+    return data.sort((a, b) => b.secondary - a.secondary);
   };
 
   useEffect(() => {

@@ -25,7 +25,7 @@ import { ChartLineIcon } from '../components/svgIcons';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Alert } from '../components/alert';
-import { updateEntity } from '../utils/management';
+import { putEntity } from '../utils/management';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 
 export function ListPartners() {
@@ -91,8 +91,7 @@ export function CreatePartner() {
   } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
   const [error, setError] = useState(null);
   const createPartner = (payload) => {
-    if (payload.name.length > 3 && payload.primary_hashtag.length > 3){
-
+    if (payload.name.length > 3 && payload.primary_hashtag.length > 3) {
       pushToLocalJSONAPI('partners/', JSON.stringify(payload), token, 'POST')
         .then((result) => {
           toast.success(
@@ -103,13 +102,13 @@ export function CreatePartner() {
               }}
             />,
           );
-          navigate(`/manage/partners/`);
+          navigate(`/partners/`);
         })
         .catch((err) => {
           setError(err.message);
         });
-    }else{
-      setError("Name and Primary_hashtag are required")
+    } else {
+      setError('Name and Primary_hashtag are required');
     }
   };
 
@@ -188,10 +187,12 @@ export function EditPartners() {
   useSetTitleTag(`Edit ${partner.name}`);
   const navigate = useNavigate();
   const updatePartner = (payload) => {
-    console.log(payload);
-    const onSuccess = () => setErrorMessage(null);
+    const onSuccess = () => {
+      navigate("/manage/partners")
+      setErrorMessage(null);
+    };
     const onFailure = (error) => setErrorMessage(error.message);
-    updateEntity(`partners/${id}/`, 'partner', payload, token, onSuccess, onFailure);
+    putEntity(`partners/${id}/`, 'partner', payload, token, onSuccess, onFailure);
   };
   useEffect(() => {
     if (error) {
