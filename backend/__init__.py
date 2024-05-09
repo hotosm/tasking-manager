@@ -83,6 +83,8 @@ osm = OAuth2Session(
 
 # Import all models so that they are registered with SQLAlchemy
 from backend.models.postgis import *  # noqa
+from backend.models.postgis import partner
+from backend.models.dtos import partner_dto
 
 
 def create_app(env="backend.config.EnvironmentConfig"):
@@ -294,6 +296,13 @@ def add_api_endpoints(app):
     # Licenses API import
     from backend.api.licenses.resources import LicensesRestAPI, LicensesAllAPI
     from backend.api.licenses.actions import LicensesActionsAcceptAPI
+
+
+    # Partners API import
+    from backend.api.partners.resources import ( 
+        PartnerRestAPI,
+        PartnersAllRestAPI,
+    )
 
     # Campaigns API endpoint
     from backend.api.campaigns.resources import CampaignsRestAPI, CampaignsAllAPI
@@ -548,6 +557,18 @@ def add_api_endpoints(app):
         format_url("interests/<int:interest_id>/"),
         methods=["GET", "PATCH", "DELETE"],
     )
+
+    # Partners REST endoints
+    api.add_resource(
+        PartnersAllRestAPI, 
+        format_url("partners/"),
+        methods=["GET", "POST"],
+        )
+    api.add_resource(
+        PartnerRestAPI, 
+        format_url("partners/<int:partner_id>/"),
+        methods=["GET", "DELETE", "PUT"],
+        )
 
     # Tasks REST endpoint
     api.add_resource(

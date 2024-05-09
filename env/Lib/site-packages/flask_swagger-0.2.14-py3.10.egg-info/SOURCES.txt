@@ -1,0 +1,14 @@
+LICENSE
+MANIFEST.in
+README
+README.md
+build_swagger_spec.py
+flask_swagger.py
+setup.cfg
+setup.py
+flask_swagger.egg-info/PKG-INFO
+flask_swagger.egg-info/SOURCES.txt
+flask_swagger.egg-info/dependency_links.txt
+flask_swagger.egg-info/entry_points.txt
+flask_swagger.egg-info/requires.txt
+flask_swagger.egg-info/top_level.txt
