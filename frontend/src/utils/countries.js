@@ -20,7 +20,8 @@ export function getCountryCode(name) {
 }
 
 export function isLangSupported(code) {
-  if (getSupportedLangs().includes(code.split('-')[0])) return true;
+  // split with `-` or `_` to get the language initials
+  if (getSupportedLangs().includes(code.split(/[-_]/)[0])) return true;
   return false;
 }
 
