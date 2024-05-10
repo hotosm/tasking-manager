@@ -9,6 +9,12 @@ class PartnerRestAPI(Resource):
         partner = PartnerService.get_partner_by_id(partner_id)
         if partner:
             partner_dict = partner.as_dto().to_primitive()
+            website_links = partner_dict.pop('website_links', [])
+
+            for i, link in enumerate(website_links, start=1):
+                partner_dict[f"name_{i}"] = link["name"]
+                partner_dict[f"url_{i}"] = link["url"]
+            
             return partner_dict, 200
         else:
             return {"message": "Partner not found"}, 404
@@ -31,15 +37,21 @@ class PartnerRestAPI(Resource):
             return {"message": str(e)}, 404
         
 
-  
+
 class PartnersAllRestAPI(Resource):
     def get(self):
         partner_ids = PartnerService.get_all_partners()
         partners = []
         for partner_id in partner_ids:
             partner = PartnerService.get_partner_by_id(partner_id)
-            partner_dict = partner.as_dto().to_primitive() 
+            partner_dict = partner.as_dto().to_primitive()
+            website_links = partner_dict.pop('website_links', [])
+
+            for i, link in enumerate(website_links, start=1):
+                partner_dict[f"name_{i}"] = link["name"]
+                partner_dict[f"url_{i}"] = link["url"]
             partners.append(partner_dict)
+        
         return partners, 200
     
     def post(self):
