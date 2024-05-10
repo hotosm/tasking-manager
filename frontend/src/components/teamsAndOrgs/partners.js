@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
 
 import ReactPlaceholder from 'react-placeholder';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import viewsMessages from '../../views/messages';
 
-import { useUploadImage } from '../../hooks/UseUploadImage';
 
 import { Management } from './management';
 
@@ -19,7 +17,6 @@ import { ChartLineIcon } from '../svgIcons';
 import { nCardPlaceholders } from './organisationsPlaceholder';
 import { Alert } from '../alert';
 import { TextField } from '../formInputs';
-import { SectionMenu } from '../menu';
 
 export function PartnersManagement({
   partners,
@@ -219,9 +216,6 @@ export function PartnersForm(props) {
 }
 
 export function PartnersInformation({ hasSlug, formState, partnerWebpageLink }) {
-  const token = useSelector((state) => state.auth.token);
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const [uploadError, uploading, uploadImg] = useUploadImage();
   const [webLinks, setWebLinks] = useState(
     partnerWebpageLink ? partnerWebpageLink : [{ name: '', url: '' }],
   );
@@ -239,7 +233,6 @@ export function PartnersInformation({ hasSlug, formState, partnerWebpageLink }) 
     updatedWebLinks[index].url = event.target.value;
     setWebLinks(updatedWebLinks);
   };
-  const intl = useIntl();
   //eslint-disable-next-line
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 p2 ph2 input-reset ba b--grey-light bg-transparent';

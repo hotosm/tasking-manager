@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, redirect, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
@@ -9,19 +9,13 @@ import { useQueryParams, BooleanParam } from 'use-query-params';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
-import { useModifyMembers } from '../hooks/UseModifyMembers';
-import { useEditOrgAllowed } from '../hooks/UsePermissions';
 import data from '../utils/result.json';
-import { Members } from '../components/teamsAndOrgs/members';
-import { Teams } from '../components/teamsAndOrgs/teams';
-import { Projects } from '../components/teamsAndOrgs/projects';
 import {
   PartnersForm,
   CreatePartnersInfo,
   PartnersManagement,
 } from '../components/teamsAndOrgs/partners';
 import { FormSubmitButton, CustomButton } from '../components/button';
-import { ChartLineIcon } from '../components/svgIcons';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Alert } from '../components/alert';
@@ -30,9 +24,11 @@ import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONReq
 
 export function ListPartners() {
   useSetTitleTag('Manage partners');
-  const token = true; //useSelector((state) => state.auth.token);
-  const userDetails = 1; //useSelector((state) => state.auth.userDetails);
-  const isOrgManager = true; //useSelector(    (state) => state.auth.organisations && state.auth.organisations.length > 0,  );
+  const token = useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const isOrgManager = useSelector(
+    (state) => state.auth.organisations && state.auth.organisations.length > 0,
+  );
   const [partners, setPartners] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,24 +42,24 @@ export function ListPartners() {
     //eslint-disable-next-line
   }, [userOrgsOnly]);
 
-  /*   useEffect(() => {
+  useEffect(() => {
     if (true) {
       setLoading(true);
       setPartners(data);
       setLoading(false);
     }
-  }, [userDetails, token, userOrgsOnly]); */
+  }, [userDetails, token, userOrgsOnly]);
 
   useEffect(() => {
-    /*     if (token && userDetails?.id) { */
-    setLoading(true);
-    fetchLocalJSONAPI(`partners/`, true)
-      .then((data) => {
-        setPartners(data);
-        setLoading(false);
-      })
-      .catch((err) => setError(err));
-    /* } */
+    if (token && userDetails?.id) {
+      setLoading(true);
+      fetchLocalJSONAPI(`partners/`, true)
+        .then((data) => {
+          setPartners(data);
+          setLoading(false);
+        })
+        .catch((err) => setError(err));
+    }
   }, [userDetails, token, userOrgsOnly]);
 
   return (
@@ -81,14 +77,7 @@ export function ListPartners() {
 export function CreatePartner() {
   useSetTitleTag('Create new partner');
   const navigate = useNavigate();
-  const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const {
-    members: managers,
-    setMembers: setManagers,
-    addMember: addManagers,
-    removeMember: removeManagers,
-  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
   const [error, setError] = useState(null);
   const createPartner = (payload) => {
     if (payload.name.length > 3 && payload.primary_hashtag.length > 3) {
@@ -102,7 +91,7 @@ export function CreatePartner() {
               }}
             />,
           );
-          navigate(`/partners/`);
+          navigate('/manage/partners');
         })
         .catch((err) => {
           setError(err.message);
@@ -188,7 +177,7 @@ export function EditPartners() {
   const navigate = useNavigate();
   const updatePartner = (payload) => {
     const onSuccess = () => {
-      navigate("/manage/partners")
+      navigate('/manage/partners');
       setErrorMessage(null);
     };
     const onFailure = (error) => setErrorMessage(error.message);
@@ -198,6 +187,7 @@ export function EditPartners() {
     if (error) {
       navigate('*');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
   return (

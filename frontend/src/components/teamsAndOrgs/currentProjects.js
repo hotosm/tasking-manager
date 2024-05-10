@@ -24,7 +24,6 @@ SwiperCore.use([Navigation, Pagination, Scrollbar, A11y]);
 export function CurrentProjects({ currentProjects }) {
   const [projectsData, setProjectsData] = useState([]);
   const [error, setError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const pagination = {
     clickable: true,
     renderBullet: function (index, className) {
@@ -66,15 +65,15 @@ export function CurrentProjects({ currentProjects }) {
 
       const projects = await Promise.all(promises);
       setProjectsData(projects);
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentProjects]);
 
   return (

@@ -58,6 +58,8 @@ export const Activity = ({ activity }) => {
 
   useEffect(() => {
     fetchData();
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <ReactPlaceholder showLoadingAnimation={true} rows={26} ready={data} className="pv3 ph2 ph4-ns">

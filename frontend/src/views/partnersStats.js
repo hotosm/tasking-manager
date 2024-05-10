@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
-import { useTasksStatsQueryParams, useTasksStatsQueryAPI } from '../hooks/UseTasksStatsQueryAPI';
-import { useTotalTasksStats } from '../hooks/UseTotalTasksStats';
-import { useCurrentYearStats } from '../hooks/UseOrgYearStats';
 import { useFetch } from '../hooks/UseFetch';
 import { StatsSection } from '../components/teamsAndOrgs/partnersStats';
 import LearnMapNowLogo from '../assets/img/learn-MapNow.svg';

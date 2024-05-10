@@ -1,8 +1,5 @@
-import { FormattedMessage, FormattedNumber } from 'react-intl';
-import shortNumber from 'short-number';
 import { TwitterIcon, FacebookIcon, InstagramIcon } from '../svgIcons';
 import { Button } from '../button';
-import messages from './messages';
 
 export const Resources = ({ partner }) => {
   const renderSocialButtons = () => {
