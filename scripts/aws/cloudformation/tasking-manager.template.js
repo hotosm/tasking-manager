@@ -187,6 +187,10 @@ const Parameters = {
   TaskingManagerLogo: {
     Description: "URL for logo",
     Type: "String"
+  },
+  OhsomeStatsToken: {
+    Description: "Ohsome Stats Token (must be same as frontend)",
+    Type: "String"
   }
 };
 
@@ -474,6 +478,7 @@ const Resources = {
           'echo "------------------------------------------------------------"',
           cf.sub('export NEW_RELIC_LICENSE_KEY="${NewRelicLicense}"'),
           cf.sub('export TM_SENTRY_BACKEND_DSN="${SentryBackendDSN}"'),
+          cf.sub('export OHSOME_STATS_TOKEN="${OhsomeStatsToken}"'),
           'export NEW_RELIC_ENVIRONMENT=$TM_ENVIRONMENT',
           cf.sub('NEW_RELIC_CONFIG_FILE=./scripts/aws/cloudformation/newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 5 --timeout 179 --access-logfile ${TaskingManagerLogDirectory}/gunicorn-access.log --access-logformat \'%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s %(T)s \"%(f)s\" \"%(a)s\"\' manage:application &'),
           cf.sub('sudo /usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchTemplate --region ${AWS::Region} --configsets default'),
