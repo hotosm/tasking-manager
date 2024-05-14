@@ -15,29 +15,5 @@ class PartnerDTO(Model):
     link_instagram = StringType(serialized_name="link_instagram")
     logo_url = StringType(serialized_name="logo_url")
     current_projects = StringType(serialized_name="current_projects")
+    permalink = StringType(serialized_name="permalink")
     website_links = ListType(StringType, serialized_name="website_links")
-
-class ListedPartner(Model):
-    """Describes a partner within the Partner List"""
-    id = LongType()
-    name = StringType(serialized_name="name")
-    primary_hashtag = StringType(serialized_name="primaryHashtag")
-    logo_url = StringType(serialized_name="pictureUrl")
-
-class PartnerSearchDTO(Model):
-    """Paginated list of TM partners"""
-    def __init__(self):
-        super().__init__()
-        self.partners = []
-
-    pagination = ModelType(Pagination)
-    partners = ListType(ModelType(ListedPartner))
-
-class PartnerListDTO(Model):
-    """DTO used to define available partners"""
-    def __init__(self):
-        """DTO constructor initialise all arrays to empty"""
-        super().__init__()
-        self.partners = []
-
-    partners = ListType(ModelType(PartnerDTO))

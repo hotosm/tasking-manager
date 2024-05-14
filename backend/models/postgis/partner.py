@@ -7,10 +7,11 @@ from backend.models.dtos.partner_dto import (
 
 
 class Partner(db.Model):
+
     __tablename__ = "partners"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(50), nullable=False, unique=True)
     primary_hashtag = db.Column(db.String(50), nullable=False)
     secondary_hashtag = db.Column(db.String(50))
     logo_url = db.Column(db.String(100))
@@ -18,22 +19,8 @@ class Partner(db.Model):
     link_x = db.Column(db.String(50))
     link_instagram = db.Column(db.String(50))
     current_projects = db.Column(db.String)
+    permalink = db.Column(db.String(250), unique=True)
     website_links = db.Column(db.String)
-
-    def as_dict(self):
-        website_links = json.loads(self.website_links)
-        return {
-            "id": self.id,
-            "name": self.name,
-            "primary_hashtag": self.primary_hashtag,
-            "secondary_hashtag": self.secondary_hashtag,
-            "logo_url": self.logo_url,
-            "link_meta": self.link_meta,
-            "link_x": self.link_x,
-            "link_instagram": self.link_instagram,
-            "current_projects": self.current_projects,
-            "website_links": website_links
-        }
 
     def create(self):
         """Creates and saves the current model to the DB"""
@@ -54,9 +41,9 @@ class Partner(db.Model):
         return db.session.query(Partner.id).all()
     
     @staticmethod
-    def get_by_name(name: str):
-        """Return the user for the specified username, or None if not found"""
-        return Partner.query.filter_by(name=name).one_or_none()
+    def get_by_permalink(permalink: str):
+        """Get partner by permalink"""
+        return Partner.query.filter_by(permalink=permalink).one_or_none()
     
     @staticmethod
     def get_by_id(partner_id: int):
@@ -70,6 +57,7 @@ class Partner(db.Model):
         return partner
     
     def as_dto(self) -> PartnerDTO:
+        """Creates partner from DTO"""
         partner_dto = PartnerDTO()
         partner_dto.id = self.id
         partner_dto.name = self.name
@@ -80,8 +68,7 @@ class Partner(db.Model):
         partner_dto.link_meta = self.link_meta
         partner_dto.link_instagram = self.link_instagram
         partner_dto.current_projects = self.current_projects
-        
-        website_links = json.loads(self.website_links)
-        partner_dto.website_links = [{"name": link['name'], "url": link['url']} for link in website_links]
+        partner_dto.permalink = self.permalink
+        partner_dto.website_links = json.loads(self.website_links)
 
         return partner_dto
