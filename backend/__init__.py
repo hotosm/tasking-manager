@@ -302,6 +302,7 @@ def add_api_endpoints(app):
     from backend.api.partners.resources import ( 
         PartnerRestAPI,
         PartnersAllRestAPI,
+        PartnerPermalinkRestAPI,
     )
 
     # Campaigns API endpoint
@@ -559,16 +560,22 @@ def add_api_endpoints(app):
     )
 
     # Partners REST endoints
+    
     api.add_resource(
         PartnersAllRestAPI, 
         format_url("partners/"),
         methods=["GET", "POST"],
-        )
+    )
     api.add_resource(
         PartnerRestAPI, 
         format_url("partners/<int:partner_id>/"),
         methods=["GET", "DELETE", "PUT"],
-        )
+    )
+    api.add_resource(
+        PartnerPermalinkRestAPI,
+        format_url("partners/<string:permalink>/"),
+        methods=["GET"],
+    )
 
     # Tasks REST endpoint
     api.add_resource(

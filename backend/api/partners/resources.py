@@ -58,6 +58,7 @@ class PartnersAllRestAPI(Resource):
         try: 
             data = request.json
             if data:
+
                 new_partner = PartnerService.create_partner(data)
                 partner_dict = new_partner.as_dto().to_primitive()
                 return partner_dict, 201 
@@ -66,3 +67,19 @@ class PartnersAllRestAPI(Resource):
         except PartnerServiceError as e:
             return {"message": str(e)}, 500
     
+
+class PartnerPermalinkRestAPI(Resource):
+    def get(self, permalink):
+        partner = PartnerService.get_partner_by_permalink(permalink)
+
+        if partner:
+            partner_dict = partner.as_dto().to_primitive()
+            website_links = partner_dict.pop('website_links', [])
+
+            for i, link in enumerate(website_links, start=1):
+                partner_dict[f"name_{i}"] = link["name"]
+                partner_dict[f"url_{i}"] = link["url"]
+            
+            return partner_dict, 200
+        else:
+            return {"message": "Partner not found"}, 404

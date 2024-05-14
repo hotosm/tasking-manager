@@ -27,15 +27,18 @@ class PartnerService:
             )     
       
         return partner
-    
+
     @staticmethod
-    def get_partner_by_name(name: str) -> Partner:
-        partner = Partner.get_by_name(name)
+    def get_partner_by_permalink(permalink: str)-> Partner:
+        partner = Partner.get_by_permalink(permalink)
 
         if partner is None:
-            raise NotFound(sub_code="PARTNER_NOT_FOUND", name=name)
-
+            raise NotFound(
+                sub_code="PARTNER_NOT_FOUND", permalink=permalink
+            )     
+      
         return partner
+
     
     @staticmethod
     def create_partner(data):
@@ -58,6 +61,7 @@ class PartnerService:
             link_x=data.get("link_x"),
             link_instagram=data.get("link_instagram"),
             current_projects=data.get("current_projects"),
+            permalink=data.get("permalink"),
             website_links=json.dumps(website_links)
         )
         new_partner.create()
