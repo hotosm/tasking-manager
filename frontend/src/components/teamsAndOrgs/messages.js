@@ -79,6 +79,10 @@ export default defineMessages({
     id: 'management.partner.resources.logYourVolunteerHours',
     defaultMessage: 'Log your volunteer hours',
   },
+  resourcesButton:{
+    id: 'management.edit.resourcesButton',
+    defaultMessage: 'Resources link',
+  },
   edit: {
     id: 'management.members.edit',
     defaultMessage: 'Edit',

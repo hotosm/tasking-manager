@@ -5,7 +5,6 @@ import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
 import toast from 'react-hot-toast';
-import { useQueryParams, BooleanParam } from 'use-query-params';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -28,18 +27,10 @@ export function ListPartners() {
   const [partners, setPartners] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [query, setQuery] = useQueryParams({
-    showAll: BooleanParam,
-  });
-  const [userOrgsOnly, setUserOrgsOnly] = useState(Boolean(!query.showAll));
+
 
   useEffect(() => {
-    setQuery({ ...query, showAll: userOrgsOnly === false ? true : undefined });
-    //eslint-disable-next-line
-  }, [userOrgsOnly]);
-
-  useEffect(() => {
-        if (token && userDetails?.id) {
+     if (token && userDetails?.id) {
     setLoading(true);
     fetchLocalJSONAPI(`partners/`, token)
       .then((data) => {
@@ -48,14 +39,10 @@ export function ListPartners() {
       })
       .catch((err) => setError(err));
         }
-  }, [userDetails, token, userOrgsOnly]);
+  }, [userDetails, token]);
 
   return (
-    <PartnersManagement
-      partners={partners}
-      isAdmin={userDetails.role === 'ADMIN'}
-      isPartnersFetched={!loading && !error}
-    />
+    <PartnersManagement partners={partners} isAdmin={true} isPartnersFetched={!loading && !error} />
   );
 }
 
@@ -65,26 +52,22 @@ export function CreatePartner() {
   const token = useSelector((state) => state.auth.token);
   const [error, setError] = useState(null);
   const createPartner = (payload) => {
-    console.log(payload);
-    if (payload.name.length > 3 && payload.primary_hashtag.length > 3) {
-      pushToLocalJSONAPI('partners/', JSON.stringify(payload), token, 'POST')
-        .then((result) => {
-          toast.success(
-            <FormattedMessage
-              {...messages.entityCreationSuccess}
-              values={{
-                entity: 'partner',
-              }}
-            />,
-          );
-          navigate('/manage/partners');
-        })
-        .catch((err) => {
-          setError(err.message);
-        });
-    } else {
-      setError('Name and Primary_hashtag are required');
-    }
+
+    pushToLocalJSONAPI('partners/', JSON.stringify(payload), token, 'POST')
+      .then((result) => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'partner',
+            }}
+          />,
+        );
+        navigate('/manage/partners');
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
   };
 
   return (
@@ -163,7 +146,7 @@ export function EditPartners() {
   const navigate = useNavigate();
 
   const updatePartner = (payload) => {
-    console.log(payload)
+
     const updatedPayload = { ...payload };
     for (const key in partner) {
       if (!(key in payload)) {
