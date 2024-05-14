@@ -9,7 +9,6 @@ import { useQueryParams, BooleanParam } from 'use-query-params';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
-import data from '../utils/result.json';
 import {
   PartnersForm,
   CreatePartnersInfo,
@@ -26,9 +25,6 @@ export function ListPartners() {
   useSetTitleTag('Manage partners');
   const token = useSelector((state) => state.auth.token);
   const userDetails = useSelector((state) => state.auth.userDetails);
-  const isOrgManager = useSelector(
-    (state) => state.auth.organisations && state.auth.organisations.length > 0,
-  );
   const [partners, setPartners] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,31 +39,20 @@ export function ListPartners() {
   }, [userOrgsOnly]);
 
   useEffect(() => {
-    if (true) {
-      setLoading(true);
-      setPartners(data);
-      setLoading(false);
-    }
-  }, [userDetails, token, userOrgsOnly]);
-
-  useEffect(() => {
-    if (token && userDetails?.id) {
-      setLoading(true);
-      fetchLocalJSONAPI(`partners/`, true)
-        .then((data) => {
-          setPartners(data);
-          setLoading(false);
-        })
-        .catch((err) => setError(err));
-    }
+        if (token && userDetails?.id) {
+    setLoading(true);
+    fetchLocalJSONAPI(`partners/`, token)
+      .then((data) => {
+        setPartners(data);
+        setLoading(false);
+      })
+      .catch((err) => setError(err));
+        }
   }, [userDetails, token, userOrgsOnly]);
 
   return (
     <PartnersManagement
       partners={partners}
-      userOrgsOnly={userOrgsOnly}
-      setUserOrgsOnly={setUserOrgsOnly}
-      isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
       isAdmin={userDetails.role === 'ADMIN'}
       isPartnersFetched={!loading && !error}
     />
@@ -80,6 +65,7 @@ export function CreatePartner() {
   const token = useSelector((state) => state.auth.token);
   const [error, setError] = useState(null);
   const createPartner = (payload) => {
+    console.log(payload);
     if (payload.name.length > 3 && payload.primary_hashtag.length > 3) {
       pushToLocalJSONAPI('partners/', JSON.stringify(payload), token, 'POST')
         .then((result) => {
@@ -175,19 +161,27 @@ export function EditPartners() {
   const [errorMessage, setErrorMessage] = useState(null);
   useSetTitleTag(`Edit ${partner.name}`);
   const navigate = useNavigate();
+
   const updatePartner = (payload) => {
+    console.log(payload)
+    const updatedPayload = { ...payload };
+    for (const key in partner) {
+      if (!(key in payload)) {
+        updatedPayload[key] = '';
+      }
+    }
     const onSuccess = () => {
       navigate('/manage/partners');
       setErrorMessage(null);
     };
     const onFailure = (error) => setErrorMessage(error.message);
-    putEntity(`partners/${id}/`, 'partner', payload, token, onSuccess, onFailure);
+    putEntity(`partners/${id}/`, 'partner', updatedPayload, token, onSuccess, onFailure);
   };
   useEffect(() => {
     if (error) {
       navigate('*');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
   return (
@@ -205,7 +199,7 @@ export function EditPartners() {
               <h3 className="f2 ttu blue-dark fw7 ma0 barlow-condensed v-mid dib">
                 <FormattedMessage {...messages.managePartner} />
               </h3>
-              <DeleteModal id={id} name={id} type="partners" />
+              <DeleteModal id={id} name={partner.name} type="partners" />
             </div>
             <div className="w-100 mt4 fl">
               <PartnersForm

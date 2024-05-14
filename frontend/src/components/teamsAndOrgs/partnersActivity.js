@@ -3,7 +3,7 @@ import ReactPlaceholder from 'react-placeholder';
 import PartnersProgresBar from './partnersProgresBar';
 import messages from './messages';
 import { FormattedMessage } from 'react-intl';
-export const Activity = ({ activity }) => {
+export const Activity = () => {
   const [data, setData] = useState(null);
 
   const fetchData = async () => {
@@ -45,24 +45,23 @@ export const Activity = ({ activity }) => {
 
     const formattedData = Object.entries(groupedData).map(([action, values]) => ({
       label: action,
-      data: sortBySecondaryDescending(values), 
+      data: sortBySecondaryDescending(values),
     }));
-  
+
     return formattedData;
   };
-  
-  
+
   function sortBySecondaryDescending(data) {
     return data.sort((a, b) => b.secondary - a.secondary);
-  };
+  }
 
   useEffect(() => {
     fetchData();
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <ReactPlaceholder showLoadingAnimation={true} rows={26} ready={data} className="pv3 ph2 ph4-ns">
+    <ReactPlaceholder showLoadingAnimation={true} rows={26} ready={data} className="pv3  ph4-ns ">
       <div className="graphics-container">
         {data &&
           data.map((series, index) => {
@@ -75,9 +74,9 @@ export const Activity = ({ activity }) => {
                 <h3>
                   <FormattedMessage {...messages[series.label]} />
                 </h3>
-                <div style={{ maxHeight: 400, overflowY: 'scroll',overflowX:'hidden' }}>
+                <div style={{ maxHeight: 400, overflowY: 'scroll', overflowX: 'hidden' }}>
                   {series.data.map((dataItem, dataIndex) => (
-                    <>
+                    <div key={dataIndex}>
                       <div className="blue-grey">
                         {dataItem ? (
                           <div
@@ -109,7 +108,7 @@ export const Activity = ({ activity }) => {
                           percentValidated={(dataItem.secondary * 100) / maxValue}
                         />
                       </div>
-                    </>
+                    </div>
                   ))}
                 </div>
               </div>

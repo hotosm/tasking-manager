@@ -8,7 +8,6 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import viewsMessages from '../../views/messages';
 
-
 import { Management } from './management';
 
 import { Button, CustomButton } from '../button';
@@ -20,10 +19,7 @@ import { TextField } from '../formInputs';
 
 export function PartnersManagement({
   partners,
-  isOrgManager,
   isAdmin,
-  userOrgsOnly,
-  setUserOrgsOnly,
   isPartnersFetched,
 }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,33 +33,33 @@ export function PartnersManagement({
       <Management
         title={
           <FormattedMessage
-          {...messages.manage}
-          values={{ entity: <FormattedMessage {...messages.partners} /> }}
+            {...messages.manage}
+            values={{ entity: <FormattedMessage {...messages.partners} /> }}
           />
         }
-        showAddButton={true}
+        showAddButton={isAdmin}
         managementView={true}
         userOnlyLabel={<FormattedMessage {...messages.myPartners} />}
-        userOnly={true}
-        setUserOnly={true}
-        isAdmin={false}
-        >
+        userOnly={isAdmin}
+        setUserOnly={isAdmin}
+        isAdmin={isAdmin}
+      >
         <ReactPlaceholder
           showLoadingAnimation={true}
           customPlaceholder={nCardPlaceholders(4)}
           delay={10}
           ready={isPartnersFetched}
-          >
+        >
           <div style={{ margin: 'auto', marginBottom: 20 }} className="w-20-l w-25-m ">
             <TextField
               value={searchQuery}
               placeholderMsg={messages.searchPartners}
               onChange={onSearchInputChange}
               onCloseIconClick={() => setSearchQuery('')}
-              />
+            />
           </div>
           <div className="ph4 cards-container">
-            {isOrgManager ? (
+            {isAdmin ? (
               filteredPartners?.length ? (
                 filteredPartners.map((partner, index) => (
                   <PartnersCard details={partner} key={index} />
@@ -75,7 +71,7 @@ export function PartnersManagement({
               )
             ) : (
               <div>
-                <FormattedMessage {...messages.notAllowed} />
+                <FormattedMessage {...messages.notAllowedPartners} />
               </div>
             )}
           </div>
@@ -102,9 +98,9 @@ export function PartnersCard({ details }) {
       }}
     >
       <div style={{ flex: '2 1 100%', textAlign: 'center' }}>
-        <div style={{ flex: '1 1 100%' }}>
+        <div className="h3">
           {details.logo_url && (
-            <img src={details.logo_url} alt={`${details.name} logo`} className="w-40" />
+            <img src={details.logo_url} alt={`${details.name} logo`} className="h2 mt2" />
           )}
         </div>
         <div>
@@ -141,7 +137,6 @@ export function PartnersCard({ details }) {
 }
 
 export function PartnersForm(props) {
-
   return (
     <Form
       onSubmit={(values) => props.updatePartner(values)}
@@ -165,7 +160,6 @@ export function PartnersForm(props) {
               <form id="org-form" onSubmit={handleSubmit}>
                 <fieldset className="bn pa0" disabled={submitting}>
                   <PartnersInformation
-                    //hasSlug={props.partner && props.organisation.slug}
                     partnerWebpageLink={props.partner.website_links}
                     formState={values}
                   />
@@ -215,34 +209,14 @@ export function PartnersForm(props) {
   );
 }
 
-export function PartnersInformation({ hasSlug, formState, partnerWebpageLink }) {
-  const [webLinks, setWebLinks] = useState(
-    partnerWebpageLink ? partnerWebpageLink : [{ name: '', url: '' }],
-  );
-  const addWebLink = () => {
-    setWebLinks([...webLinks, { name: '', url: '' }]);
-  };
-  const handleNameChange = (event, index) => {
-    const updatedWebLinks = [...webLinks];
-    updatedWebLinks[index].name = event.target.value;
-    setWebLinks(updatedWebLinks);
-  };
+export function PartnersInformation({ hasSlug, setFormState, formState }) {
 
-  const handleLinkChange = (event, index) => {
-    const updatedWebLinks = [...webLinks];
-    updatedWebLinks[index].url = event.target.value;
-    setWebLinks(updatedWebLinks);
-  };
-  //eslint-disable-next-line
+  const webLinkKeys = Array.from({ length: 5 }, (_, i) => i + 1);
+    
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 p2 ph2 input-reset ba b--grey-light bg-transparent';
   const rowClass = 'flex flex-wrap justify-start';
   const containerClases = 'mh3 w-40-l w-100-sm  w-100';
-  const removeWebLink = (index) => {
-    const updatedWebLinks = [...webLinks];
-    updatedWebLinks.splice(index, 1);
-    setWebLinks(updatedWebLinks);
-  };
   return (
     <>
       <div className={rowClass}>
@@ -254,9 +228,27 @@ export function PartnersInformation({ hasSlug, formState, partnerWebpageLink }) 
         </div>
         <div className={containerClases}>
           <label className={labelClasses}>
+            <FormattedMessage {...messages.permalink} required />
+          </label>
+          <Field
+            name="permalink"
+            component="input"
+            type="text"
+            className={fieldClasses}
+            required
+          />
+        </div>
+        <div className={containerClases}>
+          <label className={labelClasses}>
             <FormattedMessage {...messages.primaryhashtag} />
           </label>
-          <Field name="primary_hashtag" component="input" type="text" className={fieldClasses} />
+          <Field
+            name="primary_hashtag"
+            component="input"
+            type="text"
+            className={fieldClasses}
+            required
+          />
         </div>
         <div className={containerClases}>
           <label className={labelClasses}>
@@ -291,33 +283,16 @@ export function PartnersInformation({ hasSlug, formState, partnerWebpageLink }) 
           <Field name="current_projects" component="input" type="text" className={fieldClasses} />
         </div>
         <div className="w-100">
-          <div className="flex mv2 mh3">
-            <label className={labelClasses}>
-              <FormattedMessage {...messages.website} />
-            </label>
-            <Button
-              disabled={webLinks.length > 4}
-              className="bg-blue-dark white ml1 v-mid br1 f5 bn pointer mh2"
-              onClick={(e) => {
-                e.stopPropagation();
-                addWebLink();
-              }}
-            >
-              <FormattedMessage {...messages.add} />
-            </Button>
-          </div>
-          {webLinks.map((webLink, index) => (
+          {webLinkKeys.map((webLink, index) => (
             <div className="w-100 flex flex-wrap">
               <div className={containerClases}>
                 <label className={labelClasses}>
                   <FormattedMessage {...messages.name} />
                 </label>
-                <input
+                <Field
                   name={`name_${index + 1}`}
                   component="input"
                   type="text"
-                  value={webLink.name}
-                  onChange={(e) => handleNameChange(e, index)}
                   className={fieldClasses}
                 />
               </div>
@@ -325,23 +300,12 @@ export function PartnersInformation({ hasSlug, formState, partnerWebpageLink }) 
                 <label className={labelClasses}>
                   <FormattedMessage {...messages.link} />
                 </label>
-                <input
+                <Field
                   name={`url_${index + 1}`}
                   component="input"
                   type="text"
-                  value={webLink.url}
-                  onChange={(e) => handleLinkChange(e, index)}
                   className={fieldClasses}
                 />
-                <Button
-                  className="bg-blue-dark white v-mid br1 f5 bn pointer mv2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeWebLink(index);
-                  }}
-                >
-                  <FormattedMessage {...messages.remove} />
-                </Button>
               </div>
             </div>
           ))}

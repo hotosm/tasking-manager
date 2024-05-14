@@ -18,16 +18,11 @@ export const PartnersStats = () => {
 
   const fetchData = async (name) => {
     try {
-      let hashtag = name.trim();
-      if (hashtag.startsWith('#')) {
-        hashtag = hashtag.slice(1);
-      }
-      hashtag = hashtag.toLowerCase();
-      const response = await fetch('https://stats.now.ohsome.org/api/stats/hashtags/' + hashtag);
+      const response = await fetch('https://stats.now.ohsome.org/api/stats/hashtags/' + name);
 
       if (response.ok) {
         const jsonData = await response.json();
-        if (jsonData.result) setPartnerStats(jsonData.result[hashtag]);
+        if (jsonData.result) setPartnerStats(jsonData.result[name]);
       } else {
         console.error('Error al obtener los datos:', response.statusText);
       }
@@ -38,7 +33,7 @@ export const PartnersStats = () => {
 
   useEffect(() => {
     if (partner) {
-      fetchData(partner.primary_hashtag);
+      fetchData(partner.permalink);
     }
   }, [partner]);
 
@@ -46,7 +41,7 @@ export const PartnersStats = () => {
     <ReactPlaceholder
       showLoadingAnimation={true}
       rows={26}
-      ready={!error && partnerStats !== null}
+      ready={!loading && !error && partnerStats !== null}
       className="pv3 ph2 ph4-ns"
     >
       <div style={{ flex: '2 1 100%', backgroundColor: '#F0EFEF', padding: '0px 20px' }}>

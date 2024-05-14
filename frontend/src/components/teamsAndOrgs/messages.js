@@ -8,6 +8,10 @@ export default defineMessages({
     id: 'management.messages.notAllowed',
     defaultMessage: 'You are not allowed to manage organizations.',
   },
+  notAllowedPartners: {
+    id: 'management.messages.notAllowedPartners',
+    defaultMessage: 'You are not allowed to manage partners.',
+  },
   imageUploadFailed: {
     id: 'management.messages.imageUpload.error',
     defaultMessage: 'The image upload failed.',
@@ -515,6 +519,10 @@ export default defineMessages({
   website: {
     id: 'management.fields.website',
     defaultMessage: 'Website',
+  },
+  permalink:{
+    id: 'management.titles.partner_permalink',
+    defaultMessage: 'Permalink',
   },
   primaryhashtag: {
     id: 'management.titles.partner_primaryhashtag',
