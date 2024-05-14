@@ -122,7 +122,7 @@ export function PartnersCard({ details }) {
         </Link>
       </div>
       <div style={{ flex: '1 1 100%', textAlign: 'center', paddingTop: '1rem' }}>
-        <Link to={`/partners/${details.id}/stats/`} style={{ textDecoration: 'none' }}>
+        <Link to={`/partners/${details.permalink}/stats/`} style={{ textDecoration: 'none' }}>
           <CustomButton
             style={{ backgroundColor: '#e2e2e2' }}
             className="blue-dark ba b--grey-light pa2 br1 f5 pointer"
