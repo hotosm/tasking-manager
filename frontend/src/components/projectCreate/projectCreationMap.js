@@ -7,7 +7,9 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import { useDropzone } from 'react-dropzone';
+
 import { mapboxLayerDefn } from '../projects/projectsMap';
+import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
 import {
   MAPBOX_TOKEN,
@@ -31,7 +33,7 @@ try {
 
 const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step, uploadFile }) => {
   const mapRef = createRef();
-  const locale = useSelector((state) => state.preferences['locale']);
+  const mapboxSupportedLanguage = useMapboxSupportedLanguage();
   const token = useSelector((state) => state.auth.token);
   const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(true);
   const [aoiCanBeActivated, setAOICanBeActivated] = useState(false);
@@ -85,7 +87,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
       attributionControl: false,
     })
       .addControl(new mapboxgl.AttributionControl({ compact: false }))
-      .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
+      .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage }))
       .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }));
     if (MAPBOX_TOKEN) {
       map.addControl(
@@ -94,7 +96,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
           mapboxgl: mapboxgl,
           marker: false,
           collapsed: true,
-          language: locale.substr(0, 2) || 'en',
+          language: mapboxSupportedLanguage,
         }),
         'top-right',
       );
