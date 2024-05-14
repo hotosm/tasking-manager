@@ -83,11 +83,20 @@ class PartnerService:
         partner = Partner.get_by_id(partner_id)
         if not partner:
             raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
+        
+        website_links = []
+        for key, value in data.items():
+            if key.startswith("name_"):
+                index = key.split("_")[1]
+                url_key = f"url_{index}"
+                if url_key in data and value.strip():
+                    website_links.append({"name": value, "url": data[url_key]})
 
         for key, value in data.items():
-            if hasattr(partner, key):
+            if  hasattr(partner, key):
                 setattr(partner, key, value)
-
+        
+        partner.website_links = json.dumps(website_links)
         partner.save()
         return partner
 
