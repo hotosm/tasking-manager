@@ -24,7 +24,7 @@ const supportedLocales = [
   { value: 'ko', label: '한국어' },
   // { value: 'mg', label: 'Malagasy' },
   // { value: 'ml', label: 'Malayalam' },
-  { value: 'nl', label: 'Nederlands' },
+  { value: 'nl_NL', label: 'Nederlands' },
   { value: 'pt', label: 'Português' },
   { value: 'pt-BR', label: 'Português (Brasil)' },
   // { value: 'ru', label: 'Русский язык' },

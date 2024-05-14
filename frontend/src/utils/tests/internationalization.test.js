@@ -31,7 +31,7 @@ describe('getSupportedLocale', () => {
   it('returns a generic supported locale if the variation is not supported', () => {
     expect(getSupportedLocale('en-gb')).toEqual({ label: 'English', value: 'en' });
     expect(getSupportedLocale('es-AR')).toEqual({ label: 'Español', value: 'es' });
-    expect(getSupportedLocale('nl-NL')).toEqual({ label: 'Nederlands', value: 'nl' });
+    expect(getSupportedLocale('nl_NL')).toEqual({ label: 'Nederlands', value: 'nl_NL' });
   });
   it('returns the default locale if the code is not supported and does not have a variation', () => {
     expect(getSupportedLocale('xt')).toEqual({ label: 'English', value: 'en' });
