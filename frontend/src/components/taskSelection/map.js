@@ -11,6 +11,7 @@ import messages from './messages';
 import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import lock from '../../assets/img/lock.png';
 import redlock from '../../assets/img/red-lock.png';
+import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
 let lockIcon = new Image(17, 20);
 lockIcon.src = lock;
@@ -42,7 +43,7 @@ export const TasksMap = ({
 }) => {
   const intl = useIntl();
   const mapRef = createRef();
-  const locale = useSelector((state) => state.preferences['locale']);
+  const mapboxSupportedLanguage = useMapboxSupportedLanguage();
   const authDetails = useSelector((state) => state.auth.userDetails);
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
 
@@ -62,7 +63,7 @@ export const TasksMap = ({
           attributionControl: false,
         })
           .addControl(new mapboxgl.AttributionControl({ compact: false }))
-          .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
+          .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage })),
       );
 
     return () => {
