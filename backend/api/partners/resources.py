@@ -7,7 +7,37 @@ from backend.services.partner_service import PartnerServiceError
 
 @token_auth.login_required
 class PartnerRestAPI(Resource):
-    def get(self, partner_id): 
+    def get(self, partner_id):
+        """
+        Get partner by id
+        ---
+        tags:
+          - partners
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: partner_id
+              in: path
+              description: The id of the partner
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Partner found
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: Partner not found
+            500:
+                description: Internal Server Error
+        """
         partner = PartnerService.get_partner_by_id(partner_id)
         if partner:
             partner_dict = partner.as_dto().to_primitive()
@@ -22,6 +52,44 @@ class PartnerRestAPI(Resource):
             return {"message": "Partner not found"}, 404
     
     def delete(self, partner_id):
+        """
+        Deletes an existing partner
+        ---
+        tags:
+          - partners
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              required: true
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language partner is requesting
+              type: string
+              required: true
+              default: en
+            - name: partner_id
+              in: path
+              description: Partner ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Partner deleted successfully
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
+            404:
+                description: Partner not found
+            500:
+                description: Internal Server Error
+        """
         try:
             PartnerService.delete_partner(partner_id)
             return {"Success": "Partner deleted"}, 200
@@ -30,6 +98,64 @@ class PartnerRestAPI(Resource):
             return {"message": str(e)}, 404
         
     def put(self, partner_id):
+        """
+        Updates an existing partner
+        ---
+        tags:
+          - partners
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              required: true
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language partner is requesting
+              type: string
+              required: true
+              default: en
+            - name: partner_id
+              in: path
+              description: Partner ID
+              required: true
+              type: integer
+            - in: body
+              name: body
+              required: true
+              description: JSON object for updating a Partner
+              schema:
+                properties:
+                    logo:
+                        type: string
+                        example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
+                    url:
+                        type: string
+                        example: https://hotosm.org
+                    website_links:
+                        type: array
+                        items:
+                            type: string
+                        default: [
+                            
+                        ]
+        responses:
+            200:
+                description: Partner updated successfully
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
+            404:
+                description: Partner not found
+            409:
+                description: Resource duplication
+            500:
+                description: Internal Server Error
+        """
         try:
             data = request.json
             updated_partner = PartnerService.update_partner(partner_id, data)
@@ -42,6 +168,19 @@ class PartnerRestAPI(Resource):
 @token_auth.login_required
 class PartnersAllRestAPI(Resource):
     def get(self):
+        """
+        Get all active partners
+        ---
+        tags:
+          - partners
+        produces:
+          - application/json
+        responses:
+            200:
+                description: All Partners returned successfully
+            500:
+                description: Internal Server Error
+        """
         partner_ids = PartnerService.get_all_partners()
         partners = []
         for partner_id in partner_ids:
@@ -57,6 +196,56 @@ class PartnersAllRestAPI(Resource):
         return partners, 200
     
     def post(self):
+        """
+        Creates a new partner
+        ---
+        tags:
+          - partners
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              required: true
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language partner is requesting
+              type: string
+              required: true
+              default: en
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating a new Partner
+              schema:
+                properties:
+                    logo:
+                        type: string
+                        example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
+                    url:
+                        type: string
+                        example: https://hotosm.org
+                    website_links:
+                        type: array
+                        items:
+                            type: string
+                        default: [
+                        ]
+        responses:
+            201:
+                description: New partner created successfully
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
+            409:
+                description: Resource duplication
+            500:
+                description: Internal Server Error
+        """
         try: 
             data = request.json
             if data:
@@ -72,6 +261,35 @@ class PartnersAllRestAPI(Resource):
 
 class PartnerPermalinkRestAPI(Resource):
     def get(self, permalink):
+        """
+        Get partner by permalink
+        ---
+        tags:
+          - partners
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: permalink
+              in: path
+              description: The id of the partner
+              required: true
+              type: integer
+        responses:
+            200:
+                description: Partner found
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: Partner not found
+            500:
+                description: Internal Server Error
+        """
         partner = PartnerService.get_partner_by_permalink(permalink)
 
         if partner:
