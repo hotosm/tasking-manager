@@ -14,7 +14,17 @@ from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 import requests
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Table, BigInteger, Index
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    ForeignKey,
+    Boolean,
+    Table,
+    BigInteger,
+    Index,
+)
 from sqlalchemy.orm import relationship, backref
 from backend.exceptions import NotFound
 from backend.models.dtos.campaign_dto import CampaignDTO
@@ -64,6 +74,7 @@ from backend.services.grid.grid_service import GridService
 from backend.models.postgis.interests import Interest, project_interests
 import os
 from backend.db import Base, get_session
+
 session = get_session()
 
 # Secondary table defining many-to-many join for projects that were favorited by users.
@@ -92,9 +103,7 @@ class ProjectTeams(Base):
     project = relationship(
         "Project", backref=backref("teams", cascade="all, delete-orphan")
     )
-    team = relationship(
-        Team, backref=backref("projects", cascade="all, delete-orphan")
-    )
+    team = relationship(Team, backref=backref("projects", cascade="all, delete-orphan"))
 
     def create(self):
         """Creates and saves the current model to the DB"""
@@ -142,9 +151,7 @@ class Project(Base):
         Boolean, default=False
     )  # Force users to edit at random to avoid mapping "easy" tasks
     private = Column(Boolean, default=False)  # Only allowed users can validate
-    featured = Column(
-        Boolean, default=False
-    )  # Only PMs can set a project as featured
+    featured = Column(Boolean, default=False)  # Only PMs can set a project as featured
     changeset_comment = Column(String)
     osmcha_filter_id = Column(
         String
@@ -380,7 +387,9 @@ class Project(Base):
         :return: Project if found otherwise None
         """
         result = await session.execute(
-            sa.select(Project).filter_by(id=project_id).options(
+            sa.select(Project)
+            .filter_by(id=project_id)
+            .options(
                 orm.noload(Project.tasks),
                 orm.noload(Project.messages),
                 orm.noload(Project.project_chat),
@@ -388,7 +397,6 @@ class Project(Base):
         )
         project = result.scalars().first()
         return project
-    
 
     def update(self, project_dto: ProjectDTO):
         """Updates project from DTO"""
@@ -651,7 +659,8 @@ class Project(Base):
                 stats_dto.total_time_spent += stats_dto.time_spent_mapping
 
         query = (
-            session.query(TaskHistory).with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 func.date_trunc("minute", TaskHistory.action_date).label("trn"),
                 func.max(TaskHistory.action_text).label("tm"),
             )
@@ -689,9 +698,7 @@ class Project(Base):
         )
         project_stats.total_tasks = self.total_tasks
         project_stats.total_comments = (
-            session.query(ProjectChat)
-            .filter(ProjectChat.project_id == self.id)
-            .count()
+            session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
         )
         project_stats.percent_mapped = self.calculate_tasks_percent("mapped")
         project_stats.percent_validated = self.calculate_tasks_percent("validated")
@@ -764,7 +771,8 @@ class Project(Base):
         # Check that averages are non-zero.
         if len(actions) != 0:
             zoom_levels = (
-                session.query(Task).with_entities(Task.zoom.distinct())
+                session.query(Task)
+                .with_entities(Task.zoom.distinct())
                 .filter(Task.project_id == self.id)
                 .all()
             )
@@ -775,7 +783,8 @@ class Project(Base):
         if None in zoom_levels:
             is_square = False
         sq = (
-            session.query(TaskHistory).with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 Task.zoom,
                 TaskHistory.action,
                 (
@@ -946,23 +955,22 @@ class Project(Base):
 
     @staticmethod
     async def get_project_total_contributions(project_id: int, session) -> int:
-        project_contributors_count = await (
-            session.scalar(sa.select(TaskHistory.user_id, sa.func.count()).select_from(TaskHistory)
+        project_contributors_count = await session.scalar(
+            sa.select(TaskHistory.user_id, sa.func.count())
+            .select_from(TaskHistory)
             .filter(
                 TaskHistory.project_id == project_id, TaskHistory.action != "COMMENT"
             )
             .distinct(TaskHistory.user_id)
             .group_by(TaskHistory.user_id)
-            )
         )
 
         return project_contributors_count
 
-    def get_aoi_geometry_as_geojson(self):
-        from backend.db import engine
+    async def get_aoi_geometry_as_geojson(self, session):
         """Helper which returns the AOI geometry as a geojson object"""
-        with engine.connect() as conn:
-            aoi_geojson = conn.execute(self.geometry.ST_AsGeoJSON()).scalar()
+        aoi_geojson = await session.execute(self.geometry.ST_AsGeoJSON())
+        aoi_geojson = aoi_geojson.scalar()
         return geojson.loads(aoi_geojson)
 
     def get_project_teams(self):
@@ -985,7 +993,8 @@ class Project(Base):
         """Get count of Locked tasks as a proxy for users who are currently active on the project"""
         result = await session.execute(
             sa.select(func.count()).select_from(
-                sa.select(Task.locked_by).distinct(Task.locked_by)
+                sa.select(Task.locked_by)
+                .distinct(Task.locked_by)
                 .filter(
                     Task.task_status.in_(
                         (
@@ -999,15 +1008,15 @@ class Project(Base):
         )
         count = result.scalar()
         return count
-    
-    def _get_project_and_base_dto(self):
+
+    async def _get_project_and_base_dto(self, session):
         """Populates a project DTO with properties common to all roles"""
         base_dto = ProjectDTO()
         base_dto.project_id = self.id
         base_dto.project_status = ProjectStatus(self.status).name
         base_dto.default_locale = self.default_locale
         base_dto.project_priority = ProjectPriority(self.priority).name
-        base_dto.area_of_interest = self.get_aoi_geometry_as_geojson()
+        base_dto.area_of_interest = await self.get_aoi_geometry_as_geojson(session)
         base_dto.aoi_bbox = shape(base_dto.area_of_interest).bounds
         base_dto.mapping_permission = MappingPermission(self.mapping_permission).name
         base_dto.validation_permission = ValidationPermission(
@@ -1029,8 +1038,9 @@ class Project(Base):
         base_dto.license_id = self.license_id
         base_dto.created = self.created
         base_dto.last_updated = self.last_updated
-        base_dto.author = User.get_by_id(self.author_id).username
-        base_dto.active_mappers = Project.get_active_mappers(self.id)
+        user = await User.get_by_id(self.author_id, session)
+        base_dto.author = user.username
+        base_dto.active_mappers = Project.get_active_mappers(self.id, session)
         base_dto.task_creation_mode = TaskCreationMode(self.task_creation_mode).name
 
         base_dto.percent_mapped = self.calculate_tasks_percent("mapped")
@@ -1096,11 +1106,15 @@ class Project(Base):
 
         return self, base_dto
 
-    def as_dto_for_mapping(
-        self, authenticated_user_id: int = None, locale: str = "en", abbrev: bool = True
+    async def as_dto_for_mapping(
+        self,
+        authenticated_user_id: int = None,
+        locale: str = "en",
+        abbrev: bool = True,
+        session=None,
     ) -> Optional[ProjectDTO]:
         """Creates a Project DTO suitable for transmitting to mapper users"""
-        project, project_dto = self._get_project_and_base_dto()
+        project, project_dto = await self._get_project_and_base_dto(session)
         # if abbrev is False:
         #     project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(
         #         self.id, None
@@ -1132,13 +1146,19 @@ class Project(Base):
         return project_tasks
 
     @staticmethod
-    def get_all_countries():
-        query = (
-            session.query(func.unnest(Project.country).label("country"))
+    async def get_all_countries(session):
+        # query = (
+        #     session.query(func.unnest(Project.country).label("country"))
+        #     .distinct()
+        #     .order_by("country")
+        #     .all()
+        # )
+        result = await session.execute(
+            sa.select(func.unnest(Project.country).label("country"))
             .distinct()
             .order_by("country")
-            .all()
         )
+        query = result.scalars().all()
         tags_dto = TagsDTO()
         tags_dto.tags = [r[0] for r in query]
         return tags_dto
