@@ -51,6 +51,7 @@ async def get_project(
     project_id: int,
     as_file: str = "False",
     abbreviated: bool = False,
+    session: Session = Depends(get_session),
 ):
     """
     Get a specified project including it's area
@@ -110,11 +111,12 @@ async def get_project(
             if abbreviated
             else False
         )
-        project_dto = ProjectService.get_project_dto_for_mapper(
+        project_dto = await ProjectService.get_project_dto_for_mapper(
             project_id,
             authenticated_user_id,
             request.headers.get("accept-language"),
             abbreviated,
+            session,
         )
 
         if project_dto:

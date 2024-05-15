@@ -56,7 +56,7 @@ class DatabaseSessionManager:
             await session.close()
 
 
-sessionmanager = DatabaseSessionManager(settings.SQLALCHEMY_DATABASE_URI, {"echo":True, "future":True}), 
+sessionmanager = DatabaseSessionManager(settings.SQLALCHEMY_DATABASE_URI, {"echo":False, "future":True}), 
 
 
 async def get_session():

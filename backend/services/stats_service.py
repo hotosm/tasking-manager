@@ -1,5 +1,6 @@
 from cachetools import TTLCache, cached
 from datetime import date, timedelta
+import sqlalchemy as sa
 from sqlalchemy import func, desc, cast, extract, or_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
@@ -363,7 +364,7 @@ class StatsService:
 
     @staticmethod
     @cached(homepage_stats_cache)
-    def get_homepage_stats(abbrev=True) -> HomePageStatsDTO:
+    def get_homepage_stats(abbrev=True, session=None) -> HomePageStatsDTO:
         """Get overall TM stats to give community a feel for progress that's being made"""
         dto = HomePageStatsDTO()
         dto.total_projects = session.query(Project).with_entities(
