@@ -51,8 +51,8 @@ class ProjectServiceError(Exception):
 
 class ProjectService:
     @staticmethod
-    def get_project_by_id(project_id: int) -> Project:
-        project = Project.get(project_id)
+    async def get_project_by_id(project_id: int, session) -> Project:
+        project = await Project.get(project_id, session)
         if project is None:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
@@ -195,8 +195,8 @@ class ProjectService:
         return contribs_dto
 
     @staticmethod
-    def get_project_dto_for_mapper(
-        project_id, current_user_id, locale="en", abbrev=False
+    async def get_project_dto_for_mapper(
+        project_id, current_user_id, locale="en", abbrev=False, session=None
     ) -> ProjectDTO:
         """
         Get the project DTO for mappers
@@ -204,10 +204,10 @@ class ProjectService:
         :param locale: Locale the mapper has requested
         :raises ProjectServiceError, NotFound
         """
-        project = ProjectService.get_project_by_id(project_id)
+        project = await ProjectService.get_project_by_id(project_id, session)
         # if project is public and is not draft, we don't need to check permissions
         if not project.private and not project.status == ProjectStatus.DRAFT.value:
-            return project.as_dto_for_mapping(current_user_id, locale, abbrev)
+            return await project.as_dto_for_mapping(current_user_id, locale, abbrev, session)
 
         is_allowed_user = True
         is_team_member = None

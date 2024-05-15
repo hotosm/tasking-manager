@@ -9,6 +9,7 @@ from backend.services.project_service import ProjectService
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(
     prefix="/users",
@@ -60,7 +61,7 @@ async def get(request: Request, user_id: int):
 # class UsersAllAPI():
 @router.get("/")
 @requires("authenticated")
-async def get(request: Request):
+async def get(request: Request, session: AsyncSession=Depends(get_session)):
     """
     Get paged list of all usernames
     ---
@@ -125,7 +126,7 @@ async def get(request: Request):
         # logger.error(f"Error validating request: {str(e)}")
         return {"Error": "Unable to fetch user list", "SubCode": "InvalidData"}, 400
 
-    users_dto = UserService.get_all_users(query)
+    users_dto = await UserService.get_all_users(query, session)
     return users_dto.model_dump(by_alias=True), 200
 
 # class UsersQueriesFavoritesAPI():

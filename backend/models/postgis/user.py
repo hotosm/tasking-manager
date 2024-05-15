@@ -1,4 +1,5 @@
 import geojson
+import sqlalchemy as sa
 from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Boolean, ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy import desc, func
@@ -87,11 +88,10 @@ class User(Base):
         session.commit()
 
     @staticmethod
-    def get_by_id(user_id: int):
-        from backend.db import get_session
-        session = get_session()
+    async def get_by_id(user_id: int, session):
         """Return the user for the specified id, or None if not found"""
-        return session.get(User, user_id)
+        result = await session.execute(sa.select(User).filter_by(id=user_id))
+        return result.scalars().first()
 
     @staticmethod
     def get_by_username(username: str):
@@ -138,7 +138,7 @@ class User(Base):
         session.commit()
 
     @staticmethod
-    def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
+    def get_all_users(query: UserSearchQuery, session) -> UserSearchDTO:
         """Search and filter all users"""
 
         # Base query that applies to all searches

@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.get("/statistics/")
-async def get(request: Request):
+async def get(request: Request, session=Depends(get_session)):
     """
     Get HomePage Stats
     ---
@@ -37,5 +37,5 @@ async def get(request: Request):
         else True
     )
 
-    stats = StatsService.get_homepage_stats(abbreviated)
+    stats = await StatsService.get_homepage_stats(abbreviated, session)
     return stats.model_dump(by_alias=True), 200

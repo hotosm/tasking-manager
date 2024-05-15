@@ -1,4 +1,5 @@
 from backend.services.tags_service import TagsService
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends
 from backend.db import get_session
 
@@ -11,7 +12,7 @@ router = APIRouter(
 
 # class CountriesRestAPI(Resource):
 @router.get("/")
-async def get():
+async def get(session: AsyncSession = Depends(get_session)):
       """
       Fetch all Country tags
       ---
@@ -25,5 +26,5 @@ async def get():
           500:
               description: Internal Server Error
       """
-      tags = TagsService.get_all_countries()
+      tags = await TagsService.get_all_countries(session)
       return tags.model_dump(by_alias=True), 200
