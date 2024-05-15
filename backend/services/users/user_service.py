@@ -495,9 +495,9 @@ class UserService:
         return dict(verificationEmailSent=verification_email_sent)
 
     @staticmethod
-    def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
+    async def get_all_users(query: UserSearchQuery, session) -> UserSearchDTO:
         """Gets paginated list of users"""
-        return User.get_all_users(query)
+        return await User.get_all_users(query, session)
 
     @staticmethod
     @cached(user_filter_cache)

@@ -353,6 +353,7 @@ class QueryPagination(Pagination):
         out = await session.scalar(sa.select(sa.func.count()).select_from(self._query_args["query"]))
         return out  # type: ignore[no-any-return]
     
+# @inherit_cache
 class CustomQuery(Select):
     async def paginate(
             self,
