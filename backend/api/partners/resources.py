@@ -1,9 +1,11 @@
 from flask_restful import Resource, request
 from backend.services.partner_service import PartnerService
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 from backend.services.partner_service import PartnerServiceError
 
 
+
+@token_auth.login_required
 class PartnerRestAPI(Resource):
     def get(self, partner_id): 
         partner = PartnerService.get_partner_by_id(partner_id)
@@ -37,7 +39,7 @@ class PartnerRestAPI(Resource):
             return {"message": str(e)}, 404
         
 
-
+@token_auth.login_required
 class PartnersAllRestAPI(Resource):
     def get(self):
         partner_ids = PartnerService.get_all_partners()
