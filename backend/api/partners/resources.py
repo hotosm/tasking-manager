@@ -5,8 +5,9 @@ from backend.services.partner_service import PartnerServiceError
 
 
 
-@token_auth.login_required
+
 class PartnerRestAPI(Resource):
+    @token_auth.login_required
     def get(self, partner_id):
         """
         Get partner by id
@@ -50,7 +51,8 @@ class PartnerRestAPI(Resource):
             return partner_dict, 200
         else:
             return {"message": "Partner not found"}, 404
-    
+
+    @token_auth.login_required
     def delete(self, partner_id):
         """
         Deletes an existing partner
@@ -96,7 +98,8 @@ class PartnerRestAPI(Resource):
         
         except PartnerServiceError as e:
             return {"message": str(e)}, 404
-        
+
+    @token_auth.login_required    
     def put(self, partner_id):
         """
         Updates an existing partner
@@ -165,8 +168,8 @@ class PartnerRestAPI(Resource):
             return {"message": str(e)}, 404
         
 
-@token_auth.login_required
 class PartnersAllRestAPI(Resource):
+    @token_auth.login_required
     def get(self):
         """
         Get all active partners
@@ -195,6 +198,7 @@ class PartnersAllRestAPI(Resource):
         
         return partners, 200
     
+    @token_auth.login_required
     def post(self):
         """
         Creates a new partner
