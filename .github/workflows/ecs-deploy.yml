@@ -63,13 +63,20 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
 
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
-
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::670261699094:role/Github-AWS-OIDC
+          role-session-name: gh-ci-ecs-deploy
 
       - name: Download task definition
         run: |
