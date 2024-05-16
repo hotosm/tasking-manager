@@ -17,11 +17,7 @@ import { nCardPlaceholders } from './organisationsPlaceholder';
 import { Alert } from '../alert';
 import { TextField } from '../formInputs';
 
-export function PartnersManagement({
-  partners,
-  isAdmin,
-  isPartnersFetched,
-}) {
+export function PartnersManagement({ partners, isAdmin, isPartnersFetched }) {
   const [searchQuery, setSearchQuery] = useState('');
   const onSearchInputChange = (e) => setSearchQuery(e.target.value);
   const filteredPartners = partners?.filter((partner) =>
@@ -38,11 +34,7 @@ export function PartnersManagement({
           />
         }
         showAddButton={isAdmin}
-        managementView={true}
         userOnlyLabel={<FormattedMessage {...messages.myPartners} />}
-        userOnly={isAdmin}
-        setUserOnly={isAdmin}
-        isAdmin={isAdmin}
       >
         <ReactPlaceholder
           showLoadingAnimation={true}
@@ -210,9 +202,8 @@ export function PartnersForm(props) {
 }
 
 export function PartnersInformation({ hasSlug, setFormState, formState }) {
-
   const webLinkKeys = Array.from({ length: 5 }, (_, i) => i + 1);
-    
+
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 p2 ph2 input-reset ba b--grey-light bg-transparent';
   const rowClass = 'flex flex-wrap justify-start';
@@ -230,13 +221,7 @@ export function PartnersInformation({ hasSlug, setFormState, formState }) {
           <label className={labelClasses}>
             <FormattedMessage {...messages.permalink} required />
           </label>
-          <Field
-            name="permalink"
-            component="input"
-            type="text"
-            className={fieldClasses}
-            required
-          />
+          <Field name="permalink" component="input" type="text" className={fieldClasses} required />
         </div>
         <div className={containerClases}>
           <label className={labelClasses}>

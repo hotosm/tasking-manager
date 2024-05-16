@@ -20,10 +20,9 @@ export const PartnersStats = () => {
   const fetchData = async (name) => {
     try {
       const response = await fetch('https://stats.now.ohsome.org/api/stats/hashtags/' + name);
-
       if (response.ok) {
         const jsonData = await response.json();
-        if (response.result !== undefined && Object.keys(response.result).length === 0)
+        if (jsonData.result !== undefined && Object.keys(jsonData.result).length !== 0)
           setPartnerStats(jsonData.result[name]);
       } else {
         console.error('Error al obtener los datos:', response.statusText);
