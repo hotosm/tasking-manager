@@ -78,7 +78,7 @@ jobs:
 
       - name: Download task definition
         run: |
-           aws ecs describe-task-definition --task-definition tasking-manager --query taskDefinition > task-definition.json
+           aws ecs describe-task-definition --task-definition tasking-manager-fastAPI --query taskDefinition > task-definition.json
 
       - name: Task definition rendition
         id: task-def
