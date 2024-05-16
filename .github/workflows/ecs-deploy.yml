@@ -86,8 +86,8 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
-#          image: ${{ env.IMAGE_NAME }}:fastapi
-          image: ${{ needs.build-push-image.outputs.imageid }} # WHY NOT WORKS?
+          image: ${{ env.IMAGE_NAME }}:fastapi
+          # image: ${{ needs.build-push-image.outputs.imageid }} # WHY NOT WORKS?
 
       - name: Deploy task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
