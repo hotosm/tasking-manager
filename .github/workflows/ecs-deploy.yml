@@ -9,7 +9,7 @@ env:
   REGISTRY: ghcr.io
   AWS_REGION: us-east-1
   ECS_CLUSTER: tasking-manager
-  ECS_SERVICE: tasking-manager-fastAPI
+  ECS_SERVICE: backend-fastAPI
   CONTAINER_NAME: backend
   IMAGE_NAME: hotosm/tasking-manager-backend # was ${{ github.repository }}
 
