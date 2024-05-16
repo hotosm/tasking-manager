@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
+import { NotFound } from './notFound';
 import { useFetch } from '../hooks/UseFetch';
 import { StatsSection } from '../components/teamsAndOrgs/partnersStats';
 import LearnMapNowLogo from '../assets/img/learn-MapNow.svg';
@@ -22,7 +23,8 @@ export const PartnersStats = () => {
 
       if (response.ok) {
         const jsonData = await response.json();
-        if (jsonData.result) setPartnerStats(jsonData.result[name]);
+        if (response.result !== undefined && Object.keys(response.result).length === 0)
+          setPartnerStats(jsonData.result[name]);
       } else {
         console.error('Error al obtener los datos:', response.statusText);
       }
@@ -32,7 +34,7 @@ export const PartnersStats = () => {
   };
 
   useEffect(() => {
-    if (partner) {
+    if (partner !== undefined && Object.keys(partner).length !== 0) {
       fetchData(partner.permalink);
     }
   }, [partner]);
@@ -41,50 +43,54 @@ export const PartnersStats = () => {
     <ReactPlaceholder
       showLoadingAnimation={true}
       rows={26}
-      ready={!loading && !error && partnerStats !== null}
+      ready={!loading}
       className="pv3 ph2 ph4-ns"
     >
-      <div style={{ flex: '2 1 100%', backgroundColor: '#F0EFEF', padding: '0px 20px' }}>
-        <div className="flex flex-column mt3 mt2-ns mb3 ml4">
-          <h1 className="f2 fw5  ttu barlow-condensed blue-dark dib mr3">{partner.name}</h1>
-          <span className="ttu blue-grey f6">{partner.primary_hashtag}</span>
-        </div>
-        <div className="w-100 ph4 pv1 blue-dark flex ">
-          <div className="flex w-100">
-            <StatsSection partner={partnerStats} />
+      {!loading && error ? (
+        <NotFound />
+      ) : (
+        <div style={{ flex: '2 1 100%', backgroundColor: '#F0EFEF', padding: '0px 20px' }}>
+          <div className="flex flex-column mt3 mt2-ns mb3 ml4">
+            <h1 className="f2 fw5  ttu barlow-condensed blue-dark dib mr3">{partner.name}</h1>
+            <span className="ttu blue-grey f6">{partner.primary_hashtag}</span>
           </div>
-        </div>
-
-        <div className="w-100 fl cf">
-          <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
-            <FormattedMessage {...messages.currentProjects} />
-          </h4>
-          <div className="w-100 pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container ">
-            <CurrentProjects currentProjects={partner.current_projects} />
-            <div className="w-25 flex flex-column items-center text-center mt2">
-              <FormattedMessage {...messages.newToMapping} />
-              <img src={LearnMapNowLogo} height="100" alt="" className="mv2" />
-              <Link to={`/learn/map/`}>
-                <Button className="bg-red ba b--red white pv2 ph3">
-                  <FormattedMessage {...messages.learnToMap} />
-                </Button>
-              </Link>
+          <div className="w-100 ph4 pv1 blue-dark flex ">
+            <div className="flex w-100">
+              <StatsSection partner={partnerStats} />
             </div>
           </div>
+
+          <div className="w-100 fl cf">
+            <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
+              <FormattedMessage {...messages.currentProjects} />
+            </h4>
+            <div className="w-100 pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container ">
+              <CurrentProjects currentProjects={partner.current_projects} />
+              <div className="w-25 flex flex-column items-center text-center mt2">
+                <FormattedMessage {...messages.newToMapping} />
+                <img src={LearnMapNowLogo} height="100" alt="" className="mv2" />
+                <Link to={`/learn/map/`}>
+                  <Button className="bg-red ba b--red white pv2 ph3">
+                    <FormattedMessage {...messages.learnToMap} />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div className="w-80 fl cf">
+            <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3 self-center">
+              <FormattedMessage {...messages.resources} />
+            </h4>
+            <Resources partner={partner} />
+          </div>
+          <div className="w-100 fl cf">
+            <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
+              <FormattedMessage {...messages.activity} />
+            </h4>
+            <Activity partner={partner} />
+          </div>
         </div>
-        <div className="w-80 fl cf">
-          <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3 self-center">
-            <FormattedMessage {...messages.resources} />
-          </h4>
-          <Resources partner={partner} />
-        </div>
-        <div className="w-100 fl cf">
-          <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
-            <FormattedMessage {...messages.activity} />
-          </h4>
-          <Activity partner={partner} />
-        </div>
-      </div>
+      )}
     </ReactPlaceholder>
   );
 };
