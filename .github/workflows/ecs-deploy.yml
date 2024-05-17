@@ -24,7 +24,7 @@ jobs:
       packages: write
 
     outputs:
-      image_name: ${{ steps.parse-image-meta.image_name }}
+      image_tags: ${{ steps.meta.outputs.tags }}
 
     steps:
       - uses: docker/setup-qemu-action@v3
@@ -56,13 +56,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Parse build step metadata
-        id: parse-image-meta
-        run: |
-          IMAGE=$( echo $BUILD_META | jq '."image.name"' )
-          echo "image_name=${IMAGE}" >> $GITHUB_OUTPUT
-        env:
-          BUILD_META: ${{ steps.build-push-image.outputs.Metadata }}
 
   deploy:
     name: Deploy to ECS
@@ -95,7 +88,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ needs.image-build-and-push.outputs.image_name }}
+          image: ${{ needs.image-build-and-push.outputs.image_tags }}
 
       - name: Deploy task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
