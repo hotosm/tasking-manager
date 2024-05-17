@@ -14,7 +14,7 @@ env:
   IMAGE_NAME: hotosm/tasking-manager-backend # was ${{ github.repository }}
 
 jobs:
-  build-push-image:
+  image-build-and-push:
     name: Build Images
     runs-on: ubuntu-latest
     environment: production
@@ -24,7 +24,7 @@ jobs:
       packages: write
 
     outputs:
-      imageid: ${{ steps.build-push-image.imageid }}
+      image_name: ${{ steps.parse-image-meta.image_name }}
 
     steps:
       - uses: docker/setup-qemu-action@v3
@@ -42,7 +42,6 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
           tags: |
             type=raw,value=fastapi
 
@@ -55,12 +54,18 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 
+      - id: parse-image-meta
+        run: |
+          meta=${{ steps.build-push-image.Metadata }}
+          echo image=$( echo $meta | jq '."image.name"' )
+          echo "image_name=${image}" >> $GITHUB_OUTPUT
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     environment: production
 
-    needs: build-push-image
+    needs: image-build-and-push
 
     permissions:
       contents: read
@@ -87,7 +92,7 @@ jobs:
           task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
 #          image: ${{ env.IMAGE_NAME }}:fastapi
-          image: ${{ needs.build-push-image.outputs.imageid }} # WHY NOT WORKS?
+          image: ${{ needs.build-push-image.outputs.image_name }}
 
       - name: Deploy task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
