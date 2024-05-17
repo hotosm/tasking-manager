@@ -60,7 +60,7 @@ jobs:
         id: parse-image-meta
         run: |
           meta=${{ steps.build-push-image.outputs.Metadata }}
-          i_name=${{ steps.build-push-image.outputs.Metadata.*."image.name" }}
+          i_name=${{ steps.build-push-image.outputs.Metadata.*.image.name }}
           i_name2=${{ steps.meta.outputs.tags[0] }}
           echo image=$( echo $meta | jq '."image.name"' )
           echo "image_name=${image}" >> $GITHUB_OUTPUT
