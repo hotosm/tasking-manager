@@ -36,7 +36,7 @@ WORKDIR /opt/python
 # Setup backend build-time dependencies
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive \
-    apt-get install --no-install-recommends -y -q \
+    apt-get -q install --no-install-recommends -y \
       build-essential \
       postgresql-server-dev-15 \
       python3-dev \
@@ -64,7 +64,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Setup backend runtime dependencies
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive \
-    apt-get install --no-install-recommends -y -q \
+    apt-get -q install --no-install-recommends -y \
         postgresql-client libgeos3.11.1 proj-bin curl && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY --from=build \
