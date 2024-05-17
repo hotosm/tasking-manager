@@ -59,8 +59,8 @@ jobs:
       - name: Parse build step metadata
         id: parse-image-meta
         run: |
-          image=$( echo $BUILD_META | jq '."image.name"' )
-          echo "image_name=${image}" >> $GITHUB_OUTPUT
+          IMAGE=$( echo $BUILD_META | jq '."image.name"' )
+          echo "image_name=${IMAGE}" >> $GITHUB_OUTPUT
         env:
           BUILD_META: ${{ steps.build-push-image.outputs.Metadata }}
 
@@ -95,7 +95,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ needs.build-push-image.outputs.image_name }}
+          image: ${{ needs.image-build-and-push.outputs.image_name }}
 
       - name: Deploy task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
