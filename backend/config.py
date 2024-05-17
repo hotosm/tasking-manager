@@ -4,12 +4,15 @@ from functools import lru_cache
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 from typing import Optional
+import json
 
 
 class Settings(BaseSettings):
     """Base class for configuration."""
 
     """ Most settings can be defined through environment variables. """
+    class Config:
+        ignored_types = (type(json),)
 
     # Load configuration from file
     load_dotenv(
@@ -68,7 +71,6 @@ class Settings(BaseSettings):
         from AWS Secrets Manager with the ENVVAR key `DB_CONNECT_PARAM_JSON`
         and forms a valid SQLALCHEMY DATABASE URI
         """
-        import json
 
         _params: dict = json.loads(os.getenv("DB_CONNECT_PARAM_JSON", None))
         SQLALCHEMY_DATABASE_URI: str = (
@@ -113,7 +115,6 @@ class Settings(BaseSettings):
         This section reads JSON formatted SMTP connection parameters passed
         from AWS Secrets Manager with the ENVVAR key `SMTP_CREDENTIALS`.
         """
-        import json
 
         _params: dict = json.loads(os.getenv("SMTP_CREDENTIALS", None))
         MAIL_SERVER: str = _params.get("SMTP_HOST", None)
@@ -209,7 +210,6 @@ class Settings(BaseSettings):
         This section reads JSON formatted OAuth2 app credentials passed
         from AWS Secrets Manager with the ENVVAR key `OAUTH2_APP_CREDENTIALS`.
         """
-        import json
 
         _params: dict = json.loads(os.getenv("OAUTH2_APP_CREDENTIALS", None))
         OAUTH_CLIENT_ID: str = _params.get("CLIENT_ID", None)
@@ -234,7 +234,6 @@ class Settings(BaseSettings):
         This section reads JSON formatted Image Upload credentials passed
         from AWS Secrets Manager with the ENVVAR key `IMAGE_UPLOAD_CREDENTIALS`.
         """
-        import json
 
         _params: dict = json.loads(os.getenv("IMAGE_UPLOAD_CREDENTIALS"), None)
         IMAGE_UPLOAD_API_KEY: str = _params.get("IMAGE_UPLOAD_API_KEY", None)
