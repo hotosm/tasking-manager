@@ -59,10 +59,12 @@ jobs:
       - name: Parse build step metadata
         id: parse-image-meta
         run: |
-          i_name2=${{ steps.meta.outputs.tags[0] }}
-          meta=${{ steps.build-push-image.outputs.Metadata }}
-          echo image=$( echo $meta | jq '."image.name"' )
+          echo $IMAGE_TAG
+          echo image=$( echo $BUILD_META | jq '."image.name"' )
           echo "image_name=${image}" >> $GITHUB_OUTPUT
+        env:
+          IMAGE_TAG: ${{ steps.meta.outputs.tags[0] }}
+          BUILD_META: ${{ steps.build-push-image.outputs.Metadata }}
 
   deploy:
     name: Deploy to ECS
