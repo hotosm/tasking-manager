@@ -15,7 +15,7 @@ env:
 
 jobs:
   image-build-and-push:
-    name: Build Images
+    name: Build Container Images
     runs-on: ubuntu-latest
     environment: production
 
@@ -50,18 +50,20 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: "{{defaultContext}}"
+          target: prod
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 
-      - id: parse-image-meta
+      - name: Parse build step metadata
+        id: parse-image-meta
         run: |
           meta=${{ steps.build-push-image.Metadata }}
           echo image=$( echo $meta | jq '."image.name"' )
           echo "image_name=${image}" >> $GITHUB_OUTPUT
 
   deploy:
-    name: Deploy
+    name: Deploy to ECS
     runs-on: ubuntu-latest
     environment: production
 
@@ -91,8 +93,8 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
-#          image: ${{ env.IMAGE_NAME }}:fastapi
           image: ${{ needs.build-push-image.outputs.image_name }}
+#          image: ${{ env.IMAGE_NAME }}:fastapi
 
       - name: Deploy task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
