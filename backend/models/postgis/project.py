@@ -414,7 +414,7 @@ class Project(Base):
         project = result.scalars().first()
         return project
 
-    def update(self, project_dto: ProjectDTO):
+    async def update(self, project_dto: ProjectDTO, session):
         """Updates project from DTO"""
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
@@ -1063,16 +1063,16 @@ class Project(Base):
         base_dto.percent_validated = self.calculate_tasks_percent("validated")
         base_dto.percent_bad_imagery = self.calculate_tasks_percent("bad_imagery")
 
-        base_dto.project_teams = [
-            ProjectTeamDTO(
-                dict(
-                    team_id=t.team.id,
-                    team_name=t.team.name,
-                    role=TeamRoles(t.role).name,
-                )
-            )
-            for t in self.teams
-        ]
+        # base_dto.project_teams = [
+        #     ProjectTeamDTO(
+        #         dict(
+        #             team_id=t.team.id,
+        #             team_name=t.team.name,
+        #             role=TeamRoles(t.role).name,
+        #         )
+        #     )
+        #     for t in self.teams
+        # ]
 
         if self.custom_editor:
             base_dto.custom_editor = self.custom_editor.as_dto()

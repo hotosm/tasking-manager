@@ -205,6 +205,7 @@ class ProjectService:
         :raises ProjectServiceError, NotFound
         """
         project = await ProjectService.get_project_by_id(project_id, session)
+        print(project, "=========================")
         # if project is public and is not draft, we don't need to check permissions
         if not project.private and not project.status == ProjectStatus.DRAFT.value:
             return await project.as_dto_for_mapping(current_user_id, locale, abbrev, session)
