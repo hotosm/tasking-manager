@@ -5,6 +5,7 @@
   "private": false,
   "dependencies": {
     "@hotosm/id": "^2.21.1",
+    "@hotosm/underpass-ui": "^0.0.4",
     "@hotosm/iso-countries-languages": "^1.1.2",
     "@hotosm/underpass-ui": "^0.0.4",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
