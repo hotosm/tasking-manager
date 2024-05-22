@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useCallback, Suspense, useEffect } from 'react';
+import { lazy, useState, useLayoutEffect, useCallback, Suspense, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useQueryParam, NumberParam } from 'use-query-params';
@@ -34,7 +34,7 @@ import {
 } from '../../utils/geoFileFunctions';
 import { getErrorMsg } from './fileUploadErrors';
 
-const ProjectCreationMap = React.lazy(() =>
+const ProjectCreationMap = lazy(() =>
   import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
 );
 
@@ -191,6 +191,14 @@ const ProjectCreate = () => {
 
   const handleCreate = useCallback(
     (cloneProjectData) => {
+      if (!metadata.projectName.trim()) {
+        setErr({ error: true, message: intl.formatMessage(messages.noProjectName) });
+        throw new Error('Missing project name.');
+      }
+      if (!/^[a-zA-Z]/.test(metadata.projectName)) {
+        setErr({ error: true, message: intl.formatMessage(messages.projectNameValidationError) });
+        throw new Error('Project name validation error.');
+      }
       if (!metadata.geom) {
         setErr({ error: true, message: intl.formatMessage(messages.noGeometry) });
         throw new Error('Missing geom.');

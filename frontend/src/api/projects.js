@@ -1,11 +1,13 @@
+import axios from 'axios';
 import { subMonths, format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import api from './apiClient';
+import { UNDERPASS_URL } from '../config';
 
-export const useProjectsQuery = (fullProjectsQuery, action) => {
+export const useProjectsQuery = (fullProjectsQuery, action, queryOptions) => {
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
 
@@ -33,6 +35,7 @@ export const useProjectsQuery = (fullProjectsQuery, action) => {
     queryKey: ['projects', fullProjectsQuery, action],
     queryFn: ({ signal, queryKey }) => fetchProjects(signal, queryKey),
     keepPreviousData: true,
+    ...queryOptions,
   });
 };
 
@@ -51,8 +54,11 @@ export const useProjectQuery = (projectId) => {
   });
 };
 export const useProjectSummaryQuery = (projectId, otherOptions = {}) => {
+  const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences['locale']);
+
   const fetchProjectSummary = ({ signal }) => {
-    return api().get(`projects/${projectId}/queries/summary/`, {
+    return api(token, locale).get(`projects/${projectId}/queries/summary/`, {
       signal,
     });
   };
@@ -185,6 +191,18 @@ export const submitValidationTask = (projectId, payload, token, locale) => {
     `projects/${projectId}/tasks/actions/unlock-after-validation/`,
     payload,
   );
+};
+
+export const useAvailableCountriesQuery = () => {
+  const fetchGeojsonData = () => {
+    return axios.get(`${UNDERPASS_URL}/availability`);
+  };
+
+  return useQuery({
+    queryKey: ['priority-geojson'],
+    queryFn: fetchGeojsonData,
+    select: (res) => res.data,
+  });
 };
 
 const backendToQueryConversion = {

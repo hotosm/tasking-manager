@@ -1,7 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
-import { OHSOME_STATS_BASE_URL } from '../config';
+import { OHSOME_STATS_BASE_URL, defaultChangesetComment } from '../config';
+
+const ohsomeProxyAPI = (url) => {
+  const token = localStorage.getItem('token');
+  return api(token).get(`users/statistics/ohsome/?url=${url}`);
+};
 
 export const useSystemStatisticsQuery = () => {
   const fetchSystemStats = ({ signal }) => {
@@ -33,7 +39,7 @@ export const useProjectStatisticsQuery = (projectId) => {
 
 export const useOsmStatsQuery = () => {
   const fetchOsmStats = ({ signal }) => {
-    return api().get(`${OHSOME_STATS_BASE_URL}/stats/hotosm-project-%2A`, {
+    return api().get(`${OHSOME_STATS_BASE_URL}/stats/${defaultChangesetComment}-%2A`, {
       signal,
     });
   };
@@ -42,7 +48,7 @@ export const useOsmStatsQuery = () => {
     queryKey: ['osm-stats'],
     queryFn: fetchOsmStats,
     useErrorBoundary: true,
-    select: (data) => data.data.result
+    select: (data) => data.data.result,
   });
 };
 
@@ -59,5 +65,35 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
     useErrorBoundary: true,
     enabled: Boolean(defaultComment?.[0]),
     select: (data) => data.data.result,
+  });
+};
+
+export const useUserOsmStatsQuery = (id) => {
+  const fetchUserOsmStats = () => {
+    return ohsomeProxyAPI(
+      `${OHSOME_STATS_BASE_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
+    );
+  };
+
+  return useQuery({
+    queryKey: ['user-osm-stats'],
+    queryFn: fetchUserOsmStats,
+    // userDetail.test.js fails on CI when useErrorBoundary=true
+    useErrorBoundary: process.env.NODE_ENV !== 'test',
+    select: (data) => data.data.result,
+    enabled: !!id,
+  });
+};
+
+export const useOsmStatsMetadataQuery = () => {
+  const fetchOsmStatsMetadata = () => {
+    return fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/metadata`);
+  };
+
+  return useQuery({
+    queryKey: ['osm-stats-metadata'],
+    queryFn: fetchOsmStatsMetadata,
+    useErrorBoundary: true,
+    select: (data) => data.result,
   });
 };

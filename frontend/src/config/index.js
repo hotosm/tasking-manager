@@ -5,7 +5,6 @@ export const API_URL = process.env.REACT_APP_API_URL
   : 'http://127.0.0.1:5000/api/' + API_VERSION + '/';
 export const OHSOME_STATS_BASE_URL =
   process.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org/api';
-export const OHSOME_STATS_TOKEN = process.env.REACT_APP_OHSOME_STATS_TOKEN || '';
 
 // APPLICATION SETTINGS
 export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
@@ -173,6 +172,8 @@ export const MAP_STYLE = MAPBOX_TOKEN
 export const MAPBOX_RTL_PLUGIN_URL =
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';
 
+export const UNDERPASS_URL = process.env.REACT_APP_UNDERPASS_URL || 'https://underpass.hotosm.org';
+
 export const DROPZONE_SETTINGS = {
   accept: {
     'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'],
@@ -183,3 +184,6 @@ export const DROPZONE_SETTINGS = {
   // At time of writing, this workaround is only needed on Chromium based browsers.
   noClick: true,
 };
+
+// TM_DEFAULT_CHANGESET_COMMENT without '#'
+export const defaultChangesetComment = TM_DEFAULT_CHANGESET_COMMENT.replace('#', '');

@@ -1,5 +1,4 @@
-import React, { useState, useContext, useLayoutEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useState, useContext, useLayoutEffect, createRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
@@ -25,6 +24,7 @@ import {
 import { getErrorMsg } from '../projectCreate/fileUploadErrors';
 import { Alert } from '../alert';
 import WebglUnsupported from '../webglUnsupported';
+import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -35,8 +35,8 @@ try {
 
 export const PriorityAreasForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
-  const locale = useSelector((state) => state.preferences['locale']);
-  const mapRef = React.createRef();
+  const mapboxSupportedLanguage = useMapboxSupportedLanguage();
+  const mapRef = createRef();
   const [error, setError] = useState({ error: false, message: null });
 
   const modes = MapboxDraw.modes;
@@ -129,7 +129,7 @@ export const PriorityAreasForm = () => {
         attributionControl: false,
       })
         .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
+        .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage }))
         .addControl(new mapboxgl.NavigationControl());
 
     setMapObj({ ...mapObj, map: map });

@@ -1,8 +1,8 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
 // Icon produced by FontAwesome project: https://github.com/FortAwesome/Font-Awesome/
 // License: CC-By 4.0
-export class CalendarIcon extends React.PureComponent {
+export class CalendarIcon extends PureComponent {
   render() {
     return (
       <svg viewBox="0 0 448 512" {...this.props}>

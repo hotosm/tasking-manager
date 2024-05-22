@@ -9,10 +9,13 @@ import { Redirect } from './components/redirect';
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Root />} ErrorBoundary={FallbackComponent}>
-      <Route index lazy={async () => {
-        const { Home } = await import('./views/home' /* webpackChunkName: "home" */);
-        return { Component: Home };
-      }} />
+      <Route
+        index
+        lazy={async () => {
+          const { Home } = await import('./views/home' /* webpackChunkName: "home" */);
+          return { Component: Home };
+        }}
+      />
       <Route
         path="explore"
         lazy={async () => {
@@ -77,6 +80,16 @@ export const router = createBrowserRouter(
             './views/taskAction' /* webpackChunkName: "taskAction" */
           );
           return { Component: ValidateTask };
+        }}
+        ErrorBoundary={FallbackComponent}
+      />
+      <Route
+        path="projects/:id/live"
+        lazy={async () => {
+          const { ProjectLiveMonitoring } = await import(
+            './views/projectLiveMonitoring' /* webpackChunkName: "projectLiveMonitoring" */
+          );
+          return { Component: ProjectLiveMonitoring };
         }}
         ErrorBoundary={FallbackComponent}
       />

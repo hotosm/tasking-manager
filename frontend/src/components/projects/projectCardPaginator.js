@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { PaginatorLine } from '../paginator';
 
 export const ProjectCardPaginator = ({ status, pagination, fullProjectsQuery, setQueryParam }) => {

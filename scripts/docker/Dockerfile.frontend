@@ -1,14 +1,14 @@
-FROM node:16 as build
+FROM node:18.19.1 as build
 
 WORKDIR /usr/src/app/frontend
 COPY frontend .
 
 ## SETUP
-RUN npm install
+RUN yarn
 
 # SERVE
 COPY tasking-manager.env ..
-RUN npm run build
+RUN yarn run build
 
 FROM nginx:stable-alpine
 COPY --from=build /usr/src/app/frontend/build /usr/share/nginx/html

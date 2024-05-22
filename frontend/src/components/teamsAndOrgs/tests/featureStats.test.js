@@ -1,9 +1,8 @@
-import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, QueryClientProviders } from '../../../utils/testWithIntl';
 import { FeatureStats } from '../featureStats';
 import { homepageStats } from '../../../network/tests/mockData/homepageStats';
 
@@ -13,9 +12,11 @@ test('FeatureStats renders the correct values and labels', async () => {
   axios.get.mockResolvedValue({ data: homepageStats });
 
   render(
-    <ReduxIntlProviders>
-      <FeatureStats />
-    </ReduxIntlProviders>,
+    <QueryClientProviders>
+      <ReduxIntlProviders>
+        <FeatureStats />
+      </ReduxIntlProviders>
+    </QueryClientProviders>,
   );
   expect(screen.getByText('Km road mapped')).toBeInTheDocument();
   expect(screen.getByText('Buildings mapped')).toBeInTheDocument();

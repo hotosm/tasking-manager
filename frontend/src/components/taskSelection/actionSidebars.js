@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
@@ -28,7 +28,6 @@ import { getEditors } from '../../utils/editorsList';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { getTaskContributors } from '../../utils/getTaskContributors';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { CommentInputField } from '../comments/commentInput';
 import { useFetchLockedTasks, useClearLockedTasks } from '../../hooks/UseLockedTasks';
 import {
   submitMappingTask,
@@ -37,6 +36,11 @@ import {
   stopValidation,
   submitValidationTask,
 } from '../../api/projects';
+import ReactPlaceholder from 'react-placeholder';
+
+const CommentInputField = lazy(() =>
+  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
+);
 
 export function CompletionTabForMapping({
   project,
@@ -262,7 +266,7 @@ export function CompletionTabForMapping({
         <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.comment} />
         </h4>
-        <p>
+        <Suspense fallback={<ReactPlaceholder showLoadingAnimation={true} rows={11} delay={300} />}>
           <CommentInputField
             comment={taskComment}
             setComment={setTaskComment}
@@ -271,7 +275,7 @@ export function CompletionTabForMapping({
             enableContributorsHashtag
             isShowTabNavs
           />
-        </p>
+        </Suspense>
       </div>
       {directedFrom && (
         <div className="flex items-center">
@@ -289,7 +293,7 @@ export function CompletionTabForMapping({
           </label>
         </div>
       )}
-      <div className="cf mv2" data-tip>
+      <div className="cf mv2" data-tooltip-id="unsavedChangesEditingTooltip">
         <Button
           className="bg-red white w-100 fl"
           onClick={onSubmitTask}
@@ -304,9 +308,9 @@ export function CompletionTabForMapping({
         </Button>
       </div>
       {disabled && (
-        <ReactTooltip place="top">
+        <Tooltip place="top" id="unsavedChangesEditingTooltip">
           <FormattedMessage {...messages.unsavedChangesTooltip} />
-        </ReactTooltip>
+        </Tooltip>
       )}
       <div className="cf pb1">
         <Button
@@ -537,7 +541,7 @@ export function CompletionTabForValidation({
           </label>
         </div>
       )}
-      <div className="cf mv3" data-tip>
+      <div className="cf mv3" data-tooltip-id="unsavedChangesValidationTooltip">
         <Button
           className="bg-red white w-100 fl"
           onClick={onSubmitTask}
@@ -548,9 +552,9 @@ export function CompletionTabForValidation({
         </Button>
       </div>
       {disabled && (
-        <ReactTooltip place="top">
+        <Tooltip place="top" id="unsavedChangesValidationTooltip">
           <FormattedMessage {...messages.unsavedChangesTooltip} />
-        </ReactTooltip>
+        </Tooltip>
       )}
       <div className="cf">
         <Button
@@ -641,14 +645,18 @@ const TaskValidationSelector = ({
       {showCommentInput && (
         <>
           <div className="cf w-100 db pt2">
-            <CommentInputField
-              comment={comment}
-              setComment={setComment}
-              contributors={isValidatingMultipleTasks ? contributorsList : contributors}
-              enableHashtagPaste
-              enableContributorsHashtag
-              isShowTabNavs
-            />
+            <Suspense
+              fallback={<ReactPlaceholder showLoadingAnimation={true} rows={11} delay={300} />}
+            >
+              <CommentInputField
+                comment={comment}
+                setComment={setComment}
+                contributors={isValidatingMultipleTasks ? contributorsList : contributors}
+                enableHashtagPaste
+                enableContributorsHashtag
+                isShowTabNavs
+              />
+            </Suspense>
           </div>
           {isValidatingMultipleTasks && comment && (
             <div className="fw5 tr bb b--grey-light bw1 pb2">

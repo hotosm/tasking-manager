@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
@@ -21,7 +21,9 @@ import { PermissionBox } from './permissionBox';
 import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
+import { LiveViewButton } from './liveViewButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
+import useHasLiveMonitoringFeature from '../../hooks/UseHasLiveMonitoringFeature';
 import { useProjectContributionsQuery, useProjectTimelineQuery } from '../../api/projects';
 import { Alert } from '../alert';
 
@@ -31,7 +33,7 @@ import { DownloadOsmData } from './downloadOsmData.js';
 import { ENABLE_EXPORT_TOOL } from '../../config/index.js';
 
 /* lazy imports must be last import */
-const ProjectTimeline = React.lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
+const ProjectTimeline = lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
 
 const ProjectDetailMap = (props) => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
@@ -143,6 +145,8 @@ export const ProjectDetail = (props) => {
   const { data: timelineData, status: timelineDataStatus } = useProjectTimelineQuery(
     props.project.projectId,
   );
+
+  const hasLiveMonitoringFeature = useHasLiveMonitoringFeature();
 
   const htmlDescription =
     props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
@@ -331,9 +335,9 @@ export const ProjectDetail = (props) => {
             </Alert>
           )}
           {timelineDataStatus === 'success' && (
-            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+            <Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
               <ProjectTimeline tasksByDay={timelineData} />
-            </React.Suspense>
+            </Suspense>
           )}
         </div>
         <div className="flex gap-1 nowrap flex-wrap">
@@ -346,6 +350,15 @@ export const ProjectDetail = (props) => {
             project={props.project}
             className="bg-white blue-dark ba b--grey-light pa3"
           />
+
+          {/* show live view button only when the project has live monitoring feature */}
+          {hasLiveMonitoringFeature && (
+            <LiveViewButton
+              projectId={props.project.projectId}
+              className="bg-white blue-dark ba b--grey-light pa3"
+            />
+          )}
+
           <DownloadAOIButton
             projectId={props.project.projectId}
             className="bg-white blue-dark ba b--grey-light pa3"

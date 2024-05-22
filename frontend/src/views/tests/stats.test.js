@@ -3,7 +3,11 @@ import { screen, waitFor, act } from '@testing-library/react';
 import { QueryParamProvider } from 'use-query-params';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 
-import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
+import {
+  ReduxIntlProviders,
+  renderWithRouter,
+  QueryClientProviders,
+} from '../../utils/testWithIntl';
 import { store } from '../../store';
 
 import { Stats } from '../stats';
@@ -15,9 +19,11 @@ describe('Overall styats page', () => {
     });
     renderWithRouter(
       <QueryParamProvider adapter={ReactRouter6Adapter}>
-        <ReduxIntlProviders>
-          <Stats />
-        </ReduxIntlProviders>
+        <QueryClientProviders>
+          <ReduxIntlProviders>
+            <Stats />
+          </ReduxIntlProviders>
+        </QueryClientProviders>
       </QueryParamProvider>,
     );
     waitFor(() => expect(screen.getByText('101367027')).toBeInTheDocument());

@@ -309,7 +309,7 @@ a[href="https://www.mapbox.com/map-feedback/"]
   object-fit: contain;
 }
 
-#shareProject {
+#shareProjectTooltip {
   background-color: $white;
   color: $blue-dark;
   border-color: $blue-dark;
@@ -620,4 +620,18 @@ a[href="https://www.mapbox.com/map-feedback/"]
 // Override tachyons font-family for code tag
 .code {
   font-family: inherit;
+}
+
+// margin auto
+.mt-auto {
+  margin-top: auto;
+}
+.mb-auto {
+  margin-bottom: auto;
+}
+.ml-auto {
+  margin-left: auto;
+}
+.mr-auto {
+  margin-right: auto;
 }

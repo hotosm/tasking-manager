@@ -1,4 +1,4 @@
-import React, { useContext, useState, useLayoutEffect } from 'react';
+import { useContext, useState, useLayoutEffect } from 'react';
 import Select from 'react-select';
 import { FormattedMessage } from 'react-intl';
 
