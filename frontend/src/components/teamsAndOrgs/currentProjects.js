@@ -106,7 +106,7 @@ export function CurrentProjects({ currentProjects }) {
                 <h4>
                   {project.id} - {project.info.name}
                 </h4>
-                <Link to={`/projects/`}>
+                <Link  to={`/projects/` + project.id}>
                   <Button className="bg-red ba b--red white pv2 ph3">
                     <FormattedMessage {...messages.startMapping} />
                   </Button>
