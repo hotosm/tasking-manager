@@ -19,11 +19,16 @@ export const PartnersStats = () => {
 
   const fetchData = async (name) => {
     try {
-      const response = await fetch('https://stats.now.ohsome.org/api/stats/hashtags/' + name);
+      let hashtag = name.trim();
+      if (hashtag.startsWith('#')) {
+        hashtag = hashtag.slice(1);
+      }
+      hashtag = hashtag.toLowerCase();
+      const response = await fetch('https://stats.now.ohsome.org/api/stats/hashtags/' + hashtag);
       if (response.ok) {
         const jsonData = await response.json();
         if (jsonData.result !== undefined && Object.keys(jsonData.result).length !== 0)
-          setPartnerStats(jsonData.result[name]);
+          setPartnerStats(jsonData.result[hashtag]);
       } else {
         console.error('Error al obtener los datos:', response.statusText);
       }
@@ -34,7 +39,7 @@ export const PartnersStats = () => {
 
   useEffect(() => {
     if (partner !== undefined && Object.keys(partner).length !== 0) {
-      fetchData(partner.permalink);
+      fetchData(partner.primary_hashtag);
     }
   }, [partner]);
 

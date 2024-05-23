@@ -146,6 +146,14 @@ export function EditPartners() {
   const navigate = useNavigate();
 
   const updatePartner = (payload) => {
+    const requiredFields = ['primary_hashtag', 'name', 'permalink'];
+    const missingFields = requiredFields.filter(field => !(field in payload) || payload[field] === '');
+  
+    if (missingFields.length > 0) {
+      const errorMessage = `The following fields are required and are missing or empty: ${missingFields.join(', ')}`;
+      setErrorMessage(errorMessage);
+      return;
+    }
 
     const updatedPayload = { ...payload };
     for (const key in partner) {

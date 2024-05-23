@@ -160,10 +160,8 @@ export function PartnersForm(props) {
               {props.errorMessage && (
                 <div className="mt2">
                   <Alert type="error" compact>
-                    {viewsMessages[`orgCreation${props.errorMessage}Error`] ? (
-                      <FormattedMessage
-                        {...viewsMessages[`orgCreation${props.errorMessage}Error`]}
-                      />
+                    {props.errorMessag ? (
+                      <span>{props.errorMessage}</span>
                     ) : (
                       <FormattedMessage {...viewsMessages[`errorFallback`]} />
                     )}
@@ -219,13 +217,13 @@ export function PartnersInformation({ hasSlug, setFormState, formState }) {
         </div>
         <div className={containerClases}>
           <label className={labelClasses}>
-            <FormattedMessage {...messages.permalink} required />
+            <FormattedMessage {...messages.permalink} />
           </label>
           <Field name="permalink" component="input" type="text" className={fieldClasses} required />
         </div>
         <div className={containerClases}>
           <label className={labelClasses}>
-            <FormattedMessage {...messages.primaryhashtag} />
+            <FormattedMessage {...messages.primaryhashtag} required />
           </label>
           <Field
             name="primary_hashtag"
