@@ -145,7 +145,7 @@ export function CreatePartner() {
         ></Form>
       ) : (
         <div>
-          <FormattedMessage {...messages.notAllowedPartners} />
+          <FormattedMessage {...messages.notAllowedCreatePartners} />
         </div>
       )}
     </div>

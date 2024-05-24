@@ -203,6 +203,11 @@ export default defineMessages({
     defaultMessage:
       'You are not a manager of this partner, so you are not allowed to edit it.',
   },
+  notAllowedCreatePartners:{
+    id: 'teamsAndOrgs.management.partner.create.error',
+    defaultMessage:
+      'You are not allowed to access the management area.',
+  },
   tasksStatistics: {
     id: 'teamsAndOrgs.management.organisation.stats',
     defaultMessage: 'Tasks statistics',
