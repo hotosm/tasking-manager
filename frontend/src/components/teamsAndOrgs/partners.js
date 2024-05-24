@@ -160,7 +160,7 @@ export function PartnersForm(props) {
               {props.errorMessage && (
                 <div className="mt2">
                   <Alert type="error" compact>
-                    {props.errorMessag ? (
+                    {props.errorMessage ? (
                       <span>{props.errorMessage}</span>
                     ) : (
                       <FormattedMessage {...viewsMessages[`errorFallback`]} />
