@@ -98,15 +98,82 @@ class TaskInvalidationHistory(db.Model):
 
     @staticmethod
     def get_open_for_task(project_id, task_id, local_session=None):
+        """
+        Retrieve the open TaskInvalidationHistory entry for the given project and task.
+
+        This method also handles a suspected concurrency issue by managing cases where multiple entries
+        are created when only one should exist. If multiple entries are found, it
+        recursively handles and closes duplicate entries to ensure only a single entry
+        remains open.
+
+        Args:
+            project_id (int): The ID of the project.
+            task_id (int): The ID of the task.
+            local_session (Session, optional): The SQLAlchemy session to use for the query.
+                                               If not provided, a default session is used.
+
+        Returns:
+            TaskInvalidationHistory or None: The open TaskInvalidationHistory entry, or
+                                             None if no open entry is found.
+
+        Raises:
+            None: This method handles the MultipleResultsFound exception internally.
+        """
+        try:
+            if local_session:
+                return (
+                    local_session.query(TaskInvalidationHistory)
+                    .filter_by(task_id=task_id, project_id=project_id, is_closed=False)
+                    .one_or_none()
+                )
+            return TaskInvalidationHistory.query.filter_by(
+                task_id=task_id, project_id=project_id, is_closed=False
+            ).one_or_none()
+
+        except MultipleResultsFound:
+            TaskInvalidationHistory.close_duplicate_invalidation_history_rows(
+                project_id, task_id, local_session
+            )
+
+            return TaskInvalidationHistory.get_open_for_task(
+                project_id, task_id, local_session
+            )
+
+    @staticmethod
+    def close_duplicate_invalidation_history_rows(
+        project_id: int, task_id: int, local_session=None
+    ):
+        """
+        Closes duplicate TaskInvalidationHistory entries except for the latest one for the given project and task.
+
+        Args:
+            project_id (int): The ID of the project.
+            task_id (int): The ID of the task.
+            local_session (Session, optional): The SQLAlchemy session to use for the query.
+                                               If not provided, a default session is used.
+        """
         if local_session:
-            return (
+            oldest_dupe = (
                 local_session.query(TaskInvalidationHistory)
                 .filter_by(task_id=task_id, project_id=project_id, is_closed=False)
-                .one_or_none()
+                .order_by(TaskInvalidationHistory.id.asc())
+                .first()
             )
-        return TaskInvalidationHistory.query.filter_by(
-            task_id=task_id, project_id=project_id, is_closed=False
-        ).one_or_none()
+        else:
+            oldest_dupe = (
+                TaskInvalidationHistory.query.filter_by(
+                    task_id=task_id, project_id=project_id, is_closed=False
+                )
+                .order_by(TaskInvalidationHistory.id.asc())
+                .first()
+            )
+
+        if oldest_dupe:
+            oldest_dupe.is_closed = True
+            if local_session:
+                local_session.commit()
+            else:
+                db.session.commit()
 
     @staticmethod
     def close_all_for_task(project_id, task_id, local_session=None):
