@@ -399,15 +399,15 @@ const Resources = {
                 Value: cf.stackName
               },
               {
-                Key: 'Project',
-                Value: 'Tasking Manager'
+                Key: 'project',
+                Value: 'tasking-manager'
               },
               {
-                Key: 'Tool',
-                Value: 'Tasking Manager'
+                Key: 'tool',
+                Value: 'tasking-manager'
               },
               {
-                Key: 'Maintainers',
+                Key: 'maintainers',
                 Value: 'dakota.benjamin and yogeshgirikumar'
               },
               {
@@ -495,15 +495,15 @@ const Resources = {
               Value: cf.stackName
             },
             {
-              Key: 'Project',
-              Value: 'Tasking Manager'
+              Key: 'project',
+              Value: 'tasking-manager'
             },
             {
-              Key: 'Tool',
-              Value: 'Tasking Manager'
+              Key: 'tool',
+              Value: 'tasking-manager'
             },
             {
-              Key: 'Maintainers',
+              Key: 'maintainers',
               Value: 'dakota.benjamin and yogeshgirikumar'
             },
             {
@@ -654,7 +654,26 @@ const Resources = {
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
       Subnets: cf.ref('ELBSubnets'),
       Type: 'application',
-      Tags: [ { "Key": "stack_name", "Value": cf.stackName } ]
+      Tags: [  { 
+          "Key": "stack_name", 
+          "Value": cf.stackName 
+        },  
+        {
+          Key: 'project',
+          Value: 'tasking-manager'
+        },
+        {
+          Key: 'tool',
+          Value: 'tasking-manager'
+        },
+        {
+          Key: 'maintainers',
+          Value: 'dakota.benjamin and yogeshgirikumar'
+        },
+        {
+          Key: 'environment',
+          Value: cf.ref('NetworkEnvironment')
+        } ]
     }
   },
   BackendAPIDNSEntries: {
@@ -707,7 +726,28 @@ const Resources = {
       Port: 8000,
       Protocol: 'HTTP',
       VpcId: cf.importValue(cf.join('-', ['hotosm-network-production', 'default-vpc', cf.region])),
-      Tags: [ { "Key": "stack_name", "Value": cf.stackName } ],
+      Tags: [ 
+        { 
+          "Key": "stack_name", 
+          "Value": cf.stackName 
+        },  
+        {
+          Key: 'project',
+          Value: 'tasking-manager'
+        },
+        {
+          Key: 'tool',
+          Value: 'tasking-manager'
+        },
+        {
+          Key: 'maintainers',
+          Value: 'dakota.benjamin and yogeshgirikumar'
+        },
+        {
+          Key: 'environment',
+          Value: cf.ref('NetworkEnvironment')
+        }
+      ],
       Matcher: {
         HttpCode: '200,202,302,304'
       }
@@ -755,7 +795,7 @@ const Resources = {
     },
     Properties: {
         Engine: 'postgres',
-	AllowMajorVersionUpgrade: true,
+	      AllowMajorVersionUpgrade: true,
         DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresDB')),
         EngineVersion: cf.ref('DatabaseEngineVersion'),
         MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresUser')),
@@ -768,7 +808,25 @@ const Resources = {
         DBInstanceClass: cf.ref('DatabaseInstanceType'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
-	PubliclyAccessible: false
+	      PubliclyAccessible: false,
+        Tags: [   
+        {
+          Key: 'project',
+          Value: 'tasking-manager'
+        },
+        {
+          Key: 'tool',
+          Value: 'tasking-manager'
+        },
+        {
+          Key: 'maintainers',
+          Value: 'dakota.benjamin and yogeshgirikumar'
+        },
+        {
+          Key: 'environment',
+          Value: cf.ref('NetworkEnvironment')
+        }
+      ]
     }
   },
   TaskingManagerReactBucket: {
@@ -779,7 +837,25 @@ const Resources = {
         ErrorDocument: 'index.html',
         IndexDocument: 'index.html'
       },
-      AccessControl: "Private"
+      AccessControl: "Private",
+      Tags: [ 
+        {
+          Key: 'project',
+          Value: 'tasking-manager'
+        },
+        {
+          Key: 'tool',
+          Value: 'tasking-manager'
+        },
+        {
+          Key: 'maintainers',
+          Value: 'dakota.benjamin and yogeshgirikumar'
+        },
+        {
+          Key: 'environment',
+          Value: cf.ref('NetworkEnvironment')
+        }
+      ]
     }
   },
   TaskingManagerReactBucketPolicy: {
@@ -908,7 +984,25 @@ const Resources = {
           MinimumProtocolVersion: 'TLSv1.2_2021',
           SslSupportMethod: 'sni-only'
         }
-      }
+      },
+      Tags: [ 
+        {
+          Key: 'project',
+          Value: 'tasking-manager'
+        },
+        {
+          Key: 'tool',
+          Value: 'tasking-manager'
+        },
+        {
+          Key: 'maintainers',
+          Value: 'dakota.benjamin and yogeshgirikumar'
+        },
+        {
+          Key: 'environment',
+          Value: cf.ref('NetworkEnvironment')
+        }
+      ]
     }
   },
 
