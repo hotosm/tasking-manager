@@ -1,7 +1,6 @@
 import { handleErrors } from '../utils/promise';
 import { API_URL } from '../config';
 
-
 /**
  * Fetch data from an external JSON API
  * @param {string} url The url to fetch from
@@ -10,7 +9,7 @@ import { API_URL } from '../config';
  */
 export function fetchExternalJSONAPI(url, init = {}): Promise<*> {
   if (!init.headers) {
-    init.headers = {'Content-Type': 'application/json'};
+    init.headers = { 'Content-Type': 'application/json' };
   }
   init.headers['Content-Type'] = 'application/json';
 
