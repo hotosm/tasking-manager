@@ -24,11 +24,9 @@ import { setupFaultyHandlers } from '../../network/tests/server';
 import { projects } from '../../network/tests/mockData/projects';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
-// This is a late import in a React.lazy call; it takes awhile for these to resolve, so we import them here manually.
-// In the event you remove them, please measure test times before ''and'' after removal.
+// This is a late import in a React.lazy call; it takes awhile for date-fns to resolve, so we import it here manually.
+// In the event you remove it, please measure test times before ''and'' after removal.
 import '../../utils/chart';
-import '../../components/projectCreate';
-import '../../components/projectCreate/projectCreationMap';
 
 // scrollTo is not implemented by jsdom; mock to avoid warnings.
 window.scrollTo = jest.fn();
@@ -42,13 +40,6 @@ test('CreateProject renders ProjectCreate', async () => {
     </QueryParamProvider>,
   );
   expect(screen.getByText('Loading...')).toBeInTheDocument();
-  await waitFor(() => expect(screen.queryByText('Loading...')).not.toBeInTheDocument());
-  // Since WebGL is not supported by Node, we'll assume that the map context will be loaded
-  // If WebGL was supported by Node, we could look for `Step 1: define area` instead.
-  expect(
-    await screen.findByRole('heading', { name: 'WebGL Context Not Found' }),
-  ).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'WebGL is enabled' })).toBeInTheDocument();
 });
 
 describe('UserProjectsPage Component', () => {
@@ -122,16 +113,6 @@ describe('UserProjectsPage Component', () => {
 });
 
 test('More Filters should close the more filters container when clicked outside the container', async () => {
-  jest.spyOn(document, 'getElementById').mockReturnValue({
-    offsetHeight: 100,
-    getBoundingClientRect: () => ({
-      top: 0,
-      left: 0,
-      height: 100,
-      width: 100,
-    }),
-  });
-
   const { user, router } = createComponentWithMemoryRouter(
     <QueryParamProvider adapter={ReactRouter6Adapter}>
       <ReduxIntlProviders>

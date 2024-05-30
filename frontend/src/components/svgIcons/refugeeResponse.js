@@ -1,6 +1,6 @@
-import { PureComponent } from 'react';
+import React from 'react';
 
-export class RefugeeResponseIcon extends PureComponent {
+export class RefugeeResponseIcon extends React.PureComponent {
   render() {
     return (
       <svg width="53" height="70" viewBox="0 0 53 70" {...this.props}>

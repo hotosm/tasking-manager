@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
@@ -90,12 +90,12 @@ export const ProjectNav = (props) => {
     setQuery(
       {
         ...fullProjectsQuery,
-        omitMapResults: !isMapShown,
+        omitMapResults:!isMapShown
       },
       'pushIn',
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMapShown]);
+  },[isMapShown])
   const linkCombo = 'link ph3 f6 pv2 ba b--tan br1 ph3 fw5';
 
   const moreFiltersAnyActive =
@@ -115,7 +115,7 @@ export const ProjectNav = (props) => {
   // onSelectedItemChange={(changes) => console.log(changes)}
   return (
     /* mb1 mb2-ns (removed for map, but now small gap for more-filters) */
-    <header id="explore-nav" className="bt bb b--tan w-100 ">
+    <header className="bt bb b--tan w-100 ">
       <div className="mt2 mb1 ph3 dib lh-copy w-100 cf">
         <div className="w-80-l w-90-m w-100 fl dib">
           <div className="dib">
@@ -125,7 +125,6 @@ export const ProjectNav = (props) => {
             <ProjectsActionFilter setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             <Link
               to={filterRouteToggled}
-              id="more-filter-id"
               className={`dn mr3 dib-l lh-title f6 ${linkCombo} ${moreFiltersCurrentActiveStyle} blue-dark`}
             >
               <FormattedMessage {...messages.moreFilters} />

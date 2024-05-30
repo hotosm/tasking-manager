@@ -7,7 +7,7 @@ import {
   NumberParam,
   BooleanParam,
 } from 'use-query-params';
-import queryString from 'query-string';
+import { stringify as stringifyUQP } from 'query-string';
 import axios from 'axios';
 import { subMonths, format } from 'date-fns';
 
@@ -71,7 +71,7 @@ const backendToQueryConversion = {
   stale: 'lastUpdatedTo',
   createdFrom: 'createdFrom',
   basedOnMyInterests: 'basedOnMyInterests',
-  omitMapResults: 'omitMapResults',
+  omitMapResults:'omitMapResults',
 };
 
 const dataFetchReducer = (state, action) => {
@@ -228,5 +228,5 @@ export const useProjectsQueryAPI = (
 
 export const stringify = (obj) => {
   const encodedQuery = encodeQueryParams(projectQueryAllSpecification, obj);
-  return queryString.stringify(encodedQuery);
+  return stringifyUQP(encodedQuery);
 };

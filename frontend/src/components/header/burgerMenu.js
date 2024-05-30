@@ -1,8 +1,8 @@
-import { forwardRef } from 'react';
+import React from 'react';
 
 import { MenuIcon, CloseIcon } from '../svgIcons';
 
-export const BurgerMenu = forwardRef((props, ref) => (
+export const BurgerMenu = React.forwardRef((props, ref) => (
   <button
     className="blue-dark bg-white br1 f5 bn pointer ml3"
     ref={ref}

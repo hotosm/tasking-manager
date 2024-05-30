@@ -3,7 +3,7 @@ import { useEffect, useReducer } from 'react';
 import axios from 'axios';
 
 import { useQueryParams, StringParam, NumberParam } from 'use-query-params';
-import queryString from 'query-string';
+import { stringify as stringifyUQP } from 'query-string';
 import { CommaArrayParam } from '../utils/CommaArrayParam';
 import { useThrottle } from '../hooks/UseThrottle';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
@@ -204,4 +204,4 @@ export const useTaskContributionAPI = (
   return [state, dispatch];
 };
 
-export const stringify = queryString.stringify;
+export const stringify = stringifyUQP;

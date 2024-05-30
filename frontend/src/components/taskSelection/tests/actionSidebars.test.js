@@ -23,8 +23,6 @@ import { TaskMapAction } from '../action';
 import { getProjectSummary } from '../../../network/tests/mockData/projects';
 import tasksGeojson from '../../../utils/tests/snippets/tasksGeometry';
 import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/userStats';
-// This is a late import in a React.lazy call; it takes awhile for commentInput to load
-import '../../comments/commentInput';
 
 jest.mock('react-hot-toast', () => ({
   error: jest.fn(),
@@ -58,17 +56,13 @@ describe('Appearance of unsaved map changes to be dealt with while mapping', () 
   });
 
   test('when submitting a task', async () => {
-    const { user } = renderWithRouter(
+    renderWithRouter(
       <QueryClientProviders>
         <ReduxIntlProviders>
           <CompletionTabForMapping project={{ projectId: 123 }} disabled />
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
-    const button = screen.getByRole('button', { name: 'Submit task' });
-    expect(button).toBeDisabled();
-    await user.hover(button);
-    await waitFor(() => expect(screen.getByRole('tooltip')).toBeInTheDocument());
     expect(screen.getByText(messages.unsavedChangesTooltip.defaultMessage)).toBeInTheDocument();
   });
 
@@ -226,7 +220,7 @@ describe('Appearance of unsaved map changes to be dealt with while validating', 
   });
 
   test('when submitting a task', async () => {
-    const { user } = renderWithRouter(
+    renderWithRouter(
       <QueryClientProviders>
         <ReduxIntlProviders>
           <CompletionTabForValidation
@@ -238,10 +232,6 @@ describe('Appearance of unsaved map changes to be dealt with while validating', 
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
-    const button = screen.getByRole('button', { name: 'Submit task' });
-    expect(button).toBeDisabled();
-    await user.hover(button);
-    await waitFor(() => expect(screen.getByRole('tooltip')).toBeInTheDocument());
     expect(screen.getByText(messages.unsavedChangesTooltip.defaultMessage)).toBeInTheDocument();
   });
 });

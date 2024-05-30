@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 
 import { useTaskBbox } from '../UseTaskBbox';
 import { tasks } from '../../network/tests/mockData/taskGrid';

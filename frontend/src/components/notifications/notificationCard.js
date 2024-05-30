@@ -1,7 +1,7 @@
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
-import { Tooltip } from 'react-tooltip';
+import ReactTooltip from 'react-tooltip';
 import DOMPurify from 'dompurify';
 import { FormattedMessage } from 'react-intl';
 
@@ -159,13 +159,12 @@ export function NotificationCard({
                         onClick={() => setMessageAsRead()}
                         style={{ width: '20px', height: '20px' }}
                         className={`dn dib-ns h1 w1 pr1 nr4 mv1 pv1 hover-red blue-light ml3`}
-                        data-tooltip-id={'setMessageAsReadTooltip'}
-                        data-tooltip-content={msg}
+                        data-tip={msg}
                         aria-label="Mark notification as read"
                       />
                     )}
                   </FormattedMessage>
-                  <Tooltip id={'setMessageAsReadTooltip'} />
+                  <ReactTooltip />
                 </>
               )}
             </div>

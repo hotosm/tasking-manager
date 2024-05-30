@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import { Form, Field, useFormState } from 'react-final-form';
-import { Tooltip } from 'react-tooltip';
+import ReactTooltip from 'react-tooltip';
 
 import messages from './messages';
 import { InfoIcon } from '../svgIcons';
@@ -214,12 +214,9 @@ export function TeamInformation(props) {
               width={12}
               height={12}
               className="blue-grey v-mid pb1 ml2"
-              data-tooltip-id={'joinMethodDescriptionTooltip'}
-              data-tooltip-content={intl.formatMessage(
-                messages[`${joinMethods[method]}Description`],
-              )}
+              data-tip={intl.formatMessage(messages[`${joinMethods[method]}Description`])}
             />
-            <Tooltip place="bottom" className="mw6" id={'joinMethodDescriptionTooltip'} />
+            <ReactTooltip place="bottom" className="mw6" effect="solid" />
           </div>
         ))}
       </div>
@@ -237,8 +234,7 @@ export function TeamInformation(props) {
               width={12}
               height={12}
               className="blue-grey v-mid pb1 ml2"
-              data-tooltip-id={'visibilityDescriptionTooltip'}
-              data-tooltip-content={intl.formatMessage(messages['publicDescription'])}
+              data-tip={intl.formatMessage(messages['publicDescription'])}
             />
           </div>
           <div className="pv2">
@@ -250,10 +246,9 @@ export function TeamInformation(props) {
               width={12}
               height={12}
               className="blue-grey v-mid pb1 ml2"
-              data-tooltip-id={'visibilityDescriptionTooltip'}
-              data-tooltip-content={intl.formatMessage(messages['privateDescription'])}
+              data-tip={intl.formatMessage(messages['privateDescription'])}
             />
-            <Tooltip place="bottom" className="mw6" id={'visibilityDescriptionTooltip'} />
+            <ReactTooltip place="bottom" className="mw6" effect="solid" />
           </div>
         </div>
       )}

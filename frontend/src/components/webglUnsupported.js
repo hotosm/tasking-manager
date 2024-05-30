@@ -1,3 +1,4 @@
+import React from 'react';
 import { Alert } from './alert';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';

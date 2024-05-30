@@ -1,6 +1,6 @@
-import { PureComponent } from 'react';
+import React from 'react';
 
-export class FacebookIcon extends PureComponent {
+export class FacebookIcon extends React.PureComponent {
   render() {
     return (
       <svg width="15" height="14" viewBox="0 0 15 14" {...this.props} aria-label="Facebook">

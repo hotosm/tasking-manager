@@ -1,6 +1,6 @@
-import { PureComponent } from 'react';
+import React from 'react';
 
-export class MarkerIcon extends PureComponent {
+export class MarkerIcon extends React.PureComponent {
   render() {
     return (
       <svg viewBox="0 0 384 512" {...this.props}>

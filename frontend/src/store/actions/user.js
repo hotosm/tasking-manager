@@ -1,11 +1,11 @@
-import { setItem } from '../../utils/safe_storage';
+import * as safeStorage from '../../utils/safe_storage';
 import { postNewUser } from '../../network/user';
-import { types } from './auth';
+import { types } from '../actions/auth';
 
 export const registerUser = (postData) => (dispatch) => {
-  return postNewUser(postData).then((res) => {
+  let response = postNewUser(postData).then((res) => {
     if (res.success === true) {
-      setItem('userId', res.id);
+      safeStorage.setItem('userId', res.id);
     }
 
     dispatch({
@@ -15,4 +15,6 @@ export const registerUser = (postData) => (dispatch) => {
 
     return res;
   });
+
+  return response;
 };

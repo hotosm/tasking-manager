@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import queryString from 'query-string';
+import { parse } from 'query-string';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 
@@ -52,7 +52,7 @@ describe('MoreFiltersForm', () => {
           {
             basedOnMyInterests: BooleanParam,
           },
-          queryString.parse(router.state.location.search),
+          parse(router.state.location.search),
         ),
       ).toEqual({ basedOnMyInterests: true }),
     );

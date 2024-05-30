@@ -1,8 +1,9 @@
+import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { DueDateBox } from '../dueDateBox';
+import { DueDateBox } from '../../../components/projectCard/dueDateBox';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 
 describe('test DueDate', () => {

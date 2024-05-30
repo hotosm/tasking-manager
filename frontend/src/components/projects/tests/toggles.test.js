@@ -1,3 +1,4 @@
+import React from 'react';
 import { act } from 'react-test-renderer';
 
 import { store } from '../../../store';

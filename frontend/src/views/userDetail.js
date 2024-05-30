@@ -1,4 +1,4 @@
-import { lazy, useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -18,7 +18,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useUserOsmStatsQuery } from '../api/stats';
 
-const TopCauses = lazy(() =>
+const TopCauses = React.lazy(() =>
   import('../components/userDetail/topCauses' /* webpackChunkName: "topCauses" */),
 );
 
@@ -53,7 +53,7 @@ export const UserDetail = ({ withHeader = true }) => {
 
   useEffect(() => {
     if (userDetails.id) {
-      fetchExternalJSONAPI(`${OSM_SERVER_URL}/api/0.6/user/${userDetails.id}.json`)
+      fetchExternalJSONAPI(`${OSM_SERVER_URL}/api/0.6/user/${userDetails.id}.json`, false)
         .then((res) => setUserOsmDetails(res?.user))
         .catch((e) => console.log(e));
     }

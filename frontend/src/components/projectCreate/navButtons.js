@@ -1,3 +1,4 @@
+import React from 'react';
 import { featureCollection } from '@turf/helpers';
 import { FormattedMessage, useIntl } from 'react-intl';
 

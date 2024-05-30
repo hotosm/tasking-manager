@@ -1,3 +1,4 @@
+import React from 'react';
 import { PaginatorLine } from '../paginator';
 
 function Paginator({ inboxQuery, notifications, setInboxQuery }) {

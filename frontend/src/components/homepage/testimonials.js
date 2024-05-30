@@ -1,7 +1,7 @@
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import IfrcImage from '../../assets/img/testimonials/ifrc.jpg';
 // import {RightIcon, LeftIcon} from '../../svgIcons';
 
 export function Testimonials() {
@@ -11,7 +11,7 @@ export function Testimonials() {
       bio: messages.ifrcBio,
       citation: messages.ifrcCitation,
       cssCode: 'ifrc',
-      image: IfrcImage,
+      image: '.../../images/ifrc.png',
     },
   ];
 
@@ -30,7 +30,11 @@ export function Testimonials() {
         <div className="testimony relative" key={person.name}>
           {/* <div key={n} className={`blue-dark testimonial-${person.cssCode} relative`} /> */}
           <div className="testimonial-image-parent">
-            <img className="testimonial-image" src={person.image} alt={person.name} />
+            <img
+              className="testimonial-image"
+              src={require('../../assets/img/testimonials/ifrc.jpg').default}
+              alt={person.name}
+            />
           </div>
           <div className="citation-ctr">
             <p className="bg-red white pv2 pl3 pr1 citation ma0 relative">

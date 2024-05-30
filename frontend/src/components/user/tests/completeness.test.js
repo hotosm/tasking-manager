@@ -1,3 +1,4 @@
+import React from 'react';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 
 import { ProfileCompleteness } from '../completeness';

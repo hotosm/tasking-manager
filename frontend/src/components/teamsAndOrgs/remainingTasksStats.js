@@ -1,4 +1,5 @@
-import { Tooltip } from 'react-tooltip';
+import React from 'react';
+import ReactTooltip from 'react-tooltip';
 import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 
 import messages from './messages';
@@ -9,14 +10,11 @@ const ActionsNeededLabel = () => {
   const intl = useIntl();
   return (
     <>
-      <span
-        data-tooltip-content={intl.formatMessage(messages.actionsNeededHelp)}
-        data-tooltip-id={'remainingActionsNeededTooltip'}
-      >
+      <span data-tip={intl.formatMessage(messages.actionsNeededHelp)}>
         <FormattedMessage {...messages.actionsNeeded} />
         <InfoIcon className="blue-grey h1 w1 v-mid pb1 ml2" />
       </span>
-      <Tooltip place="bottom" className="mw6" id={'remainingActionsNeededTooltip'} />
+      <ReactTooltip place="bottom" className="mw6" effect="solid" />
     </>
   );
 };

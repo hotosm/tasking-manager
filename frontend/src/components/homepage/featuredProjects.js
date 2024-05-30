@@ -1,10 +1,11 @@
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import { nCardPlaceholders } from '../projectCard/nCardPlaceholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 
 import { RightIcon, LeftIcon } from '../svgIcons';
-import { ProjectCard } from '../projectCard/projectCard';
+import { ProjectCard } from '../../components/projectCard/projectCard';
 
 import messages from './messages';
 

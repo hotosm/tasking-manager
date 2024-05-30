@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { parse } from 'date-fns';
 
 import { usePredictYearlyTasks } from '../UsePredictYearlyTasks';

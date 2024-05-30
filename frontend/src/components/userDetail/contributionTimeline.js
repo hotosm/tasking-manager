@@ -1,5 +1,6 @@
+import React from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
-import { Tooltip } from 'react-tooltip';
+import ReactTooltip from 'react-tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
@@ -80,13 +81,11 @@ export const ContributionTimeline = ({ userStats }) => {
             }
 
             return {
-              'data-tooltip-float': true,
-              'data-tooltip-content': val,
-              'data-tooltip-id': 'calendarHeatmapContributionTimelineTooltip',
+              'data-tip': val,
             };
           }}
         />
-        <Tooltip id={'calendarHeatmapContributionTimelineTooltip'} />
+        <ReactTooltip />
       </div>
       <HeatmapLegend />
     </div>

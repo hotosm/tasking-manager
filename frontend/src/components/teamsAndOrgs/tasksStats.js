@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
@@ -12,7 +12,7 @@ import {
 } from '../projects/filterSelectFields';
 import { TasksStatsSummary } from './tasksStatsSummary';
 
-const TasksStatsChart = lazy(() =>
+const TasksStatsChart = React.lazy(() =>
   import('./tasksStatsChart' /* webpackChunkName: "taskStatsChart" */),
 );
 

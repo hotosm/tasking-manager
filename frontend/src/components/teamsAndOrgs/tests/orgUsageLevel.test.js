@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { getYear } from 'date-fns';
 import '@testing-library/jest-dom';

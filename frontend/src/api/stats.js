@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
-import { OHSOME_STATS_BASE_URL, defaultChangesetComment } from '../config';
+import { OHSOME_STATS_BASE_URL } from '../config';
 
 const ohsomeProxyAPI = (url) => {
   const token = localStorage.getItem('token');
@@ -39,7 +39,7 @@ export const useProjectStatisticsQuery = (projectId) => {
 
 export const useOsmStatsQuery = () => {
   const fetchOsmStats = ({ signal }) => {
-    return api().get(`${OHSOME_STATS_BASE_URL}/stats/${defaultChangesetComment}-%2A`, {
+    return api().get(`${OHSOME_STATS_BASE_URL}/stats/hotosm-project-%2A`, {
       signal,
     });
   };
@@ -87,7 +87,7 @@ export const useUserOsmStatsQuery = (id) => {
 
 export const useOsmStatsMetadataQuery = () => {
   const fetchOsmStatsMetadata = () => {
-    return fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/metadata`);
+    return fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/metadata`, true);
   };
 
   return useQuery({

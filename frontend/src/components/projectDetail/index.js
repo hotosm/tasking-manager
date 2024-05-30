@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
@@ -33,7 +33,7 @@ import { DownloadOsmData } from './downloadOsmData.js';
 import { ENABLE_EXPORT_TOOL } from '../../config/index.js';
 
 /* lazy imports must be last import */
-const ProjectTimeline = lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
+const ProjectTimeline = React.lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
 
 const ProjectDetailMap = (props) => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
@@ -335,9 +335,9 @@ export const ProjectDetail = (props) => {
             </Alert>
           )}
           {timelineDataStatus === 'success' && (
-            <Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
               <ProjectTimeline tasksByDay={timelineData} />
-            </Suspense>
+            </React.Suspense>
           )}
         </div>
         <div className="flex gap-1 nowrap flex-wrap">

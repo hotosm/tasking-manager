@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { func } from 'prop-types';
+import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -83,5 +83,5 @@ export const UpdateEmail = ({ closeModal }) => {
 };
 
 UpdateEmail.propTypes = {
-  closeModal: func.isRequired,
+  closeModal: PropTypes.func.isRequired,
 };

@@ -1,20 +1,10 @@
-import React, {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-  useContext,
-  Suspense,
-} from 'react';
+import React, { useState, useEffect, useLayoutEffect, useCallback, useContext } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { LocaleOption } from './localeOption';
-import ReactPlaceholder from 'react-placeholder';
-const CommentInputField = React.lazy(() =>
-  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
-);
+import { CommentInputField } from '../comments/commentInput';
 
 export const InputLocale = ({ children, name, type, maxLength, languages }) => {
   const { projectInfo, setProjectInfo, setSuccess, setError } = useContext(StateContext);
@@ -152,23 +142,19 @@ const LocalizedInputField = ({ type, maxLength, name, locale, updateContext }) =
         />
       ) : (
         <div className="w-80">
-          <Suspense
-            fallback={<ReactPlaceholder showLoadingAnimation={true} rows={11} delay={300} />}
-          >
-            <CommentInputField
-              isShowTabNavs
-              isShowFooter
-              comment={value}
-              setComment={handleMarkdownEditorChange}
-              maxLength={maxLength}
-              markdownTextareaProps={{
-                onBlur: () => updateContext(name, value, locale),
-                maxLength: maxLength || null,
-                name: name,
-              }}
-              placeholderMsg={messages.typeHere}
-            />
-          </Suspense>
+          <CommentInputField
+            isShowTabNavs
+            isShowFooter
+            comment={value}
+            setComment={handleMarkdownEditorChange}
+            maxLength={maxLength}
+            markdownTextareaProps={{
+              onBlur: () => updateContext(name, value, locale),
+              maxLength: maxLength || null,
+              name: name,
+            }}
+            placeholderMsg={messages.typeHere}
+          />
         </div>
       )}
       {maxLength && (

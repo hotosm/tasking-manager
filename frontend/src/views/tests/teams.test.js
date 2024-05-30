@@ -128,20 +128,13 @@ describe('Create Team', () => {
 
 describe('Edit Team', () => {
   it('should display default details of the team before editing', async () => {
-    await act(() => {
-      store.dispatch({
-        type: 'SET_USER_DETAILS',
-        userDetails: { id: 122, username: 'test_user', role: 'ADMIN' },
-      });
-      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
-    });
     renderWithRouter(
       <ReduxIntlProviders>
         <EditTeam id={123} />
       </ReduxIntlProviders>,
     );
     const nameInput = screen.getAllByRole('textbox')[0];
-    await waitFor(() => expect(nameInput).toHaveValue('Team Test'));
+    await waitFor(() => expect(nameInput.value).toBe('Team Test'));
     expect(screen.getAllByRole('textbox')[1].value).toBe('Dummy team test');
 
     await waitFor(() => expect(screen.getByText('Organisation Name 123')).toBeInTheDocument());

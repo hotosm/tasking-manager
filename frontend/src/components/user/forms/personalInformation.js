@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Form, Field } from 'react-final-form';
-import { Tooltip } from 'react-tooltip';
+import ReactTooltip from 'react-tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from '../messages';
@@ -142,10 +142,9 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                   <RequiredIndicator />
                   <InfoIcon
                     className="blue-grey h1 w1 v-mid pb1 ml2"
-                    data-tooltip-content={intl.formatMessage(messages.emailPrivacy)}
-                    data-tooltip-id={'emailPrivacyTooltip'}
+                    data-tip={intl.formatMessage(messages.emailPrivacy)}
                   />
-                  <Tooltip place="bottom" className="mw6" id={'emailPrivacyTooltip'} />
+                  <ReactTooltip place="bottom" className="mw6" effect="solid" />
                 </label>
                 <Field name="emailAddress" type="email" component="input" autoComplete="email">
                   {({ input, meta }) => (
@@ -223,10 +222,9 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                   <FormattedMessage {...messages.gender} />
                   <InfoIcon
                     className="blue-grey h1 w1 v-mid pb1 ml2"
-                    data-tooltip-content={intl.formatMessage(messages.genderPrivacy)}
-                    data-tooltip-id={'genderPrivacyTooltip'}
+                    data-tip={intl.formatMessage(messages.genderPrivacy)}
                   />
-                  <Tooltip place="bottom" className="mw6" id={'genderPrivacyTooltip'} />
+                  <ReactTooltip place="bottom" className="mw6" effect="solid" />
                 </label>
                 {genderOptions.map((option) => (
                   <div className="pv2" key={option.value}>

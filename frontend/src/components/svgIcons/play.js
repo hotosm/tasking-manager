@@ -1,6 +1,6 @@
-import { PureComponent } from 'react';
+import React from 'react';
 
-export class PlayIcon extends PureComponent {
+export class PlayIcon extends React.PureComponent {
   render() {
     return (
       <svg viewBox="0 0 15 15" {...this.props}>

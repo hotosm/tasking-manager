@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';

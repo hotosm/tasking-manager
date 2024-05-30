@@ -1,4 +1,4 @@
-import { forwardRef, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
@@ -9,8 +9,6 @@ import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { DeleteButton } from '../teamsAndOrgs/management';
 import { Button } from '../button';
 import { AlertIcon } from '../svgIcons';
-
-const DeleteTrigger = forwardRef((props, ref) => <DeleteButton {...props} />);
 
 export function DeleteModal({ id, name, type, className, endpointURL, onDelete }: Object) {
   const navigate = useNavigate();
@@ -48,7 +46,7 @@ export function DeleteModal({ id, name, type, className, endpointURL, onDelete }
     <Popup
       ref={modalRef}
       trigger={
-        <DeleteTrigger className={`${className || ''} dib ml3`} showText={type !== 'comments'} />
+        <DeleteButton className={`${className || ''} dib ml3`} showText={type !== 'comments'} />
       }
       modal
       closeOnDocumentClick

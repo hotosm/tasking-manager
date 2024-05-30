@@ -2,7 +2,7 @@ import { getCountries, getCountry, getSupportedLangs } from '@hotosm/iso-countri
 
 export function translateCountry(name, locale) {
   const code = getCountryCode(name);
-  if (code && isLangSupported(locale)) return getCountry(locale.split(/[-_]/)[0], code);
+  if (code && isLangSupported(locale)) return getCountry(locale.split('-')[0], code);
   return name;
 }
 
@@ -20,14 +20,13 @@ export function getCountryCode(name) {
 }
 
 export function isLangSupported(code) {
-  // split with `-` or `_` to get the language initials
-  if (getSupportedLangs().includes(code.split(/[-_]/)[0])) return true;
+  if (getSupportedLangs().includes(code.split('-')[0])) return true;
   return false;
 }
 
 export function formatCountryList(locale) {
   if (locale && isLangSupported(locale)) {
-    const countries = getCountries(locale.split(/[-_]/)[0]);
+    const countries = getCountries(locale.split('-')[0]);
     return Object.keys(countries).map((key) => ({ label: countries[key], value: key }));
   }
 }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Select from 'react-select';
 import { FormattedMessage } from 'react-intl';
 

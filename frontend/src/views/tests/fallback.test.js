@@ -70,7 +70,6 @@ describe('Fallback component', () => {
     const returnBtn = screen.getByRole('button', {
       name: messages.return.defaultMessage,
     });
-    expect(returnBtn).toBeInTheDocument();
     await user.click(returnBtn);
     await waitFor(() => expect(mockedUsedNavigate).toHaveBeenCalledTimes(1));
   });

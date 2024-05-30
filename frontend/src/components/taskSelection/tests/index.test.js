@@ -43,7 +43,7 @@ describe('Contributions', () => {
     );
     await user.click(
       await screen.findByRole('button', {
-        description: 'Select tasks mapped by user_3',
+        name: 'Select tasks mapped by user_3',
       }),
     );
     expect(
@@ -74,7 +74,7 @@ describe('Contributions', () => {
     );
     await user.click(
       await screen.findByRole('button', {
-        description: 'Select tasks validated by user_3',
+        name: 'Select tasks validated by user_3',
       }),
     );
     expect(

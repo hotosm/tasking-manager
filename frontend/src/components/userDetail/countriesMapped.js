@@ -1,4 +1,5 @@
-import { createRef, useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import mapboxgl from 'mapbox-gl';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
@@ -9,7 +10,6 @@ import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import { mapboxLayerDefn } from '../projects/projectsMap';
 import { BarListChart } from './barListChart';
 import WebglUnsupported from '../webglUnsupported';
-import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -20,10 +20,10 @@ try {
 
 const UserCountriesMap = ({ projects }) => {
   const navigate = useNavigate();
-  const mapboxSupportedLanguage = useMapboxSupportedLanguage();
+  const locale = useSelector((state) => state.preferences['locale']);
 
   const [map, setMap] = useState(null);
-  const mapRef = createRef();
+  const mapRef = React.createRef();
 
   useLayoutEffect(() => {
     mapboxgl.supported() &&
@@ -36,7 +36,7 @@ const UserCountriesMap = ({ projects }) => {
           attributionControl: false,
         })
           .addControl(new mapboxgl.AttributionControl({ compact: false }))
-          .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage })),
+          .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
       );
 
     return () => {

@@ -1,9 +1,9 @@
+import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import TestRenderer from 'react-test-renderer';
 
 import { CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
-import { act } from '@testing-library/react';
 
 export const createTestDropdown = (options) => {
   const testElement = TestRenderer.create(
@@ -40,12 +40,10 @@ test('dropdown-content is not rendered before the user clicks on the button', ()
 
 test('dropdown-content disappear after click on option', () => {
   const elementInstance = createTestDropdown([{ label: 'English' }, { label: 'Portuguese (pt)' }]);
-  act(() => elementInstance.findByType(CustomButton).props.onClick());
-  act(() =>
-    elementInstance
-      .findAllByProps({ className: 'pa3 nowrap bg-animate bg-white hover-bg-tan' })[0]
-      .children[0].props.onClick(),
-  );
+  elementInstance.findByType(CustomButton).props.onClick();
+  elementInstance
+    .findAllByProps({ className: 'pa3 nowrap bg-animate bg-white hover-bg-tan' })[0]
+    .children[0].props.onClick();
   // dropdown-content should disappear after selecting an option
   expect(() =>
     elementInstance.findByProps({
@@ -64,7 +62,7 @@ test('dropdown behaviour with href props', () => {
     { label: 'B', href: 'http://b.co' },
     { label: 'C', href: 'http://c.co' },
   ]);
-  act(() => elementInstance.findByType(CustomButton).props.onClick());
+  elementInstance.findByType(CustomButton).props.onClick();
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({
@@ -101,7 +99,7 @@ test('dropdown behaviour with multi enabled', () => {
     </MemoryRouter>,
   );
   const elementInstance = testElement.root;
-  act(() => elementInstance.findByType(CustomButton).props.onClick());
+  elementInstance.findByType(CustomButton).props.onClick();
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({
@@ -134,7 +132,7 @@ test('dropdown with toTop enabled should have bottom-3 class', () => {
     </MemoryRouter>,
   );
   const elementInstance = testElement.root;
-  act(() => elementInstance.findByType(CustomButton).props.onClick());
+  elementInstance.findByType(CustomButton).props.onClick();
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({
@@ -171,7 +169,7 @@ test('dropdown with more than 9 options has "h5 overflow-y-scroll" classes', () 
     </MemoryRouter>,
   );
   const elementInstance = testElement.root;
-  act(() => elementInstance.findByType(CustomButton).props.onClick());
+  elementInstance.findByType(CustomButton).props.onClick();
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({

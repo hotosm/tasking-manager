@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { startOfYear, format, add, sub } from 'date-fns';
 
 import { useIsOrgYearQuery } from '../UseOrgYearStats';

@@ -1,6 +1,7 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useIntl, FormattedMessage } from 'react-intl';
-import { Tooltip } from 'react-tooltip';
+import ReactTooltip from 'react-tooltip';
 
 import messages from './messages';
 import { CustomButton } from '../button';
@@ -27,10 +28,7 @@ export const DeleteButton = ({ className, onClick, showText = true }: Object) =>
   const intl = useIntl();
   return (
     <CustomButton className={`red bg-transparent ba b--red pv1 ${className}`} onClick={onClick}>
-      <div
-        data-tooltip-id="Delete"
-        data-tooltip-content={!showText ? intl.formatMessage(messages.delete) : ''}
-      >
+      <div data-for="Delete" data-tip={!showText ? intl.formatMessage(messages.delete) : ''}>
         <WasteIcon className="v-mid h1 w1" />
         {showText && (
           <span className="v-mid f4 fw6 ttu barlow-condensed pl2">
@@ -38,7 +36,7 @@ export const DeleteButton = ({ className, onClick, showText = true }: Object) =>
           </span>
         )}
       </div>
-      <Tooltip effect="solid" id="Delete" />
+      <ReactTooltip effect="solid" id="Delete" />
     </CustomButton>
   );
 };
@@ -68,7 +66,7 @@ export function Management(props) {
   // admin users can switch between all teams/orgs and only their teams/orgs
   return (
     <div className="pull-center cf">
-      <div className="cf pv4">
+      <div style={{ textAlign: 'center' }} className=" cf pv4">
         <h3 className="barlow-condensed f2 ma0 dib v-mid ttu">{props.title}</h3>
         {props.showAddButton && (
           <Link to={'new/'} className="dib ml3">

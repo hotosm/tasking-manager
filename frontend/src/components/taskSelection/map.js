@@ -1,4 +1,4 @@
-import { createRef, useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import bbox from '@turf/bbox';
 import mapboxgl from 'mapbox-gl';
@@ -11,7 +11,6 @@ import messages from './messages';
 import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import lock from '../../assets/img/lock.png';
 import redlock from '../../assets/img/red-lock.png';
-import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
 let lockIcon = new Image(17, 20);
 lockIcon.src = lock;
@@ -42,8 +41,8 @@ export const TasksMap = ({
   selected: selectedOnMap,
 }) => {
   const intl = useIntl();
-  const mapRef = createRef();
-  const mapboxSupportedLanguage = useMapboxSupportedLanguage();
+  const mapRef = React.createRef();
+  const locale = useSelector((state) => state.preferences['locale']);
   const authDetails = useSelector((state) => state.auth.userDetails);
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
 
@@ -63,7 +62,7 @@ export const TasksMap = ({
           attributionControl: false,
         })
           .addControl(new mapboxgl.AttributionControl({ compact: false }))
-          .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage })),
+          .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
       );
 
     return () => {
@@ -387,21 +386,14 @@ export const TasksMap = ({
       });
 
       if (taskBordersOnly && navigate) {
-        let navigateInProgress = false;
-        const navigateToTasks = () => {
-          if (!navigateInProgress) {
-            navigateInProgress = true;
-            navigate('./tasks');
-          }
-        };
         map.on('mouseenter', 'point-tasks-centroid', function (e) {
           map.getCanvas().style.cursor = 'pointer';
         });
         map.on('mouseleave', 'point-tasks-centroid', function (e) {
           map.getCanvas().style.cursor = '';
         });
-        map.on('click', 'point-tasks-centroid', navigateToTasks);
-        map.on('click', 'point-tasks-centroid-inner', navigateToTasks);
+        map.on('click', 'point-tasks-centroid', () => navigate('./tasks'));
+        map.on('click', 'point-tasks-centroid-inner', () => navigate('./tasks'));
       }
 
       map.on('click', 'tasks-fill', onSelectTaskClick);

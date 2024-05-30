@@ -1,6 +1,6 @@
-import { PureComponent } from 'react';
+import React from 'react';
 
-export class ClockIcon extends PureComponent {
+export class ClockIcon extends React.PureComponent {
   render() {
     return (
       <svg width="15px" height="21px" viewBox="0 0 15 16" role="img" {...this.props}>

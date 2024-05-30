@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import React from 'react';
 import { screen, waitFor, within } from '@testing-library/react';
 
 import {

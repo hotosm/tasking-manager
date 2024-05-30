@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, Suspense, lazy, forwardRef } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import Select from 'react-select';
@@ -13,10 +13,7 @@ import { styleClasses, StateContext } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useFetch } from '../../hooks/UseFetch';
 import { useAsync } from '../../hooks/UseAsync';
-import ReactPlaceholder from 'react-placeholder';
-const CommentInputField = lazy(() =>
-  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
-);
+import { CommentInputField } from '../comments/commentInput';
 
 const ActionStatus = ({ status, action }) => {
   let successMessage = '';
@@ -327,17 +324,13 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
         {(msg) => {
           return (
             <div className="dib w-100 mt-3">
-              <Suspense
-                fallback={<ReactPlaceholder showLoadingAnimation={true} rows={10} delay={300} />}
-              >
-                <CommentInputField
-                  comment={message}
-                  setComment={setMessage}
-                  enableHashtagPaste={false}
-                  contributors={[]}
-                  isShowTabNavs
-                />
-              </Suspense>
+              <CommentInputField
+                comment={message}
+                setComment={setMessage}
+                enableHashtagPaste={false}
+                contributors={[]}
+                isShowTabNavs
+              />
             </div>
           );
         }}
@@ -508,10 +501,6 @@ const TransferProject = ({ projectId, orgId }: Object) => {
   );
 };
 
-const FormattedButtonTrigger = forwardRef((props, ref) => (
-  <Button {...props}>{props.children}</Button>
-));
-
 export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
   const navigate = useNavigate();
 
@@ -523,9 +512,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </label>
         <Popup
           trigger={
-            <FormattedButtonTrigger className={styleClasses.actionClass}>
+            <Button className={styleClasses.actionClass}>
               <FormattedMessage {...messages.messageContributors} />
-            </FormattedButtonTrigger>
+            </Button>
           }
           modal
           closeOnDocumentClick
@@ -549,9 +538,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </p>
         <Popup
           trigger={
-            <FormattedButtonTrigger className={styleClasses.actionClass}>
+            <Button className={styleClasses.actionClass}>
               <FormattedMessage {...messages.mapAll} />
-            </FormattedButtonTrigger>
+            </Button>
           }
           modal
           closeOnDocumentClick
@@ -560,9 +549,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </Popup>
         <Popup
           trigger={
-            <FormattedButtonTrigger className={styleClasses.actionClass}>
+            <Button className={styleClasses.actionClass}>
               <FormattedMessage {...messages.invalidateAll} />
-            </FormattedButtonTrigger>
+            </Button>
           }
           modal
           closeOnDocumentClick
@@ -571,9 +560,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </Popup>
         <Popup
           trigger={
-            <FormattedButtonTrigger className={styleClasses.actionClass}>
+            <Button className={styleClasses.actionClass}>
               <FormattedMessage {...messages.validateAllTasks} />
-            </FormattedButtonTrigger>
+            </Button>
           }
           modal
           closeOnDocumentClick
@@ -597,9 +586,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </p>
         <Popup
           trigger={
-            <FormattedButtonTrigger className={styleClasses.actionClass}>
+            <Button className={styleClasses.actionClass}>
               <FormattedMessage {...messages.resetAllButton} />
-            </FormattedButtonTrigger>
+            </Button>
           }
           modal
           closeOnDocumentClick
@@ -608,9 +597,9 @@ export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
         </Popup>
         <Popup
           trigger={
-            <FormattedButtonTrigger className={styleClasses.actionClass}>
+            <Button className={styleClasses.actionClass}>
               <FormattedMessage {...messages.resetBadImageryButton} />
-            </FormattedButtonTrigger>
+            </Button>
           }
           modal
           closeOnDocumentClick

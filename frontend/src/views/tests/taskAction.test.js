@@ -42,12 +42,14 @@ describe('Submitting Mapping Status for a Task', () => {
     });
 
     const { user, router } = setup();
-    expect(
-      await screen.findByRole('button', {
-        name: /submit task/i,
-      }),
-    ).toBeInTheDocument();
-    await user.click(await screen.findByRole('button', { name: /select another task/i }));
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', {
+          name: /submit task/i,
+        }),
+      ).toBeInTheDocument();
+    });
+    await user.click(screen.getByRole('button', { name: /select another task/i }));
     await waitFor(() => expect(router.state.location.pathname).toBe('/projects/123/tasks/'));
   });
 

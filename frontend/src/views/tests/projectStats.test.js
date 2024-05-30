@@ -1,15 +1,11 @@
 import '@testing-library/jest-dom';
+import React from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { store } from '../../store';
 import { QueryClientProviders, ReduxIntlProviders } from '../../utils/testWithIntl';
 import { ProjectStats } from '../projectStats';
-
-// Lazy imports from ProjectStats (these can cause timeouts on slow disks)
-import '../../components/projectStats/contributorsStats';
-import '../../components/projectStats/taskStatus';
-import '../../components/projectDetail/timeline';
 
 jest.mock('react-chartjs-2', () => ({
   Doughnut: () => null,
@@ -47,7 +43,7 @@ describe('ProjectStats dashboard', () => {
     expect(screen.getByText('123,456,789')).toBeInTheDocument();
     expect(screen.getByText('Changesets')).toBeInTheDocument();
     expect(screen.getByText('Total map edits')).toBeInTheDocument();
-    expect(await screen.findByText('Tasks by status')).toBeInTheDocument();
+    expect(screen.getByText('Tasks by status')).toBeInTheDocument();
     expect(screen.getByText('Project timeline')).toBeInTheDocument();
     await waitFor(() => screen.getByText('Time statistics'));
     expect(screen.getByText('Time statistics')).toBeInTheDocument();

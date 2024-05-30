@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { format, add } from 'date-fns';
 
 import { useValidateDateRange } from '../UseValidateDateRange';

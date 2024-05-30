@@ -1,3 +1,4 @@
+import React from 'react';
 import { FormattedRelativeTime } from 'react-intl';
 
 import { selectUnit } from './selectUnit';

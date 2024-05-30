@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
@@ -36,8 +36,8 @@ import { SessionAboutToExpire, SessionExpired } from './extendSession';
 import { MappingTypes } from '../mappingTypes';
 import { usePriorityAreasQuery, useTaskDetail } from '../../api/projects';
 
-const Editor = lazy(() => import('../editor'));
-const RapiDEditor = lazy(() => import('../rapidEditor'));
+const Editor = React.lazy(() => import('../editor'));
+const RapiDEditor = React.lazy(() => import('../rapidEditor'));
 
 const MINUTES_BEFORE_DIALOG = 5;
 
@@ -207,7 +207,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
         <div className="cf w-100 vh-minus-69-ns overflow-y-hidden">
           <div className={`fl h-100 relative ${showSidebar ? 'w-70' : 'w-100-minus-4rem'}`}>
             {['ID', 'RAPID'].includes(editor) ? (
-              <Suspense
+              <React.Suspense
                 fallback={
                   <div className={`w7 h5 center`}>
                     <ReactPlaceholder
@@ -238,7 +238,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                     showSidebar={showSidebar}
                   />
                 )}
-              </Suspense>
+              </React.Suspense>
             ) : (
               <ReactPlaceholder
                 showLoadingAnimation={true}

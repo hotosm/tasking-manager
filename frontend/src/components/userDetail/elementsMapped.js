@@ -1,3 +1,4 @@
+import React from 'react';
 import humanizeDuration from 'humanize-duration';
 import { useIntl, FormattedMessage } from 'react-intl';
 

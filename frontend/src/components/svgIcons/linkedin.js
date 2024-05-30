@@ -1,8 +1,8 @@
-import { PureComponent } from 'react';
+import React from 'react';
 
 // Icon produced by FontAwesome project: https://github.com/FortAwesome/Font-Awesome/
 // License: CC-By 4.0
-export class LinkedinIcon extends PureComponent {
+export class LinkedinIcon extends React.PureComponent {
   render() {
     return (
       <svg viewBox="0 0 448 512" {...this.props} aria-label="LinkedIn">

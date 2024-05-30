@@ -1,6 +1,6 @@
-import { PureComponent } from 'react';
+import React from 'react';
 
-export class InfoIcon extends PureComponent {
+export class InfoIcon extends React.PureComponent {
   render() {
     return (
       <svg viewBox="0 0 32 32" {...this.props}>

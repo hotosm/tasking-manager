@@ -1,3 +1,4 @@
+import React from 'react';
 import { TextRow, RoundShape, RectShape } from 'react-placeholder/lib/placeholders';
 
 export const organisationCardPlaceholderTemplate = () => (_n, i) =>

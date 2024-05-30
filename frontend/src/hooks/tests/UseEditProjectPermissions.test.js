@@ -1,5 +1,6 @@
+import React from 'react';
 import { Provider } from 'react-redux';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react-hooks';
 
 import { store } from '../../store';
 import { useEditProjectAllowed } from '../UsePermissions';

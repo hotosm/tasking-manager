@@ -1,3 +1,5 @@
+import React from 'react';
+
 import ProjectProgressBar from '../projectProgressBar';
 import { createComponentWithIntl } from '../../../utils/testWithIntl';
 

@@ -1,3 +1,4 @@
+import React from 'react';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';

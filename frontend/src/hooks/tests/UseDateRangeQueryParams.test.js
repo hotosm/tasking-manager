@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { subWeeks, subMonths, format, endOfToday } from 'date-fns';
 
 import { useDateRangeQueryParams } from '../UseDateRangeQueryParams';

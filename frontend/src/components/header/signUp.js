@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -8,7 +8,7 @@ import { registerUser } from '../../store/actions/user';
 import { store } from '../../store';
 import { createLoginWindow } from '../../utils/login';
 import { ORG_PRIVACY_POLICY_URL, OSM_REGISTER_URL } from '../../config';
-import { setItem } from '../../utils/safe_storage';
+import * as safeStorage from '../../utils/safe_storage';
 
 export const LoginModal = ({ step, login }) => {
   return (
@@ -51,8 +51,8 @@ export const ProceedOSM = ({ data, step, setStep, login }) => {
 
   const handleLogin = () => {
     login();
-    setItem('email_address', data.email);
-    setItem('name', data.name);
+    safeStorage.setItem('email_address', data.email);
+    safeStorage.setItem('name', data.name);
   };
 
   return (
@@ -103,8 +103,8 @@ const SignupForm = ({ data, setData, step, setStep }) => {
     const registerPromise = store.dispatch(registerUser(formData));
     registerPromise.then((res) => {
       if (res.success === true) {
-        setItem('email_address', data.email);
-        setItem('name', data.name);
+        safeStorage.setItem('email_address', data.email);
+        safeStorage.setItem('name', data.name);
         setStep({ number: 2, errMessage: null });
       } else {
         setStep({ number: 1, errMessage: res.details });

@@ -1,10 +1,10 @@
-import { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import Select from 'react-select';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import commonMessages from '../messages';
-import { Button } from '../button';
+import { Button } from '../../components/button';
 import { StateContext } from '../../views/projectEdit';
 import { PencilIcon, WasteIcon, ExternalLinkIcon } from '../svgIcons';
 import { useFetchWithAbort } from '../../hooks/UseFetch';

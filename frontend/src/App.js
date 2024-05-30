@@ -1,10 +1,10 @@
-import { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import ReactPlaceholder from 'react-placeholder';
 import { useMeta } from 'react-meta-elements';
 import { useSelector } from 'react-redux';
-import { ErrorBoundary } from '@sentry/react';
+import * as Sentry from '@sentry/react';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
@@ -49,7 +49,7 @@ const App = () => {
   }, []);
 
   return (
-    <ErrorBoundary fallback={<FallbackComponent />}>
+    <Sentry.ErrorBoundary fallback={<FallbackComponent />}>
       {isLoading ? (
         <Preloader />
       ) : (
@@ -77,7 +77,7 @@ const App = () => {
           />
         </div>
       )}
-    </ErrorBoundary>
+    </Sentry.ErrorBoundary>
   );
 };
 

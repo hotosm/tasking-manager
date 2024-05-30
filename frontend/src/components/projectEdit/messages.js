@@ -1,7 +1,5 @@
 import { defineMessages } from 'react-intl';
 
-import projectCreateMessages from '../projectCreate/messages';
-
 /**
  * Internationalized messages for use on project edit.
  */
@@ -441,7 +439,6 @@ export default defineMessages({
     id: 'projects.formInputs.name',
     defaultMessage: 'Name of the project',
   },
-  projectNameValidationError: { ...projectCreateMessages.projectNameValidationError },
   dueDate: {
     id: 'projects.formInputs.dueDate',
     defaultMessage: 'Due date',

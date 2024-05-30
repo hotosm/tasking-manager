@@ -84,6 +84,10 @@ export default defineMessages({
     id: 'management.stats.users.title',
     defaultMessage: 'New users',
   },
+  newPartner: {
+    id: 'management.partner.creation',
+    defaultMessage: 'Create new partner',
+  },
   newOrganisation: {
     id: 'teamsAndOrgs.management.organisation.creation',
     defaultMessage: 'Create new organization',
@@ -107,6 +111,30 @@ export default defineMessages({
   createOrganisation: {
     id: 'teamsAndOrgs.management.organisation.button.create',
     defaultMessage: 'Create organization',
+  },
+  createPartner: {
+    id: 'management.partner.button.create',
+    defaultMessage: 'Create Partner',
+  },
+  learnToMap:{
+    id: 'management.partner.learnToMap',
+    defaultMessage: 'Learn to Map',
+  },
+  currentProjects:{
+    id: 'management.partner.currentProjects',
+    defaultMessage: 'Current Projects',
+  },
+  newToMapping:{
+    id: 'management.partner.newToMapping',
+    defaultMessage: '¿New to Mapping?',
+  },
+  activity: {
+    id: 'management.partner.activity',
+    defaultMessage: 'Activity',
+  },
+  resources: {
+    id: 'management.partner.resources',
+    defaultMessage: 'Resources',
   },
   entityCreationSuccess: {
     id: 'management.entity.creation.success',
@@ -170,6 +198,16 @@ export default defineMessages({
     defaultMessage:
       'You are not a manager of this organization, so you are not allowed to edit it.',
   },
+  editPartnerNotAllowed: {
+    id: 'teamsAndOrgs.management.partner.manage.error',
+    defaultMessage:
+      'You are not a manager of this partner, so you are not allowed to edit it.',
+  },
+  notAllowedCreatePartners:{
+    id: 'teamsAndOrgs.management.partner.create.error',
+    defaultMessage:
+      'You are not allowed to access the management area.',
+  },
   tasksStatistics: {
     id: 'teamsAndOrgs.management.organisation.stats',
     defaultMessage: 'Tasks statistics',
@@ -197,6 +235,10 @@ export default defineMessages({
   manageOrganisation: {
     id: 'teamsAndOrgs.management.organisation.manage',
     defaultMessage: 'Manage organization',
+  },
+  managePartner: {
+    id: 'management.partner.manage',
+    defaultMessage: 'Manage partner',
   },
   manageTeam: {
     id: 'teamsAndOrgs.management.team.manage',

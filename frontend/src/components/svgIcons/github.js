@@ -1,6 +1,6 @@
-import { PureComponent } from 'react';
+import React from 'react';
 
-export class GithubIcon extends PureComponent {
+export class GithubIcon extends React.PureComponent {
   render() {
     return (
       <svg width="16" height="16" viewBox="0 0 16 16" {...this.props} aria-label="GitHub">

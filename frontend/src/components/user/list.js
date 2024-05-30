@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';

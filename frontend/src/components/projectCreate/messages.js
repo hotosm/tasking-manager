@@ -123,14 +123,6 @@ export default defineMessages({
     id: 'management.projects.create.errors.closed_linestring',
     defaultMessage: 'Points do not form a closed linestring',
   },
-  noProjectName: {
-    id: 'management.projects.create.errors.no_project_name',
-    defaultMessage: 'Name is a required field.',
-  },
-  projectNameValidationError: {
-    id: 'management.projects.create.errors.project_name_validation_error',
-    defaultMessage: 'Project name should start with an alphabet.',
-  },
   noGeometry: {
     id: 'management.projects.create.errors.no_geometry',
     defaultMessage: "You need to define the project's area of interest.",

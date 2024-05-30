@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { useHover } from '../hooks/UseHover';
 
 export const ProgressBar = ({

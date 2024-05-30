@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQueryParams, StringParam, NumberParam } from 'use-query-params';
-import queryString from 'query-string';
+import { stringify as stringifyUQP } from 'query-string';
 import axios from 'axios';
 
 import { CommaArrayParam } from '../utils/CommaArrayParam';
-import { useThrottle } from './UseThrottle';
+import { useThrottle } from '../hooks/UseThrottle';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import { API_URL } from '../config';
 
@@ -163,4 +163,4 @@ export const useInboxQueryAPI = (
   return [state, dispatch];
 };
 
-export const stringify = queryString.stringify;
+export const stringify = stringifyUQP;

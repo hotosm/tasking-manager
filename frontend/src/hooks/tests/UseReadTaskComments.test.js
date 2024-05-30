@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import { invalidatedTaskHistory, history } from '../../network/tests/mockData/taskHistory';
 import { useReadTaskComments } from '../UseReadTaskComments';
 

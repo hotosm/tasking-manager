@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import React, { Fragment } from 'react';
 
 import { TextRow, TextBlock, RoundShape, RectShape } from 'react-placeholder/lib/placeholders';
 

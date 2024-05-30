@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import React from 'react';
 import TestRenderer from 'react-test-renderer';
 import { FormattedMessage } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';

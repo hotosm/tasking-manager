@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';

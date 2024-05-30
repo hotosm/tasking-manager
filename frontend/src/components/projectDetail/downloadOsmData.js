@@ -117,7 +117,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
   }, [projectMappingTypes]);
 
   useEffect(() => {
-    if (!selectedCategoryFormat) return;
+    if (!selectedCategoryFormat) return null;
     async function fetchData(url) {
       const response = await fetch(url, { method: 'HEAD' });
       const data = await response;

@@ -1,8 +1,8 @@
-import { PureComponent } from 'react';
+import React from 'react';
 
 // Icon produced by FontAwesome project: https://github.com/FortAwesome/Font-Awesome/
 // License: CC-By 4.0
-export class CommentIcon extends PureComponent {
+export class CommentIcon extends React.PureComponent {
   render() {
     return (
       <svg {...this.props} aria-hidden="true" role="img" viewBox="0 0 512 512">

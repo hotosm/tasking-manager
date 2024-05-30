@@ -1,4 +1,5 @@
-import { createRef, useLayoutEffect, useState, useCallback } from 'react';
+import React, { useLayoutEffect, useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
@@ -6,7 +7,6 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import WebglUnsupported from '../webglUnsupported';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import mapMarker from '../../assets/img/mapMarker.png';
-import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
 let markerIcon = new Image(17, 20);
 markerIcon.src = mapMarker;
@@ -96,9 +96,9 @@ export const mapboxLayerDefn = (map, mapResults, clickOnProjectID, disablePoiCli
 };
 
 export const ProjectsMap = ({ mapResults, fullProjectsQuery, setQuery, className }) => {
-  const mapRef = createRef();
+  const mapRef = React.createRef();
+  const locale = useSelector((state) => state.preferences['locale']);
   const [map, setMapObj] = useState(null);
-  const mapboxSupportedLanguage = useMapboxSupportedLanguage();
 
   const clickOnProjectID = useCallback(
     (projectIdSearch) =>
@@ -131,7 +131,7 @@ export const ProjectsMap = ({ mapResults, fullProjectsQuery, setQuery, className
           attributionControl: false,
         })
           .addControl(new mapboxgl.AttributionControl({ compact: false }))
-          .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage })),
+          .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
       );
 
     return () => {

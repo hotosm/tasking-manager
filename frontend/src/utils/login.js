@@ -1,5 +1,5 @@
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
-import { getItem, removeItem } from './safe_storage';
+import * as safeStorage from '../utils/safe_storage';
 import { OSM_REDIRECT_URI } from '../config';
 
 // Code taken from https://github.com/mapbox/osmcha-frontend/blob/master/src/utils/create_popup.js
@@ -30,10 +30,10 @@ export const createLoginWindow = (redirectTo) => {
 
     window.authComplete = (authCode, state) => {
       let callback_url = `system/authentication/callback/?redirect_uri=${OSM_REDIRECT_URI}&code=${authCode}`;
-      const emailAddress = getItem('email_address');
+      const emailAddress = safeStorage.getItem('email_address');
       if (emailAddress !== null) {
         callback_url += `&email_address=${emailAddress}`;
-        removeItem('email_address');
+        safeStorage.removeItem('email_address');
       }
 
       if (resp.state === state) {
@@ -45,7 +45,8 @@ export const createLoginWindow = (redirectTo) => {
             picture: res.picture,
             redirect_to: redirectTo,
           }).toString();
-          window.location.href = `/authorized/?${params}`;
+          let redirectUrl = `/authorized/?${params}`;
+          window.location.href = redirectUrl;
         });
       } else {
         throw new Error('States do not match');

@@ -1,5 +1,5 @@
-import { Component } from 'react';
-import { createPortal } from 'react-dom';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 let portalRoot = document.getElementById('action-root');
 if (!portalRoot) {
@@ -8,7 +8,7 @@ if (!portalRoot) {
   document.body.appendChild(portalRoot);
 }
 
-class Portal extends Component {
+class Portal extends React.Component {
   el = document.createElement('div');
 
   componentDidMount() {
@@ -22,7 +22,7 @@ class Portal extends Component {
   }
 
   render() {
-    return createPortal(this.props.children, this.el);
+    return ReactDOM.createPortal(this.props.children, this.el);
   }
 }
 

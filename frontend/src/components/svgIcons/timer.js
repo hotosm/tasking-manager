@@ -1,6 +1,6 @@
-import { PureComponent } from 'react';
+import React from 'react';
 
-export class TimerIcon extends PureComponent {
+export class TimerIcon extends React.PureComponent {
   render() {
     return (
       <svg

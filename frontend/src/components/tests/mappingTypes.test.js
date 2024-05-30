@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, AsteriskIcon } from '../svgIcons';
 import { MappingTypes } from '../mappingTypes';
 import { createComponentWithIntl } from '../../utils/testWithIntl';

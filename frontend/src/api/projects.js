@@ -7,7 +7,7 @@ import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import api from './apiClient';
 import { UNDERPASS_URL } from '../config';
 
-export const useProjectsQuery = (fullProjectsQuery, action, queryOptions) => {
+export const useProjectsQuery = (fullProjectsQuery, action) => {
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
 
@@ -35,7 +35,6 @@ export const useProjectsQuery = (fullProjectsQuery, action, queryOptions) => {
     queryKey: ['projects', fullProjectsQuery, action],
     queryFn: ({ signal, queryKey }) => fetchProjects(signal, queryKey),
     keepPreviousData: true,
-    ...queryOptions,
   });
 };
 
@@ -54,11 +53,8 @@ export const useProjectQuery = (projectId) => {
   });
 };
 export const useProjectSummaryQuery = (projectId, otherOptions = {}) => {
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
-
   const fetchProjectSummary = ({ signal }) => {
-    return api(token, locale).get(`projects/${projectId}/queries/summary/`, {
+    return api().get(`projects/${projectId}/queries/summary/`, {
       signal,
     });
   };

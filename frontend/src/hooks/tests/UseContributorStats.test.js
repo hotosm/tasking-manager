@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 
 import { useContributorStats } from '../UseContributorStats';
 import { projectContributions } from '../../network/tests/mockData/contributions';

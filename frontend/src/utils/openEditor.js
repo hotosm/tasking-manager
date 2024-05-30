@@ -139,8 +139,8 @@ function loadTasksBoundaries(project, selectedTasks) {
     new_layer: true,
     layer_name: layerName,
     layer_locked: true,
-    download_policy: 'never',
-    upload_policy: 'never',
+    download_policy: "never",
+    upload_policy: "never",
     url: getTaskXmlUrl(project.projectId, selectedTasks).href,
   };
 

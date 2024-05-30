@@ -1,3 +1,4 @@
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { TeamBox } from '../teamsAndOrgs/teams';

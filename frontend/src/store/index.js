@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-import { setItem } from '../utils/safe_storage';
+import * as safeStorage from '../utils/safe_storage';
 import reducers from './reducers';
 
 const persistConfig = {
@@ -28,9 +28,9 @@ const store = createStore(persistedReducer, {}, composedEnhancers);
 const persistor = persistStore(store);
 
 store.subscribe(() => {
-  setItem('mapShown', store.getState().preferences['mapShown']);
-  setItem('action', store.getState().preferences['action']);
-  setItem('projectListView', store.getState().preferences['projectListView']);
+  safeStorage.setItem('mapShown', store.getState().preferences['mapShown']);
+  safeStorage.setItem('action', store.getState().preferences['action']);
+  safeStorage.setItem('projectListView', store.getState().preferences['projectListView']);
 });
 
 export { store, persistor };

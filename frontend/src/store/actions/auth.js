@@ -1,4 +1,4 @@
-import { setItem, removeItem, getItem } from '../../utils/safe_storage';
+import * as safeStorage from '../../utils/safe_storage';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { setLoader } from './loader';
 
@@ -39,11 +39,11 @@ export const updateUserEmail = (userDetails, token, relevant_fields) => (dispatc
 };
 
 export const logout = () => (dispatch) => {
-  removeItem('username');
-  removeItem('token');
-  removeItem('action');
-  removeItem('osm_oauth_token');
-  removeItem('tasksSortOrder');
+  safeStorage.removeItem('username');
+  safeStorage.removeItem('token');
+  safeStorage.removeItem('action');
+  safeStorage.removeItem('osm_oauth_token');
+  safeStorage.removeItem('tasksSortOrder');
   dispatch(clearUserDetails());
 };
 
@@ -91,9 +91,9 @@ export function updateSession(session) {
 
 export const setAuthDetails = (username, token, osm_oauth_token) => (dispatch) => {
   const encoded_token = btoa(token);
-  setItem('token', encoded_token);
-  setItem('username', username);
-  setItem('osm_oauth_token', osm_oauth_token);
+  safeStorage.setItem('token', encoded_token);
+  safeStorage.setItem('username', username);
+  safeStorage.setItem('osm_oauth_token', osm_oauth_token);
   dispatch(updateToken(encoded_token));
   dispatch(
     updateSession({
@@ -152,6 +152,6 @@ export const pushUserDetails =
   (userDetails, token, update = false) =>
   (dispatch) => {
     pushToLocalJSONAPI(`users/me/actions/set-user/`, userDetails, token, 'PATCH').then((data) =>
-      dispatch(setUserDetails(getItem('username'), token, update)),
+      dispatch(setUserDetails(safeStorage.getItem('username'), token, update)),
     );
   };
