@@ -112,4 +112,3 @@ class PartnerService:
     def get_all_partners():
         """Get all partners"""
         return Partner.get_all_partners()
-    

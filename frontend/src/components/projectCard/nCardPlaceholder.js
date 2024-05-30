@@ -1,4 +1,3 @@
-import React from 'react';
 import { TextBlock, RoundShape } from 'react-placeholder/lib/placeholders';
 
 export const projectCardPlaceholderTemplate = () => (_, i) =>

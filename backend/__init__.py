@@ -308,6 +308,13 @@ def add_api_endpoints(app):
     # Campaigns API endpoint
     from backend.api.campaigns.resources import CampaignsRestAPI, CampaignsAllAPI
 
+    # Partners API import
+    from backend.api.partners.resources import ( 
+        PartnerRestAPI,
+        PartnersAllRestAPI,
+        PartnerPermalinkRestAPI,
+    )
+
     # Organisations API endpoint
     from backend.api.organisations.resources import (
         OrganisationsStatsAPI,

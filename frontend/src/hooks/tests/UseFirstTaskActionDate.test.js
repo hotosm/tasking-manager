@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import useFirstTaskActionDate from '../UseFirstTaskActionDate';
 import { history } from '../../network/tests/mockData/taskHistory';

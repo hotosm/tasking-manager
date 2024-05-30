@@ -1,4 +1,3 @@
-import React from 'react';
 import { InterestsList } from '../formInputs';
 
 export const ProjectInterests = ({ interests, projectInterests, setProjectInfo }) => {
