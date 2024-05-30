@@ -1,4 +1,3 @@
-import React from 'react';
 import { Provider } from 'react-redux';
 import { act, render } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';

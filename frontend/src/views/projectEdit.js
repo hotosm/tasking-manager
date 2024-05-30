@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import { createContext, useState, useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
@@ -24,7 +24,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { useAsync } from '../hooks/UseAsync';
 import { useEditProjectAllowed } from '../hooks/UsePermissions';
 
-export const StateContext = React.createContext();
+export const StateContext = createContext();
 
 export const styleClasses = {
   divClass: 'w-70-l w-100 pb4 mb3',
@@ -121,7 +121,9 @@ export function ProjectEdit() {
       });
     } else {
       const mandatoryFieldsMissing = mandatoryFields.filter(
-        (m) => Object.keys(defaultLocaleInfo).includes(m) === false || defaultLocaleInfo[m] === '',
+        (m) =>
+          Object.keys(defaultLocaleInfo).includes(m) === false ||
+          defaultLocaleInfo[m].trim() === '',
       );
       if (mandatoryFieldsMissing.length) {
         missingFields.push({
@@ -130,7 +132,6 @@ export function ProjectEdit() {
         });
       }
     }
-
     const nonLocaleMissingFields = [];
     if (projectInfo.mappingTypes.length === 0) nonLocaleMissingFields.push('mappingTypes');
     const { mappingEditors, validationEditors, customEditor } = projectInfo;
@@ -160,7 +161,17 @@ export function ProjectEdit() {
     ) {
       missingFields.push({ type: 'noTeamsAssigned' });
     }
-
+    // validate name
+    if (!missingFields?.[0]?.fields?.includes('name')) {
+      const projectName = defaultLocaleInfo.name;
+      if (!/^[a-zA-Z]/.test(projectName)) {
+        missingFields.push({
+          locale: projectInfo.defaultLocale,
+          fields: ['projectNameValidationError'],
+          type: 'nameValidationError',
+        });
+      }
+    }
     if (missingFields.length > 0) {
       setError(missingFields);
       return new Promise((resolve, reject) => reject());
@@ -347,6 +358,14 @@ const ErrorTitle = ({ locale, numberOfMissingFields, type, projectInfo }) => {
           mapping: doesMappingTeamNotExist(teams, mappingPermission),
           validation: doesValidationTeamNotExist(teams, validationPermission),
         }}
+      />
+    );
+  }
+  if (type === 'nameValidationError') {
+    return (
+      <FormattedMessage
+        id="management.projects.create.errors.project_name_validation_error"
+        defaultMessage="Project Name Validation Error"
       />
     );
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronRightIcon } from '../svgIcons';
 import { useWindowSize } from '../../hooks/UseWindowSize';
 
