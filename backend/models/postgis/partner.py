@@ -39,12 +39,12 @@ class Partner(db.Model):
     def get_all_partners():
         """Get all partners in DB"""
         return db.session.query(Partner.id).all()
-    
+
     @staticmethod
     def get_by_permalink(permalink: str):
         """Get partner by permalink"""
         return Partner.query.filter_by(permalink=permalink).one_or_none()
-    
+
     @staticmethod
     def get_by_id(partner_id: int):
         """Get partner by id"""
@@ -52,10 +52,10 @@ class Partner(db.Model):
         partner = db.session.get(Partner, partner_id)
 
         if partner is None:
-            raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id) 
-        
+            raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
+
         return partner
-    
+
     def as_dto(self) -> PartnerDTO:
         """Creates partner from DTO"""
         partner_dto = PartnerDTO()
@@ -64,7 +64,7 @@ class Partner(db.Model):
         partner_dto.primary_hashtag = self.primary_hashtag
         partner_dto.secondary_hashtag = self.secondary_hashtag
         partner_dto.logo_url = self.logo_url
-        partner_dto.link_x = self.link_x 
+        partner_dto.link_x = self.link_x
         partner_dto.link_meta = self.link_meta
         partner_dto.link_instagram = self.link_instagram
         partner_dto.current_projects = self.current_projects

@@ -16,6 +16,7 @@ class PartnerServiceError(Exception):
         if current_app:
             current_app.logger.debug(message)
 
+
 class PartnerService:
     @staticmethod
     def get_partner_by_id(partner_id: int) -> Partner:
@@ -24,22 +25,21 @@ class PartnerService:
         if partner is None:
             raise NotFound(
                 sub_code="PARTNER_NOT_FOUND", partner_id=partner_id
-            )     
-      
+            )
+
         return partner
 
     @staticmethod
-    def get_partner_by_permalink(permalink: str)-> Partner:
+    def get_partner_by_permalink(permalink: str) -> Partner:
         partner = Partner.get_by_permalink(permalink)
 
         if partner is None:
             raise NotFound(
                 sub_code="PARTNER_NOT_FOUND", permalink=permalink
-            )     
-      
+            )
+
         return partner
 
-    
     @staticmethod
     def create_partner(data):
         """Create a new partner in database"""
@@ -78,12 +78,12 @@ class PartnerService:
             return {
                 "Error": "Partner cannot be deleted",
             }, 400
-        
+ 
     def update_partner(partner_id: int, data: dict) -> Partner:
         partner = Partner.get_by_id(partner_id)
         if not partner:
             raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
-        
+
         website_links = []
         for key, value in data.items():
             if key.startswith("name_"):
@@ -93,9 +93,9 @@ class PartnerService:
                     website_links.append({"name": value, "url": data[url_key]})
 
         for key, value in data.items():
-            if  hasattr(partner, key):
+            if hasattr(partner, key):
                 setattr(partner, key, value)
-        
+
         partner.website_links = json.dumps(website_links)
         partner.save()
         return partner
@@ -112,4 +112,4 @@ class PartnerService:
     def get_all_partners():
         """Get all partners"""
         return Partner.get_all_partners()
-    
+ 

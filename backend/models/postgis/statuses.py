@@ -104,7 +104,7 @@ class UserRole(Enum):
     READ_ONLY = -1
     MAPPER = 0
     ADMIN = 1
-    
+
 
 class Editors(Enum):
     """Enum describing the possible editors for projects"""

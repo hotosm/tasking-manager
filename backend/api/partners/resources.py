@@ -4,8 +4,6 @@ from backend.services.users.authentication_service import token_auth
 from backend.services.partner_service import PartnerServiceError
 
 
-
-
 class PartnerRestAPI(Resource):
     @token_auth.login_required
     def get(self, partner_id):
@@ -47,7 +45,7 @@ class PartnerRestAPI(Resource):
             for i, link in enumerate(website_links, start=1):
                 partner_dict[f"name_{i}"] = link["name"]
                 partner_dict[f"url_{i}"] = link["url"]
-            
+
             return partner_dict, 200
         else:
             return {"message": "Partner not found"}, 404
@@ -95,11 +93,11 @@ class PartnerRestAPI(Resource):
         try:
             PartnerService.delete_partner(partner_id)
             return {"Success": "Partner deleted"}, 200
-        
+
         except PartnerServiceError as e:
             return {"message": str(e)}, 404
 
-    @token_auth.login_required    
+    @token_auth.login_required 
     def put(self, partner_id):
         """
         Updates an existing partner
@@ -142,9 +140,6 @@ class PartnerRestAPI(Resource):
                         type: array
                         items:
                             type: string
-                        default: [
-                            
-                        ]
         responses:
             200:
                 description: Partner updated successfully
@@ -166,7 +161,7 @@ class PartnerRestAPI(Resource):
             return updated_partner_dict, 200
         except PartnerServiceError as e:
             return {"message": str(e)}, 404
-        
+
 
 class PartnersAllRestAPI(Resource):
     @token_auth.login_required
@@ -195,9 +190,9 @@ class PartnersAllRestAPI(Resource):
                 partner_dict[f"name_{i}"] = link["name"]
                 partner_dict[f"url_{i}"] = link["url"]
             partners.append(partner_dict)
-        
+
         return partners, 200
-    
+
     @token_auth.login_required
     def post(self):
         """
@@ -250,18 +245,18 @@ class PartnersAllRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try: 
+        try:
             data = request.json
             if data:
 
                 new_partner = PartnerService.create_partner(data)
                 partner_dict = new_partner.as_dto().to_primitive()
-                return partner_dict, 201 
+                return partner_dict, 201
             else:
                 return {"message": "Data not provided"}, 400
         except PartnerServiceError as e:
             return {"message": str(e)}, 500
-    
+
 
 class PartnerPermalinkRestAPI(Resource):
     def get(self, permalink):
@@ -303,7 +298,7 @@ class PartnerPermalinkRestAPI(Resource):
             for i, link in enumerate(website_links, start=1):
                 partner_dict[f"name_{i}"] = link["name"]
                 partner_dict[f"url_{i}"] = link["url"]
-            
+
             return partner_dict, 200
         else:
             return {"message": "Partner not found"}, 404

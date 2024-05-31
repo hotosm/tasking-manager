@@ -1,7 +1,5 @@
 from schematics import Model
-from schematics.types import StringType, ListType, ModelType, LongType, BooleanType
-from schematics.types.compound import ListType, ModelType
-from backend.models.dtos.stats_dto import Pagination
+from schematics.types import StringType, ListType, ModelType, LongType
 
 
 class PartnerDTO(Model):
