@@ -1,7 +1,7 @@
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import shortNumber from 'short-number';
 
-import messages from './messages';
+import messages from '../teamsAndOrgs/messages';
 import { RoadIcon, HomeIcon, UserIcon, EditIcon } from '../svgIcons';
 
 export const StatsNumber = (props) => {
