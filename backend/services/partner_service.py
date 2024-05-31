@@ -19,9 +19,7 @@ class PartnerService:
         partner = Partner.get_by_id(partner_id)
 
         if partner is None:
-            raise NotFound(
-                sub_code="PARTNER_NOT_FOUND", partner_id=partner_id
-            )
+            raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
 
         return partner
 
@@ -30,9 +28,7 @@ class PartnerService:
         partner = Partner.get_by_permalink(permalink)
 
         if partner is None:
-            raise NotFound(
-                sub_code="PARTNER_NOT_FOUND", permalink=permalink
-            )
+            raise NotFound(sub_code="PARTNER_NOT_FOUND", permalink=permalink)
 
         return partner
 
@@ -57,7 +53,7 @@ class PartnerService:
             link_instagram=data.get("link_instagram"),
             current_projects=data.get("current_projects"),
             permalink=data.get("permalink"),
-            website_links=json.dumps(website_links)
+            website_links=json.dumps(website_links),
         )
         new_partner.create()
         return new_partner

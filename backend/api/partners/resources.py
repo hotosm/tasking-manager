@@ -40,7 +40,7 @@ class PartnerRestAPI(Resource):
         partner = PartnerService.get_partner_by_id(partner_id)
         if partner:
             partner_dict = partner.as_dto().to_primitive()
-            website_links = partner_dict.pop('website_links', [])
+            website_links = partner_dict.pop("website_links", [])
             for i, link in enumerate(website_links, start=1):
                 partner_dict[f"name_{i}"] = link["name"]
                 partner_dict[f"url_{i}"] = link["url"]
@@ -181,7 +181,7 @@ class PartnersAllRestAPI(Resource):
         for partner_id in partner_ids:
             partner = PartnerService.get_partner_by_id(partner_id)
             partner_dict = partner.as_dto().to_primitive()
-            website_links = partner_dict.pop('website_links', [])
+            website_links = partner_dict.pop("website_links", [])
             for i, link in enumerate(website_links, start=1):
                 partner_dict[f"name_{i}"] = link["name"]
                 partner_dict[f"url_{i}"] = link["url"]
@@ -270,9 +270,9 @@ class PartnerPermalinkRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: permalink
               in: path
-              description: The id of the partner
+              description: The permalink of the partner
               required: true
-              type: integer
+              type: string
         responses:
             200:
                 description: Partner found
@@ -286,7 +286,7 @@ class PartnerPermalinkRestAPI(Resource):
         partner = PartnerService.get_partner_by_permalink(permalink)
         if partner:
             partner_dict = partner.as_dto().to_primitive()
-            website_links = partner_dict.pop('website_links', [])
+            website_links = partner_dict.pop("website_links", [])
             for i, link in enumerate(website_links, start=1):
                 partner_dict[f"name_{i}"] = link["name"]
                 partner_dict[f"url_{i}"] = link["url"]
