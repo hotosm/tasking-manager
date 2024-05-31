@@ -97,7 +97,7 @@ class PartnerRestAPI(Resource):
         except PartnerServiceError as e:
             return {"message": str(e)}, 404
 
-    @token_auth.login_required 
+    @token_auth.login_required
     def put(self, partner_id):
         """
         Updates an existing partner

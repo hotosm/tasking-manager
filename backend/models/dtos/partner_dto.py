@@ -1,5 +1,5 @@
 from schematics import Model
-from schematics.types import StringType, ListType, ModelType, LongType
+from schematics.types import StringType, ListType, LongType
 
 
 class PartnerDTO(Model):

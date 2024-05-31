@@ -78,7 +78,7 @@ class PartnerService:
             return {
                 "Error": "Partner cannot be deleted",
             }, 400
- 
+
     def update_partner(partner_id: int, data: dict) -> Partner:
         partner = Partner.get_by_id(partner_id)
         if not partner:
@@ -112,4 +112,4 @@ class PartnerService:
     def get_all_partners():
         """Get all partners"""
         return Partner.get_all_partners()
- 
+
