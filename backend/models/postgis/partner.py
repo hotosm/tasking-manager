@@ -5,6 +5,7 @@ from backend.models.dtos.partner_dto import PartnerDTO
 
 
 class Partner(db.Model):
+    """Model for Partners"""
 
     __tablename__ = "partners"
 
@@ -26,6 +27,7 @@ class Partner(db.Model):
         db.session.commit()
 
     def save(self):
+        """Save changes to DB"""
         db.session.commit()
 
     def delete(self):
@@ -46,12 +48,9 @@ class Partner(db.Model):
     @staticmethod
     def get_by_id(partner_id: int):
         """Get partner by id"""
-
         partner = db.session.get(Partner, partner_id)
-
         if partner is None:
             raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
-
         return partner
 
     def as_dto(self) -> PartnerDTO:
