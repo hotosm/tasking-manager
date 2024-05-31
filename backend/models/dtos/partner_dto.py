@@ -4,7 +4,7 @@ from schematics.types import StringType, ListType, LongType
 
 class PartnerDTO(Model):
     """DTO for Partner"""
-    
+
     id = LongType()
     name = StringType(serialized_name="name")
     primary_hashtag = StringType(serialized_name="primary_hashtag")
