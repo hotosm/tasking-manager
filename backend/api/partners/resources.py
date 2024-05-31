@@ -1,4 +1,5 @@
 from flask_restful import Resource, request
+
 from backend.services.partner_service import PartnerService, PartnerServiceError
 from backend.services.users.authentication_service import token_auth
 
