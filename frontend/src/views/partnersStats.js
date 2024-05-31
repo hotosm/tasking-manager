@@ -5,11 +5,12 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { NotFound } from './notFound';
 import { useFetch } from '../hooks/UseFetch';
-import { StatsSection } from '../components/teamsAndOrgs/partnersStats';
+import { StatsSection } from '../components/partners/partnersStats';
 import LearnMapNowLogo from '../assets/img/learn-MapNow.svg';
-import { Resources } from '../components/teamsAndOrgs/partnersResourses';
-import { Activity } from '../components/teamsAndOrgs/partnersActivity';
-import { CurrentProjects } from '../components/teamsAndOrgs/currentProjects';
+import { Resources } from '../components/partners/partnersResourses';
+import { Activity } from '../components/partners/partnersActivity';
+import { CurrentProjects } from '../components/partners/currentProjects';
+import { OHSOME_STATS_BASE_URL } from '../config';
 import { Button } from '../components/button';
 
 export const PartnersStats = () => {
@@ -24,7 +25,7 @@ export const PartnersStats = () => {
         hashtag = hashtag.slice(1);
       }
       hashtag = hashtag.toLowerCase();
-      const response = await fetch('https://stats.now.ohsome.org/api/stats/hashtags/' + hashtag);
+      const response = await fetch(OHSOME_STATS_BASE_URL+'/stats/hashtags/' + hashtag);
       if (response.ok) {
         const jsonData = await response.json();
         if (jsonData.result !== undefined && Object.keys(jsonData.result).length !== 0)

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
+import messages from '../teamsAndOrgs/messages';
 import { ProgressBar } from '../progressBar';
 
 export default function PartnersProgresBar({

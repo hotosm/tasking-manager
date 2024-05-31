@@ -5,15 +5,15 @@ import { Form, Field } from 'react-final-form';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
+import messages from '../messages';
 import viewsMessages from '../../views/messages';
 
-import { Management } from './management';
+import { Management } from '../teamsAndOrgs/management';
 
 import { Button, CustomButton } from '../button';
 import { EditIcon } from '../svgIcons';
 import { ChartLineIcon } from '../svgIcons';
-import { nCardPlaceholders } from './organisationsPlaceholder';
+import { nCardPlaceholders } from '../teamsAndOrgs/organisationsPlaceholder';
 import { Alert } from '../alert';
 import { TextField } from '../formInputs';
 
@@ -25,7 +25,7 @@ export function PartnersManagement({ partners, isAdmin, isPartnersFetched }) {
   );
 
   return (
-    <div style={{ backgroundColor: '#F0EFEF' }}>
+    <div className='bg-mask'>
       <Management
         title={
           <FormattedMessage

@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import messages from './messages';
+import messages from '../messages';
 // import Swiper core and required modules
 import { TasksMap } from '../taskSelection/map';
-import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
+import { Pagination} from 'swiper/modules';
 import ReactPlaceholder from 'react-placeholder';
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
 import './styles.scss';
-import 'swiper/swiper.scss';
-import 'swiper/swiper-bundle.css';
-import 'swiper/core';
-import 'swiper/components/navigation/navigation.scss';
-import 'swiper/components/pagination/pagination.scss';
-import 'swiper/components/scrollbar/scrollbar.scss';
+import 'swiper/css';
+import 'swiper/css/bundle';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
 import { Button } from '../button';
 import { Link } from 'react-router-dom';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
-
-// install Swiper modules
-SwiperCore.use([Navigation, Pagination, Scrollbar, A11y]);
 
 export function CurrentProjects({ currentProjects }) {
   const [projectsData, setProjectsData] = useState([]);
@@ -72,8 +68,8 @@ export function CurrentProjects({ currentProjects }) {
 
   useEffect(() => {
     fetchData();
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentProjects]);
 
   return (
@@ -106,7 +102,7 @@ export function CurrentProjects({ currentProjects }) {
                 <h4>
                   {project.id} - {project.info.name}
                 </h4>
-                <Link  to={`/projects/` + project.id}>
+                <Link to={`/projects/` + project.id}>
                   <Button className="bg-red ba b--red white pv2 ph3">
                     <FormattedMessage {...messages.startMapping} />
                   </Button>

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import PartnersProgresBar from './partnersProgresBar';
-import messages from './messages';
+import messages from '../teamsAndOrgs/messages';
+import { OHSOME_STATS_BASE_URL } from '../../config';
 import { FormattedMessage } from 'react-intl';
 export const Activity = () => {
   const [data, setData] = useState(null);
@@ -9,7 +10,8 @@ export const Activity = () => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        'https://stats.now.ohsome.org/api/stats/hashtags/accenture,acn*,dublinacn19,acngraddublin19,acnfy22,acnfy23',
+        OHSOME_STATS_BASE_URL +
+          '/hashtags/accenture,acn*,dublinacn19,acngraddublin19,acnfy22,acnfy23',
       );
 
       if (response.ok) {
@@ -17,10 +19,10 @@ export const Activity = () => {
         const formattedData = formatData(jsonData.result);
         setData(formattedData);
       } else {
-        console.error('Error al obtener los datos:', response.statusText);
+        console.error('Error fetching data:', response.statusText);
       }
     } catch (error) {
-      console.error('Error al procesar la solicitud:', error);
+      console.error('Error processing the request:', error);
     }
   };
 
@@ -87,8 +89,7 @@ export const Activity = () => {
                               rel="noreferrer"
                               style={{ textDecoration: 'none', color: 'black', marginTop: 15 }}
                               href={
-                                'https://stats.now.ohsome.org/dashboard#hashtags=' +
-                                dataItem.primary
+                                OHSOME_STATS_BASE_URL + '/dashboard#hashtags=' + dataItem.primary
                               }
                             >
                               {'#' + dataItem.primary}{' '}

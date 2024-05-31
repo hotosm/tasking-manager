@@ -12,7 +12,7 @@ import {
   PartnersForm,
   CreatePartnersInfo,
   PartnersManagement,
-} from '../components/teamsAndOrgs/partners';
+} from '../components/partners/partners';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
