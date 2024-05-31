@@ -1,7 +1,6 @@
 from flask_restful import Resource, request
-from backend.services.partner_service import PartnerService
+from backend.services.partner_service import PartnerService, PartnerServiceError
 from backend.services.users.authentication_service import token_auth
-from backend.services.partner_service import PartnerServiceError
 
 
 class PartnerRestAPI(Resource):
@@ -41,11 +40,9 @@ class PartnerRestAPI(Resource):
         if partner:
             partner_dict = partner.as_dto().to_primitive()
             website_links = partner_dict.pop('website_links', [])
-
             for i, link in enumerate(website_links, start=1):
                 partner_dict[f"name_{i}"] = link["name"]
                 partner_dict[f"url_{i}"] = link["url"]
-
             return partner_dict, 200
         else:
             return {"message": "Partner not found"}, 404
@@ -93,7 +90,6 @@ class PartnerRestAPI(Resource):
         try:
             PartnerService.delete_partner(partner_id)
             return {"Success": "Partner deleted"}, 200
-
         except PartnerServiceError as e:
             return {"message": str(e)}, 404
 
@@ -185,12 +181,10 @@ class PartnersAllRestAPI(Resource):
             partner = PartnerService.get_partner_by_id(partner_id)
             partner_dict = partner.as_dto().to_primitive()
             website_links = partner_dict.pop('website_links', [])
-
             for i, link in enumerate(website_links, start=1):
                 partner_dict[f"name_{i}"] = link["name"]
                 partner_dict[f"url_{i}"] = link["url"]
             partners.append(partner_dict)
-
         return partners, 200
 
     @token_auth.login_required
@@ -248,7 +242,6 @@ class PartnersAllRestAPI(Resource):
         try:
             data = request.json
             if data:
-
                 new_partner = PartnerService.create_partner(data)
                 partner_dict = new_partner.as_dto().to_primitive()
                 return partner_dict, 201
@@ -290,15 +283,12 @@ class PartnerPermalinkRestAPI(Resource):
                 description: Internal Server Error
         """
         partner = PartnerService.get_partner_by_permalink(permalink)
-
         if partner:
             partner_dict = partner.as_dto().to_primitive()
             website_links = partner_dict.pop('website_links', [])
-
             for i, link in enumerate(website_links, start=1):
                 partner_dict[f"name_{i}"] = link["name"]
                 partner_dict[f"url_{i}"] = link["url"]
-
             return partner_dict, 200
         else:
             return {"message": "Partner not found"}, 404
