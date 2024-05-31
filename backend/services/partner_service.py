@@ -40,6 +40,7 @@ class PartnerService:
     def create_partner(data):
         """Create a new partner in database"""
         website_links = []
+
         for i in range(1, 6):
             name_key = f"name_{i}"
             url_key = f"url_{i}"
@@ -61,6 +62,7 @@ class PartnerService:
             website_links=json.dumps(website_links)
         )
         new_partner.create()
+
         return new_partner
 
     @staticmethod
@@ -77,6 +79,7 @@ class PartnerService:
 
     def update_partner(partner_id: int, data: dict) -> Partner:
         partner = Partner.get_by_id(partner_id)
+
         if not partner:
             raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
 
@@ -94,14 +97,17 @@ class PartnerService:
 
         partner.website_links = json.dumps(website_links)
         partner.save()
+
         return partner
 
     @staticmethod
     def get_partner_dto_by_id(partner: int, request_partner: int) -> PartnerDTO:
         partner = PartnerService.get_partner_by_id(partner)
+
         if request_partner:
             request_name = PartnerService.get_partner_by_id(request_partner).name
             return partner.as_dto(request_name)
+
         return partner.as_dto()
 
     @staticmethod
