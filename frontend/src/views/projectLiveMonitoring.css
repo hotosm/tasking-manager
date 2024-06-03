@@ -4,34 +4,31 @@
   height: calc(100vh - 6.05rem);
 }
 
-.top {
+.maplibregl-map {
+  height: 100vh;
+}
+
+.live-monitoring-top-filters {
   position: absolute;
-  top: 0.625rem;
-  left: 0.625rem;
+  top: 20px;
+  left: 20px;
   z-index: 999;
 }
 
-svg.pl2 {
-  display: inherit;
-  height: 22px !important;
-  width: 19px !important;
-  margin-left: 0px;
+.live-monitoring-options {
+  border-top: 2px solid var(--hot-gray-100);
+  border-bottom: 2px solid var(--hot-gray-100);
+  padding-top: 20px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
 }
 
-.react-select__control {
-  border-radius: 0.25rem !important;
-  min-height: 36px !important;
-  width: 15.8rem;
+.hui-input-text {
+  margin-top: 10px;
 }
 
-.react-select__menu {
-  width: 15.8rem !important;
-}
-
-.title-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+.hui-theme h3.title-text {
+  line-height: 0;
+  margin-bottom: 0;
 }
