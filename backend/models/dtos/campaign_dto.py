@@ -30,12 +30,12 @@ class NewCampaignDTO(BaseModel):
 #     organisations = ListType(ModelType(OrganisationDTO), serialize_when_none=False)
 
 class CampaignDTO(BaseModel):
-    id: Optional[int] = Field(serialize=False, default=None)
-    name: Optional[str] = Field(serialize=False, default=None)
-    logo: Optional[str] = Field(serialize=False, default=None)
-    url: Optional[str] = Field(serialize=False, default=None)
-    description: Optional[str] = Field(serialize=False, default=None)
-    organisations: List[OrganisationDTO] = Field(default=[], alias="organisations")
+    id: Optional[int] = Field(default=None)
+    name: Optional[str] = Field(default=None)
+    logo: Optional[str] = Field(default=None)
+    url: Optional[str] = Field(default=None)
+    description: Optional[str] = Field(default=None)
+    organisations: List[OrganisationDTO] = Field(default=None, alias="organisations")
 
 
 class CampaignProjectDTO(BaseModel):

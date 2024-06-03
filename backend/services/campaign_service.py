@@ -20,6 +20,7 @@ from backend.services.organisation_service import OrganisationService
 from backend.services.project_service import ProjectService
 from backend.db import get_session
 session = get_session()
+from sqlalchemy import select
 
 
 class CampaignService:
@@ -93,12 +94,16 @@ class CampaignService:
         new_campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
         return new_campaigns
 
-    @staticmethod
-    def get_all_campaigns() -> CampaignListDTO:
-        """Returns a list of all campaigns"""
-        query = session.query(Campaign).order_by(Campaign.name).distinct()
 
-        return Campaign.campaign_list_as_dto(query)
+    @staticmethod
+    async def get_all_campaigns(session) -> CampaignListDTO:
+        """Returns a list of all campaigns"""
+        result = await session.execute(
+            select(Campaign).order_by(Campaign.name).distinct()
+        )
+        campaigns = result.scalars().all()
+        return await Campaign.campaign_list_as_dto(campaigns)
+    
 
     @staticmethod
     def create_campaign(campaign_dto: NewCampaignDTO):
