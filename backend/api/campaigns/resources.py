@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(
     prefix="/campaigns",
@@ -204,7 +205,7 @@ async def delete(request: Request, campaign_id: int):
 
 # class CampaignsAllAPI(Resource):
 @router.get("/")
-async def get():
+async def get(request: Request, session: AsyncSession = Depends(get_session)):
     """
     Get all active campaigns
     ---
@@ -218,8 +219,8 @@ async def get():
         500:
             description: Internal Server Error
     """
-    campaigns = CampaignService.get_all_campaigns()
-    return campaigns.model_dump(by_alias=True)
+    campaigns = await CampaignService.get_all_campaigns(session)
+    return campaigns.model_dump(by_alias=True, exclude_none=True)
 
 @router.post("/")
 @requires("authenticated")
