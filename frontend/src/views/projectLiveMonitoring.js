@@ -203,7 +203,6 @@ export function ProjectLiveMonitoring() {
                 isClearable={true}
                 value={imageryOptions.find((item) => item.value === mapSource)}
                 options={imageryOptions}
-                // placeholder={<FormattedMessage {...messages.selectImagery} />}
                 onChange={handleMapSourceSelect}
                 className="hui-w-60 hui-z-2 hui-mt-2"
               />
@@ -212,7 +211,7 @@ export function ProjectLiveMonitoring() {
               <UnderpassMap
                 center={coords}
                 tags={tags}
-                // hashtag={defaultComment}
+                hashtag={defaultComment}
                 featureType={featureType}
                 highlightDataQualityIssues
                 popupFeature={activeFeature}
@@ -287,7 +286,7 @@ export function ProjectLiveMonitoring() {
               <>
                 <UnderpassValidationStats
                   tags={tags}
-                  // hashtag={defaultComment}
+                  hashtag={defaultComment}
                   featureType={featureType}
                   apiUrl={underpassConfig.API_URL}
                   status="badgeom"
@@ -326,7 +325,7 @@ export function ProjectLiveMonitoring() {
                     overflowY: 'auto',
                   }}
                   tags={tags}
-                  // hashtag={defaultComment}
+                  hashtag={defaultComment}
                   featureType={featureType}
                   page={0}
                   area={areaOfInterest}
@@ -339,7 +338,7 @@ export function ProjectLiveMonitoring() {
                   realtime={realtimeList}
                   config={underpassConfig}
                   status={listAll ? '' : status}
-                  // orderBy="created_at"
+                  orderBy="created_at"
                   onFetchFirstTime={(mostRecentFeature) => {
                     if (mostRecentFeature) {
                       setCoords([mostRecentFeature.lat, mostRecentFeature.lon]);
