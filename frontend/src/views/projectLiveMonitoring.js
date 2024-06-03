@@ -53,7 +53,7 @@ export function ProjectLiveMonitoring() {
 
   const [areaOfInterest, setAreaOfInterest] = useState(null);
   const [project, setProject] = useState(null);
-  const defaultComment = `${TM_DEFAULT_CHANGESET_COMMENT}-${id}`.replace("#","");
+  const defaultComment = `${TM_DEFAULT_CHANGESET_COMMENT}-${id}`.replace('#', '');
 
   const hasLiveMonitoringFeature = useHasLiveMonitoringFeature();
 
@@ -291,28 +291,31 @@ export function ProjectLiveMonitoring() {
                   apiUrl={underpassConfig.API_URL}
                   status="badgeom"
                   area={areaOfInterest} />
-              <div className="live-monitoring-options">
+                <div className="live-monitoring-options">
                   <form className="hui-space-x-2">
                     <input
                       onChange={() => {
                         setRealtimeList(!realtimeList);
-                      } }
+                      }}
                       name="liveListCheckbox"
-                      type="checkbox" />
+                      type="checkbox"
+                    />
                     <label target="liveListCheckbox">Live list</label>
                     <input
                       onChange={() => {
                         setRealtimeMap(!realtimeMap);
-                      } }
+                      }}
                       name="liveMapCheckbox"
-                      type="checkbox" />
+                      type="checkbox"
+                    />
                     <label target="liveMapCheckbox">Live map</label>
                     <input
                       onChange={() => {
                         setListAll(!listAll);
-                      } }
+                      }}
                       name="listAllCheckbox"
-                      type="checkbox" />
+                      type="checkbox"
+                    />
                     <label target="listAllCheckbox">List all</label>
                   </form>
                 </div>
@@ -334,7 +337,7 @@ export function ProjectLiveMonitoring() {
                     const tags = JSON.stringify(feature.tags);
                     const status = feature.status;
                     setActiveFeature({ properties: { tags, status }, ...feature });
-                  } }
+                  }}
                   realtime={realtimeList}
                   config={underpassConfig}
                   status={listAll ? '' : status}
@@ -343,7 +346,9 @@ export function ProjectLiveMonitoring() {
                     if (mostRecentFeature) {
                       setCoords([mostRecentFeature.lat, mostRecentFeature.lon]);
                     }
-                  } } /></>
+                  }}
+                />
+              </>
             )}
           </div>
         </div>
