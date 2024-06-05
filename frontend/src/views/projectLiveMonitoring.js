@@ -341,7 +341,7 @@ export function ProjectLiveMonitoring() {
                   realtime={realtimeList}
                   config={underpassConfig}
                   status={listAll ? '' : status}
-                  orderBy="closed_at"
+                  orderBy="closedAt"
                   onFetchFirstTime={(mostRecentFeature) => {
                     if (mostRecentFeature) {
                       setCoords([mostRecentFeature.lat, mostRecentFeature.lon]);
