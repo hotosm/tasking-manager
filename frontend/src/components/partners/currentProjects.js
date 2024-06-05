@@ -96,8 +96,8 @@ export function CurrentProjects({ currentProjects }) {
             border: '1px solid',
           }}
         >
-          {projectsData.map((project, index) => (
-            <SwiperSlide key={index}>
+          {projectsData.map((project) => (
+            <SwiperSlide key={project.id}>
               <TasksMap className="w-100 h-50 m2-l" mapResults={project.tasks} />
               <div className="mv2-l mh2 flex justify-between items-center">
                 <h4>
