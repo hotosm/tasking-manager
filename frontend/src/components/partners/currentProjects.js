@@ -16,6 +16,7 @@ import 'swiper/css/scrollbar';
 import { Button } from '../button';
 import { Link } from 'react-router-dom';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
+import { OHSOME_STATS_BASE_URL } from '../../config';
 
 export function CurrentProjects({ currentProjects }) {
   const [projectsData, setProjectsData] = useState([]);
@@ -34,7 +35,7 @@ export function CurrentProjects({ currentProjects }) {
       const projectIds = currentProjects.split(',').map((id) => parseInt(id.trim(), 10));
       const promises = projectIds.map(async (id) => {
         const response = await fetch(
-          `https://tasking-manager-tm4-production-api.hotosm.org/api/v2/projects/${id}/tasks/`,
+          OHSOME_STATS_BASE_URL+`/api/v2/projects/${id}/tasks/`,
         );
 
         if (!response.ok) {
@@ -42,7 +43,7 @@ export function CurrentProjects({ currentProjects }) {
           throw new Error(`Failed to fetch tasks for project ${id}`);
         }
         const responseInfo = await fetch(
-          `https://tasking-manager-tm4-production-api.hotosm.org/api/v2/projects/${id}/queries/summary/`,
+          OHSOME_STATS_BASE_URL+`/api/v2/projects/${id}/queries/summary/`,
         );
         if (!responseInfo.ok) {
           throw new Error(`Failed to fetch project info for project ${id}`);
