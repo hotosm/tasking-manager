@@ -67,6 +67,7 @@ class PartnerService:
         else:
             return {"Error": "Partner cannot be deleted"}, 400
 
+    @staticmethod
     def update_partner(partner_id: int, data: dict) -> Partner:
         partner = Partner.get_by_id(partner_id)
         if not partner:
