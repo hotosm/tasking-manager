@@ -104,18 +104,39 @@ class CampaignService:
         campaigns = result.scalars().all()
         return await Campaign.campaign_list_as_dto(campaigns)
     
+    
+    # @staticmethod
+    # def create_campaign(campaign_dto: NewCampaignDTO):
+    #     """Creates a new campaign"""
+    #     campaign = Campaign.from_dto(campaign_dto)
+    #     try:
+    #         campaign.create()
+    #         if campaign_dto.organisations:
+    #             for org_id in campaign_dto.organisations:
+    #                 organisation = OrganisationService.get_organisation_by_id(org_id)
+    #                 campaign.organisation.append(organisation)
+    #             session.commit()
+    #     except IntegrityError as e:
+    #         current_app.logger.info("Integrity error: {}".format(e.args[0]))
+    #         if isinstance(e.orig, UniqueViolation):
+    #             raise ValueError("NameExists- Campaign name already exists") from e
+    #         if isinstance(e.orig, NotNullViolation):
+    #             raise ValueError("NullName- Campaign name cannot be null") from e
+    #     return campaign
+
 
     @staticmethod
-    def create_campaign(campaign_dto: NewCampaignDTO):
-        """Creates a new campaign"""
+    async def create_campaign(campaign_dto: NewCampaignDTO, session):
+        """Creates a new campaign asynchronously"""
         campaign = Campaign.from_dto(campaign_dto)
         try:
-            campaign.create()
+            session.add(campaign)
+            await session.commit()
             if campaign_dto.organisations:
                 for org_id in campaign_dto.organisations:
-                    organisation = OrganisationService.get_organisation_by_id(org_id)
+                    organisation = await OrganisationService.get_organisation_by_id(org_id, session)
                     campaign.organisation.append(organisation)
-                session.commit()
+                await session.commit()
         except IntegrityError as e:
             current_app.logger.info("Integrity error: {}".format(e.args[0]))
             if isinstance(e.orig, UniqueViolation):

@@ -90,7 +90,7 @@ class AuthServiceError(Exception):
 
 class AuthenticationService:
     @staticmethod
-    def login_user(osm_user_details, email, user_element="user") -> dict:
+    async def login_user(osm_user_details, email, session, user_element="user") -> dict:
         """
         Generates authentication details for user, creating in DB if user is unknown to us
         :param osm_user_details: XML response from OSM
@@ -114,8 +114,8 @@ class AuthenticationService:
             user_picture = None
 
         try:
-            UserService.get_user_by_id(osm_id)
-            UserService.update_user(osm_id, username, user_picture)
+            await UserService.get_user_by_id(osm_id, session)
+            UserService.update_user(osm_id, username, user_picture, session)
         except NotFound:
             # User not found, so must be new user
             changesets = osm_user.get("changesets")
