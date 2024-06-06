@@ -16,21 +16,11 @@ class PartnerServiceError(Exception):
 class PartnerService:
     @staticmethod
     def get_partner_by_id(partner_id: int) -> Partner:
-        partner = Partner.get_by_id(partner_id)
-
-        if partner is None:
-            raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
-
-        return partner
+        return Partner.get_by_id(partner_id)
 
     @staticmethod
     def get_partner_by_permalink(permalink: str) -> Partner:
-        partner = Partner.get_by_permalink(permalink)
-
-        if partner is None:
-            raise NotFound(sub_code="PARTNER_NOT_FOUND", permalink=permalink)
-
-        return partner
+        return Partner.get_by_permalink(permalink)
 
     @staticmethod
     def create_partner(data):
@@ -70,8 +60,6 @@ class PartnerService:
     @staticmethod
     def update_partner(partner_id: int, data: dict) -> Partner:
         partner = Partner.get_by_id(partner_id)
-        if not partner:
-            raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
         website_links = []
         for key, value in data.items():
             if key.startswith("name_"):
