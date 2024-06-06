@@ -13,10 +13,10 @@ class NewCampaignDTO(BaseModel):
     """Describes JSON model to create a campaign"""
 
     name: str = Field(serialize_when_none=False, validators=[is_existent])
-    logo: str = Field(serialize_when_none=False)
-    url: str = Field(serialize_when_none=False)
-    description: str = Field(serialize_when_none=False)
-    organisations: List[int] = Field(serialize_when_none=False)
+    logo: Optional[str] = Field(None, serialize_when_none=False)
+    url: Optional[str] = Field(None, serialize_when_none=False)
+    description: Optional[str] = Field(None, serialize_when_none=False)
+    organisations: Optional[List[int]] = Field(None, serialize_when_none=False)
 
 
 # class CampaignDTO(Model):

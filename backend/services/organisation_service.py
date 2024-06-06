@@ -176,19 +176,25 @@ class OrganisationService:
         return orgs_dto
 
     @staticmethod
-    def get_organisations_managed_by_user(user_id: int):
+    async def get_organisations_managed_by_user(user_id: int, session):
         """Get all organisations a user manages"""
-        if UserService.is_user_an_admin(user_id):
-            return Organisation.get_all_organisations()
+        if await UserService.is_user_an_admin(user_id, session):
+            return await Organisation.get_all_organisations()
 
-        return Organisation.get_organisations_managed_by_user(user_id)
+        return await Organisation.get_organisations_managed_by_user(user_id, session)
 
     @staticmethod
-    def get_organisations_managed_by_user_as_dto(user_id: int) -> ListOrganisationsDTO:
-        orgs = OrganisationService.get_organisations_managed_by_user(user_id)
+    async def get_organisations_managed_by_user_as_dto(user_id: int, session) -> ListOrganisationsDTO:
+        orgs = await OrganisationService.get_organisations_managed_by_user(user_id, session)
         orgs_dto = ListOrganisationsDTO()
-        orgs_dto.organisations = [org.as_dto() for org in orgs]
+        # Fetch managers asynchronously for each organisation
+        for org in orgs:
+            await org.fetch_managers(session)  # Ensure managers are loaded
+            orgs_dto.organisations.append(org.as_dto())
         return orgs_dto
+    
+        # orgs_dto.organisations = [org.as_dto() for org in orgs]
+        # return orgs_dto
 
     @staticmethod
     def get_projects_by_organisation_id(organisation_id: int) -> Organisation:
