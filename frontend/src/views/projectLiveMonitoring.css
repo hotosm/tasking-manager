@@ -4,10 +4,6 @@
   height: calc(100vh - 6.05rem);
 }
 
-.maplibregl-map {
-  height: 100vh;
-}
-
 .live-monitoring-top-filters {
   position: absolute;
   top: 20px;
