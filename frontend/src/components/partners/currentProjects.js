@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from '../messages';
 // import Swiper core and required modules
 import { TasksMap } from '../taskSelection/map';
-import { Pagination} from 'swiper/modules';
+import { Pagination } from 'swiper/modules';
 import ReactPlaceholder from 'react-placeholder';
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
@@ -16,7 +16,7 @@ import 'swiper/css/scrollbar';
 import { Button } from '../button';
 import { Link } from 'react-router-dom';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
-import { OHSOME_STATS_BASE_URL } from '../../config';
+import { API_URL } from '../../config';
 
 export function CurrentProjects({ currentProjects }) {
   const [projectsData, setProjectsData] = useState([]);
@@ -34,17 +34,13 @@ export function CurrentProjects({ currentProjects }) {
     try {
       const projectIds = currentProjects.split(',').map((id) => parseInt(id.trim(), 10));
       const promises = projectIds.map(async (id) => {
-        const response = await fetch(
-          OHSOME_STATS_BASE_URL+`/api/v2/projects/${id}/tasks/`,
-        );
+        const response = await fetch(API_URL + `projects/${id}/tasks/`);
 
         if (!response.ok) {
           setError(true);
           throw new Error(`Failed to fetch tasks for project ${id}`);
         }
-        const responseInfo = await fetch(
-          OHSOME_STATS_BASE_URL+`/api/v2/projects/${id}/queries/summary/`,
-        );
+        const responseInfo = await fetch(API_URL + `projects/${id}/queries/summary/`);
         if (!responseInfo.ok) {
           throw new Error(`Failed to fetch project info for project ${id}`);
         }
