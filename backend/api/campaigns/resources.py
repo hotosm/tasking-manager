@@ -224,7 +224,7 @@ async def get(request: Request, session: AsyncSession = Depends(get_session)):
 
 @router.post("/")
 @requires("authenticated")
-async def post(request: Request):
+async def post(request: Request, session: AsyncSession = Depends(get_session)):
     """
     Creates a new campaign
     ---
@@ -280,8 +280,8 @@ async def post(request: Request):
             description: Internal Server Error
     """
     try:
-        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-            request.user.display_name
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            request.user.display_name, session
         )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
@@ -290,14 +290,19 @@ async def post(request: Request):
         return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
     try:
-        campaign_dto = NewCampaignDTO(request.json())
-        campaign_dto.validate()
+        request_body = await request.json()
+        NewCampaignDTO.validate(request_body)
+        campaign_dto = NewCampaignDTO(**request_body)
+        # campaign_dto.validate()
+
+        
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
         return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
     try:
-        campaign = CampaignService.create_campaign(campaign_dto)
+        campaign = await CampaignService.create_campaign(campaign_dto, session)
+        await session.refresh(campaign)  # Explicitly refresh the object
         return {"campaignId": campaign.id}, 201
     except ValueError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
