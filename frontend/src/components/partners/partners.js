@@ -53,8 +53,8 @@ export function PartnersManagement({ partners, isAdmin, isPartnersFetched }) {
           <div className="ph4 cards-container">
             {isAdmin ? (
               filteredPartners?.length ? (
-                filteredPartners.map((partner, index) => (
-                  <PartnersCard details={partner} key={index} />
+                filteredPartners.map((partner) => (
+                  <PartnersCard details={partner} key={partner.id} />
                 ))
               ) : (
                 <div className="pb5">

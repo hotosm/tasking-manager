@@ -20,10 +20,10 @@ export const Resources = ({ partner }) => {
     return (
       <div className="ph6-l flex flex-wrap flex-nowrap-ns stats-container">
         {socialLinks.map(
-          (link, index) =>
+          (link) =>
             partner[link.name] && (
               <a
-                key={index}
+                key={link.name}
                 href={partner[link.name]}
                 target="_blank"
                 rel="noreferrer"

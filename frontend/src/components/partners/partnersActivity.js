@@ -66,19 +66,19 @@ export const Activity = () => {
     <ReactPlaceholder showLoadingAnimation={true} rows={26} ready={data} className="pv3  ph4-ns ">
       <div className="graphics-container">
         {data &&
-          data.map((series, index) => {
+          data.map((series) => {
             const maxValue = series.data.reduce(
               (max, item) => (item.secondary > max ? item.secondary : max),
               0,
             );
             return (
-              <div key={index} className="pv3-l pv2 mb3-l pr4 pl4 mb2 shadow-4 bg-white">
+              <div key={series.label} className="pv3-l pv2 mb3-l pr4 pl4 mb2 shadow-4 bg-white">
                 <h3>
                   <FormattedMessage {...messages[series.label]} />
                 </h3>
                 <div style={{ maxHeight: 400, overflowY: 'scroll', overflowX: 'hidden' }}>
-                  {series.data.map((dataItem, dataIndex) => (
-                    <div key={dataIndex}>
+                  {series.data.map((dataItem) => (
+                    <div key={dataItem.primary}>
                       <div className="blue-grey">
                         {dataItem ? (
                           <div
@@ -100,7 +100,7 @@ export const Activity = () => {
                           <FormattedMessage {...messages.noProjectContributors} />
                         )}
                       </div>
-                      <div key={dataIndex}>
+                      <div key={dataItem.primary}>
                         <PartnersProgresBar
                           className="pb3 bg-white"
                           totalData={maxValue}
