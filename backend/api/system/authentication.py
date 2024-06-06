@@ -18,7 +18,7 @@ router = APIRouter(
     dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
-
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # class SystemAuthenticationLoginAPI():
 @router.get("/authentication/login/")
@@ -55,7 +55,7 @@ async def get(request: Request):
 
 # class SystemAuthenticationCallbackAPI():
 @router.get("/authentication/callback/")
-async def get(request: Request):
+async def get(request: Request, session: AsyncSession = Depends(get_session)):
     """
     Handles the OSM OAuth callback
     ---
@@ -120,8 +120,8 @@ async def get(request: Request):
         }, 502
 
     user_info_url = f"{settings.OAUTH_API_URL}/user/details.json"
-    osm_response = osm.get(user_info_url)  # Get details for the authenticating user
 
+    osm_response = osm.get(user_info_url)  # Get details for the authenticating user
     if osm_response.status_code != 200:
         logger.critical("Error response from OSM")
         return {
@@ -130,7 +130,7 @@ async def get(request: Request):
         }, 502
 
     try:
-        user_params = AuthenticationService.login_user(osm_response.json(), email)
+        user_params = await AuthenticationService.login_user(osm_response.json(), email, session)
         user_params["session"] = osm_resp
         return user_params, 200
     except AuthServiceError:

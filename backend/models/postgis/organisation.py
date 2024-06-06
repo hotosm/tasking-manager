@@ -13,7 +13,7 @@ from backend.models.postgis.campaign import Campaign, campaign_organisations
 from backend.models.postgis.statuses import OrganisationType
 from backend.db import Base, get_session
 session = get_session()
-
+from sqlalchemy import select
 # Secondary table defining many-to-many relationship between organisations and managers
 organisation_managers = Table(
     "organisation_managers",
@@ -152,23 +152,46 @@ class Organisation(Base):
         return session.query(Organisation).get(organisation_id).name
 
     @staticmethod
-    def get_all_organisations():
+    async def get_all_organisations():
         """Gets all organisations"""
         return session.query(Organisation).order_by(Organisation.name).all()
 
+    #commented
+    # @staticmethod
+    # def get_organisations_managed_by_user(user_id: int):
+    #     """Gets organisations a user can manage"""
+    #     query_results = (
+    #         session.query(Organisation).join(organisation_managers)
+    #         .filter(
+    #             (organisation_managers.c.organisation_id == Organisation.id)
+    #             & (organisation_managers.c.user_id == user_id)
+    #         )
+    #         .order_by(Organisation.name)
+    #         .all()
+    #     )
+    #     return query_results
+
+
     @staticmethod
-    def get_organisations_managed_by_user(user_id: int):
+    async def get_organisations_managed_by_user(user_id: int, session):
         """Gets organisations a user can manage"""
-        query_results = (
-            session.query(Organisation).join(organisation_managers)
+        query = (
+            select(Organisation)
+            .join(organisation_managers)
             .filter(
-                (organisation_managers.c.organisation_id == Organisation.id)
-                & (organisation_managers.c.user_id == user_id)
+                (organisation_managers.c.organisation_id == Organisation.id) &
+                (organisation_managers.c.user_id == user_id)
             )
             .order_by(Organisation.name)
-            .all()
         )
+        result = await session.execute(query)
+        query_results = result.scalars().all()
         return query_results
+    
+
+    async def fetch_managers(self, session):
+        """Fetch managers asynchronously"""
+        await session.refresh(self, ['managers'])
 
     def as_dto(self, omit_managers=False):
         """Returns a dto for an organisation"""

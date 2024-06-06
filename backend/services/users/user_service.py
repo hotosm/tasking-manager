@@ -3,6 +3,7 @@ from cachetools import TTLCache, cached
 import datetime
 from sqlalchemy.sql.expression import literal
 from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column
+from sqlalchemy import select
 
 from backend.exceptions import NotFound
 from backend import db
@@ -51,12 +52,12 @@ class UserServiceError(Exception):
 
 class UserService:
     @staticmethod
-    def get_user_by_id(user_id: int) -> User:
-        user = User.get_by_id(user_id)
-
+    async def get_user_by_id(user_id: int, session) -> User:
+        user = await User.get_by_id(user_id, session)
+        # result = await session.execute(select(User).filter_by(id=user_id))
+        # return result.scalars().first()
         if user is None:
             raise NotFound(sub_code="USER_NOT_FOUND", user_id=user_id)
-
         return user
 
     @staticmethod
@@ -111,8 +112,9 @@ class UserService:
         return users
 
     @staticmethod
-    def update_user(user_id: int, osm_username: str, picture_url: str) -> User:
-        user = UserService.get_user_by_id(user_id)
+    async def update_user(user_id: int, osm_username: str, picture_url: str, session) -> User:
+        user = await UserService.get_user_by_id(user_id)
+        print(user.__dict__, "USER KO DICT")
         if user.username != osm_username:
             user.update_username(osm_username)
 
@@ -506,9 +508,9 @@ class UserService:
         return User.filter_users(username, project_id, page)
 
     @staticmethod
-    def is_user_an_admin(user_id: int) -> bool:
+    async def is_user_an_admin(user_id: int, session) -> bool:
         """Is the user an admin"""
-        user = UserService.get_user_by_id(user_id)
+        user = await UserService.get_user_by_id(user_id, session)
         if UserRole(user.role) == UserRole.ADMIN:
             return True
 
