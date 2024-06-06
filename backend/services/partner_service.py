@@ -1,6 +1,5 @@
 from flask import current_app
 import json
-from backend.exceptions import NotFound
 from backend.models.dtos.partner_dto import PartnerDTO
 from backend.models.postgis.partner import Partner
 
