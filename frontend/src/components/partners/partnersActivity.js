@@ -4,14 +4,23 @@ import PartnersProgresBar from './partnersProgresBar';
 import messages from '../teamsAndOrgs/messages';
 import { OHSOME_STATS_BASE_URL } from '../../config';
 import { FormattedMessage } from 'react-intl';
-export const Activity = () => {
+export const Activity = (partner) => {
   const [data, setData] = useState(null);
 
   const fetchData = async () => {
     try {
+      let primaryHashtag = partner.primary_hashtag.trim();
+      if (primaryHashtag.startsWith('#')) {
+        primaryHashtag = primaryHashtag.slice(1);
+      }
+      primaryHashtag = primaryHashtag.toLowerCase();
+
+      const secondaryHashtags = partner.secondary_hashtag
+        .split(',')
+        .map((tag) => tag.trim().replace('#', '').toLowerCase())
+        .join(',');
       const response = await fetch(
-        OHSOME_STATS_BASE_URL +
-          '/hashtags/accenture,acn*,dublinacn19,acngraddublin19,acnfy22,acnfy23',
+        OHSOME_STATS_BASE_URL + `/hashtags/${primaryHashtag},${secondaryHashtags}`,
       );
 
       if (response.ok) {
