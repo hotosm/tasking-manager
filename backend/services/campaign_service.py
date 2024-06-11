@@ -21,18 +21,35 @@ from backend.services.project_service import ProjectService
 from backend.db import get_session
 session = get_session()
 from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound
+
+# class CampaignService:
+#     @staticmethod
+#     async def get_campaign(campaign_id: int, session) -> Campaign:
+#         """Gets the specified campaign"""
+#         campaign = await session.get(Campaign, campaign_id)
+
+#         if campaign is None:
+#             raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
+
+#         return campaign
 
 
 class CampaignService:
     @staticmethod
-    def get_campaign(campaign_id: int) -> Campaign:
+    async def get_campaign(campaign_id: int, session) -> Campaign:
         """Gets the specified campaign"""
-        campaign = session.get(Campaign, campaign_id)
+        try:
+            result = await session.execute(select(Campaign).filter_by(id=campaign_id))
+            campaign = result.scalar_one_or_none()
+            
+            if campaign is None:
+                raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
 
-        if campaign is None:
+            return campaign
+        except NoResultFound:
             raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
-
-        return campaign
+        
 
     @staticmethod
     def get_campaign_by_name(campaign_name: str) -> Campaign:
@@ -44,16 +61,16 @@ class CampaignService:
         return campaign
 
     @staticmethod
-    def delete_campaign(campaign_id: int):
+    async def delete_campaign(campaign_id: int, session):
         """Delete campaign for a project"""
-        campaign = session.get(Campaign, campaign_id)
-        campaign.delete()
-        campaign.save()
+        campaign = await session.get(Campaign, campaign_id)
+        await session.delete(campaign)
+        await session.commit()
 
     @staticmethod
-    def get_campaign_as_dto(campaign_id: int, user_id: int):
+    async def get_campaign_as_dto(campaign_id: int, user_id: int, session):
         """Gets the specified campaign"""
-        campaign = CampaignService.get_campaign(campaign_id)
+        campaign = await CampaignService.get_campaign(campaign_id, session)
 
         campaign_dto = CampaignDTO()
         campaign_dto.id = campaign.id
