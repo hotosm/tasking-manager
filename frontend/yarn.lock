@@ -2665,7 +2665,7 @@
     "@pixi/core" "7.4.0"
     "@pixi/math" "7.4.0"
 
-"@rapideditor/rapid@^2.1.1":
+"@rapideditor/rapid@^2.3.1":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@rapideditor/rapid/-/rapid-2.3.1.tgz#7e98fb86cb6a8498d1d43fa7a72ead5ab07b1e2f"
   integrity sha512-oKM7ZkBxpEVUG35PPrz0HzmwJak0h/b+7+YdwVskrSIZZMsWeag7sibASQcHGzGM9Ih1IBUDZ2Dw5c9MkOGsQw==

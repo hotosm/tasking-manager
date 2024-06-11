@@ -7,7 +7,7 @@ import { NotFound } from './notFound';
 import { useFetch } from '../hooks/UseFetch';
 import { StatsSection } from '../components/partners/partnersStats';
 import LearnMapNowLogo from '../assets/img/learn-MapNow.svg';
-import { Resources } from '../components/partners/partnersResourses';
+import { Resources } from '../components/partners/partnersResources';
 import { Activity } from '../components/partners/partnersActivity';
 import { CurrentProjects } from '../components/partners/currentProjects';
 import { OHSOME_STATS_BASE_URL } from '../config';

@@ -8,10 +8,6 @@ export default defineMessages({
     id: 'management.messages.notAllowed',
     defaultMessage: 'You are not allowed to manage organizations.',
   },
-  notAllowedPartners: {
-    id: 'management.messages.notAllowedPartners',
-    defaultMessage: 'You are not allowed to manage partners.',
-  },
   imageUploadFailed: {
     id: 'management.messages.imageUpload.error',
     defaultMessage: 'The image upload failed.',
@@ -35,49 +31,9 @@ export default defineMessages({
     id: 'management.link.edit.team',
     defaultMessage: 'Edit team',
   },
-  edits: {
-    id: 'management.partnersActivity.edits',
-    defaultMessage: 'Edits',
-  },
-  buildings: {
-    id: 'management.partnersActivity.buildings',
-    defaultMessage: 'Buildings Added',
-  },
-  roads: {
-    id: 'management.partnersActivity.roads',
-    defaultMessage: 'km of Roads Added',
-  },
-  users: {
-    id: 'management.partnersActivity.users',
-    defaultMessage: 'Users',
-  },
   readMore: {
     id: 'project.readMoreButton',
     defaultMessage: 'Read more',
-  },
-  startMapping: {
-    id: 'management.partnersCurrentProjects.startMapping',
-    defaultMessage: 'Start mapping',
-  },
-  learnToMap: {
-    id: 'management.partner.learnToMap',
-    defaultMessage: 'Learn to Map',
-  },
-  connectOnMSTeams: {
-    id: 'management.partner.resources.connectOnMSTeams',
-    defaultMessage: 'Connect on MS Teams',
-  },
-  hostAMapathonEvent: {
-    id: 'management.partner.resources.hostAMapathonEvent',
-    defaultMessage: 'Host a mapathon event',
-  },
-  supportEmail: {
-    id: 'management.partner.resources.supportEmail',
-    defaultMessage: 'Support Email',
-  },
-  logYourVolunteerHours: {
-    id: 'management.partner.resources.logYourVolunteerHours',
-    defaultMessage: 'Log your volunteer hours',
   },
   resourcesButton:{
     id: 'management.edit.resourcesButton',
@@ -227,14 +183,6 @@ export default defineMessages({
     id: 'management.filter.textarea.searchOrganisations',
     defaultMessage: 'Search organisations...',
   },
-  myPartners: {
-    id: 'management.filter.buttons.myPartners',
-    defaultMessage: 'My Partners',
-  },
-  searchPartners: {
-    id: 'management.filter.textarea.searchPartners',
-    defaultMessage: 'Search partners...',
-  },
   buildingsStats: {
     id: 'management.filter.stats.buildingsStats',
     defaultMessage: 'Building Edits',
@@ -315,14 +263,6 @@ export default defineMessages({
     id: 'management.organisations',
     defaultMessage: 'Organizations',
   },
-  partner: {
-    id: 'management.partner',
-    defaultMessage: 'Partner',
-  },
-  partners: {
-    id: 'management.partners',
-    defaultMessage: 'Partners',
-  },
   type: {
     id: 'management.organisations.type',
     defaultMessage: 'Type',
@@ -362,10 +302,6 @@ export default defineMessages({
   noOrganisationsFound: {
     id: 'management.organisations.list.empty',
     defaultMessage: 'No organizations were found.',
-  },
-  noPartnersFound: {
-    id: 'management.partners.list.empty',
-    defaultMessage: 'No partners were found.',
   },
   retry: {
     id: 'management.organisations.stats.retry',
@@ -480,10 +416,6 @@ export default defineMessages({
     id: 'management.titles.organisation_information',
     defaultMessage: 'Organization information',
   },
-  partnersInfo: {
-    id: 'management.titles.partner_information',
-    defaultMessage: 'Partner information',
-  },
   teamInfo: {
     id: 'management.titles.team_information',
     defaultMessage: 'Team information',
@@ -523,29 +455,6 @@ export default defineMessages({
   website: {
     id: 'management.fields.website',
     defaultMessage: 'Website',
-  },
-  permalink:{
-    id: 'management.titles.partner_permalink',
-    defaultMessage: 'Permalink',
-  },
-  primaryhashtag: {
-    id: 'management.titles.partner_primaryhashtag',
-    defaultMessage: 'Primaryhashtag',
-  },
-  secondaryhashtag: {
-    id: 'management.titles.partner_secondaryhashtag',
-    defaultMessage: 'Secondaryhashtag',
-  },
-  logo: { id: 'management.titles.partner_logo', defaultMessage: 'Logo' },
-  metaLink: { id: 'management.titles.partner_metaLink', defaultMessage: 'Meta Link' },
-  xLink: { id: 'management.titles.partner_xLink', defaultMessage: 'X Link' },
-  instagramLink: {
-    id: 'management.titles.partner_instagramLink',
-    defaultMessage: 'Instagram Link',
-  },
-  currentProjects: {
-    id: 'management.titles.partner.currentProjects',
-    defaultMessage: 'Current projects',
   },
   settings: {
     id: 'management.settings',

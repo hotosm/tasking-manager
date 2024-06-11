@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import messages from '../messages';
+import messages from './messages';
 // import Swiper core and required modules
 import { TasksMap } from '../taskSelection/map';
 import { Pagination } from 'swiper/modules';

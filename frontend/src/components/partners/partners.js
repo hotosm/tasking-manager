@@ -5,7 +5,7 @@ import { Form, Field } from 'react-final-form';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
-import messages from '../messages';
+import messages from './messages';
 import viewsMessages from '../../views/messages';
 
 import { Management } from '../teamsAndOrgs/management';

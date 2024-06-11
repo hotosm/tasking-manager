@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import PartnersProgresBar from './partnersProgresBar';
-import messages from '../teamsAndOrgs/messages';
+import messages from './messages';
 import { OHSOME_STATS_BASE_URL } from '../../config';
 import { FormattedMessage } from 'react-intl';
 export const Activity = (partner) => {
