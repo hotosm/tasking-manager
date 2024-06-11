@@ -159,6 +159,10 @@ export default defineMessages({
     id: 'management.licenses',
     defaultMessage: 'Licenses',
   },
+  users: {
+    id: 'management.users',
+    defaultMessage: 'Users',
+  },
   user: {
     id: 'management.user',
     defaultMessage: 'User',
