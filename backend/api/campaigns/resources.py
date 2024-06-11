@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 @router.get("/{campaign_id}/")
-async def get(request: Request, campaign_id: int):
+async def get(request: Request, campaign_id: int, session: AsyncSession = Depends(get_session)):
     """
     Get an active campaign's information
     ---
@@ -51,12 +51,13 @@ async def get(request: Request, campaign_id: int):
     """
     authenticated_user_id = request.user.display_name if request.user else None
     if authenticated_user_id:
-        campaign = CampaignService.get_campaign_as_dto(
-            campaign_id, authenticated_user_id
+        campaign = await CampaignService.get_campaign_as_dto(
+            campaign_id, authenticated_user_id, session
         )
     else:
-        campaign = CampaignService.get_campaign_as_dto(campaign_id, 0)
-    return campaign.model_dump(by_alias=True)
+        campaign = await CampaignService.get_campaign_as_dto(campaign_id, 0, session)
+
+    return campaign.model_dump(by_alias=True, exclude_none=True)
 
 @router.patch("/{campaign_id}/")
 @requires("authenticated")
@@ -149,7 +150,7 @@ async def patch(request: Request, campaign_id: int):
 
 @router.delete("/{campaign_id}/")
 @requires("authenticated")
-async def delete(request: Request, campaign_id: int):
+async def delete(request: Request, campaign_id: int, session: AsyncSession = Depends(get_session)):
     """
     Deletes an existing campaign
     ---
@@ -189,8 +190,8 @@ async def delete(request: Request, campaign_id: int):
             description: Internal Server Error
     """
     try:
-        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-            request.user.display_name
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            request.user.display_name, session
         )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
@@ -198,8 +199,8 @@ async def delete(request: Request, campaign_id: int):
         error_msg = f"CampaignsRestAPI DELETE: {str(e)}"
         return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
-    campaign = CampaignService.get_campaign(campaign_id)
-    CampaignService.delete_campaign(campaign.id)
+    campaign = await CampaignService.get_campaign(campaign_id, session)
+    await CampaignService.delete_campaign(campaign.id, session)
     return {"Success": "Campaign deleted"}, 200
 
 
