@@ -31,9 +31,9 @@ export default defineMessages({
     id: 'management.link.edit.team',
     defaultMessage: 'Edit team',
   },
-  readMore: {
-    id: 'project.readMoreButton',
-    defaultMessage: 'Read more',
+  partners: {
+    id: 'management.partners',
+    defaultMessage: 'Partners',
   },
   resourcesButton:{
     id: 'management.edit.resourcesButton',
