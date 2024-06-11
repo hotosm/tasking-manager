@@ -75,10 +75,6 @@ export default defineMessages({
     id: 'project.readMoreButton',
     defaultMessage: 'Read more',
   },
-  startMapping: {
-    id: 'management.partnersCurrentProjects.startMapping',
-    defaultMessage: 'Start mapping',
-  },
   learnToMap: {
     id: 'management.partner.learnToMap',
     defaultMessage: 'Learn to Map',
