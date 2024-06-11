@@ -29,7 +29,7 @@ export function PartnersManagement({ partners, isAdmin, isPartnersFetched }) {
       <Management
         title={
           <FormattedMessage
-            {...messages.manage}
+            {...messages.partnerManage}
             values={{ entity: <FormattedMessage {...messages.partners} /> }}
           />
         }
@@ -281,7 +281,7 @@ export function PartnersInformation({ hasSlug, setFormState, formState }) {
               </div>
               <div className={containerClases}>
                 <label className={labelClasses}>
-                  <FormattedMessage {...messages.link} />
+                  <FormattedMessage {...messages.partnerLink} />
                 </label>
                 <Field
                   name={`url_${index + 1}`}

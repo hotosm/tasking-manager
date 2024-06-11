@@ -8,98 +8,59 @@ export default defineMessages({
     id: 'management.messages.notAllowedPartners',
     defaultMessage: 'You are not allowed to manage partners.',
   },
-  managers: {
-    id: 'management.fields.managers',
-    defaultMessage: 'Managers',
-  },
-  remove: { id: 'management.fields.managers.remove', defaultMessage: 'Remove' },
-  add: { id: 'management.fields.managers.add', defaultMessage: 'Add' },
-  link: { id: 'management.fields.managers.link', defaultMessage: 'Link' },
-  noManagers: {
-    id: 'management.fields.managers.empty',
-    defaultMessage: 'There are no managers yet.',
-  },
+  partnerLink: { id: 'management.partners.link', defaultMessage: 'Link' },
   startMapping: {
-    id: 'management.partnersCurrentProjects.startMapping',
+    id: 'management.partners.currentProjects.startMapping',
     defaultMessage: 'Start mapping',
   },
-  manage: {
-    id: 'management.link.manage',
+  partnerManage: {
+    id: 'management.partners.link.manage',
     defaultMessage: 'Manage {entity}',
   },
   buildingsStats: {
-    id: 'management.filter.stats.buildingsStats',
+    id: 'management.partners.filter.buildingsStats',
     defaultMessage: 'Building Edits',
   },
   contributors: {
-    id: 'management.contributors',
+    id: 'management.partners.contributors',
     defaultMessage: 'Contributors',
   },
   roadsStats: {
-    id: 'management.filter.stats.roadsStats',
+    id: 'management.partners.filter.roadsStats',
     defaultMessage: 'km of Roads',
   },
   editsStats: {
-    id: 'management.filter.stats.editsStats',
+    id: 'management.partners.filter.editsStats',
     defaultMessage: 'Total Edits',
   },
-  communityStats: {
-    id: 'management.filter.stats.communityStats',
-    defaultMessage: 'Community stats',
-  },
-  mappersStats: {
-    id: 'management.filter.stats.mappersStats',
-    defaultMessage: 'Contributors',
-  },
-  noProjectContributors: {
-    id: 'project.detail.contributorCount.zero',
-    defaultMessage: 'No contributors yet',
+  noPartnersGroup: {
+    id: 'partners.group.zero',
+    defaultMessage: 'No partners group yet',
   },
   edits: {
-    id: 'management.partnersActivity.edits',
+    id: 'management.partners.activity.edits',
     defaultMessage: 'Edits',
   },
   buildings: {
-    id: 'management.partnersActivity.buildings',
+    id: 'management.partners.activity.buildings',
     defaultMessage: 'Buildings Added',
   },
   roads: {
-    id: 'management.partnersActivity.roads',
+    id: 'management.partners.activity.roads',
     defaultMessage: 'km of Roads Added',
   },
   users: {
-    id: 'management.partnersActivity.users',
+    id: 'management.partners.activity.users',
     defaultMessage: 'Users',
   },
   readMore: {
-    id: 'project.readMoreButton',
+    id: 'partners.readMoreButton',
     defaultMessage: 'Read more',
   },
   learnToMap: {
-    id: 'management.partner.learnToMap',
+    id: 'management.partners.learnToMap',
     defaultMessage: 'Learn to Map',
-  },
-  connectOnMSTeams: {
-    id: 'management.partner.resources.connectOnMSTeams',
-    defaultMessage: 'Connect on MS Teams',
-  },
-  hostAMapathonEvent: {
-    id: 'management.partner.resources.hostAMapathonEvent',
-    defaultMessage: 'Host a mapathon event',
-  },
-  supportEmail: {
-    id: 'management.partner.resources.supportEmail',
-    defaultMessage: 'Support Email',
-  },
-  logYourVolunteerHours: {
-    id: 'management.partner.resources.logYourVolunteerHours',
-    defaultMessage: 'Log your volunteer hours',
-  },
- 
-  projects: {
-    id: 'management.projects',
-    defaultMessage: 'Projects',
-  },
+  }, 
   myPartners: {
     id: 'management.filter.buttons.myPartners',
     defaultMessage: 'My Partners',
@@ -121,34 +82,30 @@ export default defineMessages({
     defaultMessage: 'No partners were found.',
   },
   partnersInfo: {
-    id: 'management.titles.partner_information',
+    id: 'management.partners.titles.partner_information',
     defaultMessage: 'Partner information',
   },
-  website: {
-    id: 'management.fields.website',
-    defaultMessage: 'Website',
-  },
   permalink:{
-    id: 'management.titles.partner_permalink',
+    id: 'management.partners.titles.partner_permalink',
     defaultMessage: 'Permalink',
   },
   primaryhashtag: {
-    id: 'management.titles.partner_primaryhashtag',
+    id: 'management.partners.titles.partner_primaryhashtag',
     defaultMessage: 'Primaryhashtag',
   },
   secondaryhashtag: {
-    id: 'management.titles.partner_secondaryhashtag',
+    id: 'management.partners.titles.partner_secondaryhashtag',
     defaultMessage: 'Secondaryhashtag',
   },
-  logo: { id: 'management.titles.partner_logo', defaultMessage: 'Logo' },
-  metaLink: { id: 'management.titles.partner_metaLink', defaultMessage: 'Meta Link' },
-  xLink: { id: 'management.titles.partner_xLink', defaultMessage: 'X Link' },
+  logo: { id: 'management.partners.titles.partner_logo', defaultMessage: 'Logo' },
+  metaLink: { id: 'management.partners.titles.partner_metaLink', defaultMessage: 'Meta Link' },
+  xLink: { id: 'management.partners.titles.partner_xLink', defaultMessage: 'X Link' },
   instagramLink: {
-    id: 'management.titles.partner_instagramLink',
+    id: 'management.partners.titles.partner_instagramLink',
     defaultMessage: 'Instagram Link',
   },
   currentProjects: {
-    id: 'management.titles.partner.currentProjects',
+    id: 'management.partners.titles.partner.currentProjects',
     defaultMessage: 'Current projects',
   },
 });

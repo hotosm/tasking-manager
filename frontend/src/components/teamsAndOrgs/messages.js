@@ -32,7 +32,7 @@ export default defineMessages({
     defaultMessage: 'Edit team',
   },
   partners: {
-    id: 'management.partners',
+    id: 'management.partners.menu',
     defaultMessage: 'Partners',
   },
   resourcesButton:{

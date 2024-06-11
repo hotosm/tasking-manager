@@ -106,7 +106,7 @@ export const Activity = (partner) => {
                             <p>{dataItem.secondary}</p>
                           </div>
                         ) : (
-                          <FormattedMessage {...messages.noProjectContributors} />
+                          <FormattedMessage {...messages.noPartnersGroup} />
                         )}
                       </div>
                       <div key={dataItem.primary}>
