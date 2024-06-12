@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import messages from './messages';
-// import Swiper core and required modules
 import { TasksMap } from '../taskSelection/map';
 import { Pagination } from 'swiper/modules';
-import ReactPlaceholder from 'react-placeholder';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Button } from '../button';
+import { Link } from 'react-router-dom';
+import { API_URL } from '../../config';
+
+import messages from './messages';
+import ReactPlaceholder from 'react-placeholder';
+import ProjectProgressBar from '../projectCard/projectProgressBar';
+
 // Import Swiper styles
 import './styles.scss';
 import 'swiper/css';
@@ -13,10 +18,6 @@ import 'swiper/css/bundle';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
-import { Button } from '../button';
-import { Link } from 'react-router-dom';
-import ProjectProgressBar from '../projectCard/projectProgressBar';
-import { API_URL } from '../../config';
 
 export function CurrentProjects({ currentProjects }) {
   const [projectsData, setProjectsData] = useState([]);

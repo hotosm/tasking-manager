@@ -139,7 +139,7 @@ export default defineMessages({
   entityCreationSuccess: {
     id: 'management.entity.creation.success',
     defaultMessage:
-      '{entity, select, organization {Organization} license {License} project {Project} category {Category} campaign {Campaign} team {Team} other {}} created successfully',
+      '{entity, select, organization {Organization} partner {Partner} license {License} project {Project} category {Category} campaign {Campaign} team {Team} other {}} created successfully',
   },
   entityCreationFailure: {
     id: 'management.entity.creation.failure',

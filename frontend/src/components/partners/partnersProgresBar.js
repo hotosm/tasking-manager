@@ -13,8 +13,6 @@ export default function PartnersProgresBar({
 }: Object) {
 
   return (
-    <>
-    
       <ProgressBar
         className={"bg-white"}
         firstBarValue={0}
@@ -29,6 +27,5 @@ export default function PartnersProgresBar({
           />
         </p>
       </ProgressBar>
-    </>
   );
 }

@@ -4,6 +4,30 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on teams and orgs.
  */
 export default defineMessages({
+  save: {
+    id: 'management.partners.button.save',
+    defaultMessage: 'Save',
+  },
+  cancel: {
+    id: 'management.partners.button.cancel',
+    defaultMessage: 'Cancel',
+  },
+  statistics: {
+    id: 'management.partners.stats.title',
+    defaultMessage: 'Statistics',
+  },
+  edit: {
+    id: 'management.partners.edit',
+    defaultMessage: 'Edit',
+  },
+  name: {
+    id: 'management.partners.fields.name',
+    defaultMessage: 'Name',
+  },
+  image: {
+    id: 'management.partners.fields.image',
+    defaultMessage: 'Image',
+  },
   notAllowedPartners: {
     id: 'management.messages.notAllowedPartners',
     defaultMessage: 'You are not allowed to manage partners.',
