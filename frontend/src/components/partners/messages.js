@@ -115,11 +115,11 @@ export default defineMessages({
   },
   primaryhashtag: {
     id: 'management.partners.titles.partner_primaryhashtag',
-    defaultMessage: 'Primaryhashtag',
+    defaultMessage: 'Primary hashtag',
   },
   secondaryhashtag: {
     id: 'management.partners.titles.partner_secondaryhashtag',
-    defaultMessage: 'Secondaryhashtag',
+    defaultMessage: 'Secondary hashtag',
   },
   logo: { id: 'management.partners.titles.partner_logo', defaultMessage: 'Logo' },
   metaLink: { id: 'management.partners.titles.partner_metaLink', defaultMessage: 'Meta Link' },
