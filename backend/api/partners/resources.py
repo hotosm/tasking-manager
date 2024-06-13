@@ -2,7 +2,7 @@ from flask_restful import Resource, request
 
 from backend.services.partner_service import PartnerService, PartnerServiceError
 from backend.services.users.authentication_service import token_auth
-
+from backend.models.postgis.user import User
 
 class PartnerRestAPI(Resource):
     @token_auth.login_required
@@ -37,6 +37,14 @@ class PartnerRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
+
+        request_user = User.get_by_id(token_auth.current_user())
+        if request_user.role != 1:
+            return {
+                "Error": "Only admin users can manage partners.",
+                "SubCode": "OnlyAdminAccess",
+            }, 403
+
         partner = PartnerService.get_partner_by_id(partner_id)
         if partner:
             partner_dict = partner.as_dto().to_primitive()
@@ -88,6 +96,13 @@ class PartnerRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        request_user = User.get_by_id(token_auth.current_user())
+        if request_user.role != 1:
+            return {
+                "Error": "Only admin users can manage partners.",
+                "SubCode": "OnlyAdminAccess",
+            }, 403
+
         try:
             PartnerService.delete_partner(partner_id)
             return {"Success": "Partner deleted"}, 200
@@ -151,6 +166,14 @@ class PartnerRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
+
+        request_user = User.get_by_id(token_auth.current_user())
+        if request_user.role != 1:
+            return {
+                "Error": "Only admin users can manage partners.",
+                "SubCode": "OnlyAdminAccess",
+            }, 403
+
         try:
             data = request.json
             updated_partner = PartnerService.update_partner(partner_id, data)
@@ -176,6 +199,14 @@ class PartnersAllRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
+
+        request_user = User.get_by_id(token_auth.current_user())
+        if request_user.role != 1:
+            return {
+                "Error": "Only admin users can manage partners.",
+                "SubCode": "OnlyAdminAccess",
+            }, 403
+
         partner_ids = PartnerService.get_all_partners()
         partners = []
         for partner_id in partner_ids:
@@ -240,6 +271,14 @@ class PartnersAllRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
+
+        request_user = User.get_by_id(token_auth.current_user())
+        if request_user.role != 1:
+            return {
+                "Error": "Only admin users can manage partners.",
+                "SubCode": "OnlyAdminAccess",
+            }, 403
+
         try:
             data = request.json
             if data:
