@@ -184,7 +184,7 @@ The client is the front-end user interface of the Tasking Manager. It is based o
 #### Dependencies
 
 The following dependencies must be available _globally_ on your system:
-* Download and install [Node 18.xx](https://nodejs.org/en/download) and [yarn](https://classic.yarnpkg.com/en/docs/install)
+* Download and install [NodeJS LTS v12+](https://nodejs.org/en/) and [yarn](https://classic.yarnpkg.com/en/docs/install)
 * Go into the `frontend` directory and execute `yarn`.
 
 #### Available Scripts
@@ -299,6 +299,23 @@ cd frontend && yarn build-locales
 
 
 ### Database
+
+
+### Migrations with docker
+
+You need to delete all the versions in ./migrations/version.
+Then, import the new model into the file ./backend/__init__.py
+Finally, enter inside the migration container and run:
+
+```
+python manage.py db migrate
+```
+
+and
+
+```
+python manage.py db upgrade
+```
 
 #### Create a fresh database
 

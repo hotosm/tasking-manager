@@ -16,6 +16,9 @@ export default defineMessages({
     id: 'management.fields.managers',
     defaultMessage: 'Managers',
   },
+  remove: { id: 'management.fields.managers.remove', defaultMessage: 'Remove' },
+  add: { id: 'management.fields.managers.add', defaultMessage: 'Add' },
+  link: { id: 'management.fields.managers.link', defaultMessage: 'Link' },
   noManagers: {
     id: 'management.fields.managers.empty',
     defaultMessage: 'There are no managers yet.',
@@ -27,6 +30,14 @@ export default defineMessages({
   editTeam: {
     id: 'management.link.edit.team',
     defaultMessage: 'Edit team',
+  },
+  partners: {
+    id: 'management.partners.menu',
+    defaultMessage: 'Partners',
+  },
+  resourcesButton:{
+    id: 'management.edit.resourcesButton',
+    defaultMessage: 'Resources link',
   },
   edit: {
     id: 'management.members.edit',
@@ -175,6 +186,30 @@ export default defineMessages({
   searchOrganisations: {
     id: 'management.filter.textarea.searchOrganisations',
     defaultMessage: 'Search organisations...',
+  },
+  buildingsStats: {
+    id: 'management.filter.stats.buildingsStats',
+    defaultMessage: 'Building Edits',
+  },
+  contributors: {
+    id: 'management.contributors',
+    defaultMessage: 'Contributors',
+  },
+  roadsStats: {
+    id: 'management.filter.stats.roadsStats',
+    defaultMessage: 'km of Roads',
+  },
+  editsStats: {
+    id: 'management.filter.stats.editsStats',
+    defaultMessage: 'Total Edits',
+  },
+  communityStats: {
+    id: 'management.filter.stats.communityStats',
+    defaultMessage: 'Community stats',
+  },
+  mappersStats: {
+    id: 'management.filter.stats.mappersStats',
+    defaultMessage: 'Contributors',
   },
   searchTeams: {
     id: 'management.filter.textarea.searchTeams',

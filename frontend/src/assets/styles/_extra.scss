@@ -448,7 +448,15 @@ a[href="https://www.mapbox.com/map-feedback/"]
 .two-column {
   grid-template-columns: 6fr 4fr;
 }
-
+.graphics-container{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 600px));
+  gap: 1rem;
+}
+.input-container{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 600px));
+}
 .cards-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
