@@ -4,6 +4,7 @@ from backend.services.partner_service import PartnerService, PartnerServiceError
 from backend.services.users.authentication_service import token_auth
 from backend.models.postgis.user import User
 
+
 class PartnerRestAPI(Resource):
     @token_auth.login_required
     def get(self, partner_id):
