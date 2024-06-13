@@ -40,7 +40,8 @@ from backend.models.dtos.project_dto import (
     ProjectInfoDTO,
 )
 from backend.models.dtos.interests_dto import InterestDTO
-
+from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 from backend.models.dtos.tags_dto import TagsDTO
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.custom_editors import CustomEditor
@@ -1009,8 +1010,27 @@ class Project(Base):
         count = result.scalar()
         return count
 
+
     async def _get_project_and_base_dto(self, session):
         """Populates a project DTO with properties common to all roles"""
+
+        project_query = (
+            select(Project)
+            .options(
+                selectinload(Project.custom_editor),
+                selectinload(Project.allowed_users),
+                selectinload(Project.campaign),
+                selectinload(Project.priority_areas),
+            )
+            .filter(Project.id == self.id)
+        )
+        
+        result = await session.execute(project_query)
+        project = result.scalar_one_or_none()
+        
+        if not project:
+            raise ValueError("Project not found")
+        
         base_dto = ProjectDTO()
         base_dto.project_id = self.id
         base_dto.project_status = ProjectStatus(self.status).name
@@ -1040,7 +1060,7 @@ class Project(Base):
         base_dto.last_updated = self.last_updated
         user = await User.get_by_id(self.author_id, session)
         base_dto.author = user.username
-        base_dto.active_mappers = Project.get_active_mappers(self.id, session)
+        base_dto.active_mappers = await Project.get_active_mappers(self.id, session)
         base_dto.task_creation_mode = TaskCreationMode(self.task_creation_mode).name
 
         base_dto.percent_mapped = self.calculate_tasks_percent("mapped")
@@ -1113,6 +1133,7 @@ class Project(Base):
         abbrev: bool = True,
         session=None,
     ) -> Optional[ProjectDTO]:
+        
         """Creates a Project DTO suitable for transmitting to mapper users"""
         project, project_dto = await self._get_project_and_base_dto(session)
         # if abbrev is False:
