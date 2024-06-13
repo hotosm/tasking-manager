@@ -51,7 +51,7 @@ async def get_project(
     project_id: int,
     as_file: str = "False",
     abbreviated: bool = False,
-    session: Session = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
 ):
     """
     Get a specified project including it's area
@@ -100,6 +100,7 @@ async def get_project(
             description: Internal Server Error
     """
     try:
+
         authenticated_user_id = request.user.display_name if request.user else None
         as_file = bool(
             strtobool(as_file)
@@ -118,7 +119,6 @@ async def get_project(
             abbreviated,
             session,
         )
-
         if project_dto:
             project_dto = project_dto.model_dump(by_alias=True)
             if as_file:
@@ -130,19 +130,22 @@ async def get_project(
                     filename=f"project_{str(project_id)}.json",
                 )
             return project_dto
+        
         else:
             return {
                 "Error": "User not permitted: Private Project",
                 "SubCode": "PrivateProject",
             }, 403
+
+
     except ProjectServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
     finally:
         # this will try to unlock tasks that have been locked too long
-        try:
-            ProjectService.auto_unlock_tasks(project_id)
-        except Exception as e:
-            logger.critical(str(e))
+        # try:
+            await ProjectService.auto_unlock_tasks(project_id, session)
+        # except Exception as e:
+        #     logger.critical(str(e))
 
 router.post("/")
 @requires("authenticated")
