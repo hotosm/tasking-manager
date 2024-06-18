@@ -14,6 +14,8 @@ from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
+from sqlalchemy.ext.asyncio import AsyncSession
+
 
 router = APIRouter(
     prefix="/organisations",
@@ -24,7 +26,7 @@ router = APIRouter(
 
 @router.get("/{organisation_id}/")
 @requires("authenticated")
-async def get(request: Request, organisation_id: int):
+async def get(request: Request, organisation_id: int, session: AsyncSession = Depends(get_session)):
     """
     Retrieves an organisation
     ---
@@ -59,6 +61,7 @@ async def get(request: Request, organisation_id: int):
         500:
             description: Internal Server Error
     """
+    print('letss goooo...')
     authenticated_user_id = request.user.display_name if request.user else None
     if authenticated_user_id is None:
         user_id = 0
@@ -66,10 +69,11 @@ async def get(request: Request, organisation_id: int):
         user_id = authenticated_user_id
     # Validate abbreviated.
     omit_managers = strtobool(request.query_params.get("omitManagerList", "false"))
-    organisation_dto = OrganisationService.get_organisation_by_id_as_dto(
-        organisation_id, user_id, omit_managers
+    organisation_dto = await OrganisationService.get_organisation_by_id_as_dto(
+        organisation_id, user_id, omit_managers, session
     )
     return organisation_dto.model_dump(by_alias=True), 200
+
 
 # class OrganisationsBySlugRestAPI(Resource):
 #     @token_auth.login_required(optional=True)
@@ -343,7 +347,7 @@ def patch(request: Request, organisation_id: int):
 
 # class OrganisationsStatsAPI(Resource):
 @router.get("/{organisation_id}/statistics/")
-async def get(organisation_id: int):
+async def get(organisation_id: int, session: AsyncSession = Depends(get_session)):
     """
     Return statistics about projects and active tasks of an organisation
     ---
@@ -366,9 +370,9 @@ async def get(organisation_id: int):
         500:
             description: Internal Server Error
     """
-    OrganisationService.get_organisation_by_id(organisation_id)
-    organisation_dto = OrganisationService.get_organisation_stats(
-        organisation_id, None
+    await OrganisationService.get_organisation_by_id(organisation_id, session)
+    organisation_dto = await OrganisationService.get_organisation_stats(
+        organisation_id, session, None
     )
     return organisation_dto.model_dump(by_alias=True), 200
 
@@ -376,7 +380,7 @@ async def get(organisation_id: int):
 # class OrganisationsAllAPI(Resource):
 #     @token_auth.login_required(optional=True)
 @router.get("/")
-async def get(request: Request):
+async def get(request: Request, session: AsyncSession = Depends(get_session)):
     """
     List all organisations
     ---
@@ -439,14 +443,13 @@ async def get(request: Request):
             403,
         )
 
-    # Validate abbreviated.
     omit_managers = bool(strtobool(request.query_params.get("omitManagerList", "false")))
     omit_stats = bool(strtobool(request.query_params.get("omitOrgStats", "true")))
-    # Obtain organisations
-    results_dto = OrganisationService.get_organisations_as_dto(
+    results_dto = await OrganisationService.get_organisations_as_dto(
         manager_user_id,
         authenticated_user_id,
         omit_managers,
         omit_stats,
+        session
     )
     return results_dto.model_dump(by_alias=True), 200
