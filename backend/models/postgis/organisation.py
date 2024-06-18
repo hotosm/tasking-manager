@@ -14,6 +14,8 @@ from backend.models.postgis.statuses import OrganisationType
 from backend.db import Base, get_session
 session = get_session()
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+
 # Secondary table defining many-to-many relationship between organisations and managers
 organisation_managers = Table(
     "organisation_managers",
@@ -127,7 +129,7 @@ class Organisation(Base):
         return len(self.projects) == 0 and len(self.teams) == 0
 
     @staticmethod
-    def get(organisation_id: int):
+    def get(organisation_id: int, session):
         """
         Gets specified organisation by id
         :param organisation_id: organisation ID in scope
@@ -151,25 +153,14 @@ class Organisation(Base):
         """
         return session.query(Organisation).get(organisation_id).name
 
-    @staticmethod
-    async def get_all_organisations():
-        """Gets all organisations"""
-        return session.query(Organisation).order_by(Organisation.name).all()
 
-    #commented
-    # @staticmethod
-    # def get_organisations_managed_by_user(user_id: int):
-    #     """Gets organisations a user can manage"""
-    #     query_results = (
-    #         session.query(Organisation).join(organisation_managers)
-    #         .filter(
-    #             (organisation_managers.c.organisation_id == Organisation.id)
-    #             & (organisation_managers.c.user_id == user_id)
-    #         )
-    #         .order_by(Organisation.name)
-    #         .all()
-    #     )
-    #     return query_results
+    @staticmethod
+    async def get_all_organisations(session):
+        """Gets all organisations"""
+        result = await session.execute(
+            select(Organisation).options(selectinload(Organisation.managers),).order_by(Organisation.name)
+        )
+        return result.scalars().all()
 
 
     @staticmethod
@@ -177,6 +168,9 @@ class Organisation(Base):
         """Gets organisations a user can manage"""
         query = (
             select(Organisation)
+            .options(
+                selectinload(Organisation.managers),
+            )
             .join(organisation_managers)
             .filter(
                 (organisation_managers.c.organisation_id == Organisation.id) &
