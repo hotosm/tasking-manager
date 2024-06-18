@@ -27,6 +27,8 @@ from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.services.users.user_service import UserService
 from backend.db import get_session
 session = get_session()
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 
 class OrganisationServiceError(Exception):
@@ -39,8 +41,8 @@ class OrganisationServiceError(Exception):
 
 class OrganisationService:
     @staticmethod
-    def get_organisation_by_id(organisation_id: int) -> Organisation:
-        org = Organisation.get(organisation_id)
+    async def get_organisation_by_id(organisation_id: int, session) -> Organisation:
+        org = await session.get(Organisation, organisation_id)
 
         if org is None:
             raise NotFound(
@@ -50,11 +52,11 @@ class OrganisationService:
         return org
 
     @staticmethod
-    def get_organisation_by_id_as_dto(
-        organisation_id: int, user_id: int, abbreviated: bool
+    async def get_organisation_by_id_as_dto(
+        organisation_id: int, user_id: int, abbreviated: bool, session
     ):
-        org = OrganisationService.get_organisation_by_id(organisation_id)
-        return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
+        org = await OrganisationService.get_organisation_by_id(organisation_id, session)
+        return await OrganisationService.get_organisation_dto(org, user_id, abbreviated, session)
 
     @staticmethod
     def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool):
@@ -64,21 +66,30 @@ class OrganisationService:
         return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
 
     @staticmethod
-    def get_organisation_dto(org, user_id: int, abbreviated: bool):
+    async def get_organisation_dto(org, user_id: int, abbreviated: bool, session):
+        
         if org is None:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND")
+        
+        org = await session.execute(
+            select(Organisation)
+            .options(selectinload(Organisation.managers), selectinload(Organisation.teams))
+            .filter_by(id=org.id)
+        )
+        org = org.scalars().first()
+
         organisation_dto = org.as_dto(abbreviated)
 
         if user_id != 0:
-            organisation_dto.is_manager = (
-                OrganisationService.can_user_manage_organisation(org.id, user_id)
+            organisation_dto.is_manager = await (
+                OrganisationService.can_user_manage_organisation(org.id, user_id, session)
             )
         else:
             organisation_dto.is_manager = False
 
         if abbreviated:
             return organisation_dto
-
+        
         if organisation_dto.is_manager:
             organisation_dto.teams = [team.as_dto_inside_org() for team in org.teams]
         else:
@@ -148,27 +159,28 @@ class OrganisationService:
             )
 
     @staticmethod
-    def get_organisations(manager_user_id: int):
+    async def get_organisations(manager_user_id: int, session):
         if manager_user_id is None:
             """Get all organisations"""
-            return Organisation.get_all_organisations()
+            return await Organisation.get_all_organisations(session)
         else:
-            return Organisation.get_organisations_managed_by_user(manager_user_id)
+            return await Organisation.get_organisations_managed_by_user(manager_user_id, session)
 
     @staticmethod
-    def get_organisations_as_dto(
+    async def get_organisations_as_dto(
         manager_user_id: int,
         authenticated_user_id: int,
         omit_managers: bool,
         omit_stats: bool,
+        session
     ):
-        orgs = OrganisationService.get_organisations(manager_user_id)
+        orgs = await OrganisationService.get_organisations(manager_user_id, session)
         orgs_dto = ListOrganisationsDTO()
         for org in orgs:
             org_dto = org.as_dto(omit_managers)
             if not omit_stats:
                 year = datetime.today().strftime("%Y")
-                org_dto.stats = OrganisationService.get_organisation_stats(org.id, year)
+                org_dto.stats = await OrganisationService.get_organisation_stats(org.id, session, year)
             if not authenticated_user_id:
                 del org_dto.managers
             orgs_dto.organisations.append(org_dto)
@@ -185,11 +197,13 @@ class OrganisationService:
 
     @staticmethod
     async def get_organisations_managed_by_user_as_dto(user_id: int, session) -> ListOrganisationsDTO:
+        
         orgs = await OrganisationService.get_organisations_managed_by_user(user_id, session)
         orgs_dto = ListOrganisationsDTO()
+
         # Fetch managers asynchronously for each organisation
         for org in orgs:
-            await org.fetch_managers(session)  # Ensure managers are loaded
+            await org.fetch_managers(session) 
             orgs_dto.organisations.append(org.as_dto())
         return orgs_dto
     
@@ -212,72 +226,81 @@ class OrganisationService:
 
         return projects
 
+
     @staticmethod
-    def get_organisation_stats(
-        organisation_id: int, year: int = None
-    ) -> OrganizationStatsDTO:
-        projects = session.query(
-            Project.id, Project.status, Project.last_updated, Project.created
-        ).filter(Project.organisation_id == organisation_id)
-        if year:
-            start_date = f"{year}/01/01"
-            projects = projects.filter(Project.created.between(start_date, func.now()))
-
-        published_projects = projects.filter(
-            Project.status == ProjectStatus.PUBLISHED.value
+    async def get_organisation_stats(organisation_id: int, session, year: int = None) -> OrganizationStatsDTO:
+        projects_query = select(Project.id, Project.status, Project.last_updated, Project.created).where(
+            Project.organisation_id == organisation_id
         )
-        active_tasks = session.query(
-            Task.id, Task.project_id, Task.task_status
-        ).filter(Task.project_id.in_([i.id for i in published_projects.all()]))
 
-        # populate projects stats
+        if year:
+            # Ensure year is an integer
+            year = int(year)
+            start_date = datetime(year, 1, 1)
+            projects_query = projects_query.where(Project.created.between(start_date, func.now()))
+
+        # Fetch the published projects
+        published_projects_query = projects_query.where(Project.status == ProjectStatus.PUBLISHED.value)
+        published_projects_result = await session.execute(published_projects_query)
+        published_projects_ids = [row[0] for row in published_projects_result.fetchall()]
+
+        # Build the base query for active tasks
+        active_tasks_query = select(Task.id, Task.project_id, Task.task_status).where(
+            Task.project_id.in_(published_projects_ids)
+        )
+        # Execute the queries asynchronously and count results
         projects_dto = OrganizationProjectsStatsDTO()
-        projects_dto.draft = projects.filter(
-            Project.status == ProjectStatus.DRAFT.value
-        ).count()
-        projects_dto.published = published_projects.count()
-        projects_dto.archived = projects.filter(
-            Project.status == ProjectStatus.ARCHIVED.value
-        ).count()
-        projects_dto.recent = projects.filter(
-            Project.status.in_(
-                [ProjectStatus.ARCHIVED.value, ProjectStatus.PUBLISHED.value]
-            ),
-            extract("year", Project.created) == datetime.now().year,
-        ).count()
-        projects_dto.stale = projects.filter(
-            Project.status == ProjectStatus.PUBLISHED.value,
-            func.DATE(Project.last_updated) < datetime.now() + relativedelta(months=-6),
-        ).count()
 
-        # populate tasks stats
+        draft_count = await session.scalar(select(func.count()).select_from(projects_query.where(Project.status == ProjectStatus.DRAFT.value).subquery()))
+        published_count = await session.scalar(select(func.count()).select_from(published_projects_query.subquery()))
+        archived_count = await session.scalar(select(func.count()).select_from(projects_query.where(Project.status == ProjectStatus.ARCHIVED.value).subquery()))
+        recent_count = await session.scalar(
+            select(func.count()).select_from(
+                projects_query.where(
+                    Project.status.in_([ProjectStatus.ARCHIVED.value, ProjectStatus.PUBLISHED.value]),
+                    extract("year", Project.created) == datetime.now().year
+                ).subquery()
+            )
+        )
+        stale_count = await session.scalar(
+            select(func.count()).select_from(
+                projects_query.where(
+                    Project.status == ProjectStatus.PUBLISHED.value,
+                    func.DATE(Project.last_updated) < datetime.now() + relativedelta(months=-6)
+                ).subquery()
+            )
+        )
+
+        projects_dto.draft = draft_count
+        projects_dto.published = published_count
+        projects_dto.archived = archived_count
+        projects_dto.recent = recent_count
+        projects_dto.stale = stale_count
+
+        # Execute the queries for tasks asynchronously and count results
         tasks_dto = OrganizationTasksStatsDTO()
-        tasks_dto.ready = active_tasks.filter(
-            Task.task_status == TaskStatus.READY.value
-        ).count()
-        tasks_dto.locked_for_mapping = active_tasks.filter(
-            Task.task_status == TaskStatus.LOCKED_FOR_MAPPING.value
-        ).count()
-        tasks_dto.mapped = active_tasks.filter(
-            Task.task_status == TaskStatus.MAPPED.value
-        ).count()
-        tasks_dto.locked_for_validation = active_tasks.filter(
-            Task.task_status == TaskStatus.LOCKED_FOR_VALIDATION.value
-        ).count()
-        tasks_dto.validated = active_tasks.filter(
-            Task.task_status == TaskStatus.VALIDATED.value
-        ).count()
-        tasks_dto.invalidated = active_tasks.filter(
-            Task.task_status == TaskStatus.INVALIDATED.value
-        ).count()
-        tasks_dto.badimagery = active_tasks.filter(
-            Task.task_status == TaskStatus.BADIMAGERY.value
-        ).count()
 
-        # populate and return main dto
+        ready_count = await session.scalar(select(func.count()).select_from(active_tasks_query.where(Task.task_status == TaskStatus.READY.value).subquery()))
+        locked_for_mapping_count = await session.scalar(select(func.count()).select_from(active_tasks_query.where(Task.task_status == TaskStatus.LOCKED_FOR_MAPPING.value).subquery()))
+        mapped_count = await session.scalar(select(func.count()).select_from(active_tasks_query.where(Task.task_status == TaskStatus.MAPPED.value).subquery()))
+        locked_for_validation_count = await session.scalar(select(func.count()).select_from(active_tasks_query.where(Task.task_status == TaskStatus.LOCKED_FOR_VALIDATION.value).subquery()))
+        validated_count = await session.scalar(select(func.count()).select_from(active_tasks_query.where(Task.task_status == TaskStatus.VALIDATED.value).subquery()))
+        invalidated_count = await session.scalar(select(func.count()).select_from(active_tasks_query.where(Task.task_status == TaskStatus.INVALIDATED.value).subquery()))
+        badimagery_count = await session.scalar(select(func.count()).select_from(active_tasks_query.where(Task.task_status == TaskStatus.BADIMAGERY.value).subquery()))
+
+        tasks_dto.ready = ready_count
+        tasks_dto.locked_for_mapping = locked_for_mapping_count
+        tasks_dto.mapped = mapped_count
+        tasks_dto.locked_for_validation = locked_for_validation_count
+        tasks_dto.validated = validated_count
+        tasks_dto.invalidated = invalidated_count
+        tasks_dto.badimagery = badimagery_count
+
+        # Populate and return the main DTO
         stats_dto = OrganizationStatsDTO()
         stats_dto.projects = projects_dto
         stats_dto.active_tasks = tasks_dto
+
         return stats_dto
 
     @staticmethod
@@ -309,24 +332,24 @@ class OrganisationService:
             organisation_dto.managers = managers
 
     @staticmethod
-    def can_user_manage_organisation(organisation_id: int, user_id: int):
+    async def can_user_manage_organisation(organisation_id: int, user_id: int, session):
         """Check that the user is an admin for the org or a global admin"""
-        if UserService.is_user_an_admin(user_id):
+        if await UserService.is_user_an_admin(user_id, session):
             return True
         else:
-            return OrganisationService.is_user_an_org_manager(organisation_id, user_id)
+            return await OrganisationService.is_user_an_org_manager(organisation_id, user_id, session)
 
     @staticmethod
-    def is_user_an_org_manager(organisation_id: int, user_id: int):
+    async def is_user_an_org_manager(organisation_id: int, user_id: int, session):
         """Check that the user is an manager for the org"""
 
-        org = Organisation.get(organisation_id)
+        org = await Organisation.get(organisation_id, session)
 
         if org is None:
             raise NotFound(
                 sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
             )
-        user = UserService.get_user_by_id(user_id)
+        user = await UserService.get_user_by_id(user_id, session)
 
         return user in org.managers
 
