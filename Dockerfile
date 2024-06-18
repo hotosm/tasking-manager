@@ -96,4 +96,4 @@ RUN python -m compileall .
 EXPOSE 5000/tcp
 USER appuser:appuser
 CMD ["uvicorn", "backend.main:api", "--host", "0.0.0.0", "--port", "5000", \
-     "--log-level", "error"]
+     "--log-level", "error","--reload"]
