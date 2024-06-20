@@ -1,4 +1,3 @@
-#
 name: Build & publish TM backend container image
 
 on:
@@ -18,50 +17,15 @@ on:
       - deployment/container-tasking-manager
 
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
-
 jobs:
-  build-and-push-image:
-    runs-on: ubuntu-latest
-    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
-    permissions:
-      contents: read
-      packages: write
+  backend-build:
+    uses: hotosm/gh-workflows/.github/workflows/image_build.yml@1.5.1
+    with:
+      image_name: ghcr.io/${{ github.repository }}/backend
+      build_target: prod
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3.0.0
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5.5.1
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-          tags: |
-            type=ref,event=pr
-            type=ref,event=tag
-            type=ref,event=branch
-            type=semver,pattern=raw
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5.1.0
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+  # frontend-build:
+  #   uses: hotosm/gh-workflows/.github/workflows/image_build.yml@1.5.1
+  #   with:
+  #     image_name: ghcr.io/${{ github.repository }}/backend
+  #     dockerfile: scripts/docker/Dockerfile.frontend
