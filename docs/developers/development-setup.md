@@ -413,53 +413,9 @@ instances, sign in in the browser and then either:
 
 ## Additional Info
 
-### Creating a local PostGIS database with Docker
+### Creating a local PostGIS database without Docker
 
-If you're not able to connect to an existing tasking-manager DB, we
-have a [Dockerfile]() that will allow you to run PostGIS locally as
-follows.
-
-### Build & Run the PostGIS dockerfile
-
-1. From the root of the project:
-
-`
-docker build -t tasking-manager-db ./scripts/docker/postgis
-`
-
-2. The image should be downloaded and build locally.  Once complete
-   you should see it listed, with
-
-`
-docker images
-`
-
-3. You can now run the image (this will run PostGIS in a docker
-   container, with port 5432 mapped to localhost):
-
-`
-docker run -d -p 5432:5432 tasking-manager-db
-`
-
-4.  Confirm the image is running successfully:
-
-`
-docker ps
-`
-
-5. Finally you can set your env variable to point at your
-   containerised DB:
-
-`
-export TM_DB=postgresql://hottm:hottm@localhost/tasking-manager
-`
-
-6.  Refer to the rest of the instructions in the README to setup the
-    DB and run the app.
-
-## Creating a local PostGIS database without Docker
-
-### Creating the PostGIS database
+#### Creating the PostGIS database
 
 It may be the case you would like to set up the database without using
 Docker for one reason or another. This provides you with a set of
