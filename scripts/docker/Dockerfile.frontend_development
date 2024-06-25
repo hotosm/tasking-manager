@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 COPY ./frontend .
 ## SETUP
-RUN npm install
+RUN yarn install
 
 # SERVE
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
