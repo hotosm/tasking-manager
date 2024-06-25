@@ -19,13 +19,12 @@ class OrganisationManagerDTO(BaseModel):
     picture_url: Optional[str] = Field(None, alias="pictureUrl")
 
 
-
 class OrganisationTeamsDTO(BaseModel):
-    team_id: Optional[int] = Field(alias="teamId")
-    name: str
-    description: Optional[str]
-    join_method: str = Field(alias="joinMethod")
-    visibility: Optional[str]
+    team_id: Optional[int] = Field(None, alias="teamId")
+    name: Optional[str] = None
+    description: Optional[str] = None
+    join_method: Optional[str] = Field(None, alias="joinMethod")
+    visibility: Optional[str] = None
     members: List[Dict[str, Optional[str]]] = Field(default=[])
 
     

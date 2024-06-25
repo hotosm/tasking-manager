@@ -50,7 +50,7 @@ class Organisation(Base):
     managers = relationship(
         User,
         secondary=organisation_managers,
-        backref=backref("organisations", lazy="joined"),
+        backref=backref("organisations"),
     )
     campaign = relationship(
         Campaign, secondary=campaign_organisations, backref="organisation"
@@ -124,9 +124,9 @@ class Organisation(Base):
         session.delete(self)
         session.commit()
 
-    def can_be_deleted(self) -> bool:
+    async def can_be_deleted(self) -> bool:
         """An Organisation can be deleted if it doesn't have any projects or teams"""
-        return len(self.projects) == 0 and len(self.teams) == 0
+        return await len(self.projects) == 0 and await len(self.teams) == 0
 
     @staticmethod
     def get(organisation_id: int, session):
@@ -158,7 +158,7 @@ class Organisation(Base):
     async def get_all_organisations(session):
         """Gets all organisations"""
         result = await session.execute(
-            select(Organisation).options(selectinload(Organisation.managers),).order_by(Organisation.name)
+            select(Organisation).options(selectinload(Organisation.managers)).order_by(Organisation.name)
         )
         return result.scalars().all()
 

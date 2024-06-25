@@ -243,6 +243,7 @@ class Project(Base):
         CustomEditor, cascade="all, delete-orphan", uselist=False
     )
     favorited = orm.relationship(User, secondary=project_favorites, backref="favorites")
+    # organisation = orm.relationship(Organisation, backref="projects", lazy="joined")
     organisation = orm.relationship(Organisation, backref="projects")
     campaign = orm.relationship(
         Campaign, secondary=campaign_projects, backref="projects"

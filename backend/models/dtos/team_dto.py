@@ -55,6 +55,7 @@ def validate_team_member_function(value):
 #         default=False, serialized_name="joinRequestNotifications"
 #     )
 #     picture_url = StringType(serialized_name="pictureUrl")
+
 class TeamMembersDTO(BaseModel):
     username: str = Field(required=True)
     function: str = Field(required=True, validators=[validate_team_member_function])
