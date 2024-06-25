@@ -8,6 +8,7 @@ from backend.services.project_admin_service import ProjectAdminService
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(
     prefix="/projects",
@@ -86,7 +87,7 @@ async def post(request: Request, project_id: int, campaign_id: int):
     return ({"Success": message}, 200)
 
 @router.get("/{project_id}/campaigns/")
-async def get(project_id):
+async def get(project_id: int, session: AsyncSession = Depends(get_session)):
     """
     Gets all campaigns for a project
     ---
@@ -111,8 +112,9 @@ async def get(project_id):
         500:
             description: Internal Server Error
     """
-    campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
+    campaigns = await CampaignService.get_project_campaigns_as_dto(project_id, session)
     return campaigns.model_dump(by_alias=True), 200
+
 
 @router.delete("/{project_id}/campaigns/{campaign_id}/")
 @requires(["authenticated"])
