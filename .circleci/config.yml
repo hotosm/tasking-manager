@@ -32,7 +32,7 @@ jobs:
           name: Run yarn test
           command: |
             cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
-            CI=true yarn test -w 1
+            CI=true yarn test -w 3 --silent
             CI=true GENERATE_SOURCEMAP=false yarn build
 
   backend-code-check-PEP8:
