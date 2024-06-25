@@ -8,7 +8,6 @@ import {
   UnderpassFeatureList,
   UnderpassMap,
   HOTTheme,
-  UnderpassFeatureStats,
   UnderpassValidationStats,
 } from '@hotosm/underpass-ui';
 
@@ -178,13 +177,13 @@ export function ProjectLiveMonitoring() {
       ready={!error && !loading}
       className="pr3"
     >
-      <div className="cf w-100" style={{ height: 'calc(100vh - 5.5rem)' }}>
+      <div className="hui-theme cf w-100" style={{ height: 'calc(100vh - 5.5rem)' }}>
         <div className="flex p-2" style={{ gap: '0.685rem' }}>
           <div style={{ flex: 2, position: 'relative' }}>
-            <div className="top">
+            <div className="live-monitoring-top-filters">
               <form>
                 <input
-                  className="border px-2 py-2 text-sm rounded"
+                  className="hui-input-text"
                   type="text"
                   placeholder="key (ex: building=yes)"
                   ref={tagsInputRef}
@@ -193,37 +192,51 @@ export function ProjectLiveMonitoring() {
                 />
                 &nbsp;
                 <button
-                  className="inline-flex items-center rounded bg-primary px-2 py-2 text-sm font-medium text-white"
+                  className="hui-button"
                   onClick={handleFilterClick}
                 >
                   Search
                 </button>
               </form>
               <Select
-                classNamePrefix="react-select"
+                classNamePrefix="hui-input-text"
                 isClearable={true}
                 value={imageryOptions.find((item) => item.value === mapSource)}
                 options={imageryOptions}
-                // placeholder={<FormattedMessage {...messages.selectImagery} />}
                 onChange={handleMapSourceSelect}
-                className="w-60 z-2 mt-2"
+                className="hui-w-60 hui-z-2 hui-mt-2"
               />
             </div>
-            <UnderpassMap
-              center={coords}
-              tags={tags}
-              hashtag={defaultComment}
-              featureType={featureType}
-              highlightDataQualityIssues
-              popupFeature={activeFeature}
-              source={mapSource}
-              config={mapConfig}
-              realtime={realtimeMap}
-              theme={demoTheme}
-              zoom={17}
-              onMove={handleMapMove}
-              onLoad={handleMapLoad}
-            />
+            {project && 
+              <UnderpassMap
+                center={coords}
+                tags={tags}
+                hashtag={defaultComment}
+                featureType={featureType}
+                highlightDataQualityIssues
+                popupFeature={activeFeature}
+                source={mapSource}
+                config={mapConfig}
+                realtime={realtimeMap}
+                theme={demoTheme}
+                zoom={17}
+                onMove={handleMapMove}
+                onLoad={handleMapLoad}
+                aoi={{
+                  "type": "FeatureCollection",
+                  "features": [
+                    {
+                      "type": "Feature",
+                      "properties": {},
+                      "geometry": {
+                        "type": "MultiPolygon",
+                        "coordinates": project.areaOfInterest.coordinates
+                      }
+                    }
+                  ]
+                }}
+              />
+            }
           </div>
           <div
             style={{
@@ -271,25 +284,15 @@ export function ProjectLiveMonitoring() {
             )}
             {project && areaOfInterest && (
               <>
-                <div className="border-b-2 pb-5 space-y-3">
-                  <UnderpassFeatureStats
-                    tags={tags}
-                    hashtag={defaultComment}
-                    featureType={featureType}
-                    apiUrl={underpassConfig.API_URL}
-                    area={areaOfInterest}
-                  />
-                  <UnderpassValidationStats
-                    tags={tags}
-                    hashtag={defaultComment}
-                    featureType={featureType}
-                    apiUrl={underpassConfig.API_URL}
-                    status="badgeom"
-                    area={areaOfInterest}
-                  />
-                </div>
-                <div className="border-b-2 py-5 mb-4">
-                  <form className="space-x-2">
+                <UnderpassValidationStats
+                  tags={tags}
+                  hashtag={defaultComment}
+                  featureType={featureType}
+                  apiUrl={underpassConfig.API_URL}
+                  status="badgeom"
+                  area={areaOfInterest} />
+                <div className="live-monitoring-options">
+                  <form className="hui-space-x-2">
                     <input
                       onChange={() => {
                         setRealtimeList(!realtimeList);
@@ -338,7 +341,7 @@ export function ProjectLiveMonitoring() {
                   realtime={realtimeList}
                   config={underpassConfig}
                   status={listAll ? '' : status}
-                  orderBy="created_at"
+                  orderBy="closedAt"
                   onFetchFirstTime={(mostRecentFeature) => {
                     if (mostRecentFeature) {
                       setCoords([mostRecentFeature.lat, mostRecentFeature.lon]);
