@@ -12,7 +12,7 @@ services:
   tm-db:
     image: "postgis/postgis:${POSTGIS_TAG:-14-3.3}"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data/
+      - tm_db_data:/var/lib/postgresql/data/
     env_file:
       - tasking-manager.env
     restart: unless-stopped
@@ -30,16 +30,14 @@ services:
     build:
       context: .
       target: ${TARGET_TAG:-prod}
-    # depends_on:
-    #   tm-db:
-    #     condition: service_healthy
-    #   tm-migration:
-    #     condition: service_completed_successfully
+    depends_on:
+      tm-db:
+        condition: service_healthy
+      tm-migration:
+        condition: service_completed_successfully
     env_file:
       - tasking-manager.env
     restart: unless-stopped
-    volumes:
-      - .:/usr/src/app/
     healthcheck:
       test: curl --fail http://localhost:5000 || exit 1
       interval: 10s

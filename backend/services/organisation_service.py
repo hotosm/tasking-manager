@@ -22,7 +22,7 @@ from backend.models.postgis.campaign import campaign_organisations
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.task import Task
-from backend.models.postgis.team import TeamVisibility
+from backend.models.postgis.team import Team, TeamVisibility
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.services.users.user_service import UserService
 from backend.db import get_session
@@ -40,15 +40,17 @@ class OrganisationServiceError(Exception):
 
 
 class OrganisationService:
+
     @staticmethod
     async def get_organisation_by_id(organisation_id: int, session) -> Organisation:
+        # Use eager loading to fetch projects and teams along with the organisation
+        query = select(Organisation).where(Organisation.id == organisation_id).options(selectinload(Organisation.managers), selectinload(Organisation.teams))
+        org = await session.execute(query)
         org = await session.get(Organisation, organisation_id)
-
         if org is None:
             raise NotFound(
                 sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
             )
-
         return org
 
     @staticmethod
@@ -58,12 +60,16 @@ class OrganisationService:
         org = await OrganisationService.get_organisation_by_id(organisation_id, session)
         return await OrganisationService.get_organisation_dto(org, user_id, abbreviated, session)
 
+
     @staticmethod
-    def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool):
-        org = session.query(Organisation).filter_by(slug=slug).first()
+    async def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool, session):
+        stmt = select(Organisation).where(Organisation.slug == slug).options(selectinload(Organisation.managers),selectinload(Organisation.teams))
+        result = await session.execute(stmt)
+        org = result.scalars().first()
         if org is None:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND", slug=slug)
-        return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
+        return await OrganisationService.get_organisation_dto(org, user_id, abbreviated, session)
+
 
     @staticmethod
     async def get_organisation_dto(org, user_id: int, abbreviated: bool, session):
@@ -71,15 +77,14 @@ class OrganisationService:
         if org is None:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND")
         
-        org = await session.execute(
-            select(Organisation)
-            .options(selectinload(Organisation.managers), selectinload(Organisation.teams))
-            .filter_by(id=org.id)
-        )
-        org = org.scalars().first()
-
+        # org = await session.execute(
+        #     select(Organisation)
+        #     .options(selectinload(Organisation.managers), selectinload(Organisation.teams))
+        #     .filter_by(id=org.id)
+        # )
+        # org = org.scalars().first()
         organisation_dto = org.as_dto(abbreviated)
-
+        
         if user_id != 0:
             organisation_dto.is_manager = await (
                 OrganisationService.can_user_manage_organisation(org.id, user_id, session)
@@ -94,12 +99,13 @@ class OrganisationService:
             organisation_dto.teams = [team.as_dto_inside_org() for team in org.teams]
         else:
             organisation_dto.teams = [
-                team.as_dto_inside_org()
+                await team.as_dto_inside_org(session)
                 for team in org.teams
                 if team.visibility == TeamVisibility.PUBLIC.value
             ]
 
         return organisation_dto
+
 
     @staticmethod
     def get_organisation_by_name(organisation_name: str) -> Organisation:
@@ -147,12 +153,14 @@ class OrganisationService:
         return org
 
     @staticmethod
-    def delete_organisation(organisation_id: int):
+    async def delete_organisation(organisation_id: int, session):
         """Deletes an organisation if it has no projects"""
-        org = OrganisationService.get_organisation_by_id(organisation_id)
+        org = await OrganisationService.get_organisation_by_id(organisation_id, session)
 
         if org.can_be_deleted():
-            org.delete()
+            await session.delete(org)
+            await session.commit()
+
         else:
             raise OrganisationServiceError(
                 "Organisation has projects, cannot be deleted"
@@ -184,7 +192,6 @@ class OrganisationService:
             if not authenticated_user_id:
                 del org_dto.managers
             orgs_dto.organisations.append(org_dto)
-
         return orgs_dto
 
     @staticmethod
@@ -197,7 +204,7 @@ class OrganisationService:
 
     @staticmethod
     async def get_organisations_managed_by_user_as_dto(user_id: int, session) -> ListOrganisationsDTO:
-        
+
         orgs = await OrganisationService.get_organisations_managed_by_user(user_id, session)
         orgs_dto = ListOrganisationsDTO()
 
@@ -331,6 +338,7 @@ class OrganisationService:
 
             organisation_dto.managers = managers
 
+
     @staticmethod
     async def can_user_manage_organisation(organisation_id: int, user_id: int, session):
         """Check that the user is an admin for the org or a global admin"""
@@ -339,19 +347,20 @@ class OrganisationService:
         else:
             return await OrganisationService.is_user_an_org_manager(organisation_id, user_id, session)
 
+
     @staticmethod
     async def is_user_an_org_manager(organisation_id: int, user_id: int, session):
         """Check that the user is an manager for the org"""
-
-        org = await Organisation.get(organisation_id, session)
-
+        stmt = select(Organisation).options(selectinload(Organisation.managers)).where(Organisation.id == organisation_id)
+        result = await session.execute(stmt)
+        org = result.scalars().first()
         if org is None:
             raise NotFound(
                 sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
             )
         user = await UserService.get_user_by_id(user_id, session)
-
         return user in org.managers
+
 
     @staticmethod
     def get_campaign_organisations_as_dto(campaign_id: int, user_id: int):

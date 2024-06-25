@@ -61,7 +61,6 @@ async def get(request: Request, organisation_id: int, session: AsyncSession = De
         500:
             description: Internal Server Error
     """
-    print('letss goooo...')
     authenticated_user_id = request.user.display_name if request.user else None
     if authenticated_user_id is None:
         user_id = 0
@@ -76,9 +75,9 @@ async def get(request: Request, organisation_id: int, session: AsyncSession = De
 
 
 # class OrganisationsBySlugRestAPI(Resource):
-#     @token_auth.login_required(optional=True)
+#       @token_auth.login_required(optional=True)
 @router.get("/{slug}/")
-async def get(request: Request, slug: str):
+async def get(request: Request, slug: str, session: AsyncSession = Depends(get_session)):
     """
     Retrieves an organisation
     ---
@@ -112,14 +111,14 @@ async def get(request: Request, slug: str):
             description: Internal Server Error
     """
     authenticated_user_id = request.user.display_name
-    if authenticated_user_id is None:
-        user_id = 0
+    if request.user.is_authenticated:
+        user_id = request.user.display_name
     else:
-        user_id = authenticated_user_id
+        user_id = 0
     # Validate abbreviated.
     omit_managers = strtobool(request.query_params.get("omitManagerList", "false"))
-    organisation_dto = OrganisationService.get_organisation_by_slug_as_dto(
-        slug, user_id, omit_managers
+    organisation_dto = await OrganisationService.get_organisation_by_slug_as_dto(
+        slug, user_id, omit_managers, session
     )
     return organisation_dto.model_dump(by_alias=True), 200
 
@@ -205,9 +204,10 @@ async def post(request: Request):
     except OrganisationServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
 
+
 @router.delete("/{organisation_id}/")
 @requires("authenticated")
-async def delete(request: Request, organisation_id):
+async def delete(request: Request, organisation_id: int, session: AsyncSession = Depends(get_session)):
         """
         Deletes an organisation
         ---
@@ -240,15 +240,15 @@ async def delete(request: Request, organisation_id):
             500:
                 description: Internal Server Error
         """
-        if not OrganisationService.can_user_manage_organisation(
-            organisation_id, request.user.display_name
+        if not await OrganisationService.can_user_manage_organisation(
+            organisation_id, request.user.display_name, session
         ):
             return {
                 "Error": "User is not an admin for the org",
                 "SubCode": "UserNotOrgAdmin",
             }, 403
         try:
-            OrganisationService.delete_organisation(organisation_id)
+            await OrganisationService.delete_organisation(organisation_id, session)
             return {"Success": "Organisation deleted"}, 200
         except OrganisationServiceError:
             return {
