@@ -3,6 +3,7 @@ from backend.services.organisation_service import OrganisationService
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(
     prefix="/organisations",
@@ -77,7 +78,7 @@ async def post(request: Request, organisation_id: int, campaign_id: int):
         }, 403
 
 @router.get("/{organisation_id}/campaigns/")
-async def get(organisation_id: int):
+async def get(organisation_id: int, session: AsyncSession = Depends(get_session)):
     """
     Returns all campaigns related to an organisation
     ---
@@ -106,7 +107,7 @@ async def get(organisation_id: int):
         500:
             description: Internal Server Error
     """
-    campaigns = CampaignService.get_organisation_campaigns_as_dto(organisation_id)
+    campaigns = await CampaignService.get_organisation_campaigns_as_dto(organisation_id, session)
     return campaigns.model_dump(by_alias=True), 200
 
 @router.delete("/{organisation_id}/campaigns/{campaign_id}/")
