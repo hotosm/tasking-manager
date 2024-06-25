@@ -45,6 +45,7 @@ export function Footer() {
     'manage/projects/new',
     'manage/categories/new',
     'manage/licenses/new',
+    'manage/partners/new',
     'teams/:id/membership',
     '/api-docs/',
   ];
