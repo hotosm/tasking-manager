@@ -54,8 +54,6 @@ class UserService:
     @staticmethod
     async def get_user_by_id(user_id: int, session) -> User:
         user = await User.get_by_id(user_id, session)
-        # result = await session.execute(select(User).filter_by(id=user_id))
-        # return result.scalars().first()
         if user is None:
             raise NotFound(sub_code="USER_NOT_FOUND", user_id=user_id)
         return user
@@ -114,7 +112,6 @@ class UserService:
     @staticmethod
     async def update_user(user_id: int, osm_username: str, picture_url: str, session) -> User:
         user = await UserService.get_user_by_id(user_id)
-        print(user.__dict__, "USER KO DICT")
         if user.username != osm_username:
             user.update_username(osm_username)
 
