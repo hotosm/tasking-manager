@@ -22,17 +22,7 @@ from backend.db import get_session
 session = get_session()
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
-
-# class CampaignService:
-#     @staticmethod
-#     async def get_campaign(campaign_id: int, session) -> Campaign:
-#         """Gets the specified campaign"""
-#         campaign = await session.get(Campaign, campaign_id)
-
-#         if campaign is None:
-#             raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
-
-#         return campaign
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class CampaignService:
@@ -81,18 +71,40 @@ class CampaignService:
 
         return campaign_dto
 
-    @staticmethod
-    def get_project_campaigns_as_dto(project_id: int) -> CampaignListDTO:
-        """Gets all the campaigns for a specified project"""
-        # Test if project exists
-        ProjectService.get_project_by_id(project_id)
-        query = (
-            session.query(Campaign).join(campaign_projects)
-            .filter(campaign_projects.c.project_id == project_id)
-            .all()
-        )
+    # @staticmethod
+    # def get_project_campaigns_as_dto(project_id: int) -> CampaignListDTO:
+    #     """Gets all the campaigns for a specified project"""
+    #     # Test if project exists
+    #     ProjectService.get_project_by_id(project_id)
+    #     query = (
+    #         session.query(Campaign).join(campaign_projects)
+    #         .filter(campaign_projects.c.project_id == project_id)
+    #         .all()
+    #     )
 
-        return Campaign.campaign_list_as_dto(query)
+    #     return Campaign.campaign_list_as_dto(query)
+
+    @staticmethod
+    async def get_project_campaigns_as_dto(project_id: int, session: AsyncSession) -> CampaignListDTO:
+        """Gets all the campaigns for a specified project"""
+        
+        # Test if project exists
+        await ProjectService.get_project_by_id(project_id, session)
+        
+        # Construct the query
+        query = (
+            select(Campaign)
+            .join(campaign_projects)
+            .filter(campaign_projects.c.project_id == project_id)
+        )
+        
+        # Execute the query asynchronously
+        result = await session.execute(query)
+        campaigns = result.scalars().all()
+        
+        # Convert the result to DTO
+        return await Campaign.campaign_list_as_dto(campaigns)
+
 
     @staticmethod
     def delete_project_campaign(project_id: int, campaign_id: int):
@@ -120,26 +132,6 @@ class CampaignService:
         )
         campaigns = result.scalars().all()
         return await Campaign.campaign_list_as_dto(campaigns)
-    
-    
-    # @staticmethod
-    # def create_campaign(campaign_dto: NewCampaignDTO):
-    #     """Creates a new campaign"""
-    #     campaign = Campaign.from_dto(campaign_dto)
-    #     try:
-    #         campaign.create()
-    #         if campaign_dto.organisations:
-    #             for org_id in campaign_dto.organisations:
-    #                 organisation = OrganisationService.get_organisation_by_id(org_id)
-    #                 campaign.organisation.append(organisation)
-    #             session.commit()
-    #     except IntegrityError as e:
-    #         current_app.logger.info("Integrity error: {}".format(e.args[0]))
-    #         if isinstance(e.orig, UniqueViolation):
-    #             raise ValueError("NameExists- Campaign name already exists") from e
-    #         if isinstance(e.orig, NotNullViolation):
-    #             raise ValueError("NullName- Campaign name cannot be null") from e
-    #     return campaign
 
 
     @staticmethod
@@ -193,17 +185,25 @@ class CampaignService:
         )
         return new_campaigns
 
+
     @staticmethod
-    def get_organisation_campaigns_as_dto(organisation_id: int) -> CampaignListDTO:
+    async def get_organisation_campaigns_as_dto(organisation_id: int, session: AsyncSession) -> CampaignListDTO:
         """Gets all the campaigns for a specified project"""
+        
         # Check if organisation exists
-        OrganisationService.get_organisation_by_id(organisation_id)
+        await OrganisationService.get_organisation_by_id(organisation_id, session)
+        
         query = (
-            session.query(Campaign).join(campaign_organisations)
+            select(Campaign)
+            .join(campaign_organisations)
             .filter(campaign_organisations.c.organisation_id == organisation_id)
-            .all()
         )
-        return Campaign.campaign_list_as_dto(query)
+        
+        result = await session.execute(query)
+        campaigns = result.scalars().all()
+        
+        return await Campaign.campaign_list_as_dto(campaigns)
+    
 
     @staticmethod
     def campaign_organisation_exists(campaign_id: int, org_id: int):
