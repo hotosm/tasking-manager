@@ -17,7 +17,7 @@ import os
 import json
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, g, make_response
 from flask_cors import CORS
 from flask_migrate import Migrate
 from requests_oauthlib import OAuth2Session
@@ -26,7 +26,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 
 from backend.config import EnvironmentConfig
-
+from pyinstrument import Profiler
 
 # Load error_messages.json and store it so that it is loaded only once at startup (Used in exceptions.py)
 # Construct the path to the JSON file
@@ -149,6 +149,20 @@ def create_app(env="backend.config.EnvironmentConfig"):
     @app.route("/")
     def index_redirect():
         return redirect(format_url("system/heartbeat/"), code=302)
+
+    @app.before_request
+    def before_request():
+        if "pyinstrument" in request.args:
+            g.profiler = Profiler()
+            g.profiler.start()
+
+    @app.after_request
+    def after_request(response):
+        if not hasattr(g, "profiler"):
+            return response
+        g.profiler.stop()
+        output_html = g.profiler.output_html()
+        return make_response(output_html)
 
     # Add paths to API endpoints
     add_api_endpoints(app)
