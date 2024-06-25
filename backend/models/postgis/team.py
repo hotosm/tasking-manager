@@ -18,6 +18,9 @@ from backend.models.postgis.statuses import (
 from backend.models.postgis.user import User
 from backend.db import Base, get_session
 session = get_session()
+from sqlalchemy.orm import selectinload
+from sqlalchemy import select
+
 
 class TeamMembers(Base):
     __tablename__ = "team_members"
@@ -33,10 +36,10 @@ class TeamMembers(Base):
         Boolean, nullable=False, default=False
     )  # Managers can turn notifications on/off for team join requests
     member = relationship(
-        User, backref=backref("teams", cascade="all, delete-orphan")
+        User, backref=backref("teams", cascade="all, delete-orphan", lazy="joined")
     )
     team = relationship(
-        "Team", backref=backref("members", cascade="all, delete-orphan")
+        "Team", backref=backref("members", cascade="all, delete-orphan", lazy="joined")
     )
 
     def create(self):
@@ -81,6 +84,7 @@ class Team(Base):
         Integer, default=TeamVisibility.PUBLIC.value, nullable=False
     )
 
+    # organisation = relationship(Organisation, backref="teams", lazy="joined")
     organisation = relationship(Organisation, backref="teams")
 
     def create(self):
@@ -203,15 +207,17 @@ class Team(Base):
         team_dto.visibility = TeamVisibility(self.visibility).name
         return team_dto
 
-    def as_dto_inside_org(self):
+    async def as_dto_inside_org(self, session):
         """Returns a dto for the team"""
         team_dto = OrganisationTeamsDTO()
+        
         team_dto.team_id = self.id
         team_dto.name = self.name
         team_dto.description = self.description
         team_dto.join_method = TeamJoinMethod(self.join_method).name
-        team_dto.members = self._get_team_members()
+        team_dto.members = await self._get_team_members(session)
         team_dto.visibility = TeamVisibility(self.visibility).name
+
         return team_dto
 
     def as_dto_team_member(self, member) -> TeamMembersDTO:
@@ -234,7 +240,7 @@ class Team(Base):
         project_team_dto.role = TeamRoles(project.role).name
         return project_team_dto
 
-    def _get_team_members(self):
+    async def _get_team_members(self, session):
         """Helper to get JSON serialized members"""
         members = []
         for mem in self.members:

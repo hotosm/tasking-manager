@@ -56,6 +56,7 @@ async def get(request: Request, project_id):
     teams_dto = TeamService.get_project_teams_as_dto(project_id)
     return teams_dto.model_dump(by_alias=True), 200
 
+
     # @token_auth.login_required
 @router.post("/{project_id}/teams/{team_id}/")
 @requires("authenticated")
