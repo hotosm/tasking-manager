@@ -25,51 +25,47 @@ export function PartnersManagement({ partners, isAdmin, isPartnersFetched }) {
   );
 
   return (
-    <div className='bg-mask'>
-      <Management
-        title={
-          <FormattedMessage
-            {...messages.partnerManage}
-            values={{ entity: <FormattedMessage {...messages.partners} /> }}
-          />
-        }
-        showAddButton={isAdmin}
-        userOnlyLabel={<FormattedMessage {...messages.myPartners} />}
+    <Management
+      title={
+        <FormattedMessage
+          {...messages.partnerManage}
+          values={{ entity: <FormattedMessage {...messages.partners} /> }}
+        />
+      }
+      showAddButton={isAdmin}
+      userOnlyLabel={<FormattedMessage {...messages.myPartners} />}
+    >
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        customPlaceholder={nCardPlaceholders(4)}
+        delay={10}
+        ready={isPartnersFetched}
       >
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          customPlaceholder={nCardPlaceholders(4)}
-          delay={10}
-          ready={isPartnersFetched}
-        >
-          <div style={{ margin: 'auto', marginBottom: 20 }} className="w-20-l w-25-m ">
-            <TextField
-              value={searchQuery}
-              placeholderMsg={messages.searchPartners}
-              onChange={onSearchInputChange}
-              onCloseIconClick={() => setSearchQuery('')}
-            />
-          </div>
-          <div className="ph4 cards-container">
-            {isAdmin ? (
-              filteredPartners?.length ? (
-                filteredPartners.map((partner) => (
-                  <PartnersCard details={partner} key={partner.id} />
-                ))
-              ) : (
-                <div className="pb5">
-                  <FormattedMessage {...messages.noPartnersFound} />
-                </div>
-              )
+        <div style={{ margin: 'auto', marginBottom: 20 }} className="w-20-l w-25-m ">
+          <TextField
+            value={searchQuery}
+            placeholderMsg={messages.searchPartners}
+            onChange={onSearchInputChange}
+            onCloseIconClick={() => setSearchQuery('')}
+          />
+        </div>
+        <div className="ph4 cards-container">
+          {isAdmin ? (
+            filteredPartners?.length ? (
+              filteredPartners.map((partner) => <PartnersCard details={partner} key={partner.id} />)
             ) : (
-              <div>
-                <FormattedMessage {...messages.notAllowedPartners} />
+              <div className="pb5">
+                <FormattedMessage {...messages.noPartnersFound} />
               </div>
-            )}
-          </div>
-        </ReactPlaceholder>
-      </Management>
-    </div>
+            )
+          ) : (
+            <div>
+              <FormattedMessage {...messages.notAllowedPartners} />
+            </div>
+          )}
+        </div>
+      </ReactPlaceholder>
+    </Management>
   );
 }
 
