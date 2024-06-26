@@ -84,7 +84,7 @@ export default defineMessages({
   learnToMap: {
     id: 'management.partners.learnToMap',
     defaultMessage: 'Learn to Map',
-  }, 
+  },
   myPartners: {
     id: 'management.filter.buttons.myPartners',
     defaultMessage: 'My Partners',
