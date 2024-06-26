@@ -36,7 +36,7 @@ aws s3 sync build/ <TaskingManagerReactBucket> --delete
 When deploying updates to the infrastructure or code, follow the steps below.
 
 #### Backup Database
-Before updating it's always recommended to backup the database. You can make a snapshot in AWS RDS console, or run the database dump directly. You will need sufficient access to a server on the same VPC as the RDS instance in order to connect to it directly. 
+Before updating it's always recommended to backup the database. You can make a snapshot in AWS RDS console, or run the database dump directly. You will need sufficient access to a server on the same VPC as the RDS instance in order to connect to it directly.
 
 ```
 PGPASSWORD=<PostgresPassword> pg_dump -Fc \
@@ -48,7 +48,7 @@ PGPASSWORD=<PostgresPassword> pg_dump -Fc \
 
 #### Update backend infrastructure
 
-If the deployment contains any changes to the cloudformation template, including new or changes to environment variables, then we must update the infrastructure prior to deployment. These changes are deliberately set outside the CI/CD process to prevent accidental deletion of data. For the HOT Tasking Manager, only staff with sufficient AWS privileges have the ability to perform these functions. 
+If the deployment contains any changes to the cloudformation template, including new or changes to environment variables, then we must update the infrastructure prior to deployment. These changes are deliberately set outside the CI/CD process to prevent accidental deletion of data. For the HOT Tasking Manager, only staff with sufficient AWS privileges have the ability to perform these functions.
 
 1. Pull the latest changes locally
 2. Run the `cfn-config update` command, keeping in mind to update any new parameters that were added.
