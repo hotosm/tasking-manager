@@ -25,7 +25,7 @@ In order to use the frontend, you may need to create keys for OSM:
 
 2. Register your Tasking Manager instance to OAuth 2 applications.
 
-   Put your login redirect url as `http://127.0.0.1:3000/authorized/`
+   Put your login redirect url as `http://127.0.0.1:3000/authorized`
 
    > Note: `127.0.0.1` is required for debugging instead of `localhost`
    > due to OSM restrictions.
