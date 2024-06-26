@@ -86,9 +86,7 @@ cp example.env tasking-manager.env
 Now you can proceed with starting the services.
 
 ```bash
-docker compose pull
-docker compose build
-docker compose up --detach
+docker compose --env-file tasking-manager.env up -d
 ```
 
 Tasking Manager should be available from:
@@ -104,11 +102,10 @@ in addition to any variables including a port, e.g. TM_APP_BASE_URL.
 The default dotenv file can also be changed.
 
 ```bash
-TM_DEV_PORT=9000 ENV_FILE=.env docker compose up --detach
+TM_DEV_PORT=9000 docker compose --env-file tasking-manager.env up -d
 ```
 ```bash
-docker compose build
-docker compose up --detach
+docker compose --env-file tasking-manager.env up -d
 ```
 #### (Optional) Overriding `docker-compose.yml`
 If you want to add custom configuration for the docker services. You can make a copy of `docker-compose.override.sample.yml` which you can edit as per your need.
@@ -133,7 +130,7 @@ POSTGRES_PORT=5432
 
 Once Updated, recreate containers with
 ```
-docker compose up -d
+docker compose --env-file tasking-manager.env up -d
 ```
 
 ### Frontend Only Deployment
@@ -148,7 +145,7 @@ TM_APP_API_URL=https://tasking-manager-staging-api.hotosm.org
 ```
 Then proceed with starting only frontend service with docker.
 ```
-docker compose up -d tm-frontend
+docker compose --env-file tasking-manager.env up -d tm-frontend
 ```
 
 Check server logs with
@@ -494,7 +491,7 @@ It is possible to install and run the Tasking Manager using
 [Docker](https://docker.com) and [Docker
 Compose](https://docs.docker.com/compose/).
 
-Clone the Tasking Manager repository and use `docker-compose up` to
+Clone the Tasking Manager repository and use `docker compose --env-file tasking-manager.env up` to
 get a working version of the API running.
 
 ## Sysadmins guide
