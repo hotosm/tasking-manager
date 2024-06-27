@@ -52,26 +52,26 @@ class ListOrganisationsDTO(BaseModel):
 
     organisations: Optional[List[OrganisationDTO]] = None
 
-
 class NewOrganisationDTO(BaseModel):
     """Describes a JSON model to create a new organisation"""
 
-    organisation_id: int = Field(alias="organisationId", required=False)
+    organisation_id: Optional[int] = Field(None, alias="organisationId")
     managers: List[str]
-    name: str
-    slug: str = ""
-    logo: str = ""
-    description: str = ""
-    url: str = ""
-    type: str = Field(validators=[is_known_organisation_type])
-    subscription_tier: str = Field(alias="subscriptionTier")
-    
+    name: str 
+    slug: Optional[str] = None
+    logo: Optional[str] = None
+    description: Optional[str] = None
+    url: Optional[str] = None
+    type: Optional[str] = Field(None, validator=is_known_organisation_type)
+    subscription_tier: Optional[int] = Field(None, alias="subscriptionTier")
+
+
 class UpdateOrganisationDTO(OrganisationDTO):
-    organisation_id: int = Field(alias="organisationId", required=False)
+    organisation_id: Optional[int] = Field(None, alias="organisationId")
     managers: List[str] = Field(default=[])
-    name: str
-    slug: str
-    logo: str
-    description: str
-    url: str
-    type: str = Field(validators=[is_known_organisation_type])
+    name: Optional[str] = None
+    slug: Optional[str] = None
+    logo: Optional[str] = None
+    description: Optional[str] = None
+    url: Optional[str] = None
+    type: Optional[str] = Field(None, validator=is_known_organisation_type)

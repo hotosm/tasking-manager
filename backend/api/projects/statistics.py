@@ -3,6 +3,7 @@ from backend.services.stats_service import StatsService
 from backend.services.project_service import ProjectService
 from fastapi import APIRouter, Depends
 from backend.db import get_session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(
     prefix="/projects",
@@ -33,7 +34,7 @@ async def get():
 
 # class ProjectsStatisticsAPI(Resource):
 @router.get("/{project_id}/statistics/")
-async def get(project_id):
+async def get(project_id: int, session: AsyncSession = Depends(get_session)):
     """
     Get Project Stats
     ---
@@ -63,7 +64,7 @@ async def get(project_id):
             description: Internal Server Error
     """
     # preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-    summary = ProjectService.get_project_stats(project_id)
+    summary = await ProjectService.get_project_stats(project_id, session)
     return summary.model_dump(by_alias=True), 200
 
 

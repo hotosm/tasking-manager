@@ -127,7 +127,7 @@ async def get(request: Request, slug: str, session: AsyncSession = Depends(get_s
 #     @token_auth.login_required
 @router.post("/")
 @requires("authenticated")
-async def post(request: Request):
+async def post(request: Request, session: AsyncSession = Depends(get_session)):
     """
     Creates a new organisation
     ---
@@ -182,24 +182,25 @@ async def post(request: Request):
         500:
             description: Internal Server Error
     """
-    request_user = User.get_by_id(request.user.display_name)
+    request_user = await User.get_by_id(request.user.display_name, session)
     if request_user.role != 1:
         return {
             "Error": "Only admin users can create organisations.",
             "SubCode": "OnlyAdminAccess",
         }, 403
-
     try:
-        organisation_dto = NewOrganisationDTO(request.json())
+        request_body = await request.json()
+        organisation_dto = NewOrganisationDTO(**request_body)
         if request_user.username not in organisation_dto.managers:
             organisation_dto.managers.append(request_user.username)
-        organisation_dto.validate()
+        organisation_dto.validate(request_body)
+
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
         return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
     try:
-        org_id = OrganisationService.create_organisation(organisation_dto)
+        org_id = await OrganisationService.create_organisation(organisation_dto, session)
         return {"organisationId": org_id}, 201
     except OrganisationServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
@@ -259,7 +260,7 @@ async def delete(request: Request, organisation_id: int, session: AsyncSession =
 
 @router.patch("/{organisation_id}/")
 @requires("authenticated")
-def patch(request: Request, organisation_id: int):
+async def patch(request: Request, organisation_id: int, session: AsyncSession = Depends(get_session)):
     """
     Updates an organisation
     ---
@@ -318,28 +319,31 @@ def patch(request: Request, organisation_id: int):
         500:
             description: Internal Server Error
     """
-    if not OrganisationService.can_user_manage_organisation(
-        organisation_id, request.user.display_name
+    if not await OrganisationService.can_user_manage_organisation(
+        organisation_id, request.user.display_name, session
     ):
         return {
             "Error": "User is not an admin for the org",
             "SubCode": "UserNotOrgAdmin",
         }, 403
     try:
-        organisation_dto = UpdateOrganisationDTO(request.get_json())
+        request_body = await request.json()
+        organisation_dto = UpdateOrganisationDTO(**request_body)
         organisation_dto.organisation_id = organisation_id
+
         # Don't update organisation type and subscription_tier if request user is not an admin
-        if User.get_by_id(request.user.display_name).role != 1:
-            org = OrganisationService.get_organisation_by_id(organisation_id)
+        user = await User.get_by_id(request.user.display_name, session)
+        if user.role != 1:
+            org = await OrganisationService.get_organisation_by_id(organisation_id, session)
             organisation_dto.type = OrganisationType(org.type).name
             organisation_dto.subscription_tier = org.subscription_tier
-        organisation_dto.validate()
+        organisation_dto.validate(request_body)
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
         return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
     try:
-        OrganisationService.update_organisation(organisation_dto)
+        await OrganisationService.update_organisation(organisation_dto, session)
         return {"Status": "Updated"}, 200
     except OrganisationServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 402
@@ -426,7 +430,6 @@ async def get(request: Request, session: AsyncSession = Depends(get_session)):
         500:
             description: Internal Server Error
     """
-
     # Restrict some of the parameters to some permissions
     authenticated_user_id = request.user.display_name if request.user else None
     try:

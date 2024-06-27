@@ -779,6 +779,7 @@ class Task(Base):
             if task:
                 await task.auto_unlock_expired_tasks(expiry_date, lock_duration, session)
 
+
     async def auto_unlock_expired_tasks(self, expiry_date, lock_duration, session):
         """Unlock all tasks locked before expiry date. Clears task lock if needed"""
         await TaskHistory.update_expired_and_locked_actions(

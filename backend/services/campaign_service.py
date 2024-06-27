@@ -61,7 +61,6 @@ class CampaignService:
     async def get_campaign_as_dto(campaign_id: int, user_id: int, session):
         """Gets the specified campaign"""
         campaign = await CampaignService.get_campaign(campaign_id, session)
-
         campaign_dto = CampaignDTO()
         campaign_dto.id = campaign.id
         campaign_dto.url = campaign.url
@@ -71,18 +70,6 @@ class CampaignService:
 
         return campaign_dto
 
-    # @staticmethod
-    # def get_project_campaigns_as_dto(project_id: int) -> CampaignListDTO:
-    #     """Gets all the campaigns for a specified project"""
-    #     # Test if project exists
-    #     ProjectService.get_project_by_id(project_id)
-    #     query = (
-    #         session.query(Campaign).join(campaign_projects)
-    #         .filter(campaign_projects.c.project_id == project_id)
-    #         .all()
-    #     )
-
-    #     return Campaign.campaign_list_as_dto(query)
 
     @staticmethod
     async def get_project_campaigns_as_dto(project_id: int, session: AsyncSession) -> CampaignListDTO:
