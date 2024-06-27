@@ -1123,7 +1123,7 @@ async def get(project_id):
 
 # class ProjectsQueriesFeaturedAPI():
 @router.get("/queries/featured/")
-async def get(request: Request):
+async def get(request: Request, session: AsyncSession = Depends(get_session)):
     """
     Get featured projects
     ---
@@ -1145,7 +1145,7 @@ async def get(request: Request):
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
-    projects_dto = ProjectService.get_featured_projects(preferred_locale)
+    projects_dto = await ProjectService.get_featured_projects(preferred_locale, session)
     return projects_dto.model_dump(by_alias=True), 200
 
 
@@ -1200,7 +1200,7 @@ async def get(request: Request, project_id: int):
 # class ProjectQueriesActiveProjectsAPI():
     # @token_auth.login_required(optional=True)
 @router.get("/queries/active/")
-async def get(request: Request):
+async def get(request: Request, session: AsyncSession = Depends(get_session)):
         """
         Get active projects
         ---
@@ -1239,5 +1239,5 @@ async def get(request: Request):
             return {
                 "Error": "Interval must be a number greater than 0 and less than or equal to 24"
             }, 400
-        projects_dto = ProjectService.get_active_projects(interval)
+        projects_dto = await ProjectService.get_active_projects(interval, session)
         return projects_dto, 200
