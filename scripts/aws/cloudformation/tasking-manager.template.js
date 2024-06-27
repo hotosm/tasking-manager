@@ -440,7 +440,7 @@ const Resources = {
           'wget -6 https://s3.dualstack.us-east-1.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz -O /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
           'pip install /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
           'pdm install',
-          'eval "$(pdm venv activate)"',
+          'eval "$(pdm venv activate --quiet)"',
           'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf',
           'export LC_ALL=C',
           'wget -6 https://s3.dualstack.us-east-1.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
