@@ -123,14 +123,15 @@ class OrganisationService:
         return Organisation.get_organisation_name_by_id(organisation_id)
 
     @staticmethod
-    def create_organisation(new_organisation_dto: NewOrganisationDTO) -> int:
+    async def create_organisation(new_organisation_dto: NewOrganisationDTO, session) -> int:
         """
         Creates a new organisation using an organisation dto
         :param new_organisation_dto: Organisation DTO
         :returns: ID of new Organisation
         """
         try:
-            org = Organisation.create_from_dto(new_organisation_dto)
+            org = await Organisation.create_from_dto(new_organisation_dto, session)
+            await session.refresh(org)  # Explicitly refresh the object
             return org.id
         except IntegrityError:
             raise OrganisationServiceError(
@@ -138,18 +139,18 @@ class OrganisationService:
             )
 
     @staticmethod
-    def update_organisation(organisation_dto: UpdateOrganisationDTO) -> Organisation:
+    async def update_organisation(organisation_dto: UpdateOrganisationDTO, session) -> Organisation:
         """
         Updates an organisation
         :param organisation_dto: DTO with updated info
         :returns updated Organisation
         """
-        org = OrganisationService.get_organisation_by_id(
-            organisation_dto.organisation_id
+        org = await OrganisationService.get_organisation_by_id(
+            organisation_dto.organisation_id, session
         )
-        OrganisationService.assert_validate_name(org, organisation_dto.name)
-        OrganisationService.assert_validate_users(organisation_dto)
-        org.update(organisation_dto)
+        OrganisationService.assert_validate_name(org, organisation_dto.name, session)
+        OrganisationService.assert_validate_users(organisation_dto, session)
+        await org.update(organisation_dto, session)
         return org
 
     @staticmethod
@@ -311,15 +312,15 @@ class OrganisationService:
         return stats_dto
 
     @staticmethod
-    def assert_validate_name(org: Organisation, name: str):
+    async def assert_validate_name(org: Organisation, name: str, session):
         """Validates that the organisation name doesn't exist"""
-        if org.name != name and Organisation.get_organisation_by_name(name) is not None:
+        if org.name != name and await Organisation.get_organisation_by_name(name, session) is not None:
             raise OrganisationServiceError(
                 f"NameExists- Organisation name already exists: {name}"
             )
 
     @staticmethod
-    def assert_validate_users(organisation_dto: OrganisationDTO):
+    async def assert_validate_users(organisation_dto: OrganisationDTO, session):
         """Validates that the users exist"""
         if organisation_dto.managers and len(organisation_dto.managers) == 0:
             raise OrganisationServiceError(
@@ -330,7 +331,7 @@ class OrganisationService:
             managers = []
             for user in organisation_dto.managers:
                 try:
-                    admin = UserService.get_user_by_username(user)
+                    admin = await UserService.get_user_by_username(user)
                 except NotFound:
                     raise NotFound(sub_code="USER_NOT_FOUND", username=user)
 

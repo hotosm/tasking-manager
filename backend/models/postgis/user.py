@@ -29,6 +29,7 @@ from backend.models.postgis.utils import timestamp
 from backend.models.postgis.interests import Interest, user_interests
 from backend.db import Base, get_session
 session = get_session()
+from sqlalchemy import select
 
 class User(Base):
     """Describes the history associated with a task"""
@@ -94,9 +95,10 @@ class User(Base):
         return result.scalars().first()
 
     @staticmethod
-    def get_by_username(username: str):
+    async def get_by_username(username: str, session):
         """Return the user for the specified username, or None if not found"""
-        return session.query(User).filter_by(username=username).one_or_none()
+        result = await session.execute(select(User).filter_by(username=username))
+        return result.unique().scalars().one_or_none()
 
     def update_username(self, username: str):
         """Update the username"""
