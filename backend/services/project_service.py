@@ -37,6 +37,8 @@ from sqlalchemy import func, or_
 from sqlalchemy.sql.expression import true
 from backend.db import get_session
 session = get_session()
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -519,7 +521,7 @@ class ProjectService:
         project.unset_as_featured()
 
     @staticmethod
-    def get_featured_projects(preferred_locale):
+    async def get_featured_projects(preferred_locale, session):
         """Sets project as featured"""
         query = ProjectSearchService.create_search_query()
         projects = query.filter(Project.featured == true()).group_by(Project.id).all()
@@ -560,10 +562,10 @@ class ProjectService:
 
     @staticmethod
     @cached(TTLCache(maxsize=1024, ttl=600))
-    def get_project_stats(project_id: int) -> ProjectStatsDTO:
+    async def get_project_stats(project_id: int, session) -> ProjectStatsDTO:
         """Gets the project stats DTO"""
-        project = ProjectService.get_project_by_id(project_id)
-        return project.get_project_stats()
+        project = await ProjectService.get_project_by_id(project_id, session)
+        return await project.get_project_stats()
 
     @staticmethod
     def get_project_user_stats(project_id: int, username: str) -> ProjectUserStatsDTO:
@@ -620,18 +622,55 @@ class ProjectService:
                 ),
             ).start()
 
+    # @staticmethod
+    # def get_active_projects(interval, session):
+    #     action_date = datetime.now(timezone.utc) - timedelta(hours=interval)
+    #     result = (
+    #         session.query(TaskHistory).with_entities(TaskHistory.project_id)
+    #         .distinct()
+    #         .filter(TaskHistory.action_date >= action_date)
+    #         .all()
+    #     )
+    #     project_ids = [row.project_id for row in result]
+    #     projects = (
+    #         session.query(Project).with_entities(
+    #             Project.id,
+    #             Project.mapping_types,
+    #             Project.geometry.ST_AsGeoJSON().label("geometry"),
+    #         )
+    #         .filter(
+    #             Project.status == ProjectStatus.PUBLISHED.value,
+    #             Project.id.in_(project_ids),
+    #         )
+    #         .all()
+    #     )
+    #     features = []
+    #     for project in projects:
+    #         properties = {
+    #             "project_id": project.id,
+    #             "mapping_types": project.mapping_types,
+    #         }
+    #         feature = geojson.Feature(
+    #             geometry=geojson.loads(project.geometry), properties=properties
+    #         )
+    #         features.append(feature)
+    #     return geojson.FeatureCollection(features)
+
     @staticmethod
-    def get_active_projects(interval):
-        action_date = datetime.now(timezone.utc) - timedelta(hours=interval)
-        result = (
-            session.query(TaskHistory).with_entities(TaskHistory.project_id)
+    async def get_active_projects(interval, session: AsyncSession):
+        # Calculate the action_date and make it naive
+        action_date = (datetime.now(timezone.utc) - timedelta(hours=interval)).replace(tzinfo=None)
+        
+        # First query to get distinct project_ids
+        result = await session.execute(
+            select(TaskHistory.project_id)
             .distinct()
             .filter(TaskHistory.action_date >= action_date)
-            .all()
         )
-        project_ids = [row.project_id for row in result]
-        projects = (
-            session.query(Project).with_entities(
+        project_ids = [row.project_id for row in result.scalars().all()]
+        # Second query to get project details
+        project_query = (
+            select(
                 Project.id,
                 Project.mapping_types,
                 Project.geometry.ST_AsGeoJSON().label("geometry"),
@@ -640,8 +679,12 @@ class ProjectService:
                 Project.status == ProjectStatus.PUBLISHED.value,
                 Project.id.in_(project_ids),
             )
-            .all()
         )
+        
+        project_result = await session.execute(project_query)
+        projects = project_result.all()
+        
+        # Building GeoJSON FeatureCollection
         features = []
         for project in projects:
             properties = {
@@ -652,4 +695,5 @@ class ProjectService:
                 geometry=geojson.loads(project.geometry), properties=properties
             )
             features.append(feature)
+            
         return geojson.FeatureCollection(features)
