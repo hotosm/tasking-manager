@@ -56,7 +56,7 @@ class Organisation(Base):
         Campaign, secondary=campaign_organisations, backref="organisation"
     )
 
-    def create(self):
+    def create(self, session):
         """Creates and saves the current model to the DB"""
         session.add(self)
         session.commit()
@@ -65,7 +65,7 @@ class Organisation(Base):
         session.commit()
 
     @classmethod
-    def create_from_dto(cls, new_organisation_dto: NewOrganisationDTO):
+    async def create_from_dto(cls, new_organisation_dto: NewOrganisationDTO, session):
         """Creates a new organisation from a DTO"""
         new_org = cls()
 
@@ -78,20 +78,23 @@ class Organisation(Base):
         new_org.subscription_tier = new_organisation_dto.subscription_tier
 
         for manager in new_organisation_dto.managers:
-            user = User.get_by_username(manager)
+            user = await User.get_by_username(manager, session)
 
             if user is None:
                 raise NotFound(sub_code="USER_NOT_FOUND", username=manager)
 
             new_org.managers.append(user)
-
-        new_org.create()
+            
+        session.add(new_org)
+        await session.commit()
         return new_org
 
-    def update(self, organisation_dto: OrganisationDTO):
-        """Updates Organisation from DTO"""
 
-        for attr, value in organisation_dto.items():
+    async def update(self, organisation_dto: OrganisationDTO, session):
+        """Updates Organisation from DTO"""
+        org_dict = organisation_dto.dict(exclude_unset=True)
+
+        for attr, value in org_dict.items():
             if attr == "type" and value is not None:
                 value = OrganisationType[organisation_dto.type].value
             if attr == "managers":
@@ -108,16 +111,15 @@ class Organisation(Base):
 
         if organisation_dto.managers:
             self.managers = []
-            # Need to handle this in the loop so we can take care of NotFound users
             for manager in organisation_dto.managers:
-                new_manager = User.get_by_username(manager)
+                new_manager = await User.get_by_username(manager, session)
 
                 if new_manager is None:
                     raise NotFound(sub_code="USER_NOT_FOUND", username=manager)
 
                 self.managers.append(new_manager)
 
-        session.commit()
+        await session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
@@ -138,12 +140,16 @@ class Organisation(Base):
         return session.get(Organisation, organisation_id)
 
     @staticmethod
-    def get_organisation_by_name(organisation_name: str):
+    async def get_organisation_by_name(organisation_name: str, session):
         """Get organisation by name
         :param organisation_name: name of organisation
         :return: Organisation if found else None
         """
-        return session.query(Organisation).filter_by(name=organisation_name).first()
+        result = await session.execute(
+            select(Organisation).filter_by(name=organisation_name)
+        )
+        return result.scalars().first()
+        # return session.query(Organisation).filter_by(name=organisation_name).first()
 
     @staticmethod
     def get_organisation_name_by_id(organisation_id: int):
