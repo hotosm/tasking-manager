@@ -71,6 +71,9 @@ export function CurrentProjects({ currentProjects }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentProjects]);
 
+  if (!currentProjects)
+    return <h3 className="f3 barlow-condensed blue-dark fw6">There are no current projects.</h3>;
+
   return (
     <ReactPlaceholder
       showLoadingAnimation={true}
