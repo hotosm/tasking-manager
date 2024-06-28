@@ -65,6 +65,7 @@ export function CurrentProjects({ currentProjects }) {
   };
 
   useEffect(() => {
+    if (!currentProjects) return;
     fetchData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
