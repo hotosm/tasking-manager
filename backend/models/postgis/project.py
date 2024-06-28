@@ -61,6 +61,7 @@ from backend.models.postgis.utils import (
 )
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.interests import Interest, project_interests
+import os
 
 # Secondary table defining many-to-many join for projects that were favorited by users.
 project_favorites = db.Table(
@@ -271,7 +272,8 @@ class Project(db.Model):
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
                 "Chrome/58.0.3029.110 Safari/537.3"
-            )
+            ),
+            "Referer": os.environ.get("TM_APP_BASE_URL", "https://example.com"),
         }
         try:
             response = requests.get(url, headers=headers)
