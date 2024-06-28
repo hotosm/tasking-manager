@@ -38,7 +38,7 @@ export const StatsColumn = ({ label, value, icon }: Object) => {
 };
 
 export const StatsSection = ({ partner }) => {
-  
+
   return (
     <>
       <div className="w-100 pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container ">
