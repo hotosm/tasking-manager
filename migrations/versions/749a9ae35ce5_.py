@@ -29,9 +29,6 @@ def upgrade():
         sa.Column(
             "started_on", postgresql.TIMESTAMP(), autoincrement=False, nullable=False
         ),
-        sa.Column(
-            "ended_on", postgresql.TIMESTAMP(), autoincrement=False, nullable=True
-        ),
         sa.ForeignKeyConstraint(
             ["partner_id"], ["partners.id"], name="project_partners_partners_fk"
         ),
