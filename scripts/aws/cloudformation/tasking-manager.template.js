@@ -423,6 +423,7 @@ const Resources = {
           'export DEBIAN_FRONTEND=noninteractive',
           'export LC_ALL="en_US.UTF-8"',
           'export LC_CTYPE="en_US.UTF-8"',
+          'export PATH=$PATH:/root/.local/bin',
           'dpkg-reconfigure --frontend=noninteractive locales',
           'sudo apt-get -q -y update',
           'sudo DEBIAN_FRONTEND=noninteractive apt-get -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
