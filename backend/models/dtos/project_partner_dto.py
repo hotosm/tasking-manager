@@ -56,4 +56,3 @@ class ProjectPartnerAction(Enum):
 
     START = 0
     END = 1
-    UPDATE = 2  # Updates the time range of when partner was linked with a project.
