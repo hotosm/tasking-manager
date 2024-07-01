@@ -10,7 +10,7 @@ We use CircleCI to manage Continuous Integration and Continuous Deployment.
 | TeachOSM            | deployment/teachosm-tasking-manager     |
 | Indonesia           | deployment/id-tasking-manager           |
 
-Each environment has its own set of environment variables which are stored as secrets in the CircleCI Organization Settings under Contexts. At the moment, these variables are for the frontend builds only. See the [deployment docs](deployment.md) for updating backend variables. 
+Each environment has its own set of environment variables which are stored as secrets in the CircleCI Organization Settings under Contexts. At the moment, these variables are for the frontend builds only. See the [deployment docs](deployment.md) for updating backend variables.
 
 - OPSGENIE_API
 - TM_APP_API_URL
