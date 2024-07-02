@@ -690,7 +690,7 @@ async def get(request: Request, session: AsyncSession = Depends(get_session)):
         user = None
         user_id = request.user.display_name if request.user else None
         if user_id:
-            user = UserService.get_user_by_id(user_id)
+            user = await UserService.get_user_by_id(user_id, session)
         search_dto = setup_search_dto(request)
         results_dto = await ProjectSearchService.search_projects(search_dto, user, session)
         return results_dto.model_dump(by_alias=True), 200

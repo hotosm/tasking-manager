@@ -31,6 +31,7 @@ from backend.services.users.user_service import UserService
 from backend.services.messaging.message_service import MessageService
 from backend.db import get_session
 session = get_session()
+from sqlalchemy import select
 
 
 class TeamServiceError(Exception):
@@ -211,8 +212,130 @@ class TeamService:
         ).one()
         project.delete()
 
+    # @staticmethod
+    # def get_all_teams(search_dto: TeamSearchDTO) -> TeamsListDTO:
+    #     query = session.query(Team)
+
+    #     orgs_query = None
+    #     user = UserService.get_user_by_id(search_dto.user_id)
+    #     is_admin = UserRole(user.role) == UserRole.ADMIN
+    #     if search_dto.organisation:
+    #         orgs_query = query.filter(Team.organisation_id == search_dto.organisation)
+    #     if search_dto.manager and search_dto.manager == search_dto.user_id:
+    #         manager_teams = query.filter(
+    #             TeamMembers.user_id == search_dto.manager,
+    #             TeamMembers.active == True,  # noqa
+    #             TeamMembers.function == TeamMemberFunctions.MANAGER.value,
+    #             Team.id == TeamMembers.team_id,
+    #         )
+
+    #         manager_orgs_teams = query.filter(
+    #             Team.organisation_id.in_(
+    #                 [
+    #                     org.id
+    #                     for org in OrganisationService.get_organisations(
+    #                         search_dto.manager
+    #                     )
+    #                 ]
+    #             )
+    #         )
+
+    #         query = manager_teams.union(manager_orgs_teams)
+
+    #     if search_dto.team_name:
+    #         query = query.filter(
+    #             Team.name.ilike("%" + search_dto.team_name + "%"),
+    #         )
+
+    #     if search_dto.team_role:
+    #         try:
+    #             role = TeamRoles[search_dto.team_role.upper()].value
+    #             project_teams = (
+    #                 session.query(ProjectTeams)
+    #                 .filter(ProjectTeams.role == role)
+    #                 .subquery()
+    #             )
+    #             query = query.join(project_teams)
+    #         except KeyError:
+    #             pass
+
+    #     if search_dto.member:
+    #         team_member = (
+    #             session.query(TeamMembers)
+    #             .filter(
+    #                 TeamMembers.user_id == search_dto.member,
+    #                 TeamMembers.active.is_(True),
+    #             )
+    #             .subquery()
+    #         )
+    #         query = query.join(team_member)
+
+    #     if search_dto.member_request:
+    #         team_member = (
+    #             session.query(TeamMembers)
+    #             .filter(
+    #                 TeamMembers.user_id == search_dto.member_request,
+    #                 TeamMembers.active.is_(False),
+    #             )
+    #             .subquery()
+    #         )
+    #         query = query.join(team_member)
+    #     if orgs_query:
+    #         query = query.union(orgs_query)
+
+    #     # Only show public teams and teams that the user is a member of
+    #     if not is_admin:
+    #         query = query.filter(
+    #             or_(
+    #                 Team.visibility == TeamVisibility.PUBLIC.value,
+    #                 # Since user.teams returns TeamMembers, we need to get the team_id
+    #                 Team.id.in_([team.team_id for team in user.teams]),
+    #             )
+    #         )
+    #     teams_list_dto = TeamsListDTO()
+
+    #     if search_dto.paginate:
+    #         paginated = query.paginate(
+    #             page=search_dto.page, per_page=search_dto.per_page, error_out=True
+    #         )
+    #         teams_list_dto.pagination = Pagination(paginated)
+    #         teams_list = paginated.items
+    #     else:
+    #         teams_list = query.all()
+    #     for team in teams_list:
+    #         team_dto = TeamDTO()
+    #         team_dto.team_id = team.id
+    #         team_dto.name = team.name
+    #         team_dto.join_method = TeamJoinMethod(team.join_method).name
+    #         team_dto.visibility = TeamVisibility(team.visibility).name
+    #         team_dto.description = team.description
+    #         team_dto.logo = team.organisation.logo
+    #         team_dto.organisation = team.organisation.name
+    #         team_dto.organisation_id = team.organisation.id
+    #         team_dto.members = []
+    #         # Skip if members are not included
+    #         if not search_dto.omit_members:
+    #             if search_dto.full_members_list:
+    #                 team_members = team.members
+    #             else:
+    #                 team_managers = team.get_team_managers(10)
+    #                 team_members = team.get_team_members(10)
+    #                 team_members.extend(team_managers)
+    #             team_dto.members = [
+    #                 team.as_dto_team_member(member) for member in team_members
+    #             ]
+    #             team_dto.members_count = team.get_members_count_by_role(
+    #                 TeamMemberFunctions.MEMBER
+    #             )
+    #             team_dto.managers_count = team.get_members_count_by_role(
+    #                 TeamMemberFunctions.MANAGER
+    #             )
+    #         teams_list_dto.teams.append(team_dto)
+    #     return teams_list_dto
+
+        
     @staticmethod
-    def get_all_teams(search_dto: TeamSearchDTO) -> TeamsListDTO:
+    async def get_all_teams(search_dto: TeamSearchDTO, session) -> TeamsListDTO:
         query = session.query(Team)
 
         orgs_query = None
@@ -232,7 +355,7 @@ class TeamService:
                 Team.organisation_id.in_(
                     [
                         org.id
-                        for org in OrganisationService.get_organisations(
+                        for org in await OrganisationService.get_organisations(
                             search_dto.manager
                         )
                     ]
@@ -291,16 +414,18 @@ class TeamService:
                     Team.id.in_([team.team_id for team in user.teams]),
                 )
             )
+        
         teams_list_dto = TeamsListDTO()
 
         if search_dto.paginate:
-            paginated = query.paginate(
+            paginated = await query.paginate(
                 page=search_dto.page, per_page=search_dto.per_page, error_out=True
             )
             teams_list_dto.pagination = Pagination(paginated)
             teams_list = paginated.items
         else:
-            teams_list = query.all()
+            teams_list = await query.all()
+
         for team in teams_list:
             team_dto = TeamDTO()
             team_dto.team_id = team.id
@@ -312,14 +437,16 @@ class TeamService:
             team_dto.organisation = team.organisation.name
             team_dto.organisation_id = team.organisation.id
             team_dto.members = []
+
             # Skip if members are not included
             if not search_dto.omit_members:
                 if search_dto.full_members_list:
                     team_members = team.members
                 else:
-                    team_managers = team.get_team_managers(10)
-                    team_members = team.get_team_members(10)
+                    team_managers = await team.get_team_managers(10)
+                    team_members = await team.get_team_members(10)
                     team_members.extend(team_managers)
+
                 team_dto.members = [
                     team.as_dto_team_member(member) for member in team_members
                 ]
@@ -329,7 +456,9 @@ class TeamService:
                 team_dto.managers_count = team.get_members_count_by_role(
                     TeamMemberFunctions.MANAGER
                 )
+
             teams_list_dto.teams.append(team_dto)
+
         return teams_list_dto
 
     @staticmethod
@@ -393,48 +522,55 @@ class TeamService:
 
         return projects
 
+
     @staticmethod
-    def get_project_teams_as_dto(project_id: int) -> TeamsListDTO:
+    async def get_project_teams_as_dto(project_id: int, session) -> TeamsListDTO:
         """Gets all the teams for a specified project"""
-        project_teams = session.query(ProjectTeams).filter(
-            ProjectTeams.project_id == project_id
-        ).all()
+        query = select(ProjectTeams).filter(ProjectTeams.project_id == project_id)
+        result = await session.execute(query)
+        project_teams = result.scalars().all()
+
         teams_list_dto = TeamsListDTO()
 
         for project_team in project_teams:
-            team = TeamService.get_team_by_id(project_team.team_id)
-            team_dto = ProjectTeamDTO()
-            team_dto.team_id = project_team.team_id
-            team_dto.team_name = team.name
-            team_dto.role = project_team.role
-
-            teams_list_dto.teams.append(team_dto)
+            team = await TeamService.get_team_by_id(project_team.team_id, session)
+            if team:
+                team_dto = ProjectTeamDTO(
+                    teamId=project_team.team_id,
+                    name=team.name,  
+                    role=str(project_team.role)
+                )
+                teams_list_dto.teams.append(team_dto)
 
         return teams_list_dto
 
-    @staticmethod
-    def change_team_role(team_id: int, project_id: int, role: str):
-        project = session.query(ProjectTeams).filter(
-            and_(ProjectTeams.team_id == team_id, ProjectTeams.project_id == project_id)
-        ).one()
-        project.role = TeamRoles[role].value
-        project.save()
 
     @staticmethod
-    def get_team_by_id(team_id: int) -> Team:
+    async def change_team_role(team_id: int, project_id: int, role: str, session):
+        query = select(ProjectTeams).filter(
+            and_(ProjectTeams.team_id == team_id, ProjectTeams.project_id == project_id)
+        )
+        result = await session.execute(query)
+        project = result.scalar_one()
+        project.role = TeamRoles[role].value
+        await session.commit()
+
+
+    @staticmethod
+    async def get_team_by_id(team_id: int, session) -> Team:
         """
         Get team from DB
         :param team_id: ID of team to fetch
         :returns: Team
         :raises: Not Found
         """
-        team = Team.get(team_id)
+        team = await session.get(Team, team_id)
 
         if team is None:
             raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_id)
 
         return team
-
+    
     @staticmethod
     def get_team_by_name(team_name: str) -> Team:
         team = Team.get_team_by_name(team_name)

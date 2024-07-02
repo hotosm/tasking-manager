@@ -118,7 +118,7 @@ async def get(project_id: int, session: AsyncSession = Depends(get_session)):
 
 @router.delete("/{project_id}/campaigns/{campaign_id}/")
 @requires(["authenticated"])
-async def delete(request: Request, project_id: int, campaign_id: int):
+async def delete(request: Request, project_id: int, campaign_id: int, session: AsyncSession = Depends(get_session)):
     """
     Delete a campaign for a project
     ---
@@ -158,13 +158,13 @@ async def delete(request: Request, project_id: int, campaign_id: int):
             description: Internal Server Error
     """
     authenticated_user_id = request.user.display_name
-    if not ProjectAdminService.is_user_action_permitted_on_project(
-        authenticated_user_id, project_id
+    if not await ProjectAdminService.is_user_action_permitted_on_project(
+        authenticated_user_id, project_id, session
     ):
         return {
             "Error": "User is not a manager of the project",
             "SubCode": "UserPermissionError",
         }, 403
 
-    CampaignService.delete_project_campaign(project_id, campaign_id)
+    await CampaignService.delete_project_campaign(project_id, campaign_id, session)
     return {"Success": "Campaigns Deleted"}, 200
