@@ -94,7 +94,6 @@ class ProjectSearchService:
             .outerjoin(Organisation, Organisation.id == Project.organisation_id)
             .group_by(Organisation.id, Project.id)
         )
-
         # Get public projects only for anonymous user.
         if user is None:
             query = query.filter(Project.private.is_(False))
