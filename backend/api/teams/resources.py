@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(
     prefix="/teams",
@@ -198,7 +199,7 @@ async def delete(request: Request, team_id: int):
 #     @token_auth.login_required
 @router.get("/")
 @requires("authenticated")
-async def get(request: Request):
+async def get(request: Request, session: AsyncSession):
     """
     Gets all teams
     ---
@@ -299,7 +300,7 @@ async def get(request: Request):
     search_dto.user_id = user_id
     search_dto.validate()
 
-    teams = TeamService.get_all_teams(search_dto)
+    teams = await TeamService.get_all_teams(search_dto, session)
     return teams.model_dump(by_alias=True), 200
 
 @router.post("/")

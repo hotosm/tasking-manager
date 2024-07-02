@@ -8,6 +8,8 @@ from backend.services.project_service import ProjectService
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
+from sqlalchemy.ext.asyncio import AsyncSession
+
 
 router = APIRouter(
     prefix="/projects",
@@ -21,7 +23,7 @@ router = APIRouter(
     # @token_auth.login_required
 @router.get("/{project_id}/teams/")
 @requires("authenticated")
-async def get(request: Request, project_id):
+async def get(request: Request, project_id: int, session: AsyncSession = Depends(get_session)):
     """Get teams assigned with a project
     ---
     tags:
@@ -52,8 +54,8 @@ async def get(request: Request, project_id):
             description: Internal Server Error
     """
     # Check if project exists
-    ProjectService.exists(project_id)
-    teams_dto = TeamService.get_project_teams_as_dto(project_id)
+    await ProjectService.exists(project_id, session)
+    teams_dto = await TeamService.get_project_teams_as_dto(project_id, session)
     return teams_dto.model_dump(by_alias=True), 200
 
 

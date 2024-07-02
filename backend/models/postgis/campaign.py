@@ -76,7 +76,7 @@ class Campaign(Base):
         return campaign_dto
 
     @staticmethod
-    async def campaign_list_as_dto(campaigns: list) -> CampaignListDTO:
+    def campaign_list_as_dto(campaigns: list) -> CampaignListDTO:
         """Converts a collection of campaigns into DTO"""
         campaign_list_dto = CampaignListDTO()
         for campaign in campaigns:

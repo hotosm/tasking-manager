@@ -91,8 +91,11 @@ class ProjectSearchService:
                 Project.country,
                 Organisation.name.label("organisation_name"),
                 Organisation.logo.label("organisation_logo"),
-            ))
-
+            )
+            .filter(Project.geometry is not None)
+            .outerjoin(Organisation, Organisation.id == Project.organisation_id)
+            .group_by(Organisation.id, Project.id)
+        )
         # Get public projects only for anonymous user.
         if user is None:
             query = query.filter(Project.private.is_(False))
