@@ -89,16 +89,9 @@ export function CreatePartner() {
           onSubmit={(values) => createPartner(values)}
           render={({ handleSubmit, pristine, form, submitting, values }) => {
             return (
-              <form
-                onSubmit={handleSubmit}
-                style={{ margin: 'auto' }}
-                className="blue-grey  w-50-l w-50-m "
-              >
+              <form onSubmit={handleSubmit} className="blue-grey  w-50-l w-50-m ">
                 <div className="w-100 cf pv4 pb5 ">
-                  <h3
-                    style={{ textAlign: 'center' }}
-                    className="f2 mb3 ttu blue-dark fw7 ma0 barlow-condensed "
-                  >
+                  <h3 className="f2 mb3 ttu blue-dark fw7 ma0 barlow-condensed ">
                     <FormattedMessage {...messages.newPartner} />
                   </h3>
                   <div className="">
@@ -213,8 +206,8 @@ export function EditPartners() {
         ready={!error && loading === false && typeof partner === 'object'}
       >
         {userDetails.role === 'ADMIN' ? (
-          <div style={{ margin: 'auto' }} className="cf w-50-l w-50-m ">
-            <div style={{ textAlign: 'center' }} className="cf pv4 ">
+          <div className="cf w-50-l w-50-m ">
+            <div className="cf pv4 ">
               <h3 className="f2 ttu blue-dark fw7 ma0 barlow-condensed v-mid dib">
                 <FormattedMessage {...messages.managePartner} />
               </h3>
