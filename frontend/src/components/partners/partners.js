@@ -41,7 +41,7 @@ export function PartnersManagement({ partners, isAdmin, isPartnersFetched }) {
         delay={10}
         ready={isPartnersFetched}
       >
-        <div style={{ margin: 'auto', marginBottom: 20 }} className="w-20-l w-25-m ">
+        <div style={{ marginBottom: '0.5rem' }} className="w-20-l w-25-m ">
           <TextField
             value={searchQuery}
             placeholderMsg={messages.searchPartners}
@@ -49,7 +49,7 @@ export function PartnersManagement({ partners, isAdmin, isPartnersFetched }) {
             onCloseIconClick={() => setSearchQuery('')}
           />
         </div>
-        <div className="ph4 cards-container">
+        <div className="cards-container">
           {isAdmin ? (
             filteredPartners?.length ? (
               filteredPartners.map((partner) => <PartnersCard details={partner} key={partner.id} />)
@@ -76,7 +76,6 @@ export function PartnersCard({ details }) {
       style={{
         backgroundColor: '#ffffff',
         color: '#002366',
-        margin: '0.5rem',
         padding: '1rem',
         borderRadius: '0.25rem',
         border: '1px solid #cbd5e0',

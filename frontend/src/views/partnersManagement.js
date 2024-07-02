@@ -90,8 +90,8 @@ export function CreatePartner() {
           render={({ handleSubmit, pristine, form, submitting, values }) => {
             return (
               <form onSubmit={handleSubmit} className="blue-grey  w-50-l w-50-m ">
-                <div className="w-100 cf pv4 pb5 ">
-                  <h3 className="f2 mb3 ttu blue-dark fw7 ma0 barlow-condensed ">
+                <div className="w-100 cf pb5 ">
+                  <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed ">
                     <FormattedMessage {...messages.newPartner} />
                   </h3>
                   <div className="">
@@ -207,13 +207,13 @@ export function EditPartners() {
       >
         {userDetails.role === 'ADMIN' ? (
           <div className="cf w-50-l w-50-m ">
-            <div className="cf pv4 ">
+            <div className="cf pv4">
               <h3 className="f2 ttu blue-dark fw7 ma0 barlow-condensed v-mid dib">
                 <FormattedMessage {...messages.managePartner} />
               </h3>
               <DeleteModal id={id} name={partner.name} type="partners" />
             </div>
-            <div className="w-100 mt4 fl">
+            <div className="w-100 fl">
               <PartnersForm
                 userDetails={userDetails}
                 partner={partner}
