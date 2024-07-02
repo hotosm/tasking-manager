@@ -551,11 +551,13 @@ class Project(Base):
         session.commit()
 
     @staticmethod
-    def exists(project_id):
-        query = session.query(Project).filter(Project.id == project_id).exists()
-
-        return session.query(literal(True)).filter(query).scalar()
-
+    async def exists(project_id: int, session):
+        query = select(literal(True)).where(
+            select(Project.id).filter(Project.id == project_id).exists()
+        )
+        result = await session.execute(query)
+        return result.scalar()
+    
     def is_favorited(self, user_id: int) -> bool:
         user = session.get(User, user_id)
         if user not in self.favorited:

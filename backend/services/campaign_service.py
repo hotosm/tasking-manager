@@ -23,7 +23,7 @@ session = get_session()
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlalchemy import insert
 
 class CampaignService:
     @staticmethod
@@ -90,26 +90,26 @@ class CampaignService:
         campaigns = result.scalars().all()
         
         # Convert the result to DTO
-        return await Campaign.campaign_list_as_dto(campaigns)
-
+        return Campaign.campaign_list_as_dto(campaigns)
 
     @staticmethod
-    def delete_project_campaign(project_id: int, campaign_id: int):
+    async def delete_project_campaign(project_id: int, campaign_id: int, session):
         """Delete campaign for a project"""
-        campaign = CampaignService.get_campaign(campaign_id)
-        project = ProjectService.get_project_by_id(project_id)
-        project_campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
+        campaign = await CampaignService.get_campaign(campaign_id, session)
+        project = await ProjectService.get_project_by_id(project_id, session)
+        project_campaigns = await CampaignService.get_project_campaigns_as_dto(project_id, session)
+        project_campaigns = project_campaigns.dict()
         if campaign.id not in [i["id"] for i in project_campaigns["campaigns"]]:
             raise NotFound(
                 sub_code="PROJECT_CAMPAIGN_NOT_FOUND",
                 campaign_id=campaign_id,
                 project_id=project_id,
             )
+        await session.refresh(project, ["campaign"])
         project.campaign.remove(campaign)
-        session.commit()
-        new_campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
+        await session.commit()
+        new_campaigns = await CampaignService.get_project_campaigns_as_dto(project_id, session)
         return new_campaigns
-
 
     @staticmethod
     async def get_all_campaigns(session) -> CampaignListDTO:
@@ -155,23 +155,21 @@ class CampaignService:
         return new_campaigns
 
     @staticmethod
-    def create_campaign_organisation(organisation_id: int, campaign_id: int):
+    async def create_campaign_organisation(organisation_id: int, campaign_id: int, session):
         """Creates new campaign from DTO"""
         # Check if campaign exists
-        CampaignService.get_campaign(campaign_id)
+        await CampaignService.get_campaign(campaign_id)
         # Check if organisation exists
-        OrganisationService.get_organisation_by_id(organisation_id)
+        await OrganisationService.get_organisation_by_id(organisation_id)
 
-        statement = campaign_organisations.insert().values(
+        statement = insert(campaign_organisations).values(
             campaign_id=campaign_id, organisation_id=organisation_id
         )
-        session.execute(statement)
-        session.commit()
-        new_campaigns = CampaignService.get_organisation_campaigns_as_dto(
-            organisation_id
-        )
-        return new_campaigns
+        await session.execute(statement)
+        await session.commit()
 
+        new_campaigns = await CampaignService.get_organisation_campaigns_as_dto(organisation_id)
+        return new_campaigns
 
     @staticmethod
     async def get_organisation_campaigns_as_dto(organisation_id: int, session: AsyncSession) -> CampaignListDTO:
@@ -191,17 +189,17 @@ class CampaignService:
         
         return await Campaign.campaign_list_as_dto(campaigns)
     
-
     @staticmethod
-    def campaign_organisation_exists(campaign_id: int, org_id: int):
-        return (
-            session.query(Campaign).join(campaign_organisations)
+    async def campaign_organisation_exists(campaign_id: int, org_id: int, session):
+        result = await session.execute(
+            select(Campaign)
+            .join(campaign_organisations)
             .filter(
                 campaign_organisations.c.organisation_id == org_id,
                 campaign_organisations.c.campaign_id == campaign_id,
             )
-            .one_or_none()
         )
+        return result.scalar_one_or_none()
 
     @staticmethod
     def delete_organisation_campaign(organisation_id: int, campaign_id: int):
@@ -228,6 +226,28 @@ class CampaignService:
             organisation_id
         )
         return new_campaigns
+
+    @staticmethod
+    async def delete_organisation_campaign(organisation_id: int, campaign_id: int, session):
+        """Delete campaign for an organisation"""
+        campaign = await session.get(Campaign, campaign_id)
+        if not campaign:
+            raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
+        
+        org = await session.get(Organisation, organisation_id)
+        if not org:
+            raise NotFound(sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id)
+        
+        campaign_org_exists = await CampaignService.campaign_organisation_exists(campaign_id, organisation_id, session)
+        if not campaign_org_exists:
+            raise NotFound(
+                sub_code="ORGANISATION_CAMPAIGN_NOT_FOUND",
+                organisation_id=organisation_id,
+                campaign_id=campaign_id,
+            )
+        await session.refresh(org, ["campaign"])
+        org.campaign.remove(campaign)
+        await session.commit()
 
     @staticmethod
     def update_campaign(campaign_dto: CampaignDTO, campaign_id: int):

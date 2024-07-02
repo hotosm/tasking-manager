@@ -199,7 +199,7 @@ class OrganisationService:
     async def get_organisations_managed_by_user(user_id: int, session):
         """Get all organisations a user manages"""
         if await UserService.is_user_an_admin(user_id, session):
-            return await Organisation.get_all_organisations()
+            return await Organisation.get_all_organisations(session)
 
         return await Organisation.get_organisations_managed_by_user(user_id, session)
 

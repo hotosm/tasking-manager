@@ -44,18 +44,6 @@ def validate_team_member_function(value):
             f"{TeamMemberFunctions.MANAGER.name}"
         )
 
-
-# class TeamMembersDTO(Model):
-#     """Describe a JSON model for team members"""
-
-#     username = StringType(required=True)
-#     function = StringType(required=True, validators=[validate_team_member_function])
-#     active = BooleanType()
-#     join_request_notifications = BooleanType(
-#         default=False, serialized_name="joinRequestNotifications"
-#     )
-#     picture_url = StringType(serialized_name="pictureUrl")
-
 class TeamMembersDTO(BaseModel):
     username: str = Field(required=True)
     function: str = Field(required=True, validators=[validate_team_member_function])
@@ -71,47 +59,11 @@ class TeamProjectDTO(BaseModel):
     project_id: int
     role: str
 
-
-# class ProjectTeamDTO(Model):
-#     """Describes a JSON model to create a project team"""
-
-#     team_id = IntType(required=True, serialized_name="teamId")
-#     team_name = StringType(serialized_name="name")
-#     role = StringType(required=True)
-    
 class ProjectTeamDTO(BaseModel):
     team_id: int = Field(alias="teamId", required=True)
     team_name: str = Field(alias="name")
     role: str = Field(required=True)
 
-
-# class TeamDetailsDTO(Model):
-#     def __init__(self):
-#         """DTO constructor initialise all arrays to empty"""
-#         super().__init__()
-#         self.members = []
-#         self.team_projects = []
-
-#     """ Describes JSON model for a team """
-#     team_id = IntType(serialized_name="teamId")
-#     organisation_id = IntType(required=True)
-#     organisation = StringType(required=True)
-#     organisation_slug = StringType(serialized_name="organisationSlug")
-#     name = StringType(required=True)
-#     logo = StringType()
-#     description = StringType()
-#     join_method = StringType(
-#         required=True,
-#         validators=[validate_team_join_method],
-#         serialized_name="joinMethod",
-#     )
-#     visibility = StringType(
-#         required=True, validators=[validate_team_visibility], serialize_when_none=False
-#     )
-#     is_org_admin = BooleanType(default=False)
-#     is_general_admin = BooleanType(default=False)
-#     members = ListType(ModelType(TeamMembersDTO))
-#     team_projects = ListType(ModelType(ProjectTeamDTO))
 class TeamDetailsDTO(BaseModel):
     def __init__(self, members: Optional[List[TeamMembersDTO]] = None, team_projects: Optional[List[ProjectTeamDTO]] = None, **kwargs):
         """DTO constructor initialise all arrays to empty"""
@@ -163,7 +115,7 @@ class TeamsListDTO(BaseModel):
         self.teams = []
 
     """ Returns List of all teams"""
-    teams: Optional[List[TeamDTO]] = None
+    teams: List[ProjectTeamDTO] = []
     pagination: Optional[Pagination] = None
 
 
@@ -182,7 +134,6 @@ class NewTeamDTO(BaseModel):
     visibility: str = Field(
         required=True, validators=[validate_team_visibility], serialize_when_none=False
     )
-
 
 class UpdateTeamDTO(BaseModel):
     """Describes a JSON model to update a team"""

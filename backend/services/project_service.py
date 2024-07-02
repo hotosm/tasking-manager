@@ -61,8 +61,8 @@ class ProjectService:
         return project
 
     @staticmethod
-    def exists(project_id: int) -> bool:
-        project = Project.exists(project_id)
+    async def exists(project_id: int, session) -> bool:
+        project = await Project.exists(project_id, session)
         if project is None:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
         return True
