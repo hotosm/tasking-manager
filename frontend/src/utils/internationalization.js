@@ -33,7 +33,7 @@ const supportedLocales = [
   // { value: 'tl', label: 'Filipino (Tagalog)' },
   { value: 'tr', label: 'Türkçe' },
   { value: 'uk', label: 'Українська' },
-  { value: 'zh', label: '繁體中文' },
+  { value: 'zh_TW', label: '繁體中文' },
 ];
 
 function getSupportedLocale(locale) {
