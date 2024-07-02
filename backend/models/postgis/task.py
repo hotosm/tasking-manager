@@ -330,46 +330,6 @@ class TaskHistory(Base):
 
         dupe.delete()
 
-    # @staticmethod
-    # async def update_expired_and_locked_actions(
-    #     project_id: int, task_id: int, expiry_date: datetime, action_text: str, session
-    # ):
-    #     """
-    #     Sets auto unlock state to all not finished actions, that are older then the expiry date.
-    #     Action is considered as a not finished, when it is in locked state and doesn't have action text
-    #     :param project_id: Project ID in scope
-    #     :param task_id: Task in scope
-    #     :param expiry_date: Action created before this date is treated as expired
-    #     :param action_text: Text which will be set for all changed actions
-    #     :return:
-    #     """
-    #     all_expired = TaskHistory.query.filter(
-    #         TaskHistory.task_id == task_id,
-    #         TaskHistory.project_id == project_id,
-    #         TaskHistory.action_text.is_(None),
-    #         TaskHistory.action.in_(
-    #             [
-    #                 TaskAction.LOCKED_FOR_VALIDATION.name,
-    #                 TaskAction.LOCKED_FOR_MAPPING.name,
-    #                 TaskAction.EXTENDED_FOR_MAPPING.name,
-    #                 TaskAction.EXTENDED_FOR_VALIDATION.name,
-    #             ]
-    #         ),
-    #         TaskHistory.action_date <= expiry_date,
-    #     ).all()
-
-    #     for task_history in all_expired:
-    #         unlock_action = (
-    #             TaskAction.AUTO_UNLOCKED_FOR_MAPPING
-    #             if task_history.action in ["LOCKED_FOR_MAPPING", "EXTENDED_FOR_MAPPING"]
-    #             else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
-    #         )
-
-    #         task_history.set_auto_unlock_action(unlock_action)
-    #         task_history.action_text = action_text
-
-    #     session.commit()
-
 
     @staticmethod
     async def update_expired_and_locked_actions(

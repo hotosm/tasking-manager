@@ -16,7 +16,7 @@ router = APIRouter(
 #     @token_auth.login_required
 @router.post("/{organisation_id}/campaigns/{campaign_id}/")
 @requires("authenticated")
-async def post(request: Request, organisation_id: int, campaign_id: int):
+async def post(request: Request, organisation_id: int, campaign_id: int, session: AsyncSession = Depends(get_session)):
     """
     Assigns a campaign to an organisation
     ---
@@ -55,18 +55,18 @@ async def post(request: Request, organisation_id: int, campaign_id: int):
         500:
             description: Internal Server Error
     """
-    if OrganisationService.can_user_manage_organisation(
-        organisation_id, request.user.display_name
+    if await OrganisationService.can_user_manage_organisation(
+        organisation_id, request.user.display_name, session
     ):
-        if CampaignService.campaign_organisation_exists(
-            campaign_id, organisation_id
+        if await CampaignService.campaign_organisation_exists(
+            campaign_id, organisation_id, session
         ):
             message = "Campaign {} is already assigned to organisation {}.".format(
                 campaign_id, organisation_id
             )
             return {"Error": message, "SubCode": "CampaignAlreadyAssigned"}, 400
 
-        CampaignService.create_campaign_organisation(organisation_id, campaign_id)
+        await CampaignService.create_campaign_organisation(organisation_id, campaign_id, session)
         message = "campaign with id {} assigned for organisation with id {}".format(
             campaign_id, organisation_id
         )
@@ -112,7 +112,7 @@ async def get(organisation_id: int, session: AsyncSession = Depends(get_session)
 
 @router.delete("/{organisation_id}/campaigns/{campaign_id}/")
 @requires("authenticated")
-async def delete(request: Request, organisation_id, campaign_id):
+async def delete(request: Request, organisation_id: int, campaign_id: int, session: AsyncSession = Depends(get_session)):
     """
     Un-assigns an organization from an campaign
     ---
@@ -122,7 +122,7 @@ async def delete(request: Request, organisation_id, campaign_id):
         - application/json
     parameters:
         - in: header
-            name: Authorization
+            name: Authorization 
             description: Base64 encoded session token
             required: true
             type: string
@@ -151,10 +151,10 @@ async def delete(request: Request, organisation_id, campaign_id):
         500:
             description: Internal Server Error
     """
-    if OrganisationService.can_user_manage_organisation(
-        organisation_id, request.user.display_name
+    if await OrganisationService.can_user_manage_organisation(
+        organisation_id, request.user.display_name, session
     ):
-        CampaignService.delete_organisation_campaign(organisation_id, campaign_id)
+        await CampaignService.delete_organisation_campaign(organisation_id, campaign_id, session)
         return (
             {"Success": "Organisation and campaign unassociated successfully"},
             200,
