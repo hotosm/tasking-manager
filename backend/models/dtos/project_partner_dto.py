@@ -23,6 +23,7 @@ def is_known_action(value):
 class ProjectPartnerDTO(Model):
     """DTO for the link between a Partner and a Project"""
 
+    id = LongType(required=True)
     project_id = LongType(required=True, serialized_name="projectId")
     partner_id = LongType(required=True, serialized_name="partnerId")
     started_on = UTCDateTimeType(required=True, serialized_name="startedOn")
@@ -32,6 +33,7 @@ class ProjectPartnerHistoryDTO(Model):
     """DTO for Logs of changes to all Project-Partner links"""
 
     id = LongType(required=True)
+    partnership_id = LongType(required=True, serialized_name="partnershipId")
     project_id = LongType(required=True, serialized_name="projectId")
     partner_id = LongType(required=True, serialized_name="partnerId")
     started_on_old = UTCDateTimeType(
@@ -56,3 +58,4 @@ class ProjectPartnerAction(Enum):
 
     START = 0
     END = 1
+    UPDATE = 2
