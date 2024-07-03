@@ -27,16 +27,14 @@ def upgrade():
         sa.Column("id", sa.BIGINT(), autoincrement=True, primary_key=True),
         sa.Column("project_id", sa.INTEGER(), autoincrement=True, nullable=False),
         sa.Column("partner_id", sa.INTEGER(), autoincrement=True, nullable=False),
-        sa.Column(
-            "started_on", postgresql.TIMESTAMP(), autoincrement=False, nullable=False
-        ),
-
+        sa.Column("started_on", postgresql.TIMESTAMP(), nullable=False),
+        sa.Column("ended_on", postgresql.TIMESTAMP(), nullable=True),
         sa.ForeignKeyConstraint(
             ["partner_id"], ["partners.id"], name="project_partners_partners_fk"
         ),
         sa.ForeignKeyConstraint(
             ["project_id"], ["projects.id"], name="project_partners_projects_fk"
-        )
+        ),
     )
 
     op.create_table(
@@ -61,16 +59,17 @@ def upgrade():
         sa.Column(
             "ended_on_new", postgresql.TIMESTAMP(), autoincrement=False, nullable=True
         ),
-
         sa.ForeignKeyConstraint(
-            ["partnership_id"], ["project_partnerships.id"], name="project_partnerships_fk"
+            ["partnership_id"],
+            ["project_partnerships.id"],
+            name="project_partnerships_fk",
         ),
         sa.ForeignKeyConstraint(
             ["partner_id"], ["partners.id"], name="project_partners_partners_fk"
         ),
         sa.ForeignKeyConstraint(
             ["project_id"], ["projects.id"], name="project_partners_projects_fk"
-        )
+        ),
     )
     # ### end Alembic commands ###
 
