@@ -43,6 +43,7 @@ class ProjectPartnership(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey("project.id"))
     partner_id = db.Column(db.Integer, db.ForeignKey("partner.id"))
     started_on = db.Column(db.DateTime, default=timestamp, nullable=False)
+    ended_on = db.Column(db.DateTime, default=timestamp, nullable=True)
 
     def create(self):
         """Creates and saves the current model to the DB"""
