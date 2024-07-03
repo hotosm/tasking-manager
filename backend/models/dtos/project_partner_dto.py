@@ -27,6 +27,7 @@ class ProjectPartnerDTO(Model):
     project_id = LongType(required=True, serialized_name="projectId")
     partner_id = LongType(required=True, serialized_name="partnerId")
     started_on = UTCDateTimeType(required=True, serialized_name="startedOn")
+    ended_on = UTCDateTimeType(serialized_name="endedOn")
 
 
 class ProjectPartnerHistoryDTO(Model):
