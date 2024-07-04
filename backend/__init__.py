@@ -478,6 +478,13 @@ def add_api_endpoints(app):
     )
 
     api.add_resource(
+        ProjectPartnershipsRestApi,
+        format_url("projects/partnerships/"),
+        endpoint="create_partnership",
+        methods=["POST"],
+    )
+
+    api.add_resource(
         ProjectsTeamsAPI,
         format_url("projects/<int:project_id>/teams/"),
         endpoint="get_all_project_teams",

@@ -10,10 +10,10 @@ class ProjectPartnershipHistory(db.Model):
         db.Integer, db.ForeignKey("project_partnerships.id"), nullable=False, index=True
     )
     project_id = db.Column(
-        db.Integer, db.ForeignKey("project.id"), nullable=False, index=True
+        db.Integer, db.ForeignKey("projects.id"), nullable=False, index=True
     )
     partner_id = db.Column(
-        db.Integer, db.ForeignKey("partner.id"), nullable=False, index=True
+        db.Integer, db.ForeignKey("partners.id"), nullable=False, index=True
     )
 
     started_on_old = db.Column(db.DateTime, default=timestamp)
@@ -39,9 +39,9 @@ class ProjectPartnershipHistory(db.Model):
 class ProjectPartnership(db.Model):
     __tablename__ = "project_partnerships"
 
-    id = db.Column(db.Integer, primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey("project.id"))
-    partner_id = db.Column(db.Integer, db.ForeignKey("partner.id"))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
+    partner_id = db.Column(db.Integer, db.ForeignKey("partners.id"))
     started_on = db.Column(db.DateTime, default=timestamp, nullable=False)
     ended_on = db.Column(db.DateTime, default=timestamp, nullable=True)
 
@@ -54,6 +54,7 @@ class ProjectPartnership(db.Model):
         """Creates and saves the current model to the DB"""
         db.session.add(self)
         db.session.commit()
+        return self.id
 
     def save(self):
         """Save changes to db"""
