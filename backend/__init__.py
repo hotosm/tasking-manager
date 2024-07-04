@@ -243,6 +243,7 @@ def add_api_endpoints(app):
     )
 
     from backend.api.projects.favorites import ProjectsFavoritesAPI
+    from backend.api.projects.partnerships import ProjectPartnershipsRestApi
 
     # Tasks API import
     from backend.api.tasks.resources import (
@@ -468,6 +469,12 @@ def add_api_endpoints(app):
 
     api.add_resource(
         ProjectsStatisticsQueriesPopularAPI, format_url("projects/queries/popular/")
+    )
+
+    api.add_resource(
+        ProjectPartnershipsRestApi,
+        format_url("projects/partnerships/<int:partnership_id>/"),
+        methods=["GET"],
     )
 
     api.add_resource(

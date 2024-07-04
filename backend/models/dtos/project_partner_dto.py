@@ -1,11 +1,7 @@
 from schematics import Model
-from schematics.types import (
-    LongType,
-    UTCDateTimeType,
-    StringType,
-    Enum,
-    ValidationError,
-)
+from schematics.types import LongType, UTCDateTimeType, StringType
+from schematics.exceptions import ValidationError
+from enum import Enum
 
 
 def is_known_action(value):
@@ -20,7 +16,7 @@ def is_known_action(value):
         )
 
 
-class ProjectPartnerDTO(Model):
+class ProjectPartnershipDTO(Model):
     """DTO for the link between a Partner and a Project"""
 
     id = LongType(required=True)
@@ -30,7 +26,7 @@ class ProjectPartnerDTO(Model):
     ended_on = UTCDateTimeType(serialized_name="endedOn")
 
 
-class ProjectPartnerHistoryDTO(Model):
+class ProjectPartnershipHistoryDTO(Model):
     """DTO for Logs of changes to all Project-Partner links"""
 
     id = LongType(required=True)
