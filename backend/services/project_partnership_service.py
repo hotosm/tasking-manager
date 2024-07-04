@@ -54,3 +54,33 @@ class ProjectPartnershipService:
         partnership.ended_on = ended_on
 
         return partnership.create()
+
+    @staticmethod
+    def update_partnership_time_range(
+        partnership_id: int,
+        started_on: Optional[datetime.datetime],
+        ended_on: Optional[datetime.datetime],
+    ) -> ProjectPartnership:
+        partnership = ProjectPartnership.get_by_id(partnership_id)
+        if partnership is None:
+            raise NotFound(
+                sub_code="PARTNERSHIP_NOT_FOUND", partnership_id=partnership_id
+            )
+
+        if started_on is not None:
+            partnership.started_on = started_on
+
+        if ended_on is not None:
+            partnership.ended_on = ended_on
+
+        partnership.save()
+        return partnership
+
+    @staticmethod
+    def delete_partnership(partnership_id: int):
+        partnership = ProjectPartnership.get_by_id(partnership_id)
+        if partnership is None:
+            raise NotFound(
+                sub_code="PARTNERSHIP_NOT_FOUND", partnership_id=partnership_id
+            )
+        partnership.delete()
