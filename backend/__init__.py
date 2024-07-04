@@ -474,7 +474,7 @@ def add_api_endpoints(app):
     api.add_resource(
         ProjectPartnershipsRestApi,
         format_url("projects/partnerships/<int:partnership_id>/"),
-        methods=["GET"],
+        methods=["GET", "PATCH", "DELETE"],
     )
 
     api.add_resource(
