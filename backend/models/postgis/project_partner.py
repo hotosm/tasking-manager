@@ -45,6 +45,11 @@ class ProjectPartnership(db.Model):
     started_on = db.Column(db.DateTime, default=timestamp, nullable=False)
     ended_on = db.Column(db.DateTime, default=timestamp, nullable=True)
 
+    @staticmethod
+    def get_by_id(partnership_id: int):
+        """Return the user for the specified id, or None if not found"""
+        return db.session.get(ProjectPartnership, partnership_id)
+
     def create(self):
         """Creates and saves the current model to the DB"""
         db.session.add(self)
