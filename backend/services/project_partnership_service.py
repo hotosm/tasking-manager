@@ -2,6 +2,11 @@ from flask import current_app
 from backend.exceptions import NotFound
 from backend.models.postgis.project_partner import ProjectPartnership
 from backend.models.dtos.project_partner_dto import ProjectPartnershipDTO
+from backend.models.dtos.project_dto import ProjectDTO
+
+from typing import List, Optional
+import datetime
+
 
 class ProjectPartnershipServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling project partnerships"""
@@ -27,3 +32,25 @@ class ProjectPartnershipService:
         partnership_dto.started_on = partnership.started_on
         partnership_dto.ended_on = partnership.ended_on
         return partnership_dto
+
+    @staticmethod
+    def get_partnerships_by_project(project_id: int) -> List[ProjectDTO]:
+        projects = ProjectPartnership.query.filter(
+            ProjectPartnership.project_id == project_id
+        ).all()
+        return list(map(lambda project: project.as_dto_for_admin(), projects))
+
+    @staticmethod
+    def create_partnership(
+        project_id: int,
+        partner_id: int,
+        started_on: Optional[datetime.datetime],
+        ended_on: Optional[datetime.datetime],
+    ) -> int:
+        partnership = ProjectPartnership()
+        partnership.project_id = project_id
+        partnership.partner_id = partner_id
+        partnership.started_on = started_on
+        partnership.ended_on = ended_on
+
+        return partnership.create()
