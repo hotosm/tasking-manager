@@ -1,5 +1,3 @@
-version: "3"
-
 name: tasking-manager-main
 
 volumes:
@@ -38,6 +36,10 @@ services:
         condition: service_completed_successfully
     env_file:
       - tasking-manager.env
+    volumes:
+      - ./pyproject.toml:/usr/src/app/pyproject.toml:ro
+      - ./backend:/usr/src/app/backend:ro
+      - ./tests:/usr/src/app/tests:ro
     restart: unless-stopped
     healthcheck:
       test: curl --fail http://localhost:5000 || exit 1
@@ -64,14 +66,18 @@ services:
     image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
-    entrypoint: ["python", "manage.py", "db", "upgrade"]
+    entrypoint: ["python", "manage.py", "db"]
+    command: "upgrade"
     depends_on:
       tm-db:
         condition: service_healthy
     env_file:
       - tasking-manager.env
+    volumes:
+      - ./pyproject.toml:/usr/src/app/pyproject.toml:ro
+      - ./backend:/usr/src/app/backend:ro
+      - ./migrations:/usr/src/app/migrations:ro
     deploy:
-      replicas: ${API_REPLICAS:-1}
       resources:
         limits:
           cpus: "1"
