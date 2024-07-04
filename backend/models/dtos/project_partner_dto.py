@@ -26,6 +26,13 @@ class ProjectPartnershipDTO(Model):
     ended_on = UTCDateTimeType(serialized_name="endedOn")
 
 
+class ProjectPartnershipUpdateDTO(Model):
+    """DTO for updating the time range of the link between a Partner and a Project"""
+
+    started_on = UTCDateTimeType(serialized_name="startedOn")
+    ended_on = UTCDateTimeType(serialized_name="endedOn")
+
+
 class ProjectPartnershipHistoryDTO(Model):
     """DTO for Logs of changes to all Project-Partner links"""
 
