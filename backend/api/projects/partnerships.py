@@ -1,7 +1,7 @@
 from flask_restful import Resource, request
 from backend.services.project_partnership_service import ProjectPartnershipService
 from backend.services.users.authentication_service import token_auth
-from backend.services.project_admin_service import ProjectAdminService
+from backend.services.users.user_service import UserService
 from backend.models.dtos.project_partner_dto import ProjectPartnershipDTO
 from backend.models.postgis.utils import timestamp
 
@@ -93,11 +93,10 @@ class ProjectPartnershipsRestApi(Resource):
         """
         try:
             partnership_dto = ProjectPartnershipDTO(request.get_json())
+            is_admin = UserService.is_user_an_admin(token_auth.current_user())
 
-            # if not ProjectAdminService.is_user_action_permitted_on_project(
-            #     token_auth.current_user, partnership_dto.project_id
-            # ):
-            #     raise ValueError()
+            if not is_admin:
+                raise ValueError()
 
             if partnership_dto.started_on is None:
                 partnership_dto.started_on = timestamp()
@@ -120,6 +119,6 @@ class ProjectPartnershipsRestApi(Resource):
             )
         except ValueError:
             return {
-                "Error": "User is not a manager of the project",
+                "Error": "User is not an admin",
                 "SubCode": "UserPermissionError",
             }, 401
