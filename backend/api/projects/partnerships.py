@@ -263,3 +263,32 @@ class ProjectPartnershipsRestApi(Resource):
                 "Error": "User is not an admin",
                 "SubCode": "UserPermissionError",
             }, 401
+
+
+class PartnersByProjectAPI(Resource):
+    @staticmethod
+    def get(project_id: int):
+        """
+        Retrieves the list of partners associated with a project
+        ---
+        tags:
+            - projects
+            - partners
+            - partnerships
+        produces:
+            - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: Unique project ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: List (possibly empty) of partners associated with this project_id
+            500:
+                description: Internal Server Error
+        """
+        partnerships = ProjectPartnershipService.get_partnerships_by_project(project_id)
+        return { "partnerships": partnerships },  200

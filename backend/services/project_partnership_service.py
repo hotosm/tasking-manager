@@ -4,6 +4,8 @@ from backend.models.postgis.project_partner import ProjectPartnership
 from backend.models.dtos.project_partner_dto import ProjectPartnershipDTO
 from backend.models.dtos.project_dto import ProjectDTO
 
+from backend.models.postgis.partner import Partner
+
 from typing import List, Optional
 import datetime
 
@@ -34,11 +36,12 @@ class ProjectPartnershipService:
         return partnership_dto
 
     @staticmethod
-    def get_partnerships_by_project(project_id: int) -> List[ProjectDTO]:
-        projects = ProjectPartnership.query.filter(
+    def get_partnerships_by_project(project_id: int) -> List[ProjectPartnershipDTO]:
+        partnerships = ProjectPartnership.query.filter(
             ProjectPartnership.project_id == project_id
         ).all()
-        return list(map(lambda project: project.as_dto_for_admin(), projects))
+
+        return list(map(lambda partnership: partnership.as_dto().to_primitive(), partnerships))
 
     @staticmethod
     def create_partnership(
@@ -84,3 +87,7 @@ class ProjectPartnershipService:
                 sub_code="PARTNERSHIP_NOT_FOUND", partnership_id=partnership_id
             )
         partnership.delete()
+
+    @staticmethod
+    def get_partners_by_project(project_id: int) -> List[Partner]:
+        return ProjectPartnership.query.filter(project_id=project_id).all()
