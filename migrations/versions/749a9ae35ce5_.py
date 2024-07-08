@@ -46,7 +46,7 @@ def upgrade():
         sa.Column(
             "action_date", postgresql.TIMESTAMP(), autoincrement=False, nullable=False
         ),
-        sa.Column("action", sa.VARCHAR(length=50), autoincrement=False, nullable=False),
+        sa.Column("action", sa.INTEGER(), autoincrement=False, nullable=False),
         sa.Column(
             "started_on_old", postgresql.TIMESTAMP(), autoincrement=False, nullable=True
         ),
