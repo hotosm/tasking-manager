@@ -1,7 +1,10 @@
 from backend import db
 from backend.models.postgis.utils import timestamp
 
-from backend.models.dtos.project_partner_dto import ProjectPartnershipDTO
+from backend.models.dtos.project_partner_dto import (
+    ProjectPartnershipDTO,
+    ProjectPartnerAction,
+)
 
 
 class ProjectPartnershipHistory(db.Model):
@@ -9,19 +12,31 @@ class ProjectPartnershipHistory(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     partnership_id = db.Column(
-        db.Integer, db.ForeignKey("project_partnerships.id"), nullable=False, index=True
+        db.Integer,
+        db.ForeignKey("project_partnerships.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
     )
     project_id = db.Column(
-        db.Integer, db.ForeignKey("projects.id"), nullable=False, index=True
+        db.Integer,
+        db.ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     partner_id = db.Column(
-        db.Integer, db.ForeignKey("partners.id"), nullable=False, index=True
+        db.Integer,
+        db.ForeignKey("partners.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
 
-    started_on_old = db.Column(db.DateTime, default=timestamp)
-    ended_on_old = db.Column(db.DateTime, default=timestamp)
-    started_on_new = db.Column(db.DateTime, default=timestamp)
-    ended_on_new = db.Column(db.DateTime, default=timestamp)
+    action = db.Column(db.Integer, default=ProjectPartnerAction.CREATE.value)
+    action_date = db.Column(db.DateTime, nullable=False, default=timestamp)
+
+    started_on_old = db.Column(db.DateTime)
+    ended_on_old = db.Column(db.DateTime)
+    started_on_new = db.Column(db.DateTime)
+    ended_on_new = db.Column(db.DateTime)
 
     def create(self):
         """Creates and saves the current model to the DB"""
@@ -42,10 +57,10 @@ class ProjectPartnership(db.Model):
     __tablename__ = "project_partnerships"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
-    partner_id = db.Column(db.Integer, db.ForeignKey("partners.id"))
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id", ondelete="CASCADE"))
+    partner_id = db.Column(db.Integer, db.ForeignKey("partners.id", ondelete="CASCADE"))
     started_on = db.Column(db.DateTime, default=timestamp, nullable=False)
-    ended_on = db.Column(db.DateTime, default=timestamp, nullable=True)
+    ended_on = db.Column(db.DateTime, nullable=True)
 
     @staticmethod
     def get_by_id(partnership_id: int):

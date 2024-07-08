@@ -40,7 +40,7 @@ def upgrade():
     op.create_table(
         "project_partnerships_history",
         sa.Column("id", sa.BIGINT(), autoincrement=True, primary_key=True),
-        sa.Column("partnership_id", sa.BIGINT(), autoincrement=True, nullable=False),
+        sa.Column("partnership_id", sa.BIGINT(), autoincrement=True, nullable=True),
         sa.Column("project_id", sa.INTEGER(), autoincrement=True, nullable=False),
         sa.Column("partner_id", sa.INTEGER(), autoincrement=True, nullable=False),
         sa.Column(
@@ -63,12 +63,13 @@ def upgrade():
             ["partnership_id"],
             ["project_partnerships.id"],
             name="project_partnerships_fk",
+            ondelete='SET NULL'
         ),
         sa.ForeignKeyConstraint(
-            ["partner_id"], ["partners.id"], name="project_partners_partners_fk"
+            ["partner_id"], ["partners.id"], name="project_partners_partners_fk", ondelete='CASCADE'
         ),
         sa.ForeignKeyConstraint(
-            ["project_id"], ["projects.id"], name="project_partners_projects_fk"
+            ["project_id"], ["projects.id"], name="project_partners_projects_fk", ondelete='CASCADE'
         ),
     )
     # ### end Alembic commands ###
