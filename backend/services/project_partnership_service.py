@@ -1,8 +1,11 @@
 from flask import current_app
 from backend.exceptions import NotFound
-from backend.models.postgis.project_partner import ProjectPartnership
+from backend.models.postgis.project_partner import (
+    ProjectPartnership,
+    ProjectPartnershipHistory,
+    ProjectPartnerAction,
+)
 from backend.models.dtos.project_partner_dto import ProjectPartnershipDTO
-from backend.models.dtos.project_dto import ProjectDTO
 
 from backend.models.postgis.partner import Partner
 
@@ -41,7 +44,9 @@ class ProjectPartnershipService:
             ProjectPartnership.project_id == project_id
         ).all()
 
-        return list(map(lambda partnership: partnership.as_dto().to_primitive(), partnerships))
+        return list(
+            map(lambda partnership: partnership.as_dto().to_primitive(), partnerships)
+        )
 
     @staticmethod
     def create_partnership(
@@ -55,8 +60,17 @@ class ProjectPartnershipService:
         partnership.partner_id = partner_id
         partnership.started_on = started_on
         partnership.ended_on = ended_on
+        partnership_id = partnership.create()
 
-        return partnership.create()
+        partnership_history = ProjectPartnershipHistory()
+        partnership_history.partnership_id = partnership_id
+        partnership_history.project_id = project_id
+        partnership_history.partner_id = partner_id
+        partnership_history.started_on_new = partnership.started_on
+        partnership_history.ended_on_new = partnership.ended_on
+        partnership_history.create()
+
+        return partnership_id
 
     @staticmethod
     def update_partnership_time_range(
@@ -70,13 +84,28 @@ class ProjectPartnershipService:
                 sub_code="PARTNERSHIP_NOT_FOUND", partnership_id=partnership_id
             )
 
-        if started_on is not None:
-            partnership.started_on = started_on
+        if (started_on is not None or ended_on is not None) and (
+            started_on != partnership.started_on or ended_on != partnership.ended_on
+        ):
+            partnership_history = ProjectPartnershipHistory()
+            partnership_history.partnership_id = partnership.id
+            partnership_history.project_id = partnership.project_id
+            partnership_history.partner_id = partnership.partner_id
+            partnership_history.action = ProjectPartnerAction.UPDATE.value
 
-        if ended_on is not None:
-            partnership.ended_on = ended_on
+            if started_on is not None and started_on != partnership.started_on:
+                partnership_history.started_on_old = partnership.started_on
+                partnership_history.started_on_new = started_on
+                partnership.started_on = started_on
 
-        partnership.save()
+            if ended_on is not None and ended_on != partnership.ended_on:
+                partnership_history.ended_on_old = partnership.ended_on
+                partnership_history.ended_on_new = ended_on
+                partnership.ended_on = ended_on
+
+            partnership.save()
+            partnership_history.create()
+
         return partnership
 
     @staticmethod
@@ -86,6 +115,16 @@ class ProjectPartnershipService:
             raise NotFound(
                 sub_code="PARTNERSHIP_NOT_FOUND", partnership_id=partnership_id
             )
+
+        partnership_history = ProjectPartnershipHistory()
+        partnership_history.partnership_id = partnership_id
+        partnership_history.project_id = partnership.project_id
+        partnership_history.partner_id = partnership.partner_id
+        partnership_history.started_on_old = partnership.started_on
+        partnership_history.ended_on_old = partnership.ended_on
+        partnership_history.action = ProjectPartnerAction.DELETE.value
+        partnership_history.create()
+
         partnership.delete()
 
     @staticmethod

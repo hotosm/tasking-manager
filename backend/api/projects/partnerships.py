@@ -291,4 +291,4 @@ class PartnersByProjectAPI(Resource):
                 description: Internal Server Error
         """
         partnerships = ProjectPartnershipService.get_partnerships_by_project(project_id)
-        return { "partnerships": partnerships },  200
+        return {"partnerships": partnerships}, 200
