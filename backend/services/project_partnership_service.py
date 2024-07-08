@@ -1,5 +1,5 @@
 from flask import current_app
-from backend.exceptions import NotFound
+from backend.exceptions import NotFound, BadRequest
 from backend.models.postgis.project_partner import (
     ProjectPartnership,
     ProjectPartnershipHistory,
@@ -60,6 +60,18 @@ class ProjectPartnershipService:
         partnership.partner_id = partner_id
         partnership.started_on = started_on
         partnership.ended_on = ended_on
+
+        if (
+            partnership.ended_on is not None
+            and partnership.started_on > partnership.ended_on
+        ):
+            raise BadRequest(
+                sub_code="INVALID_TIME_RANGE",
+                message=f"Partnership started on {partnership.started_on} but ended at a previous time: {partnership.ended_on}",
+                started_on=partnership.started_on,
+                ended_on=partnership.ended_on,
+            )
+
         partnership_id = partnership.create()
 
         partnership_history = ProjectPartnershipHistory()
@@ -102,6 +114,17 @@ class ProjectPartnershipService:
                 partnership_history.ended_on_old = partnership.ended_on
                 partnership_history.ended_on_new = ended_on
                 partnership.ended_on = ended_on
+
+            if (
+                partnership.ended_on is not None
+                and partnership.started_on > partnership.ended_on
+            ):
+                raise BadRequest(
+                    sub_code="INVALID_TIME_RANGE",
+                    message=f"Partnership started on {partnership.started_on} but ended at a previous time: {partnership.ended_on}",
+                    started_on=partnership.started_on,
+                    ended_on=partnership.ended_on,
+                )
 
             partnership.save()
             partnership_history.create()
