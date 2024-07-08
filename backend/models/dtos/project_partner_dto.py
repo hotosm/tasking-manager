@@ -6,7 +6,7 @@ from enum import Enum
 
 def is_known_action(value):
     """Validates that the action performed on a Project-Partner link is known"""
-    valid_values = f"{ProjectPartnerAction.START.name}, {ProjectPartnerAction.END.name}, {ProjectPartnerAction.UPDATE.name}"
+    valid_values = f"{ProjectPartnerAction.CREATE.name}, {ProjectPartnerAction.DELETE.name}, {ProjectPartnerAction.UPDATE.name}"
 
     try:
         action = ProjectPartnerAction[value.upper()]
@@ -60,6 +60,6 @@ class ProjectPartnershipHistoryDTO(Model):
 class ProjectPartnerAction(Enum):
     """Enum describing available actions related to updating Project-Partner links"""
 
-    START = 0
-    END = 1
+    CREATE = 0
+    DELETE = 1
     UPDATE = 2
