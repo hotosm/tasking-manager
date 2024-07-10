@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { TasksMap } from '../taskSelection/map';
+import { Link } from 'react-router-dom';
+import ReactPlaceholder from 'react-placeholder';
 import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Button } from '../button';
-import { Link } from 'react-router-dom';
-import { API_URL } from '../../config';
 
+import { TasksMap } from '../taskSelection/map';
+import { Button } from '../button';
+import { API_URL } from '../../config';
 import messages from './messages';
-import ReactPlaceholder from 'react-placeholder';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
+import { HeaderLine } from '../projectDetail/header';
 
 // Import Swiper styles
 import './styles.scss';
@@ -24,13 +25,9 @@ export function CurrentProjects({ currentProjects }) {
   const [error, setError] = useState(false);
   const pagination = {
     clickable: true,
-    renderBullet: function (index, className) {
-      return '<span class="' + className + '">' + (index + 1) + '</span>';
-    },
+    el: '.swiper-custom-pagination',
   };
 
-  const text = `This remote mapping of buildings will support the implementation of planned activities and
-  largely the generation of data for humanitarian activities in the identified provinces. `;
   const fetchData = async () => {
     try {
       const projectIds = currentProjects.split(',').map((id) => parseInt(id.trim(), 10));
@@ -54,6 +51,7 @@ export function CurrentProjects({ currentProjects }) {
           percentMapped: jsonInfo.percentMapped,
           percentValidated: jsonInfo.percentValidated,
           percentBadImagery: jsonInfo.percentBadImagery,
+          organisationName: jsonInfo.organisationName,
         };
       });
 
@@ -88,48 +86,88 @@ export function CurrentProjects({ currentProjects }) {
           pagination={pagination}
           modules={[Pagination]}
           swipeHandler={{ draggable: false }}
+          className="shadow-4"
           style={{
             backgroundColor: 'white',
             width: '100%',
             borderColor: 'gray',
-            borderRadius: 5,
-            height: 500,
-            border: '1px solid',
           }}
         >
           {projectsData.map((project) => (
-            <SwiperSlide key={project.id}>
-              <TasksMap className="w-100 h-50 m2-l" mapResults={project.tasks} />
-              <div className="mv2-l mh2 flex justify-between items-center">
-                <h4>
-                  {project.id} - {project.info.name}
-                </h4>
-                <Link to={`/projects/` + project.id}>
+            <SwiperSlide
+              key={project.id}
+              className="pa3"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
+                gap: '2rem',
+              }}
+            >
+              <div style={{ gridColumn: 'span 3' }}>
+                <HeaderLine
+                  author={project.author}
+                  projectId={project.id}
+                  priority={project.projectPriority}
+                  organisation={project.organisationName}
+                />
+                <div>
+                  <h3
+                    className="f2 fw5 mt3 mt2-ns mb3 ttu barlow-condensed blue-dark dib mr3"
+                    // lang={project.info.locale}
+                  >
+                    {project.info && project.info.name}
+                  </h3>
+                </div>
+                <section className="lh-title h5 overflow-y-auto mt3 mb3 flex flex-column">
+                  <div
+                    className="pr2 blue-dark-abbey markdown-content"
+                    dangerouslySetInnerHTML={{ __html: project.info.description }}
+                  />
+
+                  <a
+                    href="#description"
+                    className="link base-font bg-white f6 bn pn red pointer mt2"
+                  >
+                    <span className="pr2 ttu f6 fw6 ">
+                      <FormattedMessage {...messages.readMore} />
+                    </span>
+                  </a>
+
+                  <div style={{ marginTop: 'auto' }}>
+                    <ProjectProgressBar
+                      small={false}
+                      className="pb3 bg-white"
+                      percentMapped={project.percentMapped}
+                      percentValidated={project.percentValidated}
+                      percentBadImagery={project.percentBadImagery}
+                    />
+                  </div>
+                </section>
+              </div>
+              <div style={{ width: '100%', position: 'relative', gridColumn: 'span 2' }}>
+                <TasksMap
+                  className="w-100 h-100 m2-l"
+                  mapResults={project.tasks}
+                  style={{ height: '5rem' }}
+                />
+                <Link
+                  to={`/projects/` + project.id}
+                  style={{ position: 'absolute', bottom: '1.5rem', right: '0.75rem' }}
+                >
                   <Button className="bg-red ba b--red white pv2 ph3">
                     <FormattedMessage {...messages.startMapping} />
                   </Button>
-                </Link>
-              </div>
-              <div className="mh3-l mv3-l">
-                <ProjectProgressBar
-                  percentMapped={project.percentMapped}
-                  percentValidated={project.percentValidated}
-                  percentBadImagery={project.percentBadImagery}
-                />
-                <p>{text}</p>
-                <Link
-                  to={`/projects/` + project.id}
-                  className="link base-font f6 mt3 bn pn red pointer"
-                >
-                  <span className="pr2 ttu f6 fw6">
-                    <FormattedMessage {...messages.readMore} />
-                  </span>
                 </Link>
               </div>
             </SwiperSlide>
           ))}
         </Swiper>
       )}
+
+      <div
+        className="swiper-custom-pagination mt2"
+        style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}
+      />
     </ReactPlaceholder>
   );
 }

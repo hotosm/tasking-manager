@@ -2,7 +2,11 @@ import { FormattedMessage, FormattedNumber } from 'react-intl';
 import shortNumber from 'short-number';
 
 import messages from './messages';
-import { RoadIcon, HomeIcon, UserIcon, EditIcon } from '../svgIcons';
+import { StatsCard } from '../statsCard';
+import { MappingIcon, EditIcon, RoadIcon, HomeIcon } from '../svgIcons';
+
+const iconClass = 'h-50 w-50';
+const iconStyle = { height: '45px' };
 
 export const StatsNumber = (props) => {
   const value = shortNumber(props.value);
@@ -38,31 +42,32 @@ export const StatsColumn = ({ label, value, icon }: Object) => {
 };
 
 export const StatsSection = ({ partner }) => {
-  
   return (
-    <>
-      <div className="w-100 pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container ">
-        <StatsColumn
-          label={messages.contributors}
-          value={partner ? partner.users : undefined}
-          icon={<UserIcon width="25px" height="25px" />}
-        />
-        <StatsColumn
-          label={messages.editsStats}
-          value={partner ? partner.edits : undefined}
-          icon={<EditIcon width="25px" />}
-        />
-        <StatsColumn
-          label={messages.buildingsStats}
-          value={partner ? partner.buildings : undefined}
-          icon={<HomeIcon />}
-        />
-        <StatsColumn
-          label={messages.roadsStats}
-          value={partner ? partner.roads : undefined}
-          icon={<RoadIcon />}
-        />
-      </div>
-    </>
+    <div className="flex justify-between items-center" style={{ gap: '1.6rem' }}>
+      <StatsCard
+        icon={<MappingIcon className={iconClass} style={iconStyle} />}
+        description={<FormattedMessage {...messages.contributors} />}
+        value={partner ? partner.users : '-'}
+        className={'w-25-l w-50-m w-100 mv1'}
+      />
+      <StatsCard
+        icon={<EditIcon className={iconClass} style={iconStyle} />}
+        description={<FormattedMessage {...messages.editsStats} />}
+        value={partner ? partner.edits : '-'}
+        className={'w-25-l w-50-m w-100 mv1'}
+      />
+      <StatsCard
+        icon={<HomeIcon className={iconClass} style={iconStyle} />}
+        description={<FormattedMessage {...messages.buildingsStats} />}
+        value={partner ? partner.buildings : '-'}
+        className={'w-25-l w-50-m w-100 mv1'}
+      />
+      <StatsCard
+        icon={<RoadIcon className={iconClass} style={iconStyle} />}
+        description={<FormattedMessage {...messages.roadsStats} />}
+        value={partner ? partner.roads : '-'}
+        className={'w-25-l w-50-m w-100 mv1'}
+      />
+    </div>
   );
 };
