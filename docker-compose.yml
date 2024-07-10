@@ -112,6 +112,11 @@ services:
     build:
       context: .
       dockerfile: "./scripts/docker/Dockerfile.frontend_development"
+    volumes:
+      - ./frontend/:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     env_file:
       - tasking-manager.env
     labels:

@@ -2,8 +2,11 @@ FROM node:18.19.1
 
 WORKDIR /usr/src/app
 
-COPY ./frontend .
 ## SETUP
+
+COPY ./frontend/package.json ./
+COPY ./frontend/yarn.lock ./
+
 RUN yarn install
 
 # SERVE
