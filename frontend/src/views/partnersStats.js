@@ -6,12 +6,13 @@ import messages from './messages';
 import { NotFound } from './notFound';
 import { useFetch } from '../hooks/UseFetch';
 import { StatsSection } from '../components/partners/partnersStats';
-import LearnMapNowLogo from '../assets/img/learn-MapNow.svg';
-import { Resources } from '../components/partners/partnersResources';
 import { Activity } from '../components/partners/partnersActivity';
 import { CurrentProjects } from '../components/partners/currentProjects';
 import { OHSOME_STATS_BASE_URL } from '../config';
 import { Button } from '../components/button';
+import { TwitterIcon, FacebookIcon, InstagramIcon } from '../components/svgIcons';
+
+const socialIconsStyle = { height: '24px', width: '24px' };
 
 export const PartnersStats = () => {
   const { id } = useParams();
@@ -25,7 +26,7 @@ export const PartnersStats = () => {
         hashtag = hashtag.slice(1);
       }
       hashtag = hashtag.toLowerCase();
-      const response = await fetch(OHSOME_STATS_BASE_URL+'/stats/hashtags/' + hashtag);
+      const response = await fetch(OHSOME_STATS_BASE_URL + '/stats/hashtags/' + hashtag);
       if (response.ok) {
         const jsonData = await response.json();
         if (jsonData.result !== undefined && Object.keys(jsonData.result).length !== 0)
@@ -54,45 +55,63 @@ export const PartnersStats = () => {
       {!loading && error ? (
         <NotFound />
       ) : (
-        <div style={{ flex: '2 1 100%', backgroundColor: '#F0EFEF', padding: '0px 20px' }}>
-          <div className="flex flex-column mt3 mt2-ns mb3 ml4">
-            <h1 className="f2 fw5  ttu barlow-condensed blue-dark dib mr3">{partner.name}</h1>
-            <span className="ttu blue-grey f6">{partner.primary_hashtag}</span>
-          </div>
-          <div className="w-100 ph4 pv1 blue-dark flex ">
-            <div className="flex w-100">
-              <StatsSection partner={partnerStats} />
-            </div>
-          </div>
-
-          <div className="w-100 fl cf">
-            <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
-              <FormattedMessage {...messages.currentProjects} />
-            </h4>
-            <div className="w-100 pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container ">
-              <CurrentProjects currentProjects={partner.current_projects} />
-              <div className="w-25 flex flex-column items-center text-center mt2">
+        <div className="">
+          <div className="flex items-center justify-between bg-blue-dark pa4">
+            {/* logo */}
+            <img src={partner.logo_url} alt="logo" height={70} />
+            <Link to={`/learn/map/`}>
+              <Button className="bg-grey-dark white mr3 br1 f5 bn">
                 <FormattedMessage {...messages.newToMapping} />
-                <img src={LearnMapNowLogo} height="100" alt="" className="mv2" />
-                <Link to={`/learn/map/`}>
-                  <Button className="bg-red ba b--red white pv2 ph3">
-                    <FormattedMessage {...messages.learnToMap} />
-                  </Button>
-                </Link>
+              </Button>
+            </Link>
+          </div>
+          {/* social logos */}
+          <div className="pa4 bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
+            <div className="flex justify-between items-center">
+              <h3 class="f2 blue-dark fw7 ma0 barlow-condensed v-mid dib">
+                {partner.primary_hashtag
+                  ?.split(',')
+                  ?.map((str) => `#${str}`)
+                  ?.join(', ')}
+              </h3>
+              <div className="flex" style={{ gap: '0.5rem' }}>
+                <a
+                  href={partner.link_x}
+                  className="link barlow-condensed white f4 ttu di-l dib"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <TwitterIcon className="blue-dark" style={socialIconsStyle} />
+                </a>
+                <a
+                  href={partner.link_meta}
+                  className="link barlow-condensed white f4 ttu di-l dib"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FacebookIcon className="blue-dark" style={socialIconsStyle} />
+                </a>
+                <a
+                  href={partner.link_instagram}
+                  className="link barlow-condensed white f4 ttu di-l dib"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <InstagramIcon className="blue-dark" style={socialIconsStyle} />
+                </a>
               </div>
             </div>
-          </div>
-          <div className="w-80 fl cf">
-            <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3 self-center">
-              <FormattedMessage {...messages.resources} />
-            </h4>
-            <Resources partner={partner} />
-          </div>
-          <div className="w-100 fl cf">
-            <h4 className="ph4 f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
-              <FormattedMessage {...messages.activity} />
-            </h4>
-            <Activity partner={partner} />
+
+            <StatsSection partner={partnerStats} />
+
+            <CurrentProjects currentProjects={partner.current_projects} />
+
+            <div className="w-100 fl cf">
+              <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
+                <FormattedMessage {...messages.activity} />
+              </h3>
+              <Activity partner={partner} />
+            </div>
           </div>
         </div>
       )}

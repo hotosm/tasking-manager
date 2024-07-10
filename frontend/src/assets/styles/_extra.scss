@@ -448,12 +448,12 @@ a[href="https://www.mapbox.com/map-feedback/"]
 .two-column {
   grid-template-columns: 6fr 4fr;
 }
-.graphics-container{
+.graphics-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 600px));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
 }
-.input-container{
+.input-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 600px));
 }

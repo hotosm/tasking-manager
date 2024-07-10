@@ -68,7 +68,7 @@ export function Management(props) {
   // admin users can switch between all teams/orgs and only their teams/orgs
   return (
     <div className="pull-center cf">
-      <div style={{ textAlign: 'center' }} className=" cf pv4">
+      <div className="cf pt4 mb2">
         <h3 className="barlow-condensed f2 ma0 dib v-mid ttu">{props.title}</h3>
         {props.showAddButton && (
           <Link to={'new/'} className="dib ml3">
