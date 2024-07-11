@@ -36,6 +36,6 @@ Notes for the reviewer. How to test this change?
 - ✅ Provide tests for your changes.
 - 📝 Use descriptive commit messages.
 - 📗 Update any related documentation and include any relevant screenshots.
-- 🔠 Does this PR introduce or change any environment variables? If so, make sure to specify this change in the description. 
+- 🔠 Does this PR introduce or change any environment variables? If so, make sure to specify this change in the description.
 
 ## [optional] What gif best describes this PR or how it makes you feel?
