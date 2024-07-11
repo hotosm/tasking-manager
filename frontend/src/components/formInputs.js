@@ -29,7 +29,7 @@ export const SwitchToggle = ({
   labelPosition,
   small = false,
 }: Object) => (
-  <div className="v-mid justify-center bg-grey-dark">
+  <div className="v-mid justify-center">
     {label && labelPosition !== 'right' && <span className="di mr2 nowrap f6 dn-m">{label}</span>}
     <div className="relative dib">
       <input
