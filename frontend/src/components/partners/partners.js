@@ -94,7 +94,9 @@ export function PartnersCard({ details }) {
           <h3 className="barlow-condensed ttu f3 mb2 mt2 truncate" lang="en">
             {details.name}
           </h3>
-          <h4 className="ttu blue-grey f6">{details.primary_hashtag}</h4>
+          <h4 className="ttu blue-grey f6">
+            {details?.primary_hashtag?.split(',')?.slice(0, 2)?.join(',')}
+          </h4>
         </div>
       </div>
 
