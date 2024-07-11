@@ -115,12 +115,14 @@ export const PartnersStats = () => {
             <CurrentProjects currentProjects={partner.current_projects} />
 
             {/* resources section */}
-            <div className="w-100 fl cf">
-              <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
-                <FormattedMessage {...messages.resources} />
-              </h3>
-              <Resources partner={partner} />
-            </div>
+            {Object.keys(partner).some((key) => key.includes('name_')) && (
+              <div className="w-100 fl cf">
+                <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
+                  <FormattedMessage {...messages.resources} />
+                </h3>
+                <Resources partner={partner} />
+              </div>
+            )}
 
             {/* activity section */}
             <div className="w-100 fl cf">
