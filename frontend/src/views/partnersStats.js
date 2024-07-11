@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
+
 import messages from './messages';
 import { NotFound } from './notFound';
 import { useFetch } from '../hooks/UseFetch';
 import { StatsSection } from '../components/partners/partnersStats';
 import { Activity } from '../components/partners/partnersActivity';
 import { CurrentProjects } from '../components/partners/currentProjects';
+import { Resources } from '../components/partners/partnersResources';
 import { OHSOME_STATS_BASE_URL } from '../config';
 import { Button } from '../components/button';
 import { TwitterIcon, FacebookIcon, InstagramIcon } from '../components/svgIcons';
@@ -75,30 +77,36 @@ export const PartnersStats = () => {
                   ?.join(', ')}
               </h3>
               <div className="flex" style={{ gap: '0.5rem' }}>
-                <a
-                  href={partner.link_x}
-                  className="link barlow-condensed white f4 ttu di-l dib"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <TwitterIcon className="blue-dark" style={socialIconsStyle} />
-                </a>
-                <a
-                  href={partner.link_meta}
-                  className="link barlow-condensed white f4 ttu di-l dib"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <FacebookIcon className="blue-dark" style={socialIconsStyle} />
-                </a>
-                <a
-                  href={partner.link_instagram}
-                  className="link barlow-condensed white f4 ttu di-l dib"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <InstagramIcon className="blue-dark" style={socialIconsStyle} />
-                </a>
+                {!!partner.link_x && (
+                  <a
+                    href={partner.link_x}
+                    className="link barlow-condensed white f4 ttu di-l dib"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <TwitterIcon className="blue-dark" style={socialIconsStyle} />
+                  </a>
+                )}
+                {!!partner.link_meta && (
+                  <a
+                    href={partner.link_meta}
+                    className="link barlow-condensed white f4 ttu di-l dib"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <FacebookIcon className="blue-dark" style={socialIconsStyle} />
+                  </a>
+                )}
+                {!!partner.link_instagram && (
+                  <a
+                    href={partner.link_instagram}
+                    className="link barlow-condensed white f4 ttu di-l dib"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <InstagramIcon className="blue-dark" style={socialIconsStyle} />
+                  </a>
+                )}
               </div>
             </div>
 
@@ -106,6 +114,15 @@ export const PartnersStats = () => {
 
             <CurrentProjects currentProjects={partner.current_projects} />
 
+            {/* resources section */}
+            <div className="w-100 fl cf">
+              <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
+                <FormattedMessage {...messages.resources} />
+              </h3>
+              <Resources partner={partner} />
+            </div>
+
+            {/* activity section */}
             <div className="w-100 fl cf">
               <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
                 <FormattedMessage {...messages.activity} />
