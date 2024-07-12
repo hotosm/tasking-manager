@@ -55,7 +55,7 @@ export default defineMessages({
   },
   editsStats: {
     id: 'management.partners.filter.editsStats',
-    defaultMessage: 'Total Edits',
+    defaultMessage: 'Total map edits',
   },
   noPartnersGroup: {
     id: 'partners.group.zero',
@@ -67,7 +67,7 @@ export default defineMessages({
   },
   buildings: {
     id: 'management.partners.activity.buildings',
-    defaultMessage: 'Buildings Added',
+    defaultMessage: 'Buildings mapped',
   },
   roads: {
     id: 'management.partners.activity.roads',
@@ -109,7 +109,7 @@ export default defineMessages({
     id: 'management.partners.titles.partner_information',
     defaultMessage: 'Partner information',
   },
-  permalink:{
+  permalink: {
     id: 'management.partners.titles.partner_permalink',
     defaultMessage: 'Permalink',
   },
