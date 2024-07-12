@@ -2,9 +2,13 @@ FROM node:18.19.1
 
 WORKDIR /usr/src/app
 
-COPY ./frontend .
+COPY ./frontend/package.json .
+COPY ./frontend/yarn.lock .
+
 ## SETUP
 RUN yarn install
+
+COPY ./frontend .
 
 # SERVE
 CMD ["yarn", "start"]
