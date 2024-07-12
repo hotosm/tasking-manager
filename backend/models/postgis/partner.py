@@ -10,15 +10,15 @@ class Partner(db.Model):
     __tablename__ = "partners"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(50), nullable=False, unique=True)
-    primary_hashtag = db.Column(db.String(50), nullable=False)
-    secondary_hashtag = db.Column(db.String(50))
-    logo_url = db.Column(db.String(100))
-    link_meta = db.Column(db.String(50))
-    link_x = db.Column(db.String(50))
-    link_instagram = db.Column(db.String(50))
+    name = db.Column(db.String(150), nullable=False, unique=True)
+    primary_hashtag = db.Column(db.String(200), nullable=False)
+    secondary_hashtag = db.Column(db.String(200))
+    logo_url = db.Column(db.String(500))
+    link_meta = db.Column(db.String(300))
+    link_x = db.Column(db.String(300))
+    link_instagram = db.Column(db.String(300))
     current_projects = db.Column(db.String)
-    permalink = db.Column(db.String(250), unique=True)
+    permalink = db.Column(db.String(500), unique=True)
     website_links = db.Column(db.String)
 
     def create(self):
