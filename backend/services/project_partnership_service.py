@@ -67,7 +67,7 @@ class ProjectPartnershipService:
         ):
             raise BadRequest(
                 sub_code="INVALID_TIME_RANGE",
-                message=f"Partnership started on {partnership.started_on} but ended at a previous time: {partnership.ended_on}",
+                message="Partnership cannot end before it started.",
                 started_on=partnership.started_on,
                 ended_on=partnership.ended_on,
             )
@@ -121,7 +121,7 @@ class ProjectPartnershipService:
             ):
                 raise BadRequest(
                     sub_code="INVALID_TIME_RANGE",
-                    message=f"Partnership started on {partnership.started_on} but ended at a previous time: {partnership.ended_on}",
+                    message="Partnership cannot end before it started.",
                     started_on=partnership.started_on,
                     ended_on=partnership.ended_on,
                 )

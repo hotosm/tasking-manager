@@ -63,13 +63,19 @@ def upgrade():
             ["partnership_id"],
             ["project_partnerships.id"],
             name="project_partnerships_fk",
-            ondelete='SET NULL'
+            ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
-            ["partner_id"], ["partners.id"], name="project_partners_partners_fk", ondelete='CASCADE'
+            ["partner_id"],
+            ["partners.id"],
+            name="project_partners_partners_fk",
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
-            ["project_id"], ["projects.id"], name="project_partners_projects_fk", ondelete='CASCADE'
+            ["project_id"],
+            ["projects.id"],
+            name="project_partners_projects_fk",
+            ondelete="CASCADE",
         ),
     )
     # ### end Alembic commands ###
