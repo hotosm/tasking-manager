@@ -6,7 +6,8 @@ from enum import Enum
 
 def is_known_action(value):
     """Validates that the action performed on a Project-Partner link is known"""
-    valid_values = f"{ProjectPartnerAction.CREATE.name}, {ProjectPartnerAction.DELETE.name}, {ProjectPartnerAction.UPDATE.name}"
+    valid_values = \
+        f"{ProjectPartnerAction.CREATE.name}, {ProjectPartnerAction.DELETE.name}, {ProjectPartnerAction.UPDATE.name}"
 
     try:
         action = ProjectPartnerAction[value.upper()]
