@@ -9,5 +9,7 @@ COPY ./frontend/yarn.lock ./
 
 RUN yarn install
 
+COPY ./frontend .
+
 # SERVE
 CMD ["yarn", "start"]
