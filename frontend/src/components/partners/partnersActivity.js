@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { OHSOME_STATS_BASE_URL } from '../../config';
 import { FormattedMessage } from 'react-intl';
-
 import ReactPlaceholder from 'react-placeholder';
+
 import PartnersProgresBar from './partnersProgresBar';
 import messages from './messages';
+import { OHSOME_STATS_BASE_URL } from '../../config';
 
 export const Activity = ({ partner }) => {
   const [data, setData] = useState(null);
@@ -49,7 +49,7 @@ export const Activity = ({ partner }) => {
           }
 
           groupedData[secondary].push({
-            primary: primary,
+            primary,
             secondary: typeof value === 'string' ? parseFloat(value) : value,
           });
         }
@@ -69,10 +69,12 @@ export const Activity = ({ partner }) => {
   }
 
   useEffect(() => {
+    if (!partner.id) return;
     fetchData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [partner]);
+
   return (
     <ReactPlaceholder showLoadingAnimation={true} rows={26} ready={data} className="pv3  ph4-ns ">
       <div className="graphics-container">
@@ -83,33 +85,34 @@ export const Activity = ({ partner }) => {
               0,
             );
             return (
-              <div key={series.label} className="pv3-l pv2 mb3-l pr4 pl4 mb2 shadow-4 bg-white">
-                <h3>
-                  <FormattedMessage {...messages[series.label]} />
-                </h3>
-                <div style={{ maxHeight: 400, overflowY: 'scroll', overflowX: 'hidden' }}>
+              <div key={series.label} className="pa3 shadow-4 bg-white">
+                <div
+                  className="flex space-between"
+                  style={{
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderBottom: '1px solid grey',
+                  }}
+                >
+                  <p>Team</p>
+                  <h3 className="f3 fw6 ttu barlow-condensed blue-dark mv1">
+                    <FormattedMessage {...messages[series.label]} />
+                  </h3>
+                </div>
+                <div
+                  className="flex flex-column"
+                  style={{
+                    maxHeight: '380px',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    gap: '1rem',
+                    marginTop: '1rem',
+                  }}
+                >
                   {series.data.map((dataItem) => (
                     <div key={dataItem.primary}>
                       <div className="blue-grey">
-                        {dataItem ? (
-                          <div
-                            style={{ display: 'flex', justifyContent: 'space-between', height: 32 }}
-                          >
-                            <a
-                              target={'_blank'}
-                              rel="noreferrer"
-                              style={{ textDecoration: 'none', color: 'black', marginTop: 15 }}
-                              href={
-                                OHSOME_STATS_BASE_URL + '/dashboard#hashtags=' + dataItem.primary
-                              }
-                            >
-                              {'#' + dataItem.primary}{' '}
-                            </a>
-                            <p>{dataItem.secondary}</p>
-                          </div>
-                        ) : (
-                          <FormattedMessage {...messages.noPartnersGroup} />
-                        )}
+                        {dataItem ? <></> : <FormattedMessage {...messages.noPartnersGroup} />}
                       </div>
                       <div key={dataItem.primary}>
                         <PartnersProgresBar
@@ -118,6 +121,7 @@ export const Activity = ({ partner }) => {
                           label={series.label}
                           value={dataItem.secondary}
                           percentValidated={(dataItem.secondary * 100) / maxValue}
+                          data={dataItem}
                         />
                       </div>
                     </div>
