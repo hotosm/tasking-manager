@@ -1,7 +1,7 @@
 from flask_restful import Resource, request
 from backend.services.project_partnership_service import ProjectPartnershipService
 from backend.services.users.authentication_service import token_auth
-from backend.services.users.user_service import UserService
+from backend.services.project_admin_service import ProjectAdminService
 from backend.models.dtos.project_partner_dto import (
     ProjectPartnershipDTO,
     ProjectPartnershipUpdateDTO,
@@ -88,7 +88,7 @@ class ProjectPartnershipsRestApi(Resource):
             400:
                 description: Ivalid dates or started_on was after ended_on
             401:
-                description: Forbidden, if user is not an admin
+                description: Forbidden, if user is not a manager of this project
             403:
                 description: Forbidden, if user is not authenticated
             404:
@@ -96,37 +96,35 @@ class ProjectPartnershipsRestApi(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            partnership_dto = ProjectPartnershipDTO(request.get_json())
-            is_admin = UserService.is_user_an_admin(token_auth.current_user())
+        partnership_dto = ProjectPartnershipDTO(request.get_json())
 
-            if not is_admin:
-                raise ValueError()
-
-            if partnership_dto.started_on is None:
-                partnership_dto.started_on = timestamp()
-
-            partnership_dto = ProjectPartnershipDTO(request.get_json())
-            partnership_id = ProjectPartnershipService.create_partnership(
-                partnership_dto.project_id,
-                partnership_dto.partner_id,
-                partnership_dto.started_on,
-                partnership_dto.ended_on,
-            )
-            return (
-                {
-                    "Success": "Partner {} assigned to project {}".format(
-                        partnership_dto.partner_id, partnership_dto.project_id
-                    ),
-                    "partnershipId": partnership_id,
-                },
-                201,
-            )
-        except ValueError:
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            token_auth.current_user(), partnership_dto.project_id
+        ):
             return {
-                "Error": "User is not an admin",
+                "Error": "User is not a manager of the project",
                 "SubCode": "UserPermissionError",
             }, 401
+
+        if partnership_dto.started_on is None:
+            partnership_dto.started_on = timestamp()
+
+        partnership_dto = ProjectPartnershipDTO(request.get_json())
+        partnership_id = ProjectPartnershipService.create_partnership(
+            partnership_dto.project_id,
+            partnership_dto.partner_id,
+            partnership_dto.started_on,
+            partnership_dto.ended_on,
+        )
+        return (
+            {
+                "Success": "Partner {} assigned to project {}".format(
+                    partnership_dto.partner_id, partnership_dto.project_id
+                ),
+                "partnershipId": partnership_id,
+            },
+            201,
+        )
 
     @staticmethod
     @token_auth.login_required
@@ -172,7 +170,7 @@ class ProjectPartnershipsRestApi(Resource):
             400:
                 description: Ivalid dates or started_on was after ended_on
             401:
-                description: Forbidden, if user is not an admin
+                description: Forbidden, if user is not a manager of this project
             403:
                 description: Forbidden, if user is not authenticated
             404:
@@ -180,34 +178,35 @@ class ProjectPartnershipsRestApi(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            partnership_updates = ProjectPartnershipUpdateDTO(request.get_json())
-            is_admin = UserService.is_user_an_admin(token_auth.current_user())
+        partnership_updates = ProjectPartnershipUpdateDTO(request.get_json())
+        partnership_dto = ProjectPartnershipService.get_partnership_as_dto(
+            partnership_id
+        )
 
-            if not is_admin:
-                raise ValueError()
-
-            partnership = ProjectPartnershipService.update_partnership_time_range(
-                partnership_id,
-                partnership_updates.started_on,
-                partnership_updates.ended_on,
-            )
-
-            return (
-                {
-                    "Success": "Updated time range. startedOn: {}, endedOn: {}".format(
-                        partnership.started_on, partnership.ended_on
-                    ),
-                    "startedOn": f"{partnership.started_on}",
-                    "endedOn": f"{partnership.ended_on}",
-                },
-                200,
-            )
-        except ValueError:
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            token_auth.current_user(), partnership_dto.project_id
+        ):
             return {
-                "Error": "User is not an admin",
+                "Error": "User is not a manager of the project",
                 "SubCode": "UserPermissionError",
             }, 401
+
+        partnership = ProjectPartnershipService.update_partnership_time_range(
+            partnership_id,
+            partnership_updates.started_on,
+            partnership_updates.ended_on,
+        )
+
+        return (
+            {
+                "Success": "Updated time range. startedOn: {}, endedOn: {}".format(
+                    partnership.started_on, partnership.ended_on
+                ),
+                "startedOn": f"{partnership.started_on}",
+                "endedOn": f"{partnership.ended_on}",
+            },
+            200,
+        )
 
     @staticmethod
     @token_auth.login_required
@@ -237,7 +236,7 @@ class ProjectPartnershipsRestApi(Resource):
             201:
                 description: Partner project association created
             401:
-                description: Forbidden, if user is not an admin
+                description: Forbidden, if user is not a manager of this project
             403:
                 description: Forbidden, if user is not authenticated
             404:
@@ -245,24 +244,25 @@ class ProjectPartnershipsRestApi(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            is_admin = UserService.is_user_an_admin(token_auth.current_user())
+        partnership_dto = ProjectPartnershipService.get_partnership_as_dto(
+            partnership_id
+        )
 
-            if not is_admin:
-                raise ValueError()
-
-            ProjectPartnershipService.delete_partnership(partnership_id)
-            return (
-                {
-                    "Success": "Partnership ID {} deleted".format(partnership_id),
-                },
-                200,
-            )
-        except ValueError:
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            token_auth.current_user(), partnership_dto.project_id
+        ):
             return {
-                "Error": "User is not an admin",
+                "Error": "User is not a manager of the project",
                 "SubCode": "UserPermissionError",
             }, 401
+
+        ProjectPartnershipService.delete_partnership(partnership_id)
+        return (
+            {
+                "Success": "Partnership ID {} deleted".format(partnership_id),
+            },
+            200,
+        )
 
 
 class PartnersByProjectAPI(Resource):
