@@ -15,6 +15,8 @@ import { PermissionsForm } from '../components/projectEdit/permissionsForm';
 import { SettingsForm } from '../components/projectEdit/settingsForm';
 import { ActionsForm } from '../components/projectEdit/actionsForm';
 import { CustomEditorForm } from '../components/projectEdit/customEditorForm';
+import { PartnersForm } from '../components/projectEdit/partnersForm';
+
 import { Button } from '../components/button';
 import { Dropdown } from '../components/dropdown';
 import { Alert } from '../components/alert';
@@ -211,6 +213,7 @@ export function ProjectEdit() {
       { value: 'description', required: true },
       { value: 'instructions', required: true },
       { value: 'metadata', required: true },
+      { value: 'partners' },
       { value: 'priority_areas' },
       { value: 'imagery' },
       { value: 'permissions' },
@@ -241,6 +244,8 @@ export function ProjectEdit() {
         return <InstructionsForm languages={supportedLanguages} />;
       case 'metadata':
         return <MetadataForm />;
+      case 'partners':
+        return <PartnersForm />;
       case 'imagery':
         return <ImageryForm />;
       case 'permissions':
