@@ -6,7 +6,7 @@ services:
   tm-db:
     # Database container binds to host's 5433 port, update to use any other port.
     ports:
-      - 5432:5432
+      - 5433:5432
 
   tm-backend:
     # Backend binds to 8001 by default, change to use other ports.
