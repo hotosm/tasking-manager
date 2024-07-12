@@ -27,7 +27,7 @@ services:
     # Frontend development server is binded to host's 8000 port by default, update to use any other port.
     # Make sure to update, TM_APP_BASE_URL=http://127.0.0.1:8000 in tasking-manager.env accordingly.
     ports:
-      - 3000:3000
+      - 8000:8000
     volumes:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
