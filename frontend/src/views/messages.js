@@ -772,6 +772,10 @@ export default defineMessages({
     id: 'pages.edit_project.sections.metadata',
     defaultMessage: 'Metadata',
   },
+  projectEditSection_partners: {
+    id: 'pages.edit_project.sections.partners',
+    defaultMessage: 'Partners',
+  },
   projectEditSection_priority_areas: {
     id: 'pages.edit_project.sections.priority_areas',
     defaultMessage: 'Priority areas',
