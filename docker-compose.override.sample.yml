@@ -9,8 +9,14 @@ services:
       - 5433:5432
 
   tm-backend:
-    # Backend binds to 8001 by default, change to use other ports.
-    # Make sure to update, TM_APP_API_URL=http://127.0.0.1:8001 in tasking-manager.env accordingly.
+    # Backend binds to 5000 by default, change to use other ports.
+    # Make sure to update, TM_APP_API_URL=http://127.0.0.1:5000 in tasking-manager.env accordingly.
+    build:
+      context: .
+    volumes:
+      - ./backend:/usr/src/app/backend
+      - /usr/src/app/node_modules
+    command: "gunicorn -c python:backend.gunicorn manage:application --workers 1 --log-level error --reload"
     ports:
       - 5000:5000
 
