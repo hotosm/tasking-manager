@@ -18,9 +18,9 @@ export const Activity = ({ partner }) => {
       primaryHashtag = primaryHashtag.toLowerCase();
 
       const secondaryHashtags = partner.secondary_hashtag
-        .split(',')
-        .map((tag) => tag.trim().replace('#', '').toLowerCase())
-        .join(',');
+        ?.split(',')
+        ?.map((tag) => tag.trim().replace('#', '').toLowerCase())
+        ?.join(',');
       const response = await fetch(
         OHSOME_STATS_BASE_URL + `/stats/hashtags/${primaryHashtag},${secondaryHashtags}`,
       );
