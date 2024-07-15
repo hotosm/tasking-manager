@@ -60,7 +60,12 @@ export const PartnersStats = () => {
         <div className="">
           <div className="flex items-center justify-between bg-blue-dark pa4">
             {/* logo */}
-            <img src={partner.logo_url} alt="logo" height={70} />
+            {partner.logo_url ? (
+              <img src={partner.logo_url} alt="logo" height={70} />
+            ) : (
+              <h3 className="f2 fw6 ttu barlow-condensed white">{partner.name}</h3>
+            )}
+            {/* new to mapping button */}
             <Link to={`/learn/map/`}>
               <Button className="bg-grey-dark white mr3 br1 f5 bn">
                 <FormattedMessage {...messages.newToMapping} />
