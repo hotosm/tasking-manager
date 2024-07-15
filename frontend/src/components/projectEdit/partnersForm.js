@@ -11,6 +11,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ReactPlaceholder from 'react-placeholder';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import PropTypes from 'prop-types';
 
 import messages from './messages';
 import { Alert } from '../alert';
@@ -216,19 +217,18 @@ const Listing = ({ partnerIdToDetailsMapping }) => {
     const isInactive = endDate && endDate < new Date() ? true : false;
 
     return (
-      <tr className={isInactive ? 'gray' : ''} key={partner.id}>
+      <tr
+        className={`pointer ${isInactive ? 'gray' : ''}`}
+        key={partner.id}
+        data-tooltip-id="edit-partner-action"
+        data-tooltip-content="Double click to edit"
+        onDoubleClick={() => {
+          setSelectedPartner({ ...partner, startedOn: startDate, endedOn: endDate });
+          setActionType('edit');
+        }}
+      >
         <td className="pv3 f5 pr3 bb b--black-20">
-          <span
-            className="pointer"
-            data-tooltip-id="edit-partner-action"
-            data-tooltip-content="Double click to edit"
-            onDoubleClick={() => {
-              setSelectedPartner({ ...partner, startedOn: startDate, endedOn: endDate });
-              setActionType('edit');
-            }}
-          >
-            {partnerIdToDetailsMapping[partner.partnerId]?.name}
-          </span>
+          <span>{partnerIdToDetailsMapping[partner.partnerId]?.name}</span>
         </td>
         <td className="pv3 f5 pr3 bb b--black-20">{startDateString}</td>
         <td className="pv3 f5 pr3 bb b--black-20">{endDateString}</td>
@@ -280,7 +280,7 @@ const Listing = ({ partnerIdToDetailsMapping }) => {
         </table>
 
         {isError ? (
-          <div className="flex items-center justify-center pa4 flex-column gap-1">
+          <div className="flex items-center justify-start pa4 gap-1 pl1">
             <BanIcon className="red" width="20" height="20" />
             <p className="ma0">
               <FormattedMessage {...messages.partnerListingError} />
@@ -289,7 +289,7 @@ const Listing = ({ partnerIdToDetailsMapping }) => {
         ) : null}
 
         {isEmpty ? (
-          <div className="flex items-center justify-center pa4 flex-column gap-1">
+          <div className="flex items-center justify-start pa4 gap-1 pl1">
             <CircleExclamationIcon className="red" width="20" height="20" />
             <p className="ma0">
               <FormattedMessage {...messages.partnerListingEmpty} />
@@ -457,6 +457,15 @@ const Listing = ({ partnerIdToDetailsMapping }) => {
       </Popup>
     </div>
   );
+};
+
+Listing.propTypes = {
+  partnerIdToDetailsMapping: PropTypes.shape({
+    id: PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+    }),
+  }).isRequired,
 };
 
 export const PartnersForm = () => {
