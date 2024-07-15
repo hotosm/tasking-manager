@@ -20,7 +20,7 @@ import { CircleExclamationIcon } from '../svgIcons/circleExclamation';
 import { Button } from '../button';
 import { styleClasses } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
-import { DateCustomInput } from "./partnersForm"
+import { DateCustomInput } from './partnersForm';
 
 const TableContentPlaceholder = () => (
   <>
@@ -77,6 +77,7 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
       setErrorMessage({});
       return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPartner.startedOn, selectedPartner.endedOn]);
 
   const {
