@@ -77,6 +77,7 @@ export const PartnersForm = () => {
     ) {
       setErrorMessage({});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPartner]);
 
   useEffect(() => {
@@ -93,6 +94,7 @@ export const PartnersForm = () => {
       setErrorMessage({});
       return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateRange]);
 
   const {
