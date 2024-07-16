@@ -453,7 +453,7 @@ workflows:
               value: << pipeline.git.branch >>
         - or:
           - equal: [ develop, << pipeline.git.branch >> ]
-          - equal: [ fix/febdeployment, << pipeline.git.branch >> ] # change this to the branch you wish to test
+          - equal: [ fdev-switch-to-sandbox, << pipeline.git.branch >> ] # change this to the branch you wish to test
     jobs:
       - database-backup:
           name: Backup development database
