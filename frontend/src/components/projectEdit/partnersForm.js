@@ -11,8 +11,7 @@ import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { Alert } from '../alert';
-import { ChevronDownIcon } from '../svgIcons/chevron-down';
-import { CloseIcon } from '../svgIcons/close';
+import { ChevronDownIcon, CloseIcon } from '../svgIcons';
 import { Button } from '../button';
 import { styleClasses } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';

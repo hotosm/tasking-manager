@@ -82,3 +82,5 @@ export { FileImportIcon } from './fileImport';
 export { CalendarIcon } from './calendar';
 export { CommentIcon } from './comment';
 export { DownloadIcon } from './download';
+export { CircleMinusIcon } from './circleMinus';
+export { CircleExclamationIcon } from './circleExclamation';

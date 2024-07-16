@@ -14,9 +14,7 @@ import PropTypes from 'prop-types';
 
 import messages from './messages';
 import { Alert } from '../alert';
-import { BanIcon } from '../svgIcons/ban';
-import { CircleMinusIcon } from '../svgIcons/circleMinus';
-import { CircleExclamationIcon } from '../svgIcons/circleExclamation';
+import { BanIcon, CircleMinusIcon, CircleExclamationIcon } from '../svgIcons';
 import { Button } from '../button';
 import { styleClasses } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
