@@ -116,7 +116,7 @@ export function CurrentProjects({ currentProjects }) {
                 <section className="lh-title h5 overflow-y-auto mt3 mb3 flex flex-column">
                   <div
                     className="pr2 blue-dark-abbey markdown-content"
-                    dangerouslySetInnerHTML={{ __html: project.info.description }}
+                    dangerouslySetInnerHTML={{ __html: project.info.shortDescription }}
                   />
 
                   <a
