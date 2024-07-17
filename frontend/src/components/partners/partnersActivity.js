@@ -86,27 +86,17 @@ export const Activity = ({ partner }) => {
             );
             return (
               <div key={series.label} className="pa3 shadow-4 bg-white">
-                <div
-                  className="flex space-between"
-                  style={{
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    borderBottom: '1px solid grey',
-                  }}
-                >
-                  <p>Team</p>
+                <div className="flex justify-between items-center bb b--silver">
+                  <p className="silver">Team</p>
                   <h3 className="f3 fw6 ttu barlow-condensed blue-dark mv1">
                     <FormattedMessage {...messages[series.label]} />
                   </h3>
                 </div>
                 <div
-                  className="flex flex-column"
+                  className="flex flex-column overflow-y-auto overflow-x-hidden mt2"
                   style={{
                     maxHeight: '380px',
-                    overflowY: 'auto',
-                    overflowX: 'hidden',
                     gap: '1rem',
-                    marginTop: '1rem',
                   }}
                 >
                   {series.data.map((dataItem) => (

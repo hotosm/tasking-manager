@@ -84,7 +84,7 @@ export function CreatePartner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails, token]);
   return (
-    <div style={{ backgroundColor: '#f1f1f1' }}>
+    <div>
       {userDetails.role === 'ADMIN' ? (
         <Form
           onSubmit={(values) => createPartner(values)}
@@ -197,8 +197,9 @@ export function EditPartners() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails, token]);
+
   return (
-    <div style={{ backgroundColor: '#f1f1f1' }}>
+    <div>
       <ReactPlaceholder
         showLoadingAnimation={true}
         type={'media'}
