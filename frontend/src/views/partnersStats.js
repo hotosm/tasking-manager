@@ -14,8 +14,6 @@ import { OHSOME_STATS_BASE_URL } from '../config';
 import { Button } from '../components/button';
 import { TwitterIcon, FacebookIcon, InstagramIcon } from '../components/svgIcons';
 
-const socialIconsStyle = { height: '24px', width: '24px' };
-
 export const PartnersStats = () => {
   const { id } = useParams();
   const [partnerStats, setPartnerStats] = useState(null);
@@ -89,7 +87,7 @@ export const PartnersStats = () => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <TwitterIcon className="blue-dark" style={socialIconsStyle} />
+                    <TwitterIcon className="blue-dark partners-social-icon" />
                   </a>
                 )}
                 {!!partner.link_meta && (
@@ -99,7 +97,7 @@ export const PartnersStats = () => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <FacebookIcon className="blue-dark" style={socialIconsStyle} />
+                    <FacebookIcon className="blue-dark partners-social-icon" />
                   </a>
                 )}
                 {!!partner.link_instagram && (
@@ -109,7 +107,7 @@ export const PartnersStats = () => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <InstagramIcon className="blue-dark" style={socialIconsStyle} />
+                    <InstagramIcon className="blue-dark partners-social-icon" />
                   </a>
                 )}
               </div>

@@ -86,12 +86,7 @@ export function CurrentProjects({ currentProjects }) {
           pagination={pagination}
           modules={[Pagination]}
           swipeHandler={{ draggable: false }}
-          className="shadow-4"
-          style={{
-            backgroundColor: 'white',
-            width: '100%',
-            borderColor: 'gray',
-          }}
+          className="shadow-4 bg-white w-100 b--gray"
         >
           {projectsData.map((project) => (
             <SwiperSlide
@@ -133,7 +128,7 @@ export function CurrentProjects({ currentProjects }) {
                     </span>
                   </a>
 
-                  <div style={{ marginTop: 'auto' }}>
+                  <div className="mt-auto">
                     <ProjectProgressBar
                       small={false}
                       className="pb3 bg-white"
@@ -144,7 +139,7 @@ export function CurrentProjects({ currentProjects }) {
                   </div>
                 </section>
               </div>
-              <div style={{ width: '100%', position: 'relative', gridColumn: 'span 2' }}>
+              <div className="w-100 relative" style={{ gridColumn: 'span 2' }}>
                 <TasksMap
                   className="w-100 h-100 m2-l"
                   mapResults={project.tasks}
@@ -165,8 +160,8 @@ export function CurrentProjects({ currentProjects }) {
       )}
 
       <div
-        className="swiper-custom-pagination mt2"
-        style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}
+        className="swiper-custom-pagination mt2 w-100 flex justify-center"
+        style={{ gap: '0.5rem' }}
       />
     </ReactPlaceholder>
   );

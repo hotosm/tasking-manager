@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { OHSOME_STATS_BASE_URL } from '../../config';
 
 const height = '1.65rem';
@@ -8,26 +9,21 @@ const ProgressBar = ({ className, firstBarValue, secondBarValue = 0, children, d
     <div className={`cf db ${className || ''}`}>
       <div className="relative">
         <div
-          className="absolute ph1"
+          className="absolute ph1 flex justify-between items-center w-100 b"
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
             height,
             zIndex: 111,
-            width: '100%',
-            fontWeight: '700',
           }}
         >
           <a
             target={'_blank'}
             rel="noreferrer"
-            style={{ textDecoration: 'none', color: 'white' }}
+            className="white no-underline"
             href={OHSOME_STATS_BASE_URL + '/dashboard#hashtags=' + data.primary}
           >
             {'#' + data.primary}{' '}
           </a>
-          <p style={{ color: 'white', margin: 0 }}>{data.secondary}</p>
+          <p className="white ma0">{data.secondary}</p>
         </div>
         <div
           className={`absolute bg-blue-grey br-pill hide-child`}
