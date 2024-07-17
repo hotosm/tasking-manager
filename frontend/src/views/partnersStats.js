@@ -73,7 +73,7 @@ export const PartnersStats = () => {
           {/* social logos */}
           <div className="pa4 bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
             <div className="flex justify-between items-center">
-              <h3 class="f2 blue-dark fw7 ma0 barlow-condensed v-mid dib">
+              <h3 className="f2 blue-dark fw7 ma0 barlow-condensed v-mid dib">
                 {partner.primary_hashtag
                   ?.split(',')
                   ?.map((str) => `#${str}`)
