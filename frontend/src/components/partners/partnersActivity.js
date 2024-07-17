@@ -56,7 +56,13 @@ export const Activity = ({ partner }) => {
       });
     });
 
-    const formattedData = Object.entries(groupedData).map(([action, values]) => ({
+    const sortedData = {
+      edits: groupedData.edits,
+      buildings: groupedData.buildings,
+      roads: groupedData.roads,
+    };
+
+    const formattedData = Object.entries(sortedData).map(([action, values]) => ({
       label: action,
       data: sortBySecondaryDescending(values),
     }));
