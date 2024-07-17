@@ -19,6 +19,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Alert } from '../components/alert';
 import { putEntity } from '../utils/management';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import '../components/partners/styles.scss';
 
 export function ListPartners() {
   useSetTitleTag('Manage partners');
