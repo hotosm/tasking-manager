@@ -2,9 +2,9 @@ const cf = require('@mapbox/cloudfriend');
 
 const Parameters = {
   TaskingManagerBackendAMI: {
-    Type: "AWS::EC2::Image::Id",
+    Type: "String",
     Description: 'AMI ID of Backend VM, currently Ubuntu 20.04 LTS - Was ami-00fa576fb10a52a1c',
-    Default: "ami-0aa2b7722dc1b5612",
+    Default: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id",
   },
   TaskingManagerBackendInstanceType: {
     Type: 'String',
@@ -370,7 +370,7 @@ const Resources = {
         IamInstanceProfile: {
           Name: cf.ref('TaskingManagerEC2InstanceProfile'),
         },
-        ImageId: cf.ref('TaskingManagerBackendAMI'),
+        ImageId: cf.join(':', ["resolve:ssm", cf.ref('TaskingManagerBackendAMI')]),
         InstanceType: cf.ref('TaskingManagerBackendInstanceType'),
         KeyName: 'mbtiles',
         Monitoring: {
