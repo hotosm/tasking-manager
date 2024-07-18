@@ -11,6 +11,7 @@ import { API_URL } from '../../config';
 import messages from './messages';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
 import { HeaderLine } from '../projectDetail/header';
+import { BigProjectTeaser } from '../projectDetail/bigProjectTeaser';
 
 // Import Swiper styles
 import './styles.scss';
@@ -44,6 +45,8 @@ export function CurrentProjects({ currentProjects }) {
         }
         const jsonData = await response.json();
         const jsonInfo = await responseInfo.json();
+        const contributionResponse = await fetch(API_URL + `projects/${id}/contributions/`);
+        const jsonContributions = await contributionResponse.json();
         return {
           id,
           tasks: jsonData,
@@ -52,6 +55,8 @@ export function CurrentProjects({ currentProjects }) {
           percentValidated: jsonInfo.percentValidated,
           percentBadImagery: jsonInfo.percentBadImagery,
           organisationName: jsonInfo.organisationName,
+          lastUpdated: jsonInfo.lastUpdated,
+          totalContributors: jsonContributions.userContributions.length,
         };
       });
 
@@ -129,6 +134,11 @@ export function CurrentProjects({ currentProjects }) {
                   </a>
 
                   <div className="mt-auto">
+                    <BigProjectTeaser
+                      className="pt3"
+                      totalContributors={project.totalContributors}
+                      lastUpdated={project.lastUpdated}
+                    />
                     <ProjectProgressBar
                       small={false}
                       className="pb3 bg-white"
