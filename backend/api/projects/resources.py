@@ -677,6 +677,8 @@ class ProjectsAllAPI(ProjectSearchBase):
         responses:
             200:
                 description: Projects found
+            400:
+                description: Bad input.
             401:
                 description: Search parameters partnerId, partnershipFrom, partnershipTo are not allowed for this user.
             404:
@@ -689,7 +691,26 @@ class ProjectsAllAPI(ProjectSearchBase):
             user_id = token_auth.current_user()
             if user_id:
                 user = UserService.get_user_by_id(user_id)
+
             search_dto = self.setup_search_dto()
+
+            if (
+                search_dto.partnership_from is not None
+                or search_dto.partnership_to is not None
+            ) and search_dto.partner_id is None:
+                return {
+                    "Error": "partnershipFrom or partnershipTo cannot be provided without partnerId"
+                }, 400
+
+            if (
+                search_dto.partner_id is not None
+                and search_dto.partnership_from is not None
+                and search_dto.partnership_to is not None
+                and search_dto.partnership_from > search_dto.partnership_to
+            ):
+                return {
+                    "Error": "partnershipFrom cannot be greater than partnershipTo"
+                }, 400
 
             if (
                 any(
