@@ -10,6 +10,7 @@ from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectSearchBBoxDTO,
 )
+from backend.models.postgis.statuses import UserRole
 from backend.services.project_search_service import (
     ProjectSearchService,
     ProjectSearchServiceError,
@@ -481,6 +482,9 @@ class ProjectSearchBase(Resource):
         search_dto.last_updated_lte = request.args.get("lastUpdatedTo")
         search_dto.created_gte = request.args.get("createdFrom")
         search_dto.created_lte = request.args.get("createdTo")
+        search_dto.partner_id = request.args.get("partnerId")
+        search_dto.partnership_from = request.args.get("partnershipFrom")
+        search_dto.partnership_to = request.args.get("partnershipTo")
 
         # See https://github.com/hotosm/tasking-manager/pull/922 for more info
         try:
@@ -655,9 +659,26 @@ class ProjectsAllAPI(ProjectSearchBase):
               type: boolean
               description: If true, it will not return the project centroid's geometries.
               default: false
+            - in: query
+              name: partnerId
+              type: int
+              description: Limit to projects currently linked to a specific partner ID
+              default: 1
+            - in: query
+              name: partnershipFrom
+              type: date
+              description: Limit to projects with partners that began greater than or equal to a date
+              default: "2017-04-11"
+            - in: query
+              name: partnershipTo
+              type: date
+              description: Limit to projects with partners that ended less than or equal to a date
+              default: "2018-04-11"
         responses:
             200:
                 description: Projects found
+            401:
+                description: Search parameters partnerId, partnershipFrom, partnershipTo are not allowed for this user.
             404:
                 description: No projects found
             500:
@@ -669,6 +690,23 @@ class ProjectsAllAPI(ProjectSearchBase):
             if user_id:
                 user = UserService.get_user_by_id(user_id)
             search_dto = self.setup_search_dto()
+
+            if (
+                any(
+                    map(
+                        lambda x: x is not None,
+                        [
+                            search_dto.partner_id,
+                            search_dto.partnership_from,
+                            search_dto.partnership_to,
+                        ],
+                    )
+                )
+                and not user.role == UserRole.ADMIN.value
+            ):
+                error_msg = "Only admins can search projects by partnerId, partnershipFrom, partnershipTo"
+                return {"Error": error_msg}, 401
+
             results_dto = ProjectSearchService.search_projects(search_dto, user)
             return results_dto.to_primitive(), 200
         except NotFound:

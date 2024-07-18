@@ -330,6 +330,9 @@ class ProjectSearchDTO(Model):
     last_updated_gte = StringType(required=False)
     created_lte = StringType(required=False)
     created_gte = StringType(required=False)
+    partner_id = IntType(required=False)
+    partnership_from = StringType(required=False)
+    partnership_to = StringType(required=False)
 
     def __hash__(self):
         """Make object hashable so we can cache user searches"""

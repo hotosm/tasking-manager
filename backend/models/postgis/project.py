@@ -224,6 +224,7 @@ class Project(db.Model):
     interests = db.relationship(
         Interest, secondary=project_interests, backref="projects"
     )
+    partnerships = db.relationship("ProjectPartnership", backref="project")
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
