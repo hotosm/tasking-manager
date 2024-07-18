@@ -133,11 +133,12 @@ export function CurrentProjects({ currentProjects }) {
                     </span>
                   </a>
 
-                  <div className="mt-auto">
+                  <div className="mt-auto" style={{ overflowX: 'clip' }}>
                     <BigProjectTeaser
                       className="pt3"
                       totalContributors={project.totalContributors}
                       lastUpdated={project.lastUpdated}
+                      style={{ margin: '0.5rem 0', fontSize: '14px' }}
                     />
                     <ProjectProgressBar
                       small={false}
