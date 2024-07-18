@@ -28,6 +28,7 @@ from backend.models.postgis.statuses import (
     MappingPermission,
     ProjectDifficulty,
 )
+from backend.models.postgis.project_partner import ProjectPartnership
 from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.task import TaskHistory
@@ -343,6 +344,22 @@ class ProjectSearchService:
         if search_dto.created_lte:
             created_lte = validate_date_input(search_dto.created_lte)
             query = query.filter(Project.created <= created_lte)
+
+        if search_dto.partner_id:
+            query = query.join(
+                ProjectPartnership, ProjectPartnership.project_id == Project.id
+            ).filter(ProjectPartnership.partner_id == search_dto.partner_id)
+
+            if search_dto.partnership_from:
+                partnership_from = validate_date_input(search_dto.partnership_from)
+                query = query.filter(ProjectPartnership.started_on <= partnership_from)
+
+            if search_dto.partnership_to:
+                partnership_to = validate_date_input(search_dto.partnership_to)
+                query = query.filter(
+                    (ProjectPartnership.ended_on.is_(None))
+                    | (ProjectPartnership.ended_on >= partnership_to)
+                )
 
         order_by = search_dto.order_by
         if search_dto.order_by_type == "DESC":
