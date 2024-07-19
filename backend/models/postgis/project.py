@@ -12,6 +12,8 @@ from sqlalchemy.sql.expression import cast, or_
 from sqlalchemy import desc, func, Time, orm, literal
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.ext.hybrid import hybrid_property
+
 import requests
 
 from backend import db
@@ -198,6 +200,15 @@ class Project(db.Model):
     tasks_mapped = db.Column(db.Integer, default=0, nullable=False)
     tasks_validated = db.Column(db.Integer, default=0, nullable=False)
     tasks_bad_imagery = db.Column(db.Integer, default=0, nullable=False)
+
+    # Total tasks are always >= 1
+    @hybrid_property
+    def percent_mapped(self):
+        return self.tasks_mapped / self.total_tasks
+
+    @hybrid_property
+    def percent_validated(self):
+        return self.tasks_validated / self.total_tasks
 
     # Mapped Objects
     tasks = db.relationship(

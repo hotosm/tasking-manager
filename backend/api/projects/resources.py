@@ -554,7 +554,7 @@ class ProjectsAllAPI(ProjectSearchBase):
               name: orderBy
               type: string
               default: priority
-              enum: [id,difficulty,priority,status,last_updated,due_date]
+              enum: [id,difficulty,priority,status,last_updated,due_date,percent_mapped,percent_validated]
             - in: query
               name: orderByType
               type: string

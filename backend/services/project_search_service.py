@@ -362,10 +362,23 @@ class ProjectSearchService:
                 )
 
         order_by = search_dto.order_by
-        if search_dto.order_by_type == "DESC":
-            order_by = desc(search_dto.order_by)
 
-        query = query.order_by(order_by).distinct(search_dto.order_by, Project.id)
+        if search_dto.order_by == "percent_mapped":
+            if search_dto.order_by_type == "DESC":
+                order_by = Project.percent_mapped.desc()
+            else:
+                order_by = Project.percent_mapped.asc()
+            query = query.order_by(order_by)
+        elif search_dto.order_by == "percent_validated":
+            if search_dto.order_by_type == "DESC":
+                order_by = Project.percent_validated.desc()
+            else:
+                order_by = Project.percent_validated.asc()
+            query = query.order_by(order_by)
+        else:
+            if search_dto.order_by_type == "DESC":
+                order_by = desc(search_dto.order_by)
+            query = query.order_by(order_by).distinct(search_dto.order_by, Project.id)
 
         if search_dto.managed_by and user.role != UserRole.ADMIN.value:
             # Get all the projects associated with the user and team.
