@@ -28,7 +28,7 @@ export const ShowMapToggle = (props) => {
   );
 };
 
-export const ProjetListViewToggle = (props) => {
+export const ProjectListViewToggle = (props) => {
   const dispatch = useDispatch();
   const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
   return (
