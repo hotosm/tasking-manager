@@ -74,15 +74,17 @@ export function CreatePartner() {
         navigate('/manage/partners');
       })
       .catch((err) => {
-        setError(err.message);
+        setError(err);
       });
   };
+
   useEffect(() => {
     if (!token && !userDetails?.id) {
       navigate('/login');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails, token]);
+
   return (
     <div>
       {userDetails.role === 'ADMIN' ? (
@@ -100,8 +102,10 @@ export function CreatePartner() {
                     <div className="cf pv2 ml2">
                       {error && (
                         <Alert type="error" compact>
-                          {messages[`partnerCreation${error}Error`] ? (
-                            <FormattedMessage {...messages[`partnerCreation${error}Error`]} />
+                          {messages[`partnerCreation${error.message}Error`] ? (
+                            <FormattedMessage
+                              {...messages[`partnerCreation${error.message}Error`]}
+                            />
                           ) : (
                             <FormattedMessage
                               {...messages.entityCreationFailure}
