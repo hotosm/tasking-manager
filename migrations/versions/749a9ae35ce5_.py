@@ -4,7 +4,7 @@ Create a table for linking partners and projects.
 Create a table to maintain a log for all changes to these links.
 
 Revision ID: 749a9ae35ce5
-Revises: e8ffa33a9c18
+Revises: 6276c258149c
 Create Date: 2024-06-27 09:36:30.577884
 
 """
@@ -15,7 +15,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = "749a9ae35ce5"
-down_revision = "e8ffa33a9c18"
+down_revision = "6276c258149c"
 branch_labels = None
 depends_on = None
 
