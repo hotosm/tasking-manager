@@ -120,6 +120,10 @@ export default defineMessages({
     id: 'management.partner.creation.error',
     defaultMessage: 'Partner name already exists',
   },
+  partnerEditNameExistsError: {
+    id: 'management.partner.edit.error',
+    defaultMessage: 'Partner name already exists',
+  },
   learnToMap: {
     id: 'management.partner.learnToMap',
     defaultMessage: 'Learn to Map',
