@@ -76,7 +76,7 @@ export { ChartLineIcon } from './chart';
 export { EditIcon } from './edit';
 export { InfoIcon } from './info';
 export { CircleIcon } from './circle';
-export { FourCellsGridIcon, NineCellsGridIcon } from './grid';
+export { FourCellsGridIcon, NineCellsGridIcon, FilledNineCellsGridIcon } from './grid';
 export { CutIcon } from './cut';
 export { FileImportIcon } from './fileImport';
 export { CalendarIcon } from './calendar';
