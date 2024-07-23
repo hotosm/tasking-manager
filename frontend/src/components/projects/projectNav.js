@@ -12,7 +12,7 @@ import ClearFilters from './clearFilters';
 import { OrderBySelector } from './orderBy';
 import { ProjectsActionFilter } from './projectsActionFilter';
 import { SwitchToggle } from '../formInputs';
-import { GripIcon, ListIcon } from '../svgIcons';
+import { GripIcon, ListIcon, FilledNineCellsGridIcon, TableListIcon } from '../svgIcons';
 
 export const ShowMapToggle = (props) => {
   const dispatch = useDispatch();
@@ -48,6 +48,32 @@ export const ProjectListViewToggle = (props) => {
         onClick={() => dispatch({ type: 'TOGGLE_CARD_VIEW' })}
       />
     </div>
+  );
+};
+
+const ExploreProjectsViewToggle = () => {
+  const dispatch = useDispatch();
+  const isExploreProjectsTableView = useSelector(
+    (state) => state.preferences['isExploreProjectsTableView'],
+  );
+
+  return (
+    <>
+      <FilledNineCellsGridIcon
+        height="21"
+        width="21"
+        role="graphics-symbol"
+        className={`pointer ${isExploreProjectsTableView ? 'moon-gray' : ''}`}
+        onClick={() => dispatch({ type: 'EXPLORE_PROJECTS_GRID_VIEW' })}
+      />
+      <TableListIcon
+        height="21"
+        width="21"
+        role="graphics-symbol"
+        className={`pointer ${isExploreProjectsTableView ? '' : 'moon-gray'}`}
+        onClick={() => dispatch({ type: 'EXPLORE_PROJECTS_TABLE_VIEW' })}
+      />
+    </>
   );
 };
 
@@ -150,7 +176,10 @@ export const ProjectNav = (props) => {
           </div>
         </div>
         <div className="w-20-l w-10-m w-100 fr">
-          <ShowMapToggle />
+          <div className="flex items-center justify-end gap-1 mt1">
+            <ExploreProjectsViewToggle />
+            <ShowMapToggle />
+          </div>
         </div>
       </div>
       {props.children}
