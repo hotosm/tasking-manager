@@ -73,7 +73,6 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
 
     if (endDate && startDate < endDate && errorMessage.id === messages.partnerEndDateError.id) {
       setErrorMessage({});
-      return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPartner.startedOn, selectedPartner.endedOn]);
@@ -90,8 +89,7 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
       const sortedPartnershipsByStartDate = response.partnerships.sort((itemA, itemB) => {
         const dateA = new Date(itemA.startedOn);
         const dateB = new Date(itemB.startedOn);
-        // return dateA - dateB; // Ascending order
-        return dateB - dateA; // Descending order
+        return dateB - dateA; // Descending order - Use dateA - dateB for ascending
       });
 
       return { partnerships: sortedPartnershipsByStartDate };
@@ -172,7 +170,7 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
       endDate = new Date(endYear, endMonth - 1, endDay);
     }
 
-    const isInactive = endDate && endDate < new Date() ? true : false;
+    const isInactive = endDate && endDate < new Date();
 
     return (
       <tr
@@ -212,7 +210,7 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
   return (
     <div>
       <div className="overflow-auto">
-        <table className="f6 w-100 mw8 center" cellspacing="0">
+        <table className="f6 w-100 mw8 center" cellSpacing="0">
           <thead>
             <tr>
               <th className="fw6 f5 bb b--black-50 tl pb3 pr3">
@@ -274,9 +272,9 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
               <FormattedMessage {...messages.partnerRemoveModalText} />
             </p>
 
-            <dl class="lh-title mt0">
-              <dt class="f5 b">{partnerIdToDetailsMapping[selectedPartner.partnerId]?.name}</dt>
-              <dd class="ml0">
+            <dl className="lh-title mt0">
+              <dt className="f5 b">{partnerIdToDetailsMapping[selectedPartner.partnerId]?.name}</dt>
+              <dd className="ml0">
                 From&nbsp;
                 {selectedPartner.startedOn
                   ? format(new Date(selectedPartner.startedOn), 'dd/MM/yyyy')
@@ -327,7 +325,7 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
               <FormattedMessage {...messages.partnerUpdateModalTitle} />
             </h3>
             <div className="mt4 mb3 relative">
-              <h6 class="f5 b mb3 mt0">
+              <h6 className="f5 b mb3 mt0">
                 {partnerIdToDetailsMapping[selectedPartner.partnerId]?.name}
               </h6>
               <div className="flex items-center flex-wrap" style={{ gap: '1.75rem' }}>
