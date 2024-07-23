@@ -120,7 +120,7 @@ export const PartnersStats = () => {
             {/* resources section */}
             {Object.keys(partner).some((key) => key.includes('name_')) && (
               <div className="w-100 fl cf">
-                <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
+                <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb3">
                   <FormattedMessage {...messages.resources} />
                 </h3>
                 <Resources partner={partner} />
@@ -129,7 +129,7 @@ export const PartnersStats = () => {
 
             {/* activity section */}
             <div className="w-100 fl cf">
-              <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
+              <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb3">
                 <FormattedMessage {...messages.activity} />
               </h3>
               <Activity partner={partner} />
