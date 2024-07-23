@@ -8,6 +8,7 @@ import { FormattedMessage } from 'react-intl';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import PropTypes from 'prop-types';
 
 import messages from './messages';
 import { Alert } from '../alert';
@@ -37,7 +38,12 @@ export const DateCustomInput = forwardRef(
         </FormattedMessage>
 
         {(date && hideCloseIcon) || !date ? (
-          <div className="absolute right-1 pointer" style={{ top: '0.9rem' }} onClick={onClick}>
+          <div
+            className="absolute right-1 pointer"
+            style={{ top: '0.9rem' }}
+            onClick={onClick}
+            role="button"
+          >
             <ChevronDownIcon style={{ color: 'grey', width: '12px', height: '12px' }} />
           </div>
         ) : null}
@@ -47,6 +53,7 @@ export const DateCustomInput = forwardRef(
             className="absolute right-1 pointer"
             style={{ top: '0.75rem' }}
             onClick={handleClear}
+            role="button"
           >
             <CloseIcon style={{ color: 'grey', width: '10px', height: '10px' }} />
           </div>
@@ -55,6 +62,15 @@ export const DateCustomInput = forwardRef(
     );
   },
 );
+
+DateCustomInput.propTypes = {
+  value: PropTypes.string,
+  date: PropTypes.instanceOf(Date),
+  onClick: PropTypes.func.isRequired,
+  handleClear: PropTypes.func,
+  isStartDate: PropTypes.bool,
+  hideCloseIcon: PropTypes.bool,
+};
 
 export const PartnersForm = () => {
   const [selectedPartner, setSelectedPartner] = useState({});
@@ -91,7 +107,6 @@ export const PartnersForm = () => {
       errorMessage.id === messages.partnerEndDateError.id
     ) {
       setErrorMessage({});
-      return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateRange]);
@@ -146,7 +161,7 @@ export const PartnersForm = () => {
   }, [partners]);
 
   const handleSave = () => {
-    if (!selectedPartner || !selectedPartner.id) {
+    if (!selectedPartner?.id) {
       setErrorMessage(messages.partnerNotSelectedError);
       return;
     }
