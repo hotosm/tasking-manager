@@ -123,7 +123,7 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
         : null;
 
       return pushToLocalJSONAPI(
-        `projects/partnerships/${selectedPartner.id}`,
+        `projects/partnerships/${selectedPartner.id}/`,
         JSON.stringify({
           endedOn: endDate,
           startedOn: startDate,
