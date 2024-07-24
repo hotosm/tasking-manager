@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
 import { useSelector } from 'react-redux';
 import ReactDatePicker from 'react-datepicker';
 import { FormattedMessage } from 'react-intl';
@@ -57,11 +56,12 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (actionType.length === 0) {
+    if (!actionType.length) {
       setSelectedPartner({});
     }
   }, [actionType]);
 
+  // clear dateRange error messages when the right dates are picked
   useEffect(() => {
     const startDate = selectedPartner.startedOn && new Date(selectedPartner.startedOn);
     const endDate = selectedPartner.endedOn && new Date(selectedPartner.endedOn);
@@ -71,6 +71,7 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
       return;
     }
 
+    // clear error message if present when the selected endDate is after startDate
     if (endDate && startDate < endDate && errorMessage.id === messages.partnerEndDateError.id) {
       setErrorMessage({});
     }
@@ -89,7 +90,7 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
       const sortedPartnershipsByStartDate = response.partnerships.sort((itemA, itemB) => {
         const dateA = new Date(itemA.startedOn);
         const dateB = new Date(itemB.startedOn);
-        return dateB - dateA; // Descending order - Use dateA - dateB for ascending
+        return dateB - dateA; // Descending order; Use dateA - dateB for ascending
       });
 
       return { partnerships: sortedPartnershipsByStartDate };

@@ -1,6 +1,5 @@
 import { useEffect, useState, forwardRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import ReactDatePicker from 'react-datepicker';
@@ -37,7 +36,7 @@ export const DateCustomInput = forwardRef(
           }}
         </FormattedMessage>
 
-        {(date && hideCloseIcon) || !date ? (
+        {((date && hideCloseIcon) || !date) && (
           <div
             className="absolute right-1 pointer"
             style={{ top: '0.9rem' }}
@@ -46,9 +45,9 @@ export const DateCustomInput = forwardRef(
           >
             <ChevronDownIcon style={{ color: 'grey', width: '12px', height: '12px' }} />
           </div>
-        ) : null}
+        )}
 
-        {date && !hideCloseIcon ? (
+        {date && !hideCloseIcon && (
           <div
             className="absolute right-1 pointer"
             style={{ top: '0.75rem' }}
@@ -57,7 +56,7 @@ export const DateCustomInput = forwardRef(
           >
             <CloseIcon style={{ color: 'grey', width: '10px', height: '10px' }} />
           </div>
-        ) : null}
+        )}
       </div>
     );
   },
@@ -84,6 +83,7 @@ export const PartnersForm = () => {
   const queryClient = useQueryClient();
   const { id } = useParams();
 
+  // clear partnerNotSelectedError message when partner gets selected
   useEffect(() => {
     if (
       selectedPartner &&
@@ -95,12 +95,14 @@ export const PartnersForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPartner]);
 
+  // clear dateRange error messages when the right dates are picked
   useEffect(() => {
     if (!dateRange.endDate && errorMessage.id === messages.partnerEndDateError.id) {
       setErrorMessage({});
       return;
     }
 
+    // clear error message if present when the selected endDate is after startDate
     if (
       dateRange.endDate &&
       dateRange.startDate < dateRange.endDate &&
