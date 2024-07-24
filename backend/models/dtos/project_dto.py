@@ -333,6 +333,7 @@ class ProjectSearchDTO(Model):
     partner_id = IntType(required=False)
     partnership_from = StringType(required=False)
     partnership_to = StringType(required=False)
+    download_as_csv = BooleanType(required=False)
 
     def __hash__(self):
         """Make object hashable so we can cache user searches"""

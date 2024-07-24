@@ -41,8 +41,10 @@ from backend.models.postgis.utils import (
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
 
+from typing import List
 
 search_cache = TTLCache(maxsize=128, ttl=300)
+csv_download_cache = TTLCache(maxsize=16, ttl=600)
 
 # max area allowed for passed in bbox, calculation shown to help future maintenance
 # client resolution (mpp)* arbitrary large map size on a large screen in pixels * 50% buffer, all squared
@@ -169,6 +171,19 @@ class ProjectSearchService:
         )
 
         return [p.total for p in project_contributors_count]
+
+    @staticmethod
+    @cached(csv_download_cache)
+    def search_projects_without_pagination(search_dto: ProjectSearchDTO, user) -> List:
+        all_results, _ = ProjectSearchService._filter_projects(search_dto, user)
+        return [
+            ProjectSearchService.create_result_dto(
+                p,
+                search_dto.preferred_locale,
+                Project.get_project_total_contributions(p[0]),
+            ).to_primitive()
+            for p in all_results
+        ]
 
     @staticmethod
     @cached(search_cache)

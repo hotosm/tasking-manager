@@ -1,3 +1,5 @@
+import pandas as pd
+
 import geojson
 import io
 from flask import send_file
@@ -485,6 +487,7 @@ class ProjectSearchBase(Resource):
         search_dto.partner_id = request.args.get("partnerId")
         search_dto.partnership_from = request.args.get("partnershipFrom")
         search_dto.partnership_to = request.args.get("partnershipTo")
+        search_dto.download_as_csv = request.args.get("downloadAsCSV")
 
         # See https://github.com/hotosm/tasking-manager/pull/922 for more info
         try:
@@ -674,6 +677,11 @@ class ProjectsAllAPI(ProjectSearchBase):
               type: date
               description: Limit to projects with partners that ended less than or equal to a date
               default: "2018-04-11"
+            - in: query
+              name: downloadAsCSV
+              type: boolean
+              description: Set to true to download search results as a CSV
+              default: false
         responses:
             200:
                 description: Projects found
@@ -727,6 +735,19 @@ class ProjectsAllAPI(ProjectSearchBase):
             ):
                 error_msg = "Only admins can search projects by partnerId, partnershipFrom, partnershipTo"
                 return {"Error": error_msg}, 401
+
+            if search_dto.download_as_csv:
+                all_results = ProjectSearchService.search_projects_without_pagination(
+                    search_dto, user
+                )
+                df = pd.json_normalize(all_results)
+
+                return send_file(
+                    io.BytesIO(df.to_csv().encode()),
+                    mimetype="text/csv",
+                    as_attachment=True,
+                    download_name="projects_search_result.csv",
+                )
 
             results_dto = ProjectSearchService.search_projects(search_dto, user)
             return results_dto.to_primitive(), 200
