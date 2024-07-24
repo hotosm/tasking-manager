@@ -155,20 +155,23 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
     updatePartnerMutation.mutate();
   };
 
+  const getDateObjectAndDateString = (date) => {
+    const [year, month, day] = date.split('T')[0].split('-');
+    const dateString = `${day}/${month}/${year}`;
+    const dateObject = new Date(year, month - 1, day);
+    return [dateObject, dateString];
+  };
+
   const isEmpty =
     !isPending && !isRefetching && !isError && linkedPartners?.partnerships?.length === 0;
 
   const tableContents = linkedPartners?.partnerships?.map((partner) => {
-    const [startYear, startMonth, startDay] = partner.startedOn.split('T')[0].split('-');
-    const startDateString = `${startDay}/${startMonth}/${startYear}`;
-    const startDate = new Date(startYear, startMonth - 1, startDay);
+    const [startDate, startDateString] = getDateObjectAndDateString(partner.startedOn)
 
     let endDateString = 'N/A',
       endDate = null;
     if (partner.endedOn) {
-      const [endYear, endMonth, endDay] = partner.endedOn.split('T')[0].split('-');
-      endDateString = `${endDay}/${endMonth}/${endYear}`;
-      endDate = new Date(endYear, endMonth - 1, endDay);
+      [endDate, endDateString] = getDateObjectAndDateString(partner.endedOn)
     }
 
     const isInactive = endDate && endDate < new Date();
