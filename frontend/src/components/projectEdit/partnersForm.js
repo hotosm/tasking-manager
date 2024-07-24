@@ -38,25 +38,23 @@ export const DateCustomInput = forwardRef(
         </FormattedMessage>
 
         {((date && hideCloseIcon) || !date) && (
-          <div
-            className="absolute right-1 pointer"
-            style={{ top: '0.9rem' }}
+          <button
+            className="absolute pointer b--none bg-inherit"
+            style={{ top: '0.75rem', right: '0.25rem' }}
             onClick={onClick}
-            role="button"
           >
             <ChevronDownIcon style={{ color: 'grey', width: '12px', height: '12px' }} />
-          </div>
+          </button>
         )}
 
         {date && !hideCloseIcon && (
-          <div
-            className="absolute right-1 pointer"
-            style={{ top: '0.75rem' }}
+          <button
+            className="absolute pointer b--none bg-inherit"
+            style={{ top: '0.7rem', right: '0.25rem' }}
             onClick={handleClear}
-            role="button"
           >
             <CloseIcon style={{ color: 'grey', width: '10px', height: '10px' }} />
-          </div>
+          </button>
         )}
       </div>
     );
@@ -114,11 +112,7 @@ export const PartnersForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateRange]);
 
-  const {
-    isPending,
-    isError,
-    data: partners,
-  } = useAllPartnersQuery(token, userDetails.id)
+  const { isPending, isError, data: partners } = useAllPartnersQuery(token, userDetails.id);
 
   const savePartnerMutation = useMutation({
     mutationFn: () => {
