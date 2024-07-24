@@ -205,6 +205,18 @@ export const useAvailableCountriesQuery = () => {
   });
 };
 
+export const useAllPartnersQuery = (token, userId) => {
+  const fetchAllPartners = () => {
+    return api(token).get('partners/');
+  };
+
+  return useQuery({
+    queryKey: ['all-partners', userId],
+    queryFn: fetchAllPartners,
+    select: (response) => response.data,
+  });
+};
+
 const backendToQueryConversion = {
   difficulty: 'difficulty',
   campaign: 'campaign',

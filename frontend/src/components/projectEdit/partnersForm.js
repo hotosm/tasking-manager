@@ -15,6 +15,7 @@ import { ChevronDownIcon, CloseIcon } from '../svgIcons';
 import { Button } from '../button';
 import { styleClasses } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import { useAllPartnersQuery } from '../../api/projects';
 import { Listing } from './partnersListing';
 
 export const DateCustomInput = forwardRef(
@@ -117,10 +118,7 @@ export const PartnersForm = () => {
     isPending,
     isError,
     data: partners,
-  } = useQuery({
-    queryKey: ['all-partners', userDetails.id],
-    queryFn: () => fetchLocalJSONAPI('partners/', token),
-  });
+  } = useAllPartnersQuery(token, userDetails.id)
 
   const savePartnerMutation = useMutation({
     mutationFn: () => {
