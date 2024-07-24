@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import ReactDatePicker from 'react-datepicker';
 import { FormattedMessage } from 'react-intl';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import PropTypes from 'prop-types';
@@ -14,7 +14,7 @@ import { Alert } from '../alert';
 import { ChevronDownIcon, CloseIcon } from '../svgIcons';
 import { Button } from '../button';
 import { styleClasses } from '../../views/projectEdit';
-import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useAllPartnersQuery } from '../../api/projects';
 import { Listing } from './partnersListing';
 
