@@ -9,8 +9,19 @@ from backend.models.dtos.project_partner_dto import (
 from backend.models.postgis.utils import timestamp
 
 
+def check_if_manager(partnership_dto: ProjectPartnershipDTO):
+    if not ProjectAdminService.is_user_action_permitted_on_project(
+        token_auth.current_user(), partnership_dto.project_id
+    ):
+        return {
+            "Error": "User is not a manager of the project",
+            "SubCode": "UserPermissionError",
+        }, 401
+
+
 class ProjectPartnershipsRestApi(Resource):
-    def get(self, partnership_id: int):
+    @staticmethod
+    def get(partnership_id: int):
         """
         Retrieves a Partnership by id
         ---
@@ -98,13 +109,9 @@ class ProjectPartnershipsRestApi(Resource):
         """
         partnership_dto = ProjectPartnershipDTO(request.get_json())
 
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            token_auth.current_user(), partnership_dto.project_id
-        ):
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 401
+        is_not_manager_error = check_if_manager(partnership_dto)
+        if is_not_manager_error is not None:
+            return is_not_manager_error
 
         if partnership_dto.started_on is None:
             partnership_dto.started_on = timestamp()
@@ -183,13 +190,9 @@ class ProjectPartnershipsRestApi(Resource):
             partnership_id
         )
 
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            token_auth.current_user(), partnership_dto.project_id
-        ):
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 401
+        is_not_manager_error = check_if_manager(partnership_dto)
+        if is_not_manager_error is not None:
+            return is_not_manager_error
 
         partnership = ProjectPartnershipService.update_partnership_time_range(
             partnership_id,
@@ -248,13 +251,9 @@ class ProjectPartnershipsRestApi(Resource):
             partnership_id
         )
 
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            token_auth.current_user(), partnership_dto.project_id
-        ):
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 401
+        is_not_manager_error = check_if_manager(partnership_dto)
+        if is_not_manager_error is not None:
+            return is_not_manager_error
 
         ProjectPartnershipService.delete_partnership(partnership_id)
         return (
