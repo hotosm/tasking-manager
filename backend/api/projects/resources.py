@@ -720,19 +720,16 @@ class ProjectsAllAPI(ProjectSearchBase):
                     "Error": "partnershipFrom cannot be greater than partnershipTo"
                 }, 400
 
-            if (
-                any(
-                    map(
-                        lambda x: x is not None,
-                        [
-                            search_dto.partner_id,
-                            search_dto.partnership_from,
-                            search_dto.partnership_to,
-                        ],
-                    )
+            if any(
+                map(
+                    lambda x: x is not None,
+                    [
+                        search_dto.partner_id,
+                        search_dto.partnership_from,
+                        search_dto.partnership_to,
+                    ],
                 )
-                and not user.role == UserRole.ADMIN.value
-            ):
+            ) and (user is None or not user.role == UserRole.ADMIN.value):
                 error_msg = "Only admins can search projects by partnerId, partnershipFrom, partnershipTo"
                 return {"Error": error_msg}, 401
 
