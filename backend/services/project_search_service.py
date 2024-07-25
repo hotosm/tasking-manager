@@ -1,3 +1,4 @@
+import pandas as pd
 from flask import current_app
 import math
 import geojson
@@ -41,7 +42,6 @@ from backend.models.postgis.utils import (
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
 
-from typing import List
 
 search_cache = TTLCache(maxsize=128, ttl=300)
 csv_download_cache = TTLCache(maxsize=16, ttl=600)
@@ -174,9 +174,9 @@ class ProjectSearchService:
 
     @staticmethod
     @cached(csv_download_cache)
-    def search_projects_without_pagination(search_dto: ProjectSearchDTO, user) -> List:
+    def search_projects_as_csv(search_dto: ProjectSearchDTO, user) -> str:
         all_results, _ = ProjectSearchService._filter_projects(search_dto, user)
-        return [
+        results_as_dto = [
             ProjectSearchService.create_result_dto(
                 p,
                 search_dto.preferred_locale,
@@ -184,6 +184,15 @@ class ProjectSearchService:
             ).to_primitive()
             for p in all_results
         ]
+
+        df = pd.json_normalize(results_as_dto)
+
+        del df["locale"]
+        del df["shortDescription"]
+        del df["organisationLogo"]
+        del df["campaigns"]
+
+        return df.to_csv(index=False)
 
     @staticmethod
     @cached(search_cache)
