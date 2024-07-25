@@ -18,6 +18,7 @@ from backend.models.dtos.project_dto import (
     ProjectSearchBBoxDTO,
 )
 from backend.models.postgis.project import Project, ProjectInfo, ProjectTeams
+from backend.models.postgis.partner import Partner
 from backend.models.postgis.statuses import (
     ProjectStatus,
     MappingLevel,
@@ -41,7 +42,6 @@ from backend.models.postgis.utils import (
 )
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
-
 
 search_cache = TTLCache(maxsize=128, ttl=300)
 csv_download_cache = TTLCache(maxsize=16, ttl=600)
@@ -119,7 +119,12 @@ class ProjectSearchService:
         return query
 
     @staticmethod
-    def create_result_dto(project, preferred_locale, total_contributors):
+    def create_result_dto(
+        project: Project,
+        preferred_locale: str,
+        total_contributors: int,
+        with_partner_names: bool = False,
+    ) -> ListSearchResultDTO:
         project_info_dto = ProjectInfo.get_dto_for_locale(
             project.id, preferred_locale, project.default_locale
         )
@@ -146,6 +151,22 @@ class ProjectSearchService:
         list_dto.organisation_name = project.organisation_name
         list_dto.organisation_logo = project.organisation_logo
         list_dto.campaigns = Project.get_project_campaigns(project.id)
+
+        list_dto.creation_date = project_obj.created
+
+        if with_partner_names:
+            list_dto.partner_names = list(
+                set(
+                    map(
+                        lambda p: Partner.get_by_id(p.partner_id).name,
+                        project_obj.partnerships,
+                    )
+                )
+            )
+
+        list_dto.total_area = project_obj.query.with_entities(
+            func.coalesce(func.sum(func.ST_Area(project_obj.geometry, True) / 1000000))
+        ).scalar()
 
         return list_dto
 
@@ -181,6 +202,9 @@ class ProjectSearchService:
                 p,
                 search_dto.preferred_locale,
                 Project.get_project_total_contributions(p[0]),
+                with_partner_names=(
+                    user is not None and user.role == UserRole.ADMIN.value
+                ),
             ).to_primitive()
             for p in all_results
         ]
@@ -210,6 +234,9 @@ class ProjectSearchService:
                 p,
                 search_dto.preferred_locale,
                 Project.get_project_total_contributions(p[0]),
+                with_partner_names=(
+                    user is not None and user.role == UserRole.ADMIN.value
+                ),
             )
             for p in paginated_results.items
         ]
