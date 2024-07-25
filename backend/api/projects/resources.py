@@ -1,5 +1,3 @@
-import pandas as pd
-
 import geojson
 import io
 from flask import send_file
@@ -734,13 +732,12 @@ class ProjectsAllAPI(ProjectSearchBase):
                 return {"Error": error_msg}, 401
 
             if search_dto.download_as_csv:
-                all_results = ProjectSearchService.search_projects_without_pagination(
+                all_results_csv = ProjectSearchService.search_projects_as_csv(
                     search_dto, user
                 )
-                df = pd.json_normalize(all_results)
 
                 return send_file(
-                    io.BytesIO(df.to_csv().encode()),
+                    io.BytesIO(all_results_csv.encode()),
                     mimetype="text/csv",
                     as_attachment=True,
                     download_name="projects_search_result.csv",
