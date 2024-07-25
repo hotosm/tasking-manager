@@ -406,6 +406,10 @@ class ListSearchResultDTO(Model):
     total_contributors = IntType(serialized_name="totalContributors")
     country = StringType(serialize_when_none=False)
 
+    creation_date = UTCDateTimeType(serialized_name="creationDate", required=True)
+    partner_names = ListType(StringType, serialized_name="partnerNames")
+    total_area = FloatType(required=True)
+
 
 class ProjectSearchResultsDTO(Model):
     """Contains all results for the search criteria"""
