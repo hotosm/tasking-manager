@@ -139,6 +139,7 @@ export const PartnersForm = () => {
         startDate: new Date(),
         endDate: null,
       });
+      setSelectedPartner({})
       toast.success(<FormattedMessage {...messages.partnerLinkActionSuccessToast} />);
     },
     onError: () => {
@@ -185,6 +186,7 @@ export const PartnersForm = () => {
           getOptionLabel={(option) => option.name}
           getOptionValue={(option) => option.id}
           options={partners}
+          value={selectedPartner.id ? selectedPartner : null}
           placeholder={
             isError ? (
               <FormattedMessage {...messages.partnerActionsApiError} />
@@ -192,7 +194,7 @@ export const PartnersForm = () => {
               <FormattedMessage {...messages.selectPartner} />
             )
           }
-          onChange={(value) => setSelectedPartner(value)}
+          onChange={(value) => (value ? setSelectedPartner(value) : setSelectedPartner({}))}
         />
 
         <div className="mt2 flex items-start" style={{ gap: '0.75rem' }}>
