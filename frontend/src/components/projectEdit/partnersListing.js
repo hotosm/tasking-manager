@@ -166,12 +166,12 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
     !isPending && !isRefetching && !isError && linkedPartners?.partnerships?.length === 0;
 
   const tableContents = linkedPartners?.partnerships?.map((partner) => {
-    const [startDate, startDateString] = getDateObjectAndDateString(partner.startedOn)
+    const [startDate, startDateString] = getDateObjectAndDateString(partner.startedOn);
 
     let endDateString = 'N/A',
       endDate = null;
     if (partner.endedOn) {
-      [endDate, endDateString] = getDateObjectAndDateString(partner.endedOn)
+      [endDate, endDateString] = getDateObjectAndDateString(partner.endedOn);
     }
 
     const isInactive = endDate && endDate < new Date();
@@ -184,6 +184,7 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
           setSelectedPartner({ ...partner, startedOn: startDate, endedOn: endDate });
           setActionType('edit');
         }}
+        style={{ userSelect: 'none' }}
       >
         <td className="pv3 f5 pr3 bb b--black-20" id="edit-partner-action">
           <span>{partnerIdToDetailsMapping[partner.partnerId]?.name}</span>
