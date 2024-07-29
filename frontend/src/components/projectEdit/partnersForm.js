@@ -248,7 +248,7 @@ export const PartnersForm = () => {
           </div>
 
           <Button
-            className={`${styleClasses.redButtonClass} br2`}
+            className={`${styleClasses.redButtonClass} br2 flex`}
             style={{ height: '42px' }}
             onClick={handleSave}
             loading={savePartnerMutation.isLoading}
