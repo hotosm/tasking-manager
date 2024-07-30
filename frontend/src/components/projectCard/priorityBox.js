@@ -11,7 +11,7 @@ export function PriorityBox({ priority, extraClasses, showIcon }: Object) {
   return (
     <FormattedMessage {...messages[`priorityDescription${priority}`]}>
       {(msg) => (
-        <div className={`tc br1 f8 ttu ba ${color} ${extraClasses}`} title={msg}>
+        <div className={`tc br1 ttu ba ${color} ${extraClasses}`} title={msg}>
           {showIcon && <ClockIcon className={`${color} v-mid mr1`} style={{ height: '13px' }} />}
           {priority ? (
             <span className="v-mid fw5">
