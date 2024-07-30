@@ -69,6 +69,7 @@ export const ProjectsPage = () => {
             projects={projects?.results}
             pagination={projects?.pagination}
             retryFn={refetch}
+            isExploreProjectsPage
           />
           <ProjectCardPaginator
             status={status}
