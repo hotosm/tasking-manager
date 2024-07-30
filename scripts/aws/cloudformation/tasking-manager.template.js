@@ -98,6 +98,16 @@ const Parameters = {
     Description: 'TM_SECRET',
     Type: 'String'
   },
+  OSMServerUrl: {
+    Description: 'OSM_SERVER_URL',
+    Type: 'String',
+    Default: 'https://www.openstreetmap.org'
+  },
+  IDEditorUrl: {
+    Description: 'OSM_SERVER_URL',
+    Type: 'String',
+    Default: 'https://www.openstreetmap.org/edit?editor=id&'
+  },
   TaskingManagerAppBaseUrl: {
     Type: 'String',
     Description: 'TM_APP_BASE_URL; Ex: https://example.hotosm.org'
@@ -455,6 +465,8 @@ const Resources = {
           cf.sub('export TM_ENVIRONMENT="${AWS::StackName}"'),
           cf.sub('export TM_CLIENT_ID="${TaskingManagerOAuthClientID}"'),
           cf.sub('export TM_CLIENT_SECRET="${TaskingManagerOAuthClientSecret}"'),
+          cf.sub('export OSM_SERVER_URL="${OSMServerUrl}"'),
+          cf.sub('export ID_EDITOR_URL="${IDEditorUrl}"'),
           cf.sub('export TM_REDIRECT_URI="${TaskingManagerAppBaseUrl}/authorized"'),
           cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
           cf.sub('export TM_SMTP_HOST="${TaskingManagerSMTPHost}"'),
