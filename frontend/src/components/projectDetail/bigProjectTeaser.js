@@ -3,9 +3,9 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 
-export function BigProjectTeaser({ lastUpdated, totalContributors }: Object) {
+export function BigProjectTeaser({ lastUpdated, totalContributors, style = {} }: Object) {
   return (
-    <div className="flex justify-between mt4 mb3 blue-grey">
+    <div className="flex justify-between mt4 mb3 blue-grey items-center" style={style}>
       <span>
         {totalContributors ? (
           <FormattedMessage

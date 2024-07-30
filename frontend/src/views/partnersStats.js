@@ -14,8 +14,6 @@ import { OHSOME_STATS_BASE_URL } from '../config';
 import { Button } from '../components/button';
 import { TwitterIcon, FacebookIcon, InstagramIcon } from '../components/svgIcons';
 
-const socialIconsStyle = { height: '24px', width: '24px' };
-
 export const PartnersStats = () => {
   const { id } = useParams();
   const [partnerStats, setPartnerStats] = useState(null);
@@ -60,7 +58,12 @@ export const PartnersStats = () => {
         <div className="">
           <div className="flex items-center justify-between bg-blue-dark pa4">
             {/* logo */}
-            <img src={partner.logo_url} alt="logo" height={70} />
+            {partner.logo_url ? (
+              <img src={partner.logo_url} alt="logo" height={70} />
+            ) : (
+              <h3 className="f2 fw6 ttu barlow-condensed white">{partner.name}</h3>
+            )}
+            {/* new to mapping button */}
             <Link to={`/learn/map/`}>
               <Button className="bg-grey-dark white mr3 br1 f5 bn">
                 <FormattedMessage {...messages.newToMapping} />
@@ -70,7 +73,7 @@ export const PartnersStats = () => {
           {/* social logos */}
           <div className="pa4 bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
             <div className="flex justify-between items-center">
-              <h3 class="f2 blue-dark fw7 ma0 barlow-condensed v-mid dib">
+              <h3 className="f2 blue-dark fw7 ma0 barlow-condensed v-mid dib">
                 {partner.primary_hashtag
                   ?.split(',')
                   ?.map((str) => `#${str}`)
@@ -84,7 +87,7 @@ export const PartnersStats = () => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <TwitterIcon className="blue-dark" style={socialIconsStyle} />
+                    <TwitterIcon className="blue-dark partners-social-icon" />
                   </a>
                 )}
                 {!!partner.link_meta && (
@@ -94,7 +97,7 @@ export const PartnersStats = () => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <FacebookIcon className="blue-dark" style={socialIconsStyle} />
+                    <FacebookIcon className="blue-dark partners-social-icon" />
                   </a>
                 )}
                 {!!partner.link_instagram && (
@@ -104,7 +107,7 @@ export const PartnersStats = () => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <InstagramIcon className="blue-dark" style={socialIconsStyle} />
+                    <InstagramIcon className="blue-dark partners-social-icon" />
                   </a>
                 )}
               </div>
@@ -117,7 +120,7 @@ export const PartnersStats = () => {
             {/* resources section */}
             {Object.keys(partner).some((key) => key.includes('name_')) && (
               <div className="w-100 fl cf">
-                <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
+                <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb3">
                   <FormattedMessage {...messages.resources} />
                 </h3>
                 <Resources partner={partner} />
@@ -126,7 +129,7 @@ export const PartnersStats = () => {
 
             {/* activity section */}
             <div className="w-100 fl cf">
-              <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
+              <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb3">
                 <FormattedMessage {...messages.activity} />
               </h3>
               <Activity partner={partner} />
