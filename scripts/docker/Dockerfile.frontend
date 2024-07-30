@@ -5,7 +5,7 @@ COPY frontend .
 
 ## SETUP
 RUN git config --global url.https://github.com/.insteadOf git@github.com: \
-    && npm install
+    && npm install --ignore-scripts
 
 # SERVE
 COPY tasking-manager.env ..
