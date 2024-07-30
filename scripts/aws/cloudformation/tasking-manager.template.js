@@ -544,16 +544,6 @@ const Resources = {
           }]
         }
       }, {
-        PolicyName: "SSMPolicy",
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement:[{
-            Action: ['ssm:GetParameters'],
-            Effect: 'Allow',
-            Resource: ['arn:aws:ssm:*']
-          }]
-        }
-      }, {
         PolicyName: "CloudFormationPermissions",
         PolicyDocument: {
           Version: "2012-10-17",
