@@ -30,6 +30,8 @@ from backend.models.postgis.interests import Interest, user_interests
 from backend.db import Base, get_session
 session = get_session()
 from sqlalchemy import select
+from databases import Database
+from sqlalchemy import text
 
 class User(Base):
     """Describes the history associated with a task"""
@@ -88,11 +90,25 @@ class User(Base):
     def save(self):
         session.commit()
 
+    # @staticmethod
+    # async def get_by_id(user_id: int, session):
+    #     """Return the user for the specified id, or None if not found"""
+    #     result = await session.execute(sa.select(User).filter_by(id=user_id))
+    #     return result.scalars().first()
+
     @staticmethod
-    async def get_by_id(user_id: int, session):
-        """Return the user for the specified id, or None if not found"""
-        result = await session.execute(sa.select(User).filter_by(id=user_id))
-        return result.scalars().first()
+    async def get_by_id(user_id: int, db: Database):
+        """
+        Return the user for the specified id, or None if not found.
+        :param user_id: ID of the user to retrieve
+        :param db: Database connection
+        :return: User object or None
+        """
+        query = "SELECT * FROM users WHERE id = :user_id"
+        result = await db.fetch_one(query, values={"user_id": user_id})
+        if result is None:
+            return None
+        return User(**result)
 
     @staticmethod
     async def get_by_username(username: str, session):

@@ -1,6 +1,8 @@
 import base64
 import binascii
 import urllib.parse
+from backend.db import get_db
+from backend.models.dtos.user_dto import AuthUserDTO
 from starlette.authentication import (
     AuthCredentials, AuthenticationBackend, AuthenticationError, SimpleUser
 )
@@ -12,6 +14,8 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService, NotFound
 from random import SystemRandom
 from backend.config import settings
+from fastapi import FastAPI, Depends, HTTPException, Header, Request
+from databases import Database
 
 # token_auth = HTTPTokenAuth(scheme="Token")
 tm = TMAPIDecorators()
@@ -49,6 +53,8 @@ def verify_token(token):
         user_id  # Set the user ID on the decorator as a convenience
     )
     return user_id  # All tests passed token is good for the requested resource
+
+
 
 
 class TokenAuthBackend(AuthenticationBackend):
@@ -214,3 +220,25 @@ class AuthenticationService:
             return False, "BadSignature- Bad Token Signature"
 
         return True, tokenised_user_id
+
+
+async def login_required(request: Request, db: Database = Depends(get_db), authorization: str = Header(None)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header missing")
+    try:
+        scheme, credentials = authorization.split()
+        if scheme.lower() != 'token':
+            raise HTTPException(status_code=401, detail="Invalid authentication scheme")
+        try:
+            decoded_token = base64.b64decode(credentials).decode("ascii")
+        except UnicodeDecodeError:
+            logger.debug("Unable to decode token")
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except (ValueError, UnicodeDecodeError, binascii.Error):
+        raise AuthenticationError('Invalid auth credentials')
+    valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
+    if not valid_token:
+        logger.debug("Token not valid")
+        raise HTTPException(status_code=401, detail="Token not valid")
+    
+    return AuthUserDTO(id=user_id)

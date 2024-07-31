@@ -3,9 +3,9 @@ import os
 from functools import lru_cache
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, Union
 import json
-
+from pydantic import PostgresDsn, field_validator, ValidationInfo
 
 class Settings(BaseSettings):
     """Base class for configuration."""
@@ -55,38 +55,42 @@ class Settings(BaseSettings):
         "OSM_NOMINATIM_SERVER_URL", "https://nominatim.openstreetmap.org"
     )
 
-    # Database connection
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", None)
     POSTGRES_ENDPOINT: str = os.getenv("POSTGRES_ENDPOINT", "localhost")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "postgres")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
 
-    # Assamble the database uri
-    if os.getenv("TM_DB", False):
-        SQLALCHEMY_DATABASE_URI: str = os.getenv("TM_DB", None)
-    elif os.getenv("DB_CONNECT_PARAM_JSON", False):
-        """
-        This section reads JSON formatted Database connection parameters passed
-        from AWS Secrets Manager with the ENVVAR key `DB_CONNECT_PARAM_JSON`
-        and forms a valid SQLALCHEMY DATABASE URI
-        """
+    SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
-        _params: dict = json.loads(os.getenv("DB_CONNECT_PARAM_JSON", None))
-        SQLALCHEMY_DATABASE_URI: str = (
-            f"postgresql+asyncpg://{_params.get('username')}"
-            + f":{_params.get('password')}"
-            + f"@{_params.get('host')}"
-            + f":{_params.get('port')}"
-            + f"/{_params.get('dbname')}"
-        )
-    else:
-        SQLALCHEMY_DATABASE_URI: str = (
-            f"postgresql+asyncpg://{POSTGRES_USER}"
-            + f":{POSTGRES_PASSWORD}"
-            + f"@{POSTGRES_ENDPOINT}:"
-            + f"{POSTGRES_PORT}"
-            + f"/{POSTGRES_DB}"
+    @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
+    @classmethod
+    def assemble_db_connection(cls, v: Optional[str], info: ValidationInfo) -> Optional[str]:
+        """Build Postgres connection from environment variables or JSON config."""
+        if v:
+            return v
+
+        if os.getenv("TM_DB"):
+            return os.getenv("TM_DB")
+
+        if os.getenv("DB_CONNECT_PARAM_JSON"):
+            params = json.loads(os.getenv("DB_CONNECT_PARAM_JSON"))
+            return PostgresDsn.build(
+                scheme="postgresql+asyncpg",
+                username=params.get("username"),
+                password=params.get("password"),
+                host=params.get("host"),
+                port=str(params.get("port")),
+                path=f"{params.get('dbname')}",
+            )
+        
+        return PostgresDsn.build(
+            scheme="postgresql+asyncpg",
+            username=info.data.get("POSTGRES_USER"),
+            password=info.data.get("POSTGRES_PASSWORD"),
+            host=info.data.get("POSTGRES_ENDPOINT"),
+            port=int(info.data.get("POSTGRES_PORT")),
+            path=f"{info.data.get('POSTGRES_DB')}",
         )
 
     # Logging settings
