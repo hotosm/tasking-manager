@@ -12,12 +12,17 @@ from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from fastapi.logger import logger
 
+from databases import Database
+from backend.db import get_db
+
+
 router = APIRouter(
     prefix="/system",
     tags=["system"],
     dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # class SystemAuthenticationLoginAPI():
@@ -52,10 +57,9 @@ async def get(request: Request):
     login_url, state = osm.authorization_url(authorize_url)
     return {"auth_url": login_url, "state": state}, 200
 
-
 # class SystemAuthenticationCallbackAPI():
 @router.get("/authentication/callback/")
-async def get(request: Request, session: AsyncSession = Depends(get_session)):
+async def get(request: Request, db: Database = Depends(get_db)):
     """
     Handles the OSM OAuth callback
     ---
@@ -130,12 +134,11 @@ async def get(request: Request, session: AsyncSession = Depends(get_session)):
         }, 502
 
     try:
-        user_params = await AuthenticationService.login_user(osm_response.json(), email, session)
+        user_params = await AuthenticationService.login_user(osm_response.json(), email, db)
         user_params["session"] = osm_resp
         return user_params, 200
     except AuthServiceError:
         return {"Error": "Unable to authenticate", "SubCode": "AuthError"}, 500
-
 
 # class SystemAuthenticationEmailAPI():
 @router.get("/authentication/email/")
