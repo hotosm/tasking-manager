@@ -15,6 +15,7 @@ from backend.db import Base, get_session
 session = get_session()
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
+from databases import Database
 
 # Secondary table defining many-to-many relationship between organisations and managers
 organisation_managers = Table(
@@ -159,35 +160,56 @@ class Organisation(Base):
         """
         return session.query(Organisation).get(organisation_id).name
 
-
     @staticmethod
-    async def get_all_organisations(session):
+    async def get_all_organisations(db: Database):
         """Gets all organisations"""
-        result = await session.execute(
-            select(Organisation).options(selectinload(Organisation.managers)).order_by(Organisation.name)
-        )
-        return result.scalars().all()
-
+        query = """
+            SELECT 
+                o.id AS "organisationId",
+                o.name,
+                o.slug,
+                o.logo,
+                o.description,
+                o.url,
+                CASE 
+                    WHEN o.type = 1 THEN 'FREE'
+                    WHEN o.type = 2 THEN 'DISCOUNTED'
+                    WHEN o.type = 3 THEN 'FULL_FEE'
+                    ELSE 'UNKNOWN'
+                END AS type,
+                o.subscription_tier AS "subscriptionTier"
+            FROM organisations o
+            ORDER BY o.name
+        """
+        result = await db.fetch_all(query)
+        return result
 
     @staticmethod
-    async def get_organisations_managed_by_user(user_id: int, session):
+    async def get_organisations_managed_by_user(user_id: int, db: Database):
         """Gets organisations a user can manage"""
-        query = (
-            select(Organisation)
-            .options(
-                selectinload(Organisation.managers),
-            )
-            .join(organisation_managers)
-            .filter(
-                (organisation_managers.c.organisation_id == Organisation.id) &
-                (organisation_managers.c.user_id == user_id)
-            )
-            .order_by(Organisation.name)
-        )
-        result = await session.execute(query)
-        query_results = result.scalars().all()
-        return query_results
-    
+        query = f"""
+            SELECT 
+                o.id AS "organisationId",
+                o.name,
+                o.slug,
+                o.logo,
+                o.description,
+                o.url,
+                CASE 
+                    WHEN o.type = {OrganisationType.FREE.value} THEN 'FREE'
+                    WHEN o.type = {OrganisationType.DISCOUNTED.value} THEN 'DISCOUNTED'
+                    WHEN o.type = {OrganisationType.FULL_FEE.value} THEN 'FULL_FEE'
+                    ELSE 'UNKNOWN'
+                END AS type,
+                o.subscription_tier AS "subscriptionTier"
+            FROM organisations o
+            JOIN organisation_managers om ON o.id = om.organisation_id
+            WHERE om.user_id = :user_id
+            ORDER BY o.name
+        """
+        params = {"user_id": user_id}
+        result = await db.fetch_all(query, values=params)
+        return result
 
     async def fetch_managers(self, session):
         """Fetch managers asynchronously"""

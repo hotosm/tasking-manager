@@ -242,3 +242,9 @@ class UserTaskDTOs(BaseModel):
 
     user_tasks: List[TaskDTO] = Field(alias="tasks")
     pagination: Pagination
+
+
+class AuthUserDTO(BaseModel):
+    """A minimal user model with only id."""
+
+    id: int

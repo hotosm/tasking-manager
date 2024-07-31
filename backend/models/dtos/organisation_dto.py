@@ -44,13 +44,13 @@ class OrganisationDTO(BaseModel):
     type: Optional[str] = Field(None, validators=[is_known_organisation_type])
     subscription_tier: Optional[int] = Field(None, alias="subscriptionTier")
 
-
 class ListOrganisationsDTO(BaseModel):
     def __init__(self):
         super().__init__()
         self.organisations = []
 
     organisations: Optional[List[OrganisationDTO]] = None
+    
 
 class NewOrganisationDTO(BaseModel):
     """Describes a JSON model to create a new organisation"""
@@ -75,3 +75,4 @@ class UpdateOrganisationDTO(OrganisationDTO):
     description: Optional[str] = None
     url: Optional[str] = None
     type: Optional[str] = Field(None, validator=is_known_organisation_type)
+

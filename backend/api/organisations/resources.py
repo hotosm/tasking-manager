@@ -1,21 +1,29 @@
+from datetime import datetime
 from distutils.util import strtobool
 
 from backend.models.dtos.organisation_dto import (
+    ListOrganisationsDTO,
     NewOrganisationDTO,
+    OrganisationDTO,
     UpdateOrganisationDTO,
 )
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.postgis.user import User
 from backend.services.organisation_service import (
     OrganisationService,
     OrganisationServiceError,
 )
 from backend.models.postgis.statuses import OrganisationType
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
+from backend.services.users.authentication_service import login_required
+from fastapi import APIRouter, Depends, Request, Query
+from backend.db import get_db, get_session
 from starlette.authentication import requires
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from databases import Database
+from backend.models.postgis.organisation import Organisation
+from sqlalchemy import select, case
 
 router = APIRouter(
     prefix="/organisations",
@@ -24,9 +32,14 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@router.get("/{organisation_id}/")
+@router.get("/{organisation_id}/", response_model=OrganisationDTO)
 @requires("authenticated")
-async def get(request: Request, organisation_id: int, session: AsyncSession = Depends(get_session)):
+async def get(
+    request: Request,
+    organisation_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Retrieves an organisation
     ---
@@ -69,15 +82,15 @@ async def get(request: Request, organisation_id: int, session: AsyncSession = De
     # Validate abbreviated.
     omit_managers = strtobool(request.query_params.get("omitManagerList", "false"))
     organisation_dto = await OrganisationService.get_organisation_by_id_as_dto(
-        organisation_id, user_id, omit_managers, session
+        organisation_id, user_id, omit_managers, db
     )
-    return organisation_dto.model_dump(by_alias=True), 200
+    return organisation_dto
 
 
 # class OrganisationsBySlugRestAPI(Resource):
 #       @token_auth.login_required(optional=True)
 @router.get("/{slug}/")
-async def get(request: Request, slug: str, session: AsyncSession = Depends(get_session)):
+async def get(request: Request, slug: str, db: Database = Depends(get_db)):
     """
     Retrieves an organisation
     ---
@@ -381,10 +394,14 @@ async def get(organisation_id: int, session: AsyncSession = Depends(get_session)
     return organisation_dto.model_dump(by_alias=True), 200
 
 
-# class OrganisationsAllAPI(Resource):
-#     @token_auth.login_required(optional=True)
-@router.get("/")
-async def get(request: Request, session: AsyncSession = Depends(get_session)):
+@router.get("/", response_model=ListOrganisationsDTO)
+async def get(
+    request: Request,
+    db: Database = Depends(get_db),
+    omit_stats: bool = Query(False, alias="omitOrgStats", description="Omit organization stats from the response."),
+    omit_managers: bool = Query(True, alias="omitManagerList", description="Omit organization managers list from the response."),
+    manager_user_id: int = Query(None, alias="manager_user_id", description="ID of the manager user."),
+):
     """
     List all organisations
     ---
@@ -430,13 +447,7 @@ async def get(request: Request, session: AsyncSession = Depends(get_session)):
         500:
             description: Internal Server Error
     """
-    # Restrict some of the parameters to some permissions
     authenticated_user_id = request.user.display_name if request.user else None
-    try:
-        manager_user_id = int(request.query_params.get("manager_user_id"))
-    except Exception:
-        manager_user_id = None
-
     if manager_user_id is not None and not authenticated_user_id:
         return (
             {
@@ -446,13 +457,11 @@ async def get(request: Request, session: AsyncSession = Depends(get_session)):
             403,
         )
 
-    omit_managers = bool(strtobool(request.query_params.get("omitManagerList", "false")))
-    omit_stats = bool(strtobool(request.query_params.get("omitOrgStats", "true")))
     results_dto = await OrganisationService.get_organisations_as_dto(
         manager_user_id,
         authenticated_user_id,
         omit_managers,
         omit_stats,
-        session
+        db
     )
-    return results_dto.model_dump(by_alias=True), 200
+    return results_dto
