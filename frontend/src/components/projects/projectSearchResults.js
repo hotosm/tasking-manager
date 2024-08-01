@@ -7,6 +7,7 @@ import { nCardPlaceholders } from '../projectCard/nCardPlaceholder';
 import { ProjectCard } from '../projectCard/projectCard';
 import messages from './messages';
 import { ProjectListItem } from './list';
+import { ExploreProjectsTable } from './exploreProjectsTable';
 
 export const ProjectSearchResults = ({
   className,
@@ -16,10 +17,18 @@ export const ProjectSearchResults = ({
   retryFn,
   management,
   showBottomButtons,
+  isExploreProjectsPage = false,
 }) => {
   const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
+  const isExploreProjectsTableView = useSelector(
+    (state) => state.preferences['isExploreProjectsTableView'],
+  );
+
   const cardWidthClass = 'w-100';
-  const isShowListView = management && listViewIsActive;
+  let isShowListView = management && listViewIsActive;
+  if (isExploreProjectsPage && isExploreProjectsTableView) {
+    isShowListView = true;
+  }
 
   return (
     <div className={`${className}`}>
@@ -60,7 +69,11 @@ export const ProjectSearchResults = ({
               delay={50}
               ready={status === 'success'}
             >
-              <ExploreProjectList pageOfCards={projects} cardWidthClass={cardWidthClass} />
+              {isExploreProjectsPage ? (
+                <ExploreProjectsTable projects={projects} />
+              ) : (
+                <ExploreProjectList pageOfCards={projects} cardWidthClass={cardWidthClass} />
+              )}
             </ReactPlaceholder>
           ) : (
             <ReactPlaceholder
