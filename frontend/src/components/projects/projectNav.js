@@ -17,12 +17,23 @@ import { GripIcon, ListIcon, FilledNineCellsGridIcon, TableListIcon } from '../s
 export const ShowMapToggle = (props) => {
   const dispatch = useDispatch();
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
+  const isExploreProjectsTableView = useSelector(
+    (state) => state.preferences['isExploreProjectsTableView'],
+  );
+
+  useEffect(() => {
+    if (isExploreProjectsTableView && isMapShown) {
+      dispatch({ type: 'TOGGLE_MAP' });
+    }
+  }, [isExploreProjectsTableView]);
+
   return (
-    <div className="fr pv2 dib-ns dn blue-dark">
+    <div className={`fr pv2 dib-ns dn ${isExploreProjectsTableView ? "moon-gray" : "blue-dark"}`}>
       <SwitchToggle
         onChange={() => dispatch({ type: 'TOGGLE_MAP' })}
         isChecked={isMapShown}
         label={<FormattedMessage {...messages.showMapToggle} />}
+        isDisabled={isExploreProjectsTableView}
       />
     </div>
   );
@@ -177,8 +188,8 @@ export const ProjectNav = (props) => {
         </div>
         <div className="w-20-l w-10-m w-100 fr">
           <div className="flex items-center justify-end gap-1 mt1">
-            <ExploreProjectsViewToggle />
             <ShowMapToggle />
+            <ExploreProjectsViewToggle />
           </div>
         </div>
       </div>
