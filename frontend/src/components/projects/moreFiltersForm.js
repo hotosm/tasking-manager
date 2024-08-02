@@ -10,13 +10,16 @@ import { useTagAPI } from '../../hooks/UseTagAPI';
 import { useExploreProjectsQueryParams } from '../../hooks/UseProjectsQueryAPI';
 import { MappingTypeFilterPicker } from './mappingTypeFilterPicker';
 import { ProjectFilterSelect } from './filterSelectFields';
+import { PartnersFilterSelect } from './partnersFilterSelect';
 import { CommaArrayParam } from '../../utils/CommaArrayParam';
 import { formatFilterCountriesData } from '../../utils/countries';
 
 export const MoreFiltersForm = (props) => {
   /* one useQueryParams for the main form */
   const isLoggedIn = useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const [formQuery, setFormQuery] = useExploreProjectsQueryParams();
+  const isAdmin = userDetails && userDetails.role === 'ADMIN';
 
   /* dereference the formQuery */
   const {
@@ -83,6 +86,7 @@ export const MoreFiltersForm = (props) => {
           />
         )}
       </fieldset>
+
       {extraFilters.map((filter) => (
         <ProjectFilterSelect
           key={filter.fieldsetName}
@@ -96,8 +100,9 @@ export const MoreFiltersForm = (props) => {
           allQueryParamsForChild={formQuery}
         />
       ))}
+
       {isLoggedIn && (
-        <fieldset id="userInterestsToggle" className="bn dib v-mid mb4">
+        <fieldset id="userInterestsToggle" className="bn dib v-mid mb2">
           <SwitchToggle
             label={<FormattedMessage {...messages.filterByMyInterests} />}
             isChecked={Boolean(formQuery.basedOnMyInterests)}
@@ -115,6 +120,15 @@ export const MoreFiltersForm = (props) => {
           />
         </fieldset>
       )}
+
+      {isLoggedIn && isAdmin && (
+        <PartnersFilterSelect
+          fieldsetName="partner"
+          fieldsetStyle={fieldsetStyle}
+          titleStyle={titleStyle}
+        />
+      )}
+
       <div className="tr w-100 mt3 pb3 ph2">
         <Link to="/explore">
           <Button className="bg-white blue-dark mr1 f6 pv2">
