@@ -240,4 +240,12 @@ export default defineMessages({
     id: 'project.results.retry',
     defaultMessage: 'Retry',
   },
+  partner: {
+    id: 'project.navFilters.partner',
+    defaultMessage: 'Partner',
+  },
+  partnerDates: {
+    id: 'project.navFilters.partnerDates',
+    defaultMessage: 'Partner Dates',
+  }
 });

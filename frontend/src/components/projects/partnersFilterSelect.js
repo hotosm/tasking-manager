@@ -8,7 +8,8 @@ import PropTypes from 'prop-types';
 import { Alert } from '../alert';
 import { DateCustomInput } from '../projectEdit/partnersForm';
 import { useAllPartnersQuery } from '../../api/projects';
-import messages from '../projectEdit/messages';
+import messagesFromProjectEdit from '../projectEdit/messages';
+import messages from './messages.js';
 
 export const PartnersFilterSelect = ({ fieldsetName, fieldsetStyle, titleStyle }) => {
   const [selectedPartner, setSelectedPartner] = useState({});
@@ -22,11 +23,11 @@ export const PartnersFilterSelect = ({ fieldsetName, fieldsetStyle, titleStyle }
 
   useEffect(() => {
     if (dateRange.endDate && dateRange.startDate > dateRange.endDate) {
-      setErrorMessage(messages.partnerEndDateError);
+      setErrorMessage(messagesFromProjectEdit.partnerEndDateError);
       return;
     }
 
-    if (!dateRange.endDate && errorMessage.id === messages.partnerEndDateError.id) {
+    if (!dateRange.endDate && errorMessage.id === messagesFromProjectEdit.partnerEndDateError.id) {
       setErrorMessage({});
     }
 
@@ -34,7 +35,7 @@ export const PartnersFilterSelect = ({ fieldsetName, fieldsetStyle, titleStyle }
     if (
       dateRange.endDate &&
       dateRange.startDate < dateRange.endDate &&
-      errorMessage.id === messages.partnerEndDateError.id
+      errorMessage.id === messagesFromProjectEdit.partnerEndDateError.id
     ) {
       setErrorMessage({});
     }
@@ -45,7 +46,9 @@ export const PartnersFilterSelect = ({ fieldsetName, fieldsetStyle, titleStyle }
 
   return (
     <fieldset id={fieldsetName} className={fieldsetStyle}>
-      <legend className={titleStyle}>Partner</legend>
+      <legend className={titleStyle}>
+        <FormattedMessage {...messages.partner} />
+      </legend>
       <Select
         classNamePrefix="react-select"
         isClearable
@@ -57,9 +60,9 @@ export const PartnersFilterSelect = ({ fieldsetName, fieldsetStyle, titleStyle }
         value={selectedPartner.id ? selectedPartner : null}
         placeholder={
           isError ? (
-            <FormattedMessage {...messages.partnerActionsApiError} />
+            <FormattedMessage {...messagesFromProjectEdit.partnerActionsApiError} />
           ) : (
-            <FormattedMessage {...messages.selectPartner} />
+            <FormattedMessage {...messagesFromProjectEdit.selectPartner} />
           )
         }
         onChange={(value) => (value ? setSelectedPartner(value) : setSelectedPartner({}))}
@@ -73,7 +76,9 @@ export const PartnersFilterSelect = ({ fieldsetName, fieldsetStyle, titleStyle }
       />
 
       <div className="mt3">
-        <legend className={titleStyle}>Partner Dates</legend>
+        <legend className={titleStyle}>
+          <FormattedMessage {...messages.partnerDates} />
+        </legend>
         <div className="mt2 flex items-start justify-between">
           <div className="flex flex-column">
             <ReactDatePicker
@@ -100,7 +105,7 @@ export const PartnersFilterSelect = ({ fieldsetName, fieldsetStyle, titleStyle }
               }
             />
             <p className="f7 ma0 gray mt1 pl2">
-              <FormattedMessage {...messages.partnerDateFormat} />
+              <FormattedMessage {...messagesFromProjectEdit.partnerDateFormat} />
             </p>
           </div>
 
@@ -130,7 +135,7 @@ export const PartnersFilterSelect = ({ fieldsetName, fieldsetStyle, titleStyle }
               }
             />
             <p className="f7 ma0 gray mt1 pl2">
-              <FormattedMessage {...messages.partnerDateFormat} />
+              <FormattedMessage {...messagesFromProjectEdit.partnerDateFormat} />
             </p>
           </div>
         </div>
@@ -150,5 +155,5 @@ export const PartnersFilterSelect = ({ fieldsetName, fieldsetStyle, titleStyle }
 PartnersFilterSelect.propTypes = {
   fieldsetName: PropTypes.string.isRequired,
   fieldsetStyle: PropTypes.string.isRequired,
-  titleStyle: PropTypes.string.isRequired
+  titleStyle: PropTypes.string.isRequired,
 };
