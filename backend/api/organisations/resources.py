@@ -39,7 +39,9 @@ async def get(
     organisation_id: int,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
+    omit_managers: bool = Query(False, alias="omitManagerList", description="Omit organization managers list from the response."),
 ):
+    print(user)
     """
     Retrieves an organisation
     ---
@@ -80,7 +82,6 @@ async def get(
     else:
         user_id = authenticated_user_id
     # Validate abbreviated.
-    omit_managers = strtobool(request.query_params.get("omitManagerList", "false"))
     organisation_dto = await OrganisationService.get_organisation_by_id_as_dto(
         organisation_id, user_id, omit_managers, db
     )
