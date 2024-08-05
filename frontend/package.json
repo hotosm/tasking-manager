@@ -15,6 +15,7 @@
     "@sentry/react": "^7.102.0",
     "@tanstack/react-query": "^4.29.7",
     "@tanstack/react-query-devtools": "^4.29.7",
+    "@tanstack/react-table": "^8.20.1",
     "@tmcw/togeojson": "^5.8.1",
     "@turf/area": "^6.5.0",
     "@turf/bbox": "^6.5.0",
