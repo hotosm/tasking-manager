@@ -97,13 +97,48 @@ class OrganisationService:
         return await OrganisationService.get_organisation_dto(org, user_id, abbreviated, db)
 
     @staticmethod
-    async def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool, session):
-        stmt = select(Organisation).where(Organisation.slug == slug).options(selectinload(Organisation.managers),selectinload(Organisation.teams))
-        result = await session.execute(stmt)
-        org = result.scalars().first()
-        if org is None:
+    async def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool, db: Database):
+        org_query = """
+            SELECT
+                id AS "organisation_id",
+                name,
+                slug,
+                logo,
+                description,
+                url,
+                CASE 
+                    WHEN type = 1 THEN 'FREE'
+                    WHEN type = 2 THEN 'DISCOUNTED'
+                    WHEN type = 3 THEN 'FULL_FEE'
+                    ELSE 'UNKNOWN'
+                END AS type,
+                subscription_tier
+            FROM organisations
+            WHERE slug = :slug
+        """
+        org_record = await db.fetch_one(org_query, values={"slug": slug})
+
+        if not org_record:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND", slug=slug)
-        return await OrganisationService.get_organisation_dto(org, user_id, abbreviated, session)
+        
+        organisation_id = org_record["organisation_id"]
+
+        # Fetch organisation managers
+        managers_query = """
+            SELECT
+                u.id,
+                u.username,
+                u.picture_url
+            FROM users u
+            JOIN organisation_managers om ON u.id = om.user_id
+            WHERE om.organisation_id = :organisation_id
+        """
+        managers_records = await db.fetch_all(managers_query, values={"organisation_id": organisation_id})
+
+        # Assign manager records to the organization details
+        org_record = dict(org_record)
+        org_record["managers"] = managers_records
+        return await OrganisationService.get_organisation_dto(org_record, user_id, abbreviated, db)
     
 
     @staticmethod
