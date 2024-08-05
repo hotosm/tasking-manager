@@ -512,9 +512,9 @@ class UserService:
         return User.filter_users(username, project_id, page)
 
     @staticmethod
-    async def is_user_an_admin(user_id: int, session) -> bool:
+    async def is_user_an_admin(user_id: int, db: Database) -> bool:
         """Is the user an admin"""
-        user = await UserService.get_user_by_id(user_id, session)
+        user = await UserService.get_user_by_id(user_id, db)
         if UserRole(user.role) == UserRole.ADMIN:
             return True
 
