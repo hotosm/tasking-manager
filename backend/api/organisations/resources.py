@@ -33,7 +33,6 @@ router = APIRouter(
 )
 
 @router.get("/{organisation_id}/", response_model=OrganisationDTO)
-@requires("authenticated")
 async def get(
     request: Request,
     organisation_id: int,
@@ -41,7 +40,6 @@ async def get(
     user: AuthUserDTO = Depends(login_required),
     omit_managers: bool = Query(False, alias="omitManagerList", description="Omit organization managers list from the response."),
 ):
-    print(user)
     """
     Retrieves an organisation
     ---
@@ -88,10 +86,14 @@ async def get(
     return organisation_dto
 
 
-# class OrganisationsBySlugRestAPI(Resource):
-#       @token_auth.login_required(optional=True)
-@router.get("/{slug}/")
-async def get(request: Request, slug: str, db: Database = Depends(get_db)):
+@router.get("/{slug}/", response_model=OrganisationDTO)
+async def get(
+    request: Request,
+    slug: str,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+    omit_managers: bool = Query(True, alias="omitManagerList", description="Omit organization managers list from the response."),
+):
     """
     Retrieves an organisation
     ---
@@ -124,17 +126,15 @@ async def get(request: Request, slug: str, db: Database = Depends(get_db)):
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name
-    if request.user.is_authenticated:
-        user_id = request.user.display_name
-    else:
+    authenticated_user_id = request.user.display_name if request.user else None
+    if authenticated_user_id is None:
         user_id = 0
-    # Validate abbreviated.
-    omit_managers = strtobool(request.query_params.get("omitManagerList", "false"))
+    else:
+        user_id = authenticated_user_id
     organisation_dto = await OrganisationService.get_organisation_by_slug_as_dto(
-        slug, user_id, omit_managers, session
+        slug, user_id, omit_managers, db
     )
-    return organisation_dto.model_dump(by_alias=True), 200
+    return organisation_dto
 
 
 # class OrganisationsRestAPI(Resource):
