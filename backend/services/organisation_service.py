@@ -1,4 +1,6 @@
 from datetime import datetime
+import json
+from typing import Dict
 # from flask import current_app
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
@@ -25,7 +27,7 @@ from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.task import Task
 from backend.models.postgis.team import Team, TeamVisibility
-from backend.models.postgis.statuses import ProjectStatus, TaskStatus
+from backend.models.postgis.statuses import ProjectStatus, TaskStatus, TeamJoinMethod, TeamMemberFunctions
 from backend.services.users.user_service import UserService
 from backend.db import get_session
 session = get_session()
@@ -42,49 +44,47 @@ class OrganisationServiceError(Exception):
 
 
 class OrganisationService:
-
     @staticmethod
     async def get_organisation_by_id(organisation_id: int, db: Database):
-        query = """
-        SELECT
-            o.id AS organisation_id,
-            o.name AS organisation_name,
-            o.slug AS organisation_slug,
-            o.logo AS organisation_logo,
-            o.description AS organisation_description,
-            o.url AS organisation_url,
-            CASE 
-                WHEN o.type = 1 THEN 'FREE'
-                WHEN o.type = 2 THEN 'DISCOUNTED'
-                WHEN o.type = 3 THEN 'FULL_FEE'
-                ELSE 'UNKNOWN'
-            END AS organisation_type,
-            o.subscription_tier AS organisation_subscription_tier,
-            m.id AS manager_id,
-            m.username AS manager_username,
-            t.id AS team_id,
-            t.name AS team_name,
-            t.logo AS team_logo,
-            t.description AS team_description,
-            t.join_method AS team_join_method,
-            t.visibility AS team_visibility
-        FROM
-            organisations o
-        LEFT JOIN
-            organisation_managers om ON o.id = om.organisation_id
-        LEFT JOIN
-            users m ON om.user_id = m.id
-        LEFT JOIN
-            teams t ON o.id = t.organisation_id
-        WHERE
-            o.id = :organisation_id;
+        # Fetch organisation details
+        org_query = """
+            SELECT
+                id AS "organisation_id",
+                name,
+                slug,
+                logo,
+                description,
+                url,
+                CASE 
+                    WHEN type = 1 THEN 'FREE'
+                    WHEN type = 2 THEN 'DISCOUNTED'
+                    WHEN type = 3 THEN 'FULL_FEE'
+                    ELSE 'UNKNOWN'
+                END AS type,
+                subscription_tier
+            FROM organisations
+            WHERE id = :organisation_id
         """
-        result = await db.fetch_all(query, values={"organisation_id": organisation_id})
-
-        if not result:
+        org_record = await db.fetch_one(org_query, values={"organisation_id": organisation_id})
+        if not org_record:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id)
 
-        return result
+        # Fetch organisation managers
+        managers_query = """
+            SELECT
+                u.id,
+                u.username,
+                u.picture_url
+            FROM users u
+            JOIN organisation_managers om ON u.id = om.user_id
+            WHERE om.organisation_id = :organisation_id
+        """
+        managers_records = await db.fetch_all(managers_query, values={"organisation_id": organisation_id})
+
+        # Assign manager records initially
+        org_record = dict(org_record)
+        org_record["managers"] = managers_records
+        return org_record
 
     @staticmethod
     async def get_organisation_by_id_as_dto(
@@ -104,41 +104,78 @@ class OrganisationService:
         if org is None:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND", slug=slug)
         return await OrganisationService.get_organisation_dto(org, user_id, abbreviated, session)
-
+    
 
     @staticmethod
-    async def get_organisation_dto(org, user_id: int, abbreviated: bool, session):
-        
+    def team_as_dto_inside_org(team: Dict) -> OrganisationTeamsDTO:
+        team_dto = OrganisationTeamsDTO(
+            team_id=team["team_id"],
+            name=team["name"],
+            description=team["description"],
+            join_method=TeamJoinMethod(team["join_method"]).name,
+            members=[
+                {
+                    "username": member["username"],
+                    "pictureUrl": member["pictureUrl"],
+                    "function": TeamMemberFunctions(member["function"]).name,
+                    "active": str(member["active"])
+                }
+                for member in json.loads(team["members"])
+            ],
+            visibility=TeamVisibility(team["visibility"]).name
+        )
+        return team_dto
+    
+
+    @staticmethod
+    async def get_organisation_dto(org, user_id: int, abbreviated: bool, db):
         if org is None:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND")
         
-        org = await session.execute(
-            select(Organisation)
-            .options(selectinload(Organisation.managers), selectinload(Organisation.teams))
-            .filter_by(id=org.id)
-        )
-        org = org.scalars().first()
-        organisation_dto = org.as_dto(abbreviated)
-
+        if abbreviated:
+            managers_dtos = [OrganisationManagerDTO(**manager) for manager in org["managers"]]
+            org["managers"] = managers_dtos
+        else:
+            org["managers"] = []
+        organisation_dto = OrganisationDTO(**org)
         if user_id != 0:
-            organisation_dto.is_manager = await (
-                OrganisationService.can_user_manage_organisation(org.id, user_id, session)
+            organisation_dto.is_manager = (
+                await OrganisationService.can_user_manage_organisation(org["organisation_id"], user_id, db)
             )
         else:
             organisation_dto.is_manager = False
-
+    
         if abbreviated:
             return organisation_dto
         
+        teams_query = """
+            SELECT
+                t.id AS team_id,
+                t.name,
+                t.description,
+                t.join_method,
+                t.visibility,
+                COALESCE(json_agg(json_build_object(
+                    'username', u.username,
+                    'pictureUrl', u.picture_url,
+                    'function', tm.function,
+                    'active', tm.active::text
+                )) FILTER (WHERE u.id IS NOT NULL), '[]') AS members
+            FROM teams t
+            LEFT JOIN team_members tm ON t.id = tm.team_id
+            LEFT JOIN users u ON tm.user_id = u.id
+            WHERE t.organisation_id = :org_id
+            GROUP BY t.id
+        """
+        teams_records = await db.fetch_all(teams_query, values={"org_id": org["organisation_id"]})
+        teams = [
+            OrganisationService.team_as_dto_inside_org(dict(record))
+            for record in teams_records
+        ]
         if organisation_dto.is_manager:
-            organisation_dto.teams = [team.as_dto_inside_org() for team in org.teams]
+            organisation_dto.teams = teams
         else:
-            organisation_dto.teams = [
-                await team.as_dto_inside_org(session)
-                for team in org.teams
-                if team.visibility == TeamVisibility.PUBLIC.value
-            ]
-
+            organisation_dto.teams = [team for team in teams if team.visibility == "PUBLIC"]
         return organisation_dto
 
 
@@ -365,26 +402,31 @@ class OrganisationService:
 
 
     @staticmethod
-    async def can_user_manage_organisation(organisation_id: int, user_id: int, session):
+    async def can_user_manage_organisation(organisation_id: int, user_id: int, db: Database):
         """Check that the user is an admin for the org or a global admin"""
-        if await UserService.is_user_an_admin(user_id, session):
+        if await UserService.is_user_an_admin(user_id, db):
             return True
         else:
-            return await OrganisationService.is_user_an_org_manager(organisation_id, user_id, session)
+            return await OrganisationService.is_user_an_org_manager(organisation_id, user_id, db)
 
 
     @staticmethod
-    async def is_user_an_org_manager(organisation_id: int, user_id: int, session):
+    async def is_user_an_org_manager(organisation_id: int, user_id: int, db: Database):
         """Check that the user is an manager for the org"""
-        stmt = select(Organisation).options(selectinload(Organisation.managers)).where(Organisation.id == organisation_id)
-        result = await session.execute(stmt)
-        org = result.scalars().first()
-        if org is None:
-            raise NotFound(
-                sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
-            )
-        user = await UserService.get_user_by_id(user_id, session)
-        return user in org.managers
+        # Fetch organisation managers' IDs
+        managers_query = """
+            SELECT
+                u.id
+            FROM users u
+            JOIN organisation_managers om ON u.id = om.user_id
+            WHERE om.organisation_id = :organisation_id
+        """
+        managers_records = await db.fetch_all(managers_query, values={"organisation_id": organisation_id})
+
+        # Extract the list of IDs from the records
+        managers_ids = [record["id"] for record in managers_records]
+        user = await UserService.get_user_by_id(user_id, db)
+        return user.id in managers_ids
 
 
     @staticmethod
