@@ -34,6 +34,7 @@ session = get_session()
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from databases import Database
+from fastapi import HTTPException
 
 class OrganisationServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling organisations"""
@@ -260,18 +261,36 @@ class OrganisationService:
         await org.update(organisation_dto, session)
         return org
 
+
     @staticmethod
-    async def delete_organisation(organisation_id: int, session):
+    async def delete_organisation(organisation_id: int, db: Database):
         """Deletes an organisation if it has no projects"""
-        org = await OrganisationService.get_organisation_by_id(organisation_id, session)
-
-        if org.can_be_deleted():
-            await session.delete(org)
-            await session.commit()
-
+        if await Organisation.can_be_deleted(organisation_id, db):
+            delete_organisation_managers_query = """
+                DELETE FROM organisation_managers
+                WHERE organisation_id = :organisation_id
+            """
+            delete_organisation_query = """
+                DELETE FROM organisations
+                WHERE id = :organisation_id
+            """
+            try:
+                async with db.transaction():
+                    await db.execute(
+                        query=delete_organisation_managers_query, 
+                        values={"organisation_id": organisation_id}
+                    )
+                    await db.execute(
+                        query=delete_organisation_query, 
+                        values={"organisation_id": organisation_id}
+                    )
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail="Deletion failed"
+                ) from e
         else:
-            raise OrganisationServiceError(
-                "Organisation has projects, cannot be deleted"
+            raise HTTPException(
+                status_code=400, detail="Organisation has projects or teams, cannot be deleted"
             )
 
     @staticmethod
