@@ -127,9 +127,23 @@ class Organisation(Base):
         session.delete(self)
         session.commit()
 
-    async def can_be_deleted(self) -> bool:
-        """An Organisation can be deleted if it doesn't have any projects or teams"""
-        return await len(self.projects) == 0 and await len(self.teams) == 0
+    async def can_be_deleted(organisation_id: int, db) -> bool:
+        # Check if the organization has any projects
+        projects_query = """
+            SELECT COUNT(*) 
+            FROM projects 
+            WHERE organisation_id = :organisation_id
+        """
+        projects_count = await db.fetch_val(projects_query, values={"organisation_id": organisation_id})
+        # Check if the organization has any teams
+        teams_query = """
+            SELECT COUNT(*) 
+            FROM teams 
+            WHERE organisation_id = :organisation_id
+        """
+        teams_count = await db.fetch_val(teams_query, values={"organisation_id": organisation_id})
+        # Organisation can be deleted if it has no projects and no teams
+        return projects_count == 0 and teams_count == 0
 
     @staticmethod
     def get(organisation_id: int, session):

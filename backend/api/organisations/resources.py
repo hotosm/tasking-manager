@@ -24,6 +24,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from databases import Database
 from backend.models.postgis.organisation import Organisation
 from sqlalchemy import select, case
+from fastapi import HTTPException
+
 
 router = APIRouter(
     prefix="/organisations",
@@ -221,8 +223,13 @@ async def post(request: Request, session: AsyncSession = Depends(get_session)):
 
 
 @router.delete("/{organisation_id}/")
-@requires("authenticated")
-async def delete(request: Request, organisation_id: int, session: AsyncSession = Depends(get_session)):
+async def delete(
+    request: Request,
+    organisation_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
+        
         """
         Deletes an organisation
         ---
@@ -256,21 +263,20 @@ async def delete(request: Request, organisation_id: int, session: AsyncSession =
                 description: Internal Server Error
         """
         if not await OrganisationService.can_user_manage_organisation(
-            organisation_id, request.user.display_name, session
+            organisation_id, user.id, db
         ):
             return {
                 "Error": "User is not an admin for the org",
                 "SubCode": "UserNotOrgAdmin",
             }, 403
         try:
-            await OrganisationService.delete_organisation(organisation_id, session)
+            await OrganisationService.delete_organisation(organisation_id, db)
             return {"Success": "Organisation deleted"}, 200
-        except OrganisationServiceError:
-            return {
-                "Error": "Organisation has some projects",
-                "SubCode": "OrgHasProjects",
-            }, 403
 
+        except Exception as e:
+            raise HTTPException(
+                status_code=400, detail="Organisation has projects or teams, cannot be deleted."
+            ) from e
 
 @router.patch("/{organisation_id}/")
 @requires("authenticated")
