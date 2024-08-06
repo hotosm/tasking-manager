@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - staging
+      - 202408-catchup
 jobs:
   build:
     runs-on: ubuntu-latest
