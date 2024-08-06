@@ -350,7 +350,13 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
                     dateFormat="dd/MM/yyyy"
                     showYearDropdown
                     scrollableYearDropdown
-                    customInput={<DateCustomInput date={selectedPartner.startedOn} hideCloseIcon />}
+                    customInput={
+                      <DateCustomInput
+                        date={selectedPartner.startedOn}
+                        hideCloseIcon
+                        inputStyles={{ maxWidth: '9rem' }}
+                      />
+                    }
                   />
                   <p className="ma0 gray f7 mt1 pl2">
                     <FormattedMessage {...messages.partnerDateFormat} />
@@ -379,6 +385,7 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
                         date={selectedPartner.endedOn}
                         isStartDate={false}
                         hideCloseIcon
+                        inputStyles={{ maxWidth: '9rem' }}
                       />
                     }
                   />

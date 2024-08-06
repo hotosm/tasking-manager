@@ -19,10 +19,27 @@ import { useAllPartnersQuery } from '../../api/projects';
 import { Listing } from './partnersListing';
 
 export const DateCustomInput = forwardRef(
-  ({ value, onClick, date, handleClear, isStartDate = true, hideCloseIcon = false }, ref) => {
+  (
+    {
+      value,
+      onClick,
+      date,
+      handleClear,
+      isStartDate = true,
+      hideCloseIcon = false,
+      inputStyles = {},
+      placeholderMessage = {},
+    },
+    ref,
+  ) => {
+    let placeholder = messages[isStartDate ? 'partnerStartDate' : 'partnerEndDate'];
+    if (placeholderMessage.id) {
+      placeholder = placeholderMessage
+    }
+
     return (
       <div className="relative">
-        <FormattedMessage {...messages[isStartDate ? 'partnerStartDate' : 'partnerEndDate']}>
+        <FormattedMessage {...placeholder}>
           {(message) => {
             return (
               <input
@@ -30,7 +47,7 @@ export const DateCustomInput = forwardRef(
                 onClick={onClick}
                 ref={ref}
                 value={value}
-                style={{ height: '42px', boxSizing: 'border-box', maxWidth: '9rem' }}
+                style={{ height: '42px', boxSizing: 'border-box', ...inputStyles }}
                 placeholder={message}
               />
             );
@@ -68,6 +85,8 @@ DateCustomInput.propTypes = {
   handleClear: PropTypes.func,
   isStartDate: PropTypes.bool,
   hideCloseIcon: PropTypes.bool,
+  inputStyles: PropTypes.object,
+  placeholderMessage: PropTypes.object
 };
 
 export const PartnersForm = () => {
@@ -139,7 +158,7 @@ export const PartnersForm = () => {
         startDate: new Date(),
         endDate: null,
       });
-      setSelectedPartner({})
+      setSelectedPartner({});
       toast.success(<FormattedMessage {...messages.partnerLinkActionSuccessToast} />);
     },
     onError: () => {
@@ -210,7 +229,13 @@ export const PartnersForm = () => {
               dateFormat="dd/MM/yyyy"
               showYearDropdown
               scrollableYearDropdown
-              customInput={<DateCustomInput date={dateRange.startDate} hideCloseIcon />}
+              customInput={
+                <DateCustomInput
+                  date={dateRange.startDate}
+                  hideCloseIcon
+                  inputStyles={{ maxWidth: '9rem' }}
+                />
+              }
             />
             <p className="f7 ma0 gray mt1 pl2">
               <FormattedMessage {...messages.partnerDateFormat} />
@@ -239,6 +264,7 @@ export const PartnersForm = () => {
                     });
                   }}
                   isStartDate={false}
+                  inputStyles={{ maxWidth: '9rem' }}
                 />
               }
             />
