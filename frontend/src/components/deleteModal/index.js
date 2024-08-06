@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import Popup from 'reactjs-popup';
 
@@ -10,21 +10,30 @@ import { DeleteButton } from '../teamsAndOrgs/management';
 import { Button } from '../button';
 import { AlertIcon } from '../svgIcons';
 
-export function DeleteModal({ id, name, type, className }: Object) {
+export function DeleteModal({ id, name, type, className, endpointURL, onDelete }: Object) {
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.get('token'));
+  const modalRef = useRef();
+  const token = useSelector((state) => state.auth.token);
   const [deleteStatus, setDeleteStatus] = useState(null);
   const [error, setErrorMessage] = useState(null);
 
+  const deleteURL = endpointURL ? endpointURL : `${type}/${id}/`;
+
   const deleteEntity = () => {
     setDeleteStatus('started');
-    fetchLocalJSONAPI(`${type}/${id}/`, token, 'DELETE')
+    fetchLocalJSONAPI(deleteURL, token, 'DELETE')
       .then((success) => {
         setDeleteStatus('success');
         if (type === 'notifications') {
-          navigate(`/inbox`);
+          setTimeout(() => navigate(`/inbox`), 750);
+        } else if (type === 'comments') {
+          setTimeout(() => {
+            onDelete();
+            modalRef.current.close();
+          }, 750);
+          return;
         } else {
-          navigate(`/manage/${type}`);
+          setTimeout(() => navigate(`/manage/${type !== 'interests' ? type : 'categories'}`), 750);
         }
       })
       .catch((e) => {
@@ -35,9 +44,13 @@ export function DeleteModal({ id, name, type, className }: Object) {
 
   return (
     <Popup
-      trigger={<DeleteButton className={`${className || ''} dib ml3`} />}
+      ref={modalRef}
+      trigger={
+        <DeleteButton className={`${className || ''} dib ml3`} showText={type !== 'comments'} />
+      }
       modal
       closeOnDocumentClick
+      nested
       onClose={() => {
         setDeleteStatus(null);
         setErrorMessage(null);
@@ -76,13 +89,29 @@ export function DeleteModal({ id, name, type, className }: Object) {
                 </div>
               </>
             )}
-            {deleteStatus === 'failure' && (
-              <>
-                <h3 className="barlow-condensed f3">
+            {deleteStatus && (
+              <h3 className="barlow-condensed f3">
+                {deleteStatus === 'started' && (
+                  <>
+                    <FormattedMessage {...messages.processing} />
+                    &hellip;
+                  </>
+                )}
+                {deleteStatus === 'success' && (
+                  <FormattedMessage {...messages[`success_${type}`]} />
+                )}
+                {deleteStatus === 'failure' && (
                   <FormattedMessage {...messages[`failure_${type}`]} />
-                </h3>
-                <p>{error}</p>
-              </>
+                )}
+              </h3>
+            )}
+            {deleteStatus === 'failure' && (
+              <p>
+                {(error && messages[`${error}Error`] && (
+                  <FormattedMessage {...messages[`${error}Error`]} />
+                )) ||
+                  error}
+              </p>
             )}
           </div>
         </div>

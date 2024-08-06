@@ -5,7 +5,7 @@ from backend.services.users.authentication_service import AuthenticationService
 
 
 class Application(db.Model):
-    """ Describes an application that is authorized to access the TM """
+    """Describes an application that is authorized to access the TM"""
 
     __tablename__ = "application_keys"
 

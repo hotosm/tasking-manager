@@ -178,7 +178,9 @@ def upgrade():
     print("Populating organisation information for Projects....")
     # Select all existing distinct organisation tags from projects table
     org_tags = conn.execute(
-        "select distinct(organisation_tag) from projects where organisation_tag is not null"
+        sa.text(
+            "select distinct(organisation_tag) from projects where organisation_tag is not null"
+        )
     )
     total_orgs = org_tags.rowcount
     print("Total distinct organisations in the DB: " + str(total_orgs))
@@ -198,7 +200,7 @@ def upgrade():
                 mapped_org = mapped_org[:quote_index] + "'" + mapped_org[quote_index:]
 
             select_org_id = conn.execute(
-                "select id from organisations where name ='" + mapped_org + "'"
+                sa.text("select id from organisations where name ='" + mapped_org + "'")
             ).scalar()
 
             # Create new organisation only if it has not been inserted earlier
@@ -208,11 +210,15 @@ def upgrade():
                 and (mapped_org not in orgs_inserted)
             ):
                 conn.execute(
-                    "insert into organisations (name) values ('" + mapped_org + "')"
+                    sa.text(
+                        "insert into organisations (name) values ('" + mapped_org + "')"
+                    )
                 )
                 # Fetch organisation ID after the insert
                 select_org_id = conn.execute(
-                    "select id from organisations where name ='" + mapped_org + "'"
+                    sa.text(
+                        "select id from organisations where name ='" + mapped_org + "'"
+                    )
                 ).scalar()
 
             org_id = str(select_org_id)
@@ -227,31 +233,37 @@ def upgrade():
 
             # Update organisation ID
             conn.execute(
-                "update projects set organisation_id="
-                + org_id
-                + " where organisation_tag='"
-                + original_org_name
-                + "'"
+                sa.text(
+                    "update projects set organisation_id="
+                    + org_id
+                    + " where organisation_tag='"
+                    + original_org_name
+                    + "'"
+                )
             )
 
             # Identify projects related to the org name
             fetch_first_author_id = conn.execute(
-                "select author_id from projects where organisation_tag='"
-                + original_org_name
-                + "' limit 1"
+                sa.text(
+                    "select author_id from projects where organisation_tag='"
+                    + original_org_name
+                    + "' limit 1"
+                )
             ).scalar()
             org_manager = str(fetch_first_author_id)
 
             if mapped_org not in orgs_inserted:
                 org_managers[mapped_org] = org_manager
                 conn.execute(
-                    "insert into organisation_managers \
+                    sa.text(
+                        "insert into organisation_managers \
                     (organisation_id,user_id) \
                     values("
-                    + org_id
-                    + ","
-                    + org_manager
-                    + ")"
+                        + org_id
+                        + ","
+                        + org_manager
+                        + ")"
+                    )
                 )
                 print(
                     str(count)
@@ -273,22 +285,28 @@ def downgrade():
     conn = op.get_bind()
     op.add_column("projects", sa.Column("organisation_tag", sa.String(), nullable=True))
     # Remove all mappings made
-    org_ids = conn.execute("select id, name from organisations")
+    org_ids = conn.execute(sa.text("select id, name from organisations"))
     for org_id, org_name in org_ids:
         quote_index = org_name.find("'")
         if quote_index > -1:
             org_name = org_name[:quote_index] + "'" + org_name[quote_index:]
         conn.execute(
-            "update projects set organisation_tag='"
-            + str(org_name)
-            + "' where organisation_id="
-            + str(org_id)
+            sa.text(
+                "update projects set organisation_tag='"
+                + str(org_name)
+                + "' where organisation_id="
+                + str(org_id)
+            )
         )
-    conn.execute("delete from project_teams where team_id is not null")
-    conn.execute("delete from team_members where team_id is not null")
-    conn.execute("delete from teams where organisation_id is not null")
-    conn.execute("delete from organisation_managers where organisation_id is not null")
+    conn.execute(sa.text("delete from project_teams where team_id is not null"))
+    conn.execute(sa.text("delete from team_members where team_id is not null"))
+    conn.execute(sa.text("delete from teams where organisation_id is not null"))
     conn.execute(
-        "update projects set organisation_id = null where organisation_id is not null"
+        sa.text("delete from organisation_managers where organisation_id is not null")
     )
-    conn.execute("delete from organisations where name is not null")
+    conn.execute(
+        sa.text(
+            "update projects set organisation_id = null where organisation_id is not null"
+        )
+    )
+    conn.execute(sa.text("delete from organisations where name is not null"))

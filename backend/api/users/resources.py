@@ -1,9 +1,10 @@
+from distutils.util import strtobool
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
 from backend.models.dtos.user_dto import UserSearchQuery
 from backend.services.users.authentication_service import token_auth
-from backend.services.users.user_service import UserService, NotFound
+from backend.services.users.user_service import UserService
 from backend.services.project_service import ProjectService
 
 
@@ -40,20 +41,8 @@ class UsersRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            user_dto = UserService.get_user_dto_by_id(
-                user_id, token_auth.current_user()
-            )
-            return user_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Userid GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch user details",
-                "SubCode": "InternalServerError",
-            }, 500
+        user_dto = UserService.get_user_dto_by_id(user_id, token_auth.current_user())
+        return user_dto.to_primitive(), 200
 
 
 class UsersAllAPI(Resource):
@@ -78,6 +67,16 @@ class UsersAllAPI(Resource):
               description: Page of results user requested
               type: integer
             - in: query
+              name: pagination
+              description: Whether to return paginated results
+              type: boolean
+              default: true
+            - in: query
+              name: per_page
+              description: Number of results per page
+              type: integer
+              default: 20
+            - in: query
               name: username
               description: Full or part username
               type: string
@@ -99,9 +98,12 @@ class UsersAllAPI(Resource):
         """
         try:
             query = UserSearchQuery()
-            query.page = (
-                int(request.args.get("page")) if request.args.get("page") else 1
-            )
+            query.pagination = strtobool(request.args.get("pagination", "True"))
+            if query.pagination:
+                query.page = (
+                    int(request.args.get("page")) if request.args.get("page") else 1
+                )
+            query.per_page = request.args.get("perPage", 20)
             query.username = request.args.get("username")
             query.mapping_level = request.args.get("level")
             query.role = request.args.get("role")
@@ -110,16 +112,8 @@ class UsersAllAPI(Resource):
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {"Error": "Unable to fetch user list", "SubCode": "InvalidData"}, 400
 
-        try:
-            users_dto = UserService.get_all_users(query)
-            return users_dto.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch user list",
-                "SubCode": "InternalServerError",
-            }, 500
+        users_dto = UserService.get_all_users(query)
+        return users_dto.to_primitive(), 200
 
 
 class UsersQueriesUsernameAPI(Resource):
@@ -155,20 +149,10 @@ class UsersQueriesUsernameAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            user_dto = UserService.get_user_dto_by_username(
-                username, token_auth.current_user()
-            )
-            return user_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch user details",
-                "SubCode": "InternalServerError",
-            }, 500
+        user_dto = UserService.get_user_dto_by_username(
+            username, token_auth.current_user()
+        )
+        return user_dto.to_primitive(), 200
 
 
 class UsersQueriesUsernameFilterAPI(Resource):
@@ -211,20 +195,10 @@ class UsersQueriesUsernameFilterAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            page = int(request.args.get("page")) if request.args.get("page") else 1
-            project_id = request.args.get("projectId", None, int)
-            users_dto = UserService.filter_users(username, project_id, page)
-            return users_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch matching users",
-                "SubCode": "InternalServerError",
-            }, 500
+        page = int(request.args.get("page")) if request.args.get("page") else 1
+        project_id = request.args.get("projectId", None, int)
+        users_dto = UserService.filter_users(username, project_id, page)
+        return users_dto.to_primitive(), 200
 
 
 class UsersQueriesOwnLockedAPI(Resource):
@@ -254,15 +228,10 @@ class UsersQueriesOwnLockedAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            locked_tasks = ProjectService.get_task_for_logged_in_user(
-                token_auth.current_user()
-            )
-            return locked_tasks.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"UsersQueriesOwnLockedAPI - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        locked_tasks = ProjectService.get_task_for_logged_in_user(
+            token_auth.current_user()
+        )
+        return locked_tasks.to_primitive(), 200
 
 
 class UsersQueriesOwnLockedDetailsAPI(Resource):
@@ -298,18 +267,11 @@ class UsersQueriesOwnLockedDetailsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            locked_tasks = ProjectService.get_task_details_for_logged_in_user(
-                token_auth.current_user(), preferred_locale
-            )
-            return locked_tasks.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User has no locked tasks", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"UsersQueriesOwnLockedDetailsAPI - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+        locked_tasks = ProjectService.get_task_details_for_logged_in_user(
+            token_auth.current_user(), preferred_locale
+        )
+        return locked_tasks.to_primitive(), 200
 
 
 class UsersQueriesFavoritesAPI(Resource):
@@ -337,15 +299,8 @@ class UsersQueriesFavoritesAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            favs_dto = UserService.get_projects_favorited(token_auth.current_user())
-            return favs_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"UserFavorites GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        favs_dto = UserService.get_projects_favorited(token_auth.current_user())
+        return favs_dto.to_primitive(), 200
 
 
 class UsersQueriesInterestsAPI(Resource):
@@ -378,16 +333,9 @@ class UsersQueriesInterestsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            user = UserService.get_user_by_username(username)
-            interests_dto = UserService.get_interests(user)
-            return interests_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"UserInterests GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        user = UserService.get_user_by_username(username)
+        interests_dto = UserService.get_interests(user)
+        return interests_dto.to_primitive(), 200
 
 
 class UsersRecommendedProjectsAPI(Resource):
@@ -431,17 +379,10 @@ class UsersRecommendedProjectsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            locale = (
-                request.environ.get("HTTP_ACCEPT_LANGUAGE")
-                if request.environ.get("HTTP_ACCEPT_LANGUAGE")
-                else "en"
-            )
-            user_dto = UserService.get_recommended_projects(username, locale)
-            return user_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User or mapping not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        locale = (
+            request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            if request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            else "en"
+        )
+        user_dto = UserService.get_recommended_projects(username, locale)
+        return user_dto.to_primitive(), 200

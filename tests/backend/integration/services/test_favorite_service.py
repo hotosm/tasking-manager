@@ -1,4 +1,4 @@
-from backend.models.postgis.utils import NotFound
+from backend.exceptions import NotFound
 from backend.services.project_service import ProjectService
 from backend.services.users.user_service import UserService
 from tests.backend.helpers.test_helpers import create_canned_project

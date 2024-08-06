@@ -5,7 +5,7 @@ from backend.models.dtos.stats_dto import Pagination
 
 
 class MessageDTO(Model):
-    """ DTO used to define a message that will be sent to a user """
+    """DTO used to define a message that will be sent to a user"""
 
     message_id = IntType(serialized_name="messageId")
     subject = StringType(
@@ -22,6 +22,7 @@ class MessageDTO(Model):
     )
     from_user_id = IntType(required=True, serialize_when_none=False)
     from_username = StringType(serialized_name="fromUsername", default="")
+    display_picture_url = StringType(serialized_name="displayPictureUrl", default="")
     project_id = IntType(serialized_name="projectId")
     project_title = StringType(serialized_name="projectTitle")
     task_id = IntType(serialized_name="taskId")
@@ -31,10 +32,10 @@ class MessageDTO(Model):
 
 
 class MessagesDTO(Model):
-    """ DTO used to return all user messages """
+    """DTO used to return all user messages"""
 
     def __init__(self):
-        """ DTO constructor initialise all arrays to empty"""
+        """DTO constructor initialise all arrays to empty"""
         super().__init__()
         self.user_messages = []
 
@@ -43,8 +44,9 @@ class MessagesDTO(Model):
 
 
 class ChatMessageDTO(Model):
-    """ DTO describing an individual project chat message """
+    """DTO describing an individual project chat message"""
 
+    id = IntType(required=False, serialize_when_none=False)
     message = StringType(required=True)
     user_id = IntType(required=True, serialize_when_none=False)
     project_id = IntType(required=True, serialize_when_none=False)
@@ -54,10 +56,10 @@ class ChatMessageDTO(Model):
 
 
 class ProjectChatDTO(Model):
-    """ DTO describing all chat messages on one project """
+    """DTO describing all chat messages on one project"""
 
     def __init__(self):
-        """ DTO constructor initialise all arrays to empty"""
+        """DTO constructor initialise all arrays to empty"""
         super().__init__()
         self.chat = []
 

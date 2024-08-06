@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
+import { useParams } from 'react-router-dom';
+import { encodeQueryParams, StringParam } from 'use-query-params';
+import { stringify } from 'query-string';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -11,8 +14,9 @@ import { UserAvatarList } from '../components/user/avatar';
 import { EditButton } from '../components/button';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
-export function OrganisationDetail(props) {
-  const [error, loading, organisation] = useFetch(`organisations/${props.slug}/`, props.slug);
+export function OrganisationDetail() {
+  const { slug } = useParams();
+  const [error, loading, organisation] = useFetch(`organisations/${slug}/`, slug);
   const [isUserAllowed] = useEditOrgAllowed(organisation);
   //eslint-disable-next-line
   const [projectsError, projectsLoading, projects] = useFetch(
@@ -62,7 +66,16 @@ export function OrganisationDetail(props) {
         <div className="w-100 mt4">
           <Projects
             projects={projects}
-            viewAllEndpoint={`/explore/?organisation=${organisation.name}`}
+            viewAllEndpoint={`/explore/?${stringify(
+              encodeQueryParams(
+                {
+                  organisation: StringParam,
+                },
+                {
+                  organisation: organisation.name,
+                },
+              ),
+            )}`}
             ownerEntity="organisation"
             showManageButtons={false}
             border={false}

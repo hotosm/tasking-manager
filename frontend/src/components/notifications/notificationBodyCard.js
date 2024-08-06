@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useLocation, navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 import { selectUnit } from '../../utils/selectUnit';
@@ -8,78 +7,91 @@ import { FormattedRelativeTime, FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { MessageAvatar, typesThatUseSystemAvatar, rawHtmlNotification } from './notificationCard';
+import { useFetch } from '../../hooks/UseFetch';
 import { CloseIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { DeleteButton } from '../teamsAndOrgs/management';
+import { ORG_NAME } from '../../config';
+import './styles.scss';
 
 export const NotificationBodyModal = (props) => {
-  const location = useLocation();
+  const [thisNotificationError, thisNotificationLoading, thisNotification] = useFetch(
+    `notifications/${props.id}/`,
+  );
+
+  useEffect(() => {
+    // Close the mini notification popover if it's open
+    props.setPopoutFocus && props.setPopoutFocus(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div
-      style={{
-        inset: '0px',
-        background: 'rgba(0, 0, 0, 0.5) none repeat scroll 0% 0%',
-        display: 'flex',
-        'z-index': '999',
+      className={`relative shadow-3 flex flex-column notification`}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        // Navigate to links on markdown anchor elements click
+        if (e.target.href !== undefined) {
+          window.open(e.target.href);
+        }
       }}
-      onClick={() => navigate(`../../${location.search}`)}
-      className="fixed top-0 left-0 right-0 bottom-0"
     >
       <div
-        className={`relative shadow-3`}
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-
-          if (e.target.href !== undefined) {
-            window.open(e.target.href);
-          }
-        }}
-        style={{
-          background: 'rgb(255, 255, 255) none repeat scroll 0% 0%',
-          width: '55%',
-          margin: '5em auto auto',
-          border: '1px solid rgb(187, 187, 187)',
-          padding: '5px',
-        }}
+        className={`di fl f125 tl pa3 w-100 fw7 bb b--tan header base-font`}
+        style={{ letterSpacing: '0.114546px' }}
       >
-        <div className={`di fl tl pa3 mb3 w-100 fw5 bb b--tan`}>
-          <FormattedMessage {...messages.message} />
-          <Link className={`fr ml4 blue-dark`} to={`../../${location.search}`}>
-            <CloseIcon className={`h1 w1 blue-dark`} />
-          </Link>
-        </div>
-        {!props.thisNotificationError ? (
-          <NotificationBodyCard
-            loading={props.thisNotificationLoading}
-            card={props.thisNotification}
-          />
-        ) : (
-          <div>
-            <FormattedMessage
-              {...messages.errorLoadingTheX}
-              values={{
-                xWord: <FormattedMessage {...messages.message} />,
-              }}
-            />
-          </div>
-        )}
-        {props.children}
+        <FormattedMessage {...messages.message} />
+        <CloseIcon
+          role="button"
+          className={`fr ml4 blue-dark h1 w1 blue-dark pointer`}
+          onClick={props.close}
+          aria-label="Close"
+        />
       </div>
+      {!thisNotificationError && (
+        <NotificationBodyCard
+          loading={thisNotificationLoading}
+          card={thisNotification}
+          retryFn={props.retryFn}
+          closeModal={props.close}
+        />
+      )}
+      {thisNotificationError && !thisNotificationLoading && (
+        <div>
+          <FormattedMessage
+            {...messages.errorLoadingTheX}
+            values={{
+              xWord: <FormattedMessage {...messages.notification} />,
+            }}
+          />
+        </div>
+      )}
+      {props.children}
     </div>
   );
 };
 
 export function NotificationBodyCard({
   loading,
-  card: { messageId, name, messageType, fromUsername, subject, message, sentDate },
+  retryFn,
+  closeModal,
+  card: {
+    messageId,
+    name,
+    messageType,
+    fromUsername,
+    displayPictureUrl,
+    subject,
+    message,
+    sentDate,
+  },
 }: Object) {
-  const token = useSelector((state) => state.auth.get('token'));
-  const location = useLocation();
+  const token = useSelector((state) => state.auth.token);
   const { value, unit } = selectUnit(new Date((sentDate && new Date(sentDate)) || new Date()));
   const showASendingUser =
-    fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && 'System');
+    fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && ORG_NAME);
 
   let replacedSubject;
   let replacedMessage;
@@ -93,7 +105,10 @@ export function NotificationBodyCard({
   }
   const deleteNotification = (id) => {
     fetchLocalJSONAPI(`notifications/${id}/`, token, 'DELETE')
-      .then((success) => navigate(`../../${location.search}`))
+      .then(() => {
+        retryFn();
+        closeModal();
+      })
       .catch((e) => {
         console.log(e.message);
       });
@@ -104,7 +119,12 @@ export function NotificationBodyCard({
       <article className={`db  base-font mb3 mh2 blue-dark mw8`}>
         <div className={`dib`}>
           <div className="fl pl2">
-            <MessageAvatar fromUsername={fromUsername} messageType={messageType} size={'medium'} />
+            <MessageAvatar
+              fromUsername={fromUsername}
+              displayPictureUrl={displayPictureUrl}
+              messageType={messageType}
+              size={'medium'}
+            />
           </div>
 
           {showASendingUser && <div className={`pl5 f6 blue-dark fw5`}>{showASendingUser}</div>}

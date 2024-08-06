@@ -7,7 +7,7 @@ export function postNewUser(user) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(user),
-  }).then(res => {
+  }).then((res) => {
     return res.json();
   });
 }

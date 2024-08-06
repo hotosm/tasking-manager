@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class ProjectStatus(Enum):
-    """ Enum to describes all possible states of a Mapping Project """
+    """Enum to describes all possible states of a Mapping Project"""
 
     ARCHIVED = 0
     PUBLISHED = 1
@@ -10,7 +10,7 @@ class ProjectStatus(Enum):
 
 
 class ProjectPriority(Enum):
-    """ Enum to describe all possible project priority levels """
+    """Enum to describe all possible project priority levels"""
 
     URGENT = 0
     HIGH = 1
@@ -19,14 +19,14 @@ class ProjectPriority(Enum):
 
 
 class TaskCreationMode(Enum):
-    """ Enum to describe task creation mode """
+    """Enum to describe task creation mode"""
 
     GRID = 0
     ARBITRARY = 1
 
 
 class TaskStatus(Enum):
-    """ Enum describing available Task Statuses """
+    """Enum describing available Task Statuses"""
 
     READY = 0
     LOCKED_FOR_MAPPING = 1
@@ -39,15 +39,21 @@ class TaskStatus(Enum):
 
 
 class MappingLevel(Enum):
-    """ The mapping level the mapper has achieved """
+    """The mapping level the mapper has achieved"""
 
     BEGINNER = 1
     INTERMEDIATE = 2
     ADVANCED = 3
 
 
+class ProjectDifficulty(Enum):
+    EASY = 1
+    MODERATE = 2
+    CHALLENGING = 3
+
+
 class MappingTypes(Enum):
-    """ Enum describing types of mapping a project may specify"""
+    """Enum describing types of mapping a project may specify"""
 
     ROADS = 1
     BUILDINGS = 2
@@ -57,7 +63,7 @@ class MappingTypes(Enum):
 
 
 class MappingNotAllowed(Enum):
-    """ Enum describing reasons a user cannot map """
+    """Enum describing reasons a user cannot map"""
 
     USER_ALREADY_HAS_TASK_LOCKED = 100
     USER_NOT_CORRECT_MAPPING_LEVEL = 101
@@ -70,7 +76,7 @@ class MappingNotAllowed(Enum):
 
 
 class ValidatingNotAllowed(Enum):
-    """ Enum describing reasons a user cannot validate """
+    """Enum describing reasons a user cannot validate"""
 
     USER_NOT_VALIDATOR = 100
     USER_NOT_ACCEPTED_LICENSE = 101
@@ -84,7 +90,7 @@ class ValidatingNotAllowed(Enum):
 
 
 class UserGender(Enum):
-    """ Describes the gender a user can be assigned"""
+    """Describes the gender a user can be assigned"""
 
     MALE = 1
     FEMALE = 2
@@ -93,7 +99,7 @@ class UserGender(Enum):
 
 
 class UserRole(Enum):
-    """ Describes the role a user can be assigned, app doesn't support multiple roles """
+    """Describes the role a user can be assigned, app doesn't support multiple roles"""
 
     READ_ONLY = -1
     MAPPER = 0
@@ -101,7 +107,7 @@ class UserRole(Enum):
 
 
 class Editors(Enum):
-    """ Enum describing the possible editors for projects """
+    """Enum describing the possible editors for projects"""
 
     ID = 0
     JOSM = 1
@@ -112,14 +118,22 @@ class Editors(Enum):
 
 
 class TeamVisibility(Enum):
-    """ Describes the visibility associated with an Team """
+    """Describes the visibility associated with an Team"""
 
     PUBLIC = 0
     PRIVATE = 1
 
 
+class TeamJoinMethod(Enum):
+    """Describes the visibility associated with an Team"""
+
+    ANY = 0
+    BY_REQUEST = 1
+    BY_INVITE = 2
+
+
 class TeamRoles(Enum):
-    """ Describes the role a Team has within a Project """
+    """Describes the role a Team has within a Project"""
 
     READ_ONLY = -1
     MAPPER = 0
@@ -128,14 +142,14 @@ class TeamRoles(Enum):
 
 
 class TeamMemberFunctions(Enum):
-    """ Describes the function a member can hold within a team """
+    """Describes the function a member can hold within a team"""
 
     MANAGER = 1
     MEMBER = 2
 
 
 class MappingPermission(Enum):
-    """ Describes a set of permissions for mapping on a project """
+    """Describes a set of permissions for mapping on a project"""
 
     ANY = 0
     LEVEL = 1
@@ -144,7 +158,7 @@ class MappingPermission(Enum):
 
 
 class ValidationPermission(Enum):
-    """ Describes a set of permissions for validating on a project """
+    """Describes a set of permissions for validating on a project"""
 
     ANY = 0
     LEVEL = 1
@@ -153,8 +167,23 @@ class ValidationPermission(Enum):
 
 
 class OrganisationType(Enum):
-    """ Describes an organisation's subscription type """
+    """Describes an organisation's subscription type"""
 
     FREE = 1
     DISCOUNTED = 2
     FULL_FEE = 3
+
+
+class EncouragingEmailType(Enum):
+    """Describes the type of encouraging email sent to users"""
+
+    PROJECT_PROGRESS = 1  # Send encouraging email to mappers when a project they have contributed to make progress
+    PROJECT_COMPLETE = 2  # Send encouraging email to mappers when a project they have contributed to is complete
+    BEEN_SOME_TIME = 3  # Send encouraging email to mappers who haven't been active for some time on the site
+
+
+class BannerType(Enum):
+    """Describes the type of banner a user can see"""
+
+    INFO = 1
+    WARNING = 2

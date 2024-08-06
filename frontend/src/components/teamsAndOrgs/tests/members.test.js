@@ -1,11 +1,20 @@
+import '@testing-library/jest-dom';
 import React from 'react';
 import { Provider } from 'react-redux';
+import { screen } from '@testing-library/react';
 
+import messages from '../messages';
+import { usersList } from '../../../network/tests/mockData/userList';
 import { store } from '../../../store';
-import { createComponentWithIntl } from '../../../utils/testWithIntl';
-import { JoinRequests } from '../members';
+import {
+  createComponentWithIntl,
+  renderWithRouter,
+  ReduxIntlProviders,
+} from '../../../utils/testWithIntl';
+import { JoinRequests, Members } from '../members';
 import { UserAvatar } from '../../user/avatar';
 import { Button } from '../../button';
+import { MemoryRouter } from 'react-router-dom';
 
 describe('test JoinRequest list', () => {
   const requests = [
@@ -18,9 +27,11 @@ describe('test JoinRequest list', () => {
     { username: 'test_2', function: 'MEMBER', active: false, pictureUrl: null },
   ];
   const element = createComponentWithIntl(
-    <Provider store={store}>
-      <JoinRequests requests={requests} />
-    </Provider>,
+    <MemoryRouter>
+      <Provider store={store}>
+        <JoinRequests requests={requests} managers={[]} />
+      </Provider>
+    </MemoryRouter>,
   );
   const testInstance = element.root;
   it('initial div has the correct classes', () => {
@@ -52,9 +63,11 @@ describe('test JoinRequest list', () => {
 
 describe('test JoinRequest list without requests', () => {
   const element = createComponentWithIntl(
-    <Provider store={store}>
-      <JoinRequests requests={[]} />
-    </Provider>,
+    <MemoryRouter>
+      <Provider store={store}>
+        <JoinRequests requests={[]} managers={[]} />
+      </Provider>
+    </MemoryRouter>,
   );
   const testInstance = element.root;
   it('initial div has the correct classes', () => {
@@ -92,8 +105,48 @@ describe('test JoinRequest list without requests', () => {
     );
   });
   it('no requests message is present', () => {
-    expect(testInstance.findByProps({ className: 'tc' }).children[0].props.id).toBe(
+    expect(testInstance.findByProps({ className: 'tc mt3' }).children[0].props.id).toBe(
       'management.teams.join_requests.empty',
     );
+  });
+});
+
+describe('Members Component', () => {
+  it('should display no members when no members are present', () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <Members members={[]} />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText(messages.noMembers.defaultMessage)).toBeInTheDocument();
+  });
+
+  it('should display actionable buttons when edit button is clicked', async () => {
+    const { user } = renderWithRouter(
+      <ReduxIntlProviders>
+        <Members members={[]} />
+      </ReduxIntlProviders>,
+    );
+    await user.click(screen.getByRole('button', { name: messages.edit.defaultMessage }));
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: messages.edit.defaultMessage }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: messages.cancel.defaultMessage }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: messages.done.defaultMessage })).toBeInTheDocument();
+  });
+
+  it('should not display cross icon with only one member present', async () => {
+    const mockRemoveMembers = jest.fn();
+    const { user, container } = renderWithRouter(
+      <ReduxIntlProviders>
+        <Members members={[usersList.users[0]]} removeMembers={mockRemoveMembers} />
+      </ReduxIntlProviders>,
+    );
+    await user.click(screen.getByRole('button', { name: messages.edit.defaultMessage }));
+    // Matching with that one SVG being displayed from the react-select
+    expect(container.querySelectorAll('svg').length).toBe(1);
   });
 });

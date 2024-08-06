@@ -1,23 +1,21 @@
-import { Map } from 'immutable';
-
 import { types } from '../actions/tasks';
 
-const initialState = Map({
+const initialState = {
   project: null,
   tasks: [],
   status: null,
-});
+};
 
 export function tasksReducer(state = initialState, action) {
   switch (action.type) {
     case types.SET_PROJECT: {
-      return state.set('project', action.project);
+      return { ...state, project: action.project };
     }
     case types.SET_LOCKED_TASKS: {
-      return state.set('tasks', action.tasks);
+      return { ...state, tasks: action.tasks };
     }
     case types.SET_TASKS_STATUS: {
-      return state.set('status', action.status);
+      return { ...state, status: action.status };
     }
     case types.CLEAR_LOCKED_TASKS: {
       return initialState;

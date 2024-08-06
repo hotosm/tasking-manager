@@ -11,9 +11,11 @@ import { SectionMenu } from '../menu';
 import OsmLogo from '../../assets/img/osm_logo.png';
 import MissingMapsLogo from '../../assets/img/organizations/missingmaps.png';
 import SlackLogo from '../../assets/img/icons/slack.png';
+import OsmChaLogo from '../../assets/img/icons/osm-cha.png';
+import HdycNeisOneLogo from '../../assets/img/icons/hdyc-neis-one.png';
 import { OSM_SERVER_URL, ORG_CODE } from '../../config';
 
-const SocialMedia = ({ data }) => {
+export const SocialMedia = ({ data }) => {
   const intl = useIntl();
   const socialMediaItems = ['twitterId', 'facebookId', 'linkedinId'];
 
@@ -42,6 +44,8 @@ const SocialMedia = ({ data }) => {
       linkedinId: `https://www.linkedin.com/in/${value}`,
       osm: `${OSM_SERVER_URL}/user/${value}`,
       missingmaps: `https://www.missingmaps.org/users/#/${value}`,
+      osmcha: `https://osmcha.org/?filters={"users":[{"label":"${value}","value":"${value}"}]}`,
+      hdycNeisOne: `https://hdyc.neis-one.org/?${value}`,
     };
 
     return (
@@ -70,6 +74,18 @@ const SocialMedia = ({ data }) => {
           {createLink('missingmaps', data.username)}
         </div>
       </li>
+      <li className="dib mr4-ns mr2 cf f7" title={intl.formatMessage(messages.osmChaUsername)}>
+        <div className="mr2 h2">
+          <img className="h1 v-mid" src={OsmChaLogo} alt="OSM Cha Logo" />{' '}
+          {createLink('osmcha', data.username)}
+        </div>
+      </li>
+      <li className="dib mr4-ns mr2 cf f7">
+        <div className="mr2 h2">
+          <img className="h1 v-mid" src={HdycNeisOneLogo} alt="HDYC Neis One Favicon" />{' '}
+          {createLink('hdycNeisOne', data.username)}
+        </div>
+      </li>
       {data.slackId && (
         <li
           className="dib mr4-ns mr2 cf f7"
@@ -81,7 +97,7 @@ const SocialMedia = ({ data }) => {
         </li>
       )}
       {socialMediaItems.map((i) => {
-        if (data[i] === null) {
+        if (!data[i]) {
           return null;
         }
 
@@ -97,7 +113,7 @@ const SocialMedia = ({ data }) => {
   );
 };
 
-const MyContributionsNav = ({ username, authUser }) => {
+export const MyContributionsNav = ({ username, authUser }) => {
   const items = [
     { url: `/contributions`, label: <FormattedMessage {...messages.myStats} /> },
     {
@@ -116,7 +132,7 @@ const MyContributionsNav = ({ username, authUser }) => {
 };
 
 export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
-  const authDetails = useSelector((state) => state.auth.get('userDetails'));
+  const authDetails = useSelector((state) => state.auth.userDetails);
   const [user, setUser] = useState({});
 
   useEffect(() => {
@@ -133,7 +149,7 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
 
   return (
     <>
-      <div className="w-100 h-100 cf pv3 pl5-l ph2 bg-white blue-dark">
+      <div className="w-100 h-100 cf pv4 pl5-l ph2 bg-white blue-dark flex flex-column flex-row-ns items-center">
         <div className="fl dib pr3">
           {user.pictureUrl ? (
             <img
@@ -145,10 +161,12 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
             <ProfilePictureIcon className="red" />
           )}
         </div>
-        <div className="w-70-ns w-100 fl dib">
+        <div className="w-70-ns w-100 fl dib tc tl-ns">
           <div className="pl2 dib w-50-l fl w-100">
-            <p className="barlow-condensed f2 ttu b ma0 mb2">{user.name || user.username}</p>
-            <p className="f4 ma0 mb2">
+            <p className="barlow-condensed f2 ttu fw5 ma0 mb3" style={{ letterSpacing: '1.25px' }}>
+              {user.name || user.username}
+            </p>
+            <p className="f125 ma0 mb2 fw5">
               <MappingLevelMessage level={user.mappingLevel} />
             </p>
             <NextMappingLevel changesetsCount={changesets} />

@@ -6,27 +6,64 @@ import { CustomField } from './customField';
 import { SwitchToggleField } from './switchToggleField';
 
 export function UserNotificationsForm(props) {
+  const fields = [
+    {
+      labelId: 'mentions',
+      descriptionId: 'mentionsDescription',
+      fieldName: 'mentionsNotifications',
+      default: true,
+    },
+    {
+      labelId: 'teamUpdates',
+      descriptionId: 'teamUpdatesDescription',
+      fieldName: 'teamsAnnouncementNotifications',
+      default: false,
+    },
+    {
+      labelId: 'taskUpdates',
+      descriptionId: 'taskUpdatesDescription',
+      fieldName: 'tasksNotifications',
+      default: true,
+    },
+    {
+      labelId: 'projectUpdates',
+      descriptionId: 'projectUpdatesDescription',
+      fieldName: 'projectsNotifications',
+      default: true,
+    },
+    {
+      labelId: 'questionsAndComments',
+      descriptionId: 'questionsAndCommentsDescription',
+      fieldName: 'questionsAndCommentsNotifications',
+      default: false,
+    },
+    {
+      labelId: 'taskComments',
+      descriptionId: 'taskCommentsDescription',
+      fieldName: 'taskCommentsNotifications',
+      default: false,
+    },
+  ];
+
   return (
-    <div id="notifications" className="bg-white shadow-4 pa4 mb3">
-      <h3 className="f3 blue-dark mt0 fw6">
+    <div id="notifications" className="bg-white b--card ba br1 pa4 mb4">
+      <h3 className="f3 blue-dark mt0 fw7">
         <FormattedMessage {...messages.notifications} />
       </h3>
       <div className="blue-grey">
-        <CustomField labelId="mentions" descriptionId="mentionsDescription">
-          <SwitchToggleField fieldName="mentionsNotifications" />
-        </CustomField>
-        <CustomField labelId="teamUpdates" descriptionId="teamUpdatesDescription">
-          <SwitchToggleField fieldName="teamsNotifications" />
-        </CustomField>
-        <CustomField labelId="taskUpdates" descriptionId="taskUpdatesDescription">
-          <SwitchToggleField fieldName="tasksNotifications" />
-        </CustomField>
-        <CustomField labelId="projectUpdates" descriptionId="projectUpdatesDescription">
-          <SwitchToggleField fieldName="projectsNotifications" />
-        </CustomField>
-        <CustomField labelId="comments" descriptionId="commentsDescription">
-          <SwitchToggleField fieldName="commentsNotifications" />
-        </CustomField>
+        {fields.map((field) => (
+          <CustomField
+            key={field.labelId}
+            labelId={field.labelId}
+            descriptionId={field.descriptionId}
+          >
+            <SwitchToggleField
+              fieldName={field.fieldName}
+              default={field.default}
+              removeVerticalPadding
+            />
+          </CustomField>
+        ))}
       </div>
     </div>
   );

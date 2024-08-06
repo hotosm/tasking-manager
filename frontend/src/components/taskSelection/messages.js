@@ -22,11 +22,23 @@ export default defineMessages({
   },
   unsavedChangesTooltip: {
     id: 'project.tasks.unsaved_map_changes.tooltip',
-    defaultMessage: 'You have unsaved edits. Save or undo them to submit this task.'
+    defaultMessage: 'You have unsaved edits. Save or undo them to submit this task.',
   },
   closeModal: {
     id: 'project.tasks.unsaved_map_changes.actions.close_modal',
     defaultMessage: 'Close',
+  },
+  deselectAndValidate: {
+    id: 'project.tasks.validation.cannot_validate_mapped_tasks.deselect_and_validate',
+    defaultMessage: 'Deselect and validate',
+  },
+  cantValidateMappedTask: {
+    id: 'project.tasks.select.cantValidateMappedTask',
+    defaultMessage: 'This task was mapped by you',
+  },
+  priorityAreasLoadingError: {
+    id: 'project.tasks.selection.map.priorityAreas.loading.error',
+    defaultMessage: 'An error occured while loading the priority areas for the project',
   },
   noMappedTasksSelectedError: {
     id: 'project.tasks.no_mapped_tasks_selected',
@@ -36,7 +48,7 @@ export default defineMessages({
     id: 'project.tasks.no_mapped_tasks_selected.description',
     defaultMessage:
       'It was not possible to lock the selected tasks, as none of them are on the mapped status.',
-  },  
+  },
   InvalidTaskStateError: {
     id: 'project.tasks.invalid_task_state_errortitle',
     defaultMessage: 'Invalid Task State',
@@ -188,6 +200,49 @@ export default defineMessages({
     id: 'project.sidebar.show',
     defaultMessage: 'Show sidebar',
   },
+  sessionAboutToExpireTitle: {
+    id: 'project.sidebar.lockTimeAboutToExpire.title',
+    defaultMessage: 'Extend session for this task',
+  },
+  sessionAboutToExpireDescription: {
+    id: 'project.sidebar.lockTimeAboutToExpire.description',
+    defaultMessage:
+      'Your session of two hours is about to expire. Do you want to extend your time for this session to continue working on this task?',
+  },
+  extendTime: {
+    id: 'project.sidebar.extendTime',
+    defaultMessage: 'Extend session',
+  },
+  sessionExtended: {
+    id: 'project.sidebar.sessionExtended',
+    defaultMessage: 'Your session has been extended',
+  },
+  sessionExtensionError: {
+    id: 'project.sidebar.sessionExtensionError',
+    defaultMessage: 'An error occurred while extending your session.',
+  },
+  sessionExpiredTitle: {
+    id: 'project.sidebar.sessionExpired.title',
+    defaultMessage: 'Your session has expired',
+  },
+  sessionExpiredDescription: {
+    id: 'project.sidebar.sessionExpired.description',
+    defaultMessage:
+      'Do you want to relock the tasks to extend the session so that you can update the status of the {count, plural, =1 {task} other{tasks}}?',
+  },
+  relockTask: {
+    id: 'project.sidebar.relockTask',
+    defaultMessage: 'Relock {count, plural, =1 {task} other{tasks}}',
+  },
+  taskRelocked: {
+    id: 'project.sidebar.taskRelocked',
+    defaultMessage: 'Your {count, plural, =1 {task has} other{tasks have}} been relocked.',
+  },
+  taskRelockError: {
+    id: 'project.sidebar.taskRelockError',
+    defaultMessage:
+      'An error occurred while relocking your {count, plural, =1 {task} other{tasks}}.',
+  },
   hideSidebar: {
     id: 'project.sidebar.hide',
     defaultMessage: 'Hide sidebar',
@@ -211,6 +266,16 @@ export default defineMessages({
   instructions: {
     id: 'project.instructions',
     defaultMessage: 'Instructions',
+  },
+  projectIsArchived: {
+    id: 'project.isArchived',
+    defaultMessage:
+      'This project is archived and read-only. You can view the project, but you cannot update tasks.',
+  },
+  enforcedRandomTaskSelection: {
+    id: 'project.enforcedRandomTaskSelection',
+    defaultMessage:
+      "This project has enforced random task selection for mapping. When you click the 'Map a task' button, a random task will be presented for mapping.",
   },
   changesetComment: {
     id: 'project.changesetComment',
@@ -445,6 +510,10 @@ export default defineMessages({
     id: 'project.tasks.action.comment.title',
     defaultMessage: 'Comment',
   },
+  redirectToPreviousProject: {
+    id: 'project.tasks.action.redirectToPreviousProject',
+    defaultMessage: 'Redirect to previous project #{projectId}',
+  },
   commentPlaceholder: {
     id: 'project.tasks.action.comment.input.placeholder',
     defaultMessage: 'Write a comment on this task',
@@ -514,13 +583,25 @@ export default defineMessages({
     id: 'project.tasks.action.split_task.error.description',
     defaultMessage: 'This task is already too small and can not be split.',
   },
+  splitTaskGenericError: {
+    id: 'project.tasks.action.split_task.error.generic',
+    defaultMessage: 'An error occured while splitting the task.',
+  },
   selectAnotherTask: {
     id: 'project.tasks.action.select_another_task',
     defaultMessage: 'Select another task',
   },
+  stopMappingError: {
+    id: 'project.tasks.action.stop_mapping.error',
+    defaultMessage: 'An error occured while stopping mapping.',
+  },
   stopValidation: {
     id: 'project.tasks.action.stop_validation',
     defaultMessage: 'Stop validation',
+  },
+  stopValidationError: {
+    id: 'project.tasks.action.stop_validation.error',
+    defaultMessage: 'An error occured while stopping validation.',
   },
   tasksMap: {
     id: 'project.tasks.action.tasks_map',
@@ -533,6 +614,11 @@ export default defineMessages({
   submitTasks: {
     id: 'project.tasks.action.submit_tasks',
     defaultMessage: 'Submit tasks',
+  },
+  submitTaskError: {
+    id: 'project.tasks.action.submit_task.error',
+    defaultMessage:
+      'An error occured while submitting your {numTasks, plural, =1 {task} other {tasks}}.',
   },
   taskActivity: {
     id: 'project.tasks.history.title',
@@ -590,6 +676,18 @@ export default defineMessages({
     id: 'project.tasks.history.comment',
     defaultMessage: 'commented',
   },
+  taskDetailFetchError: {
+    id: 'project.tasks.history.taskDetailFetchError',
+    defaultMessage: 'An error occured while fetching the task details.',
+  },
+  noCommentsYet: {
+    id: 'project.tasks.history.noCommentsYet',
+    defaultMessage: 'No comments have been made on the task yet.',
+  },
+  noActivitiesToDisplay: {
+    id: 'project.tasks.history.nothingToDisplay',
+    defaultMessage: 'No comments/activities have been made on this task yet.',
+  },
   taskHistoryLockedMapping: {
     id: 'project.tasks.history.lockedmapping',
     defaultMessage: 'locked for mapping',
@@ -605,6 +703,14 @@ export default defineMessages({
   taskHistoryAutoUnlockedValidation: {
     id: 'project.tasks.history.autounlockedvalidation',
     defaultMessage: 'automatically unlocked for validation',
+  },
+  taskHistoryExtendedForMapping: {
+    id: 'project.tasks.history.extendedForMapping',
+    defaultMessage: 'extended the lock session for mapping',
+  },
+  taskHistoryExtendedForValidation: {
+    id: 'project.tasks.history.extendedForValidation',
+    defaultMessage: 'extended the lock session for validation',
   },
   taskHistoryBadImagery: {
     id: 'project.tasks.history.badimagery',

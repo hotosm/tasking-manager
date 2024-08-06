@@ -32,7 +32,7 @@ const dataFetchReducer = (state, action) => {
 };
 
 export const useTagAPI = (initialData, tagType, processDataFn) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences.locale);
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,

@@ -7,6 +7,7 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import { useDropzone } from 'react-dropzone';
+import { mapboxLayerDefn } from '../projects/projectsMap';
 
 import {
   MAPBOX_TOKEN,
@@ -19,6 +20,7 @@ import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
 import { BasemapMenu } from '../basemapMenu';
 import { ProjectsAOILayerCheckBox } from './projectsAOILayerCheckBox';
+import WebglUnsupported from '../webglUnsupported';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -30,24 +32,32 @@ try {
 const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step, uploadFile }) => {
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
-  const token = useSelector((state) => state.auth.get('token'));
-  const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(false);
+  const token = useSelector((state) => state.auth.token);
+  const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(true);
   const [aoiCanBeActivated, setAOICanBeActivated] = useState(false);
+  const [existingProjectsList, setExistingProjectsList] = useState([]);
+  const [isAoiLoading, setIsAoiLoading] = useState(false);
   const [debouncedGetProjectsAOI] = useDebouncedCallback(() => getProjectsAOI(), 1500);
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: step === 1 ? uploadFile : () => {}, // drag&drop is activated only on the first step
     noClick: true,
     noKeyboard: true,
   });
-  const minZoomLevelToAOIVisualization = 11;
+  const minZoomLevelToAOIVisualization = 9;
+
+  useEffect(() => {
+    fetchLocalJSONAPI('projects/').then((res) => setExistingProjectsList(res.mapResults));
+  }, []);
 
   const getProjectsAOI = () => {
     if (aoiCanBeActivated && showProjectsAOILayer && step === 1) {
+      setIsAoiLoading(true);
       let bounds = mapObj.map.getBounds();
       let bbox = `${bounds._sw.lng},${bounds._sw.lat},${bounds._ne.lng},${bounds._ne.lat}`;
-      fetchLocalJSONAPI(`projects/queries/bbox/?bbox=${bbox}&srid=4326`, token).then((res) =>
-        mapObj.map.getSource('otherProjects').setData(res),
-      );
+      fetchLocalJSONAPI(`projects/queries/bbox/?bbox=${bbox}&srid=4326`, token).then((res) => {
+        mapObj.map.getSource('otherProjects').setData(res);
+        setIsAoiLoading(false);
+      });
     }
   };
 
@@ -66,6 +76,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   }, [showProjectsAOILayer, debouncedGetProjectsAOI, clearProjectsAOI, step]);
 
   useLayoutEffect(() => {
+    if (!mapboxgl.supported()) return;
     const map = new mapboxgl.Map({
       container: mapRef.current,
       style: MAP_STYLE,
@@ -185,8 +196,43 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     }
   };
 
+  const noop = () => {};
+
   useLayoutEffect(() => {
-    if (mapObj.map !== null) {
+    /* docs: https://docs.mapbox.com/mapbox-gl-js/example/cluster/ */
+    const { map } = mapObj;
+
+    const someResultsReady =
+      existingProjectsList &&
+      existingProjectsList.features &&
+      existingProjectsList.features.length > 0;
+
+    const mapReadyProjectsReady =
+      map !== null &&
+      map.isStyleLoaded() &&
+      map.getSource('projects') === undefined &&
+      someResultsReady;
+    const projectsReadyMapLoading =
+      map !== null &&
+      !map.isStyleLoaded() &&
+      map.getSource('projects') === undefined &&
+      someResultsReady;
+
+    /* set up style/sources for the map, either immediately or on base load */
+    if (mapReadyProjectsReady) {
+      mapboxLayerDefn(map, existingProjectsList, noop, true);
+    } else if (projectsReadyMapLoading) {
+      map.on('load', () => mapboxLayerDefn(map, existingProjectsList, noop, true));
+    }
+
+    /* refill the source on existingProjectsList changes */
+    if (map !== null && map.getSource('projects') !== undefined && someResultsReady) {
+      map.getSource('projects').setData(existingProjectsList);
+    }
+  }, [mapObj, existingProjectsList]);
+
+  useLayoutEffect(() => {
+    if (mapObj.map !== null && mapboxgl.supported()) {
       mapObj.map.on('moveend', (event) => {
         debouncedGetProjectsAOI();
       });
@@ -194,7 +240,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   });
 
   useLayoutEffect(() => {
-    if (mapObj.map !== null) {
+    if (mapObj.map !== null && mapboxgl.supported()) {
       mapObj.map.on('load', () => {
         mapObj.map.addControl(new mapboxgl.NavigationControl());
         mapObj.map.addControl(mapObj.draw);
@@ -234,22 +280,27 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     }
   }, [mapObj, metadata, updateMetadata, step]);
 
-  return (
-    <div className="w-100 h-100-l relative" {...getRootProps()}>
-      <div className="absolute top-0 right-0 z-5 mr2">
-        {step === 1 && (
-          <ProjectsAOILayerCheckBox
-            isActive={showProjectsAOILayer}
-            setActive={setShowProjectsAOILayer}
-            disabled={!aoiCanBeActivated}
-          />
-        )}
-        <BasemapMenu map={mapObj.map} />
-        <input className="dn" {...getInputProps()} />
+  if (!mapboxgl.supported()) {
+    return <WebglUnsupported className="vh-50 h-100-l w-100" />;
+  } else {
+    return (
+      <div className="w-100 h-100-l relative" {...getRootProps()}>
+        <div className="absolute top-0 right-0 z-5 mr2">
+          {step === 1 && (
+            <ProjectsAOILayerCheckBox
+              isActive={showProjectsAOILayer}
+              setActive={setShowProjectsAOILayer}
+              disabled={!aoiCanBeActivated}
+              isAoiLoading={isAoiLoading}
+            />
+          )}
+          <BasemapMenu map={mapObj.map} />
+          <input className="dn" {...getInputProps()} />
+        </div>
+        <div id="project-creation-map" className="vh-50 h-100-l w-100" ref={mapRef}></div>
       </div>
-      <div id="project-creation-map" className="vh-50 h-100-l w-100" ref={mapRef}></div>
-    </div>
-  );
+    );
+  }
 };
 
 export default ProjectCreationMap;

@@ -8,16 +8,23 @@ html {
     max-height: 100vh;
     overflow-y: scroll;
   }
+
   .video-popup-content {
     width: 90% !important;
   }
+
   .user-popup-content {
     width: 70% !important;
     left: 15% !important;
   }
+
   .user-popup-overlay {
     background-color: $blue-dark;
     opacity: 0.8;
+  }
+
+  .vh-minus-122 {
+    height: calc(100vh - 122px);
   }
 }
 
@@ -25,29 +32,46 @@ html {
   #jumbotron {
     video,
     img {
-      object-position: 0 0;
+      object-position: 0 40%;
     }
   }
+
   .vh-minus-200-ns {
     height: calc(100vh - 200px);
   }
+
   .vh-minus-185-ns {
     height: calc(100vh - 185px);
   }
+
   .vh-minus-122-ns {
     height: calc(100vh - 122px);
   }
-  .vh-minus-77-ns {
-    height: calc(100vh - 77px);
+
+  .vh-minus-69-ns {
+    height: calc(100vh - 69px); // nice
   }
+
   .popup-content {
     width: 44% !important;
   }
+
   .video-popup-content {
     width: 66% !important;
   }
+
   .user-popup-content {
     width: 13% !important;
+  }
+
+  .flex-two-items-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4%;
+  }
+
+  .flex-two-items-row > div {
+    flex: 46%;
   }
 }
 
@@ -59,7 +83,7 @@ html {
 
 @media screen and (min-width: 90em) {
   .pl6-xl {
-    padding-left: 8rem;
+    padding-left: 6rem;
   }
 }
 
@@ -67,11 +91,18 @@ html {
   .bg-split-blue-white {
     background: linear-gradient(to right, $blue-dark, $blue-dark 80%, $white 20%, $white);
   }
+
   .f-4rem-l {
     font-size: 4rem;
   }
+
   .mw-36rem-l {
     max-width: 36rem;
+  }
+
+  .sticky-top-l {
+    position: sticky !important;
+    top: 0;
   }
 }
 
@@ -79,6 +110,7 @@ html {
   .mw-20rem {
     max-width: 20rem;
   }
+
   .bg-split-blue-white {
     background: linear-gradient(to bottom, $blue-dark, $blue-dark 80%, $white 20%, $white);
   }
@@ -97,8 +129,17 @@ html {
 .hhalf {
   height: 0.5rem;
 }
+
 .whalf {
   width: 0.5rem;
+}
+
+.h-pill {
+  height: 0.625rem;
+}
+
+.h-pill-s {
+  height: 0.5rem;
 }
 
 /*
@@ -116,33 +157,38 @@ a:focus,
 a:active {
   outline: 0;
 }
+
 /* TOGGLE for Show Map*/
 .t-cb {
   transition: all 0.3s cubic-bezier(0.33, 1, 0.66, 1);
-} // Custom class
+}
+
+// Custom class
 
 .checkbox:checked + .checkbox-wrapper {
   background-color: $red; // @extend .bg-green;
 
   .checkbox-toggle {
-    left: 2rem; // @extend .left-2;
-    background-color: $white; // @extend .bg-moon-gray;
-    border-color: $red;
-  }
-
-  .checkbox-toggle-sm {
-    left: 1rem; // @extend .left-1;
-    background-color: $white; // @extend .bg-moon-gray;
-    border-color: $red;
+    left: calc(1.5rem + 0.125rem); // @extend .left-2;
   }
 }
-.checkbox-toggle:hover {
-  border: dashed red !important;
+
+.switch-ctr {
+  width: 3rem;
+  height: 1.5rem;
+
+  .switch-thumb {
+    width: 1.25rem;
+    height: 1.25rem;
+    left: 0.125rem;
+    top: 0.125rem;
+  }
 }
 
 .radio-input {
   background-color: $white;
 }
+
 .radio-input:checked {
   background-color: $red;
   border: none;
@@ -153,21 +199,27 @@ https://codepen.io/nielsenramon/pen/mLMeLY
  */
 .radiobutton:checked + .radiobutton-wrapper {
   background-color: $red; // @extend .bg-white;
+
   div {
     border-color: $white; // @extend .b--white;
   }
 }
 
 .markdown-content {
+  line-height: 1.44;
+
   h1 {
     font-size: 1.25rem;
   }
+
   h2 {
     font-size: 1.125rem;
   }
+
   h3 {
     font-size: 1rem;
   }
+
   a {
     color: $red;
     text-decoration: none;
@@ -195,19 +247,25 @@ textarea:disabled {
 }
 
 div.messageSubjectLinks,
-strong.messageSubjectLinks {
+p.messageSubjectLinks {
+  letter-spacing: -0.0857513px;
   & > a {
     color: $blue-dark;
     text-decoration: none;
-    font-weight: 700;
+    font-weight: 500;
+    letter-spacing: normal;
   }
+
   & > a:hover {
     & > a {
       color: $red;
     }
+
     color: $red;
   }
+
   color: $blue-grey;
+
   &.bodycard > a {
     text-decoration: underline;
   }
@@ -219,6 +277,7 @@ div.messageBodyLinks {
     text-decoration: none;
     font-weight: 600;
   }
+
   color: $blue-grey;
 }
 
@@ -226,6 +285,7 @@ div.messageBodyLinks {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -235,7 +295,9 @@ div.messageBodyLinks {
   width: calc(100% - 4rem);
 }
 
-.mapbox-improve-map, a[href="https://www.mapbox.com/map-feedback/"] {
+.mapbox-improve-map,
+a[href="https://www.mapbox.com/map-feedback/"]
+{
   display: none;
 }
 
@@ -254,14 +316,14 @@ div.messageBodyLinks {
 }
 
 .overflow-empty {
-  text-overflow: "";
+  text-overflow: '';
 }
 
 .react-select {
   &__control {
     border-color: $grey-light !important;
-    min-height: 1.5rem !important;
-    border-radius: .125rem !important;
+    min-height: 2.625rem !important;
+    border-radius: 0.125rem !important;
 
     &--is-focused {
       box-shadow: 0 0 1px $grey-light !important;
@@ -274,12 +336,19 @@ div.messageBodyLinks {
 
   &__placeholder {
     color: $blue-dark !important;
+    line-height: 1.71;
+  }
+
+  &__indicator-separator {
+    display: none;
   }
 
   &__option {
     color: $blue-dark !important;
 
-    &:hover, &:active, &--is-focused {
+    &:hover,
+    &:active,
+    &--is-focused {
       background-color: $tan !important;
       cursor: pointer;
     }
@@ -287,10 +356,16 @@ div.messageBodyLinks {
     &--is-selected {
       background-color: $white !important;
     }
+
+    &--is-disabled {
+      pointer-events: auto !important;
+      cursor: not-allowed !important;
+    }
   }
 }
 
-#project-creation-map, #priority-area-map {
+#project-creation-map,
+#priority-area-map {
   .mapboxgl-ctrl-top-right {
     top: 2.5rem;
   }
@@ -307,14 +382,237 @@ div.messageBodyLinks {
   height: 1.8em;
   border: 1px solid #909;
   border-radius: 5px;
-  background: rgb(203,16,237);
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(6%, rgba(108,1,167,1)), color-stop(50%, rgba(203,16,237,1)), color-stop(90%, rgb(229, 140, 253)), to(rgb(201, 42, 251)));
-  background: -o-linear-gradient(bottom, rgba(108,1,167,1) 6%, rgba(203,16,237,1) 50%, rgb(229, 140, 253) 90%, rgb(201, 42, 251) 100%);
-  background: linear-gradient(0deg, rgba(108,1,167,1) 6%, rgba(203,16,237,1) 50%, rgb(229, 140, 253) 90%, rgb(201, 42, 251) 100%);
+  background: rgb(203, 16, 237);
+  background: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(6%, rgba(108, 1, 167, 1)),
+    color-stop(50%, rgba(203, 16, 237, 1)),
+    color-stop(90%, rgb(229, 140, 253)),
+    to(rgb(201, 42, 251))
+  );
+  background: -o-linear-gradient(
+    bottom,
+    rgba(108, 1, 167, 1) 6%,
+    rgba(203, 16, 237, 1) 50%,
+    rgb(229, 140, 253) 90%,
+    rgb(201, 42, 251) 100%
+  );
+  background: linear-gradient(
+    0deg,
+    rgba(108, 1, 167, 1) 6%,
+    rgba(203, 16, 237, 1) 50%,
+    rgb(229, 140, 253) 90%,
+    rgb(201, 42, 251) 100%
+  );
 
   &:before {
     content: '\03b2';
     font-size: 1.2em;
     vertical-align: middle;
   }
+}
+
+.textareaDetail {
+  border-radius: 0px 0px 3px 3px;
+  border-width: 0;
+  box-shadow: 0 1px 0 1px #d0d7de, 0 0 0 #d0d7de, 0 1px 1px #d0d7de;
+}
+
+.sticky-top {
+  position: sticky !important;
+  top: 0;
+}
+
+.notifications-header {
+  h3 {
+    letter-spacing: -0.110252px;
+    line-height: 20px;
+  }
+}
+
+.notifications-header > div {
+  padding: 1.5rem;
+}
+
+.explore-projects-container {
+  display: grid;
+  gap: 1.875rem;
+}
+
+.one-column {
+  grid-template-columns: 1fr;
+}
+
+.two-column {
+  grid-template-columns: 6fr 4fr;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  grid-auto-rows: 370px;
+}
+
+.b--card {
+  border-color: #ecebed;
+}
+
+.explore-projects-map {
+  height: calc(100vh - 190px);
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+}
+
+// Box Shadow Overrides Starts
+
+.shadow-1 {
+  box-shadow: 0px 4px 10px rgb(0 0 0 / 10%);
+}
+
+.shadow-2 {
+  box-shadow: 0px 1px 2px rgba(150, 156, 160, 0.158033);
+}
+
+.shadow-3 {
+  box-shadow: 0px 7px 64px rgba(0, 0, 0, 0.07);
+}
+
+.shadow-6 {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-7 {
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.138162);
+}
+
+.w-md-editor {
+  border-radius: 3px 3px 0px 0px !important;
+}
+
+.w-md-editor-toolbar li > button:hover,
+.w-md-editor-toolbar li > button:focus {
+  color: $red !important;
+}
+
+.task-list:hover {
+  box-shadow: 0px 7px 20px rgba(0, 0, 0, 0.08);
+}
+
+.project-edit-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+
+  @media screen and (max-width: 60em) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (max-width: 30em) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+// Styles for reactjs-popup
+.popup-overlay {
+  background: rgba(44, 48, 56, 0.7);
+}
+
+.popup-content {
+  font-family: 'Archivo', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  max-height: calc(100vh - 10em);
+  overflow-y: auto;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.105469), 0px 15px 14px rgba(0, 0, 0, 0.270041),
+    0px 34px 24px rgba(0, 0, 0, 0.37534);
+  padding: 0 !important;
+}
+
+.lh-base {
+  line-height: 1.4;
+}
+
+.interest-cards-ctr {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  row-gap: 1.25rem;
+  column-gap: 1rem;
+
+  @media screen and (max-width: 60em) {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 1rem;
+  }
+
+  @media screen and (max-width: 30em) {
+    grid-template-columns: repeat(1, 1fr);
+    row-gap: 0.5rem;
+  }
+}
+
+.interest-card {
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  place-items: center;
+
+  @media screen and (max-width: 30em) {
+    padding: 0.875rem 1rem;
+  }
+}
+
+.text-break {
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
+
+.settings-width {
+  width: 8.75rem;
+
+  @media screen and (max-width: 30em) {
+    width: 100%;
+  }
+}
+
+.break-all-word {
+  word-break: break-all;
+}
+
+.username-heading {
+  font-size: 2.5rem;
+  letter-spacing: 1.25px;
+
+  @media screen and (max-width: 30em) {
+    font-size: 1.5rem;
+    letter-spacing: normal;
+  }
+}
+
+.user-picture-medium {
+  height: 2.5rem;
+  width: 2.5rem;
+}
+
+.bg-tan-dim {
+  background-color: rgba($tan, 0.6);
+}
+
+.text-dim {
+  color: rgba($blue-dark, 0.9);
+}
+
+.gap-1 {
+  gap: 1rem;
+}
+
+// Imported from HOTOSM site to use for long texts
+.blue-dark-abbey {
+  color: #4c4f56;
+}
+
+// Remove tachyons outline
+.link:focus {
+  outline: revert;
 }

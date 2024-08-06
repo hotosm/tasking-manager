@@ -10,9 +10,7 @@ describe('test formatProjectTag and formatTitleTag', () => {
       },
     };
     expect(formatProjectTag(project)).toBe(`#1: Test Project`);
-    expect(formatTitleTag(formatProjectTag(project))).toBe(
-      `#1: Test Project - ${instanceName}`,
-    );
+    expect(formatTitleTag(formatProjectTag(project))).toBe(`#1: Test Project - ${instanceName}`);
   });
   it('return only instance name', () => {
     expect(formatProjectTag({})).toBe('');

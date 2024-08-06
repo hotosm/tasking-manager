@@ -1,0 +1,14 @@
+.navigation-items-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide the scrollbar in Firefox */
+.navigation-items-container {
+  scrollbar-width: none;
+}
+
+@media screen and (max-width: 45em) {
+  .dn-sm {
+    display: none;
+  }
+}

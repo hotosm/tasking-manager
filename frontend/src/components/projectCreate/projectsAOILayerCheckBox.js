@@ -5,8 +5,9 @@ import ReactTooltip from 'react-tooltip';
 import messages from './messages';
 import statusMessages from '../projectDetail/messages';
 import { TASK_COLOURS } from '../../config';
+import { AnimatedLoadingIcon } from '../button';
 
-export const ProjectsAOILayerCheckBox = ({ isActive, setActive, disabled }) => {
+export const ProjectsAOILayerCheckBox = ({ isActive, setActive, disabled, isAoiLoading }) => {
   return (
     <>
       <div className="bg-white fl dib pv1 ph2 blue-dark mt2 mh2 f7 br1 shadow-1">
@@ -19,6 +20,7 @@ export const ProjectsAOILayerCheckBox = ({ isActive, setActive, disabled }) => {
         <span className="di v-mid" data-tip>
           <FormattedMessage {...messages.showProjectsAOILayer} />
         </span>
+        <span className="ml1">{isAoiLoading && <AnimatedLoadingIcon />}</span>
         <ReactTooltip place="bottom">
           {disabled ? (
             <FormattedMessage {...messages.disabledAOILayer} />

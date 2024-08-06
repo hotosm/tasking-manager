@@ -5,11 +5,11 @@ import { useAvatarStyle } from '../UseAvatarStyle';
 describe('useAvatarStyle sizeClasses', () => {
   it('with null size returns medium size', () => {
     const { result } = renderHook(() => useAvatarStyle(null, false, null));
-    expect(result.current.sizeClasses).toBe('h2 w2 f5');
+    expect(result.current.sizeClasses).toBe('user-picture-medium f5');
   });
   it('with medium size returns same as null size', () => {
     const { result } = renderHook(() => useAvatarStyle('medium', false, null));
-    expect(result.current.sizeClasses).toBe('h2 w2 f5');
+    expect(result.current.sizeClasses).toBe('user-picture-medium f5');
   });
   it('with large size returns correct classes', () => {
     const { result } = renderHook(() => useAvatarStyle('large', false, null));

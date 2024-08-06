@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@reach/router';
+import { Link } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
 
@@ -11,7 +11,7 @@ import { PriorityBox } from '../projectCard/priorityBox';
 export function ProjectListItem({ project }: Object) {
   return (
     <div className="bg-white bluedark base-font w-100 mb1 db h3">
-      <div className="pv3 ph3-l ph2 ba br1 b--grey-light cf">
+      <div className="pv3 ph3-l ph2 br1 cf">
         <div className="w-10 h fl tc">
           <img
             src={project.organisationLogo}
@@ -22,7 +22,7 @@ export function ProjectListItem({ project }: Object) {
         <div className="w-40 h fl v-mid ph3 truncate">
           <Link to={`/projects/${project.projectId}`} className="link blue-dark">
             <span className="f5 blue-grey">#{project.projectId}</span>{' '}
-            <span className="f5 b">{project.name}</span>
+            <span className="f4 b">{project.name}</span>
           </Link>
         </div>
         <div className="w-40 fl">
@@ -69,8 +69,7 @@ export function ProjectListItem({ project }: Object) {
               <PriorityBox
                 priority={project.priority}
                 extraClasses={'pv1 ph2 dib'}
-                hideMediumAndLow={false}
-                showIcon={project.priority !== 'URGENT'} // inside the cards, don't show the icon for urgent, due to the space required
+                showIcon={!['URGENT', 'MEDIUM'].includes(project.priority)} // inside the cards, don't show the icon for urgent or medium, due to the space required
               />
             )}
           </div>

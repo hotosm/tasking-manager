@@ -1,10 +1,11 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { tasks } from '../../../network/tests/mockData/taskGrid';
 import { ResourcesTab } from '../resourcesTab';
+import userEvent from '@testing-library/user-event';
 
 describe('ResourcesTab', () => {
   const projectData = {
@@ -13,6 +14,7 @@ describe('ResourcesTab', () => {
     changesetComment: '#hot-osm-project-123 #buildings',
   };
   it('with multiple tasks locked', async () => {
+    const user = userEvent.setup();
     const { container } = render(
       <ReduxIntlProviders>
         <ResourcesTab tasksGeojson={tasks} project={projectData} tasksIds={[1, 2]} />
@@ -31,13 +33,13 @@ describe('ResourcesTab', () => {
     expect(container.querySelectorAll('a')[3].href).toContain('/projects/1/tasks/?as_file=true');
 
     const selectInput = container.querySelector('input');
-    fireEvent.focus(selectInput);
-    fireEvent.keyDown(selectInput, { key: 'ArrowDown' });
+    await selectInput.focus();
+    await user.type(selectInput, '{ArrowDown}');
     await waitFor(() => {
       expect(screen.getByText(1));
     });
     expect(screen.getByText(2));
-    fireEvent.click(screen.getByText(1));
+    await user.click(screen.getByText(1));
     await expect(screen.queryByText('Select task')).not.toBeInTheDocument();
     expect(screen.getByText("See task's changesets").disabled).toBeFalsy();
   });

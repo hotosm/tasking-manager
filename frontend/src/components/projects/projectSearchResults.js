@@ -9,29 +9,34 @@ import { ProjectCard } from '../projectCard/projectCard';
 import messages from './messages';
 import { ProjectListItem } from './list';
 
-export const ProjectSearchResults = (props) => {
+export const ProjectSearchResults = ({
+  className,
+  status,
+  projects,
+  pagination,
+  retryFn,
+  management,
+  showBottomButtons,
+}) => {
   const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
-  const state = props.state;
-  const cardWidthClass = 'w-third-l';
+  const cardWidthClass = 'w-100';
+  const isShowListView = management && listViewIsActive;
 
   return (
-    <div className={`${props.className}`}>
-      <p className={`blue-grey f7`}>
-        {state.isLoading ? (
-          <span>&nbsp;</span>
-        ) : (
-          !state.isError && (
-            <FormattedMessage
-              {...messages.paginationCount}
-              values={{
-                number: state.projects && state.projects.length,
-                total: <FormattedNumber value={state.pagination ? state.pagination.total : 0} />,
-              }}
-            />
-          )
+    <div className={`${className}`}>
+      <p className="blue-light f6 ttl mv3">
+        {status === 'loading' && <span>&nbsp;</span>}
+        {status === 'success' && (
+          <FormattedMessage
+            {...messages.paginationCount}
+            values={{
+              number: projects?.length,
+              total: <FormattedNumber value={pagination ? pagination.total : 0} />,
+            }}
+          />
         )}
       </p>
-      {state.isError ? (
+      {status === 'error' && (
         <div className="bg-tan pa4">
           <FormattedMessage
             {...messages.errorLoadingTheXForY}
@@ -41,43 +46,43 @@ export const ProjectSearchResults = (props) => {
             }}
           />
           <div className="pa2">
-            <button className="pa1" onClick={() => props.retryFn()}>
+            <button className="pa1" onClick={() => retryFn()}>
               <FormattedMessage {...messages.retry} />
             </button>
           </div>
         </div>
-      ) : null}
-      <div className="cf db">
-        {props.management && listViewIsActive ? (
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            rows={15}
-            delay={50}
-            ready={!state.isLoading}
-          >
-            <div className="mh2">
-              <ExploreProjectList pageOfCards={state.projects} cardWidthClass={cardWidthClass} />
-            </div>
-          </ReactPlaceholder>
-        ) : (
-          <ReactPlaceholder
-            customPlaceholder={nCardPlaceholders(5, cardWidthClass)}
-            ready={!state.isLoading}
-          >
-            <ExploreProjectCards
-              pageOfCards={state.projects}
-              cardWidthClass={cardWidthClass}
-              showBottomButtons={props.showBottomButtons}
-            />
-          </ReactPlaceholder>
-        )}
-      </div>
+      )}
+      {status !== 'error' && (
+        <div className={`${!isShowListView ? 'cards-container' : ''}`}>
+          {isShowListView ? (
+            <ReactPlaceholder
+              showLoadingAnimation={true}
+              rows={15}
+              delay={50}
+              ready={status === 'success'}
+            >
+              <ExploreProjectList pageOfCards={projects} cardWidthClass={cardWidthClass} />
+            </ReactPlaceholder>
+          ) : (
+            <ReactPlaceholder
+              customPlaceholder={nCardPlaceholders(5, cardWidthClass)}
+              ready={status === 'success'}
+            >
+              <ExploreProjectCards
+                pageOfCards={projects}
+                cardWidthClass={cardWidthClass}
+                showBottomButtons={showBottomButtons}
+              />
+            </ReactPlaceholder>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-const ExploreProjectCards = (props) => {
-  if (props.pageOfCards && props.pageOfCards.length === 0) {
+export const ExploreProjectCards = (props) => {
+  if (props.pageOfCards?.length === 0) {
     return null;
   }
   /* cardWidthClass={props.cardWidthClass} as a parameter offers more variability in the size of the cards, set to 'cardWidthNone' disables */
@@ -91,8 +96,8 @@ const ExploreProjectCards = (props) => {
   ));
 };
 
-const ExploreProjectList = (props) => {
-  if (props.pageOfCards && props.pageOfCards.length === 0) {
+export const ExploreProjectList = (props) => {
+  if (props.pageOfCards?.length === 0) {
     return null;
   }
   /* cardWidthClass={props.cardWidthClass} as a parameter offers more variability in the size of the cards, set to 'cardWidthNone' disables */

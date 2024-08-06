@@ -1,12 +1,14 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { LocaleOption } from '../localeOption';
+import userEvent from '@testing-library/user-event';
 
 describe('LocaleOption', () => {
   const mockFn = jest.fn();
-  it('with isActive = true', () => {
+  it('with isActive = true', async () => {
+    const user = userEvent.setup();
     render(
       <LocaleOption
         localeCode={'es'}
@@ -21,7 +23,7 @@ describe('LocaleOption', () => {
     );
     expect(screen.getByText('es').className).toContain('bg-blue-grey fw6 white');
     expect(screen.getByText('es').title).toBe('Español');
-    fireEvent.click(screen.getByText('es'));
+    await user.click(screen.getByText('es'));
     expect(mockFn).toHaveBeenCalledWith('es');
   });
   it('with isActive = false and hasValue = true', () => {

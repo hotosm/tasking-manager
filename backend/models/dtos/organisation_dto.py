@@ -9,11 +9,12 @@ from schematics.types import (
     DictType,
 )
 
+from backend.models.dtos.stats_dto import OrganizationStatsDTO
 from backend.models.postgis.statuses import OrganisationType
 
 
 def is_known_organisation_type(value):
-    """ Validates organisation subscription type string """
+    """Validates organisation subscription type string"""
     try:
         OrganisationType[value.upper()]
     except (AttributeError, KeyError):
@@ -24,25 +25,25 @@ def is_known_organisation_type(value):
 
 
 class OrganisationManagerDTO(Model):
-    """ Describes JSON model for a organisation manager """
+    """Describes JSON model for a organisation manager"""
 
     username = StringType(required=True)
     picture_url = StringType(serialized_name="pictureUrl")
 
 
 class OrganisationTeamsDTO(Model):
-    """ Describes JSON model for a team. To be used in the Organisations endpoints."""
+    """Describes JSON model for a team. To be used in the Organisations endpoints."""
 
     team_id = IntType(serialized_name="teamId")
     name = StringType(required=True)
     description = StringType()
-    invite_only = BooleanType(default=False, serialized_name="inviteOnly")
+    join_method = StringType(required=True, serialized_name="joinMethod")
     visibility = StringType()
     members = ListType(DictType(StringType, serialize_when_none=False))
 
 
 class OrganisationDTO(Model):
-    """ Describes JSON model for an organisation """
+    """Describes JSON model for an organisation"""
 
     organisation_id = IntType(serialized_name="organisationId")
     managers = ListType(ModelType(OrganisationManagerDTO), min_size=1, required=True)
@@ -55,6 +56,7 @@ class OrganisationDTO(Model):
     projects = ListType(StringType, serialize_when_none=False)
     teams = ListType(ModelType(OrganisationTeamsDTO))
     campaigns = ListType(ListType(StringType))
+    stats = ModelType(OrganizationStatsDTO, serialize_when_none=False)
     type = StringType(validators=[is_known_organisation_type])
     subscription_tier = IntType(serialized_name="subscriptionTier")
 
@@ -68,7 +70,7 @@ class ListOrganisationsDTO(Model):
 
 
 class NewOrganisationDTO(Model):
-    """ Describes a JSON model to create a new organisation """
+    """Describes a JSON model to create a new organisation"""
 
     organisation_id = IntType(serialized_name="organisationId", required=False)
     managers = ListType(StringType(), required=True)
@@ -82,7 +84,6 @@ class NewOrganisationDTO(Model):
 
 
 class UpdateOrganisationDTO(OrganisationDTO):
-
     organisation_id = IntType(serialized_name="organisationId", required=False)
     managers = ListType(StringType())
     name = StringType()

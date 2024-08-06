@@ -1,8 +1,7 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource
 
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
-from backend.models.postgis.utils import NotFound
 from backend.services.users.authentication_service import token_auth
 
 
@@ -47,38 +46,27 @@ class OrganisationsCampaignsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            if OrganisationService.can_user_manage_organisation(
-                organisation_id, token_auth.current_user()
+        if OrganisationService.can_user_manage_organisation(
+            organisation_id, token_auth.current_user()
+        ):
+            if CampaignService.campaign_organisation_exists(
+                campaign_id, organisation_id
             ):
-                if CampaignService.campaign_organisation_exists(
+                message = "Campaign {} is already assigned to organisation {}.".format(
                     campaign_id, organisation_id
-                ):
-                    message = (
-                        "Campaign {} is already assigned to organisation {}.".format(
-                            campaign_id, organisation_id
-                        )
-                    )
-                    return {"Error": message, "SubCode": "CampaignAlreadyAssigned"}, 400
+                )
+                return {"Error": message, "SubCode": "CampaignAlreadyAssigned"}, 400
 
-                CampaignService.create_campaign_organisation(
-                    organisation_id, campaign_id
-                )
-                message = (
-                    "campaign with id {} assigned for organisation with id {}".format(
-                        campaign_id, organisation_id
-                    )
-                )
-                return {"Success": message}, 200
-            else:
-                return {
-                    "Error": "User is not a manager of the organisation",
-                    "SubCode": "UserNotPermitted",
-                }, 403
-        except Exception as e:
-            error_msg = f"Campaign Organisation POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+            CampaignService.create_campaign_organisation(organisation_id, campaign_id)
+            message = "campaign with id {} assigned for organisation with id {}".format(
+                campaign_id, organisation_id
+            )
+            return {"Success": message}, 200
+        else:
+            return {
+                "Error": "User is not a manager of the organisation",
+                "SubCode": "UserNotPermitted",
+            }, 403
 
     def get(self, organisation_id):
         """
@@ -109,17 +97,8 @@ class OrganisationsCampaignsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            campaigns = CampaignService.get_organisation_campaigns_as_dto(
-                organisation_id
-            )
-            return campaigns.to_primitive(), 200
-        except NotFound:
-            return {"Error": "No campaign found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Organisation Campaigns GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        campaigns = CampaignService.get_organisation_campaigns_as_dto(organisation_id)
+        return campaigns.to_primitive(), 200
 
     @token_auth.login_required
     def delete(self, organisation_id, campaign_id):
@@ -161,28 +140,16 @@ class OrganisationsCampaignsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            if OrganisationService.can_user_manage_organisation(
-                organisation_id, token_auth.current_user()
-            ):
-                CampaignService.delete_organisation_campaign(
-                    organisation_id, campaign_id
-                )
-                return (
-                    {"Success": "Organisation and campaign unassociated successfully"},
-                    200,
-                )
-            else:
-                return {
-                    "Error": "User is not a manager of the organisation",
-                    "SubCode": "UserNotPermitted",
-                }, 403
-        except NotFound:
+        if OrganisationService.can_user_manage_organisation(
+            organisation_id, token_auth.current_user()
+        ):
+            CampaignService.delete_organisation_campaign(organisation_id, campaign_id)
+            return (
+                {"Success": "Organisation and campaign unassociated successfully"},
+                200,
+            )
+        else:
             return {
-                "Error": "Organisation Campaign Not Found",
-                "SubCode": "NotFound",
-            }, 404
-        except Exception as e:
-            error_msg = f"Organisation Campaigns DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+                "Error": "User is not a manager of the organisation",
+                "SubCode": "UserNotPermitted",
+            }, 403

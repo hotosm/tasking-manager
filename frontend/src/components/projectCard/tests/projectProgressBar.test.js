@@ -22,7 +22,7 @@ describe('test if projectProgressBar', () => {
   });
   it('has a div with the complete background bar', () => {
     expect(
-      testInstance.findByProps({ className: 'bg-grey-light br-pill hhalf overflow-y-hidden' }).type,
+      testInstance.findByProps({ className: 'bg-tan br-pill hhalf overflow-y-hidden' }).type,
     ).toBe('div');
   });
   it('the first div has the correct classes', () => {

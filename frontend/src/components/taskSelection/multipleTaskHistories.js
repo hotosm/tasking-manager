@@ -11,9 +11,9 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { TaskHistory } from './taskActivity';
 
-export const MultipleTaskHistoriesAccordion = ({ handleChange, tasks, projectId }) => {
+export const MultipleTaskHistoriesAccordion = ({ tasks, projectId }) => {
   return (
-    <Accordion className="bn" allowMultipleExpanded allowZeroExpanded onChange={handleChange}>
+    <Accordion className="bn" allowMultipleExpanded allowZeroExpanded>
       {tasks
         .sort((n1, n2) => n1.taskId - n2.taskId)
         .map((t) => (
@@ -24,7 +24,7 @@ export const MultipleTaskHistoriesAccordion = ({ handleChange, tasks, projectId 
               </AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel className="ph2 pb2 accordion_panel">
-              <TaskHistory projectId={projectId} taskId={t.taskId} commentPayload={undefined} />
+              <TaskHistory projectId={projectId} taskId={t.taskId} />
             </AccordionItemPanel>
           </AccordionItem>
         ))}

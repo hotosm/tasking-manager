@@ -7,8 +7,8 @@ import { Dropdown } from '../dropdown';
 
 export const ProjectsActionFilter = ({ setQuery, fullProjectsQuery }) => {
   const dispatch = useDispatch();
-  const action = useSelector((state) => state.preferences['action']);
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const action = useSelector((state) => state.preferences.action);
+  const userDetails = useSelector((state) => state.auth.userDetails);
 
   useEffect(() => {
     // if action is not set on redux/localStorage,
@@ -37,17 +37,27 @@ export const ProjectsActionFilter = ({ setQuery, fullProjectsQuery }) => {
             'pushIn',
           );
         }
-        dispatch({ type: 'SET_ACTION', action: value });
+        // 'Archived' is a special case, as it is not a valid action
+        dispatch({ type: 'SET_ACTION', action: value === 'ARCHIVED' ? 'any' : value });
+        setQuery(
+          {
+            ...fullProjectsQuery,
+            page: undefined,
+            status: value !== 'ARCHIVED' ? undefined : 'ARCHIVED',
+          },
+          'pushIn',
+        );
       }}
       // use the action query param, in case someone loads the page with /explore?action=*
-      value={fullProjectsQuery.action || action || 'any'}
+      value={fullProjectsQuery.status || fullProjectsQuery.action || action || 'any'}
       options={[
         { label: <FormattedMessage {...messages.projectsToMap} />, value: 'map' },
         { label: <FormattedMessage {...messages.projectsToValidate} />, value: 'validate' },
         { label: <FormattedMessage {...messages.anyProject} />, value: 'any' },
+        { label: <FormattedMessage {...messages.archived} />, value: 'ARCHIVED' },
       ]}
       display={'Action'}
-      className={'ba b--grey-light bg-white mr1 f6 v-mid dn dib-ns pv2'}
+      className={'ba b--tan bg-white mr3 f6 v-mid dn dib-ns pv2 br1 pl3 fw5 blue-dark'}
     />
   );
 };

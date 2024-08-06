@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import ReactPlaceholder from 'react-placeholder';
-import 'react-placeholder/lib/reactPlaceholder.css';
 import Select from 'react-select';
 import { format, parse } from 'date-fns';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { FormattedMessage, useIntl } from 'react-intl';
+import 'react-placeholder/lib/reactPlaceholder.css';
+import 'react-datepicker/dist/react-datepicker.css';
+
 import { dateRanges } from '../../utils/date';
 import messages from './messages';
 import { CalendarIcon } from '../svgIcons';
@@ -18,15 +18,15 @@ export const ProjectFilterSelect = ({
   setQueryForChild,
   allQueryParamsForChild,
   options,
+  payloadKey,
 }) => {
-  const state = options;
   const fieldsetTitle = <FormattedMessage {...messages[fieldsetName]} />;
   const fieldsetTitlePlural = <FormattedMessage {...messages[`${fieldsetName}s`]} />;
 
   return (
     <fieldset id={fieldsetName} className={fieldsetStyle}>
       <legend className={titleStyle}>{fieldsetTitle}</legend>
-      {state.isError ? (
+      {options.isError ? (
         <div className="bg-tan pa4">
           <FormattedMessage
             {...messages.errorLoadingTheXForY}
@@ -36,18 +36,18 @@ export const ProjectFilterSelect = ({
             }}
           />
         </div>
-      ) : null}
-      <ReactPlaceholder type="text" rows={2} ready={!state.isLoading}>
+      ) : (
         <TagFilterPickerAutocomplete
           fieldsetTitle={fieldsetTitle}
           defaultSelectedItem={fieldsetTitlePlural}
           fieldsetName={fieldsetName}
+          payloadKey={payloadKey}
           queryParamSelectedItem={selectedTag || fieldsetTitle}
           tagOptionsFromAPI={options}
           setQuery={setQueryForChild}
           allQueryParams={allQueryParamsForChild}
         />
-      </ReactPlaceholder>
+      )}
     </fieldset>
   );
 };
@@ -139,26 +139,28 @@ export const DateFilterPicker = ({
       <legend className={titleStyle}>
         <FormattedMessage {...messages[fieldsetName]} />
       </legend>
-      <CalendarIcon className="blue-grey dib w1 pr2 v-mid" />
-      <DatePicker
-        selected={selectedValue ? parse(selectedValue, dateFormat, new Date()) : null}
-        onChange={(date) => {
-          setQueryForChild(
-            {
-              ...allQueryParamsForChild,
-              page: undefined,
-              [fieldsetName]: date ? format(date, dateFormat) : null,
-            },
-            'pushIn',
-          );
-          setIsCustomDateRange(true);
-        }}
-        dateFormat={dateFormat}
-        className="w-auto pv2 ph1 ba b--grey-light"
-        placeholderText={intl.formatMessage(messages[`${fieldsetName}Placeholder`])}
-        showYearDropdown
-        scrollableYearDropdown
-      />
+      <div className="flex">
+        <CalendarIcon className="blue-grey dib w1 pr2 v-mid" />
+        <DatePicker
+          selected={selectedValue ? parse(selectedValue, dateFormat, new Date()) : null}
+          onChange={(date) => {
+            setQueryForChild(
+              {
+                ...allQueryParamsForChild,
+                page: undefined,
+                [fieldsetName]: date ? format(date, dateFormat) : null,
+              },
+              'pushIn',
+            );
+            setIsCustomDateRange(true);
+          }}
+          dateFormat={dateFormat}
+          className="w-auto pv2 ph1 ba b--grey-light"
+          placeholderText={intl.formatMessage(messages[`${fieldsetName}Placeholder`])}
+          showYearDropdown
+          scrollableYearDropdown
+        />
+      </div>
     </fieldset>
   );
 };
@@ -167,33 +169,18 @@ export const DateFilterPicker = ({
 defaultSelectedItem gets appended to top of list as an option for reset
 */
 export const TagFilterPickerAutocomplete = ({
-  tagOptionsFromAPI,
   tagOptionsFromAPI: { tags: tagOptions },
   fieldsetTitle,
   fieldsetName,
   queryParamSelectedItem,
-  onSelectedItemChange,
-  className,
   defaultSelectedItem,
   allQueryParams,
   setQuery,
+  payloadKey = 'name',
 }) => {
-  const getLabel = (option) => {
-    if (option.name) {
-      return option.name;
-    } else {
-      return option;
-    }
-  };
-  const getValue = (option) => {
-    if (option && option.value) {
-      return option.value;
-    }
-    if (option && option.name) {
-      return option.name;
-    }
-    return option;
-  };
+  const getLabel = (option) => option.name || option;
+
+  const getValue = (option) => (option && option[payloadKey] ? option[payloadKey] : option);
 
   const handleTagChange = (change) => {
     const value = getValue(change);
@@ -210,19 +197,27 @@ export const TagFilterPickerAutocomplete = ({
     );
   };
 
-  const [selectedOption] = tagOptions.filter((option) => option.name === queryParamSelectedItem);
+  const selectedOption = tagOptions.find((option) => option[payloadKey] === queryParamSelectedItem);
 
   return (
     <Select
+      isLoading={tagOptions.isLoading}
       onChange={handleTagChange}
       classNamePrefix="react-select"
       getOptionLabel={getLabel}
       getOptionValue={getValue}
-      autoFocus={true}
       placeholder={allQueryParams[fieldsetName] || fieldsetTitle}
       options={tagOptions}
       value={selectedOption || null}
       isClearable={true}
+      isDisabled={fieldsetName === 'interests' && allQueryParams.basedOnMyInterests}
+      styles={{
+        menu: (baseStyles) => ({
+          ...baseStyles,
+          // having greater zIndex than switch toggle(5)
+          zIndex: 6,
+        }),
+      }}
     />
   );
 };

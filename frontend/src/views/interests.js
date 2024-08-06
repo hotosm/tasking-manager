@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
-import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
-import ReactPlaceholder from 'react-placeholder';
-import { Link, useNavigate } from '@reach/router';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { InterestsManagement, InterestForm, InterestInformation } from '../components/interests';
@@ -14,16 +13,32 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { DeleteModal } from '../components/deleteModal';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { updateEntity } from '../utils/management';
+import { EntityError } from '../components/alert';
 
 export const CreateInterest = () => {
   useSetTitleTag('Create new category');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
+  const [isError, setIsError] = useState(false);
 
   const createInterest = (payload) => {
-    pushToLocalJSONAPI('interests/', JSON.stringify(payload), token, 'POST').then((result) =>
-      navigate(`/manage/categories/${result.id}`),
-    );
+    setIsError(false);
+    pushToLocalJSONAPI('interests/', JSON.stringify(payload), token, 'POST')
+      .then((result) => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'category',
+            }}
+          />,
+        );
+        navigate(`/manage/categories/${result.id}`);
+      })
+      .catch(() => {
+        setIsError(true);
+      });
   };
 
   return (
@@ -43,6 +58,7 @@ export const CreateInterest = () => {
                   </h3>
                   <InterestInformation />
                 </div>
+                {isError && <EntityError entity="category" />}
               </div>
               <div className="w-40-l w-100 fl pl5-l pl0 "></div>
             </div>
@@ -73,46 +89,37 @@ export const CreateInterest = () => {
 
 export const ListInterests = () => {
   useSetTitleTag('Manage categories');
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   // TO DO: filter teams of current user
   const [error, loading, interests] = useFetch(`interests/`);
-
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <div className="w-50-ns w-100 cf ph6-l ph4">
-        <TextBlock rows={1} className="bg-grey-light h3" />
-      </div>
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-    </div>
-  );
+  const isInterestsFetched = !loading && !error;
 
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={!error && !loading}
-    >
-      <InterestsManagement interests={interests.interests} userDetails={userDetails} />
-    </ReactPlaceholder>
+    <InterestsManagement
+      interests={interests.interests}
+      userDetails={userDetails}
+      isInterestsFetched={isInterestsFetched}
+    />
   );
 };
 
-export const EditInterest = (props) => {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
-  const [error, loading, interest] = useFetch(`interests/${props.id}/`);
+export const EditInterest = () => {
+  const { id } = useParams();
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
+  const [isError, setIsError] = useState(false);
+  const [error, loading, interest] = useFetch(`interests/${id}/`);
   useSetTitleTag(`Edit ${interest.name}`);
 
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?interests=${props.id}&omitMapResults=true`,
-    props.id,
+    `projects/?interests=${id}&omitMapResults=true`,
+    id,
   );
 
-  const updateInterest = (payload) => {
-    pushToLocalJSONAPI(`interests/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
-  };
+  const onFailure = () => setIsError(true);
+
+  const updateInterest = (payload) =>
+    updateEntity(`interests/${id}/`, 'category', payload, token, null, onFailure);
 
   return (
     <div className="cf pv4 bg-tan">
@@ -129,11 +136,12 @@ export const EditInterest = (props) => {
           updateInterest={updateInterest}
           disabledForm={error || loading}
         />
+        {isError && <EntityError entity="category" action="updation" />}
       </div>
       <div className="w-60-l w-100 mt4 pl5-l pl0 fr">
         <Projects
           projects={!projectsLoading && !projectsError && projects}
-          viewAllEndpoint={`/manage/projects/?interests=${props.id}`}
+          viewAllEndpoint={`/manage/projects/?interests=${id}`}
           ownerEntity="category"
         />
       </div>

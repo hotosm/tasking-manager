@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@reach/router';
+import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import { ProfilePictureIcon, CloseIcon } from '../svgIcons';
@@ -8,7 +8,7 @@ import { useAvatarStyle } from '../../hooks/UseAvatarStyle';
 import { useAvatarText } from '../../hooks/UseAvatarText';
 
 export const CurrentUserAvatar = (props) => {
-  const userPicture = useSelector((state) => state.auth.getIn(['userDetails', 'pictureUrl']));
+  const userPicture = useSelector((state) => state.auth.userDetails.pictureUrl);
   if (userPicture) {
     return (
       <div
@@ -18,7 +18,7 @@ export const CurrentUserAvatar = (props) => {
       />
     );
   }
-  return <ProfilePictureIcon {...props} />;
+  return <ProfilePictureIcon {...props} aria-label="Sample avatar" />;
 };
 
 export const UserAvatar = ({
@@ -78,6 +78,7 @@ const Avatar = ({ username, size, colorClasses, removeFn, picture, text, editMod
     >
       {removeFn && editMode && (
         <div
+          role="button"
           className="relative top-0 z-1 fr br-100 f7 tc h1 w1 bg-red white pointer"
           style={closeIconStyle}
           onClick={() => removeFn(username)}
@@ -100,6 +101,7 @@ export const UserAvatarList = ({
   textColor = 'white',
   bgColor,
   size,
+  totalCount,
 }: Object) => {
   const getColor = () =>
     bgColor ? bgColor : getRandomArrayItem(['bg-orange', 'bg-red', 'bg-blue-dark', 'bg-blue-grey']);
@@ -113,8 +115,8 @@ export const UserAvatarList = ({
 
   return (
     <>
-      {users.slice(0, maxLength ? maxLength : users.length).map((user, n) => (
-        <div style={{ marginLeft: n === 0 ? '' : marginLeft }} className="dib" key={n}>
+      {users.slice(0, maxLength ? maxLength : totalCount || users.length).map((user, n) => (
+        <div style={{ marginLeft: n === 0 ? '' : marginLeft }} className="dib" key={user.username}>
           <UserAvatar
             username={user.username}
             picture={user.pictureUrl}
@@ -123,10 +125,14 @@ export const UserAvatarList = ({
           />
         </div>
       ))}
-      {maxLength && users.length - maxLength > 0 && (
+      {maxLength && (totalCount || users.length) - maxLength > 0 && (
         <div style={{ marginLeft: '-1.5rem' }} className="dib">
           <UserAvatar
-            number={`+${users.length - maxLength > 999 ? 999 : users.length - maxLength}`}
+            number={`+${
+              (totalCount || users.length) - maxLength > 999
+                ? 999
+                : (totalCount || users.length) - maxLength
+            }`}
             size={size}
             colorClasses={`blue-dark bg-grey-light`}
             disableLink={true}

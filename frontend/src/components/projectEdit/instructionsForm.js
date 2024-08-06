@@ -4,9 +4,23 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { InputLocale } from './inputLocale';
+import { retrieveDefaultChangesetComment } from '../../utils/defaultChangesetComment';
+
+function getTextWidth(text, font) {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+
+  context.font = font || getComputedStyle(document.body).font;
+
+  return context.measureText(text).width;
+}
 
 export const InstructionsForm = ({ languages }) => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
+  const defaultComment = retrieveDefaultChangesetComment(
+    projectInfo.changesetComment,
+    projectInfo.projectId,
+  )[0];
   const handleChange = (event) => {
     const localesFields = ['instructions', 'perTaskInstructions'];
     if (localesFields.includes(event.target.name)) {
@@ -21,7 +35,13 @@ export const InstructionsForm = ({ languages }) => {
       newLocales.push(localeData);
       setProjectInfo({ ...projectInfo, projectInfoLocales: newLocales });
     } else {
-      setProjectInfo({ ...projectInfo, [event.target.name]: event.target.value });
+      setProjectInfo({
+        ...projectInfo,
+        [event.target.name]:
+          event.target.name === 'changesetComment'
+            ? `${defaultComment} ${event.target.value.trimStart()}`
+            : event.target.value,
+      });
     }
   };
 
@@ -31,13 +51,27 @@ export const InstructionsForm = ({ languages }) => {
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.changesetComment} />
         </label>
-        <input
-          className={styleClasses.inputClass}
-          type="text"
-          value={projectInfo.changesetComment}
-          name="changesetComment"
-          onChange={handleChange}
-        />
+        <div className="relative">
+          <input
+            className={styleClasses.inputClass}
+            type="text"
+            value={projectInfo.changesetComment.split(defaultComment)[1]}
+            name="changesetComment"
+            onChange={handleChange}
+            style={{ paddingLeft: getTextWidth(defaultComment) + 30 }}
+          />
+          <FormattedMessage {...messages.nonEditableComment}>
+            {(msg) => (
+              <span
+                className="absolute db bg-tan"
+                style={{ top: '9px', left: '8px', color: 'fieldtext', lineHeight: 1.15 }}
+                title={msg}
+              >
+                {defaultComment}
+              </span>
+            )}
+          </FormattedMessage>
+        </div>
         <p className={styleClasses.pClass}>
           <FormattedMessage {...messages.changesetCommentDescription} />
         </p>

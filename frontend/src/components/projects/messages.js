@@ -124,6 +124,18 @@ export default defineMessages({
     id: 'project.navFilters.locations',
     defaultMessage: 'Locations',
   },
+  interest: {
+    id: 'project.navFilters.interest',
+    defaultMessage: 'Interest',
+  },
+  interests: {
+    id: 'project.navFilters.interests',
+    defaultMessage: 'Interests',
+  },
+  filterByMyInterests: {
+    id: 'project.navFilters.filterByMyInterests',
+    defaultMessage: 'Filter by my interests',
+  },
   errorLoadingTheXForY: {
     id: 'project.navFilters.error',
     defaultMessage: 'Error loading the {xWord} for {yWord}',
@@ -160,6 +172,10 @@ export default defineMessages({
     id: 'project.nav.active',
     defaultMessage: 'Active',
   },
+  stale: {
+    id: 'project.nav.stale',
+    defaultMessage: 'Stale',
+  },
   managed: {
     id: 'project.nav.managed',
     defaultMessage: 'Managed by me',
@@ -178,7 +194,7 @@ export default defineMessages({
   },
   paginationCount: {
     id: 'project.pagination.count',
-    defaultMessage: 'Showing {number} of {total}',
+    defaultMessage: 'Showing {number} of {total} projects',
   },
   clearFilters: {
     id: 'project.nav.clearFilters',
@@ -200,13 +216,13 @@ export default defineMessages({
     id: 'project.sortby.priority',
     defaultMessage: 'Urgent projects',
   },
-  sortByBeginner: {
-    id: 'project.sortby.difficulty.beginner',
-    defaultMessage: 'Beginner projects',
+  sortByEasy: {
+    id: 'project.sortby.difficulty.easy',
+    defaultMessage: 'Easy projects',
   },
-  sortByAdvanced: {
-    id: 'project.sortby.difficulty.advanced',
-    defaultMessage: 'Advanced projects',
+  sortByChallenging: {
+    id: 'project.sortby.difficulty.challenging',
+    defaultMessage: 'Challenging projects',
   },
   sortByMoreActive: {
     id: 'project.sortby.more_active',

@@ -1,0 +1,35 @@
+.footer-ctr-top {
+  padding-top: 3.43rem;
+  margin-bottom: 3rem;
+  gap: 5rem;
+
+  @media screen and (max-width: 30em) {
+    gap: 2rem;
+  }
+
+  p {
+    max-width: 600px
+  }
+
+  a {
+    @media screen and (min-width: 30em) and (max-width: 60em) {
+      text-align: right;
+    }
+  }
+}
+
+.menuItems {
+  display: flex;
+  display: row;
+
+  @media screen and (max-width: 60em) {
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+.socials {
+  gap: .75rem
+}

@@ -30,17 +30,17 @@ def upgrade():
 
     # Content migration: Check the amount of zoom levels in tasks of a project and set
     # task_creation_mode to 1 or 0 accordingly.
-    projects = conn.execute("select * from projects")
+    projects = conn.execute(sa.text("select * from projects"))
 
     for project in projects:
         query = "select distinct zoom from tasks where project_id = " + str(project.id)
-        zooms = conn.execute(query).fetchall()
+        zooms = conn.execute(sa.text(query)).fetchall()
 
         if len(zooms) == 1 and zooms[0] == (None,):
             query = "update projects set task_creation_mode = 1 where id = " + str(
                 project.id
             )
-            op.execute(query)
+            op.execute(sa.text(query))
 
 
 def downgrade():

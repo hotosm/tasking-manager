@@ -1,13 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import WebFont from 'webfontloader';
 import * as Sentry from '@sentry/react';
-import { Integrations } from '@sentry/tracing';
 
 import App from './App';
-import { store } from './store';
-import { getUserDetails } from './store/actions/auth';
+import { store, persistor } from './store';
 import { ConnectedIntl } from './utils/internationalization';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { ENABLE_SERVICEWORKER, SENTRY_FRONTEND_DSN, ENVIRONMENT } from './config';
@@ -16,28 +15,42 @@ if (SENTRY_FRONTEND_DSN) {
   Sentry.init({
     dsn: SENTRY_FRONTEND_DSN,
     environment: ENVIRONMENT,
-    integrations: [new Integrations.BrowserTracing()],
+    integrations: [
+      new Sentry.BrowserTracing(),
+      new Sentry.Replay({
+        // Additional SDK configuration goes in here, for example:
+        maskAllText: true,
+        blockAllMedia: true,
+        }),
+      ],
     tracesSampleRate: 0.1,
+
+    // Session Replays integration
+    replaysSessionSampleRate: 1.0,
+    // If the entire session is not sampled, use the below sample rate to sample
+    // sessions when an error occurs.
+    replaysOnErrorSampleRate: 1.0,
+    
   });
 }
 
 WebFont.load({
   google: {
-    families: ['Barlow Condensed:400,600,700', 'Archivo:400,500,600,700', 'sans-serif'],
+    families: ['Barlow Condensed:400,500,600,700', 'Archivo:400,500,600,700', 'sans-serif'],
   },
 });
 
 ReactDOM.render(
   <Provider store={store}>
-    <ConnectedIntl>
-      <App />
-    </ConnectedIntl>
+    <PersistGate loading={null} persistor={persistor}>
+      <ConnectedIntl>
+        <App />
+      </ConnectedIntl>
+    </PersistGate>
   </Provider>,
   document.getElementById('root'),
 );
 
-// fetch user details endpoint when the user is returning to a logged in session
-store.dispatch(getUserDetails(store.getState()));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA.

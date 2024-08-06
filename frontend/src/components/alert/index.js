@@ -1,6 +1,15 @@
-import { BanIcon, CheckIcon, InfoIcon, AlertIcon } from '../svgIcons';
+import { FormattedMessage } from 'react-intl';
 
-export const Alert = ({ type = 'info', compact = false, inline = false, children }) => {
+import { BanIcon, CheckIcon, InfoIcon, AlertIcon } from '../svgIcons';
+import messages from '../../views/messages';
+
+export const Alert = ({
+  type = 'info',
+  compact = false,
+  inline = false,
+  iconClassName,
+  children,
+}) => {
   const icons = {
     info: InfoIcon,
     success: CheckIcon,
@@ -28,8 +37,23 @@ export const Alert = ({ type = 'info', compact = false, inline = false, children
         color[type]
       }`}
     >
-      <Icon className={`h1 w1 v-top mr2 ${iconColor[type]}`} />
+      <Icon className={`h1 w1 v-top mr2 ${iconColor[type]} ${iconClassName || ''}`} />
       {children}
     </div>
   );
 };
+
+export function EntityError({ entity, action = 'creation' }) {
+  const messageType = action === 'updation' ? 'entityInfoUpdationFailure' : 'entityCreationFailure';
+
+  return (
+    <Alert type="error">
+      <FormattedMessage
+        {...messages[messageType]}
+        values={{
+          entity: entity,
+        }}
+      />
+    </Alert>
+  );
+}

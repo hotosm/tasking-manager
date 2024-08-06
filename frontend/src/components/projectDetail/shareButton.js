@@ -16,14 +16,19 @@ export function ShareButton({ projectId }: Object) {
       'twitter',
       getTwitterLink(message, window.location.href, [ORG_CODE, 'OpenStreetMap']),
     );
+
   const facebookPopup = (message) =>
     createPopup('facebook', getFacebookLink(message, window.location.href));
+
   const linkedInPopup = () => createPopup('linkedin', getLinkedInLink(window.location.href));
+
   return (
     <>
-      <div data-for="shareProject" data-tip="custom show">
-        <ShareIcon className="pt3 pr2 v-btm" />
-        <FormattedMessage {...messages.share} />
+      <div className="flex items-center" data-for="shareProject" data-tip="custom show">
+        <ShareIcon className="pr2 blue-grey" />
+        <span className="dn db-ns">
+          <FormattedMessage {...messages.share} />
+        </span>
       </div>
       <ReactTooltip delayHide={500} effect="solid" clickable={true} id="shareProject">
         <FormattedMessage

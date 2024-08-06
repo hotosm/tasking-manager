@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from flask_restful import Resource, current_app, request
+from flask_restful import Resource, request
 
 from backend.services.users.authentication_service import token_auth
 from backend.services.stats_service import StatsService
@@ -64,13 +64,17 @@ class TasksStatisticsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            start_date = validate_date_input(request.args.get("startDate"))
+            if request.args.get("startDate"):
+                start_date = validate_date_input(request.args.get("startDate"))
+            else:
+                return {
+                    "Error": "Start date is required",
+                    "SubCode": "MissingDate",
+                }, 400
             end_date = validate_date_input(request.args.get("endDate", date.today()))
-            if not (start_date):
-                raise KeyError("MissingDate- Missing start date parameter")
             if end_date < start_date:
                 raise ValueError(
-                    "InvalidStartDate- Start date must be earlier than end date"
+                    "InvalidDateRange- Start date must be earlier than end date"
                 )
             if (end_date - start_date) > timedelta(days=366):
                 raise ValueError(
@@ -95,7 +99,3 @@ class TasksStatisticsAPI(Resource):
             return task_stats.to_primitive(), 200
         except (KeyError, ValueError) as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-        except Exception as e:
-            error_msg = f"Task Statistics GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch task statistics"}, 500

@@ -1,6 +1,16 @@
 const cf = require('@mapbox/cloudfriend');
 
 const Parameters = {
+  TaskingManagerBackendAMI: {
+    Type: "AWS::EC2::Image::Id",
+    Description: 'AMI ID of Backend VM, currently Ubuntu 20.04 LTS - Was ami-00fa576fb10a52a1c',
+    Default: "ami-0aa2b7722dc1b5612",
+  },
+  TaskingManagerBackendInstanceType: {
+    Type: 'String',
+    Description: 'Instance Type of  Backend VM',
+    Default: 'c6a.large'
+  },
   GitSha: {
     Type: 'String'
   },
@@ -41,7 +51,7 @@ const Parameters = {
   DatabaseEngineVersion: {
     Description: 'AWS PostgreSQL Engine version',
     Type: 'String',
-    Default: '11.12'
+    Default: '11.19'
   },
   DatabaseInstanceType: {
     Description: 'Database instance type',
@@ -65,7 +75,7 @@ const Parameters = {
   },
   ELBSubnets: {
     Description: 'ELB subnets',
-    Type: 'String'
+    Type: "List<AWS::EC2::Subnet::Id>"
   },
   SSLCertificateIdentifier: {
     Type: 'String',
@@ -75,12 +85,12 @@ const Parameters = {
     Description: 'TM_LOG_DIR environment variable',
     Type: 'String'
   },
-  TaskingManagerConsumerKey: {
-    Description: 'TM_CONSUMER_KEY',
+  TaskingManagerOAuthClientID: {
+    Description: 'TM_CLIENT_ID',
     Type: 'String'
   },
-  TaskingManagerConsumerSecret: {
-      Description: 'TM_CONSUMER_SECRET',
+  TaskingManagerOAuthClientSecret: {
+      Description: 'TM_CLIENT_SECRET',
       Type: 'String'
   },
   TaskingManagerSecret: {
@@ -127,6 +137,24 @@ const Parameters = {
   TaskingManagerSMTPPort: {
     Description: 'TM_SMTP_PORT environment variable',
     Type: 'String'
+  },
+  TaskingManagerSMTPSSL: {
+    Description: 'TM_SMTP_USE_SSL environment variable',
+    Type: 'Number',
+    AllowedValues: ['1', '0'],
+    Default: '0'
+  },
+  TaskingManagerSMTPTLS: {
+    Description: 'TM_SMTP_USE_TLS environment variable',
+    Type: 'Number',
+    AllowedValues: ['1', '0'],
+    Default: '1'
+  },
+  TaskingManagerSendProjectUpdateEmails:{
+    Description: 'TM_SEND_PROJECT_UPDATE_EMAILS environment variable',
+    Type: 'Number',
+    AllowedValues: ['1', '0'],
+    Default: '1'
   },
   TaskingManagerDefaultChangesetComment: {
     Description: 'TM_DEFAULT_CHANGESET_COMMENT environment variable',
@@ -189,7 +217,7 @@ const Resources = {
     },
     UpdatePolicy: {
       AutoScalingRollingUpdate: {
-        PauseTime: 'PT60M',
+        PauseTime: 'PT10M',
         MaxBatchSize: 2,
         WaitOnResourceSignals: true
       }
@@ -205,16 +233,8 @@ const Resources = {
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
             ResourceLabel: cf.join('/', [
-              cf.select(1,
-                cf.split('loadbalancer/',
-                  cf.select(5,
-                    cf.split(':', cf.ref("TaskingManagerLoadBalancer"))
-                  )
-                )
-              ),
-              cf.select(5,
-                cf.split(':', cf.ref("TaskingManagerTargetGroup"))
-              )
+              cf.getAtt("TaskingManagerLoadBalancer", "LoadBalancerFullName"),
+              cf.getAtt("TaskingManagerTargetGroup", "TargetGroupFullName")
             ])
           }
         },
@@ -301,7 +321,7 @@ const Resources = {
                 "[cfn-auto-reloader-hook]",
                 "triggers=post.update",
                 "path=Resources.EC2Instance.Metadata.AWS::CloudFormation::Init.02_config-amazon-cloudwatch-agent",
-                cf.sub("action=cfn-init -v --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region} --configsets UpdateEnvironment"),
+                cf.sub("action=/usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region} --configsets UpdateEnvironment"),
                 "runas=root"
               ]),
               "mode": "000400",
@@ -314,7 +334,7 @@ const Resources = {
                 "Description=cfn-hup daemon",
                 "[Service]",
                 "Type=simple",
-                "ExecStart=/opt/aws/bin/cfn-hup",
+                "ExecStart=/usr/local/bin/cfn-hup",
                 "Restart=always",
                 "[Install]",
                 "WantedBy=multi-user.target"
@@ -334,52 +354,38 @@ const Resources = {
     },
     Properties: {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-      ImageId: 'ami-00fa576fb10a52a1c',
-      InstanceType: 'c5d.large',
+      ImageId: cf.ref('TaskingManagerBackendAMI'),
+      InstanceType: cf.ref('TaskingManagerBackendInstanceType'),
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
       UserData: cf.userData([
         '#!/bin/bash',
         'set -x',
-        'sleep 60',
+        'sleep 10',
         'export DEBIAN_FRONTEND=noninteractive',
         'export LC_ALL="en_US.UTF-8"',
         'export LC_CTYPE="en_US.UTF-8"',
         'dpkg-reconfigure --frontend=noninteractive locales',
-        'sudo apt-get -y update',
-        'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
-        'sudo apt-get -y install curl',
-        'wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -',
-        'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list\'',
-        'sudo apt-get update -y',
-        'sudo apt-get install -y postgresql-12',
-        'sudo apt-get -y install postgresql-12-postgis-3',
-        'sudo apt-get -y install postgresql-12-postgis-3-scripts',
-        'sudo apt-get -y install postgis',
-        'sudo apt-get -y install libpq-dev',
-        'sudo apt-get -y install libxml2',
-        'sudo apt-get -y install wget libxml2-dev',
-        'sudo apt-get -y install libgeos-3.8.0',
-        'sudo apt-get -y install libgeos-dev',
-        'sudo apt-get -y install libproj15',
-        'sudo apt-get -y install libproj-dev',
-        'sudo apt-get -y install python3-pip libgdal-dev libpq-dev python3-psycopg2 python3.8-venv',
-        'sudo apt-get -y install libjson-c-dev',
-        'sudo apt-get -y install git',
-        'sudo apt-get -y install awscli',
-        'sudo apt-get -y install ruby',
-        'git clone --recursive https://github.com/hotosm/tasking-manager.git',
-        'cd tasking-manager/',
+        'sudo apt-get -q -y update',
+        'sudo DEBIAN_FRONTEND=noninteractive apt-get -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
+        'sudo apt-get -q -y install awscli curl git gnupg ruby wget',
+        'sudo apt-get -q -y install python3.9 python3-pip python3-psycopg2 python-is-python3',
+        'sudo apt-get -q -y install postgresql-client postgis libpq-dev',
+        'sudo apt-get -q -y install libxml2 libxml2-dev',
+        'sudo apt-get -q -y install libgeos-3.9.0 libgeos-dev',
+        'sudo apt-get -q -y install libproj19 libproj-dev',
+        'sudo apt-get -q -y install libjson-c-dev',
+        'git clone --recursive https://github.com/hotosm/tasking-manager.git /opt/tasking-manager',
+        'cd /opt/tasking-manager/',
         cf.sub('git reset --hard ${GitSha}'),
-        'python3 -m venv ./venv',
-        '. ./venv/bin/activate',
-        'pip install --upgrade pip',
-        'pip install -r requirements.txt',
+        'pip install --quiet --upgrade pip pdm',
+        'wget --quiet https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz -O /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
+        'pip install /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
+        'pdm install',
+        'eval "$(pdm venv activate)"',
         'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf',
         'export LC_ALL=C',
-        'wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
+        'wget --quiet https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
         'dpkg -i /tmp/amazon-cloudwatch-agent.deb',
-        'wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz',
-        'python3 -m easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-py3-latest.tar.gz',
         'echo "Exporting environment variables:"',
         cf.sub('export NEW_RELIC_LICENSE=${NewRelicLicense}'),
         cf.join('', ['export POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address')]),
@@ -388,13 +394,17 @@ const Resources = {
         cf.sub('export POSTGRES_USER="${PostgresUser}"'),
         cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
         cf.sub('export TM_ENVIRONMENT="${AWS::StackName}"'),
-        cf.sub('export TM_CONSUMER_KEY="${TaskingManagerConsumerKey}"'),
-        cf.sub('export TM_CONSUMER_SECRET="${TaskingManagerConsumerSecret}"'),
+        cf.sub('export TM_CLIENT_ID="${TaskingManagerOAuthClientID}"'),
+        cf.sub('export TM_CLIENT_SECRET="${TaskingManagerOAuthClientSecret}"'),
+        cf.sub('export TM_REDIRECT_URI="${TaskingManagerAppBaseUrl}/authorized"'),
+        'export TM_SCOPE="read_prefs write_api"',
         cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
         cf.sub('export TM_SMTP_HOST="${TaskingManagerSMTPHost}"'),
         cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),
         cf.sub('export TM_SMTP_PORT="${TaskingManagerSMTPPort}"'),
         cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
+        cf.sub('export TM_SMTP_USE_SSL="${TaskingManagerSMTPSSL}"'),
+        cf.sub('export TM_SMTP_USE_TLS="${TaskingManagerSMTPTLS}"'),
         cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
         cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),
         cf.sub('export TM_EMAIL_CONTACT_ADDRESS="${TaskingManagerEmailContactAddress}"'),
@@ -407,19 +417,14 @@ const Resources = {
         cf.sub('export TM_IMAGE_UPLOAD_API_KEY="${TaskingManagerImageUploadAPIKey}"'),
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
-        './venv/bin/python3 manage.py db upgrade',
+        'pdm run flask db upgrade',
         'echo "------------------------------------------------------------"',
-        'pushd /home/ubuntu',
-        'wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install',
-        'chmod +x ./install && sudo ./install auto',
-        'sudo systemctl start codedeploy-agent',
-        'popd',
         cf.sub('export NEW_RELIC_LICENSE_KEY="${NewRelicLicense}"'),
         cf.sub('export TM_SENTRY_BACKEND_DSN="${SentryBackendDSN}"'),
         'export NEW_RELIC_ENVIRONMENT=$TM_ENVIRONMENT',
         cf.sub('NEW_RELIC_CONFIG_FILE=./scripts/aws/cloudformation/newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 5 --timeout 179 --access-logfile ${TaskingManagerLogDirectory}/gunicorn-access.log --access-logformat \'%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s %(T)s \"%(f)s\" \"%(a)s\"\' manage:application &'),
-        cf.sub('sudo /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
-        cf.sub('/opt/aws/bin/cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
+        cf.sub('sudo /usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
+        cf.sub('/usr/local/bin/cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
       ]),
       KeyName: 'mbtiles'
     }
@@ -438,7 +443,6 @@ const Resources = {
         }]
       },
       ManagedPolicyArns: [
-          'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy',
           'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy',
           'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
       ],
@@ -557,7 +561,7 @@ const Resources = {
     Properties: {
       Name: cf.stackName,
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
-      Subnets: cf.split(',', cf.ref('ELBSubnets')),
+      Subnets: cf.ref('ELBSubnets'),
       Type: 'application'
     }
   },
@@ -605,7 +609,7 @@ const Resources = {
       LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
       Port: 443,
       Protocol: 'HTTPS',
-      SslPolicy: 'ELBSecurityPolicy-FS-1-2-2019-08'
+      SslPolicy: 'ELBSecurityPolicy-TLS13-1-2-2021-06'
     }
   },
   TaskingManagerLoadBalancerHTTPListener: {
@@ -634,6 +638,7 @@ const Resources = {
     },
     Properties: {
         Engine: 'postgres',
+	AllowMajorVersionUpgrade: true,
         DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresDB')),
         EngineVersion: cf.ref('DatabaseEngineVersion'),
         MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresUser')),
@@ -652,37 +657,45 @@ const Resources = {
     Type: 'AWS::S3::Bucket',
     Properties: {
       BucketName: cf.join('-', [cf.stackName, 'react-app']),
-      AccessControl: "PublicRead",
-      PublicAccessBlockConfiguration: {
-        BlockPublicAcls: false,
-        BlockPublicPolicy: false,
-        IgnorePublicAcls: false,
-        RestrictPublicBuckets: false
-      },
       WebsiteConfiguration: {
         ErrorDocument: 'index.html',
         IndexDocument: 'index.html'
-      }
+      },
+      AccessControl: "Private"
     }
   },
   TaskingManagerReactBucketPolicy: {
     Type: 'AWS::S3::BucketPolicy',
+    Metadata: {
+      TODO: "Condition: { StringEquals: { AWS:SourceArn: arn:aws:cloudfront::6000000:distribution/EH2ANTHENTH } }"
+    },
     Properties: {
       Bucket : cf.ref('TaskingManagerReactBucket'),
       PolicyDocument: {
         Version: "2012-10-17",
-        Statement:[{
-          Action: [ 's3:GetObject'],
-          Effect: 'Allow',
-          Principal: '*',
-          Resource: [ cf.join('',
-            [
-              cf.getAtt('TaskingManagerReactBucket', 'Arn'), 
-              '/*'
-            ]
-          )],
-          Sid: 'AddPerm'
-        }]
+        Statement: [
+          {
+            Action: [ "s3:GetObject" ],
+            Effect: 'Allow',
+            Principal: "*",
+            Resource: [
+              cf.join("/", [
+                  cf.getAtt("TaskingManagerReactBucket", "Arn"),
+                  "*"
+              ])
+            ],
+            Sid: "PublicGetObject"
+          },
+          {
+            Action: [ "s3:ListBucket" ],
+            Effect: "Allow",
+            Principal: "*",
+            Resource: [
+              cf.getAtt("TaskingManagerReactBucket", "Arn")
+            ],
+            Sid: "PublicListBucket"
+          }
+        ]
       }
     }
   },
@@ -690,18 +703,22 @@ const Resources = {
     Type: "AWS::CloudFront::Distribution",
     Properties: {
       DistributionConfig: {
+        Comment: cf.join(" ", [ "Frontend CDN for Tasking Manager", cf.ref("NetworkEnvironment") ] ),
         DefaultRootObject: 'index.html',
-        Aliases: [
-          cf.ref('TaskingManagerURL')
-        ],
+        Aliases: [ cf.ref('TaskingManagerURL') ],
         Enabled: true,
-        Origins: [{
-          Id: cf.join('-', [cf.stackName, 'react-app']),
-          DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only'
+        HttpVersion: "http2",
+        IPV6Enabled: true,
+        Origins: [
+          {
+            Id: cf.join('-', [cf.stackName, 'react-app']),
+            DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'), // NOTE: Can also be WebsiteURL
+            CustomOriginConfig: {
+              OriginProtocolPolicy: "https-only",
+              OriginSSLProtocols: [ "TLSv1.2" ]
+            }
           }
-        }],
+        ],
         CustomErrorResponses: [{
           ErrorCachingMinTTL : 0,
           ErrorCode: 403,
@@ -729,7 +746,7 @@ const Resources = {
         },
         ViewerCertificate: {
           AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
-          MinimumProtocolVersion: 'TLSv1.2_2018',
+          MinimumProtocolVersion: 'TLSv1.2_2021',
           SslSupportMethod: 'sni-only'
         }
       }
@@ -739,13 +756,39 @@ const Resources = {
     Type: 'AWS::Route53::RecordSet',
     Condition: 'IsHOTOSMUrl',
     Properties: {
-      Name: cf.ref('TaskingManagerURL'),
+      Name: 't0.hotosm.org',
       Type: 'A',
       AliasTarget: {
         DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
         HostedZoneId: 'Z2FDTNDATAQYW2'
       },
       HostedZoneId: 'Z2O929GW6VWG99',
+    }
+  },
+  TaskingManagerDNSEntries: {
+    Type: "AWS::Route53::RecordSetGroup",
+    Condition: "IsHOTOSMUrl",
+    Properties: {
+      Comment: "DNS records pointing to CDN Frontend",
+      HostedZoneId: 'Z2O929GW6VWG99', // This is hotosm.org hosted Zone ID on Route53
+      RecordSets: [
+        {
+          Name: cf.ref('TaskingManagerURL'),
+          Type: 'A',
+          AliasTarget: {
+            DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
+            HostedZoneId: 'Z2FDTNDATAQYW2' // TODO: This is defined in the AWS Documentation
+          }
+        },
+        {
+          Name: cf.ref('TaskingManagerURL'),
+          Type: 'AAAA',
+          AliasTarget: {
+            DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
+            HostedZoneId: 'Z2FDTNDATAQYW2' // TODO: This is defined in the AWS Documentation
+          },
+        }
+      ]
     }
   }
 };

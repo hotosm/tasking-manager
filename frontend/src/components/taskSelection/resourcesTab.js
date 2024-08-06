@@ -63,7 +63,7 @@ export const ResourcesTab = ({ project, tasksIds, tasksGeojson }) => {
       <h4 className="ttu blue-grey f5">
         <FormattedMessage {...messages.projectData} />
       </h4>
-      <div>
+      <div className="flex flex-wrap gap-1">
         <DownloadAOIButton
           projectId={project.projectId}
           className="bg-white blue-dark ba b--grey-light pv2 ph3"

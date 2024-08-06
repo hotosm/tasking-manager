@@ -1,9 +1,11 @@
+import requests
 from flask import jsonify
 from flask_restful import Resource, request, current_app
 from flask_swagger import swagger
 
 from backend.services.settings_service import SettingsService
 from backend.services.messaging.smtp_service import SMTPService
+from backend.models.postgis.release_version import ReleaseVersion
 
 
 class SystemDocsAPI(Resource):
@@ -153,7 +155,13 @@ class SystemHeartbeatAPI(Resource):
           200:
             description: Service is Healthy
         """
-        return {"status": "healthy"}, 200
+        release = ReleaseVersion.get()
+        if release is not None:
+            release = {
+                "version": release.tag_name,
+                "published_at": str(release.published_at),
+            }
+        return {"status": "healthy", "release": release}, 200
 
 
 class SystemLanguagesAPI(Resource):
@@ -171,16 +179,8 @@ class SystemLanguagesAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            languages = SettingsService.get_settings()
-            return languages.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Languages GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch supported languages",
-                "SubCode": "InternalServerError",
-            }, 500
+        languages = SettingsService.get_settings()
+        return languages.to_primitive(), 200
 
 
 class SystemContactAdminRestAPI(Resource):
@@ -213,6 +213,8 @@ class SystemContactAdminRestAPI(Resource):
             description: Email sent successfully
           400:
               description: Invalid Request
+          501:
+            description: Not Implemented
           500:
             description: A problem occurred
         """
@@ -220,10 +222,46 @@ class SystemContactAdminRestAPI(Resource):
             data = request.get_json()
             SMTPService.send_contact_admin_email(data)
             return {"Success": "Email sent"}, 201
-        except Exception as e:
-            error_msg = f"Application GET API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
+        except ValueError as e:
+            return {"Error": str(e), "SubCode": "NotImplemented"}, 501
+
+
+class SystemReleaseAPI(Resource):
+    def post(self):
+        """
+        Fetch latest release version form github and save to database.
+        ---
+        tags:
+          - system
+        produces:
+          - application/json
+        responses:
+          201:
+            description: Saved version successfully to database
+          502:
+            description: Couldn't fetch latest release from github
+          500:
+            description: Internal server error
+        """
+        response = requests.get(
+            "https://api.github.com/repos/hotosm/tasking-manager/releases/latest"
+        )
+        try:
+            tag_name = response.json()["tag_name"]
+            published_date = response.json()["published_at"]
+            release = ReleaseVersion.get()
+            if release is None:
+                release = ReleaseVersion()
+            if tag_name != release.tag_name:
+                release.tag_name = tag_name
+                release.published_at = published_date
+                release.save()
             return {
-                "Error": "Unable to fetch application keys",
-                "SubCode": "InternalServerError",
-            }, 500
+                "release_version": release.tag_name,
+                "published_at": str(release.published_at),
+            }, 201
+        except KeyError:
+            return {
+                "Error": "Couldn't fetch latest release from github",
+                "SubCode": "GithubFetchError",
+            }, 502

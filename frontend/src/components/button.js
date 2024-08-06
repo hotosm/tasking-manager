@@ -1,9 +1,10 @@
-import { Link } from '@reach/router';
+import { Link } from 'react-router-dom';
 
 import { LoadingIcon } from './svgIcons';
+import React from 'react';
 
 const IconSpace = ({ children }) => <span className="mr2">{children}</span>;
-const AnimatedLoadingIcon = () => (
+export const AnimatedLoadingIcon = () => (
   <IconSpace>
     <LoadingIcon className="h1 w1 v-mid" style={{ animation: 'spin 1s linear infinite' }} />
   </IconSpace>
@@ -50,33 +51,29 @@ export function FormSubmitButton({
   );
 }
 
-export function CustomButton({
-  onClick,
-  children,
-  icon,
-  className,
-  disabled,
-  loading = false,
-}: Object) {
-  return (
-    <button
-      onClick={onClick}
-      aria-pressed="false"
-      focusindex="0"
-      className={`${className || ''} br1 f5 ${disabled || loading ? 'o-50' : 'pointer'}`}
-      disabled={disabled || loading}
-    >
-      {loading ? <AnimatedLoadingIcon /> : icon && <IconSpace>{icon}</IconSpace>}
-      {children}
-    </button>
-  );
-}
+export const CustomButton = React.forwardRef(
+  ({ onClick, children, icon, className, disabled, loading = false }, ref): Object => {
+    return (
+      <button
+        onClick={onClick}
+        ref={ref}
+        aria-pressed="false"
+        focusindex="0"
+        className={`${className || ''} br1 f5 ${disabled || loading ? 'o-50' : 'pointer'}`}
+        disabled={disabled || loading}
+      >
+        {loading ? <AnimatedLoadingIcon /> : icon && <IconSpace>{icon}</IconSpace>}
+        {children}
+      </button>
+    );
+  },
+);
 
-export function EditButton({ url, children }: Object) {
+export function EditButton({ url, children, className = 'mh1 mv1' }: Object) {
   return (
     <Link
       to={url}
-      className="pointer no-underline br1 fw6 f7 dib pv2 ph3 ba b--red white bg-red mh1 mv1"
+      className={`pointer no-underline br1 fw6 f7 dib pv2 ph3 ba b--red white bg-red ${className}`}
     >
       {children}
     </Link>

@@ -1,19 +1,19 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { TopProjects } from '../topProjects';
 
 describe('TopProjects card', () => {
   it('renders a message if the user has not stats yet', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <TopProjects projects={{ mappedProjects: [] }} />
       </ReduxIntlProviders>,
     );
 
-    expect(screen.getByText('Top 5 projects contributed').className).toBe('f4 mv0 fw6 pt3');
+    expect(screen.getByText('Top 5 projects contributed').className).toBe('f125 mv0 fw6 pt3');
     expect(screen.getByText('No projects mapped until now.')).toBeInTheDocument();
   });
   it('renders the chart if projects data is present', () => {
@@ -37,13 +37,13 @@ describe('TopProjects card', () => {
         },
       ],
     };
-    const { container } = render(
+    const { container } = renderWithRouter(
       <ReduxIntlProviders>
         <TopProjects projects={projects} />
       </ReduxIntlProviders>,
     );
 
-    expect(screen.getByText('Top 5 projects contributed').className).toBe('f4 mv0 fw6 pt3');
+    expect(screen.getByText('Top 5 projects contributed').className).toBe('f125 mv0 fw6 pt3');
     expect(screen.getByText('7')).toBeInTheDocument();
     const progressBars = container.querySelectorAll('div.bg-red.br-pill.absolute');
     expect(progressBars[0].style.height).toBe('0.5em');

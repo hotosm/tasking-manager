@@ -1,7 +1,7 @@
 import geojson
 import json
 from shapely.geometry import MultiPolygon, mapping
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union
 import shapely.geometry
 from flask import current_app
 from backend.models.dtos.grid_dto import GridDTO
@@ -26,8 +26,8 @@ class GridService:
         :return: geojson.FeatureCollection trimmed task grid
         """
         # get items out of the dto
-        grid = grid_dto.grid
-        aoi = grid_dto.area_of_interest
+        grid = geojson.loads(geojson.dumps(grid_dto.grid))
+        aoi = geojson.loads(geojson.dumps(grid_dto.area_of_interest))
         clip_to_aoi = grid_dto.clip_to_aoi
 
         # create a shapely shape from the aoi
@@ -119,10 +119,10 @@ class GridService:
                 "MustBeMultiPloygon- Area Of Interest: geometry must be a MultiPolygon"
             )
 
-        is_valid_geojson = geojson.is_valid(aoi_multi_polygon_geojson)
-        if is_valid_geojson["valid"] == "no":
+        if not aoi_multi_polygon_geojson.is_valid:
             raise InvalidGeoJson(
-                f"InvalidMultipolygon- Area of Interest: Invalid MultiPolygon - {is_valid_geojson['message']}"
+                "InvalidMultipolygon- Area of Interest: Invalid MultiPolygon - "
+                + ", ".join(aoi_multi_polygon_geojson.errors())
             )
 
         return aoi_multi_polygon_geojson
@@ -183,7 +183,7 @@ class GridService:
         ):
             # adapt the geometry for use as a shapely geometry
             # http://toblerity.org/shapely/manual.html#shapely.geometry.asShape
-            feature.geometry = shapely.geometry.asShape(feature.geometry)
+            feature.geometry = shapely.geometry.shape(feature.geometry)
             return feature
         else:
             return None
@@ -229,7 +229,7 @@ class GridService:
         :return: Multipolygon
         """
         # http://toblerity.org/shapely/manual.html#shapely.ops.cascaded_union
-        geometry = cascaded_union(geoms)
+        geometry = unary_union(geoms)
         if geometry.geom_type == "Polygon":
             # shapely may return a POLYGON rather than a MULTIPOLYGON if there is just one shape
             # force Multipolygon

@@ -13,7 +13,7 @@ export const remapParamsToAPI = (param, conversion) => {
     /* like Object.fromEntries */
     return fromEntries(Object.entries(obj).map(fn));
   }
-  const remapped = mapObject(param, n => {
+  const remapped = mapObject(param, (n) => {
     /* fn operates on a array with [key, value] format */
 
     /* mappingTypes's value needs to be converted to comma delimited again */

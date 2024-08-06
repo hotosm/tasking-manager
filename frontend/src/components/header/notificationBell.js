@@ -1,64 +1,56 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { TopNavLink } from './NavLink';
 import { BellIcon } from '../svgIcons';
 import { NotificationPopout } from '../../views/notifications';
-import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
 import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
-import useForceUpdate from '../../hooks/UseForceUpdate';
-import { useInboxQueryAPI } from '../../hooks/UseInboxQueryAPI';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useOnResize } from '../../hooks/UseOnResize';
+import { useNotificationsQuery, useUnreadNotificationsCountQuery } from '../../api/notifications';
 
-export const NotificationBell = (props) => {
-  const token = useSelector((state) => state.auth.get('token'));
-  const trigger = token !== null;
-  const [forceUpdated, forceUpdate] = useForceUpdate();
+export const NotificationBell = () => {
+  const token = useSelector((state) => state.auth.token);
+  const dispatch = useDispatch();
+
   const [bellPosition, setBellPosition] = useState(0);
   /* these below make the references stable so hooks doesn't re-request forever */
   const notificationBellRef = useRef(null);
-  const params = useRef({ status: 'unread' });
-  const [notificationState] = useInboxQueryAPI(
-    notificationBellRef.current,
-    params.current,
-    forceUpdated,
-  );
+  const {
+    data: notifications,
+    isError,
+    isLoading,
+    refetch,
+  } = useNotificationsQuery({ status: 'unread' });
 
   const [isPopoutFocus, setPopoutFocus] = useState(false);
-  const [unreadNotifications, setUnreadNotifications] = useState(false);
-  const [initialUnreadCountError, initialUnreadCountLoading, initialUnreadCount] = useFetch(
-    '/api/v2/notifications/queries/own/count-unread/',
-    trigger,
-  );
-  const [unreadCountError, unreadCount] = useFetchIntervaled(
-    '/api/v2/notifications/queries/own/count-unread/',
-    30000,
-    trigger,
-  );
+  const [doesUnreadNotificationsExist, setDoesUnreadNotificationsExist] = useState(false);
+
+  const { data: unreadNotification } = useUnreadNotificationsCountQuery();
+  const liveUnreadCount = unreadNotification?.unread;
 
   useEffect(() => {
-    // unreadCount will receive a value only after 30 seconds,
-    //so while it's undefined, we rely on initialUnreadCount
-    if (
-      (!unreadCount && initialUnreadCount && initialUnreadCount.newMessages) ||
-      (unreadCount && unreadCount.newMessages)
-    ) {
-      setUnreadNotifications(true);
+    dispatch({ type: 'SET_UNREAD_COUNT', payload: notifications.pagination?.total });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notifications.pagination?.total]);
+
+  useEffect(() => {
+    if (unreadNotification?.newMessages) {
+      setDoesUnreadNotificationsExist(true);
+      refetch();
     } else {
-      setUnreadNotifications(false);
+      setDoesUnreadNotificationsExist(false);
     }
-  }, [initialUnreadCount, unreadCount]);
+  }, [refetch, unreadNotification?.newMessages]);
 
   const handleBellClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setBellPosition(e.target.getBoundingClientRect().left);
     setPopoutFocus(!isPopoutFocus);
-    if (unreadNotifications) {
-      forceUpdate(); // update the notifications when user clicks and there are unread messages
+    if (doesUnreadNotificationsExist) {
       pushToLocalJSONAPI('/api/v2/notifications/queries/own/post-unread/', null, token);
-      setUnreadNotifications(false);
+      setDoesUnreadNotificationsExist(false);
     }
   };
 
@@ -77,33 +69,28 @@ export const NotificationBell = (props) => {
       : { className: `link barlow-condensed blue-dark f4 ttu v-mid pt1` };
   };
 
-  const liveUnreadCount =
-    (!unreadCountError && unreadCount && unreadCount.unread) ||
-    (!initialUnreadCountLoading &&
-      !initialUnreadCountError &&
-      initialUnreadCount &&
-      initialUnreadCount.unread);
-
   return (
-    <span ref={notificationBellRef}>
+    <span ref={notificationBellRef} className="mr3">
       <TopNavLink
         to={'inbox/'}
         onClick={handleBellClick}
         onKeyPress={handleBellClick}
         isActive={isNotificationBellActive}
       >
-        <div className="relative dib">
+        <div className="relative dib pt1">
           <BellIcon aria-label="Notifications" role="button" />
-          {unreadNotifications && <div className="redicon" />}
+          {doesUnreadNotificationsExist && <div className="redicon" />}
         </div>
       </TopNavLink>
       <NotificationPopout
-        state={notificationState}
-        forceUpdate={forceUpdate}
         isPopoutFocus={isPopoutFocus}
         setPopoutFocus={setPopoutFocus}
         liveUnreadCount={liveUnreadCount}
         position={bellPosition}
+        isError={isError}
+        isLoading={isLoading}
+        notifications={notifications}
+        retryFn={refetch}
       />
     </span>
   );

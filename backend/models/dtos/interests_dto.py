@@ -4,10 +4,10 @@ from schematics.types.compound import ListType, ModelType
 
 
 class InterestDTO(Model):
-    """ DTO for a interest."""
+    """DTO for a interest."""
 
     id = IntType()
-    name = StringType()
+    name = StringType(required=True, min_length=1)
     user_selected = BooleanType(
         serialized_name="userSelected", serialize_when_none=False
     )
@@ -16,7 +16,7 @@ class InterestDTO(Model):
 
 
 class InterestsListDTO(Model):
-    """ DTO for a list of interests."""
+    """DTO for a list of interests."""
 
     def __init__(self):
         super().__init__()

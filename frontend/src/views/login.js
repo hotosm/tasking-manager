@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Redirect } from '@reach/router';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import { AuthButtons } from '../components/header';
@@ -11,7 +11,16 @@ import logo from '../assets/img/main-logo.svg';
 
 export function Login({ redirectTo }: Object) {
   useSetTitleTag('Login');
-  const userIsloggedIn = useSelector((state) => state.auth.get('token'));
+  const navigate = useNavigate();
+  const location = useLocation();
+  const userIsloggedIn = useSelector((state) => state.auth.token);
+
+  useEffect(() => {
+    if (userIsloggedIn) {
+      navigate(redirectTo || location.state?.from || '/welcome');
+    }
+  }, [location.state?.from, navigate, redirectTo, userIsloggedIn]);
+
   if (!userIsloggedIn) {
     return (
       <div className="cf w-100 bg-white blue-dark pv5">
@@ -33,13 +42,13 @@ export function Login({ redirectTo }: Object) {
           <AuthButtons
             logInStyle="blue-dark bg-white"
             signUpStyle="bg-blue-dark white ml1 v-mid"
-            redirectTo={redirectTo || '/welcome'}
+            redirectTo={redirectTo || location.state?.from || '/welcome'}
             alternativeSignUpText={true}
           />
         </div>
       </div>
     );
   } else {
-    return <Redirect to={redirectTo || '/welcome'} noThrow />;
+    return null;
   }
 }

@@ -32,9 +32,10 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
           name="defaultLocale"
           onChange={updateDefaultLocale}
           className="pa2 bg-white ba ba--grey-light"
+          value={defaultLocale}
         >
           {languages.map((l) => (
-            <option key={l.code} selected={l.code === defaultLocale ? true : false} value={l.code}>
+            <option key={l.code} value={l.code}>
               {l.language} ({l.code})
             </option>
           ))}
@@ -127,11 +128,12 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
           <FormattedMessage {...messages.randomTaskSelectionDescription} />
         </p>
       </div>
-      {(projectInfo.mappingEditors.includes('RAPID') || projectInfo.validationEditors.includes('RAPID')) && (
+      {(projectInfo.mappingEditors.includes('RAPID') ||
+        projectInfo.validationEditors.includes('RAPID')) && (
         <div className={styleClasses.divClass}>
-          <label className={styleClasses.labelClass} >
+          <label className={styleClasses.labelClass}>
             <FormattedMessage {...messages.rapidPowerUser} />
-            <div className={'rapid-beta'}/>
+            <div className={'rapid-beta'} />
           </label>
 
           <SwitchToggle
@@ -141,7 +143,7 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
             onChange={() =>
               setProjectInfo({
                 ...projectInfo,
-                rapidPowerUser: !projectInfo.rapidPowerUser
+                rapidPowerUser: !projectInfo.rapidPowerUser,
               })
             }
           />

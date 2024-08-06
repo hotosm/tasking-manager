@@ -9,8 +9,10 @@ from sqlalchemy import desc, cast, func, distinct
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
-from backend import db
 from typing import List
+
+from backend import db
+from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from backend.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
 from backend.models.dtos.project_dto import (
@@ -28,7 +30,6 @@ from backend.models.postgis.utils import (
     ST_SetSRID,
     timestamp,
     parse_duration,
-    NotFound,
 )
 from backend.models.postgis.task_annotation import TaskAnnotation
 
@@ -42,6 +43,8 @@ class TaskAction(Enum):
     COMMENT = 4
     AUTO_UNLOCKED_FOR_MAPPING = 5
     AUTO_UNLOCKED_FOR_VALIDATION = 6
+    EXTENDED_FOR_MAPPING = 7
+    EXTENDED_FOR_VALIDATION = 8
 
 
 class TaskInvalidationHistory(db.Model):
@@ -73,7 +76,9 @@ class TaskInvalidationHistory(db.Model):
         ),
         db.Index("idx_task_validation_history_composite", "task_id", "project_id"),
         db.Index(
-            "idx_task_validation_mapper_status_composite", "invalidator_id", "is_closed"
+            "idx_task_validation_validator_status_composite",
+            "invalidator_id",
+            "is_closed",
         ),
         db.Index(
             "idx_task_validation_mapper_status_composite", "mapper_id", "is_closed"
@@ -215,6 +220,15 @@ class TaskHistory(db.Model):
         self.project_id = project_id
         self.user_id = user_id
 
+    def set_task_extend_action(self, task_action: TaskAction):
+        if task_action not in [
+            TaskAction.EXTENDED_FOR_MAPPING,
+            TaskAction.EXTENDED_FOR_VALIDATION,
+        ]:
+            raise ValueError("Invalid Action")
+
+        self.action = task_action.name
+
     def set_task_locked_action(self, task_action: TaskAction):
         if task_action not in [
             TaskAction.LOCKED_FOR_MAPPING,
@@ -245,7 +259,7 @@ class TaskHistory(db.Model):
 
     @staticmethod
     def update_task_locked_with_duration(
-        task_id: int, project_id: int, lock_action: TaskStatus, user_id: int
+        task_id: int, project_id: int, lock_action, user_id: int
     ):
         """
         Calculates the duration a task was locked for and sets it on the history record
@@ -332,6 +346,8 @@ class TaskHistory(db.Model):
                 [
                     TaskAction.LOCKED_FOR_VALIDATION.name,
                     TaskAction.LOCKED_FOR_MAPPING.name,
+                    TaskAction.EXTENDED_FOR_MAPPING.name,
+                    TaskAction.EXTENDED_FOR_VALIDATION.name,
                 ]
             ),
             TaskHistory.action_date <= expiry_date,
@@ -340,7 +356,7 @@ class TaskHistory(db.Model):
         for task_history in all_expired:
             unlock_action = (
                 TaskAction.AUTO_UNLOCKED_FOR_MAPPING
-                if task_history.action == "LOCKED_FOR_MAPPING"
+                if task_history.action in ["LOCKED_FOR_MAPPING", "EXTENDED_FOR_MAPPING"]
                 else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
             )
 
@@ -445,7 +461,10 @@ class TaskHistory(db.Model):
         return TaskHistory.get_last_action_of_type(
             project_id,
             task_id,
-            [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name],
+            [
+                TaskAction.LOCKED_FOR_MAPPING.name,
+                TaskAction.LOCKED_FOR_VALIDATION.name,
+            ],
         )
 
     @staticmethod
@@ -545,9 +564,10 @@ class Task(db.Model):
         if type(task_geometry) is not geojson.MultiPolygon:
             raise InvalidGeoJson("MustBeMultiPloygon- Geometry must be a MultiPolygon")
 
-        is_valid_geojson = geojson.is_valid(task_geometry)
-        if is_valid_geojson["valid"] == "no":
-            raise InvalidGeoJson(f"InvalidMultiPolygon- {is_valid_geojson['message']}")
+        if not task_geometry.is_valid:
+            raise InvalidGeoJson(
+                "InvalidMultiPolygon - " + ", ".join(task_geometry.errors())
+            )
 
         task = cls()
         try:
@@ -596,6 +616,13 @@ class Task(db.Model):
         return Task.query.filter(Task.project_id == project_id).all()
 
     @staticmethod
+    def get_tasks_by_status(project_id: int, status: str):
+        "Returns all tasks filtered by status in a project"
+        return Task.query.filter(
+            Task.project_id == project_id, Task.task_status == TaskStatus[status].value
+        ).all()
+
+    @staticmethod
     def auto_unlock_delta():
         return parse_duration(current_app.config["TASK_AUTOUNLOCK_AFTER"])
 
@@ -612,7 +639,14 @@ class Task(db.Model):
             .filter(Task.project_id == TaskHistory.project_id)
             .filter(Task.task_status.in_([1, 3]))
             .filter(
-                TaskHistory.action.in_(["LOCKED_FOR_VALIDATION", "LOCKED_FOR_MAPPING"])
+                TaskHistory.action.in_(
+                    [
+                        "EXTENDED_FOR_MAPPING",
+                        "EXTENDED_FOR_VALIDATION",
+                        "LOCKED_FOR_VALIDATION",
+                        "LOCKED_FOR_MAPPING",
+                    ]
+                )
             )
             .filter(TaskHistory.action_text.is_(None))
             .filter(Task.project_id == project_id)
@@ -668,6 +702,11 @@ class Task(db.Model):
 
         if action in [TaskAction.LOCKED_FOR_MAPPING, TaskAction.LOCKED_FOR_VALIDATION]:
             history.set_task_locked_action(action)
+        elif action in [
+            TaskAction.EXTENDED_FOR_MAPPING,
+            TaskAction.EXTENDED_FOR_VALIDATION,
+        ]:
+            history.set_task_extend_action(action)
         elif action == TaskAction.COMMENT:
             history.set_comment_action(comment)
         elif action == TaskAction.STATE_CHANGE:
@@ -759,8 +798,13 @@ class Task(db.Model):
             user_id=user_id,
             mapping_issues=issues,
         )
-
-        if (
+        # If undo, clear the mapped_by and validated_by fields
+        if undo:
+            if new_state == TaskStatus.MAPPED:
+                self.validated_by = None
+            elif new_state == TaskStatus.READY:
+                self.mapped_by = None
+        elif (
             new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY]
             and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION
         ):
@@ -842,23 +886,26 @@ class Task(db.Model):
             Task.task_status,
             Task.geometry.ST_AsGeoJSON().label("geojson"),
             Task.locked_by,
+            Task.mapped_by,
             # subquery,
         )
 
         filters = [Task.project_id == project_id]
 
         if task_ids_str:
-            task_ids = map(int, task_ids_str.split(","))
+            task_ids = list(map(int, task_ids_str.split(",")))
             tasks = Task.get_tasks(project_id, task_ids)
             if not tasks or len(tasks) == 0:
-                raise NotFound()
+                raise NotFound(
+                    sub_code="TASKS_NOT_FOUND", tasks=task_ids, project_id=project_id
+                )
             else:
                 tasks_filters = [task.id for task in tasks]
             filters = [Task.project_id == project_id, Task.id.in_(tasks_filters)]
         else:
             tasks = Task.get_all_tasks(project_id)
             if not tasks or len(tasks) == 0:
-                raise NotFound()
+                raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
 
         if status:
             filters.append(Task.task_status == status)
@@ -902,6 +949,7 @@ class Task(db.Model):
                 taskIsSquare=task.is_square,
                 taskStatus=TaskStatus(task.task_status).name,
                 lockedBy=task.locked_by,
+                mappedBy=task.mapped_by,
             )
 
             feature = geojson.Feature(
@@ -993,7 +1041,7 @@ class Task(db.Model):
             .group_by(Task.project_id)
         )
         if result.count() == 0:
-            raise NotFound()
+            raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
         for row in result:
             return row[0]
 
@@ -1012,7 +1060,7 @@ class Task(db.Model):
         task_dto.task_history = task_history
         task_dto.last_updated = last_updated if last_updated else None
         task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
-        task_dto.comments_number = comments if type(comments) == int else None
+        task_dto.comments_number = comments if isinstance(comments, int) else None
         return task_dto
 
     def as_dto_with_instructions(self, preferred_locale: str = "en") -> TaskDTO:
@@ -1087,7 +1135,10 @@ class Task(db.Model):
 
         try:
             instructions = instructions.format(**properties)
-        except KeyError:
+        except (KeyError, ValueError, IndexError):
+            # KeyError is raised if a format string contains a key that is not in the dictionary, e.g. {foo}
+            # ValueError is raised if a format string contains a single { or }
+            # IndexError is raised if a format string contains empty braces, e.g. {}
             pass
         return instructions
 

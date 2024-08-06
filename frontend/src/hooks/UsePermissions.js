@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 export function useEditProjectAllowed(project) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const organisations = useSelector((state) => state.auth.get('organisations'));
-  const pmTeams = useSelector((state) => state.auth.get('pmTeams'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const organisations = useSelector((state) => state.auth.organisations);
+  const pmTeams = useSelector((state) => state.auth.pmTeams);
   const [isAllowed, setIsAllowed] = useState(false);
 
   useEffect(() => {
@@ -27,9 +27,9 @@ export function useEditProjectAllowed(project) {
 }
 
 export function useEditTeamAllowed(team) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const organisations = useSelector((state) => state.auth.get('organisations'));
-  const pmTeams = useSelector((state) => state.auth.get('pmTeams'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const organisations = useSelector((state) => state.auth.organisations);
+  const pmTeams = useSelector((state) => state.auth.pmTeams);
   const [isAllowed, setIsAllowed] = useState(false);
 
   useEffect(() => {
@@ -54,8 +54,8 @@ export function useEditTeamAllowed(team) {
 }
 
 export function useEditOrgAllowed(org) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const organisations = useSelector((state) => state.auth.get('organisations'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const organisations = useSelector((state) => state.auth.organisations);
   const [isAllowed, setIsAllowed] = useState(false);
 
   useEffect(() => {

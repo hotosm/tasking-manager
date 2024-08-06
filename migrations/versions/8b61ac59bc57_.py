@@ -1,8 +1,8 @@
 """Add extra_id_params to Project's table
 
 Revision ID: 8b61ac59bc57
-Revises: 8a6419f289aa
-Create Date: 2022-03-30 18:00:04.602260
+Revises: 924a63857df4
+Create Date: 2022-06-27 09:00:04.602260
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "8b61ac59bc57"
-down_revision = "8a6419f289aa"
+down_revision = "924a63857df4"
 branch_labels = None
 depends_on = None
 

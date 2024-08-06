@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { navigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
@@ -15,8 +15,16 @@ import { Imagery } from './imagery';
 import { MappingTypes } from '../mappingTypes';
 import { LockedTaskModalContent } from './lockedTasks';
 
-const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, selectedTasks }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+const TaskSelectionFooter = ({
+  defaultUserEditor,
+  project,
+  tasks,
+  taskAction,
+  selectedTasks,
+  setSelectedTasks,
+}) => {
+  const navigate = useNavigate();
+  const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences.locale);
   const [editor, setEditor] = useState(defaultUserEditor);
   const [editorOptions, setEditorOptions] = useState([]);
@@ -58,8 +66,12 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
 
   const lockTasks = async () => {
     // if user can not map or validate the project, lead him to the explore projects page
-    if (['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(taskAction)) {
+    if (
+      ['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(taskAction) ||
+      project.status === 'ARCHIVED'
+    ) {
       navigate(`/explore/`);
+      return;
     }
     // then pass to the JOSM check and validate/map checks
     if (editor === 'JOSM' && !window.safari) {
@@ -72,10 +84,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
     }
     let windowObjectReference;
     if (!['JOSM', 'ID', 'RAPID'].includes(editor)) {
-      windowObjectReference = window.open(
-        '',
-        `TM-${project.projectId}-${selectedTasks}`,
-      );
+      windowObjectReference = window.open('', `TM-${project.projectId}-${selectedTasks}`);
     }
     if (['validateSelectedTask', 'validateAnotherTask', 'validateATask'].includes(taskAction)) {
       const mappedTasks = selectedTasks.filter(
@@ -108,9 +117,6 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       )
         .then((res) => {
           lockSuccess('LOCKED_FOR_MAPPING', 'map', windowObjectReference);
-          if (editor !== 'JOSM') {
-            window.location.reload();
-          }
         })
         .catch((e) => lockFailed(windowObjectReference, e.message));
     }
@@ -140,22 +146,19 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       const validationEditorOptions = getEditors(project.validationEditors, project.customEditor);
       setEditorOptions(validationEditorOptions);
       // activate defaultUserEditor if it's allowed. If not, use the first allowed editor for validation
-      if (project.validationEditors.includes(defaultUserEditor)) {
-        setEditor(defaultUserEditor);
-      } else {
+      if (!project.validationEditors.includes(editor)) {
         updateEditor(validationEditorOptions);
       }
     } else {
       const mappingEditorOptions = getEditors(project.mappingEditors, project.customEditor);
       setEditorOptions(mappingEditorOptions);
       // activate defaultUserEditor if it's allowed. If not, use the first allowed editor
-      if (project.mappingEditors.includes(defaultUserEditor)) {
-        setEditor(defaultUserEditor);
-      } else {
+      if (!project.mappingEditors.includes(editor)) {
         updateEditor(mappingEditorOptions);
       }
     }
   }, [
+    editor,
     taskAction,
     project.mappingEditors,
     project.validationEditors,
@@ -164,7 +167,8 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
   ]);
 
   const updateEditor = (arr) => setEditor(arr[0].value);
-  const titleClasses = 'db ttu f6 blue-light mb2';
+  const titleClasses = 'db ttu f7 blue-grey mb2 fw5';
+
   return (
     <div className="cf bg-white pb2 ph4-l ph2">
       {lockError !== null && (
@@ -181,6 +185,9 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
               error={lockError}
               close={close}
               lockTasks={lockTasks}
+              tasks={tasks}
+              selectedTasks={selectedTasks}
+              setSelectedTasks={setSelectedTasks}
             />
           )}
         </Popup>
@@ -207,17 +214,17 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
           options={editorOptions}
           value={editor}
           display={<FormattedMessage {...messages.selectEditor} />}
-          className="bg-white bn"
+          className="bg-white bn pl0"
           toTop={true}
           onChange={updateEditor}
         />
       </div>
       <div className="w-30-ns w-60 fl tr">
         <div className="mt3">
-          <Button className="white bg-red" onClick={() => lockTasks()} loading={isPending}>
+          <Button className="white bg-red fw5" onClick={() => lockTasks()} loading={isPending}>
             {['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(
               taskAction,
-            ) ? (
+            ) || project.status === 'ARCHIVED' ? (
               <FormattedMessage {...messages.selectAnotherProject} />
             ) : (
               <FormattedMessage

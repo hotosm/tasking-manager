@@ -1,0 +1,157 @@
+.nav-bg {
+  background-color: rgba($blue-light, 0.4);
+}
+
+.intro-container {
+  margin-top: 3rem;
+}
+
+.intro-description {
+  font-size: 2rem;
+  line-height: 1.4;
+  margin-bottom: 2rem;
+
+  @media screen and (max-width: 30em) {
+    font-size: 1.5rem;
+    line-height: 1.28;
+    margin-bottom: 4rem;
+  }
+}
+
+.intro-sub-description {
+  margin-bottom: 6rem;
+  line-height: 1.44;
+  font-size: 1rem;
+
+  @media screen and (min-width: 30em) {
+    line-height: 1.28;
+    font-size: 1.125rem;
+  }
+
+  @media screen and (max-width: 30em) {
+    margin-bottom: 4.5rem;
+  }
+}
+
+.step-cards-container-parent {
+  position: relative;
+  z-index: 1;
+}
+
+.step-item {
+  padding-bottom: 3.75rem;
+}
+
+.step-cards-container {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 6.25rem;
+  gap: 2.25rem;
+
+  h6 {
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  @media screen and (max-width: 60em) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media screen and (max-width: 30em) {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+.step-cards-container:before {
+  content: '';
+  width: 100%;
+  height: 75%;
+  background-image: url('../../assets/img/mask.png');
+  position: absolute;
+  bottom: -32px; //adjust your positioning as necessary
+  right: -32px;
+  z-index: -1;
+
+  @media screen and (max-width: 60em) {
+    height: 90%;
+  }
+}
+
+.steps-title {
+  margin-top: 2rem;
+}
+
+.manuals-container {
+  h3 {
+    font-size: 2rem;
+    line-height: 1.56;
+    margin-bottom: 2rem;
+  }
+
+  p {
+    line-height: 1.4;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.875rem;
+
+    @media screen and (max-width: 60em) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media screen and (max-width: 30em) {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+  }
+
+  .manual-card-image {
+    height: 9.5rem;
+  }
+
+  .detail-container {
+    padding: 1.5rem 1.5rem 2rem 1.5rem;
+  }
+}
+
+.videos-container {
+  h3 {
+    font-size: 2rem;
+    line-height: 1.56;
+    margin-bottom: 2rem;
+    margin-top: 7.25rem;
+  }
+
+  p {
+    line-height: 1.4;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.875rem;
+
+    @media screen and (max-width: 60em) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media screen and (max-width: 30em) {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+  }
+
+  .play-icon {
+    height: 7rem;
+  }
+
+  .detail-container {
+    padding: 1.5rem 1.5rem 2rem 1.5rem;
+  }
+}

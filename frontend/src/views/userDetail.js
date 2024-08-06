@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense } from 'react';
-import { Redirect } from '@reach/router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
@@ -24,10 +24,14 @@ const EditsByNumbers = React.lazy(() =>
   import('../components/userDetail/editsByNumbers' /* webpackChunkName: "editsByNumbers" */),
 );
 
-export const UserDetail = ({ username, withHeader = true }) => {
+export const UserDetail = ({ withHeader = true }) => {
+  const navigate = useNavigate();
+  const loggedInUsername = useSelector((state) => state.auth.userDetails.username);
+  const { username: usernameParam } = useParams();
+  const username = usernameParam || loggedInUsername;
   useSetTitleTag(username);
-  const token = useSelector((state) => state.auth.get('token'));
-  const currentUser = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.token);
+  const currentUser = useSelector((state) => state.auth.userDetails);
   const [osmStats, setOsmStats] = useState({});
   const [errorDetails, loadingDetails, userDetails] = useFetch(
     `users/queries/${username}/`,
@@ -43,6 +47,12 @@ export const UserDetail = ({ username, withHeader = true }) => {
   );
 
   useEffect(() => {
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate, token]);
+
+  useEffect(() => {
     if (token && username) {
       fetchExternalJSONAPI(`${USER_STATS_API_URL}${username}`)
         .then((res) => setOsmStats(res))
@@ -50,16 +60,12 @@ export const UserDetail = ({ username, withHeader = true }) => {
     }
   }, [token, username]);
 
-  if (!token) {
-    return <Redirect to={'/login'} noThrow />;
-  }
+  const titleClass = 'contributions-titles fw5 ttu barlow-condensed blue-dark mt0';
 
-  const blockClass = 'w-third-l w-50-m w-100 fl pa2';
-  const titleClass = 'f3 fw6 ttu barlow-condensed blue-dark mt0 pt3 mb3';
   return errorDetails ? (
     <NotFound />
   ) : (
-    <div className="bg-tan w-100">
+    <div className="w-100">
       {withHeader && (
         <div className="w-100 cf pb3">
           <ReactPlaceholder
@@ -72,11 +78,11 @@ export const UserDetail = ({ username, withHeader = true }) => {
           </ReactPlaceholder>
         </div>
       )}
-      <div className={withHeader ? 'w-100 ph4-l ph2 cf pb3' : ''}>
-        <div className="mv4">
+      <div className={withHeader ? 'w-100 ph4-l ph2 cf pb3 bg-washed-blue' : ''}>
+        <div className="mt4">
           <ElementsMapped userStats={userStats} osmStats={osmStats} />
         </div>
-        <div className="mv4">
+        <div>
           <h3 className={titleClass}>
             <FormattedMessage {...messages.contributionTimelineTitle} />
           </h3>
@@ -93,8 +99,8 @@ export const UserDetail = ({ username, withHeader = true }) => {
           <h3 className={titleClass}>
             <FormattedMessage {...messages.projectsTitle} />
           </h3>
-          <div className="w-100 cf">
-            <div className="w-third-l w-100 fl pa2">
+          <div className="user-projects-ctr">
+            <div>
               <ReactPlaceholder
                 type="rect"
                 showLoadingAnimation={true}
@@ -104,7 +110,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
                 <TopProjects projects={userProjects} />
               </ReactPlaceholder>
             </div>
-            <div className={blockClass}>
+            <div>
               <ReactPlaceholder
                 type="rect"
                 showLoadingAnimation={true}
@@ -116,7 +122,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
                 </Suspense>
               </ReactPlaceholder>
             </div>
-            <div className={blockClass}>
+            <div>
               <Suspense fallback={<div />}>
                 <EditsByNumbers osmStats={osmStats} />
               </Suspense>

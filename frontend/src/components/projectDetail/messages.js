@@ -64,6 +64,10 @@ export default defineMessages({
     id: 'project.detail.typesOfMapping',
     defaultMessage: 'Types of Mapping',
   },
+  private: {
+    id: 'project.detail.private',
+    defaultMessage: 'Private',
+  },
   editProject: {
     id: 'project.detail.editProject',
     defaultMessage: 'Edit project',
@@ -128,6 +132,10 @@ export default defineMessages({
   loginTocomment: {
     id: 'project.detail.questionsAndComments.login',
     defaultMessage: 'Log in to be able to post comments.',
+  },
+  errorLoadingComments: {
+    id: 'project.detail.questionsAndComments.fetching.error',
+    defaultMessage: 'An error occured while loading questions and comments.',
   },
   post: {
     id: 'project.detail.questionsAndComments.button',
@@ -227,9 +235,13 @@ export default defineMessages({
     id: 'project.detail.sections.contributors',
     defaultMessage: 'Contributors',
   },
-  relatedProjects: {
-    id: 'project.detail.sections.relatedProjects',
-    defaultMessage: 'Related projects',
+  similarProjects: {
+    id: 'project.detail.sections.similarProjects',
+    defaultMessage: 'Similar projects',
+  },
+  contributorsError: {
+    id: 'project.detail.sections.contributors.error',
+    defaultMessage: 'An error occured while loading contributors',
   },
   timelineNotAvailable: {
     id: 'project.detail.sections.contributions.timelineError',
@@ -294,5 +306,21 @@ export default defineMessages({
   shareOnLinkedIn: {
     id: 'project.share.linkedin',
     defaultMessage: 'Share on LinkedIn',
+  },
+  inaccessibleProjectTitle: {
+    id: 'project.inaccessible.title',
+    defaultMessage: "You don't have permission to access this project",
+  },
+  inaccessibleProjectDescription: {
+    id: 'project.inaccessible.description',
+    defaultMessage: 'Please contact the project manager to request access.',
+  },
+  exploreOtherProjects: {
+    id: 'project.inaccessible.exploreOtherProjects',
+    defaultMessage: 'Explore other projects',
+  },
+  noSimilarProjectsFound: {
+    id: 'project.noSimilarProjectsFound',
+    defaultMessage: 'Could not find any similar projects for this project',
   },
 });

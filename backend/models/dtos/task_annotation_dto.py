@@ -4,7 +4,7 @@ from schematics.types.compound import DictType
 
 
 class TaskAnnotationDTO(Model):
-    """ Model for a single task annotation """
+    """Model for a single task annotation"""
 
     task_id = IntType(required=True, serialized_name="taskId")
     annotation_type = StringType(required=True, serialized_name="annotationType")

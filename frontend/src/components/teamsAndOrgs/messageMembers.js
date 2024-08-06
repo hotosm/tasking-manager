@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { Button } from '../button';
@@ -8,8 +9,8 @@ import { CommentInputField } from '../comments/commentInput';
 import { MessageStatus } from '../comments/status';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
-export function MessageMembers({ teamId }: Object) {
-  const token = useSelector((state) => state.auth.get('token'));
+export function MessageMembers({ teamId, members }: Object) {
+  const token = useSelector((state) => state.auth.token);
   const [message, setMessage] = useState('');
   const [subject, setSubject] = useState('');
   const [status, setStatus] = useState(null);
@@ -24,11 +25,15 @@ export function MessageMembers({ teamId }: Object) {
         'POST',
       )
         .then((res) => {
+          toast.success(<FormattedMessage {...messages.sendMessageSuccess} />);
           setStatus('messageSent');
           setMessage('');
           setSubject('');
         })
-        .catch((e) => setStatus('error'));
+        .catch((e) => {
+          toast.error(<FormattedMessage {...messages.sendMessageFailure} />);
+          setStatus('error');
+        });
     }
   };
 
@@ -59,7 +64,12 @@ export function MessageMembers({ teamId }: Object) {
           </div>
         )}
         <div className="cf mb1">
-          <CommentInputField comment={message} setComment={setMessage} />
+          <CommentInputField
+            comment={message}
+            setComment={setMessage}
+            contributors={members?.map((member) => member.username)}
+            isShowTabNavs
+          />
         </div>
         {!message && <MessageStatus status={status} />}
       </div>

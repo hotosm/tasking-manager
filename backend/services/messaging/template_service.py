@@ -40,7 +40,7 @@ def get_template(template_name: str, values: dict) -> str:
 
 
 def template_var_replacing(content: str, replace_list: list) -> str:
-    """Receives a content string and executes a replace operation to each item on the list. """
+    """Receives a content string and executes a replace operation to each item on the list."""
     for term in replace_list:
         content = content.replace(term[0], term[1])
     return content

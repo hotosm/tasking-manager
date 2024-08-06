@@ -28,6 +28,10 @@ export function ManagementMenu({ isAdmin }: Object) {
     url: '/manage/stats/',
     label: <FormattedMessage {...messages.statistics} />,
   });
+  items.unshift({
+    url: '/manage',
+    label: <FormattedMessage {...messages.overview} />,
+  });
 
   return <SectionMenu items={items} />;
 }

@@ -1,15 +1,10 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, useContext } from 'react';
-import { useDropzone } from 'react-dropzone';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { useOnDrop } from '../../hooks/UseUploadImage';
-import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { StateContext, styleClasses } from '../../views/projectEdit';
-import FileRejections from '../comments/fileRejections';
-import DropzoneUploadStatus from '../comments/uploadStatus';
 import { LocaleOption } from './localeOption';
-import { DROPZONE_SETTINGS } from '../../config';
+import { CommentInputField } from '../comments/commentInput';
 
 export const InputLocale = ({ children, name, type, maxLength, languages }) => {
   const { projectInfo, setProjectInfo, setSuccess, setError } = useContext(StateContext);
@@ -106,13 +101,6 @@ export const InputLocale = ({ children, name, type, maxLength, languages }) => {
 const LocalizedInputField = ({ type, maxLength, name, locale, updateContext }) => {
   const { projectInfo, success, setSuccess, error, setError } = useContext(StateContext);
   const [value, setValue] = useState('');
-  const [preview, setPreview] = useState(null);
-  const appendImgToComment = (url) => setValue(`${value}\n![image](${url})\n`);
-  const [uploadError, uploading, onDrop] = useOnDrop(appendImgToComment);
-  const { fileRejections, getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    ...DROPZONE_SETTINGS,
-  });
 
   const updateValue = useCallback(() => {
     const activeLocale = projectInfo.projectInfoLocales.filter((item) => item.locale === locale);
@@ -120,23 +108,25 @@ const LocalizedInputField = ({ type, maxLength, name, locale, updateContext }) =
       setValue(activeLocale[0][name]);
     } else {
       setValue('');
-      setPreview(false);
     }
   }, [locale, name, projectInfo.projectInfoLocales]);
 
   // clean or set a new field value when the locale changes
   useEffect(() => updateValue(), [locale, updateValue]);
 
-  // hide preview when saved successfully
-  useEffect(() => {
-    if (success) setPreview(false);
-  }, [success]);
-
   const handleChange = (e) => {
     setValue(e.target.value);
+    clearInfoState();
+  };
+
+  const handleMarkdownEditorChange = (value) => {
+    setValue(value);
+    clearInfoState();
+  };
+
+  const clearInfoState = () => {
     if (success !== false) setSuccess(false);
     if (error !== null) setError(null);
-    if (!preview) setPreview(true);
   };
 
   return (
@@ -151,41 +141,27 @@ const LocalizedInputField = ({ type, maxLength, name, locale, updateContext }) =
           onChange={handleChange}
         />
       ) : (
-        <div {...getRootProps()}>
-          <textarea
-            {...getInputProps()}
-            className={styleClasses.inputClass}
-            style={{ display: 'inline-block' }} // we need to set display, as dropzone makes it none as default
-            rows={styleClasses.numRows}
-            type="text"
-            name={name}
-            value={value}
-            onBlur={() => updateContext(name, value, locale)}
-            onChange={handleChange}
-            maxLength={maxLength || null}
-          ></textarea>
-          <FileRejections files={fileRejections} />
-          <DropzoneUploadStatus uploading={uploading} uploadError={uploadError} />
+        <div className="w-80">
+          <CommentInputField
+            isShowTabNavs
+            isShowFooter
+            comment={value}
+            setComment={handleMarkdownEditorChange}
+            maxLength={maxLength}
+            markdownTextareaProps={{
+              onBlur: () => updateContext(name, value, locale),
+              maxLength: maxLength || null,
+              name: name,
+            }}
+            placeholderMsg={messages.typeHere}
+          />
         </div>
       )}
       {maxLength && (
         <div
-          className={`tr cf fl w-80 f7 ${
-            value && value.length > 0.9 * maxLength ? 'red' : 'blue-light'
-          }`}
+          className={`tr w-80 f7 ${value && value.length > 0.9 * maxLength ? 'red' : 'blue-light'}`}
         >
           {value ? value.length : 0} / {maxLength}
-        </div>
-      )}
-      {type !== 'text' && preview && (
-        <div className="cf mb3">
-          <h3 className="ttu f6 fw6 blue-grey mb1">
-            <FormattedMessage {...messages.preview} />
-          </h3>
-          <div
-            className="pv1 ph3 bg-grey-light blue-dark markdown-content"
-            dangerouslySetInnerHTML={htmlFromMarkdown(value)}
-          />
         </div>
       )}
     </>

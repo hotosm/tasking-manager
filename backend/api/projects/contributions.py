@@ -1,7 +1,7 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource
 
 from backend.services.project_service import ProjectService
-from backend.services.stats_service import StatsService, NotFound
+from backend.services.stats_service import StatsService
 
 
 class ProjectsContributionsAPI(Resource):
@@ -28,22 +28,9 @@ class ProjectsContributionsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            ProjectService.exists(project_id)
-        except NotFound as e:
-            current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-
-        try:
-            contributions = StatsService.get_user_contributions(project_id)
-            return contributions.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch user contributions",
-                "SubCode": "InternalServerError",
-            }, 500
+        ProjectService.exists(project_id)
+        contributions = StatsService.get_user_contributions(project_id)
+        return contributions.to_primitive(), 200
 
 
 class ProjectsContributionsQueriesDayAPI(Resource):
@@ -70,15 +57,5 @@ class ProjectsContributionsQueriesDayAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            contribs = ProjectService.get_contribs_by_day(project_id)
-            return contribs.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Project contributions GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch per day user contribution",
-                "SubCode": "InternalServerError",
-            }, 500
+        contribs = ProjectService.get_contribs_by_day(project_id)
+        return contribs.to_primitive(), 200

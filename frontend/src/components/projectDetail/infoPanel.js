@@ -7,15 +7,15 @@ import { MappingTypes } from '../mappingTypes';
 import { Imagery } from '../taskSelection/imagery';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
 import { DueDateBox } from '../projectCard/dueDateBox';
-import { MappingLevelMessage } from '../mappingLevel';
+import { DifficultyMessage } from '../mappingLevel';
 import { BigProjectTeaser } from './bigProjectTeaser';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 
 const ProjectDetailTypeBar = (props) => {
-  const titleClasses = 'db ttu f6 blue-light mb2';
+  const titleClasses = 'db ttu f7 blue-grey mb2 fw5';
   return (
     <div className="cf">
-      <div className="w-50-ns w-70 fl">
+      <div className="w-50-ns w-100 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.typesOfMapping} />
         </h3>
@@ -23,7 +23,7 @@ const ProjectDetailTypeBar = (props) => {
           <MappingTypes types={props.mappingTypes} />
         </div>
       </div>
-      <div className="w-50-ns w-30 fl">
+      <div className="w-50-ns w-100 fl mt3 mt0-ns">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.imagery} />
         </h3>
@@ -54,21 +54,21 @@ export function ProjectInfoPanel({ project, tasks, contributors, type }: Object)
           className="pt3"
           totalContributors={contributors.length}
           lastUpdated={project.lastUpdated}
-          littleFont="f5"
-          bigFont="f4"
         />
       </ReactPlaceholder>
       <ProjectProgressBar
-        className="pb2 bg-white"
+        small={false}
+        className="pb3 bg-white"
         percentMapped={percentMapped}
         percentValidated={percentValidated}
         percentBadImagery={percentBadImagery}
       />
-      <div className="cf pb1 bg-white">
-        <MappingLevelMessage level={project.mapperLevel} className="fl f5 mt1 ttc fw5 blue-dark" />
+      <div className="pb1 bg-white flex justify-between items-center">
+        <DifficultyMessage level={project.difficulty} className="fl f5 mt1 ttc fw5 blue-dark" />
         <DueDateBox
           dueDate={project.dueDate}
           tooltipMsg={intl.formatMessage(messages.dueDateTooltip)}
+          isProjectDetailPage
         />
       </div>
     </ReactPlaceholder>

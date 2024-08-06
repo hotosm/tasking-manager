@@ -36,6 +36,10 @@ export default defineMessages({
     id: 'mytasks.placeholder.search_project',
     defaultMessage: 'Search by project id',
   },
+  noMatchingProjectId: {
+    id: 'mytasks.placeholder.noMatchingProjectId',
+    defaultMessage: 'No matching project ID',
+  },
   projects: {
     id: 'mytasks.filter.projects',
     defaultMessage: 'Projects',

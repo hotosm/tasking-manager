@@ -17,90 +17,83 @@ import {
 import { StatsCard } from '../statsCard';
 
 export const TaskStats = ({ userStats, username }) => {
+  const {
+    tasksMapped,
+    tasksValidatedByOthers,
+    tasksInvalidatedByOthers,
+    tasksValidated,
+    tasksInvalidated,
+  } = userStats;
+  const taskStats = [
+    {
+      icon: <MappedIcon className="v-mid h-100 w-50-ns w-25" />,
+      title: messages.userMapped,
+      items: [
+        {
+          label: messages.tasks,
+          value: tasksMapped,
+        },
+        {
+          label: messages.validated,
+          value: tasksValidatedByOthers,
+        },
+        {
+          label: messages.invalidated,
+          value: tasksInvalidatedByOthers,
+        },
+      ],
+    },
+    {
+      icon: <ValidatedIcon className="v-mid h-100 w-30-ns w-25" />,
+      title: messages.userValidated,
+      items: [
+        {
+          label: messages.tasks,
+          value: tasksValidated + tasksInvalidated || 0,
+        },
+        {
+          label: messages.finished,
+          value: tasksValidated,
+        },
+        {
+          label: messages.invalidated,
+          value: tasksInvalidated,
+        },
+      ],
+    },
+  ];
+
   return (
-    <div className="cf w-100 relative base-font blue-grey">
-      <div className="w-50-ns w-100 pa2 fl">
-        <div className="cf shadow-4 pv3 ph2 bg-white">
-          <div className="w-25-ns w-100 h-100 pa2 pa0-m fl red tc">
-            <MappedIcon className="v-mid w-50-ns w-25" />
-          </div>
-          <div className="w-75-ns w-100 mt3 fl tc f6 b">
-            <div className="cf w-100">
-              <p className="mb1 mt3 mt1-ns f3">
+    <div className="relative base-font blue-grey task-stats-ctr">
+      {taskStats.map((stat, index) => (
+        <article
+          key={index}
+          className="shadow-6 pv3 ph2 bg-white flex flex-column flex-row-ns items-center"
+        >
+          <div className="w-75 w-25-ns h-100 pa2 pa0-m red tc">{stat.icon}</div>
+          <div className="w-75 mt3 tc f6 b">
+            <div className=" w-100">
+              <p className="mb1 mt3 mt1-ns f3 fw6" style={{ letterSpacing: '1.25px' }}>
                 <FormattedMessage
-                  {...messages.userMapped}
+                  {...stat.title}
                   values={{ user: username ? username : <FormattedMessage {...messages.you} /> }}
                 />
               </p>
               <hr className="w-50" />
             </div>
-            <div className="cf w-100 pt4">
-              <div className="cf w-33 fl tc">
-                <p className="ma0 mb2 barlow-condensed f2 b red">{userStats.tasksMapped}</p>
-                <p className="mb3 ttl">
-                  <FormattedMessage {...messages.tasks} />
-                </p>
-              </div>
-              <div className="cf w-33 fl tc">
-                <p className="ma0 mb2 barlow-condensed f2 b red">
-                  {userStats.tasksValidatedByOthers}
-                </p>
-                <p className="mb3 ttl">
-                  <FormattedMessage {...messages.validated} />
-                </p>
-              </div>
-              <div className="cf w-33 fl tc">
-                <p className="ma0 mb2 barlow-condensed f2 b red">
-                  {userStats.tasksInvalidatedByOthers}
-                </p>
-                <p className="mb3 ttl">
-                  <FormattedMessage {...messages.invalidated} />
-                </p>
-              </div>
+            <div className="w-100 pt4 flex">
+              {stat.items.map((item, index) => (
+                <div key={index} className=" w-33 tc">
+                  <p className="ma0 mb0 barlow-condensed f2 fw5 red">{item.value}</p>
+                  <p className="mb3 ttl fw6">
+                    <FormattedMessage {...item.label} />
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </div>
-      <div className="w-50-ns w-100 pa2 fl">
-        <div className="cf shadow-4 pv3 ph2 bg-white">
-          <div className="w-25-ns w-100 h-100 pa2 pa0-m fl red tc">
-            <ValidatedIcon className="v-mid w-50-ns w-25" />
-          </div>
-          <div className="w-75-ns w-100 mt3 fl tc f6 b">
-            <div className="cf w-100">
-              <p className="mb1 mt3 mt1-ns f3">
-                <FormattedMessage
-                  {...messages.userValidated}
-                  values={{ user: username ? username : <FormattedMessage {...messages.you} /> }}
-                />
-              </p>
-              <hr className="w-50" />
-            </div>
-            <div className="cf w-100 pt4">
-              <div className="cf w-33 fl tc">
-                <p className="ma0 mb3 barlow-condensed f2 b red">
-                  {userStats.tasksValidated + userStats.tasksInvalidated || 0}
-                </p>
-                <p className="mb3 ttl">
-                  <FormattedMessage {...messages.tasks} />
-                </p>
-              </div>
-              <div className="cf w-33 fl tc">
-                <p className="ma0 mb2 barlow-condensed f2 b red">{userStats.tasksValidated}</p>
-                <p className="mb3 ttl">
-                  <FormattedMessage {...messages.finished} />
-                </p>
-              </div>
-              <div className="cf w-33 fl tc">
-                <p className="ma0 mb2 barlow-condensed f2 b red">{userStats.tasksInvalidated}</p>
-                <p className="mb3 ttl">
-                  <FormattedMessage {...messages.invalidated} />
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        </article>
+      ))}
     </div>
   );
 };
@@ -134,37 +127,32 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
 
   return (
     <div>
-      <div className="cf w-100 relative">
+      <div className="w-100 relative stats-cards-container">
         <StatsCard
           invertColors={true}
           icon={<ClockIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.timeSpentMapping} />}
           value={duration}
-          className={'w-20-l w-50-m w-100 mv1'}
         />
         <StatsCard
           icon={<HomeIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.buildingsMapped} />}
           value={osmStats.total_building_count_add || 0}
-          className={'w-20-l w-50-m w-100 mv1'}
         />
         <StatsCard
           icon={<RoadIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.roadMapped} />}
           value={osmStats.total_road_km_add || 0}
-          className={'w-20-l w-50-m w-100 mv1'}
         />
         <StatsCard
           icon={<MarkerIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.poiMapped} />}
           value={osmStats.total_poi_count_add || 0}
-          className={'w-20-l w-50-m w-100 mv1'}
         />
         <StatsCard
           icon={<WavesIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.waterwaysMapped} />}
           value={osmStats.total_waterway_km_add || 0}
-          className={'w-20-l w-50-m w-100 mv1'}
         />
       </div>
       <div className="cf w-100 relative tr pt3 pr3">

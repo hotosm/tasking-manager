@@ -1,9 +1,11 @@
-from flask_restful import Resource, current_app
+from flask_restful import Resource
 
-from backend.services.users.user_service import UserService, UserServiceError, NotFound
+from backend.services.users.authentication_service import token_auth
+from backend.services.users.user_service import UserService, OSMServiceError
 
 
 class UsersOpenStreetMapAPI(Resource):
+    @token_auth.login_required
     def get(self, username):
         """
         Get details from OpenStreetMap for a specified username
@@ -40,14 +42,5 @@ class UsersOpenStreetMapAPI(Resource):
         try:
             osm_dto = UserService.get_osm_details_for_user(username)
             return osm_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found", "SubCode": "NotFound"}, 404
-        except UserServiceError as e:
+        except OSMServiceError as e:
             return {"Error": str(e)}, 502
-        except Exception as e:
-            error_msg = f"User OSM GET - unhandled error: {str(e)}"
-            current_app.logger.error(error_msg)
-            return {
-                "Error": "Unable to fetch OpenStreetMap details",
-                "SubCode": "InternalServerError",
-            }, 500

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from '@reach/router';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
-import { RectShape } from 'react-placeholder/lib/placeholders';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
+import toast from 'react-hot-toast';
+import { useQueryParams, BooleanParam } from 'use-query-params';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
+import { useModifyMembers } from '../hooks/UseModifyMembers';
 import { useEditOrgAllowed } from '../hooks/UsePermissions';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { Members } from '../components/teamsAndOrgs/members';
@@ -22,77 +24,84 @@ import { FormSubmitButton, CustomButton } from '../components/button';
 import { ChartLineIcon } from '../components/svgIcons';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { Alert } from '../components/alert';
+import { updateEntity } from '../utils/management';
 
 export function ListOrganisations() {
   useSetTitleTag('Manage organizations');
-  const token = useSelector((state) => state.auth.get('token'));
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const isOrgManager = useSelector(
-    (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
+    (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
   const [organisations, setOrganisations] = useState(null);
-  const [userOrgsOnly, setUserOrgsOnly] = useState(userDetails.role === 'ADMIN' ? false : true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [query, setQuery] = useQueryParams({
+    showAll: BooleanParam,
+  });
+  const [userOrgsOnly, setUserOrgsOnly] = useState(Boolean(!query.showAll));
+
   useEffect(() => {
-    if (token && userDetails && userDetails.id) {
+    setQuery({ ...query, showAll: userOrgsOnly === false ? true : undefined });
+    //eslint-disable-next-line
+  }, [userOrgsOnly]);
+
+  useEffect(() => {
+    if (token && userDetails?.id) {
+      setLoading(true);
       const queryParam = `${userOrgsOnly ? `?manager_user_id=${userDetails.id}` : ''}`;
-      fetchLocalJSONAPI(`organisations/${queryParam}`, token).then((orgs) =>
-        setOrganisations(orgs.organisations),
-      );
+      fetchLocalJSONAPI(`organisations/${queryParam}`, token)
+        .then((orgs) => {
+          setOrganisations(orgs.organisations);
+          setLoading(false);
+        })
+        .catch((err) => setError(err));
     }
   }, [userDetails, token, userOrgsOnly]);
 
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <RectShape className="bg-white dib mv2" style={{ width: 700, height: 250 }} />
-      <RectShape className="bg-white dib mv2" style={{ width: 700, height: 250 }} />
-    </div>
-  );
-
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={organisations !== null}
-    >
-      <OrgsManagement
-        organisations={organisations}
-        userOrgsOnly={userOrgsOnly}
-        setUserOrgsOnly={setUserOrgsOnly}
-        isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
-        isAdmin={userDetails.role === 'ADMIN'}
-      />
-    </ReactPlaceholder>
+    <OrgsManagement
+      organisations={organisations}
+      userOrgsOnly={userOrgsOnly}
+      setUserOrgsOnly={setUserOrgsOnly}
+      isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
+      isAdmin={userDetails.role === 'ADMIN'}
+      isOrganisationsFetched={!loading && !error}
+    />
   );
 }
 
 export function CreateOrganisation() {
   useSetTitleTag('Create new organization');
   const navigate = useNavigate();
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
-  const [managers, setManagers] = useState([]);
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
+  const {
+    members: managers,
+    setMembers: setManagers,
+    addMember: addManagers,
+    removeMember: removeManagers,
+  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (userDetails && userDetails.username && managers.length === 0) {
-      setManagers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
-    }
-  }, [userDetails, managers]);
-
-  const addManagers = (values) => {
-    const newValues = values.filter(
-      (newUser) => !managers.map((i) => i.username).includes(newUser.username),
-    );
-    setManagers(managers.concat(newValues));
-  };
-  const removeManagers = (username) => {
-    setManagers(managers.filter((i) => i.username !== username));
-  };
   const createOrg = (payload) => {
     payload.managers = managers.map((user) => user.username);
-    pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST').then((result) =>
-      navigate(`/manage/organisations/${result.organisationId}`),
-    );
+    pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST')
+      .then((result) => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'organization',
+            }}
+          />,
+        );
+        navigate(`/manage/organisations/${result.organisationId}`);
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
   };
 
   return (
@@ -107,6 +116,22 @@ export function CreateOrganisation() {
               </h3>
               <div className="w-40-l w-100">
                 <CreateOrgInfo formState={values} />
+                <div className="cf pv2 ml2">
+                  {error && (
+                    <Alert type="error" compact>
+                      {messages[`orgCreation${error}Error`] ? (
+                        <FormattedMessage {...messages[`orgCreation${error}Error`]} />
+                      ) : (
+                        <FormattedMessage
+                          {...messages.entityCreationFailure}
+                          values={{
+                            entity: 'organization',
+                          }}
+                        />
+                      )}
+                    </Alert>
+                  )}
+                </div>
                 <Members
                   addMembers={addManagers}
                   removeMembers={removeManagers}
@@ -141,17 +166,24 @@ export function CreateOrganisation() {
   );
 }
 
-export function EditOrganisation(props) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+export function EditOrganisation() {
+  const { id } = useParams();
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [initManagers, setInitManagers] = useState(false);
-  const [managers, setManagers] = useState([]);
-  const [error, loading, organisation] = useFetch(`organisations/${props.id}/`, props.id);
+  const {
+    members: managers,
+    setMembers: setManagers,
+    addMember: addManager,
+    removeMember: removeManager,
+  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
+  const [error, loading, organisation] = useFetch(`organisations/${id}/`, id);
   const [isUserAllowed] = useEditOrgAllowed(organisation);
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?organisationId=${props.id}&omitMapResults=true`,
-    props.id,
+    `projects/?organisationId=${id}&omitMapResults=true&projectStatuses=PUBLISHED,DRAFT,ARCHIVED`,
+    id,
   );
+  const [errorMessage, setErrorMessage] = useState(null);
   useSetTitleTag(`Edit ${organisation.name}`);
 
   useEffect(() => {
@@ -159,25 +191,37 @@ export function EditOrganisation(props) {
       setManagers(organisation.managers);
       setInitManagers(true);
     }
-  }, [organisation, managers, initManagers]);
-
-  const addManagers = (values) => {
-    const newValues = values.filter(
-      (newUser) => !managers.map((i) => i.username).includes(newUser.username),
-    );
-    setManagers(managers.concat(newValues));
-  };
-  const removeManagers = (username) => {
-    setManagers(managers.filter((i) => i.username !== username));
-  };
+  }, [organisation, managers, initManagers, setManagers]);
 
   const updateManagers = () => {
     let payload = JSON.stringify({ managers: managers.map((i) => i.username) });
-    pushToLocalJSONAPI(`organisations/${props.id}/`, payload, token, 'PATCH');
+    pushToLocalJSONAPI(`organisations/${id}/`, payload, token, 'PATCH')
+      .then(() =>
+        toast.success(
+          <FormattedMessage
+            {...messages.affiliationUpdationSuccess}
+            values={{
+              affiliation: 'managers',
+            }}
+          />,
+        ),
+      )
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.affiliationUpdationFailure}
+            values={{
+              affiliation: 'managers',
+            }}
+          />,
+        ),
+      );
   };
 
   const updateOrg = (payload) => {
-    pushToLocalJSONAPI(`organisations/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
+    const onSuccess = () => setErrorMessage(null);
+    const onFailure = (error) => setErrorMessage(error.message);
+    updateEntity(`organisations/${id}/`, 'organization', payload, token, onSuccess, onFailure);
   };
 
   return (
@@ -226,10 +270,11 @@ export function EditOrganisation(props) {
               }}
               updateOrg={updateOrg}
               disabledForm={error || loading}
+              errorMessage={errorMessage}
             />
             <Members
-              addMembers={addManagers}
-              removeMembers={removeManagers}
+              addMembers={addManager}
+              removeMembers={removeManager}
               saveMembersFn={updateManagers}
               resetMembersFn={setManagers}
               members={managers}
@@ -243,7 +288,7 @@ export function EditOrganisation(props) {
             />
             <Teams
               teams={organisation.teams}
-              viewAllQuery={`?organisationId=${props.id}`}
+              viewAllQuery={`?organisationId=${id}`}
               isReady={!error && !loading}
             />
           </div>

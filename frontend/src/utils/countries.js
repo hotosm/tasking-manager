@@ -34,5 +34,5 @@ export function formatCountryList(locale) {
 export const formatFilterCountriesData = (countries, locale) =>
   countries.map((country) => ({
     name: locale.includes('en') ? country : translateCountry(country, locale),
-    value: country,
+    value: locale.includes('en') ? country : translateCountry(country, 'en'),
   }));

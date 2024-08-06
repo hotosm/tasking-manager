@@ -23,7 +23,7 @@ class TestGridService(BaseTestCase):
         result = GridService.merge_to_multi_polygon(aoi_geojson, True)
 
         # assert
-        self.assertEqual(str(expected), str(result))
+        self.assertDeepAlmostEqual(expected, result)
 
     def test_feature_collection_to_multi_polygon_nodissolve(self):
         # arrange
@@ -52,7 +52,7 @@ class TestGridService(BaseTestCase):
         result = GridService.trim_grid_to_aoi(grid_dto)
 
         # assert
-        self.assertEqual(str(expected), str(result))
+        self.assertDeepAlmostEqual(expected, result, places=6)
 
     def test_trim_grid_to_aoi_noclip(self):
         # arrange
@@ -67,7 +67,7 @@ class TestGridService(BaseTestCase):
         result = GridService.trim_grid_to_aoi(grid_dto)
 
         # assert
-        self.assertEqual(str(expected), str(result))
+        self.assertDeepAlmostEqual(expected, result)
 
     def test_tasks_from_aoi_features(self):
         # arrange
@@ -109,7 +109,6 @@ class TestGridService(BaseTestCase):
         self.assertEqual(str(expected), str(result))
 
     def test_raises_InvalidGeoJson_when_geometry_is_linestring(self):
-
         # arrange
         grid_json = get_canned_json("CHAI-Escuintla-West2.json")
         grid_dto = GridDTO(grid_json)
@@ -147,3 +146,13 @@ class TestGridService(BaseTestCase):
             GridService.merge_to_multi_polygon(
                 geojson.dumps(bad_feature_collection), dissolve=True
             )
+
+    def test_to_shapely_geometries(self):
+        # Arrange
+        grid_json = get_canned_json("test_arbitrary.json")
+        grid_dto = GridDTO(grid_json)
+        grid_geojson = json.dumps(grid_dto.area_of_interest)
+        # Act
+        features = GridService._to_shapely_geometries(grid_geojson)
+        # Assert
+        self.assertNotEqual(0, len(features))

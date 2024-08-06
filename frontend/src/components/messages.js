@@ -34,6 +34,11 @@ export default defineMessages({
     id: 'footer.privacyPolicy',
     defaultMessage: 'Privacy Policy',
   },
+  license: {
+    id: 'footer.license',
+    defaultMessage:
+      'Images and screenshots of the Tasking Manager may be shared under a Creative Commons Attribution-Sharealike 4.0 International License',
+  },
   mappingLevelALL: {
     id: 'mapping.level.all',
     defaultMessage: 'All levels',
@@ -49,6 +54,22 @@ export default defineMessages({
   mappingLevelBEGINNER: {
     id: 'mapping.level.beginner',
     defaultMessage: 'Beginner mapper',
+  },
+  difficultyALL: {
+    id: 'mapping.difficulty.all',
+    defaultMessage: 'All',
+  },
+  difficultyEASY: {
+    id: 'mapping.difficulty.advanced',
+    defaultMessage: 'Easy',
+  },
+  difficultyMODERATE: {
+    id: 'mapping.difficulty.moderate',
+    defaultMessage: 'Moderate',
+  },
+  difficultyCHALLENGING: {
+    id: 'mapping.difficulty.beginner',
+    defaultMessage: 'Challenging',
   },
   roads: {
     id: 'project.typesOfMapping.roads',
@@ -73,5 +94,22 @@ export default defineMessages({
   pointsOfInterest: {
     id: 'project.typesOfMapping.pointsOfInterest',
     defaultMessage: 'Points of interest',
+  },
+  webglUnsupportedTitle: {
+    id: 'browser.webgl.unsupported.title',
+    defaultMessage: 'WebGL Context Not Found',
+  },
+  webglUnsupportedDescription: {
+    id: 'browser.webgl.unsupported.description',
+    defaultMessage:
+      'Your browser does not support WebGL, which is required to render map components. Please try using a different browser or check that <a>WebGL is enabled</a>.',
+  },
+  loading: {
+    id: 'common.loading',
+    defaultMessage: 'Loading...',
+  },
+  gpxNameAttribute: {
+    id: 'editor.layer.gpx.name',
+    defaultMessage: 'Task for project {projectId}. Do not edit outside of this area!',
   },
 });

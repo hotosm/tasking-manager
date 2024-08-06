@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { ProjectDetailFooter } from '../footer';
 
 describe('test if project detail footer', () => {
@@ -11,7 +11,7 @@ describe('test if project detail footer', () => {
     className: '',
   };
   it('renders footer for project with id 1', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ProjectDetailFooter {...props} />
       </ReduxIntlProviders>,

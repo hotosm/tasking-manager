@@ -1,35 +1,33 @@
-import { Map } from 'immutable';
-
 import { types } from '../actions/auth';
 
-const initialState = Map({
+const initialState = {
   userDetails: {},
   token: '',
   session: {},
   osm: {},
   organisations: [],
   pmTeams: [],
-});
+};
 
 export function authorizationReducer(state = initialState, action) {
   switch (action.type) {
     case types.SET_USER_DETAILS: {
-      return state.set('userDetails', action.userDetails);
+      return { ...state, userDetails: action.userDetails };
     }
     case types.SET_OSM: {
-      return state.set('osm', action.osm);
+      return { ...state, osm: action.osm };
     }
     case types.SET_ORGANISATIONS: {
-      return state.set('organisations', action.organisations);
+      return { ...state, organisations: action.organisations };
     }
     case types.SET_PM_TEAMS: {
-      return state.set('pmTeams', action.teams);
+      return { ...state, pmTeams: action.teams };
     }
     case types.SET_TOKEN: {
-      return state.set('token', action.token);
+      return { ...state, token: action.token };
     }
     case types.SET_SESSION: {
-      return state.set('session', action.session);
+      return { ...state, session: action.session };
     }
     case types.CLEAR_SESSION: {
       return initialState;

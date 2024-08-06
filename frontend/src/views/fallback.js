@@ -1,12 +1,14 @@
 import React from 'react';
-import { navigate, Link } from '@reach/router';
+import { useNavigate, Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../components/button';
 import { SERVICE_DESK } from '../config';
 
-export const FallbackComponent = (props) => {
+export const FallbackComponent = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="cf w-100 pv5 base-font">
       <h3 className="f2 fw5 barlow-condensed tc">

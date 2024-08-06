@@ -37,28 +37,25 @@ export function NotificationOrderBySelector(props) {
       sort: 'ASC',
     },
   ];
-  const onSortSelect = (arr) => {
-    if (arr.length === 1) {
-      props.setQuery(
-        {
-          ...props.allQueryParams,
-          page: undefined,
-          orderBy: arr[0].sort,
-          orderByType: arr[0].type,
-        },
-        'pushIn',
-      );
-    } else if (arr.length > 1) {
-      throw new Error('filter select array is bigger.');
-    }
-  };
+
+  const onSortSelect = (arr) =>
+    props.setQuery(
+      {
+        ...props.allQueryParams,
+        page: undefined,
+        orderBy: arr[0].sort,
+        orderByType: arr[0].type,
+      },
+      'pushIn',
+    );
+
   return (
     <Dropdown
       onChange={onSortSelect}
-      value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}` || []}
+      value={`${props.allQueryParams.orderByType}.${props.allQueryParams.orderBy}` || []}
       options={options}
       display={<FormattedMessage {...messages.sortBy} />}
-      className={`ba b--grey-light bg-white mr1 f6 v-mid pv2 ${props.className || ''}`}
+      className={`ba b--grey-light blue-grey bg-white mr1 f6 v-mid pv2 ${props.className || ''}`}
     />
   );
 }

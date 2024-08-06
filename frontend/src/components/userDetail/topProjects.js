@@ -36,23 +36,25 @@ export const TopProjects = ({ projects }) => {
   });
 
   return (
-    <div className="pv2 ph3 bg-white blue-dark shadow-4">
-      <h3 className="f4 mv0 fw6 pt3">
-        <FormattedMessage {...messages.topProjectsMappedTitle} />
-      </h3>
-      {data.length > 0 ? (
-        <BarListChart
-          data={tasksPercent}
-          valueField={'total'}
-          nameField={'name'}
-          linkBase={'/projects/'}
-          linkField={'id'}
-        />
-      ) : (
-        <div className="h-100 tc pv5 mt3 blue-grey">
-          <FormattedMessage {...messages.noTopProjectsData} />
-        </div>
-      )}
+    <div className="pv2 ph3 bg-white blue-dark shadow-6 h-100">
+      <div className="ml2 mt1 mb4">
+        <h3 className="f125 mv0 fw6 pt3">
+          <FormattedMessage {...messages.topProjectsMappedTitle} />
+        </h3>
+        {data.length > 0 ? (
+          <BarListChart
+            data={tasksPercent}
+            valueField={'total'}
+            nameField={'name'}
+            linkBase={'/projects/'}
+            linkField={'id'}
+          />
+        ) : (
+          <div className="h-100 tc pv5 mt3 blue-grey">
+            <FormattedMessage {...messages.noTopProjectsData} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

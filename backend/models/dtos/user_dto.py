@@ -15,7 +15,7 @@ from backend.models.postgis.statuses import MappingLevel, UserRole
 
 
 def is_known_mapping_level(value):
-    """ Validates that supplied mapping level is known value """
+    """Validates that supplied mapping level is known value"""
     if value.upper() == "ALL":
         return True
 
@@ -31,7 +31,7 @@ def is_known_mapping_level(value):
 
 
 def is_known_role(value):
-    """ Validates that supplied user role is known value """
+    """Validates that supplied user role is known value"""
     try:
         value = value.split(",")
         for role in value:
@@ -44,7 +44,7 @@ def is_known_role(value):
 
 
 class UserDTO(Model):
-    """ DTO for User """
+    """DTO for User"""
 
     id = LongType()
     username = StringType()
@@ -71,10 +71,17 @@ class UserDTO(Model):
     picture_url = StringType(serialized_name="pictureUrl")
     default_editor = StringType(serialized_name="defaultEditor")
     mentions_notifications = BooleanType(serialized_name="mentionsNotifications")
-    comments_notifications = BooleanType(serialized_name="commentsNotifications")
+    projects_comments_notifications = BooleanType(
+        serialized_name="questionsAndCommentsNotifications"
+    )
     projects_notifications = BooleanType(serialized_name="projectsNotifications")
     tasks_notifications = BooleanType(serialized_name="tasksNotifications")
-    teams_notifications = BooleanType(serialized_name="teamsNotifications")
+    tasks_comments_notifications = BooleanType(
+        serialized_name="taskCommentsNotifications"
+    )
+    teams_announcement_notifications = BooleanType(
+        serialized_name="teamsAnnouncementNotifications"
+    )
 
     # these are read only
     gender = StringType(
@@ -95,7 +102,7 @@ class UserDTO(Model):
 
 
 class UserCountryContributed(Model):
-    """ DTO for country a user has contributed """
+    """DTO for country a user has contributed"""
 
     name = StringType(required=True)
     mapped = IntType(required=True)
@@ -104,7 +111,7 @@ class UserCountryContributed(Model):
 
 
 class UserCountriesContributed(Model):
-    """ DTO for countries a user has contributed """
+    """DTO for countries a user has contributed"""
 
     def __init__(self):
         super().__init__()
@@ -122,7 +129,7 @@ class UserContributionDTO(Model):
 
 
 class UserStatsDTO(Model):
-    """ DTO containing statistics about the user """
+    """DTO containing statistics about the user"""
 
     total_time_spent = IntType(serialized_name="totalTimeSpent")
     time_spent_mapping = IntType(serialized_name="timeSpentMapping")
@@ -145,14 +152,14 @@ class UserStatsDTO(Model):
 
 
 class UserOSMDTO(Model):
-    """ DTO containing OSM details for the user """
+    """DTO containing OSM details for the user"""
 
     account_created = StringType(required=True, serialized_name="accountCreated")
     changeset_count = IntType(required=True, serialized_name="changesetCount")
 
 
 class MappedProject(Model):
-    """ Describes a single project a user has mapped """
+    """Describes a single project a user has mapped"""
 
     project_id = IntType(serialized_name="projectId")
     name = StringType()
@@ -163,7 +170,7 @@ class MappedProject(Model):
 
 
 class UserMappedProjectsDTO(Model):
-    """ DTO for projects a user has mapped """
+    """DTO for projects a user has mapped"""
 
     def __init__(self):
         super().__init__()
@@ -175,7 +182,7 @@ class UserMappedProjectsDTO(Model):
 
 
 class UserSearchQuery(Model):
-    """ Describes a user search query, that a user may submit to filter the list of users """
+    """Describes a user search query, that a user may submit to filter the list of users"""
 
     username = StringType()
     role = StringType(validators=[is_known_role])
@@ -183,14 +190,16 @@ class UserSearchQuery(Model):
         serialized_name="mappingLevel", validators=[is_known_mapping_level]
     )
     page = IntType()
+    pagination = BooleanType(default=True)
+    per_page = IntType(default=20, serialized_name="perPage")
 
     def __hash__(self):
-        """ Make object hashable so we can cache user searches"""
+        """Make object hashable so we can cache user searches"""
         return hash((self.username, self.role, self.mapping_level, self.page))
 
 
 class ListedUser(Model):
-    """ Describes a user within the User List """
+    """Describes a user within the User List"""
 
     id = LongType()
     username = StringType()
@@ -200,7 +209,7 @@ class ListedUser(Model):
 
 
 class UserRegisterEmailDTO(Model):
-    """ DTO containing data for user registration with email model """
+    """DTO containing data for user registration with email model"""
 
     id = IntType(serialize_when_none=False)
     email = StringType(required=True)
@@ -209,7 +218,7 @@ class UserRegisterEmailDTO(Model):
 
 
 class ProjectParticipantUser(Model):
-    """ Describes a user who has participated in a project """
+    """Describes a user who has participated in a project"""
 
     username = StringType()
     project_id = LongType(serialized_name="projectId")
@@ -217,7 +226,7 @@ class ProjectParticipantUser(Model):
 
 
 class UserSearchDTO(Model):
-    """ Paginated list of TM users """
+    """Paginated list of TM users"""
 
     def __init__(self):
         super().__init__()
@@ -228,7 +237,7 @@ class UserSearchDTO(Model):
 
 
 class UserFilterDTO(Model):
-    """ DTO to hold all Tasking Manager users """
+    """DTO to hold all Tasking Manager users"""
 
     def __init__(self):
         super().__init__()
@@ -241,10 +250,10 @@ class UserFilterDTO(Model):
 
 
 class UserTaskDTOs(Model):
-    """ Describes an array of Task DTOs"""
+    """Describes an array of Task DTOs"""
 
     def __init__(self):
-        """ DTO constructor initialise all arrays to empty"""
+        """DTO constructor initialise all arrays to empty"""
         super().__init__()
         self.user_tasks = []
 

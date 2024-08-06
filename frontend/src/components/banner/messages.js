@@ -34,11 +34,12 @@ export default defineMessages({
     defaultMessage: 'Learn More',
   },
   importantNotification: {
-      id: 'banner.title.notification',
-      defaultMessage: 'Important notification for users',
+    id: 'banner.title.notification',
+    defaultMessage: 'Important notification for users',
   },
   archivalNotificationText: {
     id: 'banner.text.archivalNotification',
-    defaultMessage: 'Attention: as part of the ongoing maintenance of the Tasking Manager, projects created before 2020 will be archived.',
-  }
+    defaultMessage:
+      'Attention: as part of the ongoing maintenance of the Tasking Manager, projects created before 2020 will be archived.',
+  },
 });

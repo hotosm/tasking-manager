@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block content %}
+    <div style="padding: 0 2.357rem; margin-bottom: 3.428rem">
+      <h1
+        style="
+          text-transform: uppercase;
+          font-weight: 500;
+          font-size: 1.714rem;
+          line-height: 0.916;
+          letter-spacing: 0.75px;
+          margin-bottom: 24px;
+          margin-top: 4rem;
+        "
+      >
+        You&#39;re 25% done!
+      </h1>
+      <p style="margin-bottom: 32px">
+        To get the most out of Tasking Manager, you need to have your profile as
+        detailed as possible.
+      </p>
+      <p
+        style="
+          width: 87%;
+          font-weight: 700;
+          font-size: 1.142rem;
+          line-height: 1.5625;
+          margin-bottom: 2.857rem;
+        "
+      >
+        These 3 easy steps get you on your way to a great profile:
+      </p>
+      <table  aria-label=""> <!-- Noncompliant -->
+        <thead>
+          <th>
+          </th>
+        <thead>
+        <tr>
+          <td>
+            {% for step in values["STEPS"] %}
+              <div  style=" display: inline-block; border: 2px solid #ecebed; padding: 24px; background-color: white; width:464px;">
+                <table  aria-label="" > <!-- Noncompliant -->
+                  <thead>
+                    <th>
+                    </th>
+                  </thead>
+                  <tr >
+                    <td>
+                      {% if step.checked %}
+                        <img
+                          src="https://raw.githubusercontent.com/hotosm/tasking-manager/58c1c64687eba4d4b58724c78ac9bf206a20ddc4/backend/services/messaging/templates/assets/checked.png"
+                          width="40"
+                          height="40"
+                          alt="checked logo"
+                        />
+                      {% else %}
+                        <div
+                          style="
+                            width: 40px;
+                            height: 40px;
+                            border: 2px dashed #d73f3f;
+                            border-radius: 50%;
+                            align-items: center;
+                            justify-content: center;
+                          "
+                        >
+                          <p
+                            style="
+                              font-weight: 700;
+                              font-size: 14px;
+                              line-height: 15px;
+                              color: #d73f3f;
+                              padding: 37%;
+                            "
+                          >
+                            {{ loop.index }}
+                          </p>
+                        </div>
+                      {% endif %}
+                    </td>
+                    <td style="
+                      font-weight: 500;
+                      font-size: 1.142rem;
+                      line-height: 1;
+                    "
+                    >
+                      {% if step.checked %}
+                        <p style="margin-left:1.142rem; margin-bottom: 0.571rem; text-decoration: line-through;">
+                      {% else %}
+                        <p style="margin-left:1.142rem; margin-bottom: 0.571rem;">
+                      {% endif %}
+                      {{ step.title }}
+                      </p>
+                      <p style="color: #68707f; margin-left: 1.142rem; font-size: 0.857rem; font-weight: normal;">{{ step.subtitle }}</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            {% endfor %}
+          </td>
+        </tr>
+      </table> <!-- Noncompliant -->
+      <!-- button component starts -->
+      <table width="100%" cellspacing="0" cellpadding="0" aria-label="" style="margin-top: 2.285rem; margin-bottom: 3.428rem;">
+        <thead>
+        <thead>
+          <th>
+          </th>
+        <tbody>
+            <tr>
+                <td style="text-align:center;">
+                    <table cellspacing="0" cellpadding="0" style="margin:0 auto;" aria-label=""> <!-- Noncompliant -->
+                        <thead>
+                          <th>
+                          </th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="  padding: 11px 24px;  border: #d73f3f; border-radius:2px;" bgcolor="#d73f3f">
+                                    <a 
+                                    href="{{values['APP_BASE_URL']}}/settings" 
+                                    style="
+                                        font-size:1.142rem; 
+                                        color: #ffffff; 
+                                        text-decoration: none;
+                                        display: inline-block;
+                                    "
+                                    >
+                                        Complete my profile
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+      </table>
+      <!-- button component ends -->
+    </div>
+{% endblock %}

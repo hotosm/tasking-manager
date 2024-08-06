@@ -1,25 +1,21 @@
-from backend.services.users.osm_service import OSMService, OSMServiceError
 from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import get_canned_osm_user_json_details
+from backend.services.users.osm_service import OSMService, OSMServiceError
 
-from tests.backend.helpers.test_helpers import get_canned_simplified_osm_user_details
 
-
-class TestOSMService(BaseTestCase):
-    def test_osm_service_can_parse_oms_user_details_xml(self):
+class TestOsmService(BaseTestCase):
+    def test_parse_osm_user_details_raises_error_if_user_not_found(self):
         # Arrange
-        osm_response = get_canned_simplified_osm_user_details()
-
-        # Act
-        dto = OSMService._parse_osm_user_details_response(osm_response)
-
-        # Assert
-        self.assertEqual(dto.account_created, "2015-05-14T18:10:16Z")
-        self.assertEqual(dto.changeset_count, 16)
-
-    def test_osm_service_raise_error_if_user_element_not_found(self):
-        # Arrange
-        osm_response = get_canned_simplified_osm_user_details()
-
-        # Act / Assert
+        osm_response = get_canned_osm_user_json_details()
+        # Act/Assert
         with self.assertRaises(OSMServiceError):
             OSMService._parse_osm_user_details_response(osm_response, "wont-find")
+
+    def test_parse_osm_user_details_can_parse_valid_osm_response(self):
+        # Arrange
+        osm_response = get_canned_osm_user_json_details()
+        # Act
+        dto = OSMService._parse_osm_user_details_response(osm_response, "user")
+        # Assert
+        self.assertEqual(dto.account_created, "2017-01-23T16:23:22Z")
+        self.assertEqual(dto.changeset_count, 16)

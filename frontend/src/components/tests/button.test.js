@@ -1,12 +1,15 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { Button, CustomButton, EditButton } from '../button';
 import { BanIcon } from '../svgIcons';
+import { renderWithRouter } from '../../utils/testWithIntl';
+import userEvent from '@testing-library/user-event';
 
 describe('Button', () => {
-  it('children and onClick props', () => {
+  it('children and onClick props', async () => {
     let testVar;
+    const user = userEvent.setup();
     const { container } = render(
       <Button className="black bg-white" onClick={() => (testVar = true)}>
         Test it
@@ -16,11 +19,12 @@ describe('Button', () => {
     expect(screen.getByRole('button').className).toBe('black bg-white br1 f5 bn pointer');
     expect(container.querySelector('svg')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button'));
     expect(testVar).toEqual(true);
   });
-  it('loading prop', () => {
+  it('loading prop', async () => {
     let testVar = false;
+    const user = userEvent.setup();
     const { container } = render(
       <Button
         className="red bg-white"
@@ -37,11 +41,12 @@ describe('Button', () => {
     expect(container.querySelector('.mr2')).toBeInTheDocument(); // space after icon
     expect(container.querySelector('.blue')).not.toBeInTheDocument(); // ban icon is not present
 
-    fireEvent.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button'));
     expect(testVar).toBeFalsy();
   });
-  it('disabled and icons props', () => {
+  it('disabled and icons props', async () => {
     let testVar = false;
+    const user = userEvent.setup();
     const { container } = render(
       <Button
         className="red bg-white"
@@ -58,14 +63,15 @@ describe('Button', () => {
     expect(container.querySelector('.blue')).toBeInTheDocument();
     expect(container.querySelector('.mr2')).toBeInTheDocument(); // space after icon
 
-    fireEvent.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button'));
     expect(testVar).toBeFalsy();
   });
 });
 
 describe('CustomButton', () => {
-  it('children and onClick props, without icon', () => {
+  it('children and onClick props, without icon', async () => {
     let testVar;
+    const user = userEvent.setup();
     const { container } = render(
       <CustomButton className="black bg-white" onClick={() => (testVar = true)}>
         Test it
@@ -75,11 +81,12 @@ describe('CustomButton', () => {
     expect(screen.getByRole('button').className).toBe('black bg-white br1 f5 pointer');
     expect(container.querySelector('svg')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button'));
     expect(testVar).toEqual(true);
   });
-  it('loading prop', () => {
+  it('loading prop', async () => {
     let testVar = false;
+    const user = userEvent.setup();
     const { container } = render(
       <CustomButton
         className="red bg-white"
@@ -96,11 +103,12 @@ describe('CustomButton', () => {
     expect(container.querySelector('.mr2')).toBeInTheDocument(); // space after icon
     expect(container.querySelector('.blue')).not.toBeInTheDocument(); // ban icon is not present
 
-    fireEvent.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button'));
     expect(testVar).toBeFalsy();
   });
-  it('disabled and icons props', () => {
+  it('disabled and icons props', async () => {
     let testVar = false;
+    const user = userEvent.setup();
     const { container } = render(
       <CustomButton
         className="red bg-white"
@@ -117,13 +125,13 @@ describe('CustomButton', () => {
     expect(container.querySelector('.blue')).toBeInTheDocument();
     expect(container.querySelector('.mr2')).toBeInTheDocument(); // space after icon
 
-    fireEvent.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button'));
     expect(testVar).toBeFalsy();
   });
 });
 
 it('children and link props of EditButton', () => {
-  render(<EditButton url="/manage/projects/1/">Edit project</EditButton>);
+  renderWithRouter(<EditButton url="/manage/projects/1/">Edit project</EditButton>);
 
   expect(screen.getByText('Edit project')).toBeInTheDocument();
   expect(screen.getByText('Edit project').href).toContain('/manage/projects/1/');

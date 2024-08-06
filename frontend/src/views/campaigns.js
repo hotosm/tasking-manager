@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from '@reach/router';
-import ReactPlaceholder from 'react-placeholder';
-import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -18,10 +17,11 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { Alert } from '../components/alert';
+import { Alert, EntityError } from '../components/alert';
 import { useAsync } from '../hooks/UseAsync';
+import { updateEntity } from '../utils/management';
 
-const CampaignError = ({ error }) => {
+export const CampaignError = ({ error }) => {
   return (
     <>
       {error && (
@@ -37,45 +37,41 @@ const CampaignError = ({ error }) => {
 
 export function ListCampaigns() {
   useSetTitleTag('Manage campaigns');
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   // TO DO: filter teams of current user
   const [error, loading, campaigns] = useFetch(`campaigns/`);
-
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <div className="w-50-ns w-100 cf ph6-l ph4">
-        <TextBlock rows={1} className="bg-grey-light h3" />
-      </div>
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-    </div>
-  );
+  const isCampaignsFetched = !loading && !error;
 
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={!error && !loading}
-    >
-      <CampaignsManagement campaigns={campaigns.campaigns} userDetails={userDetails} />
-    </ReactPlaceholder>
+    <CampaignsManagement
+      campaigns={campaigns.campaigns}
+      userDetails={userDetails}
+      isCampaignsFetched={isCampaignsFetched}
+    />
   );
 }
 
 export function CreateCampaign() {
   useSetTitleTag('Create new campaign');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.get('token'));
-  const [error, setError] = useState(false);
+  const token = useSelector((state) => state.auth.token);
+  const [isError, setIsError] = useState(false);
 
   const createCampaign = (payload) => {
+    setIsError(false);
     return pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
-        setError(false);
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'campaign',
+            }}
+          />,
+        );
         navigate(`/manage/campaigns/${result.campaignId}`);
       })
-      .catch((e) => setError(true));
+      .catch(() => setIsError(true));
   };
 
   const createCampaignAsync = useAsync(createCampaign);
@@ -96,8 +92,8 @@ export function CreateCampaign() {
                     <FormattedMessage {...messages.campaignInfo} />
                   </h3>
                   <CampaignInformation />
-                  <CampaignError error={error} />
                 </div>
+                {isError && <EntityError entity="campaign" />}
               </div>
             </div>
             <div className="fixed left-0 bottom-0 cf bg-white h3 w-100">
@@ -126,10 +122,11 @@ export function CreateCampaign() {
   );
 }
 
-export function EditCampaign(props) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
-  const [error, loading, campaign] = useFetch(`campaigns/${props.id}/`, props.id);
+export function EditCampaign() {
+  const { id } = useParams();
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
+  const [error, loading, campaign] = useFetch(`campaigns/${id}/`, id);
   useSetTitleTag(`Edit ${campaign.name}`);
   const [projectsError, projectsLoading, projects] = useFetch(
     `projects/?campaign=${encodeURIComponent(campaign.name)}&omitMapResults=true`,
@@ -138,9 +135,9 @@ export function EditCampaign(props) {
   const [nameError, setNameError] = useState(false);
 
   const updateCampaign = (payload) => {
-    return pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then((res) => setNameError(false))
-      .catch((e) => setNameError(true));
+    const onSuccess = () => setNameError(false);
+    const onFailure = () => setNameError(true);
+    return updateEntity(`campaigns/${id}/`, 'campaign', payload, token, onSuccess, onFailure);
   };
 
   const updateCampaignAsync = useAsync(updateCampaign);

@@ -72,4 +72,12 @@ export default defineMessages({
     id: 'project.card.project_tasks.button',
     defaultMessage: 'Tasks',
   },
+  noDueDate: {
+    id: 'project.detail.noDueDate',
+    defaultMessage: 'No due date specified',
+  },
+  dueDateExpired: {
+    id: 'project.detail.dueDateExpired',
+    defaultMessage: 'Due date expired',
+  },
 });

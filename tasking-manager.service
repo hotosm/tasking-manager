@@ -19,7 +19,7 @@ RuntimeDirectory=gunicorn
 WorkingDirectory=/tasking-manager
 
 ;ExecStartPre=/bin/chown -R root:root /tasking-manager
-ExecStart=/tasking-manager/venv/bin/gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 3 --timeout 179 manage:application
+ExecStart=/tasking-manager/__pypackages__/3.7/bin/gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 3 --timeout 179 manage:application
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
 Restart=on-failure

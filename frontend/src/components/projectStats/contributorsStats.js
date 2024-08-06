@@ -1,4 +1,5 @@
 import React from 'react';
+import { Chart as ChartJS, ArcElement, BarElement } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -9,9 +10,11 @@ import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 import { useContributorStats } from '../../hooks/UseContributorStats';
 import { StatsCardContent } from '../statsCard';
 
+ChartJS.register(ArcElement, BarElement);
+
 export default function ContributorsStats({ contributors }) {
   const intl = useIntl();
-  const stats = useContributorStats(contributors.userContributions);
+  const stats = useContributorStats(contributors);
   const getUserLevelLabel = (level) => intl.formatMessage(userMessages[`mapperLevel${level}`]);
   const getUserExpLabel = (id) => intl.formatMessage(messages[`${id}`]);
 
@@ -81,7 +84,7 @@ export default function ContributorsStats({ contributors }) {
             className="pv3-l pv2 mb3-l mb2 shadow-4 bg-white"
           />
           <StatsCardContent
-            value={contributors.userContributions.length}
+            value={contributors.length}
             label={<FormattedMessage {...messages.totalContributors} />}
             className="pv3-l pv2 mb3-l mb2 shadow-4 bg-white"
           />

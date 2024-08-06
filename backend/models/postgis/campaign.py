@@ -21,7 +21,7 @@ campaign_organisations = db.Table(
 
 
 class Campaign(db.Model):
-    """ Describes an Campaign"""
+    """Describes an Campaign"""
 
     __tablename__ = "campaigns"
 
@@ -32,12 +32,12 @@ class Campaign(db.Model):
     description = db.Column(db.String)
 
     def create(self):
-        """ Creates and saves the current model to the DB """
+        """Creates and saves the current model to the DB"""
         db.session.add(self)
         db.session.commit()
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
@@ -45,7 +45,7 @@ class Campaign(db.Model):
         db.session.commit()
 
     def update(self, dto: CampaignDTO):
-        """ Update the user details """
+        """Update the user details"""
         self.name = dto.name if dto.name else self.name
         self.logo = dto.logo if dto.logo else self.logo
         self.url = dto.url if dto.url else self.url
@@ -54,7 +54,7 @@ class Campaign(db.Model):
 
     @classmethod
     def from_dto(cls, dto: CampaignDTO):
-        """ Creates new message from DTO """
+        """Creates new message from DTO"""
         campaign = cls()
         campaign.url = dto.url
         campaign.name = dto.name
@@ -64,7 +64,7 @@ class Campaign(db.Model):
         return campaign
 
     def as_dto(self) -> CampaignDTO:
-        """ Creates new message from DTO """
+        """Creates new message from DTO"""
         campaign_dto = CampaignDTO()
         campaign_dto.id = self.id
         campaign_dto.url = self.url
@@ -76,7 +76,7 @@ class Campaign(db.Model):
 
     @staticmethod
     def campaign_list_as_dto(campaigns: list) -> CampaignListDTO:
-        """ Converts a collection of campaigns into DTO"""
+        """Converts a collection of campaigns into DTO"""
         campaign_list_dto = CampaignListDTO()
         for campaign in campaigns:
             campaign_dto = CampaignDTO()

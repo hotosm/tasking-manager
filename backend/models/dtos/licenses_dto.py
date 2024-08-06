@@ -4,7 +4,7 @@ from schematics.types.compound import ListType, ModelType
 
 
 class LicenseDTO(Model):
-    """ DTO used to define a mapping license """
+    """DTO used to define a mapping license"""
 
     license_id = IntType(serialized_name="licenseId")
     name = StringType(required=True)
@@ -13,7 +13,7 @@ class LicenseDTO(Model):
 
 
 class LicenseListDTO(Model):
-    """ DTO for all mapping licenses """
+    """DTO for all mapping licenses"""
 
     def __init__(self):
         super().__init__()

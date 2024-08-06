@@ -23,11 +23,10 @@ class TestSplitService(BaseTestCase):
         self.test_project, self.test_user = create_canned_project()
 
     def test_split_geom_returns_split_geometries(self):
-
         # arrange
-        x = 2021
-        y = 2798
-        zoom = 12
+        x = 1010
+        y = 1399
+        zoom = 11
         task_stub = Task()
         task_stub.is_square = True
 
@@ -35,9 +34,8 @@ class TestSplitService(BaseTestCase):
 
         # act
         result = SplitService._create_split_tasks(x, y, zoom, task_stub)
-
         # assert
-        self.assertEqual(str(expected), str(result))
+        self.assertDeepAlmostEqual(expected, result)
 
     def test_split_geom_raise_grid_service_error_when_task_not_usable(self):
         with self.assertRaises(SplitServiceError):
@@ -64,7 +62,6 @@ class TestSplitService(BaseTestCase):
         mock_project_tasks,
         mock_instructions,
     ):
-
         # arrange
         task_stub = Task()
         task_stub.id = 1
@@ -104,7 +101,6 @@ class TestSplitService(BaseTestCase):
 
     @patch.object(Task, "get_tasks")
     def test_split_non_square_task(self, mock_task):
-
         # Lock task for mapping
         task = Task.get(2, self.test_project.id)
         task.lock_task_for_mapping(self.test_user.id)
@@ -119,5 +115,4 @@ class TestSplitService(BaseTestCase):
             json.dumps(get_canned_json("non_square_split_results.json"))
         )
         result = SplitService._create_split_tasks(task.x, task.y, task.zoom, task)
-
-        self.assertEqual(str(expected), str(result))
+        self.assertDeepAlmostEqual(expected, result)

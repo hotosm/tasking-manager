@@ -1,11 +1,11 @@
 import React from 'react';
-import { Link } from '@reach/router';
+import { Link, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 
 import messages from './messages';
 import { useExploreProjectsQueryParams, stringify } from '../../hooks/UseProjectsQueryAPI';
-import { MappingLevelMessage } from '../mappingLevel';
+import { DifficultyMessage } from '../mappingLevel';
 import { Dropdown } from '../dropdown';
 import { ProjectSearchBox } from './projectSearchBox';
 import ClearFilters from './clearFilters';
@@ -32,16 +32,18 @@ export const ProjetListViewToggle = (props) => {
   const dispatch = useDispatch();
   const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
   return (
-    <div className="fr pv2 dib-ns dn ">
+    <div className="fr pv2 dib-ns dn">
       <ListIcon
         height="25"
         width="25"
+        role="graphics-symbol"
         className={`dib pointer v-mid ph1 ${listViewIsActive ? 'blue-grey' : 'blue-light'}`}
         onClick={() => dispatch({ type: 'TOGGLE_LIST_VIEW' })}
       />
       <GripIcon
         height="20"
         width="20"
+        role="graphics-symbol"
         className={`dib pointer v-mid ph1 ${!listViewIsActive ? 'blue-grey' : 'blue-light'}`}
         onClick={() => dispatch({ type: 'TOGGLE_CARD_VIEW' })}
       />
@@ -65,24 +67,25 @@ const DifficultyDropdown = (props) => {
       }}
       value={props.fullProjectsQuery.difficulty || []}
       options={[
-        { label: <MappingLevelMessage level="ALL" className="" />, value: 'ALL' },
-        { label: <MappingLevelMessage level="BEGINNER" className="" />, value: 'BEGINNER' },
-        { label: <MappingLevelMessage level="INTERMEDIATE" className="" />, value: 'INTERMEDIATE' },
-        { label: <MappingLevelMessage level="ADVANCED" className="" />, value: 'ADVANCED' },
+        { label: <DifficultyMessage level="ALL" className="" />, value: 'ALL' },
+        { label: <DifficultyMessage level="EASY" className="" />, value: 'EASY' },
+        { label: <DifficultyMessage level="MODERATE" className="" />, value: 'MODERATE' },
+        { label: <DifficultyMessage level="CHALLENGING" className="" />, value: 'CHALLENGING' },
       ]}
       display={<FormattedMessage {...messages.mappingDifficulty} />}
-      className={'ba b--grey-light bg-white mr1 f6 v-mid dn dib-ns pv2'}
+      className={'ba b--tan bg-white mr3 f6 v-mid dn dib-ns pv2 br1 pl3 fw5 blue-dark'}
     />
   );
 };
 
 export const ProjectNav = (props) => {
+  const location = useLocation();
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
   const encodedParams = stringify(fullProjectsQuery)
     ? ['?', stringify(fullProjectsQuery)].join('')
     : '';
 
-  const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';
+  const linkCombo = 'link ph3 f6 pv2 ba b--tan br1 ph3 fw5';
 
   const moreFiltersAnyActive =
     fullProjectsQuery.organisation ||
@@ -94,7 +97,7 @@ export const ProjectNav = (props) => {
     ? 'bg-red white'
     : 'bg-white blue-dark';
   const filterRouteToggled =
-    props.location.pathname.indexOf('filters') > -1
+    location.pathname.indexOf('filters') > -1
       ? '/explore' + encodedParams
       : './filters/' + encodedParams;
 
@@ -111,13 +114,13 @@ export const ProjectNav = (props) => {
             <ProjectsActionFilter setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             <Link
               to={filterRouteToggled}
-              className={`dn mh1 di-l ${linkCombo} ${moreFiltersCurrentActiveStyle}`}
+              className={`dn mr3 dib-l lh-title f6 ${linkCombo} ${moreFiltersCurrentActiveStyle} blue-dark`}
             >
               <FormattedMessage {...messages.moreFilters} />
             </Link>
             <Link
               to={filterRouteToggled}
-              className={`di di-m dn-l mh1 ${linkCombo} ${moreFiltersCurrentActiveStyle}`}
+              className={`di dib-m dn-l mr3 lh-title f6 ${linkCombo} ${moreFiltersCurrentActiveStyle}`}
             >
               <FormattedMessage {...messages.filters} />
             </Link>
@@ -127,7 +130,6 @@ export const ProjectNav = (props) => {
               className="f6"
             />
             {!filterIsEmpty && <ClearFilters url="./" className="mv2 mh1 fr dn dib-l" />}
-
             <ProjectSearchBox
               className="dib fr mh1"
               setQuery={setQuery}

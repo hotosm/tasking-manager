@@ -1,27 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
-import ReactPlaceholder from 'react-placeholder';
-import { Link, useNavigate } from '@reach/router';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { LicenseInformation, LicensesManagement, LicenseForm } from '../components/licenses';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import { updateEntity } from '../utils/management';
+import { EntityError } from '../components/alert';
 
-export const EditLicense = (props) => {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
-  const [error, loading, license] = useFetch(`licenses/${props.id}/`);
+export const EditLicense = () => {
+  const { id } = useParams();
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
+  const [error, loading, license] = useFetch(`licenses/${id}/`);
+  const [isError, setIsError] = useState(false);
   useSetTitleTag(`Edit ${license.name}`);
 
+  const onFailure = () => setIsError(true);
   const updateLicense = (payload) => {
-    pushToLocalJSONAPI(`licenses/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
+    setIsError(false);
+    updateEntity(`licenses/${id}/`, 'license', payload, token, null, onFailure);
   };
 
   return (
@@ -39,6 +44,7 @@ export const EditLicense = (props) => {
           updateLicense={updateLicense}
           disabledForm={error || loading}
         />
+        {isError && <EntityError entity="license" action="updation" />}
       </div>
     </div>
   );
@@ -46,41 +52,41 @@ export const EditLicense = (props) => {
 
 export const ListLicenses = () => {
   useSetTitleTag('Manage licenses');
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   // TO DO: filter teams of current user
   const [error, loading, licenses] = useFetch(`licenses/`);
-
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <div className="w-50-ns w-100 cf ph6-l ph4">
-        <TextBlock rows={1} className="bg-grey-light h3" />
-      </div>
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-    </div>
-  );
+  const isLicensesFetched = !loading && !error;
 
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={!error && !loading}
-    >
-      <LicensesManagement licenses={licenses.licenses} userDetails={userDetails} />
-    </ReactPlaceholder>
+    <LicensesManagement
+      licenses={licenses.licenses}
+      userDetails={userDetails}
+      isLicensesFetched={isLicensesFetched}
+    />
   );
 };
 
 export const CreateLicense = () => {
   useSetTitleTag('Create new license');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
+  const [isError, setIsError] = useState(false);
 
   const createLicense = (payload) => {
-    pushToLocalJSONAPI('licenses/', JSON.stringify(payload), token, 'POST').then((result) =>
-      navigate(`/manage/licenses/${result.licenseId}`),
-    );
+    setIsError(false);
+    return pushToLocalJSONAPI('licenses/', JSON.stringify(payload), token, 'POST')
+      .then((result) => {
+        toast.success(
+          <FormattedMessage
+            {...messages.entityCreationSuccess}
+            values={{
+              entity: 'license',
+            }}
+          />,
+        );
+        navigate(`/manage/licenses/${result.licenseId}`);
+      })
+      .catch(() => setIsError(true));
   };
 
   return (
@@ -100,6 +106,7 @@ export const CreateLicense = () => {
                   </h3>
                   <LicenseInformation />
                 </div>
+                {isError && <EntityError entity="license" />}
               </div>
               <div className="w-40-l w-100 fl pl5-l pl0 "></div>
             </div>

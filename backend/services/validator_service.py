@@ -1,6 +1,7 @@
 from flask import current_app
 from sqlalchemy import text
 
+from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.dtos.validator_dto import (
@@ -10,6 +11,7 @@ from backend.models.dtos.validator_dto import (
     StopValidationDTO,
     InvalidatedTask,
     InvalidatedTasks,
+    RevertUserTasksDTO,
 )
 from backend.models.postgis.statuses import ValidatingNotAllowed
 from backend.models.postgis.task import (
@@ -19,12 +21,13 @@ from backend.models.postgis.task import (
     TaskInvalidationHistory,
     TaskMappingIssue,
 )
-from backend.models.postgis.utils import NotFound, UserLicenseError, timestamp
+from backend.models.postgis.utils import UserLicenseError, timestamp
 from backend.models.postgis.project_info import ProjectInfo
 from backend.services.messaging.message_service import MessageService
-from backend.services.project_service import ProjectService
+from backend.services.project_service import ProjectService, ProjectAdminService
 from backend.services.stats_service import StatsService
 from backend.services.users.user_service import UserService
+from backend.services.mapping_service import MappingService
 
 
 class ValidatorServiceError(Exception):
@@ -48,24 +51,31 @@ class ValidatorService:
             task = Task.get(task_id, validation_dto.project_id)
 
             if task is None:
-                raise NotFound(f"Task {task_id} not found")
-
-            if TaskStatus(task.task_status) not in [
-                TaskStatus.MAPPED,
-                TaskStatus.INVALIDATED,
-                TaskStatus.BADIMAGERY,
-            ]:
-                raise ValidatorServiceError(
-                    f"NotReadyForValidation- Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
+                raise NotFound(
+                    sub_code="TASK_NOT_FOUND",
+                    task_id=task_id,
+                    project_id=validation_dto.project_id,
                 )
-            user_can_validate = ValidatorService._user_can_validate_task(
-                validation_dto.user_id, task.mapped_by
-            )
-            if not user_can_validate:
-                raise ValidatorServiceError(
-                    "CannotValidateMappedTask-"
-                    + "Tasks cannot be validated by the same user who marked task as mapped or badimagery"
+            if not (
+                task.locked_by == validation_dto.user_id
+                and TaskStatus(task.task_status) == TaskStatus.LOCKED_FOR_VALIDATION
+            ):
+                if TaskStatus(task.task_status) not in [
+                    TaskStatus.MAPPED,
+                    TaskStatus.INVALIDATED,
+                    TaskStatus.BADIMAGERY,
+                ]:
+                    raise ValidatorServiceError(
+                        f"NotReadyForValidation- Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
+                    )
+                user_can_validate = ValidatorService._user_can_validate_task(
+                    validation_dto.user_id, task.mapped_by
                 )
+                if not user_can_validate:
+                    raise ValidatorServiceError(
+                        "CannotValidateMappedTask-"
+                        + "Tasks cannot be validated by the same user who marked task as mapped or badimagery"
+                    )
 
             tasks_to_lock.append(task)
 
@@ -85,12 +95,14 @@ class ValidatorService:
                     "ProjectNotPublished- Validation not allowed because: Project not published"
                 )
             elif error_reason == ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
-                raise ValidatorServiceError(
-                    "UserAlreadyHasTaskLocked- User already has a task locked"
-                )
+                user_tasks = Task.get_locked_tasks_for_user(validation_dto.user_id)
+                if set(user_tasks.locked_tasks) != set(validation_dto.task_ids):
+                    raise ValidatorServiceError(
+                        "UserAlreadyHasTaskLocked- User already has a task locked"
+                    )
             else:
                 raise ValidatorServiceError(
-                    f"Validation not allowed because: {error_reason}"
+                    f"ValidtionNotAllowed- Validation not allowed because: {error_reason}"
                 )
 
         # Lock all tasks for validation
@@ -190,7 +202,7 @@ class ValidatorService:
                 issues=task_mapping_issues,
             )
             dtos.append(task.as_dto_with_instructions(validated_dto.preferred_locale))
-
+        ProjectService.send_email_on_project_progress(validated_dto.project_id)
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
 
@@ -247,7 +259,11 @@ class ValidatorService:
             task = Task.get(unlock_task.task_id, project_id)
 
             if task is None:
-                raise NotFound(f"Task {unlock_task.task_id} not found")
+                raise NotFound(
+                    sub_code="TASK_NOT_FOUND",
+                    task_id=unlock_task.task_id,
+                    project_id=project_id,
+                )
 
             current_state = TaskStatus(task.task_status)
             if current_state != TaskStatus.LOCKED_FOR_VALIDATION:
@@ -310,7 +326,7 @@ class ValidatorService:
             query = query.filter_by(project_id=project_id)
 
         results = query.order_by(text(sort_by + " " + sort_direction)).paginate(
-            page, page_size, True
+            page=page, per_page=page_size, error_out=True
         )
         project_names = {}
         invalidated_tasks_dto = InvalidatedTasks()
@@ -335,25 +351,17 @@ class ValidatorService:
 
     @staticmethod
     def invalidate_all_tasks(project_id: int, user_id: int):
-        """Invalidates all mapped tasks on a project"""
-        mapped_tasks = Task.query.filter(
+        """Invalidates all validated tasks on a project"""
+        validated_tasks = Task.query.filter(
             Task.project_id == project_id,
-            ~Task.task_status.in_(
-                [TaskStatus.READY.value, TaskStatus.BADIMAGERY.value]
-            ),
+            Task.task_status == TaskStatus.VALIDATED.value,
         ).all()
-        for task in mapped_tasks:
-            if TaskStatus(task.task_status) not in [
-                TaskStatus.LOCKED_FOR_MAPPING,
-                TaskStatus.LOCKED_FOR_VALIDATION,
-            ]:
-                # Only lock tasks that are not already locked to avoid double lock issue.
-                task.lock_task_for_validating(user_id)
+        for task in validated_tasks:
+            task.lock_task_for_validating(user_id)
             task.unlock_task(user_id, new_state=TaskStatus.INVALIDATED)
 
         # Reset counters
         project = ProjectService.get_project_by_id(project_id)
-        project.tasks_mapped = 0
         project.tasks_validated = 0
         project.save()
 
@@ -362,7 +370,7 @@ class ValidatorService:
         """Validates all mapped tasks on a project"""
         tasks_to_validate = Task.query.filter(
             Task.project_id == project_id,
-            Task.task_status != TaskStatus.BADIMAGERY.value,
+            Task.task_status == TaskStatus.MAPPED.value,
         ).all()
 
         for task in tasks_to_validate:
@@ -378,8 +386,8 @@ class ValidatorService:
 
         # Set counters to fully mapped and validated
         project = ProjectService.get_project_by_id(project_id)
-        project.tasks_mapped = project.total_tasks - project.tasks_bad_imagery
-        project.tasks_validated = project.total_tasks
+        project.tasks_validated += project.tasks_mapped
+        project.tasks_mapped = 0
         project.save()
 
     @staticmethod
@@ -399,3 +407,34 @@ class ValidatorService:
                 filter(lambda issue_dto: issue_dto.count > 0, task_to_unlock["issues"]),
             )
         )
+
+    @staticmethod
+    def revert_user_tasks(revert_dto: RevertUserTasksDTO):
+        """
+        Reverts tasks with supplied action to previous state by specific user
+        :raises ValidatorServiceError
+        """
+        if ProjectAdminService.is_user_action_permitted_on_project(
+            revert_dto.action_by, revert_dto.project_id
+        ):
+            query = Task.query.filter(
+                Task.project_id == revert_dto.project_id,
+                Task.task_status == TaskStatus[revert_dto.action].value,
+            )
+            if TaskStatus[revert_dto.action].value == TaskStatus.BADIMAGERY.value:
+                query = query.filter(Task.mapped_by == revert_dto.user_id)
+            else:
+                query = query.filter(Task.validated_by == revert_dto.user_id)
+
+            tasks_to_revert = query.all()
+            for task in tasks_to_revert:
+                task = MappingService.undo_mapping(
+                    revert_dto.project_id,
+                    task.id,
+                    revert_dto.user_id,
+                    revert_dto.preferred_locale,
+                )
+        else:
+            raise ValidatorServiceError(
+                "UserActionNotPermitted- User not permitted to revert tasks"
+            )

@@ -1,29 +1,57 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import MyTasksOrderDropdown from '../myTasksOrderDropdown';
 import '@testing-library/jest-dom';
-import { IntlProvider } from 'react-intl';
+import { screen } from '@testing-library/react';
 
-it('displays dropdown options after button is clicked', () => {
-  render(
-    <IntlProvider locale="en">
-      <MyTasksOrderDropdown
-        allQueryParams={{
-          maxDate: undefined,
-          minDate: undefined,
-          orderBy: undefined,
-          page: undefined,
-          projectStatus: undefined,
-          status: undefined,
-          text: undefined,
-        }}
-      />
-    </IntlProvider>,
-  );
+import MyTasksOrderDropdown from '../myTasksOrderDropdown';
+import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 
-  const button = screen.getByRole('button');
+describe('MyTasksOrderDropdown', () => {
+  const setQueryMock = jest.fn();
+  const setup = async () => {
+    const { user } = renderWithRouter(
+      <IntlProviders>
+        <MyTasksOrderDropdown
+          allQueryParams={{
+            maxDate: undefined,
+            minDate: undefined,
+            orderBy: undefined,
+            page: undefined,
+            projectStatus: undefined,
+            status: undefined,
+            text: undefined,
+          }}
+          setQuery={setQueryMock}
+        />
+      </IntlProviders>,
+    );
+    const dropdownBtn = screen.getByRole('button', {
+      name: /sort by/i,
+    });
+    await user.click(dropdownBtn);
+    return { user };
+  };
 
-  expect(button).toBeEnabled();
-  fireEvent.click(button);
-  expect(screen.getByText(/recently edited/i)).toBeInTheDocument();
-  expect(screen.getByText(/project id/i)).toBeInTheDocument();
+  it('displays dropdown options after button is clicked', async () => {
+    await setup();
+    expect(screen.getByText(/recently edited/i)).toBeInTheDocument();
+    expect(screen.getByText(/project id/i)).toBeInTheDocument();
+  });
+
+  it('should set query when an option is selected', async () => {
+    const { user } = await setup();
+    await user.click(screen.getByText(/recently edited/i));
+    expect(setQueryMock).toHaveBeenCalled();
+  });
+
+  it('should preselect option if the query matches', async () => {
+    renderWithRouter(
+      <IntlProviders>
+        <MyTasksOrderDropdown
+          allQueryParams={{
+            orderBy: '-project_id',
+          }}
+        />
+      </IntlProviders>,
+    );
+    expect(screen.getByText(/project id/i)).toBeInTheDocument();
+  });
 });

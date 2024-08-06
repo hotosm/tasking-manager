@@ -2,7 +2,7 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from backend.models.postgis.task import Task
 from backend.models.postgis.task_annotation import TaskAnnotation
-from backend.services.project_service import ProjectService, NotFound
+from backend.services.project_service import ProjectService
 from backend.services.task_annotations_service import TaskAnnotationsService
 from backend.services.application_service import ApplicationService
 
@@ -35,24 +35,14 @@ class AnnotationsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            ProjectService.exists(project_id)
-        except NotFound as e:
-            current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-
-        try:
-            if annotation_type:
-                annotations = TaskAnnotation.get_task_annotations_by_project_id_type(
-                    project_id, annotation_type
-                )
-            else:
-                annotations = TaskAnnotation.get_task_annotations_by_project_id(
-                    project_id
-                )
-            return annotations.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Annotations not found", "SubCode": "NotFound"}, 404
+        ProjectService.exists(project_id)
+        if annotation_type:
+            annotations = TaskAnnotation.get_task_annotations_by_project_id_type(
+                project_id, annotation_type
+            )
+        else:
+            annotations = TaskAnnotation.get_task_annotations_by_project_id(project_id)
+        return annotations.to_primitive(), 200
 
     def post(self, project_id: int, annotation_type: str):
         """
@@ -122,13 +112,7 @@ class AnnotationsRestAPI(Resource):
 
         if "Application-Token" in request.headers:
             application_token = request.headers["Application-Token"]
-            try:
-                is_valid_token = ApplicationService.check_token(  # noqa
-                    application_token
-                )
-            except NotFound:
-                current_app.logger.error("Invalid token")
-                return {"Error": "Invalid token", "SubCode": "NotFound"}, 500
+            is_valid_token = ApplicationService.check_token(application_token)  # noqa
         else:
             current_app.logger.error("No token supplied")
             return {"Error": "No token supplied", "SubCode": "NotFound"}, 500
@@ -138,11 +122,7 @@ class AnnotationsRestAPI(Resource):
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
 
-        try:
-            ProjectService.exists(project_id)
-        except NotFound as e:
-            current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
+        ProjectService.exists(project_id)
 
         task_ids = [t["taskId"] for t in annotations["tasks"]]
 

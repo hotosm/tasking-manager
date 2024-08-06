@@ -1,27 +1,66 @@
 import logging
+
+# gevent.monkey.patch_ssl is required. gevent message as follows:
+# MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may
+# lead to errors, including RecursionError on Python 3.6. It may also silently
+# lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier.
+# See https://github.com/gevent/gevent/issues/1016.
+try:
+    from gevent import monkey
+
+    monkey.patch_ssl()
+except ImportError as e:
+    logging.warning("Not using gevent")
+    logging.info(e)
+
 import os
+import json
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, redirect
+from flask import Flask, redirect, request
 from flask_cors import CORS
 from flask_migrate import Migrate
-from flask_oauthlib.client import OAuth
+from requests_oauthlib import OAuth2Session
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
 
 from backend.config import EnvironmentConfig
+
+
+# Load error_messages.json and store it so that it is loaded only once at startup (Used in exceptions.py)
+# Construct the path to the JSON file
+module_dir = os.path.dirname(__file__)
+error_message_path = os.path.join(module_dir, "error_messages.json")
+
+with open(error_message_path) as jsonfile:
+    ERROR_MESSAGES = json.load(jsonfile)
 
 
 def sentry_init():
     """Initialize sentry.io event tracking"""
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
+    from backend.exceptions import (
+        BadRequest,
+        NotFound,
+        Unauthorized,
+        Forbidden,
+        Conflict,
+    )
 
     sentry_sdk.init(
         dsn=EnvironmentConfig.SENTRY_BACKEND_DSN,
         environment=EnvironmentConfig.ENVIRONMENT,
         integrations=[FlaskIntegration()],
         traces_sample_rate=0.1,
+        ignore_errors=[
+            BadRequest,
+            NotFound,
+            Unauthorized,
+            Forbidden,
+            Conflict,
+        ],  # Ignore these errors as they are handled by the API
     )
 
 
@@ -32,9 +71,15 @@ def format_url(endpoint):
 
 db = SQLAlchemy()
 migrate = Migrate()
-oauth = OAuth()
 
-osm = oauth.remote_app("osm", app_key="OSM_OAUTH_SETTINGS")
+mail = Mail()
+
+
+osm = OAuth2Session(
+    client_id=EnvironmentConfig.OAUTH_CLIENT_ID,
+    scope=EnvironmentConfig.OAUTH_SCOPE,
+    redirect_uri=EnvironmentConfig.OAUTH_REDIRECT_URI,
+)
 
 # Import all models so that they are registered with SQLAlchemy
 from backend.models.postgis import *  # noqa
@@ -52,6 +97,9 @@ def create_app(env="backend.config.EnvironmentConfig"):
     app = Flask(__name__, template_folder="services/messaging/templates/")
 
     # Load configuration options from environment
+    # Set env to TestEnvironmentConfig if TM_ENVIRONMENT is test
+    if os.getenv("TM_ENVIRONMENT") == "test":
+        env = "backend.config.TestEnvironmentConfig"
     app.config.from_object(env)
     # Enable logging to files
     initialise_logger(app)
@@ -61,8 +109,42 @@ def create_app(env="backend.config.EnvironmentConfig"):
     app.logger.debug("Connecting to the database")
     db.init_app(app)
     migrate.init_app(app, db)
+    mail.init_app(app)
 
     app.logger.debug("Add root redirect route")
+
+    @app.errorhandler(Exception)
+    def handle_generic_error(error):
+        """Generic error handler for all exceptions"""
+        from backend.exceptions import format_sub_code
+
+        app.logger.exception(error)
+
+        error_message = (
+            str(error)
+            if len(str(error)) > 0
+            else ERROR_MESSAGES["INTERNAL_SERVER_ERROR"]
+        )
+        error_code = error.code if hasattr(error, "code") else 500
+        error_sub_code = (
+            format_sub_code(error.name)
+            if hasattr(error, "name")
+            else "INTERNAL_SERVER_ERROR"
+        )
+        return (
+            {
+                "error": {
+                    "code": error_code,
+                    "sub_code": error_sub_code,
+                    "message": error_message,
+                    "details": {
+                        "url": request.url,
+                        "method": request.method,
+                    },
+                }
+            },
+            error_code,
+        )
 
     @app.route("/")
     def index_redirect():
@@ -78,7 +160,6 @@ def create_app(env="backend.config.EnvironmentConfig"):
     app.secret_key = app.config[
         "SECRET_KEY"
     ]  # Required by itsdangerous, Flask-OAuthlib for creating entropy
-    oauth.init_app(app)
 
     return app
 
@@ -107,7 +188,7 @@ def initialise_logger(app):
 
 
 def initialise_counters(app):
-    """ Initialise homepage counters so that users don't see 0 users on first load of application"""
+    """Initialise homepage counters so that users don't see 0 users on first load of application"""
     from backend.services.stats_service import StatsService
 
     with app.app_context():
@@ -134,6 +215,7 @@ def add_api_endpoints(app):
         ProjectsQueriesAoiAPI,
         ProjectsQueriesPriorityAreasAPI,
         ProjectsQueriesFeaturedAPI,
+        ProjectQueriesSimilarProjectsAPI,
     )
     from backend.api.projects.activities import (
         ProjectsActivitiesAPI,
@@ -185,6 +267,8 @@ def add_api_endpoints(app):
         TasksActionsResetBadImageryAllAPI,
         TasksActionsResetAllAPI,
         TasksActionsSplitAPI,
+        TasksActionsExtendAPI,
+        TasksActionsReverUserTaskstAPI,
     )
     from backend.api.tasks.statistics import (
         TasksStatisticsAPI,
@@ -193,6 +277,7 @@ def add_api_endpoints(app):
     # Comments API impor
     from backend.api.comments.resources import (
         CommentsProjectsRestAPI,
+        CommentsProjectsAllAPI,
         CommentsTasksRestAPI,
     )
 
@@ -228,6 +313,7 @@ def add_api_endpoints(app):
     from backend.api.teams.resources import TeamsRestAPI, TeamsAllAPI
     from backend.api.teams.actions import (
         TeamsActionsJoinAPI,
+        TeamsActionsAddAPI,
         TeamsActionsLeaveAPI,
         TeamsActionsMessageMembersAPI,
     )
@@ -239,7 +325,12 @@ def add_api_endpoints(app):
         NotificationsQueriesCountUnreadAPI,
         NotificationsQueriesPostUnreadAPI,
     )
-    from backend.api.notifications.actions import NotificationsActionsDeleteMultipleAPI
+    from backend.api.notifications.actions import (
+        NotificationsActionsDeleteMultipleAPI,
+        NotificationsActionsDeleteAllAPI,
+        NotificationsActionsMarkAsReadAllAPI,
+        NotificationsActionsMarkAsReadMultipleAPI,
+    )
 
     # Users API endpoint
     from backend.api.users.resources import (
@@ -276,7 +367,9 @@ def add_api_endpoints(app):
         SystemHeartbeatAPI,
         SystemLanguagesAPI,
         SystemContactAdminRestAPI,
+        SystemReleaseAPI,
     )
+    from backend.api.system.banner import SystemBannerAPI
     from backend.api.system.statistics import SystemStatisticsAPI
     from backend.api.system.authentication import (
         SystemAuthenticationEmailAPI,
@@ -330,6 +423,10 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         ProjectsQueriesFeaturedAPI, format_url("projects/queries/featured/")
+    )
+    api.add_resource(
+        ProjectQueriesSimilarProjectsAPI,
+        format_url("projects/queries/<int:project_id>/similar-projects/"),
     )
 
     # Projects' addtional resources
@@ -472,7 +569,7 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         TasksQueriesOwnInvalidatedAPI,
-        format_url("projects/<int:project_id>/tasks/queries/own/invalidated/"),
+        format_url("projects/<string:username>/tasks/queries/own/invalidated/"),
     )
 
     # Tasks actions endoints
@@ -499,6 +596,10 @@ def add_api_endpoints(app):
         format_url(
             "projects/<int:project_id>/tasks/actions/undo-last-action/<int:task_id>/"
         ),
+    )
+    api.add_resource(
+        TasksActionsExtendAPI,
+        format_url("projects/<int:project_id>/tasks/actions/extend/"),
     )
     api.add_resource(
         TasksActionsValidationLockAPI,
@@ -533,6 +634,10 @@ def add_api_endpoints(app):
         format_url("projects/<int:project_id>/tasks/actions/reset-all/"),
     )
     api.add_resource(
+        TasksActionsReverUserTaskstAPI,
+        format_url("projects/<int:project_id>/tasks/actions/reset-by-user/"),
+    )
+    api.add_resource(
         TasksActionsSplitAPI,
         format_url("projects/<int:project_id>/tasks/actions/split/<int:task_id>/"),
     )
@@ -546,9 +651,14 @@ def add_api_endpoints(app):
 
     # Comments REST endoints
     api.add_resource(
-        CommentsProjectsRestAPI,
+        CommentsProjectsAllAPI,
         format_url("projects/<int:project_id>/comments/"),
         methods=["GET", "POST"],
+    )
+    api.add_resource(
+        CommentsProjectsRestAPI,
+        format_url("projects/<int:project_id>/comments/<int:comment_id>/"),
+        methods=["DELETE"],
     )
     api.add_resource(
         CommentsTasksRestAPI,
@@ -651,7 +761,7 @@ def add_api_endpoints(app):
     api.add_resource(
         TeamsRestAPI,
         format_url("teams/<int:team_id>/"),
-        methods=["GET", "PUT", "DELETE", "PATCH"],
+        methods=["GET", "DELETE", "PATCH"],
     )
 
     # Teams actions endpoints
@@ -659,6 +769,11 @@ def add_api_endpoints(app):
         TeamsActionsJoinAPI,
         format_url("teams/<int:team_id>/actions/join/"),
         methods=["POST", "PATCH"],
+    )
+    api.add_resource(
+        TeamsActionsAddAPI,
+        format_url("teams/<int:team_id>/actions/add/"),
+        methods=["POST"],
     )
     api.add_resource(
         TeamsActionsLeaveAPI,
@@ -709,6 +824,21 @@ def add_api_endpoints(app):
         NotificationsActionsDeleteMultipleAPI,
         format_url("notifications/delete-multiple/"),
         methods=["DELETE"],
+    )
+    api.add_resource(
+        NotificationsActionsDeleteAllAPI,
+        format_url("notifications/delete-all/"),
+        methods=["DELETE"],
+    )
+    api.add_resource(
+        NotificationsActionsMarkAsReadAllAPI,
+        format_url("notifications/mark-as-read-all/"),
+        methods=["POST"],
+    )
+    api.add_resource(
+        NotificationsActionsMarkAsReadMultipleAPI,
+        format_url("notifications/mark-as-read-multiple/"),
+        methods=["POST"],
     )
 
     # Users REST endpoint
@@ -784,6 +914,9 @@ def add_api_endpoints(app):
 
     # System endpoint
     api.add_resource(SystemDocsAPI, format_url("system/docs/json/"))
+    api.add_resource(
+        SystemBannerAPI, format_url("system/banner/"), methods=["GET", "PATCH"]
+    )
     api.add_resource(SystemHeartbeatAPI, format_url("system/heartbeat/"))
     api.add_resource(SystemLanguagesAPI, format_url("system/languages/"))
     api.add_resource(SystemStatisticsAPI, format_url("system/statistics/"))
@@ -821,3 +954,4 @@ def add_api_endpoints(app):
     api.add_resource(
         SystemContactAdminRestAPI, format_url("system/contact-admin/"), methods=["POST"]
     )
+    api.add_resource(SystemReleaseAPI, format_url("system/release/"), methods=["POST"])

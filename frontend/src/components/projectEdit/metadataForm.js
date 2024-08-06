@@ -17,8 +17,8 @@ import { getFilterId } from '../../utils/osmchaLink';
 export const MetadataForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
   const [interests, setInterests] = useState([]);
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [organisations, setOrganisations] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
 
@@ -42,8 +42,6 @@ export const MetadataForm = () => {
     { item: 'LAND_USE', messageId: 'landUse' },
     { item: 'OTHER', messageId: 'other' },
   ];
-
-  const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
 
   const handleMappingTypes = (types) => {
     setProjectInfo({ ...projectInfo, mappingTypes: types });
@@ -78,26 +76,26 @@ export const MetadataForm = () => {
     <div className="w-100">
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
-          <FormattedMessage {...messages.mapperLevel} />
+          <FormattedMessage {...messages.difficulty} />
         </label>
         <p className={styleClasses.pClass}>
-          <FormattedMessage {...messages.mapperLevelDescription} />
+          <FormattedMessage {...messages.difficultyDescription} />
         </p>
-        {mapperLevels.map((level) => (
+        {['EASY', 'MODERATE', 'CHALLENGING'].map((level) => (
           <label className="dib pr5" key={level}>
             <input
               value={level}
-              checked={projectInfo.mapperLevel === level}
+              checked={projectInfo.difficulty === level}
               onChange={() =>
                 setProjectInfo({
                   ...projectInfo,
-                  mapperLevel: level,
+                  difficulty: level,
                 })
               }
               type="radio"
               className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
             />
-            <FormattedMessage {...messages[`mapperLevel${level}`]} />
+            <FormattedMessage {...messages[`difficulty${level}`]} />
           </label>
         ))}
       </div>
@@ -150,7 +148,7 @@ export const MetadataForm = () => {
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
-            <FormattedMessage {...messages.extraIdParams} />*
+          <FormattedMessage {...messages.extraIdParams} />
         </label>
         <p className={styleClasses.pClass}>
           <FormattedMessage
@@ -165,7 +163,7 @@ export const MetadataForm = () => {
           />
         </p>
         <ExtraIdParams
-          value={projectInfo.extraIdParams}
+          value={projectInfo.extraIdParams ? projectInfo.extraIdParams : ''}
           setProjectInfo={setProjectInfo}
         />
       </div>
@@ -249,7 +247,7 @@ export const MetadataForm = () => {
   );
 };
 
-const IdDocsLink = () =>
+const IdDocsLink = () => (
   <a
     href="https://github.com/openstreetmap/iD/blob/develop/API.md#url-parameters"
     className="red underline link"
@@ -257,4 +255,5 @@ const IdDocsLink = () =>
     rel="noopener noreferrer"
   >
     <FormattedMessage {...messages.iDAPIDocs} />
-  </a>;
+  </a>
+);

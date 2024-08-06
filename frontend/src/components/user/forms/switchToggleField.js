@@ -5,8 +5,8 @@ import { SwitchToggle } from '../../formInputs';
 import { pushUserDetails } from '../../../store/actions/auth';
 
 const mapStateToProps = (state) => ({
-  userDetails: state.auth.get('userDetails'),
-  token: state.auth.get('token'),
+  userDetails: state.auth.userDetails,
+  token: state.auth.token,
 });
 
 function _SwitchToggleField(props) {
@@ -24,9 +24,13 @@ function _SwitchToggleField(props) {
     setValue(!value);
   };
 
+  let val = value;
+  if ((val === undefined || val === null) && props.hasOwnProperty('default')) {
+    val = props.default;
+  }
   return (
-    <div className="fr pv2 dib">
-      <SwitchToggle onChange={(e) => onSwitchChange()} isChecked={value} />
+    <div className={`fr ${props.removeVerticalPadding ? '' : 'pv2'} dib`}>
+      <SwitchToggle onChange={(e) => onSwitchChange()} isChecked={val} />
     </div>
   );
 }

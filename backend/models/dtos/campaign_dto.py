@@ -6,12 +6,12 @@ from schematics.exceptions import ValidationError
 
 def is_existent(value):
     if value.strip() == "":
-        raise ValidationError(u"Empty campaign name string")
+        raise ValidationError("Empty campaign name string")
     return value
 
 
 class NewCampaignDTO(Model):
-    """ Describes JSON model to create a campaign """
+    """Describes JSON model to create a campaign"""
 
     name = StringType(serialize_when_none=False, validators=[is_existent])
     logo = StringType(serialize_when_none=False)
@@ -21,7 +21,7 @@ class NewCampaignDTO(Model):
 
 
 class CampaignDTO(Model):
-    """ Describes JSON model for an existing campaign """
+    """Describes JSON model for an existing campaign"""
 
     id = IntType(serialize_when_none=False)
     name = StringType(serialize_when_none=False)
@@ -32,24 +32,24 @@ class CampaignDTO(Model):
 
 
 class CampaignProjectDTO(Model):
-    """ DTO used to define available campaign connected projects"""
+    """DTO used to define available campaign connected projects"""
 
     project_id = IntType()
     campaign_id = IntType()
 
 
 class CampaignOrganisationDTO(Model):
-    """ DTO used to define available campaign connected projects"""
+    """DTO used to define available campaign connected projects"""
 
     organisation_id = IntType()
     campaign_id = IntType()
 
 
 class CampaignListDTO(Model):
-    """ DTO used to define available campaigns """
+    """DTO used to define available campaigns"""
 
     def __init__(self):
-        """ DTO constructor initialise all arrays to empty"""
+        """DTO constructor initialise all arrays to empty"""
         super().__init__()
         self.campaigns = []
 

@@ -3,7 +3,6 @@ from schematics.exceptions import DataError
 
 from backend.models.dtos.message_dto import ChatMessageDTO
 from backend.models.dtos.mapping_dto import TaskCommentDTO
-from backend.models.postgis.utils import NotFound
 from backend.services.messaging.chat_service import ChatService
 from backend.services.users.user_service import UserService
 from backend.services.project_service import ProjectService
@@ -11,7 +10,7 @@ from backend.services.mapping_service import MappingService, MappingServiceError
 from backend.services.users.authentication_service import token_auth, tm
 
 
-class CommentsProjectsRestAPI(Resource):
+class CommentsProjectsAllAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id):
@@ -54,7 +53,7 @@ class CommentsProjectsRestAPI(Resource):
         """
         authenticated_user_id = token_auth.current_user()
         if UserService.is_user_blocked(authenticated_user_id):
-            return {"Error": "User is on read only mode.", "SubCode": "ReadOnly"}, 403
+            return {"Error": "User is on read only mode", "SubCode": "ReadOnly"}, 403
 
         try:
             chat_dto = ChatMessageDTO(request.get_json())
@@ -75,13 +74,6 @@ class CommentsProjectsRestAPI(Resource):
             return project_messages.to_primitive(), 201
         except ValueError as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-        except Exception as e:
-            error_msg = f"Chat POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to add chat message",
-                "SubCode": "InternalServerError",
-            }, 500
 
     def get(self, project_id):
         """
@@ -116,26 +108,60 @@ class CommentsProjectsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            ProjectService.exists(project_id)
-        except NotFound as e:
-            current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
+        ProjectService.exists(project_id)
+        page = int(request.args.get("page")) if request.args.get("page") else 1
+        per_page = int(request.args.get("perPage", 20))
+        project_messages = ChatService.get_messages(project_id, page, per_page)
+        return project_messages.to_primitive(), 200
 
+
+class CommentsProjectsRestAPI(Resource):
+    @token_auth.login_required
+    def delete(self, project_id, comment_id):
+        """
+        Delete a chat message
+        ---
+        tags:
+          - comments
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: Project ID to attach the chat message to
+              required: true
+              type: integer
+              default: 1
+            - name: comment_id
+              in: path
+              description: Comment ID to delete
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Comment deleted
+            403:
+                description: User is not authorized to delete comment
+            404:
+                description: Comment not found
+            500:
+                description: Internal Server Error
+        """
+        authenticated_user_id = token_auth.current_user()
         try:
-            page = int(request.args.get("page")) if request.args.get("page") else 1
-            per_page = int(request.args.get("perPage", 20))
-            project_messages = ChatService.get_messages(project_id, page, per_page)
-            return project_messages.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"Chat GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch chat messages",
-                "SubCode": "InternalServerError",
-            }, 500
+            ChatService.delete_project_chat_by_id(
+                project_id, comment_id, authenticated_user_id
+            )
+            return {"Success": "Comment deleted"}, 200
+        except ValueError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
 class CommentsTasksRestAPI(Resource):
@@ -196,7 +222,7 @@ class CommentsTasksRestAPI(Resource):
         """
         authenticated_user_id = token_auth.current_user()
         if UserService.is_user_blocked(authenticated_user_id):
-            return {"Error": "User is on read only mode.", "SubCode": "ReadOnly"}, 403
+            return {"Error": "User is on read only mode", "SubCode": "ReadOnly"}, 403
 
         try:
             task_comment = TaskCommentDTO(request.get_json())
@@ -211,17 +237,8 @@ class CommentsTasksRestAPI(Resource):
         try:
             task = MappingService.add_task_comment(task_comment)
             return task.to_primitive(), 201
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError:
             return {"Error": "Task update failed"}, 403
-        except Exception as e:
-            error_msg = f"Task Comment API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {
-                "Error": "Task update failed",
-                "SubCode": "InternalServerError",
-            }, 500
 
     def get(self, project_id, task_id):
         """
@@ -267,10 +284,6 @@ class CommentsTasksRestAPI(Resource):
                 description: Comment retrieved
             400:
                 description: Client Error
-            401:
-                description: Unauthorized - Invalid credentials
-            403:
-                description: Forbidden
             404:
                 description: Task not found
             500:
@@ -294,11 +307,5 @@ class CommentsTasksRestAPI(Resource):
             # task = MappingService.add_task_comment(task_comment)
             # return task.to_primitive(), 200
             return
-        except NotFound:
-            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
-        except Exception as e:
-            error_msg = f"Task Comment API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

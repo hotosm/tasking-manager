@@ -47,6 +47,8 @@ class SystemImageUploadRestAPI(Resource):
             description: User is not authorized to upload images
           500:
             description: A problem occurred
+          501:
+            description: Image upload service not defined
         """
         if (
             current_app.config["IMAGE_UPLOAD_API_URL"] is None
@@ -55,47 +57,44 @@ class SystemImageUploadRestAPI(Resource):
             return {
                 "Error": "Image upload service not defined",
                 "SubCode": "UndefinedImageService",
-            }, 500
+            }, 501
 
-        try:
-            data = request.get_json()
-            if data.get("filename") is None:
-                return {
-                    "Error": "Missing filename parameter",
-                    "SubCode": "MissingFilename",
-                }, 400
-            if data.get("mime") in [
-                "image/png",
-                "image/jpeg",
-                "image/webp",
-                "image/gif",
-            ]:
-                headers = {
-                    "x-api-key": current_app.config["IMAGE_UPLOAD_API_KEY"],
-                    "Content-Type": "application/json",
-                }
-                url = "{}?filename={}".format(
-                    current_app.config["IMAGE_UPLOAD_API_URL"], data.get("filename")
-                )
-                result = requests.post(
-                    url, headers=headers, data=json.dumps({"image": data})
-                )
-                if result.ok:
-                    return result.json(), 201
-                else:
-                    return result.json(), 400
-            else:
-                return (
-                    {
-                        "Error": "Mimetype is not allowed. The supported formats are: png, jpeg, webp and gif.",
-                        "SubCode": "UnsupportedFile",
-                    },
-                    400,
-                )
-        except Exception as e:
-            error_msg = f"Image upload POST API - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
+        data = request.get_json()
+        if data.get("filename") is None:
             return {
-                "Error": "Unable to upload image",
-                "SubCode": "InternalServerError",
-            }, 500
+                "Error": "Missing filename parameter",
+                "SubCode": "MissingFilename",
+            }, 400
+        if data.get("mime") in [
+            "image/png",
+            "image/jpeg",
+            "image/webp",
+            "image/gif",
+        ]:
+            headers = {
+                "x-api-key": current_app.config["IMAGE_UPLOAD_API_KEY"],
+                "Content-Type": "application/json",
+            }
+            url = "{}?filename={}".format(
+                current_app.config["IMAGE_UPLOAD_API_URL"], data.get("filename")
+            )
+            result = requests.post(
+                url, headers=headers, data=json.dumps({"image": data})
+            )
+            if result.ok:
+                return result.json(), 201
+            else:
+                return result.json(), 400
+        elif data.get("mime") is None:
+            return {
+                "Error": "Missing mime parameter",
+                "SubCode": "MissingMime",
+            }, 400
+        else:
+            return (
+                {
+                    "Error": "Mimetype is not allowed. The supported formats are: png, jpeg, webp and gif.",
+                    "SubCode": "UnsupportedFile",
+                },
+                400,
+            )

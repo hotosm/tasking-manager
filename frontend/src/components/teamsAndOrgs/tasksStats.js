@@ -83,6 +83,7 @@ export const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) 
             options={countriesAPIState}
             setQueryForChild={setQuery}
             allQueryParamsForChild={query}
+            payloadKey="value"
           />
         </div>
       </div>

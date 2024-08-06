@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from '@reach/router';
+import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -49,8 +49,8 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
 
   return (
     <div
-      className={`w-100 cf pv3 ph3-ns ph1 ba bw1 mb2 ${
-        activeUser === user.username ? 'b--blue-dark' : 'b--tan'
+      className={`w-100 cf pv3 ph3-ns ph1 bw1 mb2 ${
+        activeUser === user.username ? 'ba b--blue-dark' : 'shadow-2'
       }`}
     >
       <div className="w-40 fl dib truncate">
@@ -76,6 +76,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
       <div className="w-20 fl tr dib truncate">
         <div
           className="dib pt2 pointer"
+          role="button"
           onClick={() => displayTasks(user.mappedTasks, 'MAPPED', user.username)}
           title={intl.formatMessage(messages.mappedByUser, { username: user.username })}
         >
@@ -87,6 +88,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
       <div className="w-20 fl tr dib truncate">
         <div
           className="dib pt2 pointer"
+          role="button"
           onClick={() => displayTasks(user.validatedTasks, 'VALIDATED', user.username)}
           title={intl.formatMessage(messages.validatedByUser, { username: user.username })}
         >
@@ -100,6 +102,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
       <div className="w-20 fl tr dib truncate">
         <div
           className="dib pt2 pointer"
+          role="button"
           onClick={() =>
             displayTasks([...user.mappedTasks, ...user.validatedTasks], 'ALL', user.username)
           }
@@ -132,7 +135,7 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
   const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(tasks);
 
   const contributors = useFilterContributors(
-    contribsData.userContributions || [],
+    contribsData || [],
     level && level.value,
     userFilter && userFilter.value,
   );

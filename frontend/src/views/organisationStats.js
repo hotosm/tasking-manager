@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Redirect } from '@reach/router';
-import { startOfYear, format } from 'date-fns';
+import { useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { useTasksStatsQueryParams, useTasksStatsQueryAPI } from '../hooks/UseTasksStatsQueryAPI';
-import { useForceUpdate } from '../hooks/UseForceUpdate';
 import { useTotalTasksStats } from '../hooks/UseTotalTasksStats';
 import { useCurrentYearStats } from '../hooks/UseOrgYearStats';
 import { useFetch } from '../hooks/UseFetch';
@@ -15,25 +13,21 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { RemainingTasksStats } from '../components/teamsAndOrgs/remainingTasksStats';
 import { OrganisationUsageLevel, OrganisationTier } from '../components/teamsAndOrgs/orgUsageLevel';
 import { TasksStats } from '../components/teamsAndOrgs/tasksStats';
+import { OrganisationProjectStats } from '../components/teamsAndOrgs/organisationProjectStats';
 
-export const OrganisationStats = ({ id }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+export const OrganisationStats = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const token = useSelector((state) => state.auth.token);
   const isOrgManager = useSelector(
     (state) =>
-      state.auth.get('userDetails').role === 'ADMIN' ||
-      (state.auth.get('organisations') && state.auth.get('organisations').includes(Number(id))),
+      state.auth.userDetails.role === 'ADMIN' || state.auth.organisations?.includes(Number(id)),
   );
   const [query, setQuery] = useTasksStatsQueryParams();
-  const [forceUpdated, forceUpdate] = useForceUpdate();
-  useEffect(() => {
-    if (!query.startDate) {
-      setQuery({ ...query, startDate: format(startOfYear(Date.now()), 'yyyy-MM-dd') }, 'replaceIn');
-    }
-  });
-  const [apiState] = useTasksStatsQueryAPI(
+
+  const [apiState, fetchTasksStatistics] = useTasksStatsQueryAPI(
     { taskStats: [] },
     query,
-    query.startDate ? forceUpdated : false,
     `organisationId=${id}`,
   );
   const [error, loading, organisation] = useFetch(`organisations/${id}/?omitManagerList=true`, id);
@@ -49,6 +43,12 @@ export const OrganisationStats = ({ id }) => {
     organisation.subscriptionTier &&
     isOrgManager;
   useSetTitleTag(`${organisation.name || 'Organization'} stats`);
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+    }
+  });
 
   if (token) {
     return (
@@ -73,7 +73,7 @@ export const OrganisationStats = ({ id }) => {
               stats={apiState.stats}
               error={apiState.isError}
               loading={apiState.isLoading}
-              retryFn={forceUpdate}
+              retryFn={fetchTasksStatistics}
             />
           </div>
           <div className="w-100 fl cf">
@@ -112,10 +112,21 @@ export const OrganisationStats = ({ id }) => {
               )}
             </ReactPlaceholder>
           </div>
+          <div className="w-40-l w-100 fl cf">
+            <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb2">
+              <FormattedMessage {...messages.orgProjectStats} />
+            </h4>
+            <div className="pa2">
+              <OrganisationProjectStats
+                projects={orgStats && orgStats.projects}
+                orgName={organisation.name}
+              />
+            </div>
+          </div>
         </div>
       </ReactPlaceholder>
     );
   } else {
-    return <Redirect from={`organisations/${id}/stats/`} to={'/login'} noThrow />;
+    return null;
   }
 };

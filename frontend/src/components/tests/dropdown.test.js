@@ -1,18 +1,20 @@
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import TestRenderer from 'react-test-renderer';
 
 import { CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
-import { CheckIcon } from '../svgIcons';
 
 export const createTestDropdown = (options) => {
   const testElement = TestRenderer.create(
-    <Dropdown
-      value={'English'}
-      options={options}
-      display={'Language'}
-      className="blue-dark bg-white"
-    />,
+    <MemoryRouter>
+      <Dropdown
+        value={'English'}
+        options={options}
+        display={'Language'}
+        className="blue-dark bg-white"
+      />
+    </MemoryRouter>,
   );
   return testElement.root;
 };
@@ -25,33 +27,6 @@ test('dropdown svg icon exists and height is 15px', () => {
 test('dropdown-content is not rendered before the user clicks on the button', () => {
   let elementInstance = createTestDropdown([{ label: 'English' }, { label: 'Português' }]);
   expect(elementInstance.findByType('div').props.className).toBe('dib pointer relative');
-  expect(() =>
-    elementInstance.findByProps({
-      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
-    }),
-  ).toThrow(
-    new Error(
-      'No instances found with props: {"className":"db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column"}',
-    ),
-  );
-});
-
-test('dropdown-content show/hide with clicks', () => {
-  let elementInstance = createTestDropdown([{ label: 'English' }, { label: 'Português' }]);
-  // CheckIcon is not present because dropdown-content is not rendered
-  expect(() => elementInstance.findByType(CheckIcon)).toThrow(
-    new Error('No instances found with node type: "CheckIcon"'),
-  );
-  elementInstance.findByType(CustomButton).props.onClick();
-  expect(
-    elementInstance.findByProps({
-      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
-    }).type,
-  ).toBe('div');
-  expect(elementInstance.findAllByType(CheckIcon).length).toBe(1);
-  expect(elementInstance.findAllByProps({ className: 'red pl4' }).length).toBe(1);
-  // dropdown-content should disappear after another button click
-  elementInstance.findByType(CustomButton).props.onClick();
   expect(() =>
     elementInstance.findByProps({
       className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
@@ -113,13 +88,15 @@ test('dropdown behaviour with href props', () => {
 
 test('dropdown behaviour with multi enabled', () => {
   const testElement = TestRenderer.create(
-    <Dropdown
-      value={'A'}
-      options={[{ label: 'A' }, { label: 'B' }, { label: 'C' }]}
-      display={'Options'}
-      multi={true}
-      className="blue-dark bg-white"
-    />,
+    <MemoryRouter>
+      <Dropdown
+        value={'A'}
+        options={[{ label: 'A' }, { label: 'B' }, { label: 'C' }]}
+        display={'Options'}
+        multi={true}
+        className="blue-dark bg-white"
+      />
+    </MemoryRouter>,
   );
   const elementInstance = testElement.root;
   elementInstance.findByType(CustomButton).props.onClick();
@@ -143,14 +120,16 @@ test('dropdown behaviour with multi enabled', () => {
 
 test('dropdown with toTop enabled should have bottom-3 class', () => {
   const testElement = TestRenderer.create(
-    <Dropdown
-      value={'A'}
-      options={[{ label: 'A' }, { label: 'B' }, { label: 'C' }]}
-      display={'Options'}
-      multi={true}
-      className="blue-dark bg-white"
-      toTop={true}
-    />,
+    <MemoryRouter>
+      <Dropdown
+        value={'A'}
+        options={[{ label: 'A' }, { label: 'B' }, { label: 'C' }]}
+        display={'Options'}
+        multi={true}
+        className="blue-dark bg-white"
+        toTop={true}
+      />
+    </MemoryRouter>,
   );
   const elementInstance = testElement.root;
   elementInstance.findByType(CustomButton).props.onClick();
@@ -178,14 +157,16 @@ test('dropdown with more than 9 options has "h5 overflow-y-scroll" classes', () 
     { label: 'L' },
   ];
   const testElement = TestRenderer.create(
-    <Dropdown
-      value={'A'}
-      options={twelveOptions}
-      display={'Options'}
-      multi={true}
-      className="blue-dark bg-white"
-      toTop={true}
-    />,
+    <MemoryRouter>
+      <Dropdown
+        value={'A'}
+        options={twelveOptions}
+        display={'Options'}
+        multi={true}
+        className="blue-dark bg-white"
+        toTop={true}
+      />
+    </MemoryRouter>,
   );
   const elementInstance = testElement.root;
   elementInstance.findByType(CustomButton).props.onClick();

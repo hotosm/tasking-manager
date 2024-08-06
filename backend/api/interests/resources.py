@@ -2,12 +2,13 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
 from backend.models.dtos.interests_dto import InterestDTO
-from backend.models.postgis.utils import NotFound
 from backend.services.interests_service import InterestService
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.authentication_service import token_auth
 
 from sqlalchemy.exc import IntegrityError
+
+INTEREST_NOT_FOUND = "Interest Not Found"
 
 
 class InterestsAllAPI(Resource):
@@ -71,15 +72,11 @@ class InterestsAllAPI(Resource):
         except IntegrityError:
             return (
                 {
-                    "error": "Value '{0}' already exists".format(interest_dto.name),
+                    "Error": "Value '{0}' already exists".format(interest_dto.name),
                     "SubCode": "NameExists",
                 },
                 400,
             )
-        except Exception as e:
-            error_msg = f"Interest POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     def get(self):
         """
@@ -95,13 +92,8 @@ class InterestsAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            interests = InterestService.get_all_interests()
-            return interests.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Interest GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        interests = InterestService.get_all_interests()
+        return interests.to_primitive(), 200
 
 
 class InterestsRestAPI(Resource):
@@ -136,6 +128,8 @@ class InterestsRestAPI(Resource):
                 description: Unauthorized - Invalid credentials
             403:
                 description: Forbidden
+            404:
+                description: Interest not found
             500:
                 description: Internal Server Error
         """
@@ -149,13 +143,8 @@ class InterestsRestAPI(Resource):
             error_msg = f"InterestsRestAPI GET: {str(e)}"
             return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
-        try:
-            interest = InterestService.get(interest_id)
-            return interest.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Interest GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        interest = InterestService.get(interest_id)
+        return interest.to_primitive(), 200
 
     @token_auth.login_required
     def patch(self, interest_id):
@@ -197,6 +186,8 @@ class InterestsRestAPI(Resource):
                 description: Unauthorized - Invalid credentials
             403:
                 description: Forbidden
+            404:
+                description: Interest not found
             500:
                 description: Internal Server Error
         """
@@ -207,7 +198,7 @@ class InterestsRestAPI(Resource):
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
-            error_msg = f"InterestsAllAPI PATCH: {str(e)}"
+            error_msg = f"InterestsRestAPI PATCH: {str(e)}"
             return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
         try:
@@ -217,13 +208,8 @@ class InterestsRestAPI(Resource):
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
-        try:
-            update_interest = InterestService.update(interest_id, interest_dto)
-            return update_interest.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"Interest PUT - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        update_interest = InterestService.update(interest_id, interest_dto)
+        return update_interest.to_primitive(), 200
 
     @token_auth.login_required
     def delete(self, interest_id):
@@ -266,15 +252,8 @@ class InterestsRestAPI(Resource):
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
-            error_msg = f"InterestsAllAPI DELETE: {str(e)}"
+            error_msg = f"InterestsRestAPI DELETE: {str(e)}"
             return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
-        try:
-            InterestService.delete(interest_id)
-            return {"Success": "Interest deleted"}, 200
-        except NotFound:
-            return {"Error": "Interest Not Found", "SubCode": "NotFound"}, 404
-        except Exception as e:
-            error_msg = f"License DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+        InterestService.delete(interest_id)
+        return {"Success": "Interest deleted"}, 200

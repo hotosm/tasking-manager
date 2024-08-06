@@ -32,10 +32,10 @@ def upgrade():
         "idx_notifications_user_id", "notifications", ["user_id"], unique=False
     )
     fetch_all_users = "select id from users;"
-    all_users = conn.execute(fetch_all_users)
+    all_users = conn.execute(sa.text(fetch_all_users))
     for user in all_users:
         user_id = user[0]
-        insert_user_info = (
+        insert_user_info = sa.text(
             "insert into notifications (user_id,unread_count,date) values ("
             + str(user_id)
             + ","
@@ -47,7 +47,7 @@ def upgrade():
         op.execute(insert_user_info)
 
     fetch_all_unread_counts = "select to_user_id, count(*) from messages where read = false group by to_user_id;"
-    unread_counts = conn.execute(fetch_all_unread_counts)
+    unread_counts = conn.execute(sa.text(fetch_all_unread_counts))
     for unread_count in unread_counts:
         user_id = unread_count[0]
         user_unread_count = unread_count[1]

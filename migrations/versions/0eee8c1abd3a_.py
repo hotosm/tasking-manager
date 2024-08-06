@@ -27,7 +27,7 @@ def upgrade():
 
     op.add_column("projects", sa.Column("country", ARRAY(sa.String()), nullable=True))
 
-    fetch_all_project_geoms = (
+    fetch_all_project_geoms = sa.text(
         "SELECT id, ST_AsText(ST_GeomFromWKB(ST_AsEWKB(centroid))) from projects;"
     )
     projects = conn.execute(fetch_all_project_geoms)
@@ -49,6 +49,9 @@ def upgrade():
         except Exception as e:
             sys.stdout.write("\033[K")
             print("Geometry Exception: Project " + str(project_id) + " " + str(e))
+            continue
+
+        if not project_centroid:
             continue
 
         if not project_centroid.is_valid:

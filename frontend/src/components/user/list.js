@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
+import ReactPlaceholder from 'react-placeholder';
+import toast from 'react-hot-toast';
+import Popup from 'reactjs-popup';
 
 import messages from './messages';
 import { UserAvatar } from './avatar';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { PaginatorLine } from '../paginator';
-import { SearchIcon, CloseIcon } from '../svgIcons';
+import { SearchIcon, CloseIcon, SettingsIcon, CheckIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
-import { SettingsIcon, CheckIcon } from '../svgIcons';
-import Popup from 'reactjs-popup';
+import { nCardPlaceholders } from './usersPlaceholder';
 
 const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
   const inputRef = useRef(null);
@@ -142,16 +144,23 @@ export const SearchNav = ({ filters, setFilters, initialFilters }) => {
 };
 
 export const UsersTable = ({ filters, setFilters }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [response, setResponse] = useState(null);
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const [status, setStatus] = useState({ status: null, message: '' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUsers = async (filters) => {
+      setLoading(true);
       const url = `users/?${filters}`;
-      const res = await fetchLocalJSONAPI(url, token);
-      setResponse(res);
+      fetchLocalJSONAPI(url, token)
+        .then((res) => {
+          setResponse(res);
+          setLoading(false);
+        })
+        .catch((err) => setError(err));
     };
 
     // Filter elements according to logic.
@@ -176,27 +185,35 @@ export const UsersTable = ({ filters, setFilters }) => {
     fetchUsers(urlFilters);
   }, [filters, token, status]);
 
-  if (response === null) {
-    return null;
-  }
-
   return (
     <div className="w-100">
-      <p className="f6 mt0">
-        <FormattedMessage {...messages.totalUsers} values={{ total: response.pagination.total }} />
-      </p>
+      {response?.users && (
+        <p className="f6 mt0">
+          <FormattedMessage
+            {...messages.totalUsers}
+            values={{ total: response.pagination.total }}
+          />
+        </p>
+      )}
       <div className="w-100 f5">
-        <ul className="list pa0 ma0">
-          {response.users.map((user) => (
-            <UserListCard
-              user={user}
-              key={user.id}
-              token={token}
-              username={userDetails.username}
-              setStatus={setStatus}
-            />
-          ))}
-        </ul>
+        <ReactPlaceholder
+          showLoadingAnimation={true}
+          customPlaceholder={nCardPlaceholders(4)}
+          delay={10}
+          ready={!loading && !error}
+        >
+          <ul className="list pa0 ma0">
+            {response?.users.map((user) => (
+              <UserListCard
+                user={user}
+                key={user.id}
+                token={token}
+                username={userDetails.username}
+                setStatus={setStatus}
+              />
+            ))}
+          </ul>
+        </ReactPlaceholder>
         {response === null || response.pagination.total === 0 ? null : (
           <PaginatorLine
             activePage={filters.page}
@@ -214,23 +231,40 @@ export const UsersTable = ({ filters, setFilters }) => {
   );
 };
 
-const UserEditMenu = ({ user, token, close, setStatus }) => {
+export const UserEditMenu = ({ user, token, close, setStatus }) => {
   const roles = ['MAPPER', 'ADMIN', 'READ_ONLY'];
   const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
   const iconClass = 'h1 w1 red';
 
-  const updateRole = (username, role, token, close) => {
-    fetchLocalJSONAPI(`users/${username}/actions/set-role/${role}/`, token, 'PATCH').then(() => {
-      close();
-      setStatus({ success: true });
-    });
-  };
+  const updateAttribute = (attribute, attributeValue) => {
+    const endpoint = {
+      role: `users/${user.username}/actions/set-role/${attributeValue}/`,
+      mapperLevel: `users/${user.username}/actions/set-level/${attributeValue}/`,
+    };
 
-  const updateMapperLevel = (username, level, token, close) => {
-    fetchLocalJSONAPI(`users/${username}/actions/set-level/${level}/`, token, 'PATCH').then(() => {
-      close();
-      setStatus({ success: true });
-    });
+    fetchLocalJSONAPI(endpoint[attribute], token, 'PATCH')
+      .then(() => {
+        close();
+        setStatus({ success: true });
+        toast.success(
+          <FormattedMessage
+            {...messages.userAttributeUpdationSuccess}
+            values={{
+              attribute,
+            }}
+          />,
+        );
+      })
+      .catch(() =>
+        toast.error(
+          <FormattedMessage
+            {...messages.userAttributeUpdationFailure}
+            values={{
+              attribute,
+            }}
+          />,
+        ),
+      );
   };
 
   return (
@@ -243,7 +277,8 @@ const UserEditMenu = ({ user, token, close, setStatus }) => {
           return (
             <div
               key={role}
-              onClick={() => updateRole(user.username, role, token, close)}
+              role="button"
+              onClick={() => updateAttribute('role', role)}
               className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
             >
               <p className="ma0">
@@ -262,7 +297,8 @@ const UserEditMenu = ({ user, token, close, setStatus }) => {
           return (
             <div
               key={level}
-              onClick={() => updateMapperLevel(user.username, level, token, close)}
+              role="button"
+              onClick={() => updateAttribute('mapperLevel', level)}
               className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
             >
               <p className="ma0">

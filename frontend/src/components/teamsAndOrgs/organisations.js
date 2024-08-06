@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useLocation } from '@reach/router';
+import { Link } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
-import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 import Select from 'react-select';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
+import viewsMessages from '../../views/messages';
 import { IMAGE_UPLOAD_SERVICE } from '../../config';
 import { useUploadImage } from '../../hooks/UseUploadImage';
 import { levels } from '../../hooks/UseOrganisationLevel';
@@ -15,6 +15,9 @@ import { Management } from './management';
 import { InternalLinkIcon, ClipboardIcon } from '../svgIcons';
 import { Button } from '../button';
 import { UserAvatarList } from '../user/avatar';
+import { nCardPlaceholders } from './organisationsPlaceholder';
+import { Alert } from '../alert';
+import { TextField } from '../formInputs';
 
 export function OrgsManagement({
   organisations,
@@ -22,7 +25,16 @@ export function OrgsManagement({
   isAdmin,
   userOrgsOnly,
   setUserOrgsOnly,
+  isOrganisationsFetched,
 }: Object) {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const onSearchInputChange = (e) => setSearchQuery(e.target.value);
+
+  const filteredOrganisations = organisations?.filter((organisation) =>
+    organisation.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   return (
     <Management
       title={
@@ -38,19 +50,34 @@ export function OrgsManagement({
       setUserOnly={setUserOrgsOnly}
       isAdmin={isAdmin}
     >
-      {isOrgManager ? (
-        organisations.length ? (
-          organisations.map((org, n) => <OrganisationCard details={org} key={n} />)
-        ) : (
-          <div className="pb5">
-            <FormattedMessage {...messages.noOrganisationsFound} />
-          </div>
-        )
-      ) : (
-        <div>
-          <FormattedMessage {...messages.notAllowed} />
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        customPlaceholder={nCardPlaceholders(4)}
+        delay={10}
+        ready={isOrganisationsFetched}
+      >
+        <div className="w-20-l w-25-m">
+          <TextField
+            value={searchQuery}
+            placeholderMsg={messages.searchOrganisations}
+            onChange={onSearchInputChange}
+            onCloseIconClick={() => setSearchQuery('')}
+          />
         </div>
-      )}
+        {isOrgManager ? (
+          filteredOrganisations?.length ? (
+            filteredOrganisations.map((org, n) => <OrganisationCard details={org} key={n} />)
+          ) : (
+            <div className="pb5">
+              <FormattedMessage {...messages.noOrganisationsFound} />
+            </div>
+          )
+        ) : (
+          <div>
+            <FormattedMessage {...messages.notAllowed} />
+          </div>
+        )}
+      </ReactPlaceholder>
     </Management>
   );
 }
@@ -70,7 +97,7 @@ export function OrganisationCard({ details }: Object) {
           </div>
           <div className="w-100 dib pt2 fl">
             <h4 className="ttu blue-grey f6">
-              <FormattedMessage {...messages.administrators} />
+              <FormattedMessage {...messages.managers} />
             </h4>
             <div className="dib">
               <UserAvatarList
@@ -116,6 +143,19 @@ export function OrganisationForm(props) {
                   />
                 </fieldset>
               </form>
+              {props.errorMessage && (
+                <div className="mt2">
+                  <Alert type="error" compact>
+                    {viewsMessages[`orgCreation${props.errorMessage}Error`] ? (
+                      <FormattedMessage
+                        {...viewsMessages[`orgCreation${props.errorMessage}Error`]}
+                      />
+                    ) : (
+                      <FormattedMessage {...viewsMessages[`errorFallback`]} />
+                    )}
+                  </Alert>
+                </div>
+              )}
             </div>
             {dirtyForm && (
               <div className="cf pt0 h3">
@@ -153,13 +193,11 @@ const TIER_OPTIONS = levels.map((level) => ({
 }));
 
 export function OrgInformation({ hasSlug, formState }) {
-  const token = useSelector((state) => state.auth.get('token'));
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const [uploadError, uploading, uploadImg] = useUploadImage();
-  const location = useLocation();
   const intl = useIntl();
   //eslint-disable-next-line
-  const [isCopied, setCopied] = useCopyClipboard();
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
 
@@ -172,6 +210,11 @@ export function OrgInformation({ hasSlug, formState }) {
     const selected = TIER_OPTIONS.filter((tier) => value === tier.value);
     return selected.length ? selected[0].label : <FormattedMessage {...messages.selectTier} />;
   };
+
+  const validateRequired = (value) =>
+    value ? undefined : <FormattedMessage {...messages.requiredField} />;
+
+  const handleCopyToClipboard = (text) => navigator.clipboard.writeText(text);
 
   return (
     <>
@@ -201,9 +244,12 @@ export function OrgInformation({ hasSlug, formState }) {
                   title={intl.formatMessage(messages.copyPublicUrl)}
                 >
                   <ClipboardIcon
+                    role="button"
                     className="h1 w1 ph1 v-mid"
                     onClick={() =>
-                      setCopied(`${location.origin}/organisations/${props.input.value}/`)
+                      handleCopyToClipboard(
+                        `${window.location.origin}/organisations/${props.input.value}/`,
+                      )
                     }
                   />
                 </span>
@@ -233,16 +279,21 @@ export function OrgInformation({ hasSlug, formState }) {
               <label className={labelClasses}>
                 <FormattedMessage {...messages.type} />
               </label>
-              <Field name="type" className={fieldClasses} required>
+              <Field name="type" className={fieldClasses} validate={validateRequired}>
                 {(props) => (
-                  <Select
-                    classNamePrefix="react-select"
-                    isClearable={false}
-                    options={TYPE_OPTIONS}
-                    placeholder={getTypePlaceholder(props.input.value)}
-                    onChange={(value) => props.input.onChange(value.value)}
-                    className="z-5"
-                  />
+                  <>
+                    <Select
+                      classNamePrefix="react-select"
+                      isClearable={false}
+                      options={TYPE_OPTIONS}
+                      placeholder={getTypePlaceholder(props.input.value)}
+                      onChange={(value) => props.input.onChange(value.value)}
+                      className="z-5"
+                    />
+                    {props.meta.error && props.meta.touched && (
+                      <span className="mt3 red">{props.meta.error}</span>
+                    )}
+                  </>
                 )}
               </Field>
             </div>
@@ -251,16 +302,21 @@ export function OrgInformation({ hasSlug, formState }) {
                 <label className={labelClasses}>
                   <FormattedMessage {...messages.subscribedTier} />
                 </label>
-                <Field name="subscriptionTier" className={fieldClasses} required>
+                <Field name="subscriptionTier" className={fieldClasses} validate={validateRequired}>
                   {(props) => (
-                    <Select
-                      classNamePrefix="react-select"
-                      isClearable={false}
-                      options={TIER_OPTIONS}
-                      placeholder={getTierPlaceholder(props.input.value)}
-                      onChange={(value) => props.input.onChange(value.value)}
-                      className="z-4"
-                    />
+                    <>
+                      <Select
+                        classNamePrefix="react-select"
+                        isClearable={false}
+                        options={TIER_OPTIONS}
+                        placeholder={getTierPlaceholder(props.input.value)}
+                        onChange={(value) => props.input.onChange(value.value)}
+                        className="z-4"
+                      />
+                      {props.meta.error && props.meta.touched && (
+                        <span className="mt3 red">{props.meta.error}</span>
+                      )}
+                    </>
                   )}
                 </Field>
               </div>
@@ -272,7 +328,7 @@ export function OrgInformation({ hasSlug, formState }) {
           <FormattedMessage {...messages.image} />
         </label>
         {IMAGE_UPLOAD_SERVICE ? (
-          <Field name="logo" className={fieldClasses} required>
+          <Field name="logo" className={fieldClasses}>
             {(fieldProps) => (
               <>
                 <input
@@ -299,7 +355,7 @@ export function OrgInformation({ hasSlug, formState }) {
             )}
           </Field>
         ) : (
-          <Field name="logo" component="input" type="text" className={fieldClasses} required />
+          <Field name="logo" component="input" type="text" className={fieldClasses} />
         )}
       </div>
     </>

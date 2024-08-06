@@ -1,8 +1,9 @@
 import json
-
+import threading
 import geojson
 from flask import current_app
 
+from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
@@ -12,9 +13,11 @@ from backend.models.dtos.project_dto import (
 from backend.models.postgis.project import Project, Task, ProjectStatus
 from backend.models.postgis.statuses import TaskCreationMode, TeamRoles
 from backend.models.postgis.task import TaskHistory, TaskStatus, TaskAction
-from backend.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
+from backend.models.postgis.user import User
+from backend.models.postgis.utils import InvalidData, InvalidGeoJson
 from backend.services.grid.grid_service import GridService
 from backend.services.license_service import LicenseService
+from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
 from backend.services.team_service import TeamService
@@ -69,8 +72,6 @@ class ProjectAdminService:
             org = OrganisationService.get_organisation_by_id(
                 draft_project_dto.organisation
             )
-            if org is None:
-                raise NotFound("Organisation does not exist")
             draft_project_dto.organisation = org
             draft_project.create_draft_project(draft_project_dto)
 
@@ -107,7 +108,7 @@ class ProjectAdminService:
         project = Project.get(project_id)
 
         if project is None:
-            raise NotFound()
+            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
         return project
 
@@ -179,7 +180,10 @@ class ProjectAdminService:
     @staticmethod
     def reset_all_tasks(project_id: int, user_id: int):
         """Resets all tasks on project, preserving history"""
-        tasks_to_reset = Task.query.filter(Task.project_id == project_id).all()
+        tasks_to_reset = Task.query.filter(
+            Task.project_id == project_id,
+            Task.task_status != TaskStatus.READY.value,
+        ).all()
 
         for task in tasks_to_reset:
             task.set_task_history(
@@ -200,7 +204,7 @@ class ProjectAdminService:
         comments = TaskHistory.get_all_comments(project_id)
 
         if len(comments.comments) == 0:
-            raise NotFound("No comments found on project")
+            raise NotFound(sub_code="COMMENTS_NOT_FOUND", project_id=project_id)
 
         return comments
 
@@ -219,10 +223,9 @@ class ProjectAdminService:
                 "MustBeFeatureCollection- Invalid: GeoJson must be FeatureCollection"
             )
 
-        is_valid_geojson = geojson.is_valid(tasks)
-        if is_valid_geojson["valid"] == "no":
+        if not tasks.is_valid:
             raise InvalidGeoJson(
-                f"InvalidFeatureCollection- {is_valid_geojson['message']}"
+                "InvalidFeatureCollection - " + ", ".join(tasks.errors())
             )
 
         task_count = 1
@@ -281,24 +284,45 @@ class ProjectAdminService:
     @staticmethod
     def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
         """Transfers project from old owner (transfering_user_id) to new owner (username)"""
-        project = Project.get(project_id)
+        project = ProjectAdminService._get_project_by_id(project_id)
+        new_owner = UserService.get_user_by_username(username)
+        # No operation is required if the new owner is same as old owner
+        if username == project.author.username:
+            return
 
         # Check permissions for the user (transferring_user_id) who initiatied the action
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            transfering_user_id, project_id
-        ):
-            raise ValueError("UserNotPermitted- User action not permitted")
-        new_owner = UserService.get_user_by_username(username)
-
-        # Check permissions for the new owner - must be an admin or project's org manager or a PM team member
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            new_owner.id, project_id
-        ):
-            raise ValueError(
-                "InvalidNewOwner- New owner must be an admin or project's org manager or a PM team member"
+        is_admin = UserService.is_user_an_admin(transfering_user_id)
+        is_author = UserService.is_user_the_project_author(
+            transfering_user_id, project.author_id
+        )
+        is_org_manager = OrganisationService.is_user_an_org_manager(
+            project.organisation_id, transfering_user_id
+        )
+        if not (is_admin or is_author or is_org_manager):
+            raise ProjectAdminServiceError(
+                "TransferPermissionError- User does not have permissions to transfer project"
             )
+
+        # Check permissions for the new owner - must be project's org manager
+        is_new_owner_org_manager = OrganisationService.is_user_an_org_manager(
+            project.organisation_id, new_owner.id
+        )
+        is_new_owner_admin = UserService.is_user_an_admin(new_owner.id)
+        if not (is_new_owner_org_manager or is_new_owner_admin):
+            error_message = (
+                "InvalidNewOwner- New owner must be project's org manager or TM admin"
+            )
+            if current_app:
+                current_app.logger.debug(error_message)
+            raise ValueError(error_message)
         else:
+            transferred_by = User.get_by_id(transfering_user_id).username
+            project.author_id = new_owner.id
             project.save()
+            threading.Thread(
+                target=MessageService.send_project_transfer_message,
+                args=(project_id, username, transferred_by),
+            ).start()
 
     @staticmethod
     def is_user_action_permitted_on_project(
@@ -306,6 +330,8 @@ class ProjectAdminService:
     ) -> bool:
         """Is user action permitted on project"""
         project = Project.get(project_id)
+        if project is None:
+            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
         author_id = project.author_id
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
 

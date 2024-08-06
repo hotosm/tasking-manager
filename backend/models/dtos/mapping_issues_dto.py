@@ -4,7 +4,7 @@ from schematics.types.compound import ListType
 
 
 class MappingIssueCategoryDTO(Model):
-    """ DTO used to define a mapping-issue category """
+    """DTO used to define a mapping-issue category"""
 
     category_id = IntType(serialized_name="categoryId")
     name = StringType(required=True)
@@ -13,7 +13,7 @@ class MappingIssueCategoryDTO(Model):
 
 
 class MappingIssueCategoriesDTO(Model):
-    """ DTO for all mapping-issue categories """
+    """DTO for all mapping-issue categories"""
 
     def __init__(self):
         super().__init__()
@@ -23,7 +23,7 @@ class MappingIssueCategoriesDTO(Model):
 
 
 class TaskMappingIssueDTO(Model):
-    """ DTO used to define a single mapping issue recorded with a task invalidation """
+    """DTO used to define a single mapping issue recorded with a task invalidation"""
 
     category_id = IntType(serialized_name="categoryId")
     name = StringType(required=True)

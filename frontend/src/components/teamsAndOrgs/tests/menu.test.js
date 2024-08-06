@@ -1,17 +1,18 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { ManagementMenu } from '../menu';
 
 describe('ManagementMenu items for', () => {
   it('ADMIN users can see all items', () => {
-    render(
+    renderWithRouter(
       <ReduxIntlProviders>
         <ManagementMenu isAdmin={true} />
       </ReduxIntlProviders>,
     );
+    expect(screen.getByText('Overview').closest('a').href).toContain('/');
     expect(screen.getByText('Statistics').closest('a').href).toContain('/stats');
     expect(screen.getByText('Users').closest('a').href).toContain('/users');
     expect(screen.getByText('Licenses').closest('a').href).toContain('/licenses');
@@ -22,12 +23,13 @@ describe('ManagementMenu items for', () => {
     expect(screen.getByText('Teams').closest('a').href).toContain('/teams');
   });
 
-  it('non ADMIN users can see only Statistics and other 3 items', () => {
-    render(
+  it('non ADMIN users can see only Statistics and other 4 items', () => {
+    renderWithRouter(
       <ReduxIntlProviders>
         <ManagementMenu isAdmin={false} />
       </ReduxIntlProviders>,
     );
+    expect(screen.getByText('Overview').closest('a').href).toContain('/');
     expect(screen.getByText('Statistics').closest('a').href).toContain('/stats');
     expect(screen.getByText('Projects').closest('a').href).toContain('/projects');
     expect(screen.getByText('Organizations').closest('a').href).toContain('/organisations');

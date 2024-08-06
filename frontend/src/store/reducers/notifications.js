@@ -1,11 +1,10 @@
-import { Map } from 'immutable';
-
 import { types } from '../actions/notifications';
 
-const initialState = Map({
+const initialState = {
   notifications: [],
   pagination: { hasNext: false, hasPrev: false, page: 1 },
-});
+  unreadCount: null,
+};
 
 export const notificationsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -43,6 +42,16 @@ export const notificationsReducer = (state = initialState, action) => {
         isLoading: false,
         isFirstLoading: false,
         isError: true,
+      };
+    case types.SET_UNREAD_COUNT:
+      return {
+        ...state,
+        unreadCount: action.payload,
+      };
+    case types.DECREMENT_UNREAD_COUNT:
+      return {
+        ...state,
+        unreadCount: state.unreadCount - 1,
       };
     default:
       return state;

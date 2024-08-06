@@ -33,40 +33,37 @@ export function OrderBySelector(props) {
       type: 'ASC',
     },
     {
-      label: <FormattedMessage {...messages.sortByBeginner} />,
-      value: 'mapper_level.ASC',
-      sort: 'mapper_level',
+      label: <FormattedMessage {...messages.sortByEasy} />,
+      value: 'difficulty.ASC',
+      sort: 'difficulty',
       type: 'ASC',
     },
     {
-      label: <FormattedMessage {...messages.sortByAdvanced} />,
-      value: 'mapper_level.DESC',
-      sort: 'mapper_level',
+      label: <FormattedMessage {...messages.sortByChallenging} />,
+      value: 'difficulty.DESC',
+      sort: 'difficulty',
       type: 'DESC',
     },
   ];
-  const onSortSelect = (arr) => {
-    if (arr.length === 1) {
-      props.setQuery(
-        {
-          ...props.allQueryParams,
-          page: undefined,
-          orderBy: arr[0].sort,
-          orderByType: arr[0].type,
-        },
-        'pushIn',
-      );
-    } else if (arr.length > 1) {
-      throw new Error('filter select array is bigger.');
-    }
-  };
+
+  const onSortSelect = (arr) =>
+    props.setQuery(
+      {
+        ...props.allQueryParams,
+        page: undefined,
+        orderBy: arr[0].sort,
+        orderByType: arr[0].type,
+      },
+      'pushIn',
+    );
+
   return (
     <Dropdown
       onChange={onSortSelect}
-      value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}` || []}
+      value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}`}
       options={options}
       display={<FormattedMessage {...messages.sortBy} />}
-      className={`ba b--grey-light bg-white mr1 v-mid pv2 ${props.className || ''}`}
+      className={`ba b--tan bg-white mr3 v-mid pv2 br1 pl3 fw5 blue-dark ${props.className || ''}`}
     />
   );
 }

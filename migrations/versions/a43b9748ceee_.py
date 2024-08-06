@@ -6,6 +6,7 @@ Create Date: 2019-06-12 12:50:15.809839
 
 """
 from alembic import op
+import sqlalchemy as sa
 from backend.models.postgis.statuses import TaskStatus
 
 
@@ -32,20 +33,21 @@ def upgrade():
 
     # Recalculate tasks stats based on the task states in projects
     conn = op.get_bind()
-    projects = conn.execute("select id from projects")
+    projects = conn.execute(sa.text("select id from projects"))
     print("Recalculating projects' tasks stats... can take a bit")
     for project_id in projects:
         _set_project_counters_from_task_states(project_id[0])
 
 
 def _set_project_counters_from_task_states(project_id: int):
-
     # Obtain and process information of the project's tasks' statuses
     conn = op.get_bind()
 
     tasks_statuses = conn.execute(
-        "SELECT task_status, count(task_status) FROM tasks WHERE project_id={0} GROUP BY task_status"
-        "".format(project_id)
+        sa.text(
+            "SELECT task_status, count(task_status) FROM tasks WHERE project_id={0} GROUP BY task_status"
+            "".format(project_id)
+        )
     )
     tasks_statuses = [r for r in tasks_statuses]
 

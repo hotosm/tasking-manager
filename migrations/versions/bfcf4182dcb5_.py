@@ -24,7 +24,7 @@ def upgrade():
     op.add_column(
         "organisations", sa.Column("slug", sa.String(length=255), nullable=True)
     )
-    orgs = conn.execute("select name from organisations;")
+    orgs = conn.execute(sa.text("select name from organisations;"))
     for org in orgs:
         name = handle_special_chars(org[0])
         query = (

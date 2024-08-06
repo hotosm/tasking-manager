@@ -32,11 +32,11 @@ export function clearLockedTasks() {
   };
 }
 
-export const setLockedTasks = (tasks, projectId) => dispatch => {
+export const setLockedTasks = (tasks, projectId) => (dispatch) => {
   dispatch(updateLockedTasks(tasks));
   dispatch(updateProject(projectId));
 };
 
-export const setTasksStatus = status => dispatch => {
+export const setTasksStatus = (status) => (dispatch) => {
   dispatch(updateTasksStatus(status));
 };

@@ -42,26 +42,28 @@ const TopCauses = ({ userStats }) => {
   const data = formatChartData(interests, stats);
 
   return (
-    <div className="pb3 ph3 pt2 bg-white blue-dark shadow-4">
-      <h3 className="f4 mv3 fw6">
-        <FormattedMessage {...messages.topCausesTitle} />
-      </h3>
-      {userStats.projectsMapped ? (
-        <Doughnut
-          data={data}
-          options={{
-            aspectRatio: 2,
-            plugins: {
-              legend: { position: 'right', labels: { boxWidth: 12 } },
-              tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
-            },
-          }}
-        />
-      ) : (
-        <div className="h-100 tc pv5 blue-grey">
-          <FormattedMessage {...messages.noProjectsData} />
-        </div>
-      )}
+    <div className="pv2 ph3 bg-white blue-dark shadow-6 h-100">
+      <div className="ml2 mt1 mb3">
+        <h3 className="f125 mv3 fw6">
+          <FormattedMessage {...messages.topCausesTitle} />
+        </h3>
+        {userStats.projectsMapped && data.datasets[0].data.some((x) => !isNaN(x)) ? (
+          <Doughnut
+            data={data}
+            options={{
+              aspectRatio: 2,
+              plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12 } },
+                tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
+              },
+            }}
+          />
+        ) : (
+          <div className="h-100 tc pv5 blue-grey">
+            <FormattedMessage {...messages.noProjectsData} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

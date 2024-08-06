@@ -32,6 +32,22 @@ export default defineMessages({
     id: 'project.stats.timeline',
     defaultMessage: 'Project timeline',
   },
+  timelineDataError: {
+    id: 'project.stats.timeline.fetching.error',
+    defaultMessage: 'An error occured while loading contributions data',
+  },
+  editsStatsError: {
+    id: 'project.detail.stats.timeline.fetching.error',
+    defaultMessage: 'An error occured while loading edits stats',
+  },
+  tasksStatsError: {
+    id: 'project.detail.stats.tasks.error',
+    defaultMessage: 'An error occured while loading tasks stats',
+  },
+  contributionsStatsError: {
+    id: 'project.detail.stats.contributions.error',
+    defaultMessage: 'An error occured while loading contributions stats',
+  },
   sectionNotAllowed: {
     id: 'management.forbiddenAccess.title',
     defaultMessage: 'You are not allowed to access the management area.',
@@ -76,6 +92,10 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.organisation.creation',
     defaultMessage: 'Create new organization',
   },
+  orgCreationNameExistsError: {
+    id: 'teamsAndOrgs.management.organisation.orgCreationNameExistsError',
+    defaultMessage: 'Organisation name already exists',
+  },
   editOrganisation: {
     id: 'teamsAndOrgs.management.organisation.edit',
     defaultMessage: 'Edit organization',
@@ -92,9 +112,38 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.organisation.button.create',
     defaultMessage: 'Create organization',
   },
+  entityCreationSuccess: {
+    id: 'management.entity.creation.success',
+    defaultMessage:
+      '{entity, select, organization {Organization} license {License} project {Project} category {Category} campaign {Campaign} team {Team} other {}} created successfully',
+  },
+  entityCreationFailure: {
+    id: 'management.entity.creation.failure',
+    defaultMessage:
+      'Failed to create {entity, select, organization {organization} license {license} project {project} category {category} campaign {campaign} team {team} other {}}. Please try again.',
+  },
+  entityInfoUpdationSuccess: {
+    id: 'management.entity.updation.success',
+    defaultMessage:
+      '{entity, select, organization {Organization} license {License} project {Project} category {Category} campaign {Campaign} team {Team} other {}} information updated',
+  },
+  entityInfoUpdationFailure: {
+    id: 'management.entity.updation.failure',
+    defaultMessage:
+      'Failed to update {entity, select, organization {organization} license {license} project {project} category {category} campaign {campaign} team {team} other {}} information. Please try again',
+  },
   createTeam: {
     id: 'teamsAndOrgs.management.team.button.create',
     defaultMessage: 'Create team',
+  },
+  affiliationUpdationSuccess: {
+    id: 'management.team.affiliationUpdationSuccess',
+    defaultMessage: '{affiliation, select, managers {Managers} other {Members}} updated',
+  },
+  affiliationUpdationFailure: {
+    id: 'management.team.affiliationUpdationFailure',
+    defaultMessage:
+      'Failed to updated {affiliation, select, managers {Managers} other {Members}}. Please try again',
   },
   createCampaign: {
     id: 'teamsAndOrgs.management.campaign.button.create',
@@ -136,6 +185,10 @@ export default defineMessages({
   remainingTasks: {
     id: 'teamsAndOrgs.management.organisation.remaining_tasks',
     defaultMessage: 'Total remaining',
+  },
+  orgProjectStats: {
+    id: 'teamsAndOrgs.management.organisation.project_stats',
+    defaultMessage: 'Projects Statistics',
   },
   tier: {
     id: 'teamsAndOrgs.management.organisation.usage_tier',
@@ -205,6 +258,10 @@ export default defineMessages({
   goToProjectButton: {
     id: 'taskAction.go_to_project.button',
     defaultMessage: 'Go to Project #{project}',
+  },
+  lockedTasksLoadingError: {
+    id: 'taskAction.locked_tasks.fetching.error',
+    defaultMessage: 'An error occurred when loading your tasks.',
   },
   profileSettings: {
     id: 'EmailVerification.link.profileSettings',
@@ -659,6 +716,11 @@ export default defineMessages({
   missingFieldsForLocale: {
     id: 'pages.edit_project.actions.missing_fields_for_locale',
     defaultMessage: "Missing information in the project's default language ({locale}):",
+  },
+  noTeamsAssigned: {
+    id: 'pages.edit_project.actions.missing_fields_for_teams',
+    defaultMessage:
+      '{mapping, select, true {Mapping} other {{validation, select, true {Validation} other {}}}} {mapping, select, true {{validation, select, true {and validation} other {}}} other {}} permissions have been set only to team members but no team has been added.',
   },
   projectEditSection_description: {
     id: 'pages.edit_project.sections.description',

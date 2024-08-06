@@ -1,21 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
-import { navigate } from '@reach/router';
-import { useDropzone } from 'react-dropzone';
+import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../button';
 import { Alert } from '../alert';
 import { DeleteModal } from '../deleteModal';
-import { styleClasses } from '../../views/projectEdit';
+import { styleClasses, StateContext } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
-import { useOnDrop } from '../../hooks/UseUploadImage';
+import { useFetch } from '../../hooks/UseFetch';
 import { useAsync } from '../../hooks/UseAsync';
-import FileRejections from '../comments/fileRejections';
-import DropzoneUploadStatus from '../comments/uploadStatus';
-import { DROPZONE_SETTINGS } from '../../config';
+import { CommentInputField } from '../comments/commentInput';
 
 const ActionStatus = ({ status, action }) => {
   let successMessage = '';
@@ -46,6 +44,14 @@ const ActionStatus = ({ status, action }) => {
       successMessage = 'resetAllSuccess';
       errorMessage = 'resetAllError';
       break;
+    case 'REVERT_VALIDATED_TASKS':
+      successMessage = 'revertVALIDATEDTasksSuccess';
+      errorMessage = 'revertTasksError';
+      break;
+    case 'REVERT_BADIMAGERY_TASKS':
+      successMessage = 'revertBADIMAGERYTasksSuccess';
+      errorMessage = 'revertTasksError';
+      break;
     case 'TRANSFER_PROJECT':
       successMessage = 'transferProjectSuccess';
       errorMessage = 'transferProjectError';
@@ -73,7 +79,7 @@ const ActionStatus = ({ status, action }) => {
 };
 
 const ResetTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const resetTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/reset-all/`, token, 'POST');
@@ -109,7 +115,7 @@ const ResetTasksModal = ({ projectId, close }: Object) => {
 };
 
 const ResetBadImageryModal = ({ projectId, close }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const resetBadImagery = () => {
     return fetchLocalJSONAPI(
@@ -153,7 +159,7 @@ const ResetBadImageryModal = ({ projectId, close }: Object) => {
 };
 
 const ValidateAllTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const validateAllTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/validate-all/`, token, 'POST');
@@ -193,7 +199,7 @@ const ValidateAllTasksModal = ({ projectId, close }: Object) => {
 };
 
 const InvalidateAllTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const invalidateAllTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/invalidate-all/`, token, 'POST');
@@ -233,7 +239,7 @@ const InvalidateAllTasksModal = ({ projectId, close }: Object) => {
 };
 
 const MapAllTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const mapAllTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/map-all/`, token, 'POST');
@@ -270,20 +276,17 @@ const MapAllTasksModal = ({ projectId, close }: Object) => {
 };
 
 const MessageContributorsModal = ({ projectId, close }: Object) => {
-  const [data, setData] = useState({ message: '', subject: '' });
-  const token = useSelector((state) => state.auth.get('token'));
-  const appendImgToMessage = (url) =>
-    setData({ ...data, message: `${data.message}\n![image](${url})\n` });
-  const [uploadError, uploading, onDrop] = useOnDrop(appendImgToMessage);
-  const { fileRejections, getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    ...DROPZONE_SETTINGS,
-  });
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const token = useSelector((state) => state.auth.token);
 
   const messageAllContributors = () => {
     return pushToLocalJSONAPI(
       `projects/${projectId}/actions/message-contributors/`,
-      JSON.stringify(data),
+      JSON.stringify({
+        subject: subject,
+        message: message,
+      }),
       token,
       'POST',
     );
@@ -291,8 +294,8 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
 
   const messageAllContributorsAsync = useAsync(messageAllContributors);
 
-  const handleChange = (e) => {
-    setData({ ...data, [e.target.name]: e.target.value });
+  const handleSubjectChange = (e) => {
+    setSubject(e.target.value);
   };
 
   return (
@@ -307,8 +310,8 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
         {(msg) => {
           return (
             <input
-              value={data.subject}
-              onChange={handleChange}
+              value={subject}
+              onChange={handleSubjectChange}
               name="subject"
               className="db center pa2 w-100 fl mb3"
               type="text"
@@ -320,28 +323,21 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
       <FormattedMessage {...messages.messagePlaceholder}>
         {(msg) => {
           return (
-            <div {...getRootProps()}>
-              <textarea
-                {...getInputProps()}
-                value={data.message}
-                onChange={handleChange}
-                name="message"
-                className="dib w-100 fl pa2 mb2"
-                style={{ display: 'inline-block' }} // we need to set display, as dropzone makes it none as default
-                type="text"
-                placeholder={msg}
-                rows={4}
+            <div className="dib w-100 mt-3">
+              <CommentInputField
+                comment={message}
+                setComment={setMessage}
+                enableHashtagPaste={false}
+                contributors={[]}
+                isShowTabNavs
               />
             </div>
           );
         }}
       </FormattedMessage>
-      <DropzoneUploadStatus uploading={uploading} uploadError={uploadError} />
-      <FileRejections files={fileRejections} />
       <p className={styleClasses.pClass}>
         <FormattedMessage {...messages.messageContributorsTranslationAlert} />
       </p>
-
       <ActionStatus status={messageAllContributorsAsync.status} action="MESSAGE_CONTRIBUTORS" />
       <p>
         <Button className={styleClasses.whiteButtonClass} onClick={close}>
@@ -360,22 +356,114 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
   );
 };
 
-const TransferProject = ({ projectId }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
-  const [username, setUsername] = useState('');
-  const [users, setUsers] = useState([]);
-  const handleUsers = (e) => {
-    const fetchUsers = (user) => {
-      fetchLocalJSONAPI(`users/?username=${user}&role=ADMIN`, token)
-        .then((res) => setUsers(res.users.map((user) => user.username)))
-        .catch((e) => setUsers([]));
-    };
+const RevertTasks = ({ projectId, action }) => {
+  const token = useSelector((state) => state.auth.token);
+  const [user, setUser] = useState(null);
+  const [, contributorsLoading, contributors] = useFetch(`projects/${projectId}/contributions/`);
 
-    const user = e.target.value;
-    setUsername(user);
-    fetchUsers(user);
+  // To get the count of corresponding action key from contributors
+  const actionKey = {
+    VALIDATED: 'validated',
+    BADIMAGERY: 'badImagery',
   };
 
+  // List only contributors who have made corresponding {action}
+  const curatedContributors = contributors.userContributions?.filter(
+    (contributor) => contributor[actionKey[action]] > 0,
+  );
+
+  const handleUsernameSelection = (e) => {
+    setUser(e);
+  };
+
+  const revertTasks = () => {
+    return pushToLocalJSONAPI(
+      `projects/${projectId}/tasks/actions/reset-by-user/?username=${user.username}&action=${action}`,
+      null,
+      token,
+      'POST',
+    );
+  };
+
+  const revertTasksAsync = useAsync(revertTasks);
+
+  return (
+    <div>
+      <Select
+        classNamePrefix="react-select"
+        className="w-40 fl pr2 z-3"
+        getOptionLabel={({ username }) => username}
+        getOptionValue={({ username }) => username}
+        onChange={handleUsernameSelection}
+        value={user}
+        options={curatedContributors}
+        isLoading={contributorsLoading}
+      />
+      <Button
+        onClick={() => revertTasksAsync.execute()}
+        loading={revertTasksAsync.status === 'pending'}
+        disabled={revertTasksAsync.status === 'pending' || !user}
+        className={styleClasses.buttonClass}
+      >
+        <FormattedMessage {...messages[`revert${action}Tasks`]} />
+      </Button>
+      <div className="pt1">
+        <ActionStatus status={revertTasksAsync.status} action={`REVERT_${action}_TASKS`} />
+      </div>
+    </div>
+  );
+};
+
+const TransferProject = ({ projectId, orgId }: Object) => {
+  const token = useSelector((state) => state.auth.token);
+  const { projectInfo } = useContext(StateContext);
+  const [username, setUsername] = useState('');
+  const [managers, setManagers] = useState([]);
+  const [admins, setAdmins] = useState([]);
+  const [isFetchingOptions, setIsFetchingOptions] = useState(true);
+
+  useEffect(() => {
+    fetchLocalJSONAPI(`organisations/${orgId}/?omitManagerList=false`, token)
+      .then((r) => setManagers(r.managers.map((m) => m.username)))
+      .then(() => setIsFetchingOptions(false));
+
+    fetchLocalJSONAPI(`users/?pagination=false&role=ADMIN`, token).then((t) =>
+      setAdmins(t.users.map((u) => u.username)),
+    );
+  }, [token, orgId]);
+
+  const optionsExtended = [
+    {
+      label: projectInfo.organisationName,
+      options: managers?.map((manager) => ({
+        label: manager,
+        value: manager,
+      })),
+    },
+    {
+      label: <FormattedMessage {...messages.admins} />,
+      options: admins
+        ?.filter((admin) => !managers?.includes(admin))
+        .map((adminName) => ({
+          label: adminName,
+          value: adminName,
+        })),
+    },
+  ];
+
+  const handleSelect = (value) => {
+    setUsername(value);
+  };
+  const { username: loggedInUsername, role: loggedInUserRole } = useSelector(
+    (state) => state.auth.userDetails,
+  );
+  const hasAccess =
+    managers?.includes(loggedInUsername) ||
+    loggedInUserRole === 'ADMIN' ||
+    loggedInUsername === projectInfo.author;
+  const isDisabled = () => {
+    return transferOwnershipAsync.status === 'pending' || !username || !hasAccess;
+  };
   const transferOwnership = () => {
     return pushToLocalJSONAPI(
       `projects/${projectId}/actions/transfer-ownership/`,
@@ -388,41 +476,20 @@ const TransferProject = ({ projectId }: Object) => {
 
   return (
     <div>
-      <Popup
-        contentStyle={{ padding: 0, border: 0 }}
-        arrow={false}
-        trigger={
-          <input
-            className={styleClasses.inputClass.replace('80', '40') + ' pa2 fl mr2'}
-            type="text"
-            value={username}
-            name="transferuser"
-            onChange={handleUsers}
-          />
-        }
-        on="focus"
-        position="bottom left"
-        open={users.length !== 0 ? true : false}
-      >
-        <div>
-          {users.map((u, n) => (
-            <span
-              className="db pa1 pointer"
-              key={n}
-              onClick={() => {
-                setUsername(u);
-                setUsers([]);
-              }}
-            >
-              {u}
-            </span>
-          ))}
-        </div>
-      </Popup>
+      <Select
+        classNamePrefix="react-select"
+        className="w-40 fl pr2 z-3"
+        getOptionLabel={({ label }) => label}
+        getOptionValue={({ value }) => value}
+        onChange={(e) => handleSelect(e?.value)}
+        value={optionsExtended?.find((manager) => manager.value === username)}
+        options={optionsExtended}
+        isLoading={isFetchingOptions}
+      ></Select>
       <Button
         onClick={() => transferOwnershipAsync.execute()}
         loading={transferOwnershipAsync.status === 'pending'}
-        disabled={transferOwnershipAsync.status === 'pending'}
+        disabled={isDisabled()}
         className={styleClasses.buttonClass}
       >
         <FormattedMessage {...messages.transferProject} />
@@ -434,7 +501,9 @@ const TransferProject = ({ projectId }: Object) => {
   );
 };
 
-export const ActionsForm = ({ projectId, projectName }: Object) => {
+export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
+  const navigate = useNavigate();
+
   return (
     <div className="w-100">
       <div className={styleClasses.divClass}>
@@ -449,6 +518,7 @@ export const ActionsForm = ({ projectId, projectName }: Object) => {
           }
           modal
           closeOnDocumentClick
+          nested
         >
           {(close) => <MessageContributorsModal projectId={projectId} close={close} />}
         </Popup>
@@ -538,6 +608,18 @@ export const ActionsForm = ({ projectId, projectName }: Object) => {
         </Popup>
       </div>
 
+      {['VALIDATED', 'BADIMAGERY'].map((action) => (
+        <div key={action} className={styleClasses.divClass}>
+          <label className={styleClasses.labelClass}>
+            <FormattedMessage {...messages[`revert${action}TasksTitle`]} />
+          </label>
+          <p className={styleClasses.pClass}>
+            <FormattedMessage {...messages[`revert${action}TasksDescription`]} />
+          </p>
+          <RevertTasks projectId={projectId} action={action} />
+        </div>
+      ))}
+
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.transferProjectTitle} />
@@ -551,7 +633,7 @@ export const ActionsForm = ({ projectId, projectName }: Object) => {
         <p className={styleClasses.pClass}>
           <FormattedMessage {...messages.transferProjectAlert} />
         </p>
-        <TransferProject projectId={projectId} />
+        <TransferProject projectId={projectId} orgId={orgId} />
       </div>
 
       <div className={styleClasses.divClass}>

@@ -46,11 +46,14 @@ it('exports ORG_YOUTUBE', () => {
 it('exports ORG_GITHUB', () => {
   expect(typeof config.ORG_GITHUB).toBe('string');
 });
-it('exports OSM_CONSUMER_KEY', () => {
-  expect(typeof config.OSM_CONSUMER_KEY).toBe('string');
+it('exports OSM_CLIENT_ID', () => {
+  expect(typeof config.OSM_CLIENT_ID).toBe('string');
 });
-it('exports OSM_CONSUMER_SECRET', () => {
-  expect(typeof config.OSM_CONSUMER_SECRET).toBe('string');
+it('exports OSM_CLIENT_SECRET', () => {
+  expect(typeof config.OSM_CLIENT_SECRET).toBe('string');
+});
+it('exports OSM_REDIRECT_URI', () => {
+  expect(typeof config.OSM_REDIRECT_URI).toBe('string');
 });
 it('exports MATOMO_ID', () => {
   expect(typeof config.MATOMO_ID).toBe('string');
@@ -105,7 +108,9 @@ it('exports MAPBOX_RTL_PLUGIN_URL', () => {
 });
 it('exports DROPZONE_SETTINGS', () => {
   expect(typeof config.DROPZONE_SETTINGS).toBe('object');
-  expect(config.DROPZONE_SETTINGS.accept).toBe('image/*');
+  expect(config.DROPZONE_SETTINGS.accept).toStrictEqual({
+    'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'],
+  });
   expect(config.DROPZONE_SETTINGS.maxSize).toBe(256000);
   expect(config.DROPZONE_SETTINGS.multiple).toBeFalsy();
 });

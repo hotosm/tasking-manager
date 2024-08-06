@@ -5,22 +5,24 @@ from backend.models.dtos.mapping_dto import TaskHistoryDTO, TaskStatusDTO
 
 
 class UserContribution(Model):
-    """ User contribution for a project """
+    """User contribution for a project"""
 
     username = StringType()
     mapping_level = StringType(serialized_name="mappingLevel")
     picture_url = StringType(serialized_name="pictureUrl")
     mapped = IntType()
     validated = IntType()
+    bad_imagery = IntType(serialized_name="badImagery")
     total = IntType()
     mapped_tasks = ListType(IntType, serialized_name="mappedTasks")
     validated_tasks = ListType(IntType, serialized_name="validatedTasks")
+    bad_imagery_tasks = ListType(IntType, serialized_name="badImageryTasks")
     name = StringType()
     date_registered = DateType(serialized_name="dateRegistered")
 
 
 class ProjectContributionsDTO(Model):
-    """ DTO for all user contributions on a project """
+    """DTO for all user contributions on a project"""
 
     def __init__(self):
         super().__init__()
@@ -32,10 +34,10 @@ class ProjectContributionsDTO(Model):
 
 
 class Pagination(Model):
-    """ Properties for paginating results """
+    """Properties for paginating results"""
 
     def __init__(self, paginated_result):
-        """ Instantiate from a Flask-SQLAlchemy paginated result"""
+        """Instantiate from a Flask-SQLAlchemy paginated result"""
         super().__init__()
 
         self.has_next = paginated_result.has_next
@@ -58,7 +60,7 @@ class Pagination(Model):
 
 
 class ProjectActivityDTO(Model):
-    """ DTO to hold all project activity """
+    """DTO to hold all project activity"""
 
     def __init__(self):
         super().__init__()
@@ -69,7 +71,7 @@ class ProjectActivityDTO(Model):
 
 
 class ProjectLastActivityDTO(Model):
-    """ DTO to hold latest status from project activity """
+    """DTO to hold latest status from project activity"""
 
     def __init__(self):
         super().__init__()
@@ -82,6 +84,8 @@ class OrganizationProjectsStatsDTO(Model):
     draft = IntType()
     published = IntType()
     archived = IntType()
+    recent = IntType()  # projects created in the current year
+    stale = IntType()  # project without any activity in the last 6 months
 
 
 class OrganizationTasksStatsDTO(Model):
@@ -120,7 +124,7 @@ class CampaignStatsDTO(Model):
 
 
 class HomePageStatsDTO(Model):
-    """ DTO for stats we want to display on the homepage """
+    """DTO for stats we want to display on the homepage"""
 
     def __init__(self):
         super().__init__()
@@ -144,7 +148,7 @@ class HomePageStatsDTO(Model):
 
 
 class TaskStats(Model):
-    """ DTO for tasks stats for a single day """
+    """DTO for tasks stats for a single day"""
 
     date = DateType(required=True)
     mapped = IntType(serialized_name="mapped")
@@ -153,7 +157,7 @@ class TaskStats(Model):
 
 
 class GenderStatsDTO(Model):
-    """ DTO for genre stats of users."""
+    """DTO for genre stats of users."""
 
     male = IntType()
     female = IntType()
@@ -162,7 +166,7 @@ class GenderStatsDTO(Model):
 
 
 class UserStatsDTO(Model):
-    """ DTO for user stats."""
+    """DTO for user stats."""
 
     total = IntType()
     beginner = IntType()
@@ -174,7 +178,7 @@ class UserStatsDTO(Model):
 
 
 class TaskStatsDTO(Model):
-    """ Contains all tasks stats broken down by day"""
+    """Contains all tasks stats broken down by day"""
 
     def __init__(self):
         super().__init__()

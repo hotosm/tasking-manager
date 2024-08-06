@@ -6,7 +6,7 @@ from backend.models.dtos.project_dto import ProjectInfoDTO
 
 
 class ProjectInfo(db.Model):
-    """ Contains all project info localized into supported languages """
+    """Contains all project info localized into supported languages"""
 
     __tablename__ = "project_info"
 
@@ -30,7 +30,7 @@ class ProjectInfo(db.Model):
 
     @classmethod
     def create_from_name(cls, name: str):
-        """ Creates a new ProjectInfo class from name, used when creating draft projects """
+        """Creates a new ProjectInfo class from name, used when creating draft projects"""
         new_info = cls()
         new_info.locale = "en"  # Draft project default to english, PMs can change this prior to publication
         new_info.name = name
@@ -38,13 +38,13 @@ class ProjectInfo(db.Model):
 
     @classmethod
     def create_from_dto(cls, dto: ProjectInfoDTO):
-        """ Creates a new ProjectInfo class from dto, used from project edit """
+        """Creates a new ProjectInfo class from dto, used from project edit"""
         new_info = cls()
         new_info.update_from_dto(dto)
         return new_info
 
     def update_from_dto(self, dto: ProjectInfoDTO):
-        """ Updates existing ProjectInfo from supplied DTO """
+        """Updates existing ProjectInfo from supplied DTO"""
         self.locale = dto.locale
         self.name = dto.name
         self.project_id_str = str(self.project_id)  # Allows project_id to be searched
