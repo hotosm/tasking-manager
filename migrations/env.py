@@ -32,11 +32,11 @@ logger = logging.getLogger("alembic.env")
 target_metadata = Base.metadata
 
 config.set_main_option(
-    "sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI
+    "sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI.unicode_string()
 )
 # target_metadata = current_app.extensions["migrate"].db.metadata
 def get_url():
-    return settings.SQLALCHEMY_DATABASE_URI
+    return settings.SQLALCHEMY_DATABASE_URI.unicode_string()
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
