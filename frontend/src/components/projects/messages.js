@@ -247,5 +247,13 @@ export default defineMessages({
   partnerDates: {
     id: 'project.navFilters.partnerDates',
     defaultMessage: 'Partner Dates',
-  }
+  },
+  partnerFromDate: {
+    id: 'project.navFilters.partnerFromDate',
+    defaultMessage: 'Date From',
+  },
+  partnerEndDate: {
+    id: 'project.navFilters.partnerEndDate',
+    defaultMessage: 'Date To',
+  },
 });

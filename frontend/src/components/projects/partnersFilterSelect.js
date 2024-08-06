@@ -80,64 +80,55 @@ export const PartnersFilterSelect = ({ fieldsetName, fieldsetStyle, titleStyle }
           <FormattedMessage {...messages.partnerDates} />
         </legend>
         <div className="mt2 flex items-start justify-between">
-          <div className="flex flex-column">
-            <ReactDatePicker
-              selected={Date.parse(dateRange.startDate)}
-              onChange={(date) =>
-                setDateRange({
-                  ...dateRange,
-                  startDate: date,
-                })
-              }
-              dateFormat="dd/MM/yyyy"
-              showYearDropdown
-              scrollableYearDropdown
-              customInput={
-                <DateCustomInput
-                  date={dateRange.startDate}
-                  handleClear={() => {
-                    setDateRange({
-                      ...dateRange,
-                      startDate: null,
-                    });
-                  }}
-                />
-              }
-            />
-            <p className="f7 ma0 gray mt1 pl2">
-              <FormattedMessage {...messagesFromProjectEdit.partnerDateFormat} />
-            </p>
-          </div>
+          <ReactDatePicker
+            selected={Date.parse(dateRange.startDate)}
+            onChange={(date) =>
+              setDateRange({
+                ...dateRange,
+                startDate: date,
+              })
+            }
+            dateFormat="dd/MM/yyyy"
+            showYearDropdown
+            scrollableYearDropdown
+            customInput={
+              <DateCustomInput
+                date={dateRange.startDate}
+                handleClear={() => {
+                  setDateRange({
+                    ...dateRange,
+                    startDate: null,
+                  });
+                }}
+                placeholderMessage={messages.partnerFromDate}
+              />
+            }
+          />
 
-          <div className="flex flex-column">
-            <ReactDatePicker
-              selected={Date.parse(dateRange.endDate)}
-              onChange={(date) =>
-                setDateRange({
-                  ...dateRange,
-                  endDate: date,
-                })
-              }
-              dateFormat="dd/MM/yyyy"
-              showYearDropdown
-              scrollableYearDropdown
-              customInput={
-                <DateCustomInput
-                  date={dateRange.endDate}
-                  handleClear={() => {
-                    setDateRange({
-                      ...dateRange,
-                      endDate: null,
-                    });
-                  }}
-                  isStartDate={false}
-                />
-              }
-            />
-            <p className="f7 ma0 gray mt1 pl2">
-              <FormattedMessage {...messagesFromProjectEdit.partnerDateFormat} />
-            </p>
-          </div>
+          <ReactDatePicker
+            selected={Date.parse(dateRange.endDate)}
+            onChange={(date) =>
+              setDateRange({
+                ...dateRange,
+                endDate: date,
+              })
+            }
+            dateFormat="dd/MM/yyyy"
+            showYearDropdown
+            scrollableYearDropdown
+            customInput={
+              <DateCustomInput
+                date={dateRange.endDate}
+                handleClear={() => {
+                  setDateRange({
+                    ...dateRange,
+                    endDate: null,
+                  });
+                }}
+                placeholderMessage={messages.partnerEndDate}
+              />
+            }
+          />
         </div>
       </div>
 
