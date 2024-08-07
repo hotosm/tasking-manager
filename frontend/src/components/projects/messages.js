@@ -256,4 +256,56 @@ export default defineMessages({
     id: 'project.navFilters.partnerEndDate',
     defaultMessage: 'Date To',
   },
+  nameColumn: {
+    id: 'project.table.name.column',
+    defaultMessage: 'Name'
+  },
+  authorColumn: {
+    id: 'project.table.author.column',
+    defaultMessage: 'Author'
+  },
+  organisationColumn: {
+    id: 'project.table.organisation.column',
+    defaultMessage: 'Organisation'
+  },
+  progressColumn: {
+    id: 'project.table.progress.column',
+    defaultMessage: 'Progress'
+  },
+  mappersColumn: {
+    id: 'project.table.Mappers.column',
+    defaultMessage: 'Mappers'
+  },
+  priorityColumn: {
+    id: 'project.table.priority.column',
+    defaultMessage: 'Priority'
+  },
+  difficultyColumn: {
+    id: 'project.table.difficulty.column',
+    defaultMessage: 'Difficulty'
+  },
+  statusColumn: {
+    id: 'project.table.status.column',
+    defaultMessage: 'Status'
+  },
+  locationColumn: {
+    id: 'project.table.location.column',
+    defaultMessage: 'Location'
+  },
+  lastUpdatedColumn: {
+    id: 'project.table.lastUpdated.column',
+    defaultMessage: 'Last updated'
+  },
+  dueDateColumn: {
+    id: 'project.table.dueDate.column',
+    defaultMessage: 'Due date'
+  },
+  percentMapped: {
+    id: 'project.table.percentMapped',
+    defaultMessage: '{n}% mapped',
+  },
+  percentValidated: {
+    id: 'project.table.percentValidated',
+    defaultMessage: '{n}% validated',
+  },
 });
