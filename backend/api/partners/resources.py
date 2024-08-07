@@ -143,16 +143,41 @@ class PartnerRestAPI(Resource):
               description: JSON object for updating a Partner
               schema:
                 properties:
-                    logo:
+                    logo_url:
                         type: string
                         example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
-                    url:
+                    name:
                         type: string
-                        example: https://hotosm.org
+                        example: Cool Partner Inc.
+                    primary_hashtag:
+                        type: string
+                        example: CoolPartner
+                    secondary_hashtag:
+                        type: string
+                        example: CoolPartner,coolProject-*
+                    link_x:
+                        type: string
+                        example: https://x.com/CoolPartner
+                    link_meta:
+                        type: string
+                        example: https://facebook.com/CoolPartner
+                    link_instagram:
+                        type: string
+                        example: https://instagram.com/CoolPartner
+                    current_projects:
+                        type: string
+                        example: 3425,2134,2643
+                    permalink:
+                        type: string
+                        example: cool-partner
+                    logo_url:
+                        type: string
+                        example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
                     website_links:
                         type: array
                         items:
                             type: string
+                        default: []
         responses:
             200:
                 description: Partner updated successfully
@@ -248,18 +273,41 @@ class PartnersAllRestAPI(Resource):
               description: JSON object for creating a new Partner
               schema:
                 properties:
-                    logo:
+                    logo_url:
                         type: string
                         example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
-                    url:
+                    name:
                         type: string
-                        example: https://hotosm.org
+                        example: Cool Partner Inc.
+                    primary_hashtag:
+                        type: string
+                        example: CoolPartner
+                    secondary_hashtag:
+                        type: string
+                        example: CoolPartner,coolProject-*
+                    link_x:
+                        type: string
+                        example: https://x.com/CoolPartner
+                    link_meta:
+                        type: string
+                        example: https://facebook.com/CoolPartner
+                    link_instagram:
+                        type: string
+                        example: https://instagram.com/CoolPartner
+                    current_projects:
+                        type: string
+                        example: 3425,2134,2643
+                    permalink:
+                        type: string
+                        example: cool-partner
+                    logo_url:
+                        type: string
+                        example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
                     website_links:
                         type: array
                         items:
                             type: string
-                        default: [
-                        ]
+                        default: []
         responses:
             201:
                 description: New partner created successfully
