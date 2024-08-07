@@ -2,9 +2,14 @@ FROM node:18.19.1
 
 WORKDIR /usr/src/app
 
-COPY ./frontend .
 ## SETUP
-RUN npm install
+
+COPY ./frontend/package.json ./
+COPY ./frontend/yarn.lock ./
+
+RUN yarn install --ignore-scripts
+
+COPY ./frontend .
 
 # SERVE
-CMD ["npm", "start"]
+CMD ["yarn", "start"]

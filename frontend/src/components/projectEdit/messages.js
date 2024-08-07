@@ -444,7 +444,7 @@ export default defineMessages({
   projectNameValidationError: {
     id: 'management.projects.edit.errors.project_name_validation_error',
     defaultMessage: 'Project name should start with an alphabet.',
- },
+  },
   dueDate: {
     id: 'projects.formInputs.dueDate',
     defaultMessage: 'Due date',
@@ -674,5 +674,81 @@ export default defineMessages({
   iDAPIDocs: {
     id: 'projects.formInputs.extraIdParams.iDAPIDocs',
     defaultMessage: 'iD editor documentation',
+  },
+  partner: {
+    id: 'projects.formInputs.partner.title',
+    defaultMessage: 'Partner',
+  },
+  partnerDescription: {
+    id: 'projects.formInputs.partner.description',
+    defaultMessage: 'Partner that is supporting this project, if there is any.',
+  },
+  selectPartner: {
+    id: 'projects.formInputs.partner.select',
+    defaultMessage: 'Select partner',
+  },
+  savePartner: {
+    id: 'projects.formInputs.partner.save.button',
+    defaultMessage: 'Save',
+  },
+  partnerStartDate: {
+    id: 'projects.partner.start.date',
+    defaultMessage: 'Start Date',
+  },
+  partnerEndDate: {
+    id: 'projects.partner.end.date',
+    defaultMessage: 'End Date',
+  },
+  partnerDateFormat: {
+    id: 'projects.partner.date.format',
+    defaultMessage: 'dd/mm/yyyy',
+  },
+  partnerNotSelectedError: {
+    id: 'projects.partner.input.not_selected',
+    defaultMessage: 'Please select a partner.',
+  },
+  partnerEndDateError: {
+    id: 'projects.partner.end_date.earlier_than.start_date',
+    defaultMessage: 'End date cannot be earlier than the start date.',
+  },
+  partnerActionsApiError: {
+    id: 'projects.partner.actions.api.error',
+    defaultMessage: 'Something went wrong! Try again later.',
+  },
+  partnerRemoveModalTitle: {
+    id: 'projects.partner.actions.remove.modal.title',
+    defaultMessage: 'Confirm Removal',
+  },
+  partnerRemoveModalText: {
+    id: 'projects.partner.actions.remove.modal.text',
+    defaultMessage: 'Are you sure you want to remove the following partner from the project?',
+  },
+  partnerRemove: {
+    id: 'projects.partner.actions.remove.button',
+    defaultMessage: 'Remove',
+  },
+  partnerRemoveActionSuccessToast: {
+    id: 'projects.partner.actions.remove.success.toast',
+    defaultMessage: 'Successfully removed the partner.',
+  },
+  partnerUpdateModalTitle: {
+    id: 'projects.partner.actions.update.modal.title',
+    defaultMessage: 'Edit Partner Assignment',
+  },
+  partnerUpdateActionSuccessToast: {
+    id: 'projects.partner.actions.update.success.toast',
+    defaultMessage: "Successfully updated the partner's assignment date range.",
+  },
+  partnerLinkActionSuccessToast: {
+    id: 'projects.partner.actions.link.success.toast',
+    defaultMessage: 'Successfully linked the partner.',
+  },
+  partnerListingEmpty: {
+    id: 'projects.partner.listing.empty',
+    defaultMessage: 'No partners are associated with this project yet.',
+  },
+  partnerListingError: {
+    id: 'projects.partner.listing.error',
+    defaultMessage: 'Something went wrong!',
   },
 });
