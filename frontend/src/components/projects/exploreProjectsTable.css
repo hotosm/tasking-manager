@@ -1,0 +1,18 @@
+.explore-projects-table-column-resizer {
+  position: absolute;
+  top: 25%;
+  height: 50%;
+  width: 2px;
+  background: rgba(177, 177, 177, 0.5);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+}
+
+.explore-projects-table-column-resizer.isResizing {
+  background: rgb(131, 131, 131);
+}
+
+.stripe:nth-child(even) {
+  background-color: rgba(232, 231, 231, 0.5);
+}
