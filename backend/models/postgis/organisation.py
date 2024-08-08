@@ -1,3 +1,7 @@
+from fastapi import HTTPException
+from databases import Database
+from sqlalchemy.orm import selectinload
+from sqlalchemy import select
 from slugify import slugify
 
 from sqlalchemy import Column, Integer, String, DateTime, BigInteger, ForeignKey, Table, UniqueConstraint
@@ -7,15 +11,14 @@ from backend.models.dtos.organisation_dto import (
     OrganisationDTO,
     NewOrganisationDTO,
     OrganisationManagerDTO,
+    UpdateOrganisationDTO,
 )
 from backend.models.postgis.user import User
 from backend.models.postgis.campaign import Campaign, campaign_organisations
 from backend.models.postgis.statuses import OrganisationType
 from backend.db import Base, get_session
 session = get_session()
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-from databases import Database
+
 
 # Secondary table defining many-to-many relationship between organisations and managers
 organisation_managers = Table(
@@ -65,62 +68,89 @@ class Organisation(Base):
     def save(self):
         session.commit()
 
-    @classmethod
-    async def create_from_dto(cls, new_organisation_dto: NewOrganisationDTO, session):
-        """Creates a new organisation from a DTO"""
-        new_org = cls()
+    async def create_from_dto(new_organisation_dto: NewOrganisationDTO, db: Database):
+        """Creates a new organisation from a DTO and associates managers"""
+        slug = new_organisation_dto.slug or slugify(new_organisation_dto.name)
+        query = """
+            INSERT INTO organisations (name, slug, logo, description, url, type, subscription_tier)
+            VALUES (:name, :slug, :logo, :description, :url, :type, :subscription_tier)
+            RETURNING id
+        """
+        values = {
+            "name": new_organisation_dto.name,
+            "slug": slug,
+            "logo": new_organisation_dto.logo,
+            "description": new_organisation_dto.description,
+            "url": new_organisation_dto.url,
+            "type": OrganisationType[new_organisation_dto.type].value,
+            "subscription_tier": new_organisation_dto.subscription_tier,
+        }
 
-        new_org.name = new_organisation_dto.name
-        new_org.slug = new_organisation_dto.slug or slugify(new_organisation_dto.name)
-        new_org.logo = new_organisation_dto.logo
-        new_org.description = new_organisation_dto.description
-        new_org.url = new_organisation_dto.url
-        new_org.type = OrganisationType[new_organisation_dto.type].value
-        new_org.subscription_tier = new_organisation_dto.subscription_tier
+        try:
+            async with db.transaction():
+                organisation_id = await db.execute(query, values)
 
-        for manager in new_organisation_dto.managers:
-            user = await User.get_by_username(manager, session)
+                for manager in new_organisation_dto.managers:
+                    user_query = "SELECT id FROM users WHERE username = :username"
+                    user = await db.fetch_one(user_query, {"username": manager})
 
-            if user is None:
-                raise NotFound(sub_code="USER_NOT_FOUND", username=manager)
+                    if not user:
+                        raise NotFound(sub_code="USER_NOT_FOUND", username=manager)
 
-            new_org.managers.append(user)
-            
-        session.add(new_org)
-        await session.commit()
-        return new_org
+                    manager_query = """
+                    INSERT INTO organisation_managers (organisation_id, user_id)
+                    VALUES (:organisation_id, :user_id)
+                    """
+                    await db.execute(manager_query, {"organisation_id": organisation_id, "user_id": user.id})
 
+                return organisation_id
 
-    async def update(self, organisation_dto: OrganisationDTO, session):
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
+
+    async def update(organisation_dto: UpdateOrganisationDTO, db: Database):
         """Updates Organisation from DTO"""
-        org_dict = organisation_dto.dict(exclude_unset=True)
-
-        for attr, value in org_dict.items():
-            if attr == "type" and value is not None:
-                value = OrganisationType[organisation_dto.type].value
-            if attr == "managers":
-                continue
-
+        async with db.transaction():
             try:
-                is_field_nullable = self.__table__.columns[attr].nullable
-                if is_field_nullable and value is not None:
-                    setattr(self, attr, value)
-                elif value is not None:
-                    setattr(self, attr, value)
-            except KeyError:
-                continue
+                org_id = organisation_dto.organisation_id
+                org_dict = organisation_dto.dict(exclude_unset=True)
+                if 'type' in org_dict and org_dict['type'] is not None:
+                    org_dict['type'] = OrganisationType[org_dict['type'].upper()].value
 
-        if organisation_dto.managers:
-            self.managers = []
-            for manager in organisation_dto.managers:
-                new_manager = await User.get_by_username(manager, session)
+                update_keys = {key: org_dict[key]
+                               for key in org_dict.keys() if key not in ["organisation_id", "managers"]}
+                set_clause = ", ".join(f"{key} = :{key}" for key in update_keys.keys())
+                update_query = f"""
+                UPDATE organisations
+                SET {set_clause}
+                WHERE id = :id
+                """
+                await db.execute(update_query, values={**update_keys, 'id': org_id})
 
-                if new_manager is None:
-                    raise NotFound(sub_code="USER_NOT_FOUND", username=manager)
+                if organisation_dto.managers:
+                    clear_managers_query = """
+                    DELETE FROM organisation_managers
+                    WHERE organisation_id = :id
+                    """
+                    await db.execute(clear_managers_query, values={'id': org_id})
 
-                self.managers.append(new_manager)
+                    for manager_username in organisation_dto.managers:
+                        user_query = "SELECT id FROM users WHERE username = :username"
+                        user = await db.fetch_one(user_query, {"username": manager_username})
 
-        await session.commit()
+                        if not user:
+                            raise NotFound(sub_code="USER_NOT_FOUND", username=manager_username)
+
+                        insert_manager_query = """
+                        INSERT INTO organisation_managers (organisation_id, user_id)
+                        VALUES (:organisation_id, :user_id)
+                        """
+                        await db.execute(insert_manager_query, {
+                            'organisation_id': org_id,
+                            'user_id': user.id
+                        })
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e)) from e
 
     def delete(self):
         """Deletes the current model from the DB"""
@@ -155,16 +185,18 @@ class Organisation(Base):
         return session.get(Organisation, organisation_id)
 
     @staticmethod
-    async def get_organisation_by_name(organisation_name: str, session):
+    async def get_organisation_by_name(organisation_name: str, db: Database):
         """Get organisation by name
         :param organisation_name: name of organisation
         :return: Organisation if found else None
         """
-        result = await session.execute(
-            select(Organisation).filter_by(name=organisation_name)
-        )
-        return result.scalars().first()
-        # return session.query(Organisation).filter_by(name=organisation_name).first()
+        query = """
+        SELECT * FROM organisations
+        WHERE name = :name
+        """
+
+        result = await db.fetch_one(query, values={"name": organisation_name})
+        return result if result else None
 
     @staticmethod
     def get_organisation_name_by_id(organisation_id: int):
@@ -179,7 +211,7 @@ class Organisation(Base):
         """Gets all organisations"""
         query = """
             SELECT 
-                o.id AS "organisationId",
+                o.id AS "organisation_id",
                 o.name,
                 o.slug,
                 o.logo,
@@ -191,7 +223,7 @@ class Organisation(Base):
                     WHEN o.type = 3 THEN 'FULL_FEE'
                     ELSE 'UNKNOWN'
                 END AS type,
-                o.subscription_tier AS "subscriptionTier"
+                o.subscription_tier
             FROM organisations o
             ORDER BY o.name
         """
@@ -203,7 +235,7 @@ class Organisation(Base):
         """Gets organisations a user can manage"""
         query = f"""
             SELECT 
-                o.id AS "organisationId",
+                o.id AS "organisation_id",
                 o.name,
                 o.slug,
                 o.logo,
@@ -215,7 +247,7 @@ class Organisation(Base):
                     WHEN o.type = {OrganisationType.FULL_FEE.value} THEN 'FULL_FEE'
                     ELSE 'UNKNOWN'
                 END AS type,
-                o.subscription_tier AS "subscriptionTier"
+                o.subscription_tier
             FROM organisations o
             JOIN organisation_managers om ON o.id = om.organisation_id
             WHERE om.user_id = :user_id

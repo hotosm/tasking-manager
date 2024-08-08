@@ -111,11 +111,16 @@ class User(Base):
         return User(**result)
 
     @staticmethod
-    async def get_by_username(username: str, session):
+    async def get_by_username(username: str, db: Database):
         """Return the user for the specified username, or None if not found"""
-        result = await session.execute(select(User).filter_by(username=username))
-        return result.unique().scalars().one_or_none()
-
+        query = """
+        SELECT * FROM users
+        WHERE username = :username
+        """
+        # Execute the query and fetch the result
+        result = await db.fetch_one(query, values={"username": username})
+        return result if result else None
+    
     def update_username(self, username: str):
         """Update the username"""
         self.username = username
