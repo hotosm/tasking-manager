@@ -51,12 +51,6 @@ class UserServiceError(Exception):
 
 
 class UserService:
-    # @staticmethod
-    # async def get_user_by_id(user_id: int, session) -> User:
-    #     user = await User.get_by_id(user_id, session)
-    #     if user is None:
-    #         raise NotFound(sub_code="USER_NOT_FOUND", user_id=user_id)
-    #     return user
 
     @staticmethod
     async def get_user_by_id(user_id: int, db: Database) -> User:
@@ -66,8 +60,8 @@ class UserService:
         return user
 
     @staticmethod
-    def get_user_by_username(username: str) -> User:
-        user = User.get_by_username(username)
+    def get_user_by_username(username: str, db) -> User:
+        user = User.get_by_username(username, db)
 
         if user is None:
             raise NotFound(sub_code="USER_NOT_FOUND", username=username)

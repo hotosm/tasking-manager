@@ -70,6 +70,8 @@ class ProjectContributionsDTO(BaseModel):
 #     prev_num = IntType(serialized_name="prevNum")
 #     per_page = IntType(serialized_name="perPage")
 #     total = IntType()
+
+
 class Pagination(BaseModel):
     def __init__(self, paginated_result):
         """Instantiate from a Flask-SQLAlchemy paginated result"""
@@ -114,14 +116,6 @@ class ProjectLastActivityDTO(BaseModel):
 
     activity: Optional[List[TaskStatusDTO]] = None
 
-
-# class OrganizationProjectsStatsDTO(Model):
-#     draft = IntType()
-#     published = IntType()
-#     archived = IntType()
-#     recent = IntType()  # projects created in the current year
-#     stale = IntType()  # project without any activity in the last 6 months
-
 class OrganizationProjectsStatsDTO(BaseModel):
     draft: Optional[int] = None
     published: Optional[int] = None
@@ -129,30 +123,18 @@ class OrganizationProjectsStatsDTO(BaseModel):
     recent: Optional[int] = None
     stale: Optional[int] = None
 
-# class OrganizationTasksStatsDTO(Model):
-#     ready = IntType()
-#     locked_for_mapping = IntType(serialized_name="lockedForMapping")
-#     locked_for_validation = IntType(serialized_name="lockedForValidation")
-#     mapped = IntType()
-#     validated = IntType()
-#     invalidated = IntType()
-#     badimagery = IntType(serialized_name="badImagery")
 class OrganizationTasksStatsDTO(BaseModel):
-    ready: Optional[int] = None
-    locked_for_mapping: Optional[int] = 0
-    locked_for_validation: Optional[int] = 0
-    mapped: Optional[int] = None
-    validated: Optional[int] = None
-    invalidated: Optional[int] = None
-    badimagery: Optional[int] = 0
+    ready: Optional[int] = 0
+    locked_for_mapping: Optional[int] = Field(0, serialization_alias='lockedForMapping')
+    locked_for_validation: Optional[int] = Field(0, serialization_alias='lockedForValidation')
+    mapped: Optional[int] = 0
+    validated: Optional[int] = 0
+    invalidated: Optional[int] = 0
+    badimagery: Optional[int] = Field(0, serialization_alias='badImagery')
 
-
-# class OrganizationStatsDTO(Model):
-#     projects = ModelType(OrganizationProjectsStatsDTO)
-#     active_tasks = ModelType(OrganizationTasksStatsDTO, serialized_name="activeTasks")
 class OrganizationStatsDTO(BaseModel):
     projects: Optional[OrganizationProjectsStatsDTO] = None
-    active_tasks: Optional[OrganizationTasksStatsDTO] = None
+    active_tasks: Optional[OrganizationTasksStatsDTO] = Field(None, serialization_alias='activeTasks')
 
 
 class OrganizationListStatsDTO(BaseModel):
