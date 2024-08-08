@@ -474,7 +474,7 @@ workflows:
           gitsha: $CIRCLE_SHA1
           stack_name: "dev"
           host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
-          pg_version: "14.8"
+          pg_version: "14.10"
           pg_param_group: "default.postgres14"
           db_instance_type: "db.t4g.small"
           backend_instance_type: "t3.medium"
