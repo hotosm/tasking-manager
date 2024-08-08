@@ -25,10 +25,11 @@ export const ShowMapToggle = (props) => {
     if (isExploreProjectsTableView && isMapShown) {
       dispatch({ type: 'TOGGLE_MAP' });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isExploreProjectsTableView]);
 
   return (
-    <div className={`fr pv2 dib-ns dn ${isExploreProjectsTableView ? "moon-gray" : "blue-dark"}`}>
+    <div className={`fr pv2 dib-ns dn ${isExploreProjectsTableView ? 'moon-gray' : 'blue-dark'}`}>
       <SwitchToggle
         onChange={() => dispatch({ type: 'TOGGLE_MAP' })}
         isChecked={isMapShown}
@@ -139,7 +140,10 @@ export const ProjectNav = (props) => {
     fullProjectsQuery.organisation ||
     fullProjectsQuery.location ||
     fullProjectsQuery.campaign ||
-    fullProjectsQuery.types;
+    fullProjectsQuery.types ||
+    fullProjectsQuery.partnerId ||
+    fullProjectsQuery.partnershipFrom ||
+    fullProjectsQuery.partnershipTo;
   const filterIsEmpty = !stringify(fullProjectsQuery);
   const moreFiltersCurrentActiveStyle = moreFiltersAnyActive
     ? 'bg-red white'
