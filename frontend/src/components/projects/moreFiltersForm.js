@@ -126,6 +126,8 @@ export const MoreFiltersForm = (props) => {
           fieldsetName="partner"
           fieldsetStyle={fieldsetStyle}
           titleStyle={titleStyle}
+          queryParams={formQuery}
+          setQueryParams={setFormQuery}
         />
       )}
 
