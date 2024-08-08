@@ -7,6 +7,7 @@ from backend.models.dtos.organisation_dto import (
     OrganisationDTO,
     UpdateOrganisationDTO,
 )
+from backend.models.dtos.stats_dto import OrganizationStatsDTO
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.postgis.user import User
 from backend.services.organisation_service import (
@@ -35,7 +36,7 @@ router = APIRouter(
 )
 
 @router.get("/{organisation_id}/", response_model=OrganisationDTO)
-async def get(
+async def retrieve_organisation(
     request: Request,
     organisation_id: int,
     db: Database = Depends(get_db),
@@ -89,7 +90,7 @@ async def get(
 
 
 @router.get("/{slug}/", response_model=OrganisationDTO)
-async def get(
+async def retrieve_organisation_by_slug(
     request: Request,
     slug: str,
     db: Database = Depends(get_db),
@@ -139,11 +140,12 @@ async def get(
     return organisation_dto
 
 
-# class OrganisationsRestAPI(Resource):
-#     @token_auth.login_required
 @router.post("/")
-@requires("authenticated")
-async def post(request: Request, session: AsyncSession = Depends(get_session)):
+async def create_organisation(
+    organisation_dto : NewOrganisationDTO,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required)
+):
     """
     Creates a new organisation
     ---
@@ -198,32 +200,29 @@ async def post(request: Request, session: AsyncSession = Depends(get_session)):
         500:
             description: Internal Server Error
     """
-    request_user = await User.get_by_id(request.user.display_name, session)
+    request_user = await User.get_by_id(user.id, db)
     if request_user.role != 1:
         return {
             "Error": "Only admin users can create organisations.",
             "SubCode": "OnlyAdminAccess",
         }, 403
     try:
-        request_body = await request.json()
-        organisation_dto = NewOrganisationDTO(**request_body)
         if request_user.username not in organisation_dto.managers:
             organisation_dto.managers.append(request_user.username)
-        organisation_dto.validate(request_body)
 
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
         return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
     try:
-        org_id = await OrganisationService.create_organisation(organisation_dto, session)
+        org_id = await OrganisationService.create_organisation(organisation_dto, db)
         return {"organisationId": org_id}, 201
     except OrganisationServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
 
 
 @router.delete("/{organisation_id}/")
-async def delete(
+async def delete_organisation(
     request: Request,
     organisation_id: int,
     db: Database = Depends(get_db),
@@ -278,9 +277,15 @@ async def delete(
                 status_code=400, detail="Organisation has projects or teams, cannot be deleted."
             ) from e
 
+
 @router.patch("/{organisation_id}/")
-@requires("authenticated")
-async def patch(request: Request, organisation_id: int, session: AsyncSession = Depends(get_session)):
+async def update_organisation(
+    organisation_dto : UpdateOrganisationDTO,
+    request: Request,
+    organisation_id: int, 
+    db: Database = Depends(get_db), 
+    user: AuthUserDTO = Depends(login_required)
+    ):
     """
     Updates an organisation
     ---
@@ -340,38 +345,36 @@ async def patch(request: Request, organisation_id: int, session: AsyncSession = 
             description: Internal Server Error
     """
     if not await OrganisationService.can_user_manage_organisation(
-        organisation_id, request.user.display_name, session
+        organisation_id, user.id, db
     ):
         return {
             "Error": "User is not an admin for the org",
             "SubCode": "UserNotOrgAdmin",
         }, 403
     try:
-        request_body = await request.json()
-        organisation_dto = UpdateOrganisationDTO(**request_body)
         organisation_dto.organisation_id = organisation_id
-
         # Don't update organisation type and subscription_tier if request user is not an admin
-        user = await User.get_by_id(request.user.display_name, session)
+        user = await User.get_by_id(user.id, db)
         if user.role != 1:
-            org = await OrganisationService.get_organisation_by_id(organisation_id, session)
+            org = await OrganisationService.get_organisation_by_id(organisation_id, db)
             organisation_dto.type = OrganisationType(org.type).name
             organisation_dto.subscription_tier = org.subscription_tier
-        organisation_dto.validate(request_body)
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
         return {"Error": str(e), "SubCode": "InvalidData"}, 400
-
     try:
-        await OrganisationService.update_organisation(organisation_dto, session)
+        await OrganisationService.update_organisation(organisation_dto, db)
         return {"Status": "Updated"}, 200
     except OrganisationServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 402
 
 
-# class OrganisationsStatsAPI(Resource):
-@router.get("/{organisation_id}/statistics/")
-async def get(organisation_id: int, session: AsyncSession = Depends(get_session)):
+@router.get("/{organisation_id}/statistics/", response_model=OrganizationStatsDTO)
+async def get_organisation_with_statistics(
+    request: Request,
+    organisation_id: int,
+    db: Database = Depends(get_db),
+):
     """
     Return statistics about projects and active tasks of an organisation
     ---
@@ -394,19 +397,19 @@ async def get(organisation_id: int, session: AsyncSession = Depends(get_session)
         500:
             description: Internal Server Error
     """
-    await OrganisationService.get_organisation_by_id(organisation_id, session)
+    await OrganisationService.get_organisation_by_id(organisation_id, db)
     organisation_dto = await OrganisationService.get_organisation_stats(
-        organisation_id, session, None
+        organisation_id, db, None
     )
-    return organisation_dto.model_dump(by_alias=True), 200
+    return organisation_dto
 
 
 @router.get("/", response_model=ListOrganisationsDTO)
-async def get(
+async def list_organisation(
     request: Request,
     db: Database = Depends(get_db),
-    omit_stats: bool = Query(False, alias="omitOrgStats", description="Omit organization stats from the response."),
-    omit_managers: bool = Query(True, alias="omitManagerList", description="Omit organization managers list from the response."),
+    omit_stats: bool = Query(True, alias="omitOrgStats", description="Omit organization stats from the response."),
+    omit_managers: bool = Query(False, alias="omitManagerList", description="Omit organization managers list from the response."),
     manager_user_id: int = Query(None, alias="manager_user_id", description="ID of the manager user."),
 ):
     """
