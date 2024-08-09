@@ -24,51 +24,66 @@ from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert
+from databases import Database
+from fastapi import HTTPException
+
 
 class CampaignService:
     @staticmethod
-    async def get_campaign(campaign_id: int, session) -> Campaign:
-        """Gets the specified campaign"""
-        try:
-            result = await session.execute(select(Campaign).filter_by(id=campaign_id))
-            campaign = result.scalar_one_or_none()
-            
-            if campaign is None:
-                raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
-
-            return campaign
-        except NoResultFound:
+    async def get_campaign(campaign_id: int, db: Database) -> CampaignDTO:
+        """Gets the specified campaign by its ID"""
+        query = """
+        SELECT id, name, logo, url, description
+        FROM campaigns
+        WHERE id = :campaign_id
+        """
+        row = await db.fetch_one(query=query, values={"campaign_id": campaign_id})
+        
+        if row is None:
             raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
         
+        return CampaignDTO(**row)
+    
 
     @staticmethod
-    def get_campaign_by_name(campaign_name: str) -> Campaign:
-        campaign = session.query(Campaign).filter_by(name=campaign_name).first()
+    async def get_campaign_by_name(campaign_name: str, db: Database) -> CampaignDTO:
+        """Gets the specified campaign by its name"""
+        query = """
+        SELECT id, name, logo, url, description
+        FROM campaigns
+        WHERE name = :campaign_name
+        """
+        row = await db.fetch_one(query=query, values={"campaign_name": campaign_name})
 
-        if campaign is None:
+        if row is None:
             raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_name=campaign_name)
+        
+        return CampaignDTO(**row)
+    
+    
+    @staticmethod
+    async def delete_campaign(campaign_id: int, db: Database):
+        """Delete a campaign and its related organizations by its ID"""
+        # Begin a transaction to ensure both deletions are handled together
+        async with db.transaction():
+            query_delete_orgs = """
+            DELETE FROM campaign_organisations
+            WHERE campaign_id = :campaign_id
+            """
+            await db.execute(query=query_delete_orgs, values={"campaign_id": campaign_id})
 
-        return campaign
+            query_delete_campaign = """
+            DELETE FROM campaigns
+            WHERE id = :campaign_id
+            """
+            await db.execute(query=query_delete_campaign, values={"campaign_id": campaign_id})
+
 
     @staticmethod
-    async def delete_campaign(campaign_id: int, session):
-        """Delete campaign for a project"""
-        campaign = await session.get(Campaign, campaign_id)
-        await session.delete(campaign)
-        await session.commit()
-
-    @staticmethod
-    async def get_campaign_as_dto(campaign_id: int, user_id: int, session):
+    async def get_campaign_as_dto(campaign_id: int, db) -> CampaignDTO:
         """Gets the specified campaign"""
-        campaign = await CampaignService.get_campaign(campaign_id, session)
-        campaign_dto = CampaignDTO()
-        campaign_dto.id = campaign.id
-        campaign_dto.url = campaign.url
-        campaign_dto.name = campaign.name
-        campaign_dto.logo = campaign.logo
-        campaign_dto.description = campaign.description
-
-        return campaign_dto
+        campaign = await CampaignService.get_campaign(campaign_id, db)
+        return campaign
 
 
     @staticmethod
@@ -111,35 +126,54 @@ class CampaignService:
         new_campaigns = await CampaignService.get_project_campaigns_as_dto(project_id, session)
         return new_campaigns
 
+
     @staticmethod
-    async def get_all_campaigns(session) -> CampaignListDTO:
+    async def get_all_campaigns(db: Database) -> CampaignListDTO:
         """Returns a list of all campaigns"""
-        result = await session.execute(
-            select(Campaign).order_by(Campaign.name).distinct()
-        )
-        campaigns = result.scalars().all()
-        return await Campaign.campaign_list_as_dto(campaigns)
+        # Define the raw SQL query
+        query = """
+        SELECT DISTINCT id, name
+        FROM campaigns
+        ORDER BY name
+        """
+        rows = await db.fetch_all(query)
+        return Campaign.campaign_list_as_dto(rows)
 
 
     @staticmethod
-    async def create_campaign(campaign_dto: NewCampaignDTO, session):
+    async def create_campaign(campaign_dto: NewCampaignDTO, db: Database):
         """Creates a new campaign asynchronously"""
-        campaign = Campaign.from_dto(campaign_dto)
         try:
-            session.add(campaign)
-            await session.commit()
-            if campaign_dto.organisations:
-                for org_id in campaign_dto.organisations:
-                    organisation = await OrganisationService.get_organisation_by_id(org_id, session)
-                    campaign.organisation.append(organisation)
-                await session.commit()
-        except IntegrityError as e:
-            current_app.logger.info("Integrity error: {}".format(e.args[0]))
-            if isinstance(e.orig, UniqueViolation):
-                raise ValueError("NameExists- Campaign name already exists") from e
-            if isinstance(e.orig, NotNullViolation):
-                raise ValueError("NullName- Campaign name cannot be null") from e
-        return campaign
+            async with db.transaction():
+                # Generate the base query and values
+                query = """
+                    INSERT INTO campaigns (name, logo, url, description)
+                    VALUES (:name, :logo, :url, :description)
+                    RETURNING id
+                """
+                values = {
+                    "name": campaign_dto.name,
+                    "logo": campaign_dto.logo,
+                    "url": campaign_dto.url,
+                    "description": campaign_dto.description,
+                }
+
+                campaign_id = await db.execute(query, values)
+                if campaign_dto.organisations:
+                    for org_id in campaign_dto.organisations:
+                        organisation = await OrganisationService.get_organisation_by_id(org_id, db)
+                        if organisation:
+                            org_query = """
+                                INSERT INTO campaign_organisations (campaign_id, organisation_id)
+                                VALUES (:campaign_id, :organisation_id)
+                            """
+                            await db.execute(org_query, {"campaign_id": campaign_id, "organisation_id": org_id})
+
+                return campaign_id
+        except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail="Failed to create campaign."
+                ) from e
 
     @staticmethod
     def create_campaign_project(dto: CampaignProjectDTO):
