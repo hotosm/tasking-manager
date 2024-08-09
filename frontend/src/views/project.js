@@ -44,6 +44,9 @@ export const ProjectsPage = () => {
   const action = useSelector((state) => state.preferences['action']);
   const [fullProjectsQuery, setProjectQuery] = useExploreProjectsQueryParams();
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
+  const isExploreProjectsTableView = useSelector(
+    (state) => state.preferences['isExploreProjectsTableView'],
+  );
   const searchResultWidth = isMapShown ? 'two-column' : 'one-column';
 
   const {
@@ -62,7 +65,7 @@ export const ProjectsPage = () => {
         <Outlet />
       </ProjectNav>
       <section className={`${searchResultWidth} explore-projects-container`}>
-        <div>
+        <div className={`${isExploreProjectsTableView ? 'overflow-auto' : ''}`}>
           <ProjectSearchResults
             className={`${isMapShown ? 'pl3' : 'ph3'}`}
             status={status}
