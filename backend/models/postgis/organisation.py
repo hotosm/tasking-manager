@@ -210,8 +210,8 @@ class Organisation(Base):
     async def get_all_organisations(db: Database):
         """Gets all organisations"""
         query = """
-            SELECT 
-                o.id AS "organisation_id",
+            SELECT
+                o.id AS organisation_id,
                 o.name,
                 o.slug,
                 o.logo,
@@ -223,35 +223,58 @@ class Organisation(Base):
                     WHEN o.type = 3 THEN 'FULL_FEE'
                     ELSE 'UNKNOWN'
                 END AS type,
-                o.subscription_tier
+                o.subscription_tier,
+                COALESCE(
+                    json_agg(
+                        json_build_object(
+                            'id', u.id,
+                            'username', u.username,
+                            'picture_url', u.picture_url
+                        )
+                    ) FILTER (WHERE u.id IS NOT NULL), '[]'
+                ) AS managers
             FROM organisations o
-            ORDER BY o.name
+            LEFT JOIN organisation_managers om ON o.id = om.organisation_id
+            LEFT JOIN users u ON om.user_id = u.id
+            GROUP BY o.id
         """
         result = await db.fetch_all(query)
         return result
+
 
     @staticmethod
     async def get_organisations_managed_by_user(user_id: int, db: Database):
         """Gets organisations a user can manage"""
         query = f"""
-            SELECT 
-                o.id AS "organisation_id",
-                o.name,
-                o.slug,
-                o.logo,
-                o.description,
-                o.url,
-                CASE 
-                    WHEN o.type = {OrganisationType.FREE.value} THEN 'FREE'
-                    WHEN o.type = {OrganisationType.DISCOUNTED.value} THEN 'DISCOUNTED'
-                    WHEN o.type = {OrganisationType.FULL_FEE.value} THEN 'FULL_FEE'
-                    ELSE 'UNKNOWN'
-                END AS type,
-                o.subscription_tier
-            FROM organisations o
-            JOIN organisation_managers om ON o.id = om.organisation_id
-            WHERE om.user_id = :user_id
-            ORDER BY o.name
+        SELECT
+            o.id AS organisation_id,
+            o.name,
+            o.slug,
+            o.logo,
+            o.description,
+            o.url,
+            CASE 
+                WHEN o.type = {OrganisationType.FREE.value} THEN 'FREE'
+                WHEN o.type = {OrganisationType.DISCOUNTED.value} THEN 'DISCOUNTED'
+                WHEN o.type = {OrganisationType.FULL_FEE.value} THEN 'FULL_FEE'
+                ELSE 'UNKNOWN'
+            END AS type,
+            o.subscription_tier,
+            COALESCE(
+                json_agg(
+                    json_build_object(
+                        'id', u.id,
+                        'username', u.username,
+                        'picture_url', u.picture_url
+                    )
+                ) FILTER (WHERE u.id IS NOT NULL), '[]'
+            ) AS managers
+        FROM organisations o
+        LEFT JOIN organisation_managers om ON o.id = om.organisation_id
+        LEFT JOIN users u ON om.user_id = u.id
+        WHERE om.user_id = :user_id  -- Filter organisations by the user who manages them
+        GROUP BY o.id
+        ORDER BY o.name
         """
         params = {"user_id": user_id}
         result = await db.fetch_all(query, values=params)

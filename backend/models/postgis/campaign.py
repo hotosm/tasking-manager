@@ -80,8 +80,6 @@ class Campaign(Base):
         """Converts a collection of campaigns into DTO"""
         campaign_list_dto = CampaignListDTO()
         for campaign in campaigns:
-            campaign_dto = CampaignDTO()
-            campaign_dto.id = campaign.id
-            campaign_dto.name = campaign.name
+            campaign_dto = CampaignDTO(**campaign)
             campaign_list_dto.campaigns.append(campaign_dto)
         return campaign_list_dto

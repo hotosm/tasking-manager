@@ -19,23 +19,13 @@ class NewCampaignDTO(BaseModel):
     organisations: Optional[List[int]] = Field(None, serialize_when_none=False)
 
 
-# class CampaignDTO(Model):
-#     """Describes JSON model for an existing campaign"""
-
-#     id = IntType(serialize_when_none=False)
-#     name = StringType(serialize_when_none=False)
-#     logo = StringType(serialize_when_none=False)
-#     url = StringType(serialize_when_none=False)
-#     description = StringType(serialize_when_none=False)
-#     organisations = ListType(ModelType(OrganisationDTO), serialize_when_none=False)
-
 class CampaignDTO(BaseModel):
-    id: Optional[int] = Field(default=None)
-    name: Optional[str] = Field(default=None)
-    logo: Optional[str] = Field(default=None)
-    url: Optional[str] = Field(default=None)
-    description: Optional[str] = Field(default=None)
-    organisations: List[OrganisationDTO] = Field(default=None, alias="organisations")
+    id: Optional[int] = None
+    name: Optional[str] = None
+    logo: Optional[str] = None
+    url: Optional[str] = None
+    description: Optional[str] = None
+    organisations: List[OrganisationDTO] = Field(default=None, serialization_alias="organisations")
 
 
 class CampaignProjectDTO(BaseModel):
@@ -51,6 +41,9 @@ class CampaignOrganisationDTO(BaseModel):
     organisation_id: int
     campaign_id: int
 
+class ListCampaignDTO(BaseModel):
+    id: Optional[int] = None
+    name: Optional[str] = None
 
 class CampaignListDTO(BaseModel):
     """DTO used to define available campaigns"""
@@ -60,4 +53,4 @@ class CampaignListDTO(BaseModel):
         super().__init__()
         self.campaigns = []
 
-    campaigns: Optional[List[CampaignDTO]] = None
+    campaigns: Optional[List[ListCampaignDTO]] = None
