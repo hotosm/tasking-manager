@@ -466,7 +466,6 @@ async def list_organisation(
             },
             403,
         )
-
     results_dto = await OrganisationService.get_organisations_as_dto(
         manager_user_id,
         authenticated_user_id,
