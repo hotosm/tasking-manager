@@ -57,7 +57,7 @@ async def retrieve_campaign(request: Request, campaign_id: int, db: Database = D
     return campaign
 
 @router.patch("/{campaign_id}/")
-async def patch(request: Request, campaign_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db) ):
+async def update_campaign(campaign_dto : CampaignDTO,request: Request, campaign_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
     """
     Updates an existing campaign
     ---
@@ -121,24 +121,14 @@ async def patch(request: Request, campaign_id: int, user: AuthUserDTO = Depends(
             description: Internal Server Error
     """
     try:
-        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-            request.user.display_name
-        )
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(user.id, db)
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"CampaignsRestAPI PATCH: {str(e)}"
         return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
-
     try:
-        campaign_dto = CampaignDTO(request.get_json())
-        campaign_dto.validate()
-    except Exception as e:
-        logger.error(f"error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
-
-    try:
-        campaign = CampaignService.update_campaign(campaign_dto, campaign_id)
+        campaign = await CampaignService.update_campaign(campaign_dto, campaign_id, db)
         return {"Success": "Campaign {} updated".format(campaign.id)}, 200
     except ValueError:
         error_msg = "Campaign PATCH - name already exists"
@@ -222,8 +212,7 @@ async def list_campaigns(
 
 
 @router.post("/")
-@requires("authenticated")
-async def post(campaign_dto: NewCampaignDTO,request: Request, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
+async def create_campaign(campaign_dto: NewCampaignDTO,request: Request, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
     """
     Creates a new campaign
     ---
