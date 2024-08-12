@@ -283,15 +283,36 @@ class CampaignService:
         org.campaign.remove(campaign)
         await session.commit()
 
+
     @staticmethod
-    def update_campaign(campaign_dto: CampaignDTO, campaign_id: int):
-        campaign = session.get(Campaign, campaign_id)
+    async def update_campaign(campaign_dto: CampaignDTO, campaign_id: int, db: Database):
+        campaign_query = "SELECT * FROM campaigns WHERE id = :id"
+        campaign = await db.fetch_one(query=campaign_query, values={"id": campaign_id})
+
         if not campaign:
             raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
         try:
-            campaign.update(campaign_dto)
-        except IntegrityError as e:
-            current_app.logger.info("Integrity error: {}".format(e.args[0]))
-            raise ValueError()
+            # Convert the DTO to a dictionary, excluding unset fields
+            campaign_dict = campaign_dto.dict(exclude_unset=True)
+            # Remove 'organisation' key if it exists
+            if 'organisations' in campaign_dict:
+                del campaign_dict['organisations']
 
-        return campaign
+            set_clause = ", ".join(f"{key} = :{key}" for key in campaign_dict.keys())
+            update_query = f"""
+            UPDATE campaigns
+            SET {set_clause}
+            WHERE id = :id
+            RETURNING id
+            """
+            campaign = await db.fetch_one(query=update_query, values={**campaign_dict, 'id': campaign_id})
+            if not campaign:
+                raise HTTPException(status_code=404, detail="Campaign not found")
+
+            return campaign
+
+        except IntegrityError:
+            raise HTTPException(status_code=409, detail="Campaign name already exists")
+
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
