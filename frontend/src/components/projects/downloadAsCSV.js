@@ -1,6 +1,7 @@
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 
+import { API_URL } from '../../config';
 import { stringify } from '../../hooks/UseProjectsQueryAPI';
 import { DownloadIcon } from '../svgIcons';
 import messages from './messages';
@@ -9,7 +10,7 @@ export default function DownloadAsCSV({ allQueryParams }) {
   const allQueryParamsCopy = { ...allQueryParams };
   allQueryParamsCopy.downloadAsCSV = true;
   allQueryParamsCopy.omitMapResults = true;
-  const downloadCSVLink = '/explore?' + stringify(allQueryParamsCopy);
+  const downloadCSVLink = `${API_URL}projects/?${stringify(allQueryParamsCopy)}`;
 
   return (
     <a
