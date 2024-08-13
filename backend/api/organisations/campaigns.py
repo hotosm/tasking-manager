@@ -2,9 +2,6 @@ from backend.models.dtos.campaign_dto import CampaignListDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from starlette.authentication import requires
-from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 from databases import Database
 from backend.db import get_db
