@@ -17,7 +17,7 @@ from backend.services.organisation_service import (
 from backend.models.postgis.statuses import OrganisationType
 from backend.services.users.authentication_service import login_required
 from fastapi import APIRouter, Depends, Request, Query
-from backend.db import get_db, get_session
+from backend.db import get_db
 from starlette.authentication import requires
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,7 +31,7 @@ from fastapi import HTTPException
 router = APIRouter(
     prefix="/organisations",
     tags=["organisations"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -40,7 +40,6 @@ async def retrieve_organisation(
     request: Request,
     organisation_id: int,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(login_required),
     omit_managers: bool = Query(False, alias="omitManagerList", description="Omit organization managers list from the response."),
 ):
     """
@@ -94,7 +93,6 @@ async def retrieve_organisation_by_slug(
     request: Request,
     slug: str,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(login_required),
     omit_managers: bool = Query(True, alias="omitManagerList", description="Omit organization managers list from the response."),
 ):
     """
