@@ -189,99 +189,82 @@ class CampaignService:
         return new_campaigns
 
     @staticmethod
-    async def create_campaign_organisation(organisation_id: int, campaign_id: int, session):
-        """Creates new campaign from DTO"""
+    async def create_campaign_organisation(organisation_id: int, campaign_id: int, db: Database):
+        """Creates new campaign organisation from DTO"""
         # Check if campaign exists
-        await CampaignService.get_campaign(campaign_id)
+        await CampaignService.get_campaign(campaign_id, db)
         # Check if organisation exists
-        await OrganisationService.get_organisation_by_id(organisation_id)
+        await OrganisationService.get_organisation_by_id(organisation_id, db)
 
-        statement = insert(campaign_organisations).values(
-            campaign_id=campaign_id, organisation_id=organisation_id
-        )
-        await session.execute(statement)
-        await session.commit()
+        query = """
+        INSERT INTO campaign_organisations (campaign_id, organisation_id)
+        VALUES (:campaign_id, :organisation_id)
+        """
+        await db.execute(query=query, values={"campaign_id": campaign_id, "organisation_id": organisation_id})
 
-        new_campaigns = await CampaignService.get_organisation_campaigns_as_dto(organisation_id)
-        return new_campaigns
 
     @staticmethod
-    async def get_organisation_campaigns_as_dto(organisation_id: int, session: AsyncSession) -> CampaignListDTO:
-        """Gets all the campaigns for a specified project"""
-        
+    async def get_organisation_campaigns_as_dto(organisation_id: int, database: Database) -> CampaignListDTO:
+        """Gets all the campaigns for a specified organisation"""
+
         # Check if organisation exists
-        await OrganisationService.get_organisation_by_id(organisation_id, session)
-        
-        query = (
-            select(Campaign)
-            .join(campaign_organisations)
-            .filter(campaign_organisations.c.organisation_id == organisation_id)
-        )
-        
-        result = await session.execute(query)
-        campaigns = result.scalars().all()
-        
-        return await Campaign.campaign_list_as_dto(campaigns)
+        await OrganisationService.get_organisation_by_id(organisation_id, database)
+
+        query = """
+        SELECT c.* 
+        FROM campaigns c
+        JOIN campaign_organisations co ON c.id = co.campaign_id
+        WHERE co.organisation_id = :organisation_id
+        """
+        campaigns = await database.fetch_all(query=query, values={"organisation_id": organisation_id})
+
+        # Convert the result to a list of campaign DTOs
+        return Campaign.campaign_list_as_dto(campaigns)
+    
+
+    @staticmethod
+    async def campaign_organisation_exists(campaign_id: int, org_id: int, database: Database) -> bool:
+        query = """
+        SELECT 1 
+        FROM campaign_organisations 
+        WHERE organisation_id = :org_id 
+        AND campaign_id = :campaign_id
+        LIMIT 1
+        """
+        result = await database.fetch_one(query=query, values={"org_id": org_id, "campaign_id": campaign_id})
+        return result is not None
+    
     
     @staticmethod
-    async def campaign_organisation_exists(campaign_id: int, org_id: int, session):
-        result = await session.execute(
-            select(Campaign)
-            .join(campaign_organisations)
-            .filter(
-                campaign_organisations.c.organisation_id == org_id,
-                campaign_organisations.c.campaign_id == campaign_id,
-            )
-        )
-        return result.scalar_one_or_none()
-
-    @staticmethod
-    def delete_organisation_campaign(organisation_id: int, campaign_id: int):
-        """Delete campaign for a organisation"""
-        campaign = session.get(Campaign, campaign_id)
-        if not campaign:
-            raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
-        org = session.get(Organisation, organisation_id)
-        if not org:
-            raise NotFound(
-                sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
-            )
-        if not CampaignService.campaign_organisation_exists(
-            campaign_id, organisation_id
-        ):
-            raise NotFound(
-                sub_code="ORGANISATION_CAMPAIGN_NOT_FOUND",
-                organisation_id=organisation_id,
-                campaign_id=campaign_id,
-            )
-        org.campaign.remove(campaign)
-        session.commit()
-        new_campaigns = CampaignService.get_organisation_campaigns_as_dto(
-            organisation_id
-        )
-        return new_campaigns
-
-    @staticmethod
-    async def delete_organisation_campaign(organisation_id: int, campaign_id: int, session):
+    async def delete_organisation_campaign(organisation_id: int, campaign_id: int, db: Database):
         """Delete campaign for an organisation"""
-        campaign = await session.get(Campaign, campaign_id)
-        if not campaign:
+
+        # Check if campaign exists
+        query_campaign = "SELECT 1 FROM campaigns WHERE id = :campaign_id LIMIT 1"
+        campaign_exists = await db.fetch_one(query=query_campaign, values={"campaign_id": campaign_id})
+        if not campaign_exists:
             raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
-        
-        org = await session.get(Organisation, organisation_id)
-        if not org:
+
+        # Check if organisation exists
+        query_org = "SELECT 1 FROM organisations WHERE id = :organisation_id LIMIT 1"
+        org_exists = await db.fetch_one(query=query_org, values={"organisation_id": organisation_id})
+        if not org_exists:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id)
-        
-        campaign_org_exists = await CampaignService.campaign_organisation_exists(campaign_id, organisation_id, session)
+
+        campaign_org_exists = await CampaignService.campaign_organisation_exists(campaign_id, organisation_id, db)
         if not campaign_org_exists:
             raise NotFound(
                 sub_code="ORGANISATION_CAMPAIGN_NOT_FOUND",
                 organisation_id=organisation_id,
                 campaign_id=campaign_id,
             )
-        await session.refresh(org, ["campaign"])
-        org.campaign.remove(campaign)
-        await session.commit()
+
+        query_delete = """
+        DELETE FROM campaign_organisations 
+        WHERE campaign_id = :campaign_id 
+        AND organisation_id = :organisation_id
+        """
+        await db.execute(query=query_delete, values={"campaign_id": campaign_id, "organisation_id": organisation_id})
 
 
     @staticmethod

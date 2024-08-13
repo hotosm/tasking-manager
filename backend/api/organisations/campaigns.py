@@ -1,22 +1,27 @@
+from backend.models.dtos.campaign_dto import CampaignListDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import HTTPException
+from databases import Database
+from backend.db import get_db
+from backend.services.users.authentication_service import login_required
+from backend.models.dtos.user_dto import AuthUserDTO
+
 
 router = APIRouter(
     prefix="/organisations",
     tags=["organisations"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
-# class OrganisationsCampaignsAPI(Resource):
-#     @token_auth.login_required
+
 @router.post("/{organisation_id}/campaigns/{campaign_id}/")
-@requires("authenticated")
-async def post(request: Request, organisation_id: int, campaign_id: int, session: AsyncSession = Depends(get_session)):
+async def post(request: Request, organisation_id: int, campaign_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
     """
     Assigns a campaign to an organisation
     ---
@@ -56,17 +61,17 @@ async def post(request: Request, organisation_id: int, campaign_id: int, session
             description: Internal Server Error
     """
     if await OrganisationService.can_user_manage_organisation(
-        organisation_id, request.user.display_name, session
+        organisation_id, request.user.display_name, db
     ):
         if await CampaignService.campaign_organisation_exists(
-            campaign_id, organisation_id, session
+            campaign_id, organisation_id, db
         ):
             message = "Campaign {} is already assigned to organisation {}.".format(
                 campaign_id, organisation_id
             )
             return {"Error": message, "SubCode": "CampaignAlreadyAssigned"}, 400
 
-        await CampaignService.create_campaign_organisation(organisation_id, campaign_id, session)
+        await CampaignService.create_campaign_organisation(organisation_id, campaign_id, db)
         message = "campaign with id {} assigned for organisation with id {}".format(
             campaign_id, organisation_id
         )
@@ -77,8 +82,9 @@ async def post(request: Request, organisation_id: int, campaign_id: int, session
             "SubCode": "UserNotPermitted",
         }, 403
 
-@router.get("/{organisation_id}/campaigns/")
-async def get(organisation_id: int, session: AsyncSession = Depends(get_session)):
+
+@router.get("/{organisation_id}/campaigns/", response_model=CampaignListDTO)
+async def get(organisation_id: int, db: Database = Depends(get_db)):
     """
     Returns all campaigns related to an organisation
     ---
@@ -107,12 +113,12 @@ async def get(organisation_id: int, session: AsyncSession = Depends(get_session)
         500:
             description: Internal Server Error
     """
-    campaigns = await CampaignService.get_organisation_campaigns_as_dto(organisation_id, session)
-    return campaigns.model_dump(by_alias=True), 200
+    campaigns = await CampaignService.get_organisation_campaigns_as_dto(organisation_id, db)
+    return campaigns
+
 
 @router.delete("/{organisation_id}/campaigns/{campaign_id}/")
-@requires("authenticated")
-async def delete(request: Request, organisation_id: int, campaign_id: int, session: AsyncSession = Depends(get_session)):
+async def delete(request: Request, organisation_id: int, campaign_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
     """
     Un-assigns an organization from an campaign
     ---
@@ -152,9 +158,9 @@ async def delete(request: Request, organisation_id: int, campaign_id: int, sessi
             description: Internal Server Error
     """
     if await OrganisationService.can_user_manage_organisation(
-        organisation_id, request.user.display_name, session
+        organisation_id, request.user.display_name, db
     ):
-        await CampaignService.delete_organisation_campaign(organisation_id, campaign_id, session)
+        await CampaignService.delete_organisation_campaign(organisation_id, campaign_id, db)
         return (
             {"Success": "Organisation and campaign unassociated successfully"},
             200,
