@@ -74,6 +74,8 @@ from backend.models.postgis.utils import (
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.interests import Interest, project_interests
 from backend.db import Base, get_session
+from databases import Database
+
 
 session = get_session()
 
@@ -1159,23 +1161,23 @@ class Project(Base):
         )
 
         return project_tasks
-
     @staticmethod
-    async def get_all_countries(session):
-        # query = (
-        #     session.query(func.unnest(Project.country).label("country"))
-        #     .distinct()
-        #     .order_by("country")
-        #     .all()
-        # )
-        result = await session.execute(
-            sa.select(func.unnest(Project.country).label("country"))
-            .distinct()
-            .order_by("country")
-        )
-        query = result.scalars().all()
-        tags_dto = TagsDTO()
-        tags_dto.tags = [r[0] for r in query]
+    async def get_all_countries(database: Database) -> TagsDTO:
+        # Raw SQL query to unnest the country field, select distinct values, and order by country
+        query = """
+        SELECT DISTINCT UNNEST(country) AS country
+        FROM projects
+        ORDER BY country
+        """
+        
+        # Execute the query and fetch all results
+        rows = await database.fetch_all(query=query)
+        
+        # Extract the countries from the result set
+        countries = [row["country"] for row in rows]
+        
+        # Create TagsDTO and populate it with the list of countries
+        tags_dto = TagsDTO(tags=countries)
         return tags_dto
 
     def calculate_tasks_percent(self, target):
