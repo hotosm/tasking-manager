@@ -70,7 +70,7 @@ export const ProjectSearchResults = ({
               ready={status === 'success'}
             >
               {isExploreProjectsPage ? (
-                <ExploreProjectsTable projects={projects} />
+                <ExploreProjectsTable projects={projects} status={status} />
               ) : (
                 <ExploreProjectList pageOfCards={projects} cardWidthClass={cardWidthClass} />
               )}

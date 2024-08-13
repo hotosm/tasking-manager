@@ -258,47 +258,47 @@ export default defineMessages({
   },
   nameColumn: {
     id: 'project.table.name.column',
-    defaultMessage: 'Name'
+    defaultMessage: 'Name',
   },
   authorColumn: {
     id: 'project.table.author.column',
-    defaultMessage: 'Author'
+    defaultMessage: 'Author',
   },
   organisationColumn: {
     id: 'project.table.organisation.column',
-    defaultMessage: 'Organisation'
+    defaultMessage: 'Organisation',
   },
   progressColumn: {
     id: 'project.table.progress.column',
-    defaultMessage: 'Progress'
+    defaultMessage: 'Progress',
   },
   mappersColumn: {
     id: 'project.table.Mappers.column',
-    defaultMessage: 'Mappers'
+    defaultMessage: 'Mappers',
   },
   priorityColumn: {
     id: 'project.table.priority.column',
-    defaultMessage: 'Priority'
+    defaultMessage: 'Priority',
   },
   difficultyColumn: {
     id: 'project.table.difficulty.column',
-    defaultMessage: 'Difficulty'
+    defaultMessage: 'Difficulty',
   },
   statusColumn: {
     id: 'project.table.status.column',
-    defaultMessage: 'Status'
+    defaultMessage: 'Status',
   },
   locationColumn: {
     id: 'project.table.location.column',
-    defaultMessage: 'Location'
+    defaultMessage: 'Location',
   },
   lastUpdatedColumn: {
     id: 'project.table.lastUpdated.column',
-    defaultMessage: 'Last updated'
+    defaultMessage: 'Last updated',
   },
   dueDateColumn: {
     id: 'project.table.dueDate.column',
-    defaultMessage: 'Due date'
+    defaultMessage: 'Due date',
   },
   percentMapped: {
     id: 'project.table.percentMapped',
@@ -310,6 +310,10 @@ export default defineMessages({
   },
   downloadAsCSV: {
     id: 'project.table.downloadAsCSV',
-    defaultMessage: 'Download CSV'
-  }
+    defaultMessage: 'Download CSV',
+  },
+  projectsTableEmpty: {
+    id: 'project.table.empty',
+    defaultMessage: 'No projects were found. Try updating the search term or filters if any.',
+  },
 });

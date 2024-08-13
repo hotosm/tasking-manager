@@ -1,10 +1,12 @@
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import { FormattedMessage } from 'react-intl';
 import { formatDistance } from 'date-fns';
+import PropTypes from 'prop-types';
 
 import { ProgressBar } from '../progressBar';
 import { PriorityBox } from '../projectCard/priorityBox';
 import messages from './messages';
+import { CircleExclamationIcon } from '../svgIcons';
 import './exploreProjectsTable.css';
 
 const COLUMNS = [
@@ -161,7 +163,7 @@ const COLUMNS = [
   },
 ];
 
-export const ExploreProjectsTable = ({ projects }) => {
+export const ExploreProjectsTable = ({ projects, status }) => {
   const table = useReactTable({
     columns: COLUMNS,
     data: projects,
@@ -169,6 +171,8 @@ export const ExploreProjectsTable = ({ projects }) => {
     columnResizeMode: 'onChange',
     columnResizeDirection: 'ltr',
   });
+
+  const isEmpty = status !== 'pending' && status !== 'error' && projects.length === 0;
 
   return (
     <div className="overflow-auto">
@@ -224,6 +228,20 @@ export const ExploreProjectsTable = ({ projects }) => {
           ))}
         </tbody>
       </table>
+
+      {isEmpty ? (
+        <div className="flex items-center justify-start pa4 gap-1 pl2">
+          <CircleExclamationIcon className="red" width="20" height="20" />
+          <p className="ma0">
+            <FormattedMessage {...messages.projectsTableEmpty} />
+          </p>
+        </div>
+      ) : null}
     </div>
   );
+};
+
+ExploreProjectsTable.propTypes = {
+  projects: PropTypes.arrayOf(PropTypes.object).isRequired,
+  status: PropTypes.string.isRequired,
 };
