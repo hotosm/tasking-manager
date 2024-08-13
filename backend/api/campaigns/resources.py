@@ -2,7 +2,7 @@ from backend.models.dtos.campaign_dto import CampaignDTO, CampaignListDTO, NewCa
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_db, get_session
+from backend.db import get_db
 from starlette.authentication import requires
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,7 +14,7 @@ from backend.models.dtos.user_dto import AuthUserDTO
 router = APIRouter(
     prefix="/campaigns",
     tags=["campaigns"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -55,6 +55,7 @@ async def retrieve_campaign(request: Request, campaign_id: int, db: Database = D
     """
     campaign = await CampaignService.get_campaign_as_dto(campaign_id, db)
     return campaign
+
 
 @router.patch("/{campaign_id}/")
 async def update_campaign(campaign_dto : CampaignDTO,request: Request, campaign_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
@@ -133,6 +134,7 @@ async def update_campaign(campaign_dto : CampaignDTO,request: Request, campaign_
     except ValueError:
         error_msg = "Campaign PATCH - name already exists"
         return {"Error": error_msg, "SubCode": "NameExists"}
+    
 
 @router.delete("/{campaign_id}/")
 async def delete_campaign(request: Request, campaign_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
