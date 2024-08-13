@@ -124,6 +124,7 @@ class ProjectSearchService:
         preferred_locale: str,
         total_contributors: int,
         with_partner_names: bool = False,
+        with_author_name: bool = True,
     ) -> ListSearchResultDTO:
         project_info_dto = ProjectInfo.get_dto_for_locale(
             project.id, preferred_locale, project.default_locale
@@ -153,6 +154,9 @@ class ProjectSearchService:
         list_dto.campaigns = Project.get_project_campaigns(project.id)
 
         list_dto.creation_date = project_obj.created
+
+        if with_author_name:
+            list_dto.author = project_obj.author.name or project_obj.author.username
 
         if with_partner_names:
             list_dto.partner_names = list(
@@ -205,6 +209,7 @@ class ProjectSearchService:
                 with_partner_names=(
                     user is not None and user.role == UserRole.ADMIN.value
                 ),
+                with_author_name=False,
             ).to_primitive()
             for p in all_results
         ]
@@ -237,6 +242,7 @@ class ProjectSearchService:
                 with_partner_names=(
                     user is not None and user.role == UserRole.ADMIN.value
                 ),
+                with_author_name=True,
             )
             for p in paginated_results.items
         ]
