@@ -308,4 +308,8 @@ export default defineMessages({
     id: 'project.table.percentValidated',
     defaultMessage: '{n}% validated',
   },
+  downloadAsCSV: {
+    id: 'project.table.downloadAsCSV',
+    defaultMessage: 'Download CSV'
+  }
 });

@@ -12,6 +12,7 @@ import ClearFilters from './clearFilters';
 import { OrderBySelector } from './orderBy';
 import { ProjectsActionFilter } from './projectsActionFilter';
 import { SwitchToggle } from '../formInputs';
+import DownloadAsCSV from './downloadAsCSV';
 import { GripIcon, ListIcon, FilledNineCellsGridIcon, TableListIcon } from '../svgIcons';
 
 export const ShowMapToggle = (props) => {
@@ -183,14 +184,16 @@ export const ProjectNav = (props) => {
               className="f6"
             />
             {!filterIsEmpty && <ClearFilters url="./" className="mv2 mh1 fr dn dib-l" />}
+
             <ProjectSearchBox
               className="dib fr mh1"
               setQuery={setQuery}
               fullProjectsQuery={fullProjectsQuery}
             />
           </div>
+          <DownloadAsCSV allQueryParams={fullProjectsQuery} />
         </div>
-        <div className="w-20-l w-10-m w-100 fr">
+        <div className="w-20-l w-100 fr">
           <div className="flex items-center justify-end gap-1 mt1">
             <ShowMapToggle />
             <ExploreProjectsViewToggle />
