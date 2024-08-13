@@ -1,18 +1,21 @@
+from backend.models.dtos.tags_dto import TagsDTO
 from backend.services.tags_service import TagsService
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends
-from backend.db import get_session
+from backend.db import get_db
+from databases import Database
+
 
 router = APIRouter(
     prefix="/countries",
     tags=["countries"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 # class CountriesRestAPI(Resource):
-@router.get("/")
-async def get(session: AsyncSession = Depends(get_session)):
+@router.get("/", response_model=TagsDTO)
+async def get(db: Database = Depends(get_db)):
       """
       Fetch all Country tags
       ---
@@ -26,5 +29,5 @@ async def get(session: AsyncSession = Depends(get_session)):
           500:
               description: Internal Server Error
       """
-      tags = await TagsService.get_all_countries(session)
-      return tags.model_dump(by_alias=True), 200
+      tags = await TagsService.get_all_countries(db)
+      return tags
