@@ -39,6 +39,8 @@ from backend.db import get_session
 session = get_session()
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from fastapi import HTTPException
+from databases import Database
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -52,11 +54,16 @@ class ProjectServiceError(Exception):
 
 
 class ProjectService:
+    
     @staticmethod
-    async def get_project_by_id(project_id: int, session) -> Project:
-        project = await Project.get(project_id, session)
-        if project is None:
-            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
+    async def get_project_by_id(project_id: int, db: Database):
+        query = """
+            SELECT * FROM projects WHERE id = :project_id
+        """
+        project = await db.fetch_one(query=query, values={"project_id": project_id})
+
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
 
         return project
 
@@ -195,22 +202,22 @@ class ProjectService:
         contribs_dto.stats = dates_list
 
         return contribs_dto
+    
 
     @staticmethod
-    async def get_project_dto_for_mapper(
-        project_id, current_user_id, locale="en", abbrev=False, session=None
-    ) -> ProjectDTO:
+    async def get_project_dto_for_mapper(project_id, current_user_id, db: Database , locale="en", abbrev=False) -> ProjectDTO:
         """
         Get the project DTO for mappers
         :param project_id: ID of the Project mapper has requested
         :param locale: Locale the mapper has requested
         :raises ProjectServiceError, NotFound
         """
-        project = await ProjectService.get_project_by_id(project_id, session)
-
+        project = await ProjectService.get_project_by_id(project_id, db)
+        print(project, "This is project...")
         # if project is public and is not draft, we don't need to check permissions
         if not project.private and not project.status == ProjectStatus.DRAFT.value:
-            return await project.as_dto_for_mapping(current_user_id, locale, abbrev, session)
+            print('Insssideeeee...')
+            return await Project.as_dto_for_mapping(project.id, db,current_user_id, locale, abbrev)
 
         is_allowed_user = True
         is_team_member = None
