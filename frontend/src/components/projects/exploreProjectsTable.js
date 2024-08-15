@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import { FormattedMessage } from 'react-intl';
 import { formatDistance } from 'date-fns';
@@ -17,6 +18,13 @@ const COLUMNS = [
         <FormattedMessage {...messages.nameColumn} />
       </span>
     ),
+    cell: ({ row }) => {
+      return (
+        <Link to={`/projects/${row.original.projectId}`} className="no-underline color-inherit">
+          {row.original.name}
+        </Link>
+      );
+    },
   },
   {
     accessorKey: 'author',
@@ -70,7 +78,7 @@ const COLUMNS = [
     accessorKey: 'totalContributors',
     header: () => (
       <span>
-        <FormattedMessage {...messages.mappersColumn} />
+        <FormattedMessage {...messages.contributorsColumn} />
       </span>
     ),
   },
@@ -157,7 +165,7 @@ const COLUMNS = [
       return dueDateObject < new Date() ? (
         <span className="gray">Finished</span>
       ) : (
-        <span>`in ${formatDistance(dueDateObject, new Date())}`</span>
+        <span>in {formatDistance(dueDateObject, new Date())}</span>
       );
     },
   },

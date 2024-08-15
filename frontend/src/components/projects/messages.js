@@ -272,9 +272,9 @@ export default defineMessages({
     id: 'project.table.progress.column',
     defaultMessage: 'Progress',
   },
-  mappersColumn: {
-    id: 'project.table.Mappers.column',
-    defaultMessage: 'Mappers',
+  contributorsColumn: {
+    id: 'project.table.contributors.column',
+    defaultMessage: 'Contributors',
   },
   priorityColumn: {
     id: 'project.table.priority.column',
