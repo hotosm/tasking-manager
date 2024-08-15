@@ -13,7 +13,6 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# class CountriesRestAPI(Resource):
 @router.get("/", response_model=TagsDTO)
 async def get(db: Database = Depends(get_db)):
       """
