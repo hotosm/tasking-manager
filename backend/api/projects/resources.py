@@ -35,22 +35,25 @@ from backend.models.dtos.project_dto import ProjectSearchDTO
 from starlette.authentication import requires
 import json
 from sqlalchemy.ext.asyncio import AsyncSession
+from backend.db import get_db
+from databases import Database
+from backend.services.users.authentication_service import login_required
+from backend.models.dtos.user_dto import AuthUserDTO
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 @router.get("/{project_id}/")
-# @requires("authenticated")
 async def get_project(
     request: Request,
     project_id: int,
     as_file: str = "False",
     abbreviated: bool = False,
-    session: AsyncSession = Depends(get_session),
+    db: Database = Depends(get_db),
 ):
     """
     Get a specified project including it's area
@@ -114,12 +117,11 @@ async def get_project(
         project_dto = await ProjectService.get_project_dto_for_mapper(
             project_id,
             authenticated_user_id,
+            db,
             request.headers.get("accept-language"),
             abbreviated,
-            session,
         )
         if project_dto:
-            project_dto = project_dto.model_dump(by_alias=True)
             if as_file:
                 project_dto = json.dumps(project_dto, default=str)
                 return FileResponse(
@@ -136,15 +138,14 @@ async def get_project(
                 "SubCode": "PrivateProject",
             }, 403
 
-
     except ProjectServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
     finally:
         # this will try to unlock tasks that have been locked too long
-        # try:
-            await ProjectService.auto_unlock_tasks(project_id, session)
-        # except Exception as e:
-        #     logger.critical(str(e))
+        try:
+            await ProjectService.auto_unlock_tasks(project_id, db)
+        except Exception as e:
+            logger.critical(str(e))
 
 router.post("/")
 @requires("authenticated")
@@ -281,7 +282,7 @@ def head(request: Request, project_id):
 
 @router.patch("/{project_id}/")
 @requires('authenticated')
-def patch(request: Request, project_id: int, db: Session = Depends(get_session) ):
+def patch(request: Request, project_id: int, db: Database = Depends(get_session) ):
     """
     Updates a Tasking-Manager project
     ---
@@ -545,7 +546,7 @@ def setup_search_dto(request) -> ProjectSearchDTO:
 
 
 @router.get("/")
-async def get(request: Request, session: AsyncSession = Depends(get_session)):
+async def get(request: Request, db: Database = Depends(get_db)):
     """
     List and search for projects
     ---
@@ -689,9 +690,9 @@ async def get(request: Request, session: AsyncSession = Depends(get_session)):
         user = None
         user_id = request.user.display_name if request.user else None
         if user_id:
-            user = await UserService.get_user_by_id(user_id, session)
+            user = await UserService.get_user_by_id(user_id, db)
         search_dto = setup_search_dto(request)
-        results_dto = await ProjectSearchService.search_projects(search_dto, user, session)
+        results_dto = await ProjectSearchService.search_projects(search_dto, user, db)
         return results_dto.model_dump(by_alias=True), 200
     except NotFound:
         return {"mapResults": {}, "results": []}, 200 

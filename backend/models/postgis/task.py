@@ -37,6 +37,8 @@ from backend.db import Base, get_session
 session = get_session()
 from backend.config import settings
 from sqlalchemy import select
+from typing import Optional
+from databases import Database
 
 
 class TaskAction(Enum):
@@ -929,143 +931,250 @@ class Task(Base):
         self.locked_by = None
         self.update()
 
+    # @staticmethod
+    # def get_tasks_as_geojson_feature_collection(
+    #     project_id,
+    #     task_ids_str: str = None,
+    #     order_by: str = None,
+    #     order_by_type: str = "ASC",
+    #     status: int = None,
+    # ):
+    #     """
+    #     Creates a geoJson.FeatureCollection object for tasks related to the supplied project ID
+    #     :param project_id: Owning project ID
+    #     :order_by: sorting option: available values update_date and building_area_diff
+    #     :status: task status id to filter by
+    #     :return: geojson.FeatureCollection
+    #     """
+    #     # subquery = (
+    #     #     session.query(func.max(TaskHistory.action_date))
+    #     #     .filter(
+    #     #         Task.id == TaskHistory.task_id,
+    #     #         Task.project_id == TaskHistory.project_id,
+    #     #     )
+    #     #     .correlate(Task)
+    #     #     .group_by(Task.id)
+    #     #     .label("update_date")
+    #     # )
+    #     query = session.query(
+    #         Task.id,
+    #         Task.x,
+    #         Task.y,
+    #         Task.zoom,
+    #         Task.is_square,
+    #         Task.task_status,
+    #         Task.geometry.ST_AsGeoJSON().label("geojson"),
+    #         Task.locked_by,
+    #         Task.mapped_by,
+    #         # subquery,
+    #     )
+
+    #     filters = [Task.project_id == project_id]
+
+    #     if task_ids_str:
+    #         task_ids = list(map(int, task_ids_str.split(",")))
+    #         tasks = Task.get_tasks(project_id, task_ids)
+    #         if not tasks or len(tasks) == 0:
+    #             raise NotFound(
+    #                 sub_code="TASKS_NOT_FOUND", tasks=task_ids, project_id=project_id
+    #             )
+    #         else:
+    #             tasks_filters = [task.id for task in tasks]
+    #         filters = [Task.project_id == project_id, Task.id.in_(tasks_filters)]
+    #     else:
+    #         tasks = Task.get_all_tasks(project_id)
+    #         if not tasks or len(tasks) == 0:
+    #             raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
+
+    #     if status:
+    #         filters.append(Task.task_status == status)
+
+    #     if order_by == "effort_prediction":
+    #         query = query.outerjoin(TaskAnnotation).filter(*filters)
+    #         if order_by_type == "DESC":
+    #             query = query.order_by(
+    #                 desc(
+    #                     cast(
+    #                         cast(TaskAnnotation.properties["building_area_diff"], Text),
+    #                         Float,
+    #                     )
+    #                 )
+    #             )
+    #         else:
+    #             query = query.order_by(
+    #                 cast(
+    #                     cast(TaskAnnotation.properties["building_area_diff"], Text),
+    #                     Float,
+    #                 )
+    #             )
+    #     # elif order_by == "last_updated":
+    #     #     if order_by_type == "DESC":
+    #     #         query = query.filter(*filters).order_by(desc("update_date"))
+    #     #     else:
+    #     #         query = query.filter(*filters).order_by("update_date")
+    #     else:
+    #         query = query.filter(*filters)
+
+    #     project_tasks = query.all()
+
+    #     tasks_features = []
+    #     for task in project_tasks:
+    #         task_geometry = geojson.loads(task.geojson)
+    #         task_properties = dict(
+    #             taskId=task.id,
+    #             taskX=task.x,
+    #             taskY=task.y,
+    #             taskZoom=task.zoom,
+    #             taskIsSquare=task.is_square,
+    #             taskStatus=TaskStatus(task.task_status).name,
+    #             lockedBy=task.locked_by,
+    #             mappedBy=task.mapped_by,
+    #         )
+
+    #         feature = geojson.Feature(
+    #             geometry=task_geometry, properties=task_properties
+    #         )
+    #         tasks_features.append(feature)
+
+    #     return geojson.FeatureCollection(tasks_features)
+
+
+
     @staticmethod
-    def get_tasks_as_geojson_feature_collection(
-        project_id,
-        task_ids_str: str = None,
-        order_by: str = None,
+    async def get_tasks_as_geojson_feature_collection(
+        db: Database,
+        project_id: int,
+        task_ids_str: Optional[str] = None,
+        order_by: Optional[str] = None,
         order_by_type: str = "ASC",
-        status: int = None,
-    ):
+        status: Optional[int] = None
+    ) -> geojson.FeatureCollection:
         """
-        Creates a geoJson.FeatureCollection object for tasks related to the supplied project ID
+        Creates a geoJson.FeatureCollection object for tasks related to the supplied project ID.
+        :param db: The async database connection
         :param project_id: Owning project ID
-        :order_by: sorting option: available values update_date and building_area_diff
-        :status: task status id to filter by
+        :param task_ids_str: Comma-separated task IDs to filter by
+        :param order_by: Sorting option: available values are 'effort_prediction'
+        :param order_by_type: Sorting order: 'ASC' or 'DESC'
+        :param status: Task status ID to filter by
         :return: geojson.FeatureCollection
         """
-        # subquery = (
-        #     session.query(func.max(TaskHistory.action_date))
-        #     .filter(
-        #         Task.id == TaskHistory.task_id,
-        #         Task.project_id == TaskHistory.project_id,
-        #     )
-        #     .correlate(Task)
-        #     .group_by(Task.id)
-        #     .label("update_date")
-        # )
-        query = session.query(
-            Task.id,
-            Task.x,
-            Task.y,
-            Task.zoom,
-            Task.is_square,
-            Task.task_status,
-            Task.geometry.ST_AsGeoJSON().label("geojson"),
-            Task.locked_by,
-            Task.mapped_by,
-            # subquery,
-        )
+        # Base query
+        query = """
+            SELECT 
+                t.id,
+                t.x,
+                t.y,
+                t.zoom,
+                t.is_square,
+                t.task_status,
+                ST_AsGeoJSON(t.geometry) AS geojson,
+                t.locked_by,
+                t.mapped_by
+            FROM tasks t
+            WHERE t.project_id = :project_id
+        """
 
-        filters = [Task.project_id == project_id]
-
+        # Initialize query parameters
+        filters = {'project_id': project_id}
+        
+        # Add task_id filter
         if task_ids_str:
-            task_ids = list(map(int, task_ids_str.split(",")))
-            tasks = Task.get_tasks(project_id, task_ids)
-            if not tasks or len(tasks) == 0:
-                raise NotFound(
-                    sub_code="TASKS_NOT_FOUND", tasks=task_ids, project_id=project_id
-                )
-            else:
-                tasks_filters = [task.id for task in tasks]
-            filters = [Task.project_id == project_id, Task.id.in_(tasks_filters)]
-        else:
-            tasks = Task.get_all_tasks(project_id)
-            if not tasks or len(tasks) == 0:
-                raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
+            task_ids = [int(task_id) for task_id in task_ids_str.split(",")]
+            query += " AND t.id IN :task_ids"
+            filters['task_ids'] = tuple(task_ids)
+        
+        # Add status filter
+        if status is not None:
+            query += " AND t.task_status = :status"
+            filters['status'] = status
 
-        if status:
-            filters.append(Task.task_status == status)
-
+        # Add ordering
         if order_by == "effort_prediction":
-            query = query.outerjoin(TaskAnnotation).filter(*filters)
             if order_by_type == "DESC":
-                query = query.order_by(
-                    desc(
-                        cast(
-                            cast(TaskAnnotation.properties["building_area_diff"], Text),
-                            Float,
-                        )
-                    )
-                )
+                query += """
+                    LEFT JOIN task_annotations ta ON ta.task_id = t.id
+                    ORDER BY CAST(ta.properties->>'building_area_diff' AS FLOAT) DESC
+                """
             else:
-                query = query.order_by(
-                    cast(
-                        cast(TaskAnnotation.properties["building_area_diff"], Text),
-                        Float,
-                    )
-                )
-        # elif order_by == "last_updated":
-        #     if order_by_type == "DESC":
-        #         query = query.filter(*filters).order_by(desc("update_date"))
-        #     else:
-        #         query = query.filter(*filters).order_by("update_date")
-        else:
-            query = query.filter(*filters)
+                query += """
+                    LEFT JOIN task_annotations ta ON ta.task_id = t.id
+                    ORDER BY CAST(ta.properties->>'building_area_diff' AS FLOAT) ASC
+                """
+        elif order_by:
+            if order_by_type == "DESC":
+                query += f" ORDER BY {order_by} DESC"
+            else:
+                query += f" ORDER BY {order_by} ASC"
 
-        project_tasks = query.all()
+        # Execute the query
+        rows = await db.fetch_all(query, values=filters)
 
+        # Process results into geojson.FeatureCollection
         tasks_features = []
-        for task in project_tasks:
-            task_geometry = geojson.loads(task.geojson)
+        for row in rows:
+            task_geometry = geojson.loads(row["geojson"])
             task_properties = dict(
-                taskId=task.id,
-                taskX=task.x,
-                taskY=task.y,
-                taskZoom=task.zoom,
-                taskIsSquare=task.is_square,
-                taskStatus=TaskStatus(task.task_status).name,
-                lockedBy=task.locked_by,
-                mappedBy=task.mapped_by,
+                taskId=row["id"],
+                taskX=row["x"],
+                taskY=row["y"],
+                taskZoom=row["zoom"],
+                taskIsSquare=row["is_square"],
+                taskStatus=TaskStatus(row["task_status"]).name,
+                lockedBy=row["locked_by"],
+                mappedBy=row["mapped_by"],
             )
-
             feature = geojson.Feature(
                 geometry=task_geometry, properties=task_properties
             )
             tasks_features.append(feature)
 
         return geojson.FeatureCollection(tasks_features)
+    
 
     @staticmethod
-    def get_tasks_as_geojson_feature_collection_no_geom(project_id):
+    async def get_tasks_as_geojson_feature_collection_no_geom(
+        db: Database,
+        project_id: int
+    ) -> geojson.FeatureCollection:
         """
-        Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID without geometry
+        Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID without geometry.
+        :param db: The async database connection
         :param project_id: Owning project ID
         :return: geojson.FeatureCollection
         """
-        project_tasks = (
-            session.query(
-                Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status
-            )
-            .filter(Task.project_id == project_id)
-            .all()
-        )
+        # Define the SQL query
+        query = """
+            SELECT
+                t.id,
+                t.x,
+                t.y,
+                t.zoom,
+                t.is_square,
+                t.task_status
+            FROM tasks t
+            WHERE t.project_id = :project_id
+        """
 
+        # Execute the query
+        rows = await db.fetch_all(query, values={"project_id": project_id})
+
+        # Process results into geojson.FeatureCollection
         tasks_features = []
-        for task in project_tasks:
+        for row in rows:
             task_properties = dict(
-                taskId=task.id,
-                taskX=task.x,
-                taskY=task.y,
-                taskZoom=task.zoom,
-                taskIsSquare=task.is_square,
-                taskStatus=TaskStatus(task.task_status).name,
+                taskId=row["id"],
+                taskX=row["x"],
+                taskY=row["y"],
+                taskZoom=row["zoom"],
+                taskIsSquare=row["is_square"],
+                taskStatus=TaskStatus(row["task_status"]).name,
             )
-
             feature = geojson.Feature(properties=task_properties)
             tasks_features.append(feature)
 
         return geojson.FeatureCollection(tasks_features)
+
 
     @staticmethod
     def get_mapped_tasks_by_user(project_id: int):
