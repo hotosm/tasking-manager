@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import messages from './messages';
 import { useExploreProjectsQueryParams, stringify } from '../../hooks/UseProjectsQueryAPI';
@@ -117,13 +118,16 @@ const DifficultyDropdown = (props) => {
   );
 };
 
-export const ProjectNav = (props) => {
+export const ProjectNav = ({ isExploreProjectsPage, children }) => {
   const location = useLocation();
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
   const encodedParams = stringify(fullProjectsQuery)
     ? ['?', stringify(fullProjectsQuery)].join('')
     : '';
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
+  const isExploreProjectsTableView = useSelector(
+    (state) => state.preferences['isExploreProjectsTableView'],
+  );
 
   useEffect(() => {
     setQuery(
@@ -145,7 +149,9 @@ export const ProjectNav = (props) => {
     fullProjectsQuery.partnerId ||
     fullProjectsQuery.partnershipFrom ||
     fullProjectsQuery.partnershipTo;
-  const filterIsEmpty = !stringify(fullProjectsQuery);
+  const fullProjectsQueryCopy = { ...fullProjectsQuery };
+  delete fullProjectsQueryCopy.omitMapResults;
+  const filterIsEmpty = !stringify(fullProjectsQueryCopy);
   const moreFiltersCurrentActiveStyle = moreFiltersAnyActive
     ? 'bg-red white'
     : 'bg-white blue-dark';
@@ -153,6 +159,10 @@ export const ProjectNav = (props) => {
     location.pathname.indexOf('filters') > -1
       ? '/explore' + encodedParams
       : './filters/' + encodedParams;
+  let clearFiltersURL = './';
+  if ((isExploreProjectsPage && isExploreProjectsTableView) || !isMapShown) {
+    clearFiltersURL = './?omitMapResults=1';
+  }
 
   // onSelectedItemChange={(changes) => console.log(changes)}
   return (
@@ -183,7 +193,9 @@ export const ProjectNav = (props) => {
               allQueryParams={fullProjectsQuery}
               className="f6"
             />
-            {!filterIsEmpty && <ClearFilters url="./" className="mv2 mh1 fr dn dib-l" />}
+            {!filterIsEmpty && (
+              <ClearFilters url={clearFiltersURL} className="mv2 mh1 fr dn dib-l" />
+            )}
 
             <ProjectSearchBox
               className="dib fr mh1"
@@ -200,7 +212,12 @@ export const ProjectNav = (props) => {
           </div>
         </div>
       </div>
-      {props.children}
+      {children}
     </header>
   );
+};
+
+ProjectNav.propTypes = {
+  isExploreProjectsPage: PropTypes.bool.isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
 };

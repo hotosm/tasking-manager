@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useEffect, useState, useLayoutEffect, useRef } f
 import { useSelector } from 'react-redux';
 import ReactPlaceholder from 'react-placeholder';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import { ProjectNav } from '../components/projects/projectNav';
 import { MyProjectNav } from '../components/projects/myProjectNav';
@@ -61,7 +62,7 @@ export const ProjectsPage = () => {
 
   return (
     <div className="pull-center" id="projects-container">
-      <ProjectNav>
+      <ProjectNav isExploreProjectsPage>
         <Outlet />
       </ProjectNav>
       <section className={`${searchResultWidth} explore-projects-container`}>
@@ -156,6 +157,10 @@ export const UserProjectsPage = ({ management }) => {
       </section>
     </div>
   );
+};
+
+UserProjectsPage.propTypes = {
+  management: PropTypes.bool.isRequired,
 };
 
 export const ProjectsPageIndex = (props) => {
