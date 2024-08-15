@@ -228,6 +228,18 @@ export default defineMessages({
     id: 'project.sortby.more_active',
     defaultMessage: 'Active projects',
   },
+  sortByDueDateAsc: {
+    id: 'project.sortby.due_date',
+    defaultMessage: 'Due Soon',
+  },
+  sortByPercentMappedDesc: {
+    id: 'project.sortby.percent_mapped',
+    defaultMessage: 'Most Mapped',
+  },
+  sortByPercentValidatedDesc: {
+    id: 'project.sortby.percent_validated',
+    defaultMessage: 'Most Validated',
+  },
   apply: {
     id: 'project.nav.apply',
     defaultMessage: 'Apply',

@@ -1,4 +1,5 @@
 import { FormattedMessage } from 'react-intl';
+import PropTypes from 'prop-types';
 
 import messages from './messages';
 import { Dropdown } from '../dropdown';
@@ -43,6 +44,24 @@ export function OrderBySelector(props) {
       sort: 'difficulty',
       type: 'DESC',
     },
+    {
+      label: <FormattedMessage {...messages.sortByDueDateAsc} />,
+      value: 'due_date.ASC',
+      sort: 'due_date',
+      type: 'ASC',
+    },
+    {
+      label: <FormattedMessage {...messages.sortByPercentMappedDesc} />,
+      value: 'percent_mapped.DESC',
+      sort: 'percent_mapped',
+      type: 'DESC',
+    },
+    {
+      label: <FormattedMessage {...messages.sortByPercentValidatedDesc} />,
+      value: 'percent_validated.DESC',
+      sort: 'percent_validated',
+      type: 'DESC',
+    },
   ];
 
   const onSortSelect = (arr) =>
@@ -66,3 +85,9 @@ export function OrderBySelector(props) {
     />
   );
 }
+
+OrderBySelector.propTypes = {
+  className: PropTypes.string,
+  setQuery: PropTypes.func.isRequired,
+  allQueryParams: PropTypes.object.isRequired,
+};
