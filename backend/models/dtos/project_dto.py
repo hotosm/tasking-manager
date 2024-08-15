@@ -3,7 +3,7 @@
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.dtos.team_dto import ProjectTeamDTO
-from backend.models.dtos.interests_dto import InterestDTO
+from backend.models.dtos.interests_dto import InterestDTO, ListInterestDTO
 from backend.models.postgis.statuses import (
     ProjectStatus,
     ProjectPriority,
@@ -140,16 +140,16 @@ class DraftProjectDTO(BaseModel):
     has_arbitrary_tasks: bool = Field(required=True, alias="arbitraryTasks")
     user_id: int = Field(required=True)
 
-
 class ProjectInfoDTO(BaseModel):
     """Contains the localized project info"""
 
-    locale: str = None
-    name: str = ""
-    short_description: str = ""
-    description: str = ""
-    instructions: str = ""
-    per_task_instructions: str = ""
+    locale: str
+    name: str = Field(default="")
+    short_description: str = Field(default="", serialization_alias="shortDescription")
+    description: str = Field(default="")
+    instructions: str = Field(default="")
+    per_task_instructions: str = Field(default="", serialization_alias="perTaskInstructions")
+
 
 class CustomEditorDTO(BaseModel):
     """DTO to define a custom editor"""
@@ -161,52 +161,51 @@ class CustomEditorDTO(BaseModel):
 class ProjectDTO(BaseModel):
     """Describes JSON model for a tasking manager project"""
     
-    project_id: Optional[int] = Field(alias="projectId", default=None)
+    project_id: Optional[int] = Field(serialization_alias="projectId", default=None)
     project_status: Optional[str] = None
     project_priority: Optional[str] = None
-    area_of_interest: Optional[dict] = Field(alias="areaOfInterest", default={})
-    aoi_bbox: List[float] = Field(alias="aoiBBOX", default=[])
+    area_of_interest: Optional[dict] = Field(serialization_alias="areaOfInterest", default={})
+    aoi_bbox: List[float] = Field(serialization_alias="aoiBBOX", default=[])
     tasks: Optional[dict] = None  # Replace with the actual type for tasks
-    default_locale: Optional[str] = Field(alias="defaultLocale", default=None)
+    default_locale: Optional[str] = Field(serialization_alias="defaultLocale", default=None)
     project_info: Optional[ProjectInfoDTO] = None
-    project_info_locales: List[ProjectInfoDTO] = Field(alias="projectInfoLocales", default=[])
+    project_info_locales: List[ProjectInfoDTO] = Field(serialization_alias="projectInfoLocales", default=[])
     difficulty: Optional[str] = None
-    mapping_permission: Optional[str] = Field(alias="mappingPermission", default=None)
-    validation_permission: Optional[str] = Field(alias="validationPermission", default=None)
-    enforce_random_task_selection: Optional[bool] = Field(alias="enforceRandomTaskSelection", default=False)
+    mapping_permission: Optional[str] = Field(serialization_alias="mappingPermission", default=None)
+    validation_permission: Optional[str] = Field(serialization_alias="validationPermission", default=None)
+    enforce_random_task_selection: Optional[bool] = Field(serialization_alias="enforceRandomTaskSelection", default=False)
     private: Optional[bool] = None
-    changeset_comment: Optional[str] = Field(alias="changesetComment", default=None)
-    osmcha_filter_id: Optional[str] = Field(alias="osmchaFilterId", default=None)
-    due_date: Optional[str] = Field(alias="dueDate", default=None)
+    changeset_comment: Optional[str] = Field(serialization_alias="changesetComment", default=None)
+    osmcha_filter_id: Optional[str] = Field(serialization_alias="osmchaFilterId", default=None)
+    due_date: Optional[str] = Field(serialization_alias="dueDate", default=None)
     imagery: Optional[str] = None
-    josm_preset: Optional[str] = Field(alias="josmPreset", default=None)
-    id_presets: Optional[List[str]] = Field(alias="idPresets", default=[])
-    extra_id_params: Optional[str] = Field(alias="extraIdParams", default=None)
-    rapid_power_user: Optional[bool] = Field(alias="rapidPowerUser", default=False)
-    mapping_types: List[str] = Field(alias="mappingTypes", default=[], validators=[is_known_mapping_type])
+    josm_preset: Optional[str] = Field(serialization_alias="josmPreset", default=None)
+    id_presets: Optional[List[str]] = Field(serialization_alias="idPresets", default=[])
+    extra_id_params: Optional[str] = Field(serialization_alias="extraIdParams", default=None)
+    rapid_power_user: Optional[bool] = Field(serialization_alias="rapidPowerUser", default=False)
+    mapping_types: List[str] = Field(serialization_alias="mappingTypes", default=[], validators=[is_known_mapping_type])
     campaigns: List[CampaignDTO] = Field(default=[])
     organisation: Optional[int] = None
-    organisation_name: Optional[str] = Field(alias="organisationName", default=None)
-    organisation_slug: Optional[str] = Field(alias="organisationSlug", default=None)
-    organisation_logo: Optional[str] = Field(alias="organisationLogo", default=None)
-    country_tag: List[str] = Field(alias="countryTag", default=[])
-
-    license_id: Optional[int] = Field(alias="licenseId", default=None)
-    allowed_usernames: List[str] = Field(alias="allowedUsernames", default=[])
-    priority_areas: Optional[dict] = Field(alias="priorityAreas", default={})
+    organisation_name: Optional[str] = Field(serialization_alias="organisationName", default=None)
+    organisation_slug: Optional[str] = Field(serialization_alias="organisationSlug", default=None)
+    organisation_logo: Optional[str] = Field(serialization_alias="organisationLogo", default=None)
+    country_tag: List[str] = Field(serialization_alias="countryTag", default=[])
+    license_id: Optional[int] = Field(serialization_alias="licenseId", default=None)
+    allowed_usernames: List[str] = Field(serialization_alias="allowedUsernames", default=[])
+    priority_areas: Optional[dict] = Field(serialization_alias="priorityAreas", default={})
     created: Optional[str] = None
-    last_updated: Optional[str] = Field(alias="lastUpdated", default=None)
+    last_updated: Optional[str] = Field(serialization_alias="lastUpdated", default=None)
     author: Optional[str] = None
-    active_mappers: Optional[int] = Field(alias="activeMappers", default=None)
-    percent_mapped: Optional[int] = Field(alias="percentMapped", default=None)
-    percent_validated: Optional[int] = Field(alias="percentValidated", default=None)
-    percent_bad_imagery: Optional[int] = Field(alias="percentBadImagery", default=None)
-    task_creation_mode: Optional[str] = Field(alias="taskCreationMode", validators=[is_known_task_creation_mode], default=None)
-    project_teams: List[ProjectTeamDTO] = Field(alias="teams", default=[])
-    mapping_editors: Optional[List[str]] = Field(alias="mappingEditors", min_items=1, validators=[is_known_editor], default=[])
-    validation_editors: Optional[List[str]] = Field(alias="validationEditors", min_items=1, validators=[is_known_editor], default=[])
-    custom_editor: Optional[CustomEditorDTO] = Field(alias="customEditor", default=None)
-    interests: Optional[List[InterestDTO]] = None
+    active_mappers: Optional[int] = Field(serialization_alias="activeMappers", default=None)
+    percent_mapped: Optional[int] = Field(serialization_alias="percentMapped", default=None)
+    percent_validated: Optional[int] = Field(serialization_alias="percentValidated", default=None)
+    percent_bad_imagery: Optional[int] = Field(serialization_alias="percentBadImagery", default=None)
+    task_creation_mode: Optional[str] = Field(serialization_alias="taskCreationMode", validators=[is_known_task_creation_mode], default=None)
+    project_teams: List[ProjectTeamDTO] = Field(serialization_alias="teams", default=[])
+    mapping_editors: Optional[List[str]] = Field(serialization_alias="mappingEditors", min_items=1, validators=[is_known_editor], default=[])
+    validation_editors: Optional[List[str]] = Field(serialization_alias="validationEditors", min_items=1, validators=[is_known_editor], default=[])
+    custom_editor: Optional[CustomEditorDTO] = Field(serialization_alias="customEditor", default=None)
+    interests: Optional[List[ListInterestDTO]] = None
 
 
 class ProjectFavoriteDTO(BaseModel):
