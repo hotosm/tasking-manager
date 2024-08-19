@@ -22,10 +22,20 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 <!-- prettier-ignore-start -->
 | Status | Feature |
 |:--:| :-- |
-|✅| implemented |
-|⚙️| ongoing |
-| | future |
+|✅| 🗺️ task splitting and collaborative mapping |
+|✅| 🗺️ OSM data downloadable in various data formats |
+|✅| 🗺️ campgaign pages to link projects via theme |
+|⚙️| 💼 OSM teams integration |
+| | 💼 improved documentation for community contribution |
+| | 💼 updates to resilience, ensuring zero downtime during mapathons |
+| | 🗺️ field validation of data using FMTM |
 <!-- prettier-ignore-end -->
+
+
+> [!Note]
+> 🗺️ for mappers
+>
+> 💼 for managers / validators
 
 A more developer-facing roadmap can be found
 [here](https://github.com/orgs/hotosm/projects/28/).
