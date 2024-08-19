@@ -19,9 +19,23 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 ## Product Roadmap
 
-|Now | Next | Later|
-|----|------|-------|
-|<ul><li>[Letting user to explore projects with a downloadable list view](https://github.com/hotosm/tasking-manager/issues/3394)</li><li>Bring in latest features of iD</li><li>Update latest translations</li></ul>| <ul><li>Bring in MapSwipe stats for Partner Pages</li><li>Enable OSM practice projects</li><li>Improve sorting & filtering of projects</li></ul> | <ul><li>UI/UX improvements</li></ul>|
+
+
+Status | Feature
+-------|---------
+✅ | Downloadable OSM exports for each project
+✅ | Data Quality live monitoring
+✅ | Rapid editor upgrade
+✅| Public facing partner pages
+⚙️|[Letting user to explore projects with a downloadable list view](https://github.com/hotosm/tasking-manager/issues/3394)
+⚙️| Bring in MapSwipe stats for Partner Pages
+⚙️|Bring in latest features of iD editor
+⚙️| Address performance and scalability issues through fast API migration
+|| Update latest translations
+|| Enable OSM practice projects
+|| Improve sorting & filtering of projects
+|| UI/UX improvements
+
 
  
 
