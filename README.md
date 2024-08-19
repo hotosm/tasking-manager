@@ -19,26 +19,11 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 ## Product Roadmap
 
-<!-- prettier-ignore-start -->
-| Status | Feature |
-|:--:| :-- |
-|✅| 🗺️ task splitting and collaborative mapping |
-|✅| 🗺️ OSM data downloadable in various data formats |
-|✅| 🗺️ campgaign pages to link projects via theme |
-|⚙️| 💼 OSM teams integration |
-| | 💼 improved documentation for community contribution |
-| | 💼 updates to resilience, ensuring zero downtime during mapathons |
-| | 🗺️ field validation of data using FMTM |
-<!-- prettier-ignore-end -->
+|Now | Next | Later|
+|----|------|-------|
+|<ul><li>[Letting user to explore projects with a downloadable list view](https://github.com/hotosm/tasking-manager/issues/3394)</li><li>Bring in latest features of iD</li><li>Update latest translations</li></ul>| <ul><li>Bring in MapSwipe stats for Partner Pages</li><li>Enable OSM practice projects</li><li>Improve sorting & filtering of projects</li></ul> | <ul><li>UI/UX improvements</li></ul>|
 
-
-> [!Note]
-> 🗺️ for mappers
->
-> 💼 for managers / validators
-
-A more developer-facing roadmap can be found
-[here](https://github.com/orgs/hotosm/projects/28/).
+ 
 
 ## Developers
 
