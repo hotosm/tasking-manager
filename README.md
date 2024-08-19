@@ -23,8 +23,9 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 Status | Feature
 -------|---------
-✅ | Downloadable OSM exports for each project
-✅ | Data Quality live monitoring
+✅ | Upto date OSM statistics with [ohsome Now integration](https://stats.now.ohsome.org/) - [v4.6.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.6.2)
+✅ | Downloadable OSM exports for each project - [v4.7.0](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.0)
+✅ | Data Quality live monitoring - [v4.7.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.2)
 ✅ | Rapid editor upgrade
 ✅| Public facing partner pages
 ⚙️|[Letting user to explore projects with a downloadable list view](https://github.com/hotosm/tasking-manager/issues/3394)
