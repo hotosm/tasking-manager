@@ -700,6 +700,11 @@ class ProjectsAllAPI(ProjectSearchBase):
 
             search_dto = self.setup_search_dto()
 
+            if search_dto.omit_map_results and search_dto.download_as_csv:
+                return {
+                    "Error": "omitMapResults and downloadAsCSV cannot be both set to true"
+                }, 400
+
             if (
                 search_dto.partnership_from is not None
                 or search_dto.partnership_to is not None

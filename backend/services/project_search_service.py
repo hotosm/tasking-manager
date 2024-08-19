@@ -215,11 +215,17 @@ class ProjectSearchService:
         ]
 
         df = pd.json_normalize(results_as_dto)
-
-        del df["locale"]
-        del df["shortDescription"]
-        del df["organisationLogo"]
-        del df["campaigns"]
+        df.drop(
+            columns=[
+                "locale",
+                "shortDescription",
+                "organisationName",
+                "organisationLogo",
+                "campaigns",
+            ],
+            inplace=True,
+            axis=1,
+        )
 
         return df.to_csv(index=False)
 
