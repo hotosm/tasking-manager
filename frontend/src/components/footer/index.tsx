@@ -32,7 +32,7 @@ const socialNetworks = [
 
 export function Footer() {
   const location = useLocation();
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const userDetails = useSelector((state: RootState) => state.auth.userDetails);
 
   const footerDisabledPaths = [
     'projects/:id/tasks',
