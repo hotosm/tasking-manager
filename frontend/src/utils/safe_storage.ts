@@ -6,9 +6,13 @@
  * Wraps localStorage.getItem in a try/catch. Return null
  * if the key does not exist or localStorage fails.
  */
-function getItem(key: string): ?string {
+function getItem(key: string) {
   try {
-    return localStorage.getItem(key) || null;
+    const gotKey = localStorage.getItem(key);
+    if (gotKey === null) {
+      return null;
+    }
+    return JSON.parse(gotKey) as unknown;
   } catch (err) {
     console.warn('Could not read from localStorage.');
     return null;
@@ -18,9 +22,9 @@ function getItem(key: string): ?string {
 /**
  * Wraps localStorage.setItem in a try/catch.
  */
-function setItem(key: string, value: string): void {
+function setItem(key: string, value: unknown): void {
   try {
-    localStorage.setItem(key, value);
+    localStorage.setItem(key, JSON.stringify(value));
   } catch (err) {
     console.warn('Could not write to localStorage.');
   }
