@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import messages from './messages';
 import { Alert } from '../alert';
 import { ChevronDownIcon, CloseIcon } from '../svgIcons';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { styleClasses } from '../../views/projectEdit';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useAllPartnersQuery } from '../../api/projects';

@@ -2,7 +2,7 @@ import { featureCollection } from '@turf/helpers';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { useAsync } from '../../hooks/UseAsync';
 
 const clearParamsStep = (props) => {

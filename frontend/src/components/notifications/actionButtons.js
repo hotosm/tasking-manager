@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import deletionMessages from '../deleteModal/messages';
 import messages from './messages';
 import { EyeIcon, WasteIcon } from '../svgIcons';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const ActionButtons = ({
@@ -84,9 +84,9 @@ export const ActionButtons = ({
     isAllSelected
       ? updateUnreadCount()
       : // The decrement count is readily available; deducting count from selected
-        Array.from({ length: unreadCountInSelected }, () =>
-          dispatch({ type: 'DECREMENT_UNREAD_COUNT' }),
-        );
+      Array.from({ length: unreadCountInSelected }, () =>
+        dispatch({ type: 'DECREMENT_UNREAD_COUNT' }),
+      );
   }
 
   if (selected.length) {

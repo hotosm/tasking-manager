@@ -5,7 +5,7 @@ import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { SignUp } from '../header/signUp';
 import bannerHR from '../../assets/img/banner_2500.jpg';
 import bannerLR from '../../assets/img/banner_824.jpg';

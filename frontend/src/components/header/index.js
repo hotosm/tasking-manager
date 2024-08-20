@@ -10,7 +10,7 @@ import logo from '../../assets/img/main-logo.svg';
 import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { LocaleSelector } from '../localeSelect';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { UpdateDialog } from './updateDialog';
 import { BurgerMenu } from './burgerMenu';
 import { TopNavLink } from './NavLink';

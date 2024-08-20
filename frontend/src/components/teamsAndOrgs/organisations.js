@@ -13,7 +13,7 @@ import { useUploadImage } from '../../hooks/UseUploadImage';
 import { levels } from '../../hooks/UseOrganisationLevel';
 import { Management } from './management';
 import { InternalLinkIcon, ClipboardIcon } from '../svgIcons';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { UserAvatarList } from '../user/avatar';
 import { nCardPlaceholders } from './organisationsPlaceholder';
 import { Alert } from '../alert';
