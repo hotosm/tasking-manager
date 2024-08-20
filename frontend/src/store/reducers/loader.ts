@@ -2,9 +2,14 @@ import { types } from '../actions/loader';
 
 const initialState = {
   isLoading: false,
-};
+} satisfies { isLoading: boolean; };
 
-export function loaderReducer(state = initialState, action) {
+type Actions = {
+  type: typeof types.SET_LOADER;
+  isLoading: boolean;
+}
+
+export function loaderReducer(state = initialState, action: Actions) {
   switch (action.type) {
     case types.SET_LOADER: {
       return {
