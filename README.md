@@ -28,14 +28,14 @@ Status | Feature
 ✅ | Live Data Quality Monitoring: Monitor project data quality in real-time. Introduced in [v4.7.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.2).
 ✅ | Rapid Editor Upgrade: Enhanced mapping experience with the latest rapid editor updates.
 ✅ | Public-Facing Partner Pages: Create and display dedicated pages for partners running remote mapathons.
-⚙️|Downloadable Project List View: Allow users to explore projects via a downloadable list. [View issue](https://github.com/hotosm/tasking-manager/issues/3394).
-⚙️|MapSwipe Stats Integration: Display MapSwipe statistics on Partner Pages.
-⚙️|iD Editor Latest Features: Integrate the newest features of the iD editor.
-⚙️|FastAPI Migration: Improve performance and scalability of Tasking Managaer to handle large scale validation and mapping efforts.
-||Latest Translations Update: Keep all content current with the latest translations.
-||OSM Practice Projects: Enable users to engage in OSM practice projects within Tasking Manager workflow.
-||Improved Project Sorting & Filtering: Enhance the user experience with better sorting and filtering options.
-||UI/UX Enhancements: Continuous improvements to the user interface and experience.
+⚙️| Downloadable Project List View: Allow users to explore projects via a downloadable list. [View issue](https://github.com/hotosm/tasking-manager/issues/3394).
+⚙️| MapSwipe Stats Integration: Display MapSwipe statistics on Partner Pages.
+⚙️| iD Editor Latest Features: Integrate the newest features of the iD editor.
+⚙️| FastAPI Migration: Improve performance and scalability of Tasking Manager to handle large scale validation and mapping efforts.
+| | Latest Translations Update: Keep all content current with the latest translations.
+| | OSM Practice Projects: Enable users to engage in OSM practice projects within Tasking Manager workflow.
+| | Improved Project Sorting & Filtering: Enhance the user experience with better sorting and filtering options.
+| | UI/UX Enhancements: Continuous improvements to the user interface and experience.
 
 
 
