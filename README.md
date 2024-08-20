@@ -23,19 +23,20 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 Status | Feature
 -------|---------
-✅ | Upto date OSM statistics with [ohsome Now integration](https://stats.now.ohsome.org/) - [v4.6.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.6.2)
-✅ | Downloadable OSM exports for each project - [v4.7.0](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.0)
-✅ | Data Quality live monitoring - [v4.7.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.2)
-✅ | Rapid editor upgrade
-✅| Public facing partner pages
-⚙️|[Letting user to explore projects with a downloadable list view](https://github.com/hotosm/tasking-manager/issues/3394)
-⚙️| Bring in MapSwipe stats for Partner Pages
-⚙️|Bring in latest features of iD editor
-⚙️| Address performance and scalability issues through fast API migration
-|| Update latest translations
-|| Enable OSM practice projects
-|| Improve sorting & filtering of projects
-|| UI/UX improvements
+✅ | Up-to-date OSM Statistics: Integrated with [ohsome Now](https://stats.now.ohsome.org/) for real-time data insights. Released in [v4.6.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.6.2).
+✅ | Downloadable OSM Exports: Export data directly from each project. Available in[ v4.7.0](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.0).
+✅ | Live Data Quality Monitoring: Monitor project data quality in real-time. Introduced in [v4.7.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.2).
+✅ | Rapid Editor Upgrade: Enhanced mapping experience with the latest rapid editor updates.
+✅ | Public-Facing Partner Pages: Create and display dedicated pages for partners running remote mapathons.
+⚙️|Downloadable Project List View: Allow users to explore projects via a downloadable list. [View issue](https://github.com/hotosm/tasking-manager/issues/3394).
+⚙️|MapSwipe Stats Integration: Display MapSwipe statistics on Partner Pages.
+⚙️|iD Editor Latest Features: Integrate the newest features of the iD editor.
+⚙️|FastAPI Migration: Improve performance and scalability of Tasking Managaer to handle large scale validation and mapping efforts.
+||Latest Translations Update: Keep all content current with the latest translations.
+||OSM Practice Projects: Enable users to engage in OSM practice projects within Tasking Manager workflow.
+||Improved Project Sorting & Filtering: Enhance the user experience with better sorting and filtering options.
+||UI/UX Enhancements: Continuous improvements to the user interface and experience.
+
 
 
  
