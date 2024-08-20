@@ -10,7 +10,7 @@ import { loaderReducer } from './loader';
 import { editorReducer } from './editor';
 import { orgBarVisibilityReducer } from './orgTopBar';
 
-export default combineReducers({
+const reducers = combineReducers({
   preferences: preferencesReducer,
   auth: authorizationReducer,
   notifications: notificationsReducer,
@@ -21,3 +21,5 @@ export default combineReducers({
   editor: editorReducer,
   orgBarVisibility: orgBarVisibilityReducer,
 });
+
+export default reducers;

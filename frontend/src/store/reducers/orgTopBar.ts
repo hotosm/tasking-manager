@@ -9,7 +9,9 @@ type Actions = {
   isVisible: boolean;
 }
 
-export function orgBarVisibilityReducer(state = initialState, action: Actions) {
+export function orgBarVisibilityReducer(state: {
+  isVisible: boolean;
+} = initialState, action: Actions) {
   switch (action.type) {
     case 'SET_VISIBILITY': {
       return {

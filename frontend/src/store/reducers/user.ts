@@ -23,7 +23,7 @@ type Actions = {
   payload: User['user'],
 };
 
-export function userReducer(state = initialState, action: Actions) {
+export function userReducer(state: User = initialState, action: Actions) {
   switch (action.type) {
     case types.REGISTER_USER: {
       return {

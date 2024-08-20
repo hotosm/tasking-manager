@@ -32,7 +32,7 @@ type Actions = {
   projectListView: boolean;
 }
 
-export function preferencesReducer(state = initialState, action: Actions) {
+export function preferencesReducer(state: UserPreferences = initialState, action: Actions) {
   switch (action.type) {
     case types.SET_LOCALE: {
       return {

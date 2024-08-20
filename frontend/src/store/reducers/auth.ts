@@ -50,7 +50,7 @@ type Actions = {
   session: null,
 }
 
-export function authorizationReducer(state = initialState, action: Actions) {
+export function authorizationReducer(state: UserData = initialState, action: Actions) {
   switch (action.type) {
     case types.SET_USER_DETAILS: {
       return { ...state, userDetails: action.userDetails };

@@ -9,7 +9,11 @@ type Actions = {
   isLoading: boolean;
 }
 
-export function loaderReducer(state = initialState, action: Actions) {
+export function loaderReducer(state: {
+  isLoading: boolean;
+} = initialState, action: Actions): {
+  isLoading: boolean;
+} {
   switch (action.type) {
     case types.SET_LOADER: {
       return {

@@ -7,6 +7,7 @@ type Notification = {
   isFirstLoading: boolean;
   isError: boolean;
   unreadNotificationsMini: any[];
+  lastParams: any;
   pagination: { hasNext: boolean; hasPrev: boolean; page: number };
   unreadCount: number;
   params: {
@@ -21,6 +22,7 @@ const initialState = {
   isLoading: false,
   isFirstLoading: false,
   isError: false,
+  lastParams: {},
   pagination: { hasNext: false, hasPrev: false, page: 1 },
   unreadCount: 0,
   params: {
@@ -33,7 +35,7 @@ type Actions = {
 } | {
   type: typeof types.NOTIFICATIONS_SUCCESS;
   userMessages: any[];
-  pagination: { page: number };
+  pagination: Notification["pagination"]
   params: any;
 } | {
   type: typeof types.NOTIFICATIONS_FAILURE;
@@ -44,7 +46,7 @@ type Actions = {
   type: typeof types.DECREMENT_UNREAD_COUNT;
 };
 
-export const notificationsReducer = (state = initialState, action: Actions) => {
+export const notificationsReducer = (state: Notification = initialState, action: Actions): Notification => {
   switch (action.type) {
     case types.NOTIFICATIONS_INIT:
       return {
