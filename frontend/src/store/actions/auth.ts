@@ -1,6 +1,7 @@
 import { setItem, removeItem, getItem } from '../../utils/safe_storage';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { setLoader } from './loader';
+import { Dispatch } from 'redux';
 
 export const types = {
   REGISTER_USER: 'REGISTER_USER',
@@ -13,7 +14,7 @@ export const types = {
   SET_TOKEN: 'SET_TOKEN',
   SET_SESSION: 'SET_SESSION',
   CLEAR_SESSION: 'CLEAR_SESSION',
-};
+} as const;
 
 export function clearUserDetails() {
   return {
@@ -38,7 +39,7 @@ export const updateUserEmail = (userDetails, token, relevant_fields) => (dispatc
   });
 };
 
-export const logout = () => (dispatch) => {
+export const logout = () => (dispatch: Dispatch) => {
   removeItem('username');
   removeItem('token');
   removeItem('action');
@@ -106,41 +107,41 @@ export const setAuthDetails = (username, token, osm_oauth_token) => (dispatch) =
 // UPDATES OSM INFORMATION OF THE USER
 export const setUserDetails =
   (username, encodedToken, update = false) =>
-  (dispatch) => {
-    // only trigger the loader if this function is not being triggered to update the user information
-    if (!update) dispatch(setLoader(true));
-    fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encodedToken)
-      .then((osmInfo) => dispatch(updateOSMInfo(osmInfo)))
-      .catch((error) => {
-        console.log(error);
-        dispatch(setLoader(false));
-      });
-    // GET USER DETAILS
-    fetchLocalJSONAPI(`users/queries/${username}/`, encodedToken)
-      .then((userDetails) => {
-        dispatch(updateUserDetails(userDetails));
-        // GET USER ORGS INFO
-        fetchLocalJSONAPI(
-          `organisations/?omitManagerList=true&manager_user_id=${userDetails.id}`,
-          encodedToken,
-        )
-          .then((orgs) =>
-            dispatch(updateOrgsInfo(orgs.organisations.map((org) => org.organisationId))),
+    (dispatch) => {
+      // only trigger the loader if this function is not being triggered to update the user information
+      if (!update) dispatch(setLoader(true));
+      fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encodedToken)
+        .then((osmInfo) => dispatch(updateOSMInfo(osmInfo)))
+        .catch((error) => {
+          console.log(error);
+          dispatch(setLoader(false));
+        });
+      // GET USER DETAILS
+      fetchLocalJSONAPI(`users/queries/${username}/`, encodedToken)
+        .then((userDetails) => {
+          dispatch(updateUserDetails(userDetails));
+          // GET USER ORGS INFO
+          fetchLocalJSONAPI(
+            `organisations/?omitManagerList=true&manager_user_id=${userDetails.id}`,
+            encodedToken,
           )
-          .catch((error) => dispatch(updateOrgsInfo([])));
-        fetchLocalJSONAPI(
-          `teams/?omitMemberList=true&team_role=PROJECT_MANAGER&member=${userDetails.id}`,
-          encodedToken,
-        )
-          .then((teams) => dispatch(updatePMsTeams(teams.teams.map((team) => team.teamId))))
-          .catch((error) => dispatch(updatePMsTeams([])));
-        dispatch(setLoader(false));
-      })
-      .catch((error) => {
-        if (error.message === 'InvalidToken') dispatch(logout());
-        dispatch(setLoader(false));
-      });
-  };
+            .then((orgs) =>
+              dispatch(updateOrgsInfo(orgs.organisations.map((org) => org.organisationId))),
+            )
+            .catch((error) => dispatch(updateOrgsInfo([])));
+          fetchLocalJSONAPI(
+            `teams/?omitMemberList=true&team_role=PROJECT_MANAGER&member=${userDetails.id}`,
+            encodedToken,
+          )
+            .then((teams) => dispatch(updatePMsTeams(teams.teams.map((team) => team.teamId))))
+            .catch((error) => dispatch(updatePMsTeams([])));
+          dispatch(setLoader(false));
+        })
+        .catch((error) => {
+          if (error.message === 'InvalidToken') dispatch(logout());
+          dispatch(setLoader(false));
+        });
+    };
 
 export const getUserDetails = (state) => (dispatch) => {
   if (state.auth.userDetails.username) {
@@ -150,8 +151,8 @@ export const getUserDetails = (state) => (dispatch) => {
 
 export const pushUserDetails =
   (userDetails, token, update = false) =>
-  (dispatch) => {
-    pushToLocalJSONAPI(`users/me/actions/set-user/`, userDetails, token, 'PATCH').then((data) =>
-      dispatch(setUserDetails(getItem('username'), token, update)),
-    );
-  };
+    (dispatch) => {
+      pushToLocalJSONAPI(`users/me/actions/set-user/`, userDetails, token, 'PATCH').then((data) =>
+        dispatch(setUserDetails(getItem('username'), token, update)),
+      );
+    };

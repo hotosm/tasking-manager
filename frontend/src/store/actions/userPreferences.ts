@@ -1,3 +1,4 @@
+import { Dispatch } from 'redux';
 import { setItem } from '../../utils/safe_storage';
 
 export const types = {
@@ -6,16 +7,16 @@ export const types = {
   TOGGLE_MAP: 'TOGGLE_MAP',
   TOGGLE_LIST_VIEW: 'TOGGLE_LIST_VIEW',
   TOGGLE_CARD_VIEW: 'TOGGLE_CARD_VIEW',
-};
+} as const;
 
-export function updateLocale(locale) {
+export function updateLocale(locale: string) {
   return {
     type: types.SET_LOCALE,
     locale: locale,
   };
 }
 
-export const setLocale = (locale) => (dispatch) => {
+export const setLocale = (locale: string) => (dispatch: Dispatch) => {
   setItem('locale', locale);
   dispatch(updateLocale(locale));
 };
