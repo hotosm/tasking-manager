@@ -14,13 +14,7 @@ const persistConfig = {
   blacklist: ['editor', 'orgBarVisibility'],
 };
 
-const persistedReducer = persistReducer<{
-  preferences: {
-    mapShown: boolean;
-    action: string;
-    projectListView: boolean;
-  }
-}>(persistConfig, reducers);
+const persistedReducer = persistReducer(persistConfig, reducers);
 
 const store = createStore(persistedReducer, undefined, composeWithDevTools((applyMiddleware(thunk))));
 

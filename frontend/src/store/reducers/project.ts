@@ -18,7 +18,7 @@ type Actions = {
   projectId: string
 };
 
-export function projectReducer(state = initialState, action: Actions) {
+export function projectReducer(state: ProjectState = initialState, action: Actions) {
   switch (action.type) {
     case types.CREATE_PROJECT: {
       return { ...state, params: action.params };

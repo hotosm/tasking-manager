@@ -30,7 +30,7 @@ type Actions = {
   type: typeof types.CLEAR_LOCKED_TASKS
 }
 
-export function tasksReducer(state = initialState, action: Actions) {
+export function tasksReducer(state: TaskData = initialState, action: Actions): TaskData {
   switch (action.type) {
     case types.SET_PROJECT: {
       return { ...state, project: action.project };
