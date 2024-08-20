@@ -28,7 +28,11 @@ ChartJS.register(
   Tooltip,
 );
 
-export default function ProjectTimeline({ tasksByDay }: Object) {
+export default function ProjectTimeline({ tasksByDay }: {
+  tasksByDay: {
+    date: string;
+  }[]
+}) {
   const intl = useIntl();
   const unit = useTimeDiff(tasksByDay);
   const mappedTasksConfig = {

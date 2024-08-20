@@ -15,7 +15,7 @@ import { store } from './store';
 import { ORG_NAME, MATOMO_ID } from './config';
 import { Preloader } from './components/preloader';
 import { FallbackComponent } from './views/fallback';
-import { Banner, ArchivalNotificationBanner } from './components/banner/index.jsx';
+import { Banner, ArchivalNotificationBanner } from './components/banner/index';
 import { router } from './routes';
 
 const queryClient = new QueryClient({

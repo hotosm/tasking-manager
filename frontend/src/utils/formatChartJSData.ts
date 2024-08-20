@@ -1,4 +1,4 @@
-export const formatChartData = (reference, stats) => {
+export const formatChartData = (reference: any, stats: any) => {
   let data = { datasets: [{ data: [], backgroundColor: [] }], labels: [] };
 
   data.datasets[0].data = reference.map((f) => stats[f.field]);
@@ -11,7 +11,7 @@ export const formatChartData = (reference, stats) => {
   return data;
 };
 
-export const formatTimelineData = (stats, mappedTasksConfig, validatedTasksConfig) => {
+export const formatTimelineData = (stats: any, mappedTasksConfig: any, validatedTasksConfig: any) => {
   let mapped = {
     data: [],
     backgroundColor: mappedTasksConfig.color,
@@ -38,7 +38,7 @@ export const formatTimelineData = (stats, mappedTasksConfig, validatedTasksConfi
   return { datasets: [validated, mapped], labels: labels };
 };
 
-export const formatTasksStatsData = (stats, mappedTasksConfig, validatedTasksConfig) => {
+export const formatTasksStatsData = (stats: any, mappedTasksConfig: any, validatedTasksConfig: any) => {
   let mapped = {
     data: [],
     backgroundColor: mappedTasksConfig.color,
@@ -57,7 +57,7 @@ export const formatTasksStatsData = (stats, mappedTasksConfig, validatedTasksCon
   return { datasets: [mapped, validated], labels: labels };
 };
 
-export const formatTooltip = (context) => {
+export const formatTooltip = (context: any) => {
   var label = context.label;
   if (label) label += ': ';
   label += context.dataset.data[context.dataIndex];
@@ -65,7 +65,7 @@ export const formatTooltip = (context) => {
   return `${label}%`;
 };
 
-export const formatTimelineTooltip = (context, isPercent) => {
+export const formatTimelineTooltip = (context: any, isPercent: boolean) => {
   var label = context.dataset.label || '';
   if (label) label += ': ';
   label += context.dataset.data[context.dataIndex];
