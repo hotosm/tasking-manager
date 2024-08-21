@@ -336,6 +336,8 @@ class ProjectSearchBBoxDTO(BaseModel):
 #     due_date = UTCDateTimeType(serialized_name="dueDate")
 #     total_contributors = IntType(serialized_name="totalContributors")
 #     country = StringType(serialize_when_none=False)
+
+
 class ListSearchResultDTO(BaseModel):
     project_id: Optional[int] = Field(alias="projectId", default=None)
     locale: Optional[str] = None
@@ -355,27 +357,7 @@ class ListSearchResultDTO(BaseModel):
     total_contributors: Optional[int] = Field(alias="totalContributors", default=None)
     country: Optional[str] = Field(default="", serialize=False)
 
-
-# class ProjectSearchResultsDTO(Model):
-#     """Contains all results for the search criteria"""
-
-#     def __init__(self):
-#         """DTO constructor initialise all arrays to empty"""
-#         super().__init__()
-#         self.results = []
-#         self.map_results = []
-
-#     map_results = BaseType(serialized_name="mapResults")
-#     results = ListType(ModelType(ListSearchResultDTO))
-#     pagination = ModelType(Pagination)
 class ProjectSearchResultsDTO(BaseModel):
-    # def __init__(self, results: List[ListSearchResultDTO] = None, map_results: List = None, pagination: Pagination = None, **kwargs):
-    #     """DTO constructor initialise all arrays to empty"""
-    #     super().__init__(**kwargs)
-    #     self.results = results or []
-    #     self.map_results = map_results or []
-    #     self.pagination = pagination or Pagination()
-
     map_results: Optional[List] = []
     results: Optional[List[ListSearchResultDTO]] = []
     pagination: Optional[Pagination] = {}
@@ -549,3 +531,25 @@ class ProjectUserStatsDTO(BaseModel):
     time_spent_mapping: int = Field(alias="timeSpentMapping")
     time_spent_validating: int = Field(alias="timeSpentValidating")
     total_time_spent: int = Field(alias="totalTimeSpent")
+
+
+# class PaginatedResults(BaseModel):
+#     items: List[ProjectDTO]
+#     total: int
+#     page: int
+#     per_page: int
+#     total_pages: int
+
+# class Pagination(BaseModel):
+#     total: int
+#     page: int
+#     per_page: int
+#     total_pages: int
+
+#     def __init__(self, paginated_results: PaginatedResults):
+#         super().__init__(
+#             total=paginated_results.total,
+#             page=paginated_results.page,
+#             per_page=paginated_results.per_page,
+#             total_pages=paginated_results.total_pages
+#         )

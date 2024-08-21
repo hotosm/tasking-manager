@@ -8,6 +8,7 @@ from backend.models.dtos.project_dto import (
     ProjectDTO,
     ProjectSearchDTO,
     ProjectSearchBBoxDTO,
+    ProjectSearchResultsDTO,
 )
 from backend.services.project_search_service import (
     ProjectSearchService,
@@ -540,7 +541,6 @@ def setup_search_dto(request) -> ProjectSearchDTO:
     interests_str = request.query_params.get("interests")
     if interests_str:
         search_dto.interests = map(int, interests_str.split(","))
-    # search_dto.validate()
 
     return search_dto
 
@@ -693,7 +693,7 @@ async def get(request: Request, db: Database = Depends(get_db)):
             user = await UserService.get_user_by_id(user_id, db)
         search_dto = setup_search_dto(request)
         results_dto = await ProjectSearchService.search_projects(search_dto, user, db)
-        return results_dto.model_dump(by_alias=True), 200
+        return results_dto, 200
     except NotFound:
         return {"mapResults": {}, "results": []}, 200 
     except (KeyError, ValueError) as e:

@@ -213,10 +213,8 @@ class ProjectService:
         :raises ProjectServiceError, NotFound
         """
         project = await ProjectService.get_project_by_id(project_id, db)
-        print(project, "This is project...")
         # if project is public and is not draft, we don't need to check permissions
         if not project.private and not project.status == ProjectStatus.DRAFT.value:
-            print('Insssideeeee...')
             return await Project.as_dto_for_mapping(project.id, db,current_user_id, locale, abbrev)
 
         is_allowed_user = True
@@ -628,40 +626,6 @@ class ProjectService:
                     project_completion,
                 ),
             ).start()
-
-    # @staticmethod
-    # def get_active_projects(interval, session):
-    #     action_date = datetime.now(timezone.utc) - timedelta(hours=interval)
-    #     result = (
-    #         session.query(TaskHistory).with_entities(TaskHistory.project_id)
-    #         .distinct()
-    #         .filter(TaskHistory.action_date >= action_date)
-    #         .all()
-    #     )
-    #     project_ids = [row.project_id for row in result]
-    #     projects = (
-    #         session.query(Project).with_entities(
-    #             Project.id,
-    #             Project.mapping_types,
-    #             Project.geometry.ST_AsGeoJSON().label("geometry"),
-    #         )
-    #         .filter(
-    #             Project.status == ProjectStatus.PUBLISHED.value,
-    #             Project.id.in_(project_ids),
-    #         )
-    #         .all()
-    #     )
-    #     features = []
-    #     for project in projects:
-    #         properties = {
-    #             "project_id": project.id,
-    #             "mapping_types": project.mapping_types,
-    #         }
-    #         feature = geojson.Feature(
-    #             geometry=geojson.loads(project.geometry), properties=properties
-    #         )
-    #         features.append(feature)
-    #     return geojson.FeatureCollection(features)
 
     @staticmethod
     async def get_active_projects(interval, session: AsyncSession):
