@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { API_URL } from '../config';
 
-const api = (token, locale) => {
+const api = (token?: string, locale?: string) => {
   const instance = axios.create({
     baseURL: API_URL.toString(),
     headers: {

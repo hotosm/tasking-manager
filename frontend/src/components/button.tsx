@@ -12,6 +12,7 @@ export const AnimatedLoadingIcon = () => (
   </IconSpace>
 );
 
+<<<<<<< HEAD
 export function Button(
   props: React.ButtonHTMLAttributes<HTMLButtonElement> & {
     icon?: React.ReactNode;
@@ -19,6 +20,15 @@ export function Button(
   },
 ) {
   const { children, icon, className, loading = false, disabled, ...rest } = props;
+=======
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  icon?: React.ReactNode,
+  loading?: boolean,
+};
+
+export function Button(props: ButtonProps) {
+  const { children, icon, className, loading = false, disabled, ...rest } = props
+>>>>>>> 454d43caf (chore(frontend): more ts migrations)
 
   return (
     <button

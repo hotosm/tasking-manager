@@ -4,13 +4,16 @@ import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
 import { OHSOME_STATS_BASE_URL, defaultChangesetComment } from '../config';
 
-const ohsomeProxyAPI = (url) => {
+const ohsomeProxyAPI = (url: string) => {
   const token = localStorage.getItem('token');
+  if (!token) return null;
   return api(token).get(`users/statistics/ohsome/?url=${url}`);
 };
 
 export const useSystemStatisticsQuery = () => {
-  const fetchSystemStats = ({ signal }) => {
+  const fetchSystemStats = ({ signal }: {
+    signal: AbortSignal;
+  }) => {
     return api().get(`system/statistics/`, {
       signal,
     });
@@ -23,7 +26,7 @@ export const useSystemStatisticsQuery = () => {
   });
 };
 
-export const useProjectStatisticsQuery = (projectId) => {
+export const useProjectStatisticsQuery = (projectId: string) => {
   const fetchProjectStats = ({ signal }) => {
     return api().get(`projects/${projectId}/statistics/`, {
       signal,
@@ -38,7 +41,9 @@ export const useProjectStatisticsQuery = (projectId) => {
 };
 
 export const useOsmStatsQuery = () => {
-  const fetchOsmStats = ({ signal }) => {
+  const fetchOsmStats = ({ signal }: {
+    signal: AbortSignal;
+  }) => {
     return api().get(`${OHSOME_STATS_BASE_URL}/stats/${defaultChangesetComment}-%2A`, {
       signal,
     });
@@ -52,8 +57,10 @@ export const useOsmStatsQuery = () => {
   });
 };
 
-export const useOsmHashtagStatsQuery = (defaultComment) => {
-  const fetchOsmStats = ({ signal }) => {
+export const useOsmHashtagStatsQuery = (defaultComment: string) => {
+  const fetchOsmStats = ({ signal }: {
+    signal: AbortSignal;
+  }) => {
     return api().get(`${OHSOME_STATS_BASE_URL}/stats/${defaultComment[0].replace('#', '')}`, {
       signal,
     });
@@ -68,7 +75,7 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
   });
 };
 
-export const useUserOsmStatsQuery = (id) => {
+export const useUserOsmStatsQuery = (id: string) => {
   const fetchUserOsmStats = () => {
     return ohsomeProxyAPI(
       `${OHSOME_STATS_BASE_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
@@ -80,7 +87,7 @@ export const useUserOsmStatsQuery = (id) => {
     queryFn: fetchUserOsmStats,
     // userDetail.test.js fails on CI when useErrorBoundary=true
     useErrorBoundary: process.env.NODE_ENV !== 'test',
-    select: (data) => data.data.result,
+    select: (data) => data?.data.result,
     enabled: !!id,
   });
 };

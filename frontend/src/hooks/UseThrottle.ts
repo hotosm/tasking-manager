@@ -1,7 +1,7 @@
 /* https://github.com/bhaskarGyan/use-throttle#readme */
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-export const useThrottle = (value, limit) => {
+export const useThrottle = (value: string, limit: number) => {
   const [throttledValue, setThrottledValue] = useState(value);
   const lastRan = useRef(Date.now());
 
@@ -22,19 +22,24 @@ export const useThrottle = (value, limit) => {
 };
 
 /* https://github.com/xnimorz/use-debounce based on 3.3.0 compiled from TypeScript */
-export function useDebouncedCallback(callback, delay, options = {}) {
+export function useDebouncedCallback<T extends any>(callback: (arg: T) => void, delay: number, options: {
+  maxWait?: number;
+  leading?: boolean;
+  trailing?: boolean;
+} = {}) {
   const maxWait = options.maxWait;
-  const maxWaitHandler = useRef(null);
+  const maxWaitHandler = useRef<null | NodeJS.Timeout>(null);
   const maxWaitArgs = useRef([]);
   const leading = options.leading;
   const trailing = options.trailing === undefined ? true : options.trailing;
   const leadingCall = useRef(false);
-  const functionTimeoutHandler = useRef(null);
+  const functionTimeoutHandler = useRef<null | NodeJS.Timeout>(null);
   const isComponentUnmounted = useRef(false);
   const debouncedFunction = useRef(callback);
   debouncedFunction.current = callback;
   const cancelDebouncedCallback = useCallback(() => {
-    clearTimeout(functionTimeoutHandler.current);
+    if (!functionTimeoutHandler.current || !maxWaitHandler.current) return;
+    clearTimeout(functionTimeoutHandler?.current);
     clearTimeout(maxWaitHandler.current);
     maxWaitHandler.current = null;
     maxWaitArgs.current = [];
@@ -49,9 +54,11 @@ export function useDebouncedCallback(callback, delay, options = {}) {
     [],
   );
   const debouncedCallback = useCallback(
-    (...args) => {
+    (...args: any) => {
       maxWaitArgs.current = args;
-      clearTimeout(functionTimeoutHandler.current);
+      if (functionTimeoutHandler.current) {
+        clearTimeout(functionTimeoutHandler.current);
+      }
       if (leadingCall.current) {
         leadingCall.current = false;
       }

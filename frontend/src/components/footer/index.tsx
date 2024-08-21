@@ -21,6 +21,7 @@ import {
   ORG_PRIVACY_POLICY_URL,
 } from '../../config';
 import './styles.scss';
+import { RootStore } from '../../store';
 
 const socialNetworks = [
   { link: ORG_TWITTER, icon: <TwitterIcon style={{ height: '20px', width: '20px' }} noBg /> },
@@ -32,7 +33,7 @@ const socialNetworks = [
 
 export function Footer() {
   const location = useLocation();
-  const userDetails = useSelector((state: RootState) => state.auth.userDetails);
+  const userDetails = useSelector((state: RootStore) => state.auth.userDetails);
 
   const footerDisabledPaths = [
     'projects/:id/tasks',
@@ -71,6 +72,7 @@ export function Footer() {
           <div className="menuItems">
             {getMenuItemsForUser(userDetails).map((item) => (
               <Fragment key={item.label.id}>
+                {/* @ts-expect-error TS migrations */}
                 {!item.serviceDesk ? (
                   <Link
                     to={item.link}
