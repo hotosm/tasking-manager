@@ -19,8 +19,7 @@ export const useLockedTasksQuery = () => {
   return useQuery({
     queryKey: ['locked-tasks'],
     queryFn: fetchLockedTasks,
-    select: (data: any) => data.data?.tasks,
-    cacheTime: 0,
-    useErrorBoundary: true,
+    select: (data) => data.data?.tasks,
+    throwOnError: true,
   });
 };

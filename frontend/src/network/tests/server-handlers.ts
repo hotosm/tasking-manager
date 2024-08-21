@@ -1,4 +1,4 @@
-import { rest } from 'msw';
+import { DefaultBodyType, PathParams, ResponseComposition, rest, RestContext, RestRequest } from 'msw';
 
 import {
   getProjectSummary,
@@ -117,10 +117,12 @@ const handlers = [
     return res(ctx.json(userFavorite));
   }),
   rest.post(API_URL + 'projects/:id/favorite/', async (req, res, ctx) => {
-    return res(ctx.json(favoritePost(req.params.id)));
+    // return res(ctx.json(favoritePost(req.params.id)));
+    return res(ctx.json(favoritePost()));
   }),
   rest.get(API_URL + 'projects/:id/statistics/', async (req, res, ctx) => {
     const { id } = req.params;
+    // @ts-expect-error TS Migrations
     return res(ctx.json(getProjectStats(id)));
   }),
   rest.get(API_URL + 'projects/:id/contributions/queries/day/', async (req, res, ctx) => {
@@ -299,14 +301,16 @@ const handlers = [
   rest.get(API_URL + 'interests/:id/', (req, res, ctx) => {
     return res(ctx.json(interest));
   }),
-  rest.patch(API_URL + 'interests/:id', (req, res, ctx) => {
-    return res(interestUpdationSuccess(req.body.name));
+  rest.patch(API_URL + 'interests/:id', async (req, res, ctx) => {
+    const body = await req.json();
+    return res(ctx.json(interestUpdationSuccess(body.name)));
   }),
   rest.delete(API_URL + 'interests/:id', (req, res, ctx) => {
     return res(ctx.json(interestDeletionSuccess));
   }),
-  rest.post(API_URL + 'interests', (req, res, ctx) => {
-    return res(ctx.json(interestCreationSuccess(req.body.name)));
+  rest.post(API_URL + 'interests', async (req, res, ctx) => {
+    const body = await req.json();
+    return res(ctx.json(interestCreationSuccess(body.name)));
   }),
   rest.get(API_URL + 'countries', (req, res, ctx) => {
     return res(ctx.json(countries));
@@ -375,7 +379,7 @@ const handlers = [
   }),
 ];
 
-const failedToConnectError = (req, res, ctx) => {
+const failedToConnectError = (_req: RestRequest<never, PathParams<string>>, res: ResponseComposition<DefaultBodyType>, _ctx: RestContext) => {
   return res.networkError('Failed to connect');
 };
 

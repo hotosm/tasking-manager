@@ -99,7 +99,7 @@ export const interestCreationSuccess = (name) => ({
   name,
 });
 
-export const interestUpdationSuccess = (name) => ({
+export const interestUpdationSuccess = (name: string) => ({
   id: 123,
   name,
 });

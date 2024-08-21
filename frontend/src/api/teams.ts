@@ -2,11 +2,14 @@ import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 
 import api from './apiClient';
+import { RootStore } from '../store';
 
-export const useTeamsQuery = (params, otherOptions) => {
-  const token = useSelector((state) => state.auth.token);
+export const useTeamsQuery = (params: any, otherOptions: any) => {
+  const token = useSelector((state: RootStore) => state.auth.token);
 
-  const fetchUserTeams = ({ signal }) => {
+  const fetchUserTeams = ({ signal }: {
+    signal: AbortSignal;
+  }) => {
     return api(token).get(`teams/`, {
       signal,
       params: params,

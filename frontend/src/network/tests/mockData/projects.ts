@@ -13,9 +13,9 @@ const status = {
   [PROJECT_ID_ALL_MAPPED]: {
     mappedPercent: 100,
   },
-};
+} as const;
 
-export const getProjectSummary = (id) => ({
+export const getProjectSummary = (id: number) => ({
   projectId: id,
   defaultLocale: 'en',
   author: 'test_user',
@@ -40,8 +40,8 @@ export const getProjectSummary = (id) => ({
   osmchaFilterId: '9322aa63-cccc-4d0d-9f93-403678e52345',
   mappingTypes: ['BUILDINGS'],
   changesetComment: `${TM_DEFAULT_CHANGESET_COMMENT}-${id} #brumado-buildings`,
-  percentMapped: status[id]?.mappedPercent || 16,
-  percentValidated: status[id]?.validatedPercent || 6,
+  percentMapped: (id === PROJECT_ID_ALL_VALIDATED || id === PROJECT_ID_ALL_MAPPED) ? status[id].mappedPercent : 16,
+  percentValidated: (id === PROJECT_ID_ALL_VALIDATED) ? status[id].validatedPercent : 6,
   percentBadImagery: 0,
   aoiCentroid: {
     type: 'Point',
@@ -73,7 +73,7 @@ export const getProjectSummary = (id) => ({
   validationEditors: ['JOSM', 'POTLATCH_2', 'FIELD_PAPERS', 'ID'],
 });
 
-export const getProjectStats = (id) => ({
+export const getProjectStats = (id: string) => ({
   projectId: Number(id),
   'projectArea(in sq.km)': 3506.03997973834,
   totalMappers: 105,
@@ -294,7 +294,7 @@ export const userTouchedProjects = {
   ],
 };
 
-export const taskDetail = (taskId) => ({
+export const taskDetail = (taskId: number) => ({
   taskId: taskId,
   projectId: 5871,
   taskStatus: 'LOCKED_FOR_MAPPING',
@@ -381,11 +381,11 @@ export const userFavorite = {
   favorited: false,
 };
 
-export const favoritePost = (id) => ({
+export const favoritePost = () => ({
   project_id: 123,
 });
 
-export const activities = (id) => {
+export const activities = (id: number) => {
   const isProjectValidated = id === PROJECT_ID_ALL_VALIDATED;
   return {
     activity: [

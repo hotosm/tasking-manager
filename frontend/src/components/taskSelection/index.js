@@ -73,17 +73,17 @@ export function TaskSelection({ project }: Object) {
       member: user.id,
     },
     {
-      useErrorBoundary: true,
+      throwOnError: true,
     },
   );
   const { data: activities, refetch: getActivities } = useActivitiesQuery(projectId);
   const { data: contributions } = useProjectContributionsQuery(projectId, {
-    useErrorBoundary: true,
+    throwOnError: true,
     refetchOnWindowFocus: true,
     refetchInterval: activeSection === 'contributions' ? 1000 * 60 : false,
   });
   const { data: tasksData, refetch: refetchTasks } = useTasksQuery(projectId, {
-    useErrorBoundary: true,
+    throwOnError: true,
     // Task status on the map were not being updated when coming from the action page,
     // so added this as a workaround.
     cacheTime: 0,
@@ -239,8 +239,8 @@ export function TaskSelection({ project }: Object) {
     project.enforceRandomTaskSelection && taskAction !== 'validateSelectedTask'
       ? randomTask
       : selected.length && !taskAction.endsWith('AnotherTask')
-      ? selected
-      : randomTask;
+        ? selected
+        : randomTask;
 
   return (
     <div>

@@ -7,7 +7,7 @@ describe('Alert Component', () => {
     const { container } = render(<Alert type="error">An error message</Alert>);
     expect(container.querySelector('svg')).toBeInTheDocument(); // ban icon
     expect(container.querySelector('.dark-red')).toBeInTheDocument();
-    expect(container.querySelector('div').className).toBe(
+    expect(container.querySelector('div')?.className).toBe(
       'db blue-dark bl bw2 br2 pa3 b--dark-red bg-washed-red',
     );
     expect(screen.queryByText(/An error message/)).toBeInTheDocument();
@@ -21,7 +21,7 @@ describe('Alert Component', () => {
     );
     expect(container.querySelector('svg')).toBeInTheDocument();
     expect(container.querySelector('.dark-green')).toBeInTheDocument();
-    const divClassName = container.querySelector('div').className;
+    const divClassName = container.querySelector('div')?.className;
     expect(divClassName).toContain('b--dark-green bg-washed-green');
     expect(divClassName).toContain('di');
     expect(divClassName).not.toContain('db');
@@ -36,7 +36,7 @@ describe('Alert Component', () => {
     );
     expect(container.querySelector('svg')).toBeInTheDocument();
     expect(container.querySelector('.blue')).toBeInTheDocument();
-    const divClassName = container.querySelector('div').className;
+    const divClassName = container.querySelector('div')?.className;
     expect(divClassName).toContain('b--blue bg-lightest-blue');
     expect(divClassName).toContain('db');
     expect(divClassName).not.toContain('di');
@@ -53,7 +53,7 @@ describe('Alert Component', () => {
     );
     expect(container.querySelector('svg')).toBeInTheDocument();
     expect(container.querySelector('.gold')).toBeInTheDocument();
-    const divClassName = container.querySelector('div').className;
+    const divClassName = container.querySelector('div')?.className;
     expect(divClassName).toContain('b--gold bg-washed-yellow');
     expect(divClassName).toContain('di');
     expect(divClassName).toContain('pa2');

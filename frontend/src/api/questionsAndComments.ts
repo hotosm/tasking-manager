@@ -2,12 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 
 import api from './apiClient';
+import { RootStore } from '../store';
 
-export const useCommentsQuery = (projectId, page) => {
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
+export const useCommentsQuery = (projectId: string, page: number) => {
+  const token = useSelector((state: RootStore) => state.auth.token);
+  const locale = useSelector((state: RootStore) => state.preferences['locale']);
 
-  const getComments = ({ signal }) => {
+  const getComments = ({ signal }: {
+    signal: AbortSignal;
+  }) => {
     return api(token, locale).get(`projects/${projectId}/comments/`, {
       signal,
       params: {
@@ -24,11 +27,11 @@ export const useCommentsQuery = (projectId, page) => {
   });
 };
 
-export const postProjectComment = (projectId, comment, token, locale = 'en') => {
+export const postProjectComment = (projectId: string, comment: string, token: string, locale: string = 'en') => {
   return api(token, locale).post(`projects/${projectId}/comments/`, { message: comment });
 };
 
-export const postTaskComment = (projectId, taskId, comment, token, locale = 'en') => {
+export const postTaskComment = (projectId: string, taskId: number, comment: string, token: string, locale: string = 'en') => {
   return api(token, locale).post(`projects/${projectId}/comments/tasks/${taskId}/`, {
     comment,
   });

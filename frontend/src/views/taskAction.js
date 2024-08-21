@@ -108,9 +108,9 @@ export function TaskAction({ projectId, action }: Object) {
 
 export function TaskActionPossible({ projectId, lockedTasks, action, editor, getTasks }) {
   const { data: project, status: projectStatus } = useProjectSummaryQuery(projectId, {
-    useErrorBoundary: true,
+    throwOnError: true,
   });
-  const { data: tasks, status: tasksStatus } = useTasksQuery(projectId, { useErrorBoundary: true });
+  const { data: tasks, status: tasksStatus } = useTasksQuery(projectId, { throwOnError: true });
 
   return (
     <div className="cf w-100">

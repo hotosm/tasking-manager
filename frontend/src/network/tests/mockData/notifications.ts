@@ -1,4 +1,4 @@
-export function generateSampleNotifications(numSamples) {
+export function generateSampleNotifications(numSamples: number) {
   const sampleData = [];
 
   for (let i = 0; i < numSamples; i++) {
@@ -11,8 +11,8 @@ export function generateSampleNotifications(numSamples) {
       i % 3 === 0
         ? 'REQUEST_TEAM_NOTIFICATION'
         : i % 3 === 1
-        ? 'INVITATION_NOTIFICATION'
-        : 'TEAM_BROADCAST';
+          ? 'INVITATION_NOTIFICATION'
+          : 'TEAM_BROADCAST';
     const sentDate = new Date().toISOString();
     const read = i % 3 !== 0;
 

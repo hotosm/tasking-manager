@@ -9,6 +9,12 @@ export const Alert = ({
   inline = false,
   iconClassName,
   children,
+}: {
+  type: 'info' | 'success' | 'warning' | 'error';
+  compact?: boolean;
+  inline?: boolean;
+  iconClassName?: string;
+  children: React.ReactNode;
 }) => {
   const icons = {
     info: InfoIcon,
@@ -33,9 +39,8 @@ export const Alert = ({
 
   return (
     <div
-      className={`${inline ? 'di' : 'db'} blue-dark bl bw2 br2 ${compact ? 'pa2' : 'pa3'} ${
-        color[type]
-      }`}
+      className={`${inline ? 'di' : 'db'} blue-dark bl bw2 br2 ${compact ? 'pa2' : 'pa3'} ${color[type]
+        }`}
     >
       <Icon className={`h1 w1 v-top mr2 ${iconColor[type]} ${iconClassName || ''}`} />
       {children}
@@ -43,7 +48,10 @@ export const Alert = ({
   );
 };
 
-export function EntityError({ entity, action = 'creation' }) {
+export function EntityError({ entity, action = 'creation' }: {
+  entity: string;
+  action?: 'creation' | 'updation';
+}) {
   const messageType = action === 'updation' ? 'entityInfoUpdationFailure' : 'entityCreationFailure';
 
   return (

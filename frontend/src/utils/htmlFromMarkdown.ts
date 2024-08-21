@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 
 const VIDEO_TAG_REGEXP = new RegExp(/^::youtube\[(.*)\]$/);
 
-const parseMarkdown = (markdownText) => {
+const parseMarkdown = async (markdownText: string) => {
   marked.use({
     gfm: false,
     extensions: [
@@ -47,11 +47,11 @@ const parseMarkdown = (markdownText) => {
       },
     ],
   });
-  return marked.parse(markdownText);
+  return await marked.parse(markdownText);
 };
 
 /* per https://stackoverflow.com/a/34688574/272018 */
-export const htmlFromMarkdown = (markdownText) => {
+export const htmlFromMarkdown = async (markdownText: string) => {
   DOMPurify.addHook('afterSanitizeAttributes', function (node) {
     // set all elements owning target to target=_blank
     if ('target' in node) {
@@ -81,10 +81,10 @@ export const htmlFromMarkdown = (markdownText) => {
     ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder'],
   };
 
-  return { __html: DOMPurify.sanitize(parseMarkdown(markdownText), config) };
+  return { __html: DOMPurify.sanitize(await parseMarkdown(markdownText), config) };
 };
 
-export const formatUserNamesToLink = (text) => {
+export const formatUserNamesToLink = (text: string) => {
   const regex = /@\[([^\]]+)\]/gi;
   // Find usernames with a regular expression. They all start with '[@' and end with ']'
   const usernames = text && text.match(regex);
