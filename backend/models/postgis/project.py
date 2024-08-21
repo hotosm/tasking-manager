@@ -976,19 +976,33 @@ class Project(Base):
         )
         return project_info.name
 
-    @staticmethod
-    async def get_project_total_contributions(project_id: int, session) -> int:
-        project_contributors_count = await session.scalar(
-            sa.select(TaskHistory.user_id, sa.func.count())
-            .select_from(TaskHistory)
-            .filter(
-                TaskHistory.project_id == project_id, TaskHistory.action != "COMMENT"
-            )
-            .distinct(TaskHistory.user_id)
-            .group_by(TaskHistory.user_id)
-        )
+    # @staticmethod
+    # async def get_project_total_contributions(project_id: int, session) -> int:
+    #     project_contributors_count = await session.scalar(
+    #         sa.select(TaskHistory.user_id, sa.func.count())
+    #         .select_from(TaskHistory)
+    #         .filter(
+    #             TaskHistory.project_id == project_id, TaskHistory.action != "COMMENT"
+    #         )
+    #         .distinct(TaskHistory.user_id)
+    #         .group_by(TaskHistory.user_id)
+    #     )
 
-        return project_contributors_count
+    #     return project_contributors_count
+    
+
+    @staticmethod
+    async def get_project_total_contributions(project_id: int, db) -> int:
+        query = """
+            SELECT COUNT(DISTINCT user_id)
+            FROM task_history
+            WHERE project_id = :project_id AND action != 'COMMENT'
+        """
+        
+        result = await db.fetch_one(query=query, values={"project_id": project_id})
+        
+        # fetch_one returns a single record, use index [0] to get the first column value
+        return result[0] if result else 0
 
     # async def get_aoi_geometry_as_geojson(self, session):
     #     """Helper which returns the AOI geometry as a geojson object"""
@@ -1480,21 +1494,16 @@ class Project(Base):
         session.commit()
 
     @staticmethod
-    async def get_project_campaigns(project_id: int, session):
-        result = await session.execute(
-            sa.select(Campaign)
-            .join(campaign_projects)
-            .filter(campaign_projects.c.project_id == project_id)
-        )
-        campaigns = result.scalars().all()
-        campaign_list = []
-        for campaign in campaigns:
-            campaign_dto = CampaignDTO()
-            campaign_dto.id = campaign.id
-            campaign_dto.name = campaign.name
-
-            campaign_list.append(campaign_dto)
-
+    async def get_project_campaigns(project_id: int, db: Database):
+        query = """
+            SELECT c.id, c.name
+            FROM campaign_projects cp
+            JOIN campaigns c ON cp.campaign_id = c.id
+            WHERE cp.project_id = :project_id
+        """
+        rows = await db.fetch_all(query=query, values={"project_id": project_id})
+        
+        campaign_list = [ListCampaignDTO(**row) for row in rows]
         return campaign_list
 
 
