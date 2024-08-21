@@ -1,4 +1,4 @@
-const fromEntries = require('fromentries');
+import fromEntries from "fromentries"
 /* read about it at MDN's Object.fromEntries – this is a tiny polyfill/ponyfill.
 
 /* The API uses slightly different JSON keys than the queryParams,
@@ -8,9 +8,10 @@ const fromEntries = require('fromentries');
    left key is client query param, right value is what backend calls the parameter
    */
 
-export const remapParamsToAPI = (param, conversion) => {
-  function mapObject(obj, fn) {
+export const remapParamsToAPI = (param: unknown, conversion: unknown) => {
+  function mapObject(obj: unknown, fn: (n: any) => void) {
     /* like Object.fromEntries */
+    // @ts-expect-error TS migration
     return fromEntries(Object.entries(obj).map(fn));
   }
   const remapped = mapObject(param, (n) => {
