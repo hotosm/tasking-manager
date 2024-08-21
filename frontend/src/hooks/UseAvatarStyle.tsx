@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 
-export const useAvatarStyle = (size, editMode, picture) => {
+export const useAvatarStyle = (size?: "small" | "medium" | "large", editMode?: boolean, picture?: string) => {
   const [sizeClasses, setSizeClasses] = useState('h2 w2 f5');
   const [textPadding, setTextPadding] = useState({});
   const [sizeStyle, setSizeStyle] = useState({});
-  const [closeIconStyle, setCloseIconStyle] = useState({ left: '0.4rem' });
+  const [closeIconStyle, setCloseIconStyle] = useState<Partial<CSSStyleDeclaration>>({ left: '0.4rem' });
 
   useEffect(() => {
     if (size === 'large') setSizeClasses('h3 w3 f2');
@@ -26,7 +26,7 @@ export const useAvatarStyle = (size, editMode, picture) => {
   }, [size]);
   useEffect(() => {
     if (size === 'small') {
-      const smallStyle = { height: '1.5rem', width: '1.5rem' };
+      const smallStyle: Partial<CSSStyleDeclaration> = { height: '1.5rem', width: '1.5rem' };
       if (picture) smallStyle.backgroundImage = `url("${picture}")`;
       setSizeStyle(smallStyle);
     } else {
