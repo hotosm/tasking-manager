@@ -1,4 +1,4 @@
-export function cancelablePromise(promise: Promise<*>) {
+export function cancelablePromise(promise: Promise<any>) {
   let hasCanceled_ = false;
 
   const wrappedPromise = new Promise((resolve, reject) => {

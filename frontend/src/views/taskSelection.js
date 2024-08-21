@@ -15,6 +15,7 @@ export function SelectTask() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
+<<<<<<< HEAD
   const {
     data: projectSummaryData,
     error: projectSummaryError,
@@ -23,12 +24,8 @@ export function SelectTask() {
     useErrorBoundary: (error) => error.response.status !== 404,
     enabled: !!token,
   });
-  const {
-    data: projectData,
-    error: projectError,
-    status: projectStatus,
-  } = useProjectQuery(id, {
-    enabled: !token,
+  const { data, status, error } = useProjectSummaryQuery(id, {
+    throwOnError: (error) => error.response.status !== 404,
   });
 
   useEffect(() => {

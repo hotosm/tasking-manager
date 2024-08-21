@@ -52,7 +52,7 @@ const getRandomTaskByAction = (activities, taskAction) => {
   }
 };
 
-export function TaskSelection({ project }: Object) {
+export function TaskSelection({ project }) {
   useSetProjectPageTitleTag(project);
   const { projectId } = project;
   const { tabname: activeSection } = useParams();
@@ -84,12 +84,12 @@ export function TaskSelection({ project }: Object) {
   );
   const { data: activities, refetch: getActivities } = useActivitiesQuery(projectId);
   const { data: contributions } = useProjectContributionsQuery(projectId, {
-    useErrorBoundary: true,
+    throwOnError: true,
     refetchOnWindowFocus: true,
     refetchInterval: activeSection === 'contributions' ? 1000 * 60 : false,
   });
   const { data: tasksData, refetch: refetchTasks } = useTasksQuery(projectId, {
-    useErrorBoundary: true,
+    throwOnError: true,
     // Task status on the map were not being updated when coming from the action page,
     // so added this as a workaround.
     cacheTime: 0,

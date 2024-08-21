@@ -3,11 +3,12 @@ import { useSelector } from 'react-redux';
 
 import { fetchLocalJSONAPI, fetchLocalJSONAPIWithAbort } from '../network/genericJSONRequest';
 import { useInterval } from './UseInterval';
+import { RootStore } from '../store';
 
-export const useFetch = (url, trigger = true) => {
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
-  const [error, setError] = useState(null);
+export const useFetch = (url: string, trigger: boolean = true) => {
+  const token = useSelector((state: RootStore) => state.auth.token);
+  const locale = useSelector((state: RootStore) => state.preferences['locale']);
+  const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
 
@@ -26,8 +27,10 @@ export const useFetch = (url, trigger = true) => {
           setData(response);
           setLoading(false);
         } catch (e) {
-          setError(e);
-          setLoading(false);
+          if (e instanceof Error) {
+            setError(e.message);
+            setLoading(false);
+          }
         }
       }
     })();
@@ -35,12 +38,12 @@ export const useFetch = (url, trigger = true) => {
   return [error, loading, data];
 };
 
-export const useFetchWithAbort = (url, trigger = true) => {
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
-  const [error, setError] = useState(null);
+export const useFetchWithAbort = (url: string, trigger: boolean = true) => {
+  const token = useSelector((state: RootStore) => state.auth.token);
+  const locale = useSelector((state: RootStore) => state.preferences['locale']);
+  const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState({});
+  const [data, setData] = useState<unknown>(null);
   const [refetchIndex, setRefetchIndex] = useState(0);
 
   // Component using refetch would infinitely make requests
@@ -68,8 +71,10 @@ export const useFetchWithAbort = (url, trigger = true) => {
           setLoading(false);
         } catch (e) {
           if (signal.aborted) return;
-          setError(e);
-          setLoading(false);
+          if (e instanceof Error) {
+            setError(e.message);
+            setLoading(false);
+          }
         }
       }
     })();
@@ -79,11 +84,11 @@ export const useFetchWithAbort = (url, trigger = true) => {
   return [error, loading, data, refetch];
 };
 
-export function useFetchIntervaled(url, delay, trigger = true) {
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
+export function useFetchIntervaled(url: string, delay: number, trigger = true) {
+  const token = useSelector((state: RootStore) => state.auth.token);
+  const locale = useSelector((state: RootStore) => state.preferences['locale']);
   const [data, setData] = useState();
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<null | string>(null);
 
   useInterval(() => {
     (async () => {
@@ -93,7 +98,12 @@ export function useFetchIntervaled(url, delay, trigger = true) {
           const response = await fetchLocalJSONAPI(url, token, 'GET', locale.replace('-', '_'));
           setData(response);
         } catch (e) {
-          setError(e);
+          if (e instanceof Error) {
+            if (e.name === 'AbortError') {
+              return;
+            }
+            setError(e.message);
+          }
         }
       }
     })();

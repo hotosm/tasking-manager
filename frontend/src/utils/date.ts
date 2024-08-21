@@ -8,7 +8,7 @@ import {
   endOfYear,
 } from 'date-fns';
 
-export function getPastMonths(months) {
+export function getPastMonths(months: number) {
   let today = new Date();
   return today.setMonth(today.getMonth() - months);
 }

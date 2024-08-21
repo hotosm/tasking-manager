@@ -22,12 +22,14 @@ export const useSystemStatisticsQuery = () => {
   return useQuery({
     queryKey: ['tm-stats'],
     queryFn: fetchSystemStats,
-    useErrorBoundary: true,
+    throwOnError: true,
   });
 };
 
 export const useProjectStatisticsQuery = (projectId: string) => {
-  const fetchProjectStats = ({ signal }) => {
+  const fetchProjectStats = ({ signal }: {
+    signal: AbortSignal;
+  }) => {
     return api().get(`projects/${projectId}/statistics/`, {
       signal,
     });
@@ -52,7 +54,7 @@ export const useOsmStatsQuery = () => {
   return useQuery({
     queryKey: ['osm-stats'],
     queryFn: fetchOsmStats,
-    useErrorBoundary: true,
+    throwOnError: true,
     select: (data) => data.data.result,
   });
 };
@@ -69,7 +71,7 @@ export const useOsmHashtagStatsQuery = (defaultComment: string) => {
   return useQuery({
     queryKey: ['osm-hashtag-stats'],
     queryFn: fetchOsmStats,
-    useErrorBoundary: true,
+    throwOnError: true,
     enabled: Boolean(defaultComment?.[0]),
     select: (data) => data.data.result,
   });
@@ -85,8 +87,8 @@ export const useUserOsmStatsQuery = (id: string) => {
   return useQuery({
     queryKey: ['user-osm-stats'],
     queryFn: fetchUserOsmStats,
-    // userDetail.test.js fails on CI when useErrorBoundary=true
-    useErrorBoundary: process.env.NODE_ENV !== 'test',
+    // userDetail.test.js fails on CI when throwOnError=true
+    throwOnError: process.env.NODE_ENV !== 'test',
     select: (data) => data?.data.result,
     enabled: !!id,
   });
@@ -100,7 +102,7 @@ export const useOsmStatsMetadataQuery = () => {
   return useQuery({
     queryKey: ['osm-stats-metadata'],
     queryFn: fetchOsmStatsMetadata,
-    useErrorBoundary: true,
+    throwOnError: true,
     select: (data) => data.result,
   });
 };

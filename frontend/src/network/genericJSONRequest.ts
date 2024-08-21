@@ -7,13 +7,12 @@ import { API_URL } from '../config';
  * @param {RequestInit} [init={}}] Any specific init options you want to pass the fetch (such as an {@link AbortSignal})
  * @returns {Promise<*>} A promise that returns a JSON or an error
  */
-export function fetchExternalJSONAPI(url: string, init: {
+export function fetchExternalJSONAPI(url: string, init?: {
   headers: any
 }) {
-  if (!init.headers) {
-    init.headers = { 'Content-Type': 'application/json' };
+  if (init?.headers) {
+    init.headers['Content-Type'] = 'application/json';
   }
-  init.headers['Content-Type'] = 'application/json';
 
   return fetch(url, {
     method: 'GET',

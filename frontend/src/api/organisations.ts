@@ -2,11 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 
 import api from './apiClient';
+import { RootStore } from '../store';
 
-export const useUserOrganisationsQuery = (userId) => {
-  const token = useSelector((state) => state.auth.token);
+export const useUserOrganisationsQuery = (userId: string | number) => {
+  const token = useSelector((state: RootStore) => state.auth.token);
 
-  const fetchOrganisations = ({ signal }) => {
+  const fetchOrganisations = ({ signal }: {
+    signal: AbortSignal;
+  }) => {
     return api(token).get(`organisations/`, {
       signal,
       params: {

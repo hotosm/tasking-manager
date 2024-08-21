@@ -1,14 +1,14 @@
 import { types } from '../actions/userPreferences';
 
 type UserPreferences = {
-  locale: string | null,
+  locale: string,
   mapShown: boolean,
   projectListView: boolean,
   action: string,
 }
 
 const initialState = {
-  locale: null,
+  locale: "en",
   mapShown: false,
   projectListView: false,
   isExploreProjectsTableView: false,

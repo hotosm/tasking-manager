@@ -28,7 +28,7 @@ export function ProjectStats() {
   const { id } = useParams();
   useSetTitleTag(`Project #${id} Stats`);
   const { data: project, status: projectStatus } = useProjectSummaryQuery(id, {
-    useErrorBoundary: true,
+    throwOnError: true,
   });
   const { data: tasks, status: tasksStatus } = useTasksQuery(id);
   const tasksByStatus = useTasksByStatus(tasks);

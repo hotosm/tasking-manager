@@ -1,17 +1,22 @@
 import axios from 'axios';
 import { subMonths, format } from 'date-fns';
-import { useQuery } from '@tanstack/react-query';
+import { QueryKey, QueryOptions, useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import api from './apiClient';
 import { UNDERPASS_URL } from '../config';
+import { RootStore } from '../store';
 
-export const useProjectsQuery = (fullProjectsQuery, action, queryOptions) => {
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
+export const useProjectsQuery = (
+  fullProjectsQuery: string,
+  action: string,
+  queryOptions: QueryOptions,
+) => {
+  const token = useSelector((state: RootStore) => state.auth.token);
+  const locale = useSelector((state: RootStore) => state.preferences['locale']);
 
-  const fetchProjects = (signal, queryKey) => {
+  const fetchProjects = async (signal: AbortSignal | undefined, queryKey: QueryKey) => {
     const [, fullProjectsQuery, action] = queryKey;
     const paramsRemapped = remapParamsToAPI(fullProjectsQuery, backendToQueryConversion);
     // it's needed in order to query by action when the user goes to /explore page
@@ -23,7 +28,7 @@ export const useProjectsQuery = (fullProjectsQuery, action, queryOptions) => {
       paramsRemapped.lastUpdatedTo = format(subMonths(Date.now(), 6), 'yyyy-MM-dd');
     }
 
-    return api(token, locale)
+    return await api(token, locale)
       .get('projects/', {
         signal,
         params: paramsRemapped,
@@ -39,10 +44,10 @@ export const useProjectsQuery = (fullProjectsQuery, action, queryOptions) => {
   });
 };
 
-export const useProjectQuery = (projectId, otherOptions) => {
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
-  const fetchProject = ({ signal }) => {
+export const useProjectQuery = (projectId: string, otherOptions: any) => {
+  const token = useSelector((state: RootStore) => state.auth.token);
+  const locale = useSelector((state: RootStore) => state.preferences['locale']);
+  const fetchProject = ({ signal }: { signal: AbortSignal }) => {
     return api(token, locale).get(`projects/${projectId}/`, {
       signal,
     });
@@ -54,11 +59,11 @@ export const useProjectQuery = (projectId, otherOptions) => {
     ...otherOptions,
   });
 };
-export const useProjectSummaryQuery = (projectId, otherOptions = {}) => {
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
+export const useProjectSummaryQuery = (projectId: string, otherOptions = {}) => {
+  const token = useSelector((state: RootStore) => state.auth.token);
+  const locale = useSelector((state: RootStore) => state.preferences['locale']);
 
-  const fetchProjectSummary = ({ signal }) => {
+  const fetchProjectSummary = ({ signal }: { signal: AbortSignal }) => {
     return api(token, locale).get(`projects/${projectId}/queries/summary/`, {
       signal,
     });
@@ -67,13 +72,13 @@ export const useProjectSummaryQuery = (projectId, otherOptions = {}) => {
   return useQuery({
     queryKey: ['project-summary', projectId],
     queryFn: fetchProjectSummary,
-    select: (data) => data.data,
+    select: (data: any) => data.data,
     ...otherOptions,
   });
 };
 
-export const useProjectContributionsQuery = (projectId, otherOptions = {}) => {
-  const fetchProjectContributions = ({ signal }) => {
+export const useProjectContributionsQuery = (projectId: string, otherOptions = {}) => {
+  const fetchProjectContributions = ({ signal }: { signal: AbortSignal }) => {
     return api().get(`projects/${projectId}/contributions/`, {
       signal,
     });
@@ -87,9 +92,9 @@ export const useProjectContributionsQuery = (projectId, otherOptions = {}) => {
   });
 };
 
-export const useActivitiesQuery = (projectId) => {
+export const useActivitiesQuery = (projectId: string) => {
   const ACTIVITIES_REFETCH_INTERVAL = 1000 * 60;
-  const fetchProjectActivities = ({ signal }) => {
+  const fetchProjectActivities = ({ signal }: { signal: AbortSignal }) => {
     return api().get(`projects/${projectId}/activities/latest/`, {
       signal,
     });
@@ -102,12 +107,12 @@ export const useActivitiesQuery = (projectId) => {
     refetchIntervalInBackground: false,
     refetchInterval: ACTIVITIES_REFETCH_INTERVAL,
     refetchOnWindowFocus: true,
-    useErrorBoundary: true,
+    throwOnError: true,
   });
 };
 
-export const useTasksQuery = (projectId, otherOptions = {}) => {
-  const fetchProjectTasks = ({ signal }) => {
+export const useTasksQuery = (projectId: string, otherOptions = {}) => {
+  const fetchProjectTasks = ({ signal }: { signal: AbortSignal }) => {
     return api().get(`projects/${projectId}/tasks/`, {
       signal,
     });
@@ -121,8 +126,8 @@ export const useTasksQuery = (projectId, otherOptions = {}) => {
   });
 };
 
-export const usePriorityAreasQuery = (projectId) => {
-  const fetchProjectPriorityArea = (signal) => {
+export const usePriorityAreasQuery = (projectId: string) => {
+  const fetchProjectPriorityArea = (signal: { signal: AbortSignal }) => {
     return api().get(`projects/${projectId}/queries/priority-areas/`, {
       signal,
     });
@@ -135,8 +140,8 @@ export const usePriorityAreasQuery = (projectId) => {
   });
 };
 
-export const useProjectTimelineQuery = (projectId) => {
-  const fetchTimelineData = (signal) => {
+export const useProjectTimelineQuery = (projectId: string) => {
+  const fetchTimelineData = (signal: { signal: AbortSignal }) => {
     return api().get(`projects/${projectId}/contributions/queries/day/`, {
       signal,
     });
@@ -149,10 +154,10 @@ export const useProjectTimelineQuery = (projectId) => {
   });
 };
 
-export const useTaskDetail = (projectId, taskId, shouldRefetch) => {
-  const token = useSelector((state) => state.auth.token);
+export const useTaskDetail = (projectId: string, taskId: number, shouldRefetch: boolean) => {
+  const token = useSelector((state: RootStore) => state.auth.token);
 
-  const fetchTaskDetail = ({ signal }) => {
+  const fetchTaskDetail = ({ signal }: { signal: AbortSignal }) => {
     return api(token).get(`projects/${projectId}/tasks/${taskId}/`, {
       signal,
     });
@@ -168,26 +173,52 @@ export const useTaskDetail = (projectId, taskId, shouldRefetch) => {
 };
 
 // MAPPING
-export const stopMapping = (projectId, taskId, comment, token, locale = 'en') => {
+export const stopMapping = (
+  projectId: string,
+  taskId: number,
+  comment: string,
+  token: string,
+  locale: string = 'en',
+) => {
   return api(token, locale).post(`projects/${projectId}/tasks/actions/stop-mapping/${taskId}/`, {
     comment,
   });
 };
 
-export const splitTask = (projectId, taskId, token, locale) => {
+export const splitTask = (
+  projectId: string,
+  taskId: number,
+  token: string,
+  locale: string = 'en',
+) => {
   return api(token, locale).post(`projects/${projectId}/tasks/actions/split/${taskId}/`);
 };
 
-export const submitMappingTask = (url, payload, token, locale) => {
+export const submitMappingTask = (
+  url: string,
+  payload: any,
+  token: string,
+  locale: string = 'en',
+) => {
   return api(token, locale).post(url, payload);
 };
 
 // VALIDATION
-export const stopValidation = (projectId, payload, token, locale = 'en') => {
+export const stopValidation = (
+  projectId: string,
+  payload: any,
+  token: string,
+  locale: string = 'en',
+) => {
   return api(token, locale).post(`projects/${projectId}/tasks/actions/stop-validation/`, payload);
 };
 
-export const submitValidationTask = (projectId, payload, token, locale) => {
+export const submitValidationTask = (
+  projectId: string,
+  payload: any,
+  token: string,
+  locale: string = 'en',
+) => {
   return api(token, locale).post(
     `projects/${projectId}/tasks/actions/unlock-after-validation/`,
     payload,
@@ -221,7 +252,7 @@ export const useAvailableCountriesQuery = () => {
   });
 };
 
-export const useAllPartnersQuery = (token, userId) => {
+export const useAllPartnersQuery = (token: string, userId: string) => {
   const fetchAllPartners = () => {
     return api(token).get('partners/');
   };
