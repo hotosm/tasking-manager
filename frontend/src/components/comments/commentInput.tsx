@@ -17,6 +17,7 @@ import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMar
 import { iconConfig } from './editorIconConfig';
 import messages from './messages';
 import { CurrentUserAvatar } from '../user/avatar';
+import { RootStore } from '../../store';
 
 function CommentInputField({
   comment,
@@ -29,16 +30,27 @@ function CommentInputField({
   isShowUserPicture = false,
   placeholderMsg = messages.leaveAComment,
   markdownTextareaProps = {},
-}: Object) {
-  const token = useSelector((state) => state.auth.token);
+}: {
+  comment: string;
+  setComment: (comment: string) => void;
+  contributors: string[] | undefined;
+  enableHashtagPaste?: boolean;
+  isShowTabNavs?: boolean;
+  isShowFooter?: boolean;
+  enableContributorsHashtag?: boolean;
+  isShowUserPicture?: boolean;
+  placeholderMsg?: any;
+  markdownTextareaProps?: any;
+}) {
+  const token = useSelector((state: RootStore) => state.auth.token);
   const textareaRef = useRef();
   const isBundle = useRef(false);
   const [isShowPreview, setIsShowPreview] = useState(false);
 
-  const appendImgToComment = (url) => setComment(`${comment}\n![image](${url})\n`);
+  const appendImgToComment = (url: string) => setComment(`${comment}\n![image](${url})\n`);
   const [uploadError, uploading, onDrop] = useOnDrop(appendImgToComment);
   const { fileRejections, getRootProps, getInputProps } = useDropzone({
-    onDrop,
+    onDrop: onDrop ?? undefined,
     ...DROPZONE_SETTINGS,
   });
   const [fileuploadError, fileuploading, uploadImg] = useUploadImage();
@@ -95,18 +107,16 @@ function CommentInputField({
           <div className="pv3-ns ph3 ph3-m bg-grey-light dib">
             <span
               role="button"
-              className={`pointer db dib-ns pb1 bb bw1 ${
-                !isShowPreview ? 'b--blue-dark' : 'b--grey-light'
-              }`}
+              className={`pointer db dib-ns pb1 bb bw1 ${!isShowPreview ? 'b--blue-dark' : 'b--grey-light'
+                }`}
               onClick={() => setIsShowPreview(false)}
             >
               <FormattedMessage {...messages.write} />
             </span>
             <span
               role="button"
-              className={`pointer ml3 db dib-ns pb1 bb bw1 ${
-                isShowPreview ? 'b--blue-dark' : 'b--grey-light'
-              }`}
+              className={`pointer ml3 db dib-ns pb1 bb bw1 ${isShowPreview ? 'b--blue-dark' : 'b--grey-light'
+                }`}
               onClick={() => setIsShowPreview(true)}
             >
               <FormattedMessage {...messages.preview} />
