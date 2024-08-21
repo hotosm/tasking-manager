@@ -10,7 +10,7 @@ import logo from '../../assets/img/main-logo.svg';
 import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { LocaleSelector } from '../localeSelect';
-import { Button } from '../button.jsx';
+import { Button, ButtonProps } from '../button.jsx';
 import { UpdateDialog } from './updateDialog';
 import { BurgerMenu } from './burgerMenu';
 import { TopNavLink } from './NavLink';
@@ -24,6 +24,7 @@ import { useDebouncedCallback } from '../../hooks/UseThrottle';
 import { HorizontalScroll } from '../horizontalScroll';
 
 import './styles.scss';
+import { RootStore } from '../../store/index';
 
 export const Header = () => {
   const dispatch = useDispatch();
@@ -31,19 +32,21 @@ export const Header = () => {
   const navigate = useNavigate();
   const menuItemsContainerRef = useRef(null);
 
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const organisations = useSelector((state) => state.auth.organisations);
-  const showOrgBar = useSelector((state) => state.orgBarVisibility.isVisible);
+  const userDetails = useSelector((state: RootStore) => state.auth.userDetails);
+  const organisations = useSelector((state: RootStore) => state.auth.organisations);
+  const showOrgBar = useSelector((state: RootStore) => state.orgBarVisibility.isVisible);
 
   const linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu lh-solid nowrap pv2';
 
-  const isActive = ({ isPartiallyCurrent }) => {
+  const isActive = ({ isPartiallyCurrent }: {
+    isPartiallyCurrent: boolean;
+  }) => {
     return isPartiallyCurrent
       ? { className: `${linkCombo} bb b--blue-dark bw1` }
       : { className: linkCombo };
   };
 
-  const getUserLinks = (role) => {
+  const getUserLinks = () => {
     return [
       { label: <FormattedMessage {...messages.settings} />, url: '/settings' },
       { label: <FormattedMessage {...messages.logout} />, url: '/logout' },
@@ -162,7 +165,7 @@ export const Header = () => {
   );
 };
 
-export function getMenuItemsForUser(userDetails, organisations) {
+export function getMenuItemsForUser(userDetails: any, organisations?: any) {
   const menuItems = [
     { label: messages.exploreProjects, link: 'explore', showAlways: true },
     {
@@ -199,7 +202,9 @@ export function getMenuItemsForUser(userDetails, organisations) {
   return filteredMenuItems;
 }
 
-const UserDisplay = ({ username }) => {
+const UserDisplay = ({ username }: {
+  username: string
+}) => {
   return (
     <span>
       <CurrentUserAvatar className="br-100 v-mid red h2 w2 dib" />
@@ -208,7 +213,10 @@ const UserDisplay = ({ username }) => {
   );
 };
 
-const SignupTrigger = forwardRef((props, ref) => {
+const SignupTrigger = (props: ButtonProps & {
+  signUpStyle: string;
+  alternativeSignUpText?: boolean;
+}) => {
   const { signUpStyle, alternativeSignUpText, ...remainingProps } = props;
   return (
     <Button className={signUpStyle} {...remainingProps}>
@@ -226,6 +234,11 @@ export const AuthButtons = ({
   signUpStyle,
   redirectTo,
   alternativeSignUpText = false,
+}: {
+  logInStyle: string;
+  signUpStyle: string;
+  redirectTo: string;
+  alternativeSignUpText?: boolean;
 }) => {
   const [debouncedCreateLoginWindow] = useDebouncedCallback(
     (redirectToPass) => createLoginWindow(redirectToPass),
@@ -251,7 +264,12 @@ export const AuthButtons = ({
   );
 };
 
-export const ActionItems = ({ userDetails, onUserMenuSelect, location, getUserLinks }) =>
+export const ActionItems = ({ userDetails, onUserMenuSelect, location, getUserLinks }: {
+  userDetails: any;
+  onUserMenuSelect: (e: any) => void;
+  location: any;
+  getUserLinks: (role: string) => any;
+}) =>
   userDetails.username ? (
     <>
       <NotificationBell />

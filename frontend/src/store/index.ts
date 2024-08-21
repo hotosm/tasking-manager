@@ -18,6 +18,8 @@ const persistedReducer = persistReducer(persistConfig, reducers);
 
 const store = createStore(persistedReducer, undefined, composeWithDevTools((applyMiddleware(thunk))));
 
+export type RootStore = ReturnType<typeof reducers>;
+
 const persistor = persistStore(store);
 
 store.subscribe(() => {

@@ -12,10 +12,12 @@ export const AnimatedLoadingIcon = () => (
   </IconSpace>
 );
 
-export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: React.ReactNode,
   loading?: boolean,
-}) {
+};
+
+export function Button(props: ButtonProps) {
   const { children, icon, className, loading = false, disabled, ...rest } = props
 
   return (

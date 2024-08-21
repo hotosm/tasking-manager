@@ -7,39 +7,51 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 import { store } from '../store';
 import userEvent from '@testing-library/user-event';
+import { Store } from 'redux';
 
-export const createComponentWithIntl = (children, props = { locale: 'en' }) => {
-  return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);
+export const createComponentWithIntl = (props: {
+  locale?: string,
+  children: React.ReactNode,
+}) => {
+  return TestRenderer.create(<IntlProvider locale={props.locale ?? "en"}>{props.children}</IntlProvider>);
 };
 
-export const createComponentWithReduxAndIntl = (children, props = { locale: 'en' }) => {
-  return TestRenderer.create(<ReduxIntlProviders {...props}>{children}</ReduxIntlProviders>);
+export const createComponentWithReduxAndIntl = (props: {
+  locale?: string,
+  children: React.ReactNode,
+}) => {
+  return TestRenderer.create(<ReduxIntlProviders locale={props.locale ?? "en"}>{props.children}</ReduxIntlProviders>);
 };
 
-export const renderWithRouter = (ui, { route = '/' } = {}) => {
+export const renderWithRouter = (ui: React.ReactNode, { route = '/' } = {}) => {
   act(() => window.history.pushState({}, 'Test page', route));
 
   return {
-    user: userEvent.setup({ copyToClipboard: true }),
+    user: userEvent.setup({ writeToClipboard: true }),
     ...render(ui, { wrapper: BrowserRouter }),
   };
 };
 
-export const ReduxIntlProviders = ({
-  children,
-  props = { locale: 'en' },
-  localStore = null,
-}: Object) => (
-  <Provider store={localStore || store}>
-    <IntlProvider {...props}>{children}</IntlProvider>
+export const ReduxIntlProviders = (props: {
+  children: React.ReactNode,
+  locale?: string,
+  localStore?: Store,
+}) => (
+  <Provider store={props.localStore || store}>
+    <IntlProvider locale={props.locale ?? "en"}>{props.children}</IntlProvider>
   </Provider>
 );
 
-export const IntlProviders = ({ children, props = { locale: 'en' } }: Object) => (
-  <IntlProvider {...props}>{children}</IntlProvider>
+export const IntlProviders = (props: {
+  children: React.ReactNode,
+  locale?: string,
+}) => (
+  <IntlProvider locale={props.locale ?? "en"}>{props.children}</IntlProvider>
 );
 
-export const QueryClientProviders = ({ children }) => {
+export const QueryClientProviders = (props: {
+  children: React.ReactNode
+}) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -50,14 +62,14 @@ export const QueryClientProviders = ({ children }) => {
       log: console.log,
       warn: console.warn,
       // ✅ no more errors on the console for tests
-      error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
+      error: process.env.NODE_ENV === 'test' ? () => { } : console.error,
     },
   });
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return <QueryClientProvider client={queryClient}>{props.children}</QueryClientProvider>;
 };
 
 export const createComponentWithMemoryRouter = (
-  component,
+  component: React.ReactNode,
   { route = '/starting/path', entryRoute = route } = {},
 ) => {
   const user = userEvent.setup();

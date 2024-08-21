@@ -7,7 +7,9 @@ import { API_URL } from '../config';
  * @param {RequestInit} [init={}}] Any specific init options you want to pass the fetch (such as an {@link AbortSignal})
  * @returns {Promise<*>} A promise that returns a JSON or an error
  */
-export function fetchExternalJSONAPI(url, init = {}): Promise<*> {
+export function fetchExternalJSONAPI(url: string, init: {
+  headers: any
+}) {
   if (!init.headers) {
     init.headers = { 'Content-Type': 'application/json' };
   }
@@ -23,12 +25,13 @@ export function fetchExternalJSONAPI(url, init = {}): Promise<*> {
     });
 }
 
-export function fetchLocalJSONAPI(endpoint, token, method = 'GET', language = 'en'): Promise<*> {
+export function fetchLocalJSONAPI(endpoint: string, token: string, method = 'GET', language = 'en') {
   const url = new URL(endpoint, API_URL);
   let headers = {
     'Content-Type': 'application/json',
     'Accept-Language': language.replace('-', '_'),
-  };
+  } as Record<string, string>;
+
   if (token) {
     headers['Authorization'] = `Token ${token}`;
   }
@@ -43,9 +46,9 @@ export function fetchLocalJSONAPI(endpoint, token, method = 'GET', language = 'e
 }
 
 export function fetchLocalJSONAPIWithAbort(
-  endpoint,
-  token,
-  signal,
+  endpoint: string,
+  token: string,
+  signal: AbortSignal,
   method = 'GET',
   language = 'en',
 ) {
@@ -53,7 +56,7 @@ export function fetchLocalJSONAPIWithAbort(
   let headers = {
     'Content-Type': 'application/json',
     'Accept-Language': language.replace('-', '_'),
-  };
+  } as Record<string, string>
   if (token) {
     headers['Authorization'] = `Token ${token}`;
   }
@@ -69,12 +72,12 @@ export function fetchLocalJSONAPIWithAbort(
 }
 
 export function pushToLocalJSONAPI(
-  endpoint,
-  payload,
-  token,
+  endpoint: string,
+  payload: string,
+  token: string,
   method = 'POST',
   language = 'en',
-): Promise<*> {
+) {
   const url = new URL(endpoint, API_URL);
   return fetch(url, {
     method: method,
