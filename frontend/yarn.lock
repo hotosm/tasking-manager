@@ -1530,35 +1530,36 @@
     intl-messageformat "10.5.11"
     tslib "^2.4.0"
 
-"@hotosm/id@^2.21.1":
-  version "2.21.1"
-  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.21.1.tgz#ba24ddd4731c0253403237a760711091b68d4cd1"
-  integrity sha512-Q2DrTaOEcpcEbILeRI/6UrxRyMPlb6d0jy2Dlh33ZoRB+0owoMWFMeAgwtU3Sikd7hlWF9D6JXwV2hKAPcDPwg==
+"@hotosm/id@git+https://github.com/hotosm/iD.git#v2.29.0":
+  version "2.29.0"
+  resolved "git+https://github.com/hotosm/iD.git#6fa0cfadfb6d75ec47e0637f9f49ef8776be4f8b"
   dependencies:
-    "@ideditor/country-coder" "~5.0.3"
-    "@ideditor/location-conflation" "~1.0.2"
     "@mapbox/geojson-area" "^0.2.2"
     "@mapbox/sexagesimal" "1.2.0"
     "@mapbox/vector-tile" "^1.3.1"
-    "@tmcw/togeojson" "^4.5.0"
+    "@rapideditor/country-coder" "~5.2.2"
+    "@rapideditor/location-conflation" "~1.3.0"
+    "@tmcw/togeojson" "^5.8.1"
+    "@turf/bbox" "^6.0.0"
     "@turf/bbox-clip" "^6.0.0"
-    abortcontroller-polyfill "^1.4.0"
+    abortcontroller-polyfill "^1.7.5"
     aes-js "^3.1.2"
     alif-toolkit "^1.2.9"
-    core-js-bundle "^3.19.0"
+    core-js-bundle "^3.37.0"
     diacritics "1.3.0"
+    exifr "^7.1.3"
     fast-deep-equal "~3.1.1"
     fast-json-stable-stringify "2.1.0"
     lodash-es "~4.17.15"
-    marked "~4.0.12"
+    marked "~12.0.2"
     node-diff3 "~3.1.0"
-    osm-auth "~2.0.0"
+    osm-auth "~2.4.0"
     pannellum "2.5.6"
     pbf "^3.2.1"
-    polygon-clipping "~0.15.1"
+    polygon-clipping "~0.15.7"
     rbush "3.0.1"
-    whatwg-fetch "^3.4.1"
-    which-polygon "2.2.0"
+    whatwg-fetch "^3.6.20"
+    which-polygon "2.2.1"
 
 "@hotosm/iso-countries-languages@^1.1.2":
   version "1.1.2"
@@ -1596,32 +1597,6 @@
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-2.0.3.tgz#4a2868d75d6d6963e423bcf90b7fd1be343409d3"
   integrity sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==
-
-"@ideditor/country-coder@^5.0.3":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@ideditor/country-coder/-/country-coder-5.1.0.tgz#5bab755330ced58ebe0333a703101704debf06a1"
-  integrity sha512-fiWZRn0HMNfo73lNBOiiG2gwAlHUUDvRSLOUIb/XHMQTDgq98OpmYzymZFUZUDOtVIh3psLa/Q0DoXZNgOva+Q==
-  dependencies:
-    which-polygon "^2.2.0"
-
-"@ideditor/country-coder@~5.0.3":
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/@ideditor/country-coder/-/country-coder-5.0.4.tgz#837cbfd1940fcdf6af3ba63c25253a11fbde60f9"
-  integrity sha512-MkmFGKWksVzRLjpthO8NLQYrUOdda1itR0VrzSN3eFYcBOzA1fvTVEUqt0it3cDQQtyGbNx6TloQZz8FFC4L9A==
-  dependencies:
-    which-polygon "^2.2.0"
-
-"@ideditor/location-conflation@~1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@ideditor/location-conflation/-/location-conflation-1.0.2.tgz#3ae420dc572d4227a1f439e9d258f998c79feb74"
-  integrity sha512-6WzMgjapiIiYKPVFK70zQ4qqesM6OCA3hmP9/FvT3odrBZWsHf+cTeNiZYDew2A4KV+WAJAaDW6dMlaHWgDL/A==
-  dependencies:
-    "@aitodotai/json-stringify-pretty-compact" "^1.3.0"
-    "@ideditor/country-coder" "^5.0.3"
-    "@mapbox/geojson-area" "^0.2.2"
-    circle-to-polygon "^2.0.2"
-    geojson-precision "^1.0.0"
-    polygon-clipping "~0.15.3"
 
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
@@ -3142,11 +3117,6 @@
   resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-14.5.2.tgz#db7257d727c891905947bd1c1a99da20e03c2ebd"
   integrity sha512-YAh82Wh4TIrxYLmfGcixwD18oIjyC1pFQC2Y01F2lzV2HTMiYrI0nze0FD0ocB//CKS/7jIUgae+adPqxK5yCQ==
 
-"@tmcw/togeojson@^4.5.0":
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-4.7.0.tgz#071d6d6d01f0aa86299cc98e3cdb102f1119241d"
-  integrity sha512-edAPymgIEIY/jrEmATYe56a46XHvPVm7SXhf29h7jSAUrRhLOIFIlbHPCsic/gGDSvWODTSioRFpXgou47ZLYg==
-
 "@tmcw/togeojson@^5.8.1":
   version "5.8.1"
   resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-5.8.1.tgz#6cbcc9b1484ed28e71bdd4b5f96ceae540a4533f"
@@ -3205,7 +3175,7 @@
   dependencies:
     "@turf/helpers" "^6.5.0"
 
-"@turf/bbox@^6.5.0":
+"@turf/bbox@^6.0.0", "@turf/bbox@^6.5.0":
   version "6.5.0"
   resolved "https://registry.yarnpkg.com/@turf/bbox/-/bbox-6.5.0.tgz#bec30a744019eae420dac9ea46fb75caa44d8dc5"
   integrity sha512-RBbLaao5hXTYyyg577iuMtDB8ehxMlUqHEJiMs8jT1GHkFhr6sYre3lmLsPeYEi/ZKj5TP5tt7fkzNdJ4GIVyw==
@@ -4135,7 +4105,7 @@ abab@^2.0.3, abab@^2.0.5:
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.6.tgz#41b80f2c871d19686216b82309231cfd3cb3d291"
   integrity sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==
 
-abortcontroller-polyfill@^1.4.0:
+abortcontroller-polyfill@^1.7.5:
   version "1.7.5"
   resolved "https://registry.yarnpkg.com/abortcontroller-polyfill/-/abortcontroller-polyfill-1.7.5.tgz#6738495f4e901fbb57b6c0611d0c75f76c485bed"
   integrity sha512-JMJ5soJWP18htbbxJjG7bG6yuI6pRhgJ0scHHTfkUjf6wjP912xZWvM+A4sJK3gqd9E8fcPbDnOefbA9Th/FIQ==
@@ -4260,9 +4230,9 @@ ajv@^8.0.0, ajv@^8.6.0, ajv@^8.9.0:
     uri-js "^4.4.1"
 
 alif-toolkit@^1.2.9:
-  version "1.2.9"
-  resolved "https://registry.yarnpkg.com/alif-toolkit/-/alif-toolkit-1.2.9.tgz#60d9a892a3d7b5d7394e1318ef931ecbba1537b1"
-  integrity sha512-j++XV1TyQP1n5i7ir1FgBcIBCkWhbu3xX8p2ttQV78iRscEwbSjbipRAU413pG2Ip+dy3ehy/+5ZFDGeOvrYPQ==
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/alif-toolkit/-/alif-toolkit-1.3.0.tgz#007ce22ecaf684cd29ac00193d17322148c0f4d7"
+  integrity sha512-jDqf4NRaP0aY7GFr3tvWUSV1qjPe5ho4woKOgIP1otJ/9Si4+bSjSqdDvhuJsVtnAi97Dw7hM4cObLHcHO+o0A==
 
 ansi-escapes@^4.2.1, ansi-escapes@^4.3.1:
   version "4.3.2"
@@ -5119,7 +5089,7 @@ ci-info@^3.2.0:
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-3.9.0.tgz#4279a62028a7b1f262f3473fc9605f5e218c59b4"
   integrity sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==
 
-circle-to-polygon@^2.0.2, circle-to-polygon@^2.2.0:
+circle-to-polygon@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/circle-to-polygon/-/circle-to-polygon-2.2.0.tgz#ca4aec7b0536510fc99bf3e1dcef1d53a504a04e"
   integrity sha512-yC9/bw6P0YmV2/oxm4DLrSgrzHhbz9H+vgUScmSFN5KilR/KFGVRbUi9a0mIYPsXK44HvnysVVi/iIysRJVvNw==
@@ -5418,10 +5388,10 @@ copy-anything@^3.0.2:
   dependencies:
     is-what "^4.1.8"
 
-core-js-bundle@^3.19.0:
-  version "3.37.0"
-  resolved "https://registry.yarnpkg.com/core-js-bundle/-/core-js-bundle-3.37.0.tgz#7d79cd80e4d3f5dd4e5a7f869b2575d9f84c0f2c"
-  integrity sha512-AdUUF5R8+2ytuozAN2idBfGiDqtdsRVClilMCQSso/MBaZ+Uc4ENgzQkrRV4VRspari6L5te8sROcxGS7sncGQ==
+core-js-bundle@^3.37.0:
+  version "3.38.1"
+  resolved "https://registry.yarnpkg.com/core-js-bundle/-/core-js-bundle-3.38.1.tgz#e6cdb074ea5c3da6de54ce827c33ec4424d0862d"
+  integrity sha512-VVA1mEYo2FRVbVdcAy5z8d4lidIrCphN6rFM0Hzr/keUJrjW2m13wwGE9UJOIE+P2sFV7ujtlEdogakPad21uw==
 
 core-js-compat@^3.31.0, core-js-compat@^3.36.1:
   version "3.37.0"
@@ -6995,6 +6965,11 @@ execa@^5.0.0:
     onetime "^5.1.2"
     signal-exit "^3.0.3"
     strip-final-newline "^2.0.0"
+
+exifr@^7.1.3:
+  version "7.1.3"
+  resolved "https://registry.yarnpkg.com/exifr/-/exifr-7.1.3.tgz#f6218012c36dbb7d843222011b27f065fddbab6f"
+  integrity sha512-g/aje2noHivrRSLbAUtBPWFbxKdKhgj/xr1vATDdUXPOFYJlQ62Ft0oy+72V6XLIpDJfHs6gXLbBLAolqOXYRw==
 
 exit@^0.1.2:
   version "0.1.2"
@@ -9799,11 +9774,6 @@ marked@~12.0.2:
   resolved "https://registry.yarnpkg.com/marked/-/marked-12.0.2.tgz#b31578fe608b599944c69807b00f18edab84647e"
   integrity sha512-qXUm7e/YKFoqFPYPa3Ukg9xlI5cyAtGmyEIzMfW//m6kXwCy2Ps9DYf5ioijFKQ8qyuscrHoY04iJGctu2Kg0Q==
 
-marked@~4.0.12:
-  version "4.0.19"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-4.0.19.tgz#d36198d1ac1255525153c351c68c75bc1d7aee46"
-  integrity sha512-rgQF/OxOiLcvgUAj1Q1tAf4Bgxn5h5JZTp04Fx4XUkVhs7B+7YA9JEWJhJpoO8eJt8MkZMwqLCNeNqj1bCREZQ==
-
 mdast-util-definitions@^5.0.0:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/mdast-util-definitions/-/mdast-util-definitions-5.1.2.tgz#9910abb60ac5d7115d6819b57ae0bcef07a3f7a7"
@@ -10823,12 +10793,10 @@ osm-auth@2.5.0:
   resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-2.5.0.tgz#1b439979cfe16a7002e8a06945fbe4b766f76496"
   integrity sha512-w3NnYbt+0PIih2Kwr1sLfQWehdLbcA3gZNJhX4VOBfeRtvm30iZA3nURphuZDokZ8Kmdv4LWB+AiIng2b+KvIA==
 
-osm-auth@~2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-2.0.1.tgz#fb932d3e5999d52e88e94a5e5b216e2ad4333d57"
-  integrity sha512-Uw0hpw7IVlFMqd6hW9kTS1Qah9xh85hwn1xqLgCONGKRtHZ3ZaUzg/obm7WOwheJSmSmkwfiDnPN0imZyNOSbw==
-  dependencies:
-    store "~2.0.12"
+osm-auth@~2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-2.4.0.tgz#d77a0c17ce985b867902871186b71fd32a21f731"
+  integrity sha512-FvTyYnIl+pjLi9cKJWNM74PjrLUED1f2TnWpAexxJ2qoxr8sdndON/EzXHf0nfMLB07Pn9DPyWVEbTXZ/nID8A==
 
 osm-polygon-features@^0.9.1:
   version "0.9.2"
@@ -11183,7 +11151,7 @@ polyclip-ts@~0.16.3, polyclip-ts@~0.16.5:
     bignumber.js "^9.1.0"
     splaytree-ts "^1.0.1"
 
-polygon-clipping@^0.15.3, polygon-clipping@~0.15.1, polygon-clipping@~0.15.3:
+polygon-clipping@^0.15.3, polygon-clipping@~0.15.7:
   version "0.15.7"
   resolved "https://registry.yarnpkg.com/polygon-clipping/-/polygon-clipping-0.15.7.tgz#3823ca1e372566f350795ce9dd9a7b19e97bdaad"
   integrity sha512-nhfdr83ECBg6xtqOAJab1tbksbBAOMUltN60bU+llHVOL0e5Onm1WpAXXWXVB39L8AJFssoIhEVuy/S90MmotA==
@@ -13550,11 +13518,6 @@ stop-iteration-iterator@^1.0.0:
   dependencies:
     internal-slot "^1.0.4"
 
-store@~2.0.12:
-  version "2.0.12"
-  resolved "https://registry.yarnpkg.com/store/-/store-2.0.12.tgz#8c534e2a0b831f72b75fc5f1119857c44ef5d593"
-  integrity sha512-eO9xlzDpXLiMr9W1nQ3Nfp9EzZieIQc10zPPMP5jsVV7bLOziSFFBP0XoDXACEIFtdI+rIz0NwWVA/QVJ8zJtw==
-
 strict-event-emitter@^0.2.4:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/strict-event-emitter/-/strict-event-emitter-0.2.8.tgz#b4e768927c67273c14c13d20e19d5e6c934b47ca"
@@ -14951,7 +14914,7 @@ whatwg-encoding@^1.0.5:
   dependencies:
     iconv-lite "0.4.24"
 
-whatwg-fetch@^3.4.1, whatwg-fetch@^3.6.2:
+whatwg-fetch@^3.6.2, whatwg-fetch@^3.6.20:
   version "3.6.20"
   resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.6.20.tgz#580ce6d791facec91d37c72890995a0b48d31c70"
   integrity sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==
@@ -15026,15 +14989,7 @@ which-collection@^1.0.1:
     is-weakmap "^2.0.2"
     is-weakset "^2.0.3"
 
-which-polygon@2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/which-polygon/-/which-polygon-2.2.0.tgz#e4741c050620e55f932b0355d30327136dc8041d"
-  integrity sha512-P2+zRXPqUsTVm4moH8gm7ZTlLtOemy4+EY8elJohjJNMTNpkXLFrlI7i2zUYJD8zHopgKH5TuBmYXca3ZLtMkg==
-  dependencies:
-    lineclip "^1.1.5"
-    rbush "^2.0.1"
-
-which-polygon@2.2.1, which-polygon@^2.2.0, which-polygon@^2.2.1:
+which-polygon@2.2.1, which-polygon@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/which-polygon/-/which-polygon-2.2.1.tgz#093d76c9628ee12bfae39448609accbdcc268c31"
   integrity sha512-RlpWbqz12OMT0r2lEHk7IUPXz0hb1L/ZZsGushB2P2qxuBu1aq1+bcTfsLtfoRBYHsED6ruBMiwFaidvXZfQVw==
