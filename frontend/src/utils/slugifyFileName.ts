@@ -1,6 +1,6 @@
 import slug from 'slug';
 
-export const slugifyFileName = (name, mimetype) => {
+export const slugifyFileName = (name: string, mimetype: string) => {
   // slugify file names in order to avoid problems on the markdown
   if (name.lastIndexOf('.') === -1) {
     name = `${name}.${mimetype.split('/')[1]}`;
