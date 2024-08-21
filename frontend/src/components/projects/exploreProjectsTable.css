@@ -12,7 +12,3 @@
 .explore-projects-table-column-resizer.isResizing {
   background: rgb(131, 131, 131);
 }
-
-.stripe:nth-child(even) {
-  background-color: rgba(232, 231, 231, 0.5);
-}

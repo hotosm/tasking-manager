@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import { FormattedMessage } from 'react-intl';
 import { formatDistance } from 'date-fns';
+import { Tooltip } from 'react-tooltip';
 import PropTypes from 'prop-types';
 
 import { ProgressBar } from '../progressBar';
@@ -51,26 +52,35 @@ const COLUMNS = [
     ),
     minSize: 130,
     cell: ({ row }) => {
-      return (
-        <ProgressBar
-          firstBarValue={row.original.percentMapped}
-          secondBarValue={row.original.percentValidated}
-          height="half"
-          small={false}
-        >
-          <p className="f6 lh-copy ma0 white f7 fw4">
+      const tooltipContent = (
+        <div>
+          <p className="lh-copy ma0 white f7 fw4">
             <FormattedMessage
               {...messages['percentMapped']}
               values={{ n: <span className="fw8">{row.original.percentMapped}</span> }}
             />
           </p>
-          <p className="f6 lh-copy ma0 white f7 fw4">
+          <p className="lh-copy ma0 white f7 fw4">
             <FormattedMessage
               {...messages['percentValidated']}
               values={{ n: <span className="fw8">{row.original.percentValidated}</span> }}
             />
           </p>
-        </ProgressBar>
+        </div>
+      );
+
+      return (
+        <div>
+          <div data-tooltip-id={`project-${row.original.projectId}-progress`}>
+            <ProgressBar
+              firstBarValue={row.original.percentMapped}
+              secondBarValue={row.original.percentValidated}
+              height="half"
+              small={false}
+            />
+          </div>
+          <Tooltip id={`project-${row.original.projectId}-progress`}>{tooltipContent}</Tooltip>
+        </div>
       );
     },
   },
@@ -218,10 +228,10 @@ export const ExploreProjectsTable = ({ projects, status }) => {
         </thead>
         <tbody className="lh-copy">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="stripe">
+            <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <td
-                  className={`pv3 f5 pr3 mw5 pl2 ${cell.column.id !== 'progress' && 'truncate'}`} // Don't add truncate class to progress column as it shows a tooltip
+                  className={`pv3 f5 pr3 mw5 pl2 bb b--moon-gray ${cell.column.id !== 'progress' && 'truncate'}`} // Don't add truncate class to progress column as it shows a tooltip
                   key={cell.id}
                   style={{
                     width: cell.column.getSize(),

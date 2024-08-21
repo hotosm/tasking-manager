@@ -9,7 +9,7 @@ import messages from './messages';
 export default function DownloadAsCSV({ allQueryParams }) {
   const allQueryParamsCopy = { ...allQueryParams };
   allQueryParamsCopy.downloadAsCSV = true;
-  allQueryParamsCopy.omitMapResults = null;
+  allQueryParamsCopy.omitMapResults = undefined;
   const downloadCSVLink = `${API_URL}projects/?${stringify(allQueryParamsCopy)}`;
 
   return (
