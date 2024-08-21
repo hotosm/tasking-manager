@@ -6,6 +6,7 @@ type UserData = {
     username: string;
     emailAddress: string;
     role: string;
+    pictureUrl: string;
   } | null,
   token: string,
   session: {

@@ -3,12 +3,17 @@ import Select from 'react-select';
 import { FormattedMessage } from 'react-intl';
 import { useFetch } from '../../hooks/UseFetch';
 import messages from './messages';
+import { RootStore } from '../../store';
 
-export default function MyProjectsDropdown({ className, setQuery, allQueryParams }) {
-  const username = useSelector((state) => state.auth.userDetails.username);
+export default function MyProjectsDropdown({ className, setQuery, allQueryParams }: {
+  className?: string;
+  setQuery: any;
+  allQueryParams: any;
+}) {
+  const username = useSelector((state: RootStore) => state.auth.userDetails?.username);
   const [, , projects] = useFetch(`projects/queries/${username}/touched/`);
 
-  const onSortSelect = (projectId) => {
+  const onSortSelect = (projectId: string) => {
     setQuery(
       {
         ...allQueryParams,
@@ -19,7 +24,10 @@ export default function MyProjectsDropdown({ className, setQuery, allQueryParams
     );
   };
 
-  const options = projects.mappedProjects?.map(({ projectId }) => ({
+  // @ts-expect-error TS Migrations
+  const options = projects.mappedProjects?.map(({ projectId }: {
+    projectId: string;
+  }) => ({
     label: projectId,
     value: projectId,
   }));
@@ -33,6 +41,7 @@ export default function MyProjectsDropdown({ className, setQuery, allQueryParams
         onChange={(e) => onSortSelect(e.value)}
         options={options}
         placeholder={<FormattedMessage {...messages.searchProject} />}
+        // @ts-expect-error TS Migrations
         value={options?.find(({ value }) => value === allQueryParams.projectId) || null}
       />
     </div>

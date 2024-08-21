@@ -39,7 +39,7 @@ describe('DropzoneUploadStatus when', () => {
       </ReduxIntlProviders>,
     );
     expect(screen.queryByText('Uploading file...')).toBeInTheDocument();
-    expect(screen.queryByText('Uploading file...').className).toBe('blue-grey f6 pt3 db');
+    expect(screen.queryByText('Uploading file...')?.className).toBe('blue-grey f6 pt3 db');
     expect(screen.queryByText('The image upload failed.')).not.toBeInTheDocument();
   });
   it('uploading is false and uploadError is true', () => {
@@ -50,6 +50,6 @@ describe('DropzoneUploadStatus when', () => {
     );
     expect(screen.queryByText('Uploading file...')).not.toBeInTheDocument();
     expect(screen.queryByText('The image upload failed.')).toBeInTheDocument();
-    expect(screen.queryByText('The image upload failed.').className).toBe('red f6 pt3 db');
+    expect(screen.queryByText('The image upload failed.')?.className).toBe('red f6 pt3 db');
   });
 });

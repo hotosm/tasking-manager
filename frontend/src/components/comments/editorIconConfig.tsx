@@ -6,6 +6,8 @@ import {
   unorderedListCommand,
   selectWord,
   orderedListCommand,
+  ExecuteState,
+  TextAreaTextApi,
 } from '@uiw/react-md-editor';
 
 const ICON_SIZE = 14;
@@ -103,7 +105,8 @@ export const iconConfig = {
         <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path>
       </svg>
     ),
-    execute: (state, api) => {
+    execute: (state: ExecuteState, api: TextAreaTextApi) => {
+      // @ts-expect-error TS Migrations - we need to look at what prefix does - can't find it in the docs'
       const newSelectionRange = selectWord({ text: state.text, selection: state.selection });
       const state1 = api.setSelectionRange(newSelectionRange);
       const state2 = api.replaceSelection(`@${state1.selectedText}`);
@@ -131,7 +134,7 @@ export const iconConfig = {
       </svg>
     ),
     execute: () => {
-      document.getElementById('image_picker').click();
+      document.getElementById('image_picker')?.click();
     },
   },
   // The backend converts markdown into HTML, so youtube embed iframe works on the preview mode,

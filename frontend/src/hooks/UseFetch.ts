@@ -10,7 +10,7 @@ export const useFetch = (url: string, trigger: boolean = true) => {
   const locale = useSelector((state: RootStore) => state.preferences['locale']);
   const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState({});
+  const [data, setData] = useState<unknown>({});
 
   useEffect(() => {
     (async () => {

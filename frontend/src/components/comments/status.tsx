@@ -3,7 +3,10 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { Alert } from '../alert';
 
-export const MessageStatus = ({ status, comment }) => {
+export const MessageStatus = ({ status, comment }: {
+  status: 'success' | 'error',
+  comment?: string,
+}) => {
   if (status === 'success' && !comment) {
     return (
       <Alert type="success" inline={true} compact={true}>

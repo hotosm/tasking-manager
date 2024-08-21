@@ -5,9 +5,12 @@ import { ProfilePictureIcon, CloseIcon } from '../svgIcons';
 import { getRandomArrayItem } from '../../utils/random';
 import { useAvatarStyle } from '../../hooks/UseAvatarStyle';
 import { useAvatarText } from '../../hooks/UseAvatarText';
+import { HtmlHTMLAttributes } from 'react';
+import { RootStore } from '../../store';
 
-export const CurrentUserAvatar = (props) => {
-  const userPicture = useSelector((state) => state.auth.userDetails.pictureUrl);
+export const CurrentUserAvatar = (props: HtmlHTMLAttributes<any>) => {
+  const userPicture = useSelector((state: RootStore) => state.auth.userDetails?.pictureUrl);
+  const
   if (userPicture) {
     return (
       <div
@@ -21,7 +24,6 @@ export const CurrentUserAvatar = (props) => {
 };
 
 export const UserAvatar = ({
-  name,
   username,
   number,
   picture,
@@ -30,7 +32,16 @@ export const UserAvatar = ({
   removeFn,
   editMode,
   disableLink = false,
-}: Object) => {
+}: {
+  username: string;
+  number?: string;
+  picture?: string;
+  size?: string;
+  colorClasses?: string;
+  removeFn?: Function;
+  editMode?: boolean;
+  disableLink?: boolean;
+}) => {
   const avatarText = useAvatarText(name, username, number);
 
   if ((removeFn && editMode) || disableLink) {
@@ -62,7 +73,17 @@ export const UserAvatar = ({
   }
 };
 
-const Avatar = ({ username, size, colorClasses, removeFn, picture, text, editMode }) => {
+const Avatar = ({ username, size, colorClasses, removeFn, picture, text, editMode }: {
+  username: string;
+  number?: string;
+  picture?: string;
+  text: string;
+  size?: "small" | "medium" | "large";
+  colorClasses?: string;
+  removeFn?: Function;
+  editMode?: boolean;
+  disableLink?: boolean;
+}) => {
   const { sizeClasses, textPadding, closeIconStyle, sizeStyle } = useAvatarStyle(
     size,
     editMode,
@@ -101,7 +122,14 @@ export const UserAvatarList = ({
   bgColor,
   size,
   totalCount,
-}: Object) => {
+}: {
+  users: any[];
+  maxLength?: number;
+  textColor?: string;
+  bgColor?: string;
+  size?: string;
+  totalCount?: number;
+}) => {
   const getColor = () =>
     bgColor ? bgColor : getRandomArrayItem(['bg-orange', 'bg-red', 'bg-blue-dark', 'bg-blue-grey']);
   let marginLeft = '-1.25rem';
@@ -127,11 +155,12 @@ export const UserAvatarList = ({
       {maxLength && (totalCount || users.length) - maxLength > 0 && (
         <div style={{ marginLeft: '-1.5rem' }} className="dib">
           <UserAvatar
-            number={`+${
-              (totalCount || users.length) - maxLength > 999
-                ? 999
-                : (totalCount || users.length) - maxLength
-            }`}
+            // TODO: Fix this, it shouldn't really just be an empty string
+            username={""}
+            number={`+${(totalCount || users.length) - maxLength > 999
+              ? 999
+              : (totalCount || users.length) - maxLength
+              }`}
             size={size}
             colorClasses={`blue-dark bg-grey-light`}
             disableLink={true}

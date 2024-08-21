@@ -2,7 +2,10 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 
-const DropzoneUploadStatus = ({ uploadError, uploading }: Object) => {
+const DropzoneUploadStatus = ({ uploadError, uploading }: {
+  uploadError?: boolean | null;
+  uploading?: boolean | null;
+}) => {
   return (
     <>
       {uploadError && (
