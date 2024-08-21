@@ -45,55 +45,34 @@ class ProjectContributionsDTO(BaseModel):
 
     user_contributions: Optional[List[UserContribution]] = Field(alias="userContributions", default=None)
 
-
-# class Pagination(Model):
-#     """Properties for paginating results"""
-
-#     def __init__(self, paginated_result):
-#         """Instantiate from a Flask-SQLAlchemy paginated result"""
-#         super().__init__()
-
-#         self.has_next = paginated_result.has_next
-#         self.has_prev = paginated_result.has_prev
-#         self.next_num = paginated_result.next_num
-#         self.page = paginated_result.page
-#         self.pages = paginated_result.pages
-#         self.prev_num = paginated_result.prev_num
-#         self.per_page = paginated_result.per_page
-#         self.total = paginated_result.total
-
-#     has_next = BooleanType(serialized_name="hasNext")
-#     has_prev = BooleanType(serialized_name="hasPrev")
-#     next_num = IntType(serialized_name="nextNum")
-#     page = IntType()
-#     pages = IntType()
-#     prev_num = IntType(serialized_name="prevNum")
-#     per_page = IntType(serialized_name="perPage")
-#     total = IntType()
-
-
 class Pagination(BaseModel):
-    def __init__(self, paginated_result):
-        """Instantiate from a Flask-SQLAlchemy paginated result"""
-        super().__init__()
-
-        self.has_next = paginated_result.has_next
-        self.has_prev = paginated_result.has_prev
-        self.next_num = paginated_result.next_num
-        self.page = paginated_result.page
-        self.pages = paginated_result.pages
-        self.prev_num = paginated_result.prev_num
-        self.per_page = paginated_result.per_page
-        self.total = paginated_result.total
-
-    has_next: Optional[bool] = Field(alias="hasNext", default=False)
-    has_prev: Optional[bool] = Field(alias="hasPrev", default=False)
-    next_num: Optional[int] = Field(alias="nextNum", default=None)
+    has_next: Optional[bool] = Field(serialization_alias="hasNext", default=False)
+    has_prev: Optional[bool] = Field(serialization_alias="hasPrev", default=False)
+    next_num: Optional[int] = Field(serialization_alias="nextNum", default=None)
     page: Optional[int] = None
     pages: Optional[int] = None
-    prev_num: Optional[int] = Field(alias="prevNum", default=None)
-    per_page: Optional[int] = Field(alias="perPage", default=None)
+    prev_num: Optional[int] = Field(serialization_alias="prevNum", default=None)
+    per_page: Optional[int] = Field(serialization_alias="perPage", default=None)
     total: Optional[int] = None
+
+    @staticmethod
+    def from_total_count(page: int, per_page: int, total: int) -> "Pagination":
+        pages = (total + per_page - 1) // per_page
+        has_next = page < pages
+        has_prev = page > 1
+        next_num = page + 1 if has_next else None
+        prev_num = page - 1 if has_prev else None
+
+        return Pagination(
+            has_next=has_next,
+            has_prev=has_prev,
+            next_num=next_num,
+            page=page,
+            pages=pages,
+            prev_num=prev_num,
+            per_page=per_page,
+            total=total,
+        )
 
 
 class ProjectActivityDTO(BaseModel):

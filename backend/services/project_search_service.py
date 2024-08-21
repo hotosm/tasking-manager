@@ -41,6 +41,8 @@ from backend.models.postgis.utils import (
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
 from backend.db import get_session
+from databases import Database
+
 session = get_session()
 
 
@@ -68,62 +70,84 @@ class BBoxTooBigError(Exception):
 
 
 class ProjectSearchService:
+    
     @staticmethod
     async def create_search_query(user=None):
-        from backend.pagination import CustomQuery
-        query = (
-            CustomQuery(
-                Project.id.label("id"),
-                Project.difficulty,
-                Project.priority,
-                Project.default_locale,
-                Project.centroid.ST_AsGeoJSON().label("centroid"),
-                Project.organisation_id,
-                Project.tasks_bad_imagery,
-                Project.tasks_mapped,
-                Project.tasks_validated,
-                Project.status,
-                Project.total_tasks,
-                Project.last_updated,
-                Project.due_date,
-                Project.country,
-                Organisation.name.label("organisation_name"),
-                Organisation.logo.label("organisation_logo"),
-            )
-            .filter(Project.geometry is not None)
-            .outerjoin(Organisation, Organisation.id == Project.organisation_id)
-            .group_by(Organisation.id, Project.id)
-        )
-        # Get public projects only for anonymous user.
+        # Base query for fetching project details
+        query = """
+        SELECT
+            p.id AS id,
+            p.difficulty,
+            p.priority,
+            p.default_locale,
+            ST_AsGeoJSON(p.centroid) AS centroid,
+            p.organisation_id,
+            p.tasks_bad_imagery,
+            p.tasks_mapped,
+            p.tasks_validated,
+            p.status,
+            p.total_tasks,
+            p.last_updated,
+            p.due_date,
+            p.country,
+            o.name AS organisation_name,
+            o.logo AS organisation_logo
+        FROM projects p
+        LEFT JOIN organisations o ON o.id = p.organisation_id
+        LEFT JOIN project_info pi ON pi.project_id = p.id
+        WHERE p.geometry IS NOT NULL
+        """
+        
+        filters = []
+        params = {}
+
         if user is None:
-            query = query.filter(Project.private.is_(False))
+            filters.append("p.private = :private")
+            params['private'] = False
 
-        if user is not None and user.role != UserRole.ADMIN.value:
-            # Get also private projects of teams that the user is member.
-            project_ids = [[p.project_id for p in t.team.projects] for t in user.teams]
+        if user is not None:
+            if user.role != UserRole.ADMIN.value:
+                # Fetch project_ids for user's teams
+                team_projects_query = """
+                SELECT p.id
+                FROM user_teams ut
+                JOIN teams t ON t.id = ut.team_id
+                JOIN projects p ON p.team_id = t.id
+                WHERE ut.user_id = :user_id
+                """
+                
+                # Fetch project_ids for user's organisations
+                org_projects_query = """
+                SELECT p.id
+                FROM user_organisations uo
+                JOIN organisations o ON o.id = uo.organisation_id
+                JOIN projects p ON p.organisation_id = o.id
+                WHERE uo.user_id = :user_id
+                """
+                
+                # Execute the queries to get project IDs
+                team_projects = await db.fetch_all(team_projects_query, {'user_id': user.id})
+                org_projects = await db.fetch_all(org_projects_query, {'user_id': user.id})
 
-            # Get projects that belong to user organizations.
-            orgs_projects_ids = [[p.id for p in u.projects] for u in user.organisations]
+                # Flatten the results and combine them
+                project_ids = tuple(set([row['id'] for row in team_projects] + [row['id'] for row in org_projects]))
 
-            project_ids.extend(orgs_projects_ids)
+                if project_ids:
+                    filters.append("p.private = :private OR p.id IN :project_ids")
+                    params['private'] = False
+                    params['project_ids'] = project_ids
+        
+        if filters:
+            query += " AND " + " AND ".join(filters)
 
-            project_ids = tuple(
-                set([item for sublist in project_ids for item in sublist])
-            )
-
-            query = query.filter(
-                or_(Project.private.is_(False), Project.id.in_(project_ids))
-            )
-
-        # If the user is admin, no filter.
-        return query
+        return query, params
 
     @staticmethod
-    async def create_result_dto(project, preferred_locale, total_contributors, session):
+    async def create_result_dto(project, preferred_locale, total_contributors, db: Database):
         project_info_dto = await ProjectInfo.get_dto_for_locale(
-            project.id, preferred_locale, project.default_locale, session
+            db, project.id, preferred_locale, project.default_locale
         )
-        project_obj = await Project.get(project.id, session)
+        # project_obj = await Project.get(project.id, db)
         list_dto = ListSearchResultDTO()
         list_dto.project_id = project.id
         list_dto.locale = project_info_dto.locale
@@ -133,19 +157,19 @@ class ProjectSearchService:
         list_dto.short_description = project_info_dto.short_description
         list_dto.last_updated = project.last_updated
         list_dto.due_date = project.due_date
-        list_dto.percent_mapped = project_obj.calculate_tasks_percent(
-            "mapped",
+        list_dto.percent_mapped = Project.calculate_tasks_percent(
+            "mapped", project.tasks_mapped, project.tasks_validated, project.total_tasks, project.tasks_bad_imagery 
         )
-        list_dto.percent_validated = project_obj.calculate_tasks_percent(
-            "validated",
+        list_dto.percent_validated = Project.calculate_tasks_percent(
+            "validated", project.tasks_mapped, project.tasks_validated, project.total_tasks, project.tasks_bad_imagery 
         )
         list_dto.status = ProjectStatus(project.status).name
-        list_dto.active_mappers = await Project.get_active_mappers(project.id, session)
+        list_dto.active_mappers = await Project.get_active_mappers(project.id, db)
         list_dto.total_contributors = total_contributors
         list_dto.country = project.country
         list_dto.organisation_name = project.organisation_name
         list_dto.organisation_logo = project.organisation_logo
-        list_dto.campaigns = await Project.get_project_campaigns(project.id, session)
+        list_dto.campaigns = await Project.get_project_campaigns(project.id, db)
 
         return list_dto
 
@@ -174,25 +198,26 @@ class ProjectSearchService:
 
     @staticmethod
     @cached(search_cache)
-    async def search_projects(search_dto: ProjectSearchDTO, user, session) -> ProjectSearchResultsDTO:
+    async def search_projects(search_dto: ProjectSearchDTO, user, db) -> ProjectSearchResultsDTO:
         """Searches all projects for matches to the criteria provided by the user"""
-        all_results, paginated_results = await ProjectSearchService._filter_projects(
-            search_dto, user, session
+        all_results, paginated_results, pagination_dto = await ProjectSearchService._filter_projects(
+            search_dto, user, db
         )
-        if paginated_results.total == 0:
+        if pagination_dto.total == 0:
             raise NotFound(sub_code="PROJECTS_NOT_FOUND")
-
+        
         dto = ProjectSearchResultsDTO()
         dto.results = [
             await ProjectSearchService.create_result_dto(
                 p,
                 search_dto.preferred_locale,
-                await Project.get_project_total_contributions(p[0], session),
-                session
+                await Project.get_project_total_contributions(p.id, db),
+                db
             )
-            for p in paginated_results.items
+            for p in paginated_results
         ]
-        dto.pagination = Pagination(paginated_results)
+
+        dto.pagination = pagination_dto
         if search_dto.omit_map_results:
             return dto
 
@@ -210,189 +235,175 @@ class ProjectSearchService:
             features.append(feature)
         feature_collection = geojson.FeatureCollection(features)
         dto.map_results = feature_collection
-
         return dto
 
-    @staticmethod
-    async def _filter_projects(search_dto: ProjectSearchDTO, user, session):
-        """Filters all projects based on criteria provided by user"""
 
-        query = await ProjectSearchService.create_search_query(user)
+    async def _filter_projects(search_dto: ProjectSearchDTO, user, db: Database):
+        base_query, params = await ProjectSearchService.create_search_query(user)
+        # Initialize filter list and parameters dictionary
+        filters = []
 
-        query = query.join(ProjectInfo).filter(
-            ProjectInfo.locale.in_([search_dto.preferred_locale, "en"])
-        )
-        project_status_array = []
+        # Filters based on search_dto
+        if search_dto.preferred_locale:
+            filters.append("pi.locale IN (:preferred_locale, 'en')")
+            params['preferred_locale'] = search_dto.preferred_locale
+
         if search_dto.project_statuses:
-            project_status_array = [
-                ProjectStatus[project_status].value
-                for project_status in search_dto.project_statuses
-            ]
-            query = query.filter(Project.status.in_(project_status_array))
+            statuses = [ProjectStatus[status].value for status in search_dto.project_statuses]
+            filters.append("p.status IN :statuses")
+            params['statuses'] = tuple(statuses)
         else:
             if not search_dto.created_by:
-                project_status_array = [ProjectStatus.PUBLISHED.value]
-                query = query.filter(Project.status.in_(project_status_array))
+                filters.append("p.status = :published_status")
+                params['published_status'] = ProjectStatus.PUBLISHED.value
 
         if not search_dto.based_on_user_interests:
-            # Only filter by interests if not based on user interests is provided
             if search_dto.interests:
-                query = query.join(
-                    project_interests, project_interests.c.project_id == Project.id
-                ).filter(project_interests.c.interest_id.in_(search_dto.interests))
+                filters.append("p.id IN (SELECT project_id FROM project_interests WHERE interest_id IN :interests)")
+                params['interests'] = tuple(search_dto.interests)
         else:
-            user = UserService.get_user_by_id(search_dto.based_on_user_interests)
-            query = query.join(
-                project_interests, project_interests.c.project_id == Project.id
-            ).filter(
-                project_interests.c.interest_id.in_(
-                    [interest.id for interest in user.interests]
-                )
-            )
+            user = await UserService.get_user_by_id(search_dto.based_on_user_interests)
+            filters.append("p.id IN (SELECT project_id FROM project_interests WHERE interest_id IN :user_interests)")
+            params['user_interests'] = tuple(interest.id for interest in user.interests)
+
         if search_dto.created_by:
-            query = query.filter(Project.author_id == search_dto.created_by)
+            filters.append("p.author_id = :created_by")
+            params['created_by'] = search_dto.created_by
+
         if search_dto.mapped_by:
-            projects_mapped = UserService.get_projects_mapped(search_dto.mapped_by)
-            query = query.filter(Project.id.in_(projects_mapped))
+            mapped_projects = await UserService.get_projects_mapped(search_dto.mapped_by)
+            filters.append("p.id IN :mapped_projects")
+            params['mapped_projects'] = tuple(mapped_projects)
+
         if search_dto.favorited_by:
-            projects_favorited = user.favorites
-            query = query.filter(
-                Project.id.in_([project.id for project in projects_favorited])
-            )
+            favorited_projects = [project.id for project in user.favorites]
+            filters.append("p.id IN :favorited_projects")
+            params['favorited_projects'] = tuple(favorited_projects)
+
         if search_dto.difficulty and search_dto.difficulty.upper() != "ALL":
-            query = query.filter(
-                Project.difficulty == ProjectDifficulty[search_dto.difficulty].value
-            )
+            filters.append("p.difficulty = :difficulty")
+            params['difficulty'] = ProjectDifficulty[search_dto.difficulty].value
+
         if search_dto.action and search_dto.action != "any":
             if search_dto.action == "map":
-                query = ProjectSearchService.filter_projects_to_map(query, user)
-            if search_dto.action == "validate":
-                query = ProjectSearchService.filter_projects_to_validate(query, user)
+                filters.append("p.id IN (SELECT project_id FROM project_actions WHERE action = 'map')")
+            elif search_dto.action == "validate":
+                filters.append("p.id IN (SELECT project_id FROM project_actions WHERE action = 'validate')")
 
         if search_dto.organisation_name:
-            query = query.filter(Organisation.name == search_dto.organisation_name)
+            filters.append("o.name = :organisation_name")
+            params['organisation_name'] = search_dto.organisation_name
 
         if search_dto.organisation_id:
-            query = query.filter(Organisation.id == search_dto.organisation_id)
+            filters.append("o.id = :organisation_id")
+            params['organisation_id'] = search_dto.organisation_id
 
         if search_dto.team_id:
-            query = query.join(
-                ProjectTeams, ProjectTeams.project_id == Project.id
-            ).filter(ProjectTeams.team_id == search_dto.team_id)
+            filters.append("p.id IN (SELECT project_id FROM project_teams WHERE team_id = :team_id)")
+            params['team_id'] = search_dto.team_id
 
         if search_dto.campaign:
-            query = query.join(Campaign, Project.campaign).group_by(Campaign.name)
-            query = query.filter(Campaign.name == search_dto.campaign)
+            filters.append("p.id IN (SELECT project_id FROM campaigns WHERE name = :campaign_name)")
+            params['campaign_name'] = search_dto.campaign
 
         if search_dto.mapping_types:
-            # Construct array of mapping types for query
-            mapping_type_array = []
-
             if search_dto.mapping_types_exact:
-                mapping_type_array = [
-                    {
-                        MappingTypes[mapping_type].value
-                        for mapping_type in search_dto.mapping_types
-                    }
-                ]
-                query = query.filter(Project.mapping_types.in_(mapping_type_array))
+                filters.append("p.mapping_types @> :mapping_types")
+                params['mapping_types'] = tuple(MappingTypes[mapping_type].value for mapping_type in search_dto.mapping_types)
             else:
-                mapping_type_array = [
-                    MappingTypes[mapping_type].value
-                    for mapping_type in search_dto.mapping_types
-                ]
-                query = query.filter(Project.mapping_types.overlap(mapping_type_array))
+                filters.append("p.mapping_types && :mapping_types")
+                params['mapping_types'] = tuple(MappingTypes[mapping_type].value for mapping_type in search_dto.mapping_types)
 
         if search_dto.text_search:
-            # We construct an OR search, so any projects that contain or more of the search terms should be returned
-            invalid_ts_chars = "@|&!><\\():"
-            search_text = "".join(
-                char for char in search_dto.text_search if char not in invalid_ts_chars
-            )
-            or_search = " | ".join([x for x in search_text.split(" ") if x != ""])
-            opts = [
-                ProjectInfo.text_searchable.match(
-                    or_search, postgresql_regconfig="english"
-                ),
-                ProjectInfo.name.ilike(f"%{or_search}%"),
-            ]
-            try:
-                opts.append(Project.id == int(search_dto.text_search))
-            except ValueError:
-                pass
-
-            query = query.filter(or_(*opts))
+            search_text = "".join(char for char in search_dto.text_search if char not in "@|&!><\\():")
+            or_search = " | ".join([x for x in search_text.split(" ") if x])
+            filters.append("pi.text_searchable @@ to_tsquery('english', :text_search) OR pi.name ILIKE :text_search")
+            params['text_search'] = or_search
 
         if search_dto.country:
-            # Unnest country column array.
-            sq = session.query(Project).with_entities(
-                Project.id, func.unnest(Project.country).label("country")
-            ).subquery()
-            query = query.filter(
-                func.lower(sq.c.country) == search_dto.country.lower()
-            ).filter(Project.id == sq.c.id)
+            filters.append("p.id IN (SELECT id FROM projects, unnest(country) AS country WHERE LOWER(country) = LOWER(:country))")
+            params['country'] = search_dto.country
 
         if search_dto.last_updated_gte:
-            last_updated_gte = validate_date_input(search_dto.last_updated_gte)
-            query = query.filter(Project.last_updated >= last_updated_gte)
+            filters.append("p.last_updated >= :last_updated_gte")
+            params['last_updated_gte'] = validate_date_input(search_dto.last_updated_gte)
 
         if search_dto.last_updated_lte:
-            last_updated_lte = validate_date_input(search_dto.last_updated_lte)
-            query = query.filter(Project.last_updated <= last_updated_lte)
+            filters.append("p.last_updated <= :last_updated_lte")
+            params['last_updated_lte'] = validate_date_input(search_dto.last_updated_lte)
 
         if search_dto.created_gte:
-            created_gte = validate_date_input(search_dto.created_gte)
-            query = query.filter(Project.created >= created_gte)
+            filters.append("p.created >= :created_gte")
+            params['created_gte'] = validate_date_input(search_dto.created_gte)
 
         if search_dto.created_lte:
-            created_lte = validate_date_input(search_dto.created_lte)
-            query = query.filter(Project.created <= created_lte)
+            filters.append("p.created <= :created_lte")
+            params['created_lte'] = validate_date_input(search_dto.created_lte)
 
-        order_by = search_dto.order_by
-        if search_dto.order_by_type == "DESC":
-            order_by = desc(search_dto.order_by)
-
-        query = query.order_by(order_by).distinct(search_dto.order_by, Project.id)
 
         if search_dto.managed_by and user.role != UserRole.ADMIN.value:
-            # Get all the projects associated with the user and team.
-            orgs_projects_ids = [[p.id for p in u.projects] for u in user.organisations]
-            orgs_projects_ids = [
-                item for sublist in orgs_projects_ids for item in sublist
-            ]
+            # Fetch project IDs for user's organisations
+            org_projects_query = """
+            SELECT p.id
+            FROM projects p
+            JOIN organisations o ON o.id = p.organisation_id
+            JOIN user_organisations uo ON uo.organisation_id = o.id
+            WHERE uo.user_id = :user_id
+            """
+            orgs_projects_ids = await db.fetch_all(org_projects_query, {'user_id': user.id})
 
-            team_project_ids = [
-                [
-                    p.project_id
-                    for p in u.team.projects
-                    if p.role == TeamRoles.PROJECT_MANAGER.value
-                ]
-                for u in user.teams
-            ]
-            team_project_ids = [
-                item for sublist in team_project_ids for item in sublist
-            ]
+            # Fetch project IDs for user's teams
+            team_projects_query = """
+            SELECT p.id
+            FROM projects p
+            JOIN teams t ON t.id = p.team_id
+            JOIN user_teams ut ON ut.team_id = t.id
+            WHERE ut.user_id = :user_id
+            AND ut.role = :project_manager_role
+            """
+            team_project_ids = await db.fetch_all(team_projects_query, {
+                'user_id': user.id,
+                'project_manager_role': TeamRoles.PROJECT_MANAGER.value
+            })
 
-            orgs_projects_ids.extend(team_project_ids)
-            ids = tuple(set(orgs_projects_ids))
-            query = query.filter(Project.id.in_(ids))
+            # Combine and flatten the project IDs from both queries
+            project_ids = tuple(set([row['id'] for row in orgs_projects_ids] + [row['id'] for row in team_project_ids]))
+            if project_ids:
+                filters.append("p.id IN :managed_projects")
+                params['managed_projects'] = project_ids
 
-        all_results = []
-        if not search_dto.omit_map_results:
-            query_result = query
-            query_result.column_descriptions.clear()
-            query_result.add_columns(
-                Project.id,
-                Project.centroid.ST_AsGeoJSON().label("centroid"),
-                Project.priority,
-            )
-            all_results = await session.execute(query_result)
+        order_by_clause = ""
+        if search_dto.order_by:
+            order_by = f"p.{search_dto.order_by}"
+            if search_dto.order_by_type == "DESC":
+                order_by += " DESC"
+            order_by_clause = f" ORDER BY {order_by}"
 
-        paginated_results = await query.paginate(
-            session=session, page=search_dto.page, per_page=14, error_out=False
-        )
+        # Construct final query
+        if filters:
+            sql_query = base_query + " AND " + " AND ".join(filters)
+        else:
+            sql_query = base_query
 
-        return all_results, paginated_results
+        # Append the ORDER BY clause
+        sql_query += order_by_clause
+
+        # Pagination
+        page = search_dto.page
+        per_page = 14
+        offset = (page - 1) * per_page
+        sql_query_paginated = sql_query + f" LIMIT {per_page} OFFSET {offset}"
+
+        # Get total count
+        count_query = f"SELECT COUNT(*) FROM ({sql_query}) AS count_subquery"
+        total_count = await db.fetch_val(count_query, values=params)
+
+        paginated_results = await db.fetch_all(sql_query_paginated, values=params)
+        all_results = await db.fetch_all(sql_query, values=params)
+
+        pagination_dto = Pagination.from_total_count(page, per_page, total_count)
+
+        return all_results, paginated_results, pagination_dto
 
     @staticmethod
     def filter_by_user_permission(query, user, permission: str):
@@ -541,7 +552,6 @@ class ProjectSearchService:
                 ),
             )
         )
-
         if author_id:
             query = query.filter(Project.author_id == author_id)
 

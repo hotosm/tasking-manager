@@ -59,46 +59,6 @@ class ProjectInfo(Base):
         self.instructions = dto.instructions
         self.per_task_instructions = dto.per_task_instructions
 
-    # @staticmethod
-    # async def get_dto_for_locale(project_id, locale, default_locale="en", session=None) -> ProjectInfoDTO:
-    #     """
-    #     Gets the projectInfoDTO for the project for the requested locale. If not found, then the default locale is used
-    #     :param project_id: ProjectID in scope
-    #     :param locale: locale requested by user
-    #     :param default_locale: default locale of project
-    #     :raises: ValueError if no info found for Default Locale
-    #     """
-    #     project_info = await session.execute(sa.select(ProjectInfo).filter_by(
-    #         project_id=project_id, locale=locale
-    #     ))
-    #     project_info = project_info.scalars().one_or_none()
-
-    #     if project_info is None:
-    #         # If project is none, get default locale and don't worry about empty translations
-    #         project_info = await session.execute(sa.select(ProjectInfo).filter_by(
-    #             project_id=project_id, locale=default_locale
-    #         ))
-    #         project_info = project_info.scalars().one_or_none()
-    #         return project_info.get_dto()
-
-    #     if locale == default_locale:
-    #         # If locale == default_locale don't need to worry about empty translations
-    #         return project_info.get_dto()
-
-    #     default_locale = await session.execute(sa.select(ProjectInfo).filter_by(
-    #         project_id=project_id, locale=default_locale
-    #     ))
-    #     default_locale = default_locale.scalars().one_or_none()
-
-    #     if default_locale is None:
-    #         error_message = f"BAD DATA: no info for project {project_id}, locale: {locale}, default {default_locale}"
-    #         # current_app.logger.critical(error_message)
-    #         raise ValueError(error_message)
-
-    #     # Pass thru default_locale in case of partial translation
-    #     return project_info.get_dto(default_locale)
-
-
     @staticmethod
     async def get_dto_for_locale(
         db: Database,
