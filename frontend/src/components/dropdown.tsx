@@ -1,15 +1,37 @@
-import { createRef, forwardRef, useEffect, useState } from 'react';
+import { createRef, forwardRef, useEffect, useState, RefObject } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, CheckIcon } from './svgIcons';
 import { CustomButton } from './button';
 
-const DropdownContent = forwardRef((props, ref) => {
+interface DropdownOption {
+  label: string;
+  value: string;
+  href?: string;
+  internalLink?: boolean;
+}
+
+interface DropdownContentProps {
+  value: DropdownOption | DropdownOption[];
+  onChange?: (value: DropdownOption[]) => void;
+  onRemove?: (option: DropdownOption) => void;
+  onAdd?: (option: DropdownOption) => void;
+  toggleDropdown: () => void;
+  multi?: boolean;
+  toTop?: boolean;
+  options: DropdownOption[];
+  deletable?: (value: string) => void;
+}
+
+const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>((props, ref) => {
   const navigate = useNavigate();
-  const isActive = (obj) => {
-    return props.value === obj.value;
+  
+  const isActive = (obj: DropdownOption): boolean => {
+    return Array.isArray(props.value)
+      ? props.value.some(item => item.value === obj.value)
+      : props.value.value === obj.value;
   };
 
-  const handleClick = (data) => {
+  const handleClick = (data: DropdownOption) => {
     if (data) {
       const label = data.label;
       if (!props.value || !props.onChange) {
@@ -24,22 +46,24 @@ const DropdownContent = forwardRef((props, ref) => {
       if (!ourObj) return;
 
       let isRemove = false;
-      for (let x = 0; x < value.length; x++) {
-        if (value[x].label === label) {
-          isRemove = true;
-          props.onRemove && props.onRemove(ourObj);
-          props.onChange(value.slice(0, x).concat(value.slice(x + 1)));
+      if (Array.isArray(value)) {
+        for (let x = 0; x < value.length; x++) {
+          if (value[x].label === label) {
+            isRemove = true;
+            props.onRemove && props.onRemove(ourObj);
+            props.onChange(value.slice(0, x).concat(value.slice(x + 1)));
+          }
         }
-      }
-
-      if (!isRemove) {
-        let newArray = value.slice(0, value.length);
-        if (!props.multi) {
-          newArray = [];
+        
+        if (!isRemove) {
+          let newArray = value.slice(0, value.length);
+          if (!props.multi) {
+            newArray = [];
+          }
+          newArray.push(ourObj);
+          props.onAdd && props.onAdd(ourObj);
+          props.onChange(newArray);
         }
-        newArray.push(ourObj);
-        props.onAdd && props.onAdd(ourObj);
-        props.onChange(newArray);
       }
     }
     if (!props.multi) {
@@ -104,7 +128,7 @@ const DropdownContent = forwardRef((props, ref) => {
                 e.preventDefault();
                 e.stopPropagation();
                 props.toggleDropdown();
-                props.deletable(i.value);
+                props.deletable?.(i.value);
               }}
             >
               x
@@ -116,19 +140,32 @@ const DropdownContent = forwardRef((props, ref) => {
   );
 });
 
-export function Dropdown(props) {
-  const [display, setDisplay] = useState(false);
+interface DropdownProps {
+  options: DropdownOption[];
+  value: DropdownOption | DropdownOption[]; // Changed here
+  display: string;
+  className?: string;
+  toTop?: boolean;
+  multi?: boolean;
+  onChange?: (value: DropdownOption[]) => void;
+  onRemove?: (option: DropdownOption) => void;
+  onAdd?: (option: DropdownOption) => void;
+  deletable?: (value: string) => void;
+}
 
-  const contentRef = createRef();
-  const buttonRef = createRef();
+export function Dropdown(props: DropdownProps) {
+  const [display, setDisplay] = useState<boolean>(false);
+
+  const contentRef: RefObject<HTMLDivElement> = createRef();
+  const buttonRef: RefObject<HTMLButtonElement> = createRef();
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: Event) => {
       if (
         !contentRef.current ||
-        contentRef.current.contains(event.target) ||
+        contentRef.current.contains(event.target as Node) ||
         !buttonRef.current ||
-        buttonRef.current.contains(event.target)
+        buttonRef.current.contains(event.target as Node)
       ) {
         return;
       }
@@ -146,13 +183,16 @@ export function Dropdown(props) {
     setDisplay(!display);
   };
 
-  const getActiveOrDisplay = () => {
-    const activeItems = props.options.filter(
-      (item) => item.label === props.value || item.value === props.value,
-    );
+  const getActiveOrDisplay = (): string => {
+    const activeItems = props.options.filter((item) => {
+      if (Array.isArray(props.value)) {
+        return props.value.some(v => v.label === item.label || v.value === item.value);
+      }
+      return item.label === props.value.label || item.value === props.value.value;
+    });
     return activeItems.length === 0 || activeItems.length > 1
       ? props.display
-      : activeItems[0].label;
+      : activeItems[0].label
   };
 
   return (
@@ -170,7 +210,6 @@ export function Dropdown(props) {
         <DropdownContent
           ref={contentRef}
           {...props}
-          eventTypes={['click', 'touchend']}
           toggleDropdown={toggleDropdown}
           toTop={props.toTop}
         />

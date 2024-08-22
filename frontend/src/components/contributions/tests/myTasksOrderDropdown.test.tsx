@@ -49,6 +49,7 @@ describe('MyTasksOrderDropdown', () => {
           allQueryParams={{
             orderBy: '-project_id',
           }}
+          setQuery={setQueryMock}
         />
       </IntlProviders>,
     );

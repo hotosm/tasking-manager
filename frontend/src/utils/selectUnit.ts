@@ -1,10 +1,16 @@
 // this code is an adaptation of https://www.npmjs.com/package/@formatjs/intl-utils
 
-var __assign =
+import { FormattedRelativeTime } from "react-intl";
+
+const __assign =
+  // @ts-expect-error TS Migrations
   (this && this.__assign) ||
+  // @ts-expect-error TS Migrations
   function () {
+    // @ts-expect-error TS Migrations
     __assign =
       Object.assign ||
+      // @ts-expect-error TS Migrations
       function (t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
           s = arguments[i];
@@ -12,6 +18,7 @@ var __assign =
         }
         return t;
       };
+    // @ts-expect-error TS Migrations
     return __assign.apply(this, arguments);
   };
 
@@ -27,13 +34,18 @@ const DEFAULT_THRESHOLDS = {
   day: 7,
 };
 
-export function selectUnit(from, to, thresholds) {
+export function selectUnit(from: Date | number, to: Date | number = Date.now(), thresholds = DEFAULT_THRESHOLDS): {
+  value: number;
+  unit: Parameters<typeof FormattedRelativeTime>["0"]["unit"]
+} {
   if (to === void 0) {
     to = Date.now();
   }
   if (thresholds === void 0) {
+    // @ts-expect-error TS Migrations
     thresholds = {};
   }
+  // @ts-expect-error TS Migrations
   const resolvedThresholds = __assign(__assign({}, DEFAULT_THRESHOLDS), thresholds || {});
   const secs = (+from - +to) / MS_PER_SECOND;
   if (Math.abs(secs) < resolvedThresholds.second) {

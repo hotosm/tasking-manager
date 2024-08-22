@@ -5,7 +5,25 @@ import 'react-placeholder/lib/reactPlaceholder.css';
 import messages from './messages';
 import { TaskCard } from './taskCard';
 
-export const TaskResults = (props) => {
+export interface TaskCardProps {
+  projectId: number;
+  taskId: number;
+}
+
+interface TaskResultsProps {
+  state: {
+    isLoading: boolean;
+    isError: boolean;
+    tasks: TaskCardProps[];
+    pagination?: {
+      total: number;
+    };
+  };
+  className?: string;
+  retryFn: () => void;
+}
+
+export const TaskResults: React.FC<TaskResultsProps> = (props) => {
   const state = props.state;
 
   return (
@@ -15,8 +33,8 @@ export const TaskResults = (props) => {
           <FormattedMessage
             {...messages.paginationCount}
             values={{
-              number: state.tasks && state.tasks.length,
-              total: <FormattedNumber value={state.pagination && state.pagination.total} />,
+              number: state.tasks?.length ?? 0,
+              total: <FormattedNumber value={state.pagination?.total ?? 0} />,
             }}
           />
         </p>
@@ -40,7 +58,11 @@ export const TaskResults = (props) => {
   );
 };
 
-export const TaskCards = ({ pageOfCards }) => {
+interface TaskCardsProps {
+  pageOfCards?: TaskCardProps[];
+}
+
+export const TaskCards: React.FC<TaskCardsProps> = ({ pageOfCards }) => {
   if (pageOfCards?.length === 0) {
     return (
       <div className="mb3 blue-grey">
