@@ -153,6 +153,9 @@ class PartnerRestAPI(Resource):
                         type: array
                         items:
                             type: string
+                    mapswipe_group_id:
+                        type: string
+                        example: -NL6WXPOdFyWACqwNU2O
         responses:
             200:
                 description: Partner updated successfully
@@ -260,6 +263,9 @@ class PartnersAllRestAPI(Resource):
                             type: string
                         default: [
                         ]
+                    mapswipe_group_id:
+                        type: string
+                        example: -NL6WXPOdFyWACqwNU2O
         responses:
             201:
                 description: New partner created successfully
