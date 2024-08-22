@@ -478,9 +478,8 @@ class OrganisationService:
             WHERE om.organisation_id = :organisation_id
         """
         managers_records = await db.fetch_all(managers_query, values={"organisation_id": organisation_id})
-
         # Extract the list of IDs from the records
-        managers_ids = [record["id"] for record in managers_records]
+        managers_ids = [record.id for record in managers_records]
         user = await UserService.get_user_by_id(user_id, db)
         return user.id in managers_ids
 
