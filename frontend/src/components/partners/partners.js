@@ -286,6 +286,15 @@ export function PartnersInformation({ hasSlug, setFormState, formState }) {
         </label>
         <Field name="logo_url" component="input" type="text" className={fieldClasses} />
       </div>
+
+      <div className={rowClass}>
+        <div className={containerClases}>
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.mapSwipeGroupId} />
+          </label>
+          <Field name="mapswipe_group_id" component="input" type="text" className={fieldClasses} />
+        </div>
+      </div>
     </>
   );
 }
