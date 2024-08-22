@@ -31,6 +31,7 @@ import {
   useTasksQuery,
 } from '../../api/projects';
 import { useTeamsQuery } from '../../api/teams';
+import { RootStore } from '../../store/index.js';
 const TaskSelectionFooter = lazy(() => import('./footer'));
 
 const getRandomTaskByAction = (activities, taskAction) => {
@@ -50,13 +51,16 @@ const getRandomTaskByAction = (activities, taskAction) => {
   }
 };
 
-export function TaskSelection({ project }: Object) {
+export function TaskSelection({ project }: {
+  // TODO: Fix this - big type
+  project: any
+}) {
   useSetProjectPageTitleTag(project);
   const { projectId } = project;
   const location = useLocation();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.userDetails);
-  const userOrgs = useSelector((state) => state.auth.organisations);
+  const user = useSelector((state: RootStore) => state.auth.userDetails);
+  const userOrgs = useSelector((state: RootStore) => state.auth.organisations);
   const lockedTasks = useGetLockedTasks();
   const [zoomedTaskId, setZoomedTaskId] = useState(null);
   const [activeSection, setActiveSection] = useState(null);

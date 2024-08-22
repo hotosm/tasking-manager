@@ -5,7 +5,22 @@ import messages from './messages';
 import { Button } from '../button.jsx';
 import { useAsync } from '../../hooks/UseAsync';
 
-const clearParamsStep = (props) => {
+const clearParamsStep = (props: {
+  index: number;
+  metadata: {
+    area: number;
+    arbitraryTasks: boolean;
+    geom: any;
+    taskGrid: any;
+    tempTaskGrid: any;
+    tasksNumber: number;
+  };
+  maxArea: number;
+  mapObj: any;
+  setStep: (step: number) => void;
+  updateMetadata: (metadata: any) => void;
+  setErr: (err: { error: boolean; message: string }) => void;
+}) => {
   switch (props.index) {
     case 2: //clear Tasks
       props.mapObj.map.getSource('grid').setData(featureCollection([]));
@@ -39,7 +54,7 @@ const clearParamsStep = (props) => {
   props.setStep(prevStep);
 };
 
-const NavButtons = (props) => {
+const NavButtons = (props: any) => {
   const intl = useIntl();
 
   const createProjectFn = () => {
@@ -47,7 +62,21 @@ const NavButtons = (props) => {
   };
   const createProjectAsync = useAsync(createProjectFn);
 
-  const validateStep = (props) => {
+  const validateStep = (props: {
+    index: number;
+    metadata: {
+      area: number;
+      arbitraryTasks: boolean;
+      geom: any;
+      taskGrid: any;
+      tempTaskGrid: any;
+      tasksNumber: number;
+    };
+    maxArea: number;
+    mapObj: any;
+    setStep: (step: number) => void;
+    updateMetadata: (metadata: any) => void;
+  }) => {
     switch (props.index) {
       case 1: // Set Project AOI.
         if (props.metadata.area >= props.maxArea) {
@@ -90,7 +119,7 @@ const NavButtons = (props) => {
     props.setStep(nextStep);
     return { error: false, message: '' };
   };
-  const stepHandler = (event) => {
+  const stepHandler = () => {
     const resp = validateStep(props);
     props.setErr(resp);
   };

@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 
 // source: https://usehooks.com/useAsync/ (with modifications)
 
-export const useAsync = (asyncFunction, immediate = false) => {
+export const useAsync = (asyncFunction: () => Promise<any>, immediate = false) => {
   const [status, setStatus] = useState('idle');
   const [value, setValue] = useState(null);
   const [error, setError] = useState(null);
@@ -12,7 +12,7 @@ export const useAsync = (asyncFunction, immediate = false) => {
   // useCallback ensures the below useEffect is not called
   // on every render, but only if asyncFunction changes.
   const execute = useCallback(
-    (param = null) => {
+    async (param = null) => {
       setStatus('pending');
       setValue(null);
       setError(null);
