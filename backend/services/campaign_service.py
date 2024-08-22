@@ -84,47 +84,60 @@ class CampaignService:
         """Gets the specified campaign"""
         campaign = await CampaignService.get_campaign(campaign_id, db)
         return campaign
-
+    
 
     @staticmethod
-    async def get_project_campaigns_as_dto(project_id: int, session: AsyncSession) -> CampaignListDTO:
+    async def get_project_campaigns_as_dto(project_id: int, db: Database) -> CampaignListDTO:
         """Gets all the campaigns for a specified project"""
-        
         # Test if project exists
-        await ProjectService.get_project_by_id(project_id, session)
-        
-        # Construct the query
-        query = (
-            select(Campaign)
-            .join(campaign_projects)
-            .filter(campaign_projects.c.project_id == project_id)
-        )
-        
-        # Execute the query asynchronously
-        result = await session.execute(query)
-        campaigns = result.scalars().all()
-        
-        # Convert the result to DTO
-        return Campaign.campaign_list_as_dto(campaigns)
+        await ProjectService.get_project_by_id(project_id, db)
 
+        query = """
+            SELECT c.*
+            FROM campaigns c
+            INNER JOIN campaign_projects cp ON c.id = cp.campaign_id
+            WHERE cp.project_id = :project_id
+        """
+
+        campaigns = await db.fetch_all(query=query, values={"project_id": project_id})
+        return Campaign.campaign_list_as_dto(campaigns)
+    
+    
     @staticmethod
-    async def delete_project_campaign(project_id: int, campaign_id: int, session):
-        """Delete campaign for a project"""
-        campaign = await CampaignService.get_campaign(campaign_id, session)
-        project = await ProjectService.get_project_by_id(project_id, session)
-        project_campaigns = await CampaignService.get_project_campaigns_as_dto(project_id, session)
-        project_campaigns = project_campaigns.dict()
-        if campaign.id not in [i["id"] for i in project_campaigns["campaigns"]]:
+    async def delete_project_campaign(project_id: int, campaign_id: int, db: Database):
+        """Delete campaign from a project."""
+        # Check if the campaign exists
+        await CampaignService.get_campaign(campaign_id, db)
+        
+        # Check if the project exists
+        await ProjectService.get_project_by_id(project_id, db)
+        
+        """Fetch all campaigns associated with a project."""
+        query = """
+            SELECT c.id
+            FROM campaigns c
+            JOIN campaign_projects pc ON c.id = pc.campaign_id
+            WHERE pc.project_id = :project_id
+        """
+        project_campaigns = await db.fetch_all(query=query, values={"project_id": project_id})
+
+        if campaign_id not in [campaign.id for campaign in project_campaigns]:
             raise NotFound(
                 sub_code="PROJECT_CAMPAIGN_NOT_FOUND",
                 campaign_id=campaign_id,
                 project_id=project_id,
             )
-        await session.refresh(project, ["campaign"])
-        project.campaign.remove(campaign)
-        await session.commit()
-        new_campaigns = await CampaignService.get_project_campaigns_as_dto(project_id, session)
-        return new_campaigns
+        
+        # Delete the campaign from the project
+        delete_query = """
+            DELETE FROM campaign_projects
+            WHERE project_id = :project_id
+            AND campaign_id = :campaign_id
+        """
+        await db.execute(delete_query, values={"project_id": project_id, "campaign_id": campaign_id})
+        # Fetch the updated list of campaigns
+        updated_campaigns = await CampaignService.get_project_campaigns_as_dto(project_id, db)
+        return updated_campaigns
 
 
     @staticmethod
@@ -176,16 +189,22 @@ class CampaignService:
                 ) from e
 
     @staticmethod
-    def create_campaign_project(dto: CampaignProjectDTO):
-        """Assign a campaign with a project"""
-        ProjectService.get_project_by_id(dto.project_id)
-        CampaignService.get_campaign(dto.campaign_id)
-        statement = campaign_projects.insert().values(
-            campaign_id=dto.campaign_id, project_id=dto.project_id
-        )
-        session.execute(statement)
-        session.commit()
-        new_campaigns = CampaignService.get_project_campaigns_as_dto(dto.project_id)
+    async def create_campaign_project(dto: CampaignProjectDTO, db: Database) -> CampaignListDTO:
+        """Assign a campaign to a project"""
+        
+        # Check if the project exists
+        await ProjectService.get_project_by_id(dto.project_id, db)
+        
+        # Check if the campaign exists
+        await CampaignService.get_campaign(dto.campaign_id, db)
+        
+        insert_query = """
+            INSERT INTO campaign_projects (campaign_id, project_id)
+            VALUES (:campaign_id, :project_id)
+        """
+        
+        await db.execute(query=insert_query, values={"campaign_id": dto.campaign_id, "project_id": dto.project_id})
+        new_campaigns = await CampaignService.get_project_campaigns_as_dto(dto.project_id, db)
         return new_campaigns
 
     @staticmethod

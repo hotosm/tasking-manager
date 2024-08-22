@@ -62,7 +62,7 @@ class TeamProjectDTO(BaseModel):
 class ProjectTeamDTO(BaseModel):
     team_id: int = Field(serialization_alias="teamId", required=True)
     team_name: str = Field(serialization_alias="name")
-    role: str = Field(required=True)
+    role: int = Field(required=True)
 
 class TeamDetailsDTO(BaseModel):
     def __init__(self, members: Optional[List[TeamMembersDTO]] = None, team_projects: Optional[List[ProjectTeamDTO]] = None, **kwargs):
