@@ -24,7 +24,7 @@ interface DropdownContentProps {
 
 const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>((props, ref) => {
   const navigate = useNavigate();
-  
+
   const isActive = (obj: DropdownOption): boolean => {
     return Array.isArray(props.value)
       ? props.value.some(item => item.value === obj.value)
@@ -54,7 +54,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>((props,
             props.onChange(value.slice(0, x).concat(value.slice(x + 1)));
           }
         }
-        
+
         if (!isRemove) {
           let newArray = value.slice(0, value.length);
           if (!props.multi) {
