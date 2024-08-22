@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from backend.exceptions import NotFound
 from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
 from backend.db import Base, get_session
+from databases import Database
 session = get_session()
 
 # Secondary table defining the many-to-many join
@@ -38,19 +39,23 @@ class License(Base):
             raise NotFound(sub_code="LICENSE_NOT_FOUND", license_id=license_id)
 
         return map_license
-
-    @classmethod
-    def create_from_dto(cls, dto: LicenseDTO) -> int:
+    
+    async def create_from_dto(license_dto: LicenseDTO, db: Database) -> int:
         """Creates a new License class from dto"""
-        new_license = cls()
-        new_license.name = dto.name
-        new_license.description = dto.description
-        new_license.plain_text = dto.plain_text
+        query = """
+            INSERT INTO licenses (name, description, plain_text)
+            VALUES (:name, :description, :plain_text)
+            RETURNING id
+        """
+        values = {
+            "name": license_dto.name,
+            "description": license_dto.description,
+            "plain_text": license_dto.plain_text,
+        }
 
-        session.add(new_license)
-        session.commit()
-
-        return new_license.id
+        async with db.transaction():
+            new_license_id = await db.execute(query, values)
+            return new_license_id
 
     def update_license(self, dto: LicenseDTO):
         """Update existing license"""
