@@ -32,6 +32,8 @@ from backend.services.messaging.message_service import MessageService
 from backend.db import get_session
 session = get_session()
 from sqlalchemy import select
+from databases import Database
+
 
 
 class TeamServiceError(Exception):
@@ -524,21 +526,28 @@ class TeamService:
 
 
     @staticmethod
-    async def get_project_teams_as_dto(project_id: int, session) -> TeamsListDTO:
+    async def get_project_teams_as_dto(project_id: int, db: Database) -> TeamsListDTO:
         """Gets all the teams for a specified project"""
-        query = select(ProjectTeams).filter(ProjectTeams.project_id == project_id)
-        result = await session.execute(query)
-        project_teams = result.scalars().all()
 
+        # Raw SQL query to get project teams
+        query = """
+            SELECT team_id, role
+            FROM project_teams
+            WHERE project_id = :project_id
+        """
+
+        # Execute the query and fetch all results
+        project_teams = await db.fetch_all(query=query, values={"project_id": project_id})
+        # Initialize the DTO
         teams_list_dto = TeamsListDTO()
 
         for project_team in project_teams:
-            team = await TeamService.get_team_by_id(project_team.team_id, session)
+            team = await TeamService.get_team_by_id(project_team.team_id, db)
             if team:
                 team_dto = ProjectTeamDTO(
-                    teamId=project_team.team_id,
-                    name=team.name,  
-                    role=str(project_team.role)
+                    team_id=project_team.team_id,
+                    team_name=team.name,
+                    role=str(project_team["role"])
                 )
                 teams_list_dto.teams.append(team_dto)
 
@@ -555,21 +564,28 @@ class TeamService:
         project.role = TeamRoles[role].value
         await session.commit()
 
-
     @staticmethod
-    async def get_team_by_id(team_id: int, session) -> Team:
+    async def get_team_by_id(team_id: int, db: Database):
         """
         Get team from DB
         :param team_id: ID of team to fetch
         :returns: Team
         :raises: Not Found
         """
-        team = await session.get(Team, team_id)
-
-        if team is None:
+        # Raw SQL query to select the team by ID
+        query = """
+            SELECT id, name
+            FROM teams
+            WHERE id = :team_id
+        """
+        # Execute the query and fetch the team
+        team_record = await db.fetch_one(query=query, values={"team_id": team_id})
+        if team_record is None:
             raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_id)
 
-        return team
+        return team_record
+    
+
     
     @staticmethod
     def get_team_by_name(team_name: str) -> Team:
@@ -667,14 +683,31 @@ class TeamService:
         ).exists()
         return session.query(query).scalar()
 
+
     @staticmethod
-    def is_user_an_active_team_member(team_id: int, user_id: int):
-        query = TeamMembers.query.filter(
-            TeamMembers.team_id == team_id,
-            TeamMembers.user_id == user_id,
-            TeamMembers.active.is_(True),
-        ).exists()
-        return session.query(query).scalar()
+    async def is_user_an_active_team_member(team_id: int, user_id: int, db: Database) -> bool:
+        """
+        Check if a user is an active member of a team.
+        :param team_id: ID of the team
+        :param user_id: ID of the user
+        :param db: Database connection
+        :returns: True if the user is an active member, False otherwise
+        """
+        # Raw SQL query to check if the user is an active team member
+        query = """
+            SELECT EXISTS(
+                SELECT 1 
+                FROM team_members
+                WHERE team_id = :team_id
+                AND user_id = :user_id
+                AND active = true
+            ) AS is_active
+        """
+
+        # Execute the query and fetch the result
+        result = await db.fetch_one(query=query, values={"team_id": team_id, "user_id": user_id})
+        # Return the boolean value indicating if the user is an active team member
+        return result["is_active"]
 
     @staticmethod
     def is_user_team_manager(team_id: int, user_id: int):
@@ -712,16 +745,16 @@ class TeamService:
             }, 400
 
     @staticmethod
-    def check_team_membership(project_id: int, allowed_roles: list, user_id: int):
+    async def check_team_membership(project_id: int, allowed_roles: list, user_id: int, db):
         """Given a project and permitted team roles, check user's membership in the team list"""
-        teams_dto = TeamService.get_project_teams_as_dto(project_id)
+        teams_dto = await TeamService.get_project_teams_as_dto(project_id, db)
         teams_allowed = [
             team_dto for team_dto in teams_dto.teams if team_dto.role in allowed_roles
         ]
         user_membership = [
             team_dto.team_id
             for team_dto in teams_allowed
-            if TeamService.is_user_an_active_team_member(team_dto.team_id, user_id)
+            if await TeamService.is_user_an_active_team_member(team_dto.team_id, user_id, db)
         ]
         return len(user_membership) > 0
 

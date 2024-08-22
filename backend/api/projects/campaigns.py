@@ -2,13 +2,17 @@
 # from schematics.exceptions import DataError
 
 from backend.models.dtos.campaign_dto import CampaignProjectDTO
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.project_admin_service import ProjectAdminService
 # from backend.services.users.authentication_service import token_auth
+from backend.services.users.authentication_service import login_required
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
+from backend.db import get_db, get_session
 from starlette.authentication import requires
 from sqlalchemy.ext.asyncio import AsyncSession
+from databases import Database
+
 
 router = APIRouter(
     prefix="/projects",
@@ -17,12 +21,13 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-
-# class ProjectsCampaignsAPI(Resource):
-    # @token_auth.login_required
 @router.post("/{project_id}/campaigns/{campaign_id}/")
-@requires(["authenticated"])
-async def post(request: Request, project_id: int, campaign_id: int):
+async def post(
+    project_id: int,
+    campaign_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Assign a campaign for a project
     ---
@@ -61,24 +66,31 @@ async def post(request: Request, project_id: int, campaign_id: int):
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name
-    if not ProjectAdminService.is_user_action_permitted_on_project(
-        authenticated_user_id, project_id
+    if not await ProjectAdminService.is_user_action_permitted_on_project(
+        user.id, project_id, db
     ):
         return {
             "Error": "User is not a manager of the project",
             "SubCode": "UserPermissionError",
         }, 403
-    try:
-        campaign_project_dto = CampaignProjectDTO()
-        campaign_project_dto.campaign_id = campaign_id
-        campaign_project_dto.project_id = project_id
-        campaign_project_dto.validate()
-    except DataError as e:
-        current_app.logger.error(f"error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
+    
+    # Check if the project is already assigned to the campaign
+    query = """
+    SELECT COUNT(*)
+    FROM campaign_projects
+    WHERE project_id = :project_id AND campaign_id = :campaign_id
+    """
+    result = await db.fetch_val(query, values={"project_id": project_id, "campaign_id": campaign_id})
 
-    CampaignService.create_campaign_project(campaign_project_dto)
+    if result > 0:
+        return {
+            "Error": "Project is already assigned to this campaign",
+            "SubCode": "CampaignAssignmentError",
+        }, 400
+    
+    campaign_project_dto = CampaignProjectDTO(project_id=project_id,campaign_id=campaign_id )
+
+    await CampaignService.create_campaign_project(campaign_project_dto, db)
     message = (
         "campaign with id {} assigned successfully for project with id {}".format(
             campaign_id, project_id
@@ -86,8 +98,9 @@ async def post(request: Request, project_id: int, campaign_id: int):
     )
     return ({"Success": message}, 200)
 
+
 @router.get("/{project_id}/campaigns/")
-async def get(project_id: int, session: AsyncSession = Depends(get_session)):
+async def get(project_id: int, db: Database = Depends(get_db)):
     """
     Gets all campaigns for a project
     ---
@@ -112,13 +125,17 @@ async def get(project_id: int, session: AsyncSession = Depends(get_session)):
         500:
             description: Internal Server Error
     """
-    campaigns = await CampaignService.get_project_campaigns_as_dto(project_id, session)
-    return campaigns.model_dump(by_alias=True), 200
+    campaigns = await CampaignService.get_project_campaigns_as_dto(project_id, db)
+    return campaigns
 
 
 @router.delete("/{project_id}/campaigns/{campaign_id}/")
-@requires(["authenticated"])
-async def delete(request: Request, project_id: int, campaign_id: int, session: AsyncSession = Depends(get_session)):
+async def delete(
+    project_id: int,
+    campaign_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Delete a campaign for a project
     ---
@@ -157,14 +174,13 @@ async def delete(request: Request, project_id: int, campaign_id: int, session: A
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name
     if not await ProjectAdminService.is_user_action_permitted_on_project(
-        authenticated_user_id, project_id, session
+        user.id, project_id, db
     ):
         return {
             "Error": "User is not a manager of the project",
             "SubCode": "UserPermissionError",
         }, 403
 
-    await CampaignService.delete_project_campaign(project_id, campaign_id, session)
+    await CampaignService.delete_project_campaign(project_id, campaign_id, db)
     return {"Success": "Campaigns Deleted"}, 200
