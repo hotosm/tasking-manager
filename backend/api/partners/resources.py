@@ -251,6 +251,14 @@ class PartnersAllRestAPI(Resource):
               description: JSON object for creating a new Partner
               schema:
                 properties:
+                    name:
+                        type: string
+                        required: true
+                        example: "American red cross"
+                    primary_hashtag:
+                        type: string
+                        required: true
+                        example: "#americanredcross"
                     logo:
                         type: string
                         example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
@@ -289,6 +297,12 @@ class PartnersAllRestAPI(Resource):
         try:
             data = request.json
             if data:
+                if data.get("name") is None:
+                    return {"message": "Partner name is not provided"}, 400
+
+                if data.get("primary_hashtag") is None:
+                    return {"message": "Partner primary_hashtag is not provided"}, 400
+
                 new_partner = PartnerService.create_partner(data)
                 partner_dict = new_partner.as_dto().to_primitive()
                 return partner_dict, 201
