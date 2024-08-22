@@ -219,7 +219,6 @@ class ProjectSearchService:
             columns=[
                 "locale",
                 "shortDescription",
-                "organisationName",
                 "organisationLogo",
                 "campaigns",
             ],
