@@ -1,10 +1,15 @@
 from backend.models.dtos.licenses_dto import LicenseDTO
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.user import User
 from backend.services.license_service import LicenseService
-from backend.services.users.authentication_service import tm
+from backend.services.users.authentication_service import tm, login_required
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
+from databases import Database
+from backend.db import get_db
+
 
 router = APIRouter(
     prefix="/licenses",
@@ -13,11 +18,12 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# class LicensesRestAPI(Resource):
+
 @router.post("/")
-@requires("authenticated")
-@tm.pm_only()
-def post(request: Request):
+# TODO: refactor decorator functions
+# @requires("authenticated")
+# @tm.pm_only()
+async def post(license_dto: LicenseDTO, db: Database = Depends(get_db)):
     """
     Creates a new mapping license
     ---
@@ -57,21 +63,15 @@ def post(request: Request):
         500:
             description: Internal Server Error
     """
-    try:
-        license_dto = LicenseDTO(request.get_json())
-        license_dto.validate()
-    except Exception as e:
-        logger.error(f"Error validating request: {str(e)}")
-        return {
-            "Error": "Unable to create new mapping license",
-            "SubCode": "InvalidData",
-        }, 400
-
-    new_license_id = LicenseService.create_licence(license_dto)
+    new_license_id = await LicenseService.create_license(license_dto, db)
     return {"licenseId": new_license_id}, 201
 
+
 @router.get("/{license_id}/")
-async def get(request: Request, license_id):
+async def get(
+    license_id: int,
+    db: Database = Depends(get_db),
+):
     """
     Get a specified mapping license
     ---
@@ -94,13 +94,16 @@ async def get(request: Request, license_id):
         500:
             description: Internal Server Error
     """
-    license_dto = LicenseService.get_license_as_dto(license_id)
-    return license_dto.model_dump(by_alias=True), 200
+    license_dto = await LicenseService.get_license_as_dto(license_id, db)
+    return license_dto
+
 
 @router.patch("/{license_id}/")
-@requires("authenticated")
-@tm.pm_only()
-async def patch(request: Request, license_id):
+# @requires("authenticated")
+# @tm.pm_only()
+async def patch(
+    license_dto: LicenseDTO, license_id: int, db: Database = Depends(get_db)
+):
     """
     Update a specified mapping license
     ---
@@ -146,21 +149,14 @@ async def patch(request: Request, license_id):
         500:
             description: Internal Server Error
     """
-    try:
-        license_dto = LicenseDTO(request.json())
-        license_dto.license_id = license_id
-        license_dto.validate()
-    except Exception as e:
-        logger.error(f"Error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
+    await LicenseService.update_license(license_dto, license_id, db)
+    return {"status": "Updated"}, 200
 
-    updated_license = LicenseService.update_licence(license_dto)
-    return updated_license.model_dump(by_alias=True), 200
 
 @router.delete("/{license_id}/")
-@requires("authenticated")
-@tm.pm_only()
-async def delete(request: Request, license_id):
+# @requires("authenticated")
+# @tm.pm_only()
+async def delete(license_id: int, db: Database = Depends(get_db)):
     """
     Delete a specified mapping license
     ---
@@ -191,13 +187,12 @@ async def delete(request: Request, license_id):
         500:
             description: Internal Server Error
     """
-    LicenseService.delete_license(license_id)
+    await LicenseService.delete_license(license_id, db)
     return {"Success": "License deleted"}, 200
 
 
-# class LicensesAllAPI(Resource):
 @router.get("/")
-async def get():
+async def get(db: Database = Depends(get_db)):
     """
     Get all imagery licenses
     ---
@@ -213,5 +208,5 @@ async def get():
         500:
             description: Internal Server Error
     """
-    licenses_dto = LicenseService.get_all_licenses()
-    return licenses_dto.model_dump(by_alias=True), 200
+    licenses_dto = await LicenseService.get_all_licenses(db)
+    return licenses_dto
