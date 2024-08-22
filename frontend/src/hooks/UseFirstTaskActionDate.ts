@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 
 import { compareHistoryLastUpdate } from '../utils/sorting';
 
-const useFirstTaskActionDate = (history) => {
-  const [firstDate, setFirstDate] = useState(null);
+const useFirstTaskActionDate = (history: {
+  taskHistory: { actionDate: string }[];
+}) => {
+  const [firstDate, setFirstDate] = useState<string | null>(null);
   useEffect(() => {
     if (history && history.taskHistory && history.taskHistory.length) {
       const fistTaskAction =
