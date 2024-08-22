@@ -409,7 +409,7 @@ class ListSearchResultDTO(Model):
     creation_date = UTCDateTimeType(serialized_name="creationDate", required=True)
     author = StringType(serialize_when_none=False)
     partner_names = ListType(StringType, serialized_name="partnerNames")
-    total_area = FloatType(required=True)
+    total_area = FloatType(required=True, serialized_name="totalAreaSquareKilometers")
 
 
 class ProjectSearchResultsDTO(Model):
