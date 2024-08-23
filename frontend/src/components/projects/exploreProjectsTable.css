@@ -1,7 +1,7 @@
 .explore-projects-table-column-resizer {
   position: absolute;
-  top: 25%;
-  height: 50%;
+  top: 27%;
+  height: 40%;
   width: 2px;
   background: rgba(177, 177, 177, 0.5);
   cursor: col-resize;

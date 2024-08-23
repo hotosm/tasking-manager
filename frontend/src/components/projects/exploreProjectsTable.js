@@ -21,7 +21,11 @@ const COLUMNS = [
     ),
     cell: ({ row }) => {
       return (
-        <Link to={`/projects/${row.original.projectId}`} className="no-underline color-inherit">
+        <Link
+          to={`/projects/${row.original.projectId}`}
+          className="no-underline color-inherit"
+          title={row.original.name}
+        >
           {row.original.name}
         </Link>
       );
@@ -34,6 +38,9 @@ const COLUMNS = [
         <FormattedMessage {...messages.authorColumn} />
       </span>
     ),
+    cell: ({ row }) => {
+      return row.original.author ? row.original.author : <span className="gray">--</span>;
+    },
   },
   {
     accessorKey: 'organisationName',
@@ -103,7 +110,7 @@ const COLUMNS = [
       return (
         <PriorityBox
           priority={row.original.priority}
-          extraClasses="f6 pv1 ph2 dib"
+          extraClasses="f7 pv1 ph2 dib"
           showIcon={!['URGENT', 'MEDIUM', 'LOW'].includes(row.original.priority)}
         />
       );
@@ -146,7 +153,7 @@ const COLUMNS = [
     ),
     cell: ({ row }) => {
       if (!row.original?.country[0]) return null;
-      return row.original.country[0];
+      return <span title={row.original.country[0]}>{row.original.country[0]}</span>;
     },
   },
   {
@@ -169,7 +176,7 @@ const COLUMNS = [
       </span>
     ),
     cell: ({ row }) => {
-      if (!row.original.dueDate) return null;
+      if (!row.original.dueDate) return <span className="gray">--</span>;
 
       const dueDateObject = new Date(row.original.dueDate);
       return dueDateObject < new Date() ? (
@@ -200,7 +207,7 @@ export const ExploreProjectsTable = ({ projects, status }) => {
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
-                  className="fw4 f5 bb bw1 b--moon-gray tl pv3 pr3 pl2 relative"
+                  className="fw5 f6 bb bw1 b--moon-gray tl pv3 pr3 pl2 relative"
                   key={header.id}
                   colSpan={header.colSpan}
                   style={{ width: header.getSize(), maxWidth: header.maxWidth }}
@@ -231,12 +238,16 @@ export const ExploreProjectsTable = ({ projects, status }) => {
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <td
-                  className={`pv3 f5 pr3 mw5 pl2 bb b--moon-gray ${cell.column.id !== 'progress' && 'truncate'}`} // Don't add truncate class to progress column as it shows a tooltip
+                  className={`f6 pr3 mw5 pl2 bb b--moon-gray ${
+                    cell.column.id !== 'progress' && 'truncate'
+                  }`} // Don't add truncate class to progress column as it shows a tooltip
                   key={cell.id}
                   style={{
                     width: cell.column.getSize(),
                     minWidth: cell.column.columnDef.minSize,
                     maxWidth: cell.column.columnDef.size,
+                    paddingTop: '0.75rem',
+                    paddingBottom: '0.75rem',
                   }}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

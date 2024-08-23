@@ -77,14 +77,14 @@ const ExploreProjectsViewToggle = () => {
         height="21"
         width="21"
         role="graphics-symbol"
-        className={`pointer ${isExploreProjectsTableView ? 'moon-gray' : ''}`}
+        className={`pointer ${isExploreProjectsTableView ? 'moon-gray' : 'blue-dark'}`}
         onClick={() => dispatch({ type: 'SET_EXPLORE_PROJECTS_CARD_VIEW' })}
       />
       <TableListIcon
         height="21"
         width="21"
         role="graphics-symbol"
-        className={`pointer ${isExploreProjectsTableView ? '' : 'moon-gray'}`}
+        className={`pointer ${isExploreProjectsTableView ? 'blue-dark' : 'moon-gray'}`}
         onClick={() => dispatch({ type: 'SET_EXPLORE_PROJECTS_TABLE_VIEW' })}
       />
     </>
