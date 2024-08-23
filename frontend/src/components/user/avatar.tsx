@@ -10,13 +10,12 @@ import { RootStore } from '../../store';
 
 export const CurrentUserAvatar = (props: HtmlHTMLAttributes<any>) => {
   const userPicture = useSelector((state: RootStore) => state.auth.userDetails?.pictureUrl);
-  const
   if (userPicture) {
     return (
       <div
         {...props}
         style={{ backgroundImage: `url(${userPicture})`, backgroundSize: 'cover' }}
-        alt={'user avatar'}
+        aria-label={'user avatar'}
       />
     );
   }

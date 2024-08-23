@@ -90,7 +90,7 @@ export function updateSession(session) {
   };
 }
 
-export const setAuthDetails = (username, token, osm_oauth_token) => (dispatch) => {
+export const setAuthDetails = (username: string, token: string, osm_oauth_token: string) => (dispatch: Dispatch) => {
   const encoded_token = btoa(token);
   setItem('token', encoded_token);
   setItem('username', username);
@@ -106,8 +106,8 @@ export const setAuthDetails = (username, token, osm_oauth_token) => (dispatch) =
 
 // UPDATES OSM INFORMATION OF THE USER
 export const setUserDetails =
-  (username, encodedToken, update = false) =>
-    (dispatch) => {
+  (username: string, encodedToken: string, update: boolean = false) =>
+    (dispatch: Dispatch) => {
       // only trigger the loader if this function is not being triggered to update the user information
       if (!update) dispatch(setLoader(true));
       fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encodedToken)
