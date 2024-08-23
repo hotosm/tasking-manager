@@ -12,7 +12,7 @@ import { AlertIcon } from '../svgIcons';
 
 const DeleteTrigger = forwardRef((props, ref) => <DeleteButton {...props} />);
 
-export function DeleteModal({ id, name, type, className, endpointURL, onDelete }: Object) {
+export function DeleteModal({ id, name, type, className, endpointURL, onDelete }) {
   const navigate = useNavigate();
   const modalRef = useRef();
   const token = useSelector((state) => state.auth.token);
