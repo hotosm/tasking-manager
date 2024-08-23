@@ -227,7 +227,7 @@ const SignupTrigger = (props: ButtonProps & {
       )}
     </Button>
   );
-});
+};
 
 export const AuthButtons = ({
   logInStyle,
@@ -291,6 +291,7 @@ export const ActionItems = ({ userDetails, onUserMenuSelect, location, getUserLi
       />
     </>
   );
+
 
 export const PopupItems = (props) => {
   const dispatch = useDispatch();

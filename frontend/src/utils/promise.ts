@@ -39,6 +39,6 @@ export function cancelableFetchJSON(url: string) {
   );
 }
 
-export function delayPromise(interval: number): { promise: Promise<*>, cancel: () => any } {
+export function delayPromise(interval: number): { promise: Promise<any>, cancel: () => any } {
   return cancelablePromise(new Promise((res) => setTimeout(res, interval)));
 }
