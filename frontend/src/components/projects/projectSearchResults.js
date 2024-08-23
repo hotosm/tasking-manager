@@ -25,10 +25,8 @@ export const ProjectSearchResults = ({
   );
 
   const cardWidthClass = 'w-100';
-  let isShowListView = management && listViewIsActive;
-  if (isExploreProjectsPage && isExploreProjectsTableView) {
-    isShowListView = true;
-  }
+  const isShowListView =
+    (management && listViewIsActive) || (isExploreProjectsPage && isExploreProjectsTableView);
 
   return (
     <div className={`${className}`}>

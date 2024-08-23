@@ -34,7 +34,7 @@ export const SwitchToggle = ({
     {label && labelPosition !== 'right' && <span className="di mr2 nowrap f6 dn-m">{label}</span>}
     <div className="relative dib">
       <input
-        className={`absolute z-5 w-100 h-100 o-0 ${!isDisabled && 'pointer'} checkbox`}
+        className={`absolute z-5 w-100 h-100 o-0 ${!isDisabled ? 'pointer' : ''} checkbox`}
         type="checkbox"
         checked={isChecked}
         onChange={onChange}

@@ -239,7 +239,7 @@ export const ExploreProjectsTable = ({ projects, status }) => {
               {row.getVisibleCells().map((cell) => (
                 <td
                   className={`f6 pr3 mw5 pl2 bb b--moon-gray ${
-                    cell.column.id !== 'progress' && 'truncate'
+                    cell.column.id !== 'progress' ? 'truncate' : ''
                   }`} // Don't add truncate class to progress column as it shows a tooltip
                   key={cell.id}
                   style={{
@@ -258,14 +258,14 @@ export const ExploreProjectsTable = ({ projects, status }) => {
         </tbody>
       </table>
 
-      {isEmpty ? (
+      {isEmpty && (
         <div className="flex items-center justify-start pa4 gap-1 pl2">
           <CircleExclamationIcon className="red" width="20" height="20" />
           <p className="ma0">
             <FormattedMessage {...messages.projectsTableEmpty} />
           </p>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };
