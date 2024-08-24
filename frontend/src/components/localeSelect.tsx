@@ -5,6 +5,7 @@ import Select from 'react-select';
 import messages from './messages';
 import { supportedLocales } from '../utils/internationalization';
 import { setLocale } from '../store/actions/userPreferences';
+import { RootStore } from '../store';
 
 function LocaleSelect({
   className,
@@ -12,14 +13,26 @@ function LocaleSelect({
   setLocale,
   removeBorder = true,
   fullWidth = false,
+}: {
+  className?: string;
+  userPreferences: { locale: string };
+  setLocale: (locale: string) => void;
+  removeBorder?: boolean;
+  fullWidth?: boolean;
 }) {
-  const onLocaleSelect = (arr) => {
+  const onLocaleSelect = (arr: {
+    value: string;
+    label: string;
+  }[]) => {
     setLocale(arr[0].value);
   };
 
   const getActiveLanguageNames = () => {
     const locales = [userPreferences.locale, navigator.language, navigator.language.substr(0, 2)];
-    let supportedLocaleNames = [];
+    const supportedLocaleNames: {
+      value: string;
+      label: string
+    }[] = [];
     locales.forEach((locale) =>
       supportedLocales
         .filter((i) => i.value === locale)
@@ -55,7 +68,7 @@ function LocaleSelect({
   );
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: RootStore) => ({
   userPreferences: state.preferences,
 });
 

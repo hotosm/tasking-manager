@@ -18,7 +18,7 @@ export const StatsNumber = (props) => {
   );
 };
 
-export const StatsColumn = ({ label, value }: Object) => {
+export const StatsColumn = ({ label, value }) => {
   return (
     <div className={`tc`}>
       <div className="fw5 red barlow-condensed stat-number">

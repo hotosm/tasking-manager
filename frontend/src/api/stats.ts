@@ -88,7 +88,7 @@ export const useUserOsmStatsQuery = (id: string) => {
     queryKey: ['user-osm-stats'],
     queryFn: fetchUserOsmStats,
     // userDetail.test.js fails on CI when throwOnError=true
-    throwOnError: process.env.NODE_ENV !== 'test',
+    throwOnError: import.meta.env.NODE_ENV !== 'test',
     select: (data) => data?.data.result,
     enabled: !!id,
   });

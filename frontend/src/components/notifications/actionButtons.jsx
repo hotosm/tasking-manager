@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import deletionMessages from '../deleteModal/messages';
 import messages from './messages';
 import { EyeIcon, WasteIcon } from '../svgIcons';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const ActionButtons = ({

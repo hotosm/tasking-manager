@@ -87,7 +87,7 @@ export function NotificationBodyCard({
     message,
     sentDate,
   },
-}: Object) {
+}) {
   const token = useSelector((state) => state.auth.token);
   const { value, unit } = selectUnit(new Date((sentDate && new Date(sentDate)) || new Date()));
   const showASendingUser =

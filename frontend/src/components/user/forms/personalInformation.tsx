@@ -11,6 +11,7 @@ import { UserCountrySelect, RadioField } from '../../formInputs';
 import { pushUserDetails } from '../../../store/actions/auth';
 import { fetchLocalJSONAPI } from '../../../network/genericJSONRequest';
 import { ORG_CODE } from '../../../config';
+import { RootStore } from '../../../store';
 
 export const PROFILE_RELEVANT_FIELDS = [
   'name',
@@ -66,7 +67,7 @@ const genderOptions = [
   },
 ];
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: RootStore) => ({
   userDetails: state.auth.userDetails,
   token: state.auth.token,
 });
@@ -95,14 +96,14 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
 
   const composeValidators =
     (...validators) =>
-    (value) =>
-      validators.reduce((error, validator) => error || validator(value), undefined);
+      (value) =>
+        validators.reduce((error, validator) => error || validator(value), undefined);
 
   const isUrl = (value) =>
     value &&
-    value.match(
-      /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi,
-    ) ? (
+      value.match(
+        /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi,
+      ) ? (
       <FormattedMessage {...messages.urlDetectedError} />
     ) : undefined;
 

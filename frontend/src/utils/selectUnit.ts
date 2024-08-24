@@ -2,10 +2,9 @@
 
 import { FormattedRelativeTime } from "react-intl";
 
-const __assign =
+let __assign =
   // @ts-expect-error TS Migrations
   (this && this.__assign) ||
-  // @ts-expect-error TS Migrations
   function () {
     // @ts-expect-error TS Migrations
     __assign =
@@ -18,7 +17,6 @@ const __assign =
         }
         return t;
       };
-    // @ts-expect-error TS Migrations
     return __assign.apply(this, arguments);
   };
 

@@ -62,7 +62,7 @@ export const QueryClientProviders = (props: {
       log: console.log,
       warn: console.warn,
       // ✅ no more errors on the console for tests
-      error: process.env.NODE_ENV === 'test' ? () => { } : console.error,
+      error: import.meta.env.NODE_ENV === 'test' ? () => { } : console.error,
     },
   });
   return <QueryClientProvider client={queryClient}>{props.children}</QueryClientProvider>;

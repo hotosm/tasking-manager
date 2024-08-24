@@ -4,7 +4,7 @@ import messages from './messages';
 import { MappingIcon, ValidationIcon, DataUseIcon } from '../svgIcons';
 import './styles.scss';
 
-function MappingCard({ image, title, description }: Object) {
+function MappingCard({ image, title, description }) {
   return (
     <div className="w-100 w-third-l pv3 card bg-white">
       <div className="pa4 ph3-m">

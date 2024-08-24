@@ -66,7 +66,7 @@ export const PageButton = (props) => {
   }
 };
 
-export function PaginatorLine({ activePage, lastPage, setPageFn, className }: Object) {
+export function PaginatorLine({ activePage, lastPage, setPageFn, className }) {
   const pageOptions = listPageOptions(activePage, lastPage);
   return (
     <div className={`${className} paginator-btn-ctr`}>

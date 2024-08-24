@@ -1,66 +1,66 @@
 // API ENDPOINTS
-export const API_VERSION = process.env.REACT_APP_API_VERSION || 'v2';
-export const API_URL = process.env.REACT_APP_API_URL
-  ? new URL('/api/' + API_VERSION + '/', process.env.REACT_APP_API_URL)
+export const API_VERSION = import.meta.env.REACT_APP_API_VERSION || 'v2';
+export const API_URL = import.meta.env.REACT_APP_API_URL
+  ? new URL('/api/' + API_VERSION + '/', import.meta.env.REACT_APP_API_URL)
   : 'http://127.0.0.1:5000/api/' + API_VERSION + '/';
 export const OHSOME_STATS_BASE_URL =
-  process.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org/api';
+  import.meta.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org/api';
 // APPLICATION SETTINGS
-export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
-export const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT || '';
+export const DEFAULT_LOCALE = import.meta.env.REACT_APP_DEFAULT_LOCALE || 'en';
+export const ENVIRONMENT = import.meta.env.REACT_APP_ENVIRONMENT || '';
 export const PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD =
-  process.env.REACT_APP_PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD || 5;
+  import.meta.env.REACT_APP_PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD || 5;
 export const INTERMEDIATE_LEVEL_COUNT =
-  Number(process.env.REACT_APP_TM_MAPPER_LEVEL_INTERMEDIATE) || 250;
-export const ADVANCED_LEVEL_COUNT = Number(process.env.REACT_APP_TM_MAPPER_LEVEL_ADVANCED) || 500;
-export const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
-export const ENABLE_SERVICEWORKER = process.env.REACT_APP_ENABLE_SERVICEWORKER || 0;
-export const MAX_AOI_AREA = Number(process.env.REACT_APP_MAX_AOI_AREA) || 5000;
-export const MAX_FILESIZE = parseInt(process.env.REACT_APP_MAX_FILESIZE) || 1000000; // bytes
+  Number(import.meta.env.REACT_APP_TM_MAPPER_LEVEL_INTERMEDIATE) || 250;
+export const ADVANCED_LEVEL_COUNT = Number(import.meta.env.REACT_APP_TM_MAPPER_LEVEL_ADVANCED) || 500;
+export const MAPBOX_TOKEN = import.meta.env.REACT_APP_MAPBOX_TOKEN || '';
+export const ENABLE_SERVICEWORKER = import.meta.env.REACT_APP_ENABLE_SERVICEWORKER || 0;
+export const MAX_AOI_AREA = Number(import.meta.env.REACT_APP_MAX_AOI_AREA) || 5000;
+export const MAX_FILESIZE = parseInt(import.meta.env.REACT_APP_MAX_FILESIZE) || 1000000; // bytes
 
 // ORGANISATIONAL INFORMATION
-export const ORG_NAME = process.env.REACT_APP_ORG_NAME || 'Humanitarian OpenStreetMap Team';
-export const ORG_CODE = process.env.REACT_APP_ORG_CODE || 'HOT';
-export const ORG_URL = process.env.REACT_APP_ORG_URL || '';
-export const ORG_LOGO = process.env.REACT_APP_ORG_LOGO || '';
-export const HOMEPAGE_IMG_HIGH = process.env.REACT_APP_HOMEPAGE_IMG_HIGH || '';
-export const HOMEPAGE_IMG_LOW = process.env.REACT_APP_HOMEPAGE_IMG_LOW || '';
-export const OSM_CLIENT_ID = process.env.REACT_APP_OSM_CLIENT_ID || '';
-export const OSM_CLIENT_SECRET = process.env.REACT_APP_OSM_CLIENT_SECRET || '';
-export const OSM_REDIRECT_URI = process.env.REACT_APP_OSM_REDIRECT_URI || '';
-export const ORG_PRIVACY_POLICY_URL = process.env.REACT_APP_ORG_PRIVACY_POLICY_URL || '';
+export const ORG_NAME = import.meta.env.REACT_APP_ORG_NAME || 'Humanitarian OpenStreetMap Team';
+export const ORG_CODE = import.meta.env.REACT_APP_ORG_CODE || 'HOT';
+export const ORG_URL = import.meta.env.REACT_APP_ORG_URL || '';
+export const ORG_LOGO = import.meta.env.REACT_APP_ORG_LOGO || '';
+export const HOMEPAGE_IMG_HIGH = import.meta.env.REACT_APP_HOMEPAGE_IMG_HIGH || '';
+export const HOMEPAGE_IMG_LOW = import.meta.env.REACT_APP_HOMEPAGE_IMG_LOW || '';
+export const OSM_CLIENT_ID = import.meta.env.REACT_APP_OSM_CLIENT_ID || '';
+export const OSM_CLIENT_SECRET = import.meta.env.REACT_APP_OSM_CLIENT_SECRET || '';
+export const OSM_REDIRECT_URI = import.meta.env.REACT_APP_OSM_REDIRECT_URI || '';
+export const ORG_PRIVACY_POLICY_URL = import.meta.env.REACT_APP_ORG_PRIVACY_POLICY_URL || '';
 export const OSM_REGISTER_URL =
-  process.env.REACT_APP_OSM_REGISTER_URL || 'https://www.openstreetmap.org/user/new';
-export const ORG_TWITTER = process.env.REACT_APP_ORG_TWITTER || 'https://twitter.com/hotosm';
-export const ORG_FB = process.env.REACT_APP_ORG_FB || 'https://www.facebook.com/hotosm';
+  import.meta.env.REACT_APP_OSM_REGISTER_URL || 'https://www.openstreetmap.org/user/new';
+export const ORG_TWITTER = import.meta.env.REACT_APP_ORG_TWITTER || 'https://twitter.com/hotosm';
+export const ORG_FB = import.meta.env.REACT_APP_ORG_FB || 'https://www.facebook.com/hotosm';
 export const ORG_INSTAGRAM =
-  process.env.REACT_APP_ORG_INSTAGRAM || 'https://www.instagram.com/open.mapping.hubs/';
+  import.meta.env.REACT_APP_ORG_INSTAGRAM || 'https://www.instagram.com/open.mapping.hubs/';
 export const ORG_YOUTUBE =
-  process.env.REACT_APP_ORG_YOUTUBE || 'https://www.youtube.com/user/hotosm';
-export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.com/hotosm';
-export const MATOMO_ID = process.env.REACT_APP_MATOMO_ID || '';
-export const SERVICE_DESK = process.env.REACT_APP_SERVICE_DESK || '';
-export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL || '';
+  import.meta.env.REACT_APP_ORG_YOUTUBE || 'https://www.youtube.com/user/hotosm';
+export const ORG_GITHUB = import.meta.env.REACT_APP_ORG_GITHUB || 'https://github.com/hotosm';
+export const MATOMO_ID = import.meta.env.REACT_APP_MATOMO_ID || '';
+export const SERVICE_DESK = import.meta.env.REACT_APP_SERVICE_DESK || '';
+export const IMAGE_UPLOAD_SERVICE = import.meta.env.REACT_APP_IMAGE_UPLOAD_API_URL || '';
 export const TM_DEFAULT_CHANGESET_COMMENT =
-  process.env.REACT_APP_TM_DEFAULT_CHANGESET_COMMENT || '#hotosm-project';
-export const HOMEPAGE_VIDEO_URL = process.env.REACT_APP_HOMEPAGE_VIDEO_URL || '';
+  import.meta.env.REACT_APP_TM_DEFAULT_CHANGESET_COMMENT || '#hotosm-project';
+export const HOMEPAGE_VIDEO_URL = import.meta.env.REACT_APP_HOMEPAGE_VIDEO_URL || '';
 // Sentry.io DSN
-export const SENTRY_FRONTEND_DSN = process.env.REACT_APP_SENTRY_FRONTEND_DSN;
+export const SENTRY_FRONTEND_DSN = import.meta.env.REACT_APP_SENTRY_FRONTEND_DSN;
 
 // OSM API and Editor URLs
 export const OSM_SERVER_URL =
-  process.env.REACT_APP_OSM_SERVER_URL || 'https://www.openstreetmap.org';
+  import.meta.env.REACT_APP_OSM_SERVER_URL || 'https://www.openstreetmap.org';
 export const OSM_SERVER_API_URL =
-  process.env.REACT_APP_OSM_SERVER_API_URL || 'https://api.openstreetmap.org';
+  import.meta.env.REACT_APP_OSM_SERVER_API_URL || 'https://api.openstreetmap.org';
 export const ID_EDITOR_URL =
-  process.env.REACT_APP_ID_EDITOR_URL || 'https://www.openstreetmap.org/edit?editor=id&';
+  import.meta.env.REACT_APP_ID_EDITOR_URL || 'https://www.openstreetmap.org/edit?editor=id&';
 export const POTLATCH2_EDITOR_URL =
-  process.env.REACT_APP_POTLATCH2_EDITOR_URL ||
+  import.meta.env.REACT_APP_POTLATCH2_EDITOR_URL ||
   'https://www.openstreetmap.org/edit?editor=potlatch2';
 export const RAPID_EDITOR_URL =
-  process.env.REACT_APP_RAPID_EDITOR_URL || 'https://mapwith.ai/rapid';
-export const EXPORT_TOOL_S3_URL = process.env.REACT_APP_EXPORT_TOOL_S3_URL || '';
-export const ENABLE_EXPORT_TOOL = process.env.REACT_APP_ENABLE_EXPORT_TOOL || '';
+  import.meta.env.REACT_APP_RAPID_EDITOR_URL || 'https://mapwith.ai/rapid';
+export const EXPORT_TOOL_S3_URL = import.meta.env.REACT_APP_EXPORT_TOOL_S3_URL || '';
+export const ENABLE_EXPORT_TOOL = import.meta.env.REACT_APP_ENABLE_EXPORT_TOOL || '';
 
 export const TASK_COLOURS = {
   READY: '#fff',
@@ -174,7 +174,7 @@ export const MAP_STYLE = MAPBOX_TOKEN
 export const MAPBOX_RTL_PLUGIN_URL =
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';
 
-export const UNDERPASS_URL = process.env.REACT_APP_UNDERPASS_URL || 'https://underpass.hotosm.org';
+export const UNDERPASS_URL = import.meta.env.REACT_APP_UNDERPASS_URL || 'https://underpass.hotosm.org';
 
 export const DROPZONE_SETTINGS = {
   accept: {
