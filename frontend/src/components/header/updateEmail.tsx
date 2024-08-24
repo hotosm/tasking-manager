@@ -8,12 +8,15 @@ import { updateUserEmail } from '../../store/actions/auth';
 import { PROFILE_RELEVANT_FIELDS } from '../user/forms/personalInformation';
 import { ORG_PRIVACY_POLICY_URL } from '../../config';
 import { Button } from '../button.jsx';
+import { RootStore } from '../../store/index.js';
 
-export const UpdateEmail = ({ closeModal }) => {
+export const UpdateEmail = ({ closeModal }: {
+  closeModal: () => void;
+}) => {
   const dispatch = useDispatch();
 
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state: RootStore) => state.auth.userDetails);
+  const token = useSelector((state: RootStore) => state.auth.token);
   const [userState, setUserState] = useState({ email: '', success: false, details: '' });
 
   const onChange = (e) => {

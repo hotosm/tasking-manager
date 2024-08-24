@@ -6,7 +6,7 @@ import messages from './messages';
 import { CustomButton } from '../button';
 import { PlusIcon, WasteIcon } from '../svgIcons';
 
-export const ViewAllLink = ({ link }: Object) => (
+export const ViewAllLink = ({ link }) => (
   <Link to={link} className="dib mt2 fr red link">
     <span>
       <FormattedMessage {...messages.viewAll} />
@@ -23,7 +23,7 @@ export const AddButton = () => (
   </CustomButton>
 );
 
-export const DeleteButton = ({ className, onClick, showText = true }: Object) => {
+export const DeleteButton = ({ className, onClick, showText = true }) => {
   const intl = useIntl();
   return (
     <CustomButton className={`red bg-transparent ba b--red pv1 ${className}`} onClick={onClick}>
@@ -43,7 +43,7 @@ export const DeleteButton = ({ className, onClick, showText = true }: Object) =>
   );
 };
 
-export function VisibilityBox({ visibility, extraClasses }: Object) {
+export function VisibilityBox({ visibility, extraClasses }) {
   let color = visibility === 'PUBLIC' ? 'blue-grey' : 'red';
   let borderColor = visibility === 'PUBLIC' ? 'b--grey' : 'b--red';
   const text = visibility ? <FormattedMessage {...messages[visibility.toLowerCase()]} /> : '';
@@ -78,9 +78,8 @@ export function Management(props) {
         {props.isAdmin && (
           <div className="mt2 mb3">
             <CustomButton
-              className={`link di f6 mr2 ph3 pv2 ba b--grey-light ${
-                props.userOnly ? 'bg-white blue-grey' : 'bg-blue-grey white fw5'
-              }`}
+              className={`link di f6 mr2 ph3 pv2 ba b--grey-light ${props.userOnly ? 'bg-white blue-grey' : 'bg-blue-grey white fw5'
+                }`}
               onClick={() => {
                 props.setUserOnly(false);
               }}
@@ -88,9 +87,8 @@ export function Management(props) {
               <FormattedMessage {...messages.all} />
             </CustomButton>
             <CustomButton
-              className={`link di f6 mh1 ph3 pv2 ba b--grey-light ${
-                props.userOnly ? 'bg-blue-grey white fw5' : 'bg-white blue-grey'
-              }`}
+              className={`link di f6 mh1 ph3 pv2 ba b--grey-light ${props.userOnly ? 'bg-blue-grey white fw5' : 'bg-white blue-grey'
+                }`}
               onClick={() => {
                 props.setUserOnly(true);
               }}

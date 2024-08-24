@@ -2,6 +2,7 @@ import { setItem, removeItem, getItem } from '../../utils/safe_storage';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { setLoader } from './loader';
 import { Dispatch } from 'redux';
+import { RootStore } from '..';
 
 export const types = {
   REGISTER_USER: 'REGISTER_USER',
@@ -143,8 +144,8 @@ export const setUserDetails =
         });
     };
 
-export const getUserDetails = (state) => (dispatch) => {
-  if (state.auth.userDetails.username) {
+export const getUserDetails = (state: RootStore) => (dispatch: Dispatch) => {
+  if (state.auth.userDetails?.username) {
     dispatch(setUserDetails(state.auth.userDetails.username, state.auth.token));
   }
 };

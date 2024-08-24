@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 
 const updateServiceWorker = (registration) => {
   if (registration && registration.waiting) {

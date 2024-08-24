@@ -25,7 +25,7 @@ export const stripHtmlToText = (notificationHtml) =>
 
 export const typesThatUseSystemAvatar = ['SYSTEM', 'REQUEST_TEAM_NOTIFICATION'];
 
-export const MessageAvatar = ({ messageType, fromUsername, displayPictureUrl, size }: Object) => {
+export const MessageAvatar = ({ messageType, fromUsername, displayPictureUrl, size }) => {
   const checkIsSystem = typesThatUseSystemAvatar.indexOf(messageType) !== -1;
 
   if (!fromUsername && !checkIsSystem) {
@@ -68,7 +68,7 @@ export function NotificationCard({
   retryFn,
   selected,
   setSelected,
-}: Object) {
+}) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const ref = useRef();
@@ -201,7 +201,7 @@ export function NotificationCardMini({
   setPopoutFocus,
   retryFn,
   read,
-}: Object) {
+}) {
   const dispatch = useDispatch();
 
   const setMessageAsRead = () => {

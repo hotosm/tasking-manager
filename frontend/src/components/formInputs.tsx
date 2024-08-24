@@ -8,16 +8,21 @@ import messages from './messages';
 import { formatCountryList } from '../utils/countries';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { CheckIcon, SearchIcon, CloseIcon } from './svgIcons';
+import { RootStore } from '../store';
 
-export const RadioField = ({ name, value, className, required = false }: Object) => (
+export const RadioField = ({ name, value, className, required = false }: {
+  name: string,
+  value: string,
+  className?: string,
+  required?: boolean,
+}) => (
   <Field
     name={name}
     component="input"
     type="radio"
     value={value}
-    className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light ${
-      className || ''
-    }`}
+    className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light ${className || ''
+      }`}
     required={required}
   />
 );
@@ -28,7 +33,13 @@ export const SwitchToggle = ({
   onChange,
   labelPosition,
   small = false,
-}: Object) => (
+}: {
+  label: string,
+  isChecked: boolean,
+  onChange: () => void,
+  labelPosition: string,
+  small?: boolean,
+}) => (
   <div className="v-mid justify-center">
     {label && labelPosition !== 'right' && <span className="di mr2 nowrap f6 dn-m">{label}</span>}
     <div className="relative dib">
@@ -46,9 +57,13 @@ export const SwitchToggle = ({
   </div>
 );
 
-export const OrganisationSelect = ({ className, orgId, onChange }) => {
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+export const OrganisationSelect = ({ className, orgId, onChange }: {
+  className?: string,
+  orgId: number | string,
+  onChange: (value: number | string) => void,
+}) => {
+  const userDetails = useSelector((state: RootStore) => state.auth.userDetails);
+  const token = useSelector((state: RootStore) => state.auth.token);
   const [organisations, setOrganisations] = useState([]);
 
   useEffect(() => {
@@ -60,7 +75,7 @@ export const OrganisationSelect = ({ className, orgId, onChange }) => {
     }
   }, [userDetails, token]);
 
-  const getOrgPlaceholder = (id) => {
+  const getOrgPlaceholder = (id: string | number) => {
     const orgs = organisations.filter((org) => org.organisationId === id);
     return orgs.length ? orgs[0].name : <FormattedMessage {...messages.selectOrganisation} />;
   };
@@ -79,22 +94,26 @@ export const OrganisationSelect = ({ className, orgId, onChange }) => {
   );
 };
 
-export function OrganisationSelectInput({ className }) {
+export function OrganisationSelectInput(props: {
+  className?: string;
+  input: { value: string, onChange: (value: string) => void };
+}) {
   return (
-    <Field name="organisation_id" className={className} required>
-      {(props) => (
-        <OrganisationSelect
-          orgId={props.input.value}
-          onChange={(value) => props.input.onChange(value.organisationId || '')}
-          className="z-5"
-        />
-      )}
+    <Field name="organisation_id" className={props.className} required>
+      <OrganisationSelect
+        orgId={props.input.value}
+        onChange={(value) => props.input.onChange(value.toString())}
+        className="z-5"
+      />
     </Field>
   );
 }
 
-export function UserCountrySelect({ className, isDisabled = false }: Object) {
-  const locale = useSelector((state) => state.preferences.locale);
+export function UserCountrySelect({ className, isDisabled = false }: {
+  className?: string,
+  isDisabled?: boolean,
+}) {
+  const locale = useSelector((state: RootStore) => state.preferences.locale);
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
@@ -103,7 +122,7 @@ export function UserCountrySelect({ className, isDisabled = false }: Object) {
     }
   }, [locale]);
 
-  const getPlaceholder = (value) => {
+  const getPlaceholder = (value: string) => {
     const placeholder = options.filter((option) => option.value === value);
     if (placeholder.length) {
       return placeholder[0].label;
@@ -130,17 +149,21 @@ export function UserCountrySelect({ className, isDisabled = false }: Object) {
   );
 }
 
-export const CheckBoxInput = ({ isActive, changeState, className = '', disabled }) => (
+export const CheckBoxInput = ({ isActive, changeState, className = '', disabled }: {
+  isActive: boolean,
+  changeState: () => void,
+  className?: string,
+  disabled?: boolean,
+}) => (
   <div
     role="checkbox"
     disabled={disabled}
     aria-checked={isActive}
-    onClick={disabled ? () => {} : changeState}
-    onKeyPress={disabled ? () => {} : changeState}
-    tabIndex="0"
-    className={`bg-white w1 h1 ma1 ba bw1 ${
-      disabled ? 'b--grey-light' : 'b--red'
-    } br1 relative pointer ${className}`}
+    onClick={disabled ? () => { } : changeState}
+    onKeyPress={disabled ? () => { } : changeState}
+    tabIndex={0}
+    className={`bg-white w1 h1 ma1 ba bw1 ${disabled ? 'b--grey-light' : 'b--red'
+      } br1 relative pointer ${className}`}
   >
     {isActive ? (
       <div
@@ -152,7 +175,11 @@ export const CheckBoxInput = ({ isActive, changeState, className = '', disabled 
   </div>
 );
 
-export const CheckBox = ({ activeItems, toggleFn, itemId }) => {
+export const CheckBox = ({ activeItems, toggleFn, itemId }: {
+  activeItems: any[];
+  toggleFn: (value: any[]) => void;
+  itemId: any;
+}) => {
   const isActive = activeItems.includes(itemId);
   const changeState = (e) => {
     e.persist();
@@ -185,15 +212,18 @@ export const SelectAll = ({ selected, setSelected, allItems, className }) => {
   return <CheckBoxInput changeState={changeState} isActive={isActive} className={className} />;
 };
 
-export const InterestsList = ({ interests, field, changeSelect }) => (
+export const InterestsList = ({ interests, field, changeSelect }: {
+  interests: any[];
+  field: string;
+  changeSelect: (value: any) => void;
+}) => (
   <div className="w-100 pa0 interest-cards-ctr">
     {interests.map((interest) => (
       <article
         key={interest.id}
         onClick={() => changeSelect(interest.id)}
-        className={`${
-          interest[field] === true ? 'b--red bw1 blue-dark' : 'b--grey-light blue-grey'
-        } bg-white ba br1 tc relative ttc pointer text-break lh-base interest-card `}
+        className={`${interest[field] === true ? 'b--red bw1 blue-dark' : 'b--grey-light blue-grey'
+          } bg-white ba br1 tc relative ttc pointer text-break lh-base interest-card `}
       >
         {interest.name}
         {interest[field] === true && (
@@ -205,7 +235,12 @@ export const InterestsList = ({ interests, field, changeSelect }) => (
 );
 
 // Used as a generic search box for input fields in the management section
-export const TextField = ({ value, placeholderMsg, onChange, onCloseIconClick }) => {
+export const TextField = ({ value, placeholderMsg, onChange, onCloseIconClick }: {
+  value: string;
+  placeholderMsg: any;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onCloseIconClick: () => void;
+}) => {
   const inputRef = useRef(null);
 
   return (
@@ -242,9 +277,8 @@ export const TextField = ({ value, placeholderMsg, onChange, onCloseIconClick })
                 onClick={onCloseIconClick}
                 role="button"
                 aria-label="clear"
-                className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 red ${
-                  !value ? 'pr2 right-0 dn ' : 'pr2 right-0'
-                }`}
+                className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 red ${!value ? 'pr2 right-0 dn ' : 'pr2 right-0'
+                  }`}
               />
             </form>
           );
