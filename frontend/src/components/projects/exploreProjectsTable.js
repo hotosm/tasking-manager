@@ -86,7 +86,9 @@ const COLUMNS = [
               small={false}
             />
           </div>
-          <Tooltip id={`project-${row.original.projectId}-progress`}>{tooltipContent}</Tooltip>
+          <Tooltip id={`project-${row.original.projectId}-progress`} className="z-3">
+            {tooltipContent}
+          </Tooltip>
         </div>
       );
     },
@@ -126,7 +128,7 @@ const COLUMNS = [
     cell: ({ row }) => {
       const difficulty = row.original.difficulty;
       if (difficulty === 'EASY') return <div className="i green">Easy</div>;
-      if (difficulty === 'MODERATE') return <div className="i orange">Medium</div>;
+      if (difficulty === 'MODERATE') return <div className="i orange">Moderate</div>;
       if (difficulty === 'CHALLENGING') return <div className="i red">Challenging</div>;
     },
   },
