@@ -33,7 +33,10 @@ from backend.api.tasks import (
     actions as task_actions,
     statistics as task_statistics
 )
-
+from backend.api.teams import (
+    resources as teams_resources,
+    actions as teams_actions,
+)
 from backend.api.system import (
     applications as system_applications,
     general as system_general,
@@ -57,6 +60,10 @@ def add_api_end_points(api):
 
     # Comments REST endpoint
     v2.include_router(comment_resources.router)
+
+    # Teams REST endpoint
+    v2.include_router(teams_resources.router)
+    v2.include_router(teams_actions.router)
 
     # Countries REST endpoint
     v2.include_router(country_resources.router)

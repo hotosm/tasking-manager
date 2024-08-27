@@ -1,12 +1,18 @@
 from backend.models.dtos.interests_dto import InterestDTO
 from backend.services.interests_service import InterestService
 from backend.services.organisation_service import OrganisationService
+from backend.services.users.authentication_service import login_required
 
 from sqlalchemy.exc import IntegrityError
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
+from backend.models.dtos.user_dto import AuthUserDTO
+from databases import Database
+from backend.db import get_db
 from loguru import logger
+from asyncpg.exceptions import UniqueViolationError
+
 
 router = APIRouter(
     prefix="/interests",
@@ -17,9 +23,13 @@ router = APIRouter(
 
 INTEREST_NOT_FOUND = "Interest Not Found"
 
+
 @router.post("/")
-@requires("authenticated")
-async def post(request: Request):
+async def post(
+    interest_dto: InterestDTO,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Creates a new interest
     ---
@@ -56,8 +66,8 @@ async def post(request: Request):
             description: Internal Server Error
     """
     try:
-        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-            request.user.display_name
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user_id=user.id, db=db
         )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
@@ -66,16 +76,10 @@ async def post(request: Request):
         return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
     try:
-        interest_dto = InterestDTO(request.get_json())
-        interest_dto.validate()
-    except Exception as e:
-        logger.error(f"Error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
+        new_interest_dto = await InterestService.create(interest_dto.name, db)
+        return new_interest_dto
 
-    try:
-        new_interest = InterestService.create(interest_dto.name)
-        return new_interest.model_dump(by_alias=True), 200
-    except IntegrityError:
+    except UniqueViolationError:
         return (
             {
                 "Error": "Value '{0}' already exists".format(interest_dto.name),
@@ -84,8 +88,9 @@ async def post(request: Request):
             400,
         )
 
+
 @router.get("/")
-async def get():
+async def get(db: Database = Depends(get_db)):
     """
     Get all interests
     ---
@@ -99,13 +104,16 @@ async def get():
         500:
             description: Internal Server Error
     """
-    interests = InterestService.get_all_interests()
-    return interests.model_dump(by_alias=True), 200
+    interests_dto = await InterestService.get_all_interests(db)
+    return interests_dto
 
 
 @router.get("/{interest_id}/")
-@requires("authenticated")
-async def get(request: Request, interest_id: int):
+async def get(
+    interest_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Get an existing interest
     ---
@@ -141,8 +149,8 @@ async def get(request: Request, interest_id: int):
             description: Internal Server Error
     """
     try:
-        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-            request.user.display_name
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user_id=user.id, db=db
         )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
@@ -150,12 +158,17 @@ async def get(request: Request, interest_id: int):
         error_msg = f"InterestsRestAPI GET: {str(e)}"
         return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
-    interest = InterestService.get(interest_id)
-    return interest.model_dump(by_alias=True), 200
+    interest_dto = await InterestService.get(interest_id, db)
+    return interest_dto
+
 
 @router.patch("/{interest_id}/")
-@requires("authenticated")
-async def patch(request: Request, interest_id):
+async def patch(
+    interest_id: int,
+    interest_dto: InterestDTO,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Update an existing interest
     ---
@@ -200,8 +213,8 @@ async def patch(request: Request, interest_id):
             description: Internal Server Error
     """
     try:
-        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-            request.user.display_name
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user_id=user.id, db=db
         )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
@@ -209,19 +222,16 @@ async def patch(request: Request, interest_id):
         error_msg = f"InterestsRestAPI PATCH: {str(e)}"
         return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
-    try:
-        interest_dto = InterestDTO(request.json())
-        interest_dto.validate()
-    except Exception as e:
-        logger.error(f"Error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
+    update_interest = await InterestService.update(interest_id, interest_dto, db)
+    return update_interest
 
-    update_interest = InterestService.update(interest_id, interest_dto)
-    return update_interest.model_dump(by_alias=True), 200
 
 @router.delete("/{interest_id}/")
-@requires("authenticated")
-async def delete(request: Request, interest_id: int):
+async def delete(
+    interest_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Delete a specified interest
     ---
@@ -255,8 +265,8 @@ async def delete(request: Request, interest_id: int):
             description: Internal Server Error
     """
     try:
-        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-            request.user.display_name
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user_id=user.id, db=db
         )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
@@ -264,5 +274,5 @@ async def delete(request: Request, interest_id: int):
         error_msg = f"InterestsRestAPI DELETE: {str(e)}"
         return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
-    InterestService.delete(interest_id)
+    await InterestService.delete(interest_id, db)
     return {"Success": "Interest deleted"}, 200

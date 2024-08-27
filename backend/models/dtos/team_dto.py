@@ -4,52 +4,70 @@ from backend.models.postgis.statuses import (
     TeamVisibility,
     TeamJoinMethod,
 )
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
+from fastapi import HTTPException
 
 
-def validate_team_visibility(value):
-    """Validates that value is a known Team Visibility"""
+def validate_team_visibility(value: str) -> str:
+    """Validates that value is a known Team Visibility."""
     try:
         TeamVisibility[value.upper()]
     except KeyError:
-        raise ValidationError(
-            f"Unknown teamVisibility: {value} Valid values are "
-            f"{TeamVisibility.PUBLIC.name}, "
-            f"{TeamVisibility.PRIVATE.name}"
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unknown teamVisibility: {value}. Valid values are: "
+                f"{TeamVisibility.PUBLIC.name}, "
+                f"{TeamVisibility.PRIVATE.name}."
+            )
         )
+    return value
 
 
-def validate_team_join_method(value):
-    """Validates join method value and its visibility"""
+def validate_team_join_method(value: str):
+    """Validates join method value and its visibility."""
     try:
         TeamJoinMethod[value.upper()]
     except KeyError:
-        raise ValidationError(
-            f"Unknown teamJoinMethod: {value} Valid values are "
-            f"{TeamJoinMethod.ANY.name}, "
-            f"{TeamJoinMethod.BY_INVITE.name}, "
-            f"{TeamJoinMethod.BY_REQUEST.name}"
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unknown teamJoinMethod: {value}. "
+                f"Valid values are: {TeamJoinMethod.ANY.name}, "
+                f"{TeamJoinMethod.BY_INVITE.name}, "
+                f"{TeamJoinMethod.BY_REQUEST.name}."
+            )
         )
+    return value
 
 
-def validate_team_member_function(value):
-    """Validates that value is a known Team Member Function"""
+def validate_team_member_function(value: str):
+    """Validates that value is a known Team Member Function."""
     try:
         TeamMemberFunctions[value.upper()]
     except KeyError:
-        raise ValidationError(
-            f"Unknown teamMemberFunction: {value} Valid values are "
-            f"{TeamMemberFunctions.MEMBER.name}, "
-            f"{TeamMemberFunctions.MANAGER.name}"
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unknown teamMemberFunction: {value}. "
+                f"Valid values are: {TeamMemberFunctions.MEMBER.name}, "
+                f"{TeamMemberFunctions.MANAGER.name}."
+            )
         )
+    return value
+
 
 class TeamMembersDTO(BaseModel):
-    username: str = Field(required=True)
-    function: str = Field(required=True, validators=[validate_team_member_function])
+    username: str
+    function: str
     active: bool
-    join_request_notifications: bool = Field(default=False, alias="joinRequestNotifications")
-    picture_url: Optional[str] = Field(alias="pictureUrl")
+    join_request_notifications: bool = Field(default=False, serialization_alias="joinRequestNotifications")
+    picture_url: Optional[str] = Field(None, serialization_alias="pictureUrl")
+
+    @field_validator("function")
+    def validate_function(cls, value):
+        return validate_team_member_function(value)
 
 
 class TeamProjectDTO(BaseModel):
@@ -59,53 +77,61 @@ class TeamProjectDTO(BaseModel):
     project_id: int
     role: str
 
+
 class ProjectTeamDTO(BaseModel):
     team_id: int = Field(serialization_alias="teamId", required=True)
     team_name: str = Field(serialization_alias="name")
     role: int = Field(required=True)
 
-class TeamDetailsDTO(BaseModel):
-    def __init__(self, members: Optional[List[TeamMembersDTO]] = None, team_projects: Optional[List[ProjectTeamDTO]] = None, **kwargs):
-        """DTO constructor initialise all arrays to empty"""
-        super().__init__(**kwargs)
-        self.members = members or []
-        self.team_projects = team_projects or []
 
-    team_id: Optional[int] = Field(alias="teamId")
+class TeamDetailsDTO(BaseModel):
+    """Pydantic model equivalent of the original TeamDetailsDTO"""
+
+    team_id: Optional[int] = Field(None, serialization_alias="teamId")
     organisation_id: int
     organisation: str
-    organisation_slug: Optional[str] = Field(alias="organisationSlug")
+    organisation_slug: Optional[str] = Field(None, serialization_alias="organisationSlug")
     name: str
-    logo: Optional[str]
-    description: Optional[str]
-    join_method: str = Field(validators=[validate_team_join_method], alias="joinMethod")
-    visibility: str = Field(validators=[validate_team_visibility], default="", alias="visibility")
-    is_org_admin: bool = False
-    is_general_admin: bool = False
-    members: List[TeamMembersDTO]
-    team_projects: List[ProjectTeamDTO]
+    logo: Optional[str] = None
+    description: Optional[str] = None
+    join_method: str = Field(serialization_alias="joinMethod")
+    visibility: str
+    is_org_admin: bool = Field(False)
+    is_general_admin: bool = Field(False)
+    members: List[TeamMembersDTO] = Field(default_factory=list)
+    team_projects: List[TeamProjectDTO] = Field(default_factory=list)
+
+    @field_validator("join_method")
+    def validate_join_method(cls, value):
+        return validate_team_join_method(value)
+
+    @field_validator("visibility")
+    def validate_visibility(cls, value):
+        return validate_team_visibility(value)
 
 
 class TeamDTO(BaseModel):
     """Describes JSON model for a team"""
 
-    team_id: int = Field(alias="teamId")
-    organisation_id: int = Field(required=True, alias="organisationId")
-    organisation: str = Field(required=True)
-    name: str = Field(required=True)
-    logo: str
-    description: str
-    join_method: str = Field(
-        required=True,
-        validators=[validate_team_join_method],
-        alias="joinMethod",
-    )
-    visibility: str = Field(
-        required=True, validators=[validate_team_visibility], serialize_when_none=False
-    )
-    members: List[TeamMembersDTO]
-    members_count: int = Field(alias="membersCount", required=False)
-    managers_count: int = Field(alias="managersCount", required=False)
+    team_id: Optional[int] = Field(None, serialization_alias="teamId")
+    organisation_id: int = Field(..., serialization_alias="organisationId")
+    organisation: str
+    name: str
+    logo: Optional[str] = None
+    description: Optional[str] = None
+    join_method: str = Field(..., serialization_alias="joinMethod")
+    visibility: str = Field(..., serialization_alias="visibility")
+    members: Optional[List[TeamMembersDTO]] = None
+    members_count: Optional[int] = Field(None, serialization_alias="membersCount")
+    managers_count: Optional[int] = Field(None, serialization_alias="managersCount")
+
+    @field_validator("join_method")
+    def validate_join_method(cls, value):
+        return validate_team_join_method(value)
+
+    @field_validator("visibility")
+    def validate_visibility(cls, value):
+        return validate_team_visibility(value)
 
 
 class TeamsListDTO(BaseModel):
@@ -115,7 +141,7 @@ class TeamsListDTO(BaseModel):
         self.teams = []
 
     """ Returns List of all teams"""
-    teams: List[ProjectTeamDTO] = []
+    teams: List[TeamDTO] = []
     pagination: Optional[Pagination] = None
 
 
@@ -134,6 +160,7 @@ class NewTeamDTO(BaseModel):
     visibility: str = Field(
         required=True, validators=[validate_team_visibility], serialize_when_none=False
     )
+
 
 class UpdateTeamDTO(BaseModel):
     """Describes a JSON model to update a team"""
@@ -157,15 +184,15 @@ class UpdateTeamDTO(BaseModel):
 class TeamSearchDTO(BaseModel):
     """Describes a JSON model to search for a team"""
 
-    user_id: float = Field(alias="userId")
-    organisation: int = Field(alias="organisation")
-    team_name: str = Field(alias="team_name")
-    omit_members: bool = Field(alias="omitMemberList", default=False)
-    full_members_list: bool = Field(alias="fullMemberList", default=True)
-    member: float = Field(alias="member")
-    manager: float = Field(alias="manager")
-    team_role: str = Field(alias="team_role")
-    member_request: float = Field(alias="member_request")
-    paginate: bool = Field(alias="paginate", default=False)
-    page: int = Field(alias="page", default=1)
-    per_page: int = Field(alias="perPage", default=10)
+    user_id: Optional[float] = Field(None, serialization_alias="userId")
+    organisation: Optional[int] = Field(None, serialization_alias="organisation")
+    team_name: Optional[str] = Field(None, serialization_alias="team_name")
+    omit_members: Optional[bool] = Field(False, serialization_alias="omitMemberList")
+    full_members_list: Optional[bool] = Field(True, serialization_alias="fullMemberList")
+    member: Optional[float] = Field(None, serialization_alias="member")
+    manager: Optional[float] = Field(None, serialization_alias="manager")
+    team_role: Optional[str] = Field(None, serialization_alias="team_role")
+    member_request: Optional[float] = Field(None, aliserialization_aliasas="member_request")
+    paginate: Optional[bool] = Field(False, serialization_alias="paginate")
+    page: Optional[int] = Field(1, serialization_alias="page")
+    per_page: Optional[int] = Field(10, serialization_alias="perPage")

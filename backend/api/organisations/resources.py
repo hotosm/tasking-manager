@@ -18,13 +18,9 @@ from backend.models.postgis.statuses import OrganisationType
 from backend.services.users.authentication_service import login_required
 from fastapi import APIRouter, Depends, Request, Query
 from backend.db import get_db
-from starlette.authentication import requires
 from loguru import logger
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from databases import Database
 from backend.models.postgis.organisation import Organisation
-from sqlalchemy import select, case
 from fastapi import HTTPException
 
 
