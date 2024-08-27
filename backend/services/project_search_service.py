@@ -74,7 +74,7 @@ class BBoxTooBigError(Exception):
 class ProjectSearchService:
     
     @staticmethod
-    async def create_search_query(user=None):
+    async def create_search_query(db, user=None):
         # Base query for fetching project details
         query = """
         SELECT
@@ -112,32 +112,31 @@ class ProjectSearchService:
                 # Fetch project_ids for user's teams
                 team_projects_query = """
                 SELECT p.id
-                FROM user_teams ut
-                JOIN teams t ON t.id = ut.team_id
-                JOIN projects p ON p.team_id = t.id
-                WHERE ut.user_id = :user_id
+                FROM projects p
+                JOIN project_teams pt ON pt.project_id = p.id
+                JOIN teams t ON t.id = pt.team_id
+                JOIN team_members tm ON tm.team_id = t.id
+                WHERE tm.user_id = :user_id
                 """
-                
+                team_projects = await db.fetch_all(team_projects_query, {'user_id': user.id})
+
                 # Fetch project_ids for user's organisations
                 org_projects_query = """
                 SELECT p.id
-                FROM user_organisations uo
-                JOIN organisations o ON o.id = uo.organisation_id
-                JOIN projects p ON p.organisation_id = o.id
-                WHERE uo.user_id = :user_id
+                FROM projects p
+                JOIN organisations o ON o.id = p.organisation_id
+                JOIN organisation_managers om ON om.organisation_id = o.id
+                WHERE om.user_id = :user_id
                 """
-                
-                # Execute the queries to get project IDs
-                team_projects = await db.fetch_all(team_projects_query, {'user_id': user.id})
                 org_projects = await db.fetch_all(org_projects_query, {'user_id': user.id})
 
-                # Flatten the results and combine them
+                # Combine and deduplicate project IDs
                 project_ids = tuple(set([row['id'] for row in team_projects] + [row['id'] for row in org_projects]))
-
+                
                 if project_ids:
-                    filters.append("p.private = :private OR p.id IN :project_ids")
+                    filters.append("p.private = :private OR p.id = ANY(:project_ids)")
                     params['private'] = False
-                    params['project_ids'] = project_ids
+                    params['project_ids'] = list(project_ids) 
         
         if filters:
             query += " AND " + " AND ".join(filters)
@@ -172,28 +171,6 @@ class ProjectSearchService:
         list_dto.organisation_name = project.organisation_name
         list_dto.organisation_logo = project.organisation_logo
         list_dto.campaigns = await Project.get_project_campaigns(project.id, db)
-
-        list_dto.creation_date = project_obj.created
-
-        if with_author_name:
-            list_dto.author = project_obj.author.name or project_obj.author.username
-
-        if with_partner_names:
-            list_dto.partner_names = list(
-                set(
-                    map(
-                        lambda p: Partner.get_by_id(p.partner_id).name,
-                        project_obj.partnerships,
-                    )
-                )
-            )
-
-        # Use postgis to compute the total area of the geometry in square kilometers
-        list_dto.total_area = project_obj.query.with_entities(
-            func.coalesce(func.sum(func.ST_Area(project_obj.geometry, True) / 1000000))
-        ).scalar()
-        list_dto.total_area = round(list_dto.total_area, 3)
-
         return list_dto
 
     @staticmethod
@@ -326,7 +303,7 @@ class ProjectSearchService:
 
 
     async def _filter_projects(search_dto: ProjectSearchDTO, user, db: Database):
-        base_query, params = await ProjectSearchService.create_search_query(user)
+        base_query, params = await ProjectSearchService.create_search_query(db, user)
         # Initialize filter list and parameters dictionary
         filters = []
 
