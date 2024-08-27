@@ -1,15 +1,18 @@
 # from flask_restful import Resource, request, current_app
 # from schematics.exceptions import DataError
 
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.team_service import TeamService, TeamServiceError
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
 # from backend.services.users.authentication_service import token_auth
+from backend.services.users.authentication_service import login_required
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
+from backend.db import get_session, get_db
 from starlette.authentication import requires
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from databases import Database
+from fastapi import HTTPException
 
 router = APIRouter(
     prefix="/projects",
@@ -18,12 +21,8 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-
-# class ProjectsTeamsAPI(Resource):
-    # @token_auth.login_required
 @router.get("/{project_id}/teams/")
-@requires("authenticated")
-async def get(request: Request, project_id: int, session: AsyncSession = Depends(get_session)):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
     """Get teams assigned with a project
     ---
     tags:
@@ -54,9 +53,9 @@ async def get(request: Request, project_id: int, session: AsyncSession = Depends
             description: Internal Server Error
     """
     # Check if project exists
-    await ProjectService.exists(project_id, session)
-    teams_dto = await TeamService.get_project_teams_as_dto(project_id, session)
-    return teams_dto.model_dump(by_alias=True), 200
+    await ProjectService.exists(project_id, db)
+    teams_dto = await TeamService.get_project_teams_as_dto(project_id, db)
+    return teams_dto
 
 
     # @token_auth.login_required

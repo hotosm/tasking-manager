@@ -66,12 +66,22 @@ class ProjectService:
             raise HTTPException(status_code=404, detail="Project not found")
 
         return project
-
+    
     @staticmethod
-    async def exists(project_id: int, session) -> bool:
-        project = await Project.exists(project_id, session)
-        if project is None:
+    async def exists(project_id: int, db: Database) -> bool:
+        # Query to check if the project exists
+        query = """
+            SELECT 1
+            FROM projects
+            WHERE id = :project_id
+        """
+
+        # Execute the query
+        result = await db.fetch_one(query=query, values={"project_id": project_id})
+
+        if result is None:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
+        
         return True
 
     @staticmethod
@@ -215,7 +225,7 @@ class ProjectService:
         project = await ProjectService.get_project_by_id(project_id, db)
         # if project is public and is not draft, we don't need to check permissions
         if not project.private and not project.status == ProjectStatus.DRAFT.value:
-            return await Project.as_dto_for_mapping(project.id, db,current_user_id, locale, abbrev)
+            return await Project.as_dto_for_mapping(project.id, db, current_user_id, locale, abbrev)
 
         is_allowed_user = True
         is_team_member = None
@@ -223,15 +233,15 @@ class ProjectService:
 
         if current_user_id:
             is_manager_permission = (
-                ProjectAdminService.is_user_action_permitted_on_project(
-                    current_user_id, project_id
+                await ProjectAdminService.is_user_action_permitted_on_project(
+                    current_user_id, project_id, db
                 )
             )
         # Draft Projects - admins, authors, org admins & team managers permitted
         if project.status == ProjectStatus.DRAFT.value:
             if not is_manager_permission:
                 is_allowed_user = False
-                raise ProjectServiceError("ProjectNotFetched- Unable to fetch project")
+                raise HTTPException(status_code=400, detail="Unable to fetch project.")
 
         # Private Projects - allowed_users, admins, org admins &
         # assigned teams (mappers, validators, project managers), authors permitted
@@ -239,16 +249,18 @@ class ProjectService:
         if project.private and not is_manager_permission:
             is_allowed_user = False
             if current_user_id:
-                is_allowed_user = (
-                    len(
-                        [
-                            user
-                            for user in project.allowed_users
-                            if user.id == current_user_id
-                        ]
-                    )
-                    > 0
-                )
+                # Query to check if the current user is an allowed user for the project
+                allowed_user_check_query = """
+                    SELECT 1
+                    FROM project_allowed_users pau
+                    WHERE pau.project_id = :project_id AND pau.user_id = :user_id
+                """
+                result = await db.fetch_one(allowed_user_check_query, {
+                    "project_id": project.id,
+                    "user_id": current_user_id
+                })
+                is_allowed_user = result is not None
+
         if not (is_allowed_user or is_manager_permission):
             if current_user_id:
                 allowed_roles = [
@@ -256,12 +268,12 @@ class ProjectService:
                     TeamRoles.VALIDATOR.value,
                     TeamRoles.PROJECT_MANAGER.value,
                 ]
-                is_team_member = TeamService.check_team_membership(
-                    project_id, allowed_roles, current_user_id
+                is_team_member = await TeamService.check_team_membership(
+                    project.id, allowed_roles, current_user_id, db
                 )
 
         if is_allowed_user or is_manager_permission or is_team_member:
-            return project.as_dto_for_mapping(current_user_id, locale, abbrev)
+            return await Project.as_dto_for_mapping(project.id, db, current_user_id, locale, abbrev)
         else:
             return None
 

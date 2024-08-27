@@ -16,7 +16,7 @@ from backend.models.postgis.statuses import (
 )
 from backend.models.dtos.campaign_dto import CampaignDTO
 
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError, validator
 from typing import List, Optional
 from datetime import datetime
 from typing_extensions import Annotated
@@ -150,6 +150,10 @@ class ProjectInfoDTO(BaseModel):
     instructions: str = Field(default="")
     per_task_instructions: str = Field(default="", serialization_alias="perTaskInstructions")
 
+    @validator("per_task_instructions", pre=True, always=True)
+    def handle_none(cls, value):
+        return value or ""
+
 
 class CustomEditorDTO(BaseModel):
     """DTO to define a custom editor"""
@@ -189,7 +193,7 @@ class ProjectDTO(BaseModel):
     organisation_name: Optional[str] = Field(serialization_alias="organisationName", default=None)
     organisation_slug: Optional[str] = Field(serialization_alias="organisationSlug", default=None)
     organisation_logo: Optional[str] = Field(serialization_alias="organisationLogo", default=None)
-    country_tag: List[str] = Field(serialization_alias="countryTag", default=[])
+    country_tag: Optional[List[str]] = Field(serialization_alias="countryTag", default=[])
     license_id: Optional[int] = Field(serialization_alias="licenseId", default=None)
     allowed_usernames: List[str] = Field(serialization_alias="allowedUsernames", default=[])
     priority_areas: Optional[dict] = Field(serialization_alias="priorityAreas", default={})

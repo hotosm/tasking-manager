@@ -145,6 +145,18 @@ class TeamsListDTO(BaseModel):
     pagination: Optional[Pagination] = None
 
 
+
+class ListTeamsDTO(BaseModel):
+    def __init__(self):
+        """DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.teams = []
+
+    """ Returns List of all teams"""
+    teams: List[ProjectTeamDTO] = []
+    pagination: Optional[Pagination] = None
+
+
 class NewTeamDTO(BaseModel):
     """Describes a JSON model to create a new team"""
 
