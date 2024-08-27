@@ -80,8 +80,16 @@ const COLUMNS = [
         <div>
           <div data-tooltip-id={`project-${row.original.projectId}-progress`}>
             <ProgressBar
-              firstBarValue={row.original.percentMapped}
-              secondBarValue={row.original.percentValidated}
+              firstBarValue={
+                row.original.percentMapped > 0
+                  ? Math.max(8, row.original.percentMapped)
+                  : row.original.percentMapped
+              }
+              secondBarValue={
+                row.original.percentValidated > 0
+                  ? Math.max(8, row.original.percentValidated)
+                  : row.original.percentValidated
+              }
               height="half"
               small={false}
             />
