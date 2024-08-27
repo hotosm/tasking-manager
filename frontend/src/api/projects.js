@@ -193,6 +193,10 @@ export const submitValidationTask = (projectId, payload, token, locale) => {
   );
 };
 
+export const downloadAsCSV = (queryParamsString, token) => {
+  return api(token).get(`projects/?${queryParamsString}`);
+};
+
 export const useAvailableCountriesQuery = () => {
   const fetchGeojsonData = () => {
     return axios.get(`${UNDERPASS_URL}/availability`);
@@ -239,4 +243,7 @@ const backendToQueryConversion = {
   stale: 'lastUpdatedTo',
   createdFrom: 'createdFrom',
   basedOnMyInterests: 'basedOnMyInterests',
+  partnerId: 'partnerId',
+  partnershipFrom: 'partnershipFrom',
+  partnershipTo: 'partnershipTo',
 };

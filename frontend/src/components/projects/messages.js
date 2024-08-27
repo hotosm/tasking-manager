@@ -324,6 +324,10 @@ export default defineMessages({
     id: 'project.table.downloadAsCSV',
     defaultMessage: 'Download CSV',
   },
+  downloadAsCSVError: {
+    id: 'project.table.downloadAsCSV.error',
+    defaultMessage: 'Something went wrong. Could not download CSV.',
+  },
   projectsTableEmpty: {
     id: 'project.table.empty',
     defaultMessage: 'No projects were found. Try updating the search term or filters if any.',
