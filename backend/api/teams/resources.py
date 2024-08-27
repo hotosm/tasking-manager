@@ -5,13 +5,18 @@ from backend.models.dtos.team_dto import (
 )
 from backend.services.team_service import TeamService, TeamServiceError
 from backend.services.organisation_service import OrganisationService
+from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
+from backend.models.dtos.user_dto import AuthUserDTO
 from distutils.util import strtobool
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
+from backend.db import get_db, get_session
 from starlette.authentication import requires
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
+from databases import Database
+from fastapi import HTTPException
+
 
 router = APIRouter(
     prefix="/teams",
@@ -22,6 +27,8 @@ router = APIRouter(
 
 # class TeamsRestAPI(Resource):
 #     @token_auth.login_required
+
+
 @router.patch("/{team_id}/")
 @requires("authenticated")
 async def patch(request: Request, team_id: int):
@@ -109,8 +116,9 @@ async def patch(request: Request, team_id: int):
     except TeamServiceError as e:
         return str(e), 402
 
+
 @router.get("/{team_id}/")
-async def get(request: Request, team_id):
+async def retrieve_team(request: Request, team_id: int, db: Database = Depends(get_db)):
     """
     Retrieves a Team
     ---
@@ -146,10 +154,11 @@ async def get(request: Request, team_id):
         user_id = 0
     else:
         user_id = authenticated_user_id
-    team_dto = TeamService.get_team_as_dto(team_id, user_id, omit_members)
-    return team_dto.model_dump(by_alias=True), 200
+    team_dto = await TeamService.get_team_as_dto(team_id, user_id, omit_members, db)
+    return team_dto
 
     # TODO: Add delete API then do front end services and ui work
+
 
 @router.delete("/{team_id}/")
 @requires("authenticated")
@@ -195,11 +204,8 @@ async def delete(request: Request, team_id: int):
     return TeamService.delete_team(team_id)
 
 
-# class TeamsAllAPI(Resource):
-#     @token_auth.login_required
 @router.get("/")
-@requires("authenticated")
-async def get(request: Request, session: AsyncSession):
+async def list_teams(request: Request, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
     """
     Gets all teams
     ---
@@ -288,20 +294,20 @@ async def get(request: Request, session: AsyncSession):
     search_dto.member_request = request.query_params.get("member_request", None)
     search_dto.team_role = request.query_params.get("team_role", None)
     search_dto.organisation = request.query_params.get("organisation", None)
-    search_dto.omit_member_list = strtobool(
+    search_dto.omit_members = strtobool(
         request.query_params.get("omitMemberList", "false")
     )
-    search_dto.full_member_list = strtobool(
+    search_dto.full_members_list = strtobool(
         request.query_params.get("fullMemberList", "true")
     )
     search_dto.paginate = strtobool(request.query_params.get("paginate", "false"))
     search_dto.page = request.query_params.get("page", 1)
     search_dto.per_page = request.query_params.get("perPage", 10)
     search_dto.user_id = user_id
-    search_dto.validate()
 
-    teams = await TeamService.get_all_teams(search_dto, session)
-    return teams.model_dump(by_alias=True), 200
+    teams = await TeamService.get_all_teams(search_dto, db)
+    return teams
+
 
 @router.post("/")
 @requires("authenticated")
