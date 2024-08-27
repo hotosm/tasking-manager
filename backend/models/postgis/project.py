@@ -1064,7 +1064,7 @@ class Project(Base):
 
 
     @staticmethod
-    @cached(active_mappers_cache)
+    # @cached(active_mappers_cache)
     async def get_active_mappers(project_id: int, database: Database) -> int:
         """Get count of Locked tasks as a proxy for users who are currently active on the project"""
         query = """
@@ -1301,15 +1301,17 @@ class Project(Base):
         if custom_editor:
             project_dto.custom_editor = CustomEditorDTO(**custom_editor)
 
+            
         if project_dto.private:
+            # Fetch allowed usernames using the intermediate table
             allowed_users_query = """
                 SELECT u.username
-                FROM allowed_users au
-                JOIN users u ON au.user_id = u.id
-                WHERE au.project_id = :project_id
+                FROM project_allowed_users pau
+                JOIN users u ON pau.user_id = u.id
+                WHERE pau.project_id = :project_id
             """
             allowed_usernames = await db.fetch_all(allowed_users_query, {"project_id": project_id})
-            project_dto.allowed_usernames = [user.username for user in allowed_usernames]
+            project_dto.allowed_usernames = [user.username for user in allowed_usernames] if allowed_usernames else []
 
         campaigns_query = """
             SELECT c.id, c.name
