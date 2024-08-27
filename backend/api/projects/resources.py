@@ -686,19 +686,19 @@ async def get(request: Request, db: Database = Depends(get_db)):
         500:
             description: Internal Server Error
     """
-    try:
-        user = None
-        user_id = request.user.display_name if request.user else None
-        if user_id:
-            user = await UserService.get_user_by_id(user_id, db)
-        search_dto = setup_search_dto(request)
-        results_dto = await ProjectSearchService.search_projects(search_dto, user, db)
-        return results_dto, 200
-    except NotFound:
-        return {"mapResults": {}, "results": []}, 200 
-    except (KeyError, ValueError) as e:
-        error_msg = f"Projects GET - {str(e)}"
-        return {"Error": error_msg}, 400
+    # try:
+    user = None
+    user_id = request.user.display_name if request.user else None
+    if user_id:
+        user = await UserService.get_user_by_id(user_id, db)
+    search_dto = setup_search_dto(request)
+    results_dto = await ProjectSearchService.search_projects(search_dto, user, db)
+    return results_dto, 200
+    # except NotFound:
+    #     return {"mapResults": {}, "results": []}, 200 
+    # except (KeyError, ValueError) as e:
+    #     error_msg = f"Projects GET - {str(e)}"
+    #     return {"Error": error_msg}, 400
 
 
 @router.get("/queries/bbox/")

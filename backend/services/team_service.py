@@ -5,6 +5,7 @@ from markdown import markdown
 from backend import create_app, db
 from backend.exceptions import NotFound
 from backend.models.dtos.team_dto import (
+    ListTeamsDTO,
     TeamDTO,
     NewTeamDTO,
     TeamsListDTO,
@@ -214,256 +215,6 @@ class TeamService:
         ).one()
         project.delete()
 
-    # @staticmethod
-    # def get_all_teams(search_dto: TeamSearchDTO) -> TeamsListDTO:
-    #     query = session.query(Team)
-
-    #     orgs_query = None
-    #     user = UserService.get_user_by_id(search_dto.user_id)
-    #     is_admin = UserRole(user.role) == UserRole.ADMIN
-    #     if search_dto.organisation:
-    #         orgs_query = query.filter(Team.organisation_id == search_dto.organisation)
-    #     if search_dto.manager and search_dto.manager == search_dto.user_id:
-    #         manager_teams = query.filter(
-    #             TeamMembers.user_id == search_dto.manager,
-    #             TeamMembers.active == True,  # noqa
-    #             TeamMembers.function == TeamMemberFunctions.MANAGER.value,
-    #             Team.id == TeamMembers.team_id,
-    #         )
-
-    #         manager_orgs_teams = query.filter(
-    #             Team.organisation_id.in_(
-    #                 [
-    #                     org.id
-    #                     for org in OrganisationService.get_organisations(
-    #                         search_dto.manager
-    #                     )
-    #                 ]
-    #             )
-    #         )
-
-    #         query = manager_teams.union(manager_orgs_teams)
-
-    #     if search_dto.team_name:
-    #         query = query.filter(
-    #             Team.name.ilike("%" + search_dto.team_name + "%"),
-    #         )
-
-    #     if search_dto.team_role:
-    #         try:
-    #             role = TeamRoles[search_dto.team_role.upper()].value
-    #             project_teams = (
-    #                 session.query(ProjectTeams)
-    #                 .filter(ProjectTeams.role == role)
-    #                 .subquery()
-    #             )
-    #             query = query.join(project_teams)
-    #         except KeyError:
-    #             pass
-
-    #     if search_dto.member:
-    #         team_member = (
-    #             session.query(TeamMembers)
-    #             .filter(
-    #                 TeamMembers.user_id == search_dto.member,
-    #                 TeamMembers.active.is_(True),
-    #             )
-    #             .subquery()
-    #         )
-    #         query = query.join(team_member)
-
-    #     if search_dto.member_request:
-    #         team_member = (
-    #             session.query(TeamMembers)
-    #             .filter(
-    #                 TeamMembers.user_id == search_dto.member_request,
-    #                 TeamMembers.active.is_(False),
-    #             )
-    #             .subquery()
-    #         )
-    #         query = query.join(team_member)
-    #     if orgs_query:
-    #         query = query.union(orgs_query)
-
-    #     # Only show public teams and teams that the user is a member of
-    #     if not is_admin:
-    #         query = query.filter(
-    #             or_(
-    #                 Team.visibility == TeamVisibility.PUBLIC.value,
-    #                 # Since user.teams returns TeamMembers, we need to get the team_id
-    #                 Team.id.in_([team.team_id for team in user.teams]),
-    #             )
-    #         )
-    #     teams_list_dto = TeamsListDTO()
-
-    #     if search_dto.paginate:
-    #         paginated = query.paginate(
-    #             page=search_dto.page, per_page=search_dto.per_page, error_out=True
-    #         )
-    #         teams_list_dto.pagination = Pagination(paginated)
-    #         teams_list = paginated.items
-    #     else:
-    #         teams_list = query.all()
-    #     for team in teams_list:
-    #         team_dto = TeamDTO()
-    #         team_dto.team_id = team.id
-    #         team_dto.name = team.name
-    #         team_dto.join_method = TeamJoinMethod(team.join_method).name
-    #         team_dto.visibility = TeamVisibility(team.visibility).name
-    #         team_dto.description = team.description
-    #         team_dto.logo = team.organisation.logo
-    #         team_dto.organisation = team.organisation.name
-    #         team_dto.organisation_id = team.organisation.id
-    #         team_dto.members = []
-    #         # Skip if members are not included
-    #         if not search_dto.omit_members:
-    #             if search_dto.full_members_list:
-    #                 team_members = team.members
-    #             else:
-    #                 team_managers = team.get_team_managers(10)
-    #                 team_members = team.get_team_members(10)
-    #                 team_members.extend(team_managers)
-    #             team_dto.members = [
-    #                 team.as_dto_team_member(member) for member in team_members
-    #             ]
-    #             team_dto.members_count = team.get_members_count_by_role(
-    #                 TeamMemberFunctions.MEMBER
-    #             )
-    #             team_dto.managers_count = team.get_members_count_by_role(
-    #                 TeamMemberFunctions.MANAGER
-    #             )
-    #         teams_list_dto.teams.append(team_dto)
-    #     return teams_list_dto
-
-        
-    # @staticmethod
-    # async def get_all_teams(search_dto: TeamSearchDTO, session) -> TeamsListDTO:
-    #     query = session.query(Team)
-
-    #     orgs_query = None
-    #     user = UserService.get_user_by_id(search_dto.user_id)
-    #     is_admin = UserRole(user.role) == UserRole.ADMIN
-    #     if search_dto.organisation:
-    #         orgs_query = query.filter(Team.organisation_id == search_dto.organisation)
-    #     if search_dto.manager and search_dto.manager == search_dto.user_id:
-    #         manager_teams = query.filter(
-    #             TeamMembers.user_id == search_dto.manager,
-    #             TeamMembers.active == True,  # noqa
-    #             TeamMembers.function == TeamMemberFunctions.MANAGER.value,
-    #             Team.id == TeamMembers.team_id,
-    #         )
-
-    #         manager_orgs_teams = query.filter(
-    #             Team.organisation_id.in_(
-    #                 [
-    #                     org.id
-    #                     for org in await OrganisationService.get_organisations(
-    #                         search_dto.manager
-    #                     )
-    #                 ]
-    #             )
-    #         )
-
-    #         query = manager_teams.union(manager_orgs_teams)
-
-    #     if search_dto.team_name:
-    #         query = query.filter(
-    #             Team.name.ilike("%" + search_dto.team_name + "%"),
-    #         )
-
-    #     if search_dto.team_role:
-    #         try:
-    #             role = TeamRoles[search_dto.team_role.upper()].value
-    #             project_teams = (
-    #                 session.query(ProjectTeams)
-    #                 .filter(ProjectTeams.role == role)
-    #                 .subquery()
-    #             )
-    #             query = query.join(project_teams)
-    #         except KeyError:
-    #             pass
-
-    #     if search_dto.member:
-    #         team_member = (
-    #             session.query(TeamMembers)
-    #             .filter(
-    #                 TeamMembers.user_id == search_dto.member,
-    #                 TeamMembers.active.is_(True),
-    #             )
-    #             .subquery()
-    #         )
-    #         query = query.join(team_member)
-
-    #     if search_dto.member_request:
-    #         team_member = (
-    #             session.query(TeamMembers)
-    #             .filter(
-    #                 TeamMembers.user_id == search_dto.member_request,
-    #                 TeamMembers.active.is_(False),
-    #             )
-    #             .subquery()
-    #         )
-    #         query = query.join(team_member)
-    #     if orgs_query:
-    #         query = query.union(orgs_query)
-
-    #     # Only show public teams and teams that the user is a member of
-    #     if not is_admin:
-    #         query = query.filter(
-    #             or_(
-    #                 Team.visibility == TeamVisibility.PUBLIC.value,
-    #                 # Since user.teams returns TeamMembers, we need to get the team_id
-    #                 Team.id.in_([team.team_id for team in user.teams]),
-    #             )
-    #         )
-        
-    #     teams_list_dto = TeamsListDTO()
-
-    #     if search_dto.paginate:
-    #         paginated = await query.paginate(
-    #             page=search_dto.page, per_page=search_dto.per_page, error_out=True
-    #         )
-    #         teams_list_dto.pagination = Pagination(paginated)
-    #         teams_list = paginated.items
-    #     else:
-    #         teams_list = await query.all()
-
-    #     for team in teams_list:
-    #         team_dto = TeamDTO()
-    #         team_dto.team_id = team.id
-    #         team_dto.name = team.name
-    #         team_dto.join_method = TeamJoinMethod(team.join_method).name
-    #         team_dto.visibility = TeamVisibility(team.visibility).name
-    #         team_dto.description = team.description
-    #         team_dto.logo = team.organisation.logo
-    #         team_dto.organisation = team.organisation.name
-    #         team_dto.organisation_id = team.organisation.id
-    #         team_dto.members = []
-
-    #         # Skip if members are not included
-    #         if not search_dto.omit_members:
-    #             if search_dto.full_members_list:
-    #                 team_members = team.members
-    #             else:
-    #                 team_managers = await team.get_team_managers(10)
-    #                 team_members = await team.get_team_members(10)
-    #                 team_members.extend(team_managers)
-
-    #             team_dto.members = [
-    #                 team.as_dto_team_member(member) for member in team_members
-    #             ]
-    #             team_dto.members_count = team.get_members_count_by_role(
-    #                 TeamMemberFunctions.MEMBER
-    #             )
-    #             team_dto.managers_count = team.get_members_count_by_role(
-    #                 TeamMemberFunctions.MANAGER
-    #             )
-
-    #         teams_list_dto.teams.append(team_dto)
-
-    #     return teams_list_dto
-    
-
     @staticmethod
     async def get_all_teams(search_dto: TeamSearchDTO, db: Database) -> TeamsListDTO:
         query_parts = []
@@ -589,52 +340,6 @@ class TeamService:
                 total=total, page=search_dto.page, per_page=search_dto.per_page
             )
         return teams_list_dto
-    
-
-    # @staticmethod
-    # def get_team_as_dto(
-    #     team_id: int, user_id: int, abbreviated: bool, db: Database
-    # ) -> TeamDetailsDTO:
-    #     team = TeamService.get_team_by_id(team_id, db)
-
-    #     if team is None:
-    #         raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_id)
-
-    #     team_dto = TeamDetailsDTO()
-    #     team_dto.team_id = team.id
-    #     team_dto.name = team.name
-    #     team_dto.join_method = TeamJoinMethod(team.join_method).name
-    #     team_dto.visibility = TeamVisibility(team.visibility).name
-    #     team_dto.description = team.description
-    #     team_dto.logo = team.organisation.logo
-    #     team_dto.organisation = team.organisation.name
-    #     team_dto.organisation_id = team.organisation.id
-    #     team_dto.organisation_slug = team.organisation.slug
-
-    #     if user_id != 0:
-    #         if UserService.is_user_an_admin(user_id, db):
-    #             team_dto.is_general_admin = True
-
-    #         if OrganisationService.is_user_an_org_manager(
-    #             team.organisation.id, user_id, db
-    #         ):
-    #             team_dto.is_org_admin = True
-    #     else:
-    #         team_dto.is_general_admin = False
-    #         team_dto.is_org_admin = False
-
-    #     if abbreviated:
-    #         return team_dto
-
-    #     team_dto.members = [team.as_dto_team_member(member) for member in team.members]
-
-    #     team_projects = TeamService.get_projects_by_team_id(team.id)
-
-    #     team_dto.team_projects = [
-    #         team.as_dto_team_project(project) for project in team_projects
-    #     ]
-
-    #     return team_dto
 
 
     async def get_team_as_dto(
@@ -691,30 +396,11 @@ class TeamService:
             for member in members
         ] if members else []
         team_projects = await TeamService.get_projects_by_team_id(team_id, db)
-        for project in team_projects:
-            print(project.name)
-            print(project.project_id)
-        
         team_dto.team_projects = [
             Team.as_dto_team_project(project) for project in team_projects
         ] if team_projects else []
         return team_dto
 
-    # @staticmethod
-    # def get_projects_by_team_id(team_id: int):
-    #     projects = (
-    #         session.query(
-    #             ProjectInfo.name, ProjectTeams.project_id, ProjectTeams.role
-    #         )
-    #         .join(ProjectTeams, ProjectInfo.project_id == ProjectTeams.project_id)
-    #         .filter(ProjectTeams.team_id == team_id)
-    #         .all()
-    #     )
-
-    #     if projects is None:
-    #         raise NotFound(sub_code="PROJECTS_NOT_FOUND", team_id=team_id)
-
-    #     return projects
 
     @staticmethod
     async def get_projects_by_team_id(team_id: int, db: Database):
@@ -734,32 +420,28 @@ class TeamService:
 
         return projects
 
-
     @staticmethod
     async def get_project_teams_as_dto(project_id: int, db: Database) -> TeamsListDTO:
-        """Gets all the teams for a specified project"""
-
-        # Raw SQL query to get project teams
+        """Gets all the teams for a specified project with their roles and names"""
+        # Raw SQL query to get project teams with team names
         query = """
-            SELECT team_id, role
-            FROM project_teams
-            WHERE project_id = :project_id
+            SELECT pt.team_id, t.name AS team_name, pt.role
+            FROM project_teams pt
+            JOIN teams t ON pt.team_id = t.id
+            WHERE pt.project_id = :project_id
         """
-
-        # Execute the query and fetch all results
         project_teams = await db.fetch_all(query=query, values={"project_id": project_id})
         # Initialize the DTO
-        teams_list_dto = TeamsListDTO()
+        teams_list_dto = ListTeamsDTO()
 
+        # Populate the DTO with team data
         for project_team in project_teams:
-            team = await TeamService.get_team_by_id(project_team.team_id, db)
-            if team:
-                team_dto = ProjectTeamDTO(
-                    team_id=project_team.team_id,
-                    team_name=team.name,
-                    role=str(project_team["role"])
-                )
-                teams_list_dto.teams.append(team_dto)
+            team_dto = ProjectTeamDTO(
+                team_id=project_team["team_id"],
+                team_name=project_team["team_name"],
+                role=str(project_team["role"])
+            )
+            teams_list_dto.teams.append(team_dto)
 
         return teams_list_dto
 
@@ -784,7 +466,7 @@ class TeamService:
         """
         # Raw SQL query to select the team by ID
         query = """
-            SELECT id, name, organisation
+            SELECT id, name, organisation_id
             FROM teams
             WHERE id = :team_id
         """
