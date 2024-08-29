@@ -42,6 +42,8 @@ from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
 from backend.db import get_session
 from databases import Database
+from fastapi import HTTPException
+
 
 session = get_session()
 
@@ -484,35 +486,31 @@ class ProjectSearchService:
         )
 
     @staticmethod
-    def get_projects_geojson(
-        search_bbox_dto: ProjectSearchBBoxDTO,
+    async def get_projects_geojson(
+        search_bbox_dto: ProjectSearchBBoxDTO, db: Database
     ) -> geojson.FeatureCollection:
         """Search for projects meeting the provided criteria. Returns a GeoJSON feature collection."""
-
         # make a polygon from provided bounding box
-        polygon = ProjectSearchService._make_4326_polygon_from_bbox(
-            search_bbox_dto.bbox, search_bbox_dto.input_srid
+        polygon = await ProjectSearchService._make_4326_polygon_from_bbox(
+            search_bbox_dto.bbox, search_bbox_dto.input_srid, db
         )
-
         # validate the bbox area is less than or equal to the max area allowed to prevent
         # abuse of the api or performance issues from large requests
-        if not ProjectSearchService.validate_bbox_area(polygon):
-            raise BBoxTooBigError(
-                "BBoxTooBigError- Requested bounding box is too large"
+        if not await ProjectSearchService.validate_bbox_area(polygon, db):
+            raise HTTPException(
+                status_code=400, detail="Organisation has projects or teams, cannot be deleted."
             )
-
         # get projects intersecting the polygon for created by the author_id
-        intersecting_projects = ProjectSearchService._get_intersecting_projects(
-            polygon, search_bbox_dto.project_author
+        intersecting_projects = await ProjectSearchService._get_intersecting_projects(
+            polygon, search_bbox_dto.project_author, db
         )
-
         # allow an empty feature collection to be returned if no intersecting features found, since this is primarily
         # for returning data to show on a map
         features = []
         for project in intersecting_projects:
             try:
-                localDTO = ProjectInfo.get_dto_for_locale(
-                    project.id, search_bbox_dto.preferred_locale, project.default_locale
+                localDTO = await ProjectInfo.get_dto_for_locale(
+                    db, project.id, search_bbox_dto.preferred_locale, project.default_locale
                 )
             except Exception:
                 pass
@@ -529,57 +527,91 @@ class ProjectSearchService:
 
         return geojson.FeatureCollection(features)
 
+
     @staticmethod
-    def _get_intersecting_projects(search_polygon: Polygon, author_id: int):
+    async def _get_intersecting_projects(search_polygon: Polygon, author_id: int, db: Database):
         """Executes a database query to get the intersecting projects created by the author if provided"""
+        try:
+            # Convert the search_polygon bounds to a bounding box (WKT)
+            bounds = search_polygon.bounds
+            envelope_wkt = f"ST_MakeEnvelope({bounds[0]}, {bounds[1]}, {bounds[2]}, {bounds[3]}, 4326)"
+            
+            # Base SQL query with parameter placeholders
+            query_str = f"""
+                SELECT 
+                    id, 
+                    status, 
+                    default_locale, 
+                    ST_AsGeoJSON(geometry) AS geometry 
+                FROM 
+                    projects 
+                WHERE 
+                    ST_Intersects(geometry, {envelope_wkt})
+            """
+            
+            # If an author_id is provided, append the AND condition
+            if author_id:
+                query_str += " AND author_id = :author_id"
 
-        query = session.query(
-            Project.id,
-            Project.status,
-            Project.default_locale,
-            Project.geometry.ST_AsGeoJSON().label("geometry"),
-        ).filter(
-            ST_Intersects(
-                Project.geometry,
-                ST_MakeEnvelope(
-                    search_polygon.bounds[0],
-                    search_polygon.bounds[1],
-                    search_polygon.bounds[2],
-                    search_polygon.bounds[3],
-                    4326,
-                ),
-            )
-        )
-        if author_id:
-            query = query.filter(Project.author_id == author_id)
+            # Execute the query asynchronously with the parameters
+            values = {"author_id": author_id} if author_id else {}
+            results = await db.fetch_all(query=query_str, values=values)
 
-        return query.all()
+            return results
 
+        except Exception as e:
+            logger.error(f"Error fetching intersecting projects: {e}")
+            raise ProjectSearchServiceError(f"Error fetching intersecting projects: {e}")
+
+    
     @staticmethod
-    def _make_4326_polygon_from_bbox(bbox: list, srid: int) -> Polygon:
-        """make a shapely Polygon in SRID 4326 from bbox and srid"""
+    async def _make_4326_polygon_from_bbox(bbox: list, srid: int, db: Database) -> Polygon:
+        """Make a shapely Polygon in SRID 4326 from bbox and srid"""
         try:
             polygon = box(bbox[0], bbox[1], bbox[2], bbox[3])
-            if not srid == 4326:
+            
+            # If the SRID is not 4326, transform it to 4326
+            if srid != 4326:
                 geometry = shape.from_shape(polygon, srid)
-                with db.engine.connect() as conn:
-                    geom_4326 = conn.execute(ST_Transform(geometry, 4326)).scalar()
+                # Construct the raw SQL query to transform the geometry
+                query = "SELECT ST_Transform(ST_GeomFromText(:wkt, :srid), 4326) AS geom_4326"
+                values = {"wkt": geometry.wkt, "srid": srid}
+                
+                # Execute the SQL query using the encode databases instance
+                result = await db.fetch_one(query=query, values=values)
+                geom_4326 = result["geom_4326"]
                 polygon = shape.to_shape(geom_4326)
+
         except Exception as e:
             logger.error(f"InvalidData- error making polygon: {e}")
             raise ProjectSearchServiceError(f"InvalidData- error making polygon: {e}")
+
         return polygon
 
     @staticmethod
-    def _get_area_sqm(polygon: Polygon) -> float:
-        """get the area of the polygon in square metres"""
-        with db.engine.connect() as conn:
-            return conn.execute(
-                ST_Area(ST_Transform(shape.from_shape(polygon, 4326), 3857))
-            ).scalar()
+    async def _get_area_sqm(polygon: Polygon, db: Database) -> float:
+        """Get the area of the polygon in square meters."""
+        try:
+            # Convert the polygon to its WKT format
+            
+            geometry_wkt = polygon.wkt
+            
+            # Prepare the raw SQL query to calculate the area
+            query = "SELECT ST_Area(ST_Transform(ST_GeomFromText(:wkt, 4326), 3857)) AS area"
+            values = {"wkt": geometry_wkt}
+
+            # Execute the query asynchronously using encode databases
+            result = await db.fetch_one(query=query, values=values)
+            return result["area"]
+
+
+        except Exception as e:
+            logger.error(f"Error calculating area: {e}")
+            raise ProjectSearchServiceError(f"Error calculating area: {e}")
+
 
     @staticmethod
-    def validate_bbox_area(polygon: Polygon) -> bool:
-        """check polygon does not exceed maximim allowed area"""
-        area = ProjectSearchService._get_area_sqm(polygon)
+    async def validate_bbox_area(polygon: Polygon, db: Database) -> bool:
+        """Check if the polygon does not exceed the maximum allowed area."""
+        area = await ProjectSearchService._get_area_sqm(polygon, db)
         return area <= MAX_AREA
