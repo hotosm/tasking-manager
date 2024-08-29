@@ -140,20 +140,16 @@ class DraftProjectDTO(BaseModel):
     has_arbitrary_tasks: bool = Field(required=True, alias="arbitraryTasks")
     user_id: int = Field(required=True)
 
+
 class ProjectInfoDTO(BaseModel):
     """Contains the localized project info"""
 
     locale: str
-    name: str = Field(default="")
-    short_description: str = Field(default="", serialization_alias="shortDescription")
-    description: str = Field(default="")
-    instructions: str = Field(default="")
-    per_task_instructions: str = Field(default="", serialization_alias="perTaskInstructions")
-
-    @validator("per_task_instructions", pre=True, always=True)
-    def handle_none(cls, value):
-        return value or ""
-
+    name: Optional[str] = ""  # Optional, with default as empty string
+    short_description: Optional[str] = Field(default="", serialization_alias="shortDescription")  # Optional, with default as empty string
+    description: Optional[str] = ""  # Optional, with default as empty string
+    instructions: Optional[str] = ""  # Optional, with default as empty string
+    per_task_instructions: Optional[str] = Field(default="", serialization_alias="perTaskInstructions")
 
 class CustomEditorDTO(BaseModel):
     """DTO to define a custom editor"""
@@ -219,16 +215,6 @@ class ProjectFavoriteDTO(BaseModel):
     user_id: int
 
 
-# class ProjectFavoritesDTO(Model):
-#     """DTO to retrieve favorited projects"""
-
-#     def __init__(self):
-#         super().__init__()
-#         self.favorited_projects = []
-
-#     favorited_projects = ListType(
-#         ModelType(ProjectDTO), serialized_name="favoritedProjects"
-#     )
 class ProjectFavoritesDTO(BaseModel):
     def __init__(self, favorited_projects: List[ProjectDTO] = None, **kwargs):
         super().__init__(**kwargs)
@@ -312,35 +298,11 @@ class ProjectSearchDTO(BaseModel):
             )
         )
 
-
 class ProjectSearchBBoxDTO(BaseModel):
-    bbox: List[float] = Field(required=True, min_size=4, max_size=4)
-    input_srid: int = Field(required=True, choices=[4326])
-    preferred_locale: str = Field(required=False, default="en")
-    project_author: int = Field(required=False, alias="projectAuthor")
-
-
-# class ListSearchResultDTO(Model):
-#     """Describes one search result"""
-
-#     project_id = IntType(required=True, serialized_name="projectId")
-#     locale = StringType(required=True)
-#     name = StringType(default="")
-#     short_description = StringType(serialized_name="shortDescription", default="")
-#     difficulty = StringType(required=True, serialized_name="difficulty")
-#     priority = StringType(required=True)
-#     organisation_name = StringType(serialized_name="organisationName")
-#     organisation_logo = StringType(serialized_name="organisationLogo")
-#     campaigns = ListType(ModelType(CampaignDTO), default=[])
-#     percent_mapped = IntType(serialized_name="percentMapped")
-#     percent_validated = IntType(serialized_name="percentValidated")
-#     status = StringType(serialized_name="status")
-#     active_mappers = IntType(serialized_name="activeMappers")
-#     last_updated = UTCDateTimeType(serialized_name="lastUpdated")
-#     due_date = UTCDateTimeType(serialized_name="dueDate")
-#     total_contributors = IntType(serialized_name="totalContributors")
-#     country = StringType(serialize_when_none=False)
-
+    bbox: List[float] = Field(..., min_items=4, max_items=4)
+    input_srid: int = Field(..., choices=[4326])
+    preferred_locale: Optional[str] = Field(default="en")
+    project_author: Optional[int] = Field(default=None, serialization_alias="projectAuthor")
 
 class ListSearchResultDTO(BaseModel):
     project_id: Optional[int] = Field(alias="projectId", default=None)
@@ -535,25 +497,3 @@ class ProjectUserStatsDTO(BaseModel):
     time_spent_mapping: int = Field(alias="timeSpentMapping")
     time_spent_validating: int = Field(alias="timeSpentValidating")
     total_time_spent: int = Field(alias="totalTimeSpent")
-
-
-# class PaginatedResults(BaseModel):
-#     items: List[ProjectDTO]
-#     total: int
-#     page: int
-#     per_page: int
-#     total_pages: int
-
-# class Pagination(BaseModel):
-#     total: int
-#     page: int
-#     per_page: int
-#     total_pages: int
-
-#     def __init__(self, paginated_results: PaginatedResults):
-#         super().__init__(
-#             total=paginated_results.total,
-#             page=paginated_results.page,
-#             per_page=paginated_results.per_page,
-#             total_pages=paginated_results.total_pages
-#         )
