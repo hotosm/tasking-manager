@@ -193,8 +193,19 @@ export const submitValidationTask = (projectId, payload, token, locale) => {
   );
 };
 
-export const downloadAsCSV = (queryParamsString, token) => {
-  return api(token).get(`projects/?${queryParamsString}`);
+export const downloadAsCSV = (allQueryParams, action, token) => {
+  const paramsRemapped = remapParamsToAPI(allQueryParams, backendToQueryConversion);
+  // it's needed in order to query by action
+  if (paramsRemapped.action === undefined && action) {
+    paramsRemapped.action = action;
+  }
+
+  if (paramsRemapped.lastUpdatedTo) {
+    paramsRemapped.lastUpdatedTo = format(subMonths(Date.now(), 6), 'yyyy-MM-dd');
+  }
+  return api(token).get('projects/', {
+    params: paramsRemapped,
+  });
 };
 
 export const useAvailableCountriesQuery = () => {

@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 
-import { stringify } from '../../hooks/UseProjectsQueryAPI';
 import { downloadAsCSV } from '../../api/projects';
 import { DownloadIcon, LoadingIcon } from '../svgIcons';
 import messages from './messages';
@@ -12,6 +11,7 @@ import messages from './messages';
 export default function DownloadAsCSV({ allQueryParams }) {
   const [isLoading, setIsLoading] = useState(false);
   const token = useSelector((state) => state.auth.token);
+  const action = useSelector((state) => state.preferences['action']);
 
   const allQueryParamsCopy = { ...allQueryParams };
   allQueryParamsCopy.downloadAsCSV = true;
@@ -21,7 +21,7 @@ export default function DownloadAsCSV({ allQueryParams }) {
     setIsLoading(true);
 
     try {
-      const response = await downloadAsCSV(stringify(allQueryParamsCopy), token);
+      const response = await downloadAsCSV(allQueryParamsCopy, action, token);
 
       // Get the filename from the Content-Disposition header, if available
       const contentDisposition = response.headers.get('Content-Disposition');
