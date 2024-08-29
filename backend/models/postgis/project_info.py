@@ -84,7 +84,6 @@ class ProjectInfo(Base):
         
         # Execute the query for the requested locale
         project_info = await db.fetch_one(query, values={"project_id": project_id, "locale": locale})
-
         if project_info is None:
             # Define the SQL query to get project info by default locale
             query_default = """
