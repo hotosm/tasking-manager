@@ -687,24 +687,23 @@ async def get(request: Request, db: Database = Depends(get_db)):
         500:
             description: Internal Server Error
     """
-    # try:
-    user = None
-    user_id = request.user.display_name if request.user else None
-    if user_id:
-        user = await UserService.get_user_by_id(user_id, db)
-    search_dto = setup_search_dto(request)
-    results_dto = await ProjectSearchService.search_projects(search_dto, user, db)
-    return results_dto, 200
-    # except NotFound:
-    #     return {"mapResults": {}, "results": []}, 200 
-    # except (KeyError, ValueError) as e:
-    #     error_msg = f"Projects GET - {str(e)}"
-    #     return {"Error": error_msg}, 400
+    try:
+        user = None
+        user_id = request.user.display_name if request.user else None
+        if user_id:
+            user = await UserService.get_user_by_id(user_id, db)
+        search_dto = setup_search_dto(request)
+        results_dto = await ProjectSearchService.search_projects(search_dto, user, db)
+        return results_dto
+    except NotFound:
+        return {"mapResults": {}, "results": []}, 200 
+    except (KeyError, ValueError) as e:
+        error_msg = f"Projects GET - {str(e)}"
+        return {"Error": error_msg}, 400
 
 
 @router.get("/queries/bbox/")
-@requires("authenticated")
-async def get(request: Request):
+async def get(request: Request, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
     """
     List and search projects by bounding box
     ---
@@ -753,8 +752,8 @@ async def get(request: Request):
             description: Internal Server Error
     """
     authenticated_user_id = request.user.display_name if request.user else None
-    orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-        authenticated_user_id
+    orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+        authenticated_user_id, db
     )
     if len(orgs_dto.organisations) < 1:
         return {
@@ -763,10 +762,13 @@ async def get(request: Request):
         }, 403
 
     try:
-        search_dto = ProjectSearchBBoxDTO()
-        search_dto.bbox = map(float, request.query_params.get("bbox").split(","))
-        search_dto.input_srid = request.query_params.get("srid")
-        search_dto.preferred_locale = request.headers.get("accept-language")
+        bbox = map(float, request.query_params.get("bbox").split(","))
+        input_srid = request.query_params.get("srid")
+        search_dto = ProjectSearchBBoxDTO(
+            bbox=bbox,
+            input_srid=input_srid,
+            preferred_locale=request.headers.get("accept-language", "en")
+        )
         created_by_me = (
             strtobool(request.query_params.get("createdByMe"))
             if request.query_params.get("createdByMe")
@@ -774,7 +776,7 @@ async def get(request: Request):
         )
         if created_by_me:
             search_dto.project_author = authenticated_user_id
-        search_dto.validate()
+        # search_dto.validate()
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return {
@@ -782,7 +784,7 @@ async def get(request: Request):
             "SubCode": "InvalidData",
         }, 400
     try:
-        geojson = ProjectSearchService.get_projects_geojson(search_dto)
+        geojson = await ProjectSearchService.get_projects_geojson(search_dto, db)
         return geojson, 200
     except BBoxTooBigError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
