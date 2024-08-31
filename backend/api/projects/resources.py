@@ -686,24 +686,23 @@ async def get(request: Request, db: Database = Depends(get_db)):
         500:
             description: Internal Server Error
     """
-    # try:
-    user = None
-    user_id = request.user.display_name if request.user else None
-    if user_id:
-        user = await UserService.get_user_by_id(user_id, db)
-    search_dto = setup_search_dto(request)
-    results_dto = await ProjectSearchService.search_projects(search_dto, user, db)
-    return results_dto, 200
-    # except NotFound:
-    #     return {"mapResults": {}, "results": []}, 200 
-    # except (KeyError, ValueError) as e:
-    #     error_msg = f"Projects GET - {str(e)}"
-    #     return {"Error": error_msg}, 400
+    try:
+        user = None
+        user_id = request.user.display_name if request.user else None
+        if user_id:
+            user = await UserService.get_user_by_id(user_id, db)
+        search_dto = setup_search_dto(request)
+        results_dto = await ProjectSearchService.search_projects(search_dto, user, db)
+        return results_dto
+    except NotFound:
+        return {"mapResults": {}, "results": []}, 200 
+    except (KeyError, ValueError) as e:
+        error_msg = f"Projects GET - {str(e)}"
+        return {"Error": error_msg}, 400
 
 
 @router.get("/queries/bbox/")
-@requires("authenticated")
-async def get(request: Request):
+async def get(request: Request, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
     """
     List and search projects by bounding box
     ---
@@ -752,8 +751,8 @@ async def get(request: Request):
             description: Internal Server Error
     """
     authenticated_user_id = request.user.display_name if request.user else None
-    orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-        authenticated_user_id
+    orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+        authenticated_user_id, db
     )
     if len(orgs_dto.organisations) < 1:
         return {
@@ -762,10 +761,13 @@ async def get(request: Request):
         }, 403
 
     try:
-        search_dto = ProjectSearchBBoxDTO()
-        search_dto.bbox = map(float, request.query_params.get("bbox").split(","))
-        search_dto.input_srid = request.query_params.get("srid")
-        search_dto.preferred_locale = request.headers.get("accept-language")
+        bbox = map(float, request.query_params.get("bbox").split(","))
+        input_srid = request.query_params.get("srid")
+        search_dto = ProjectSearchBBoxDTO(
+            bbox=bbox,
+            input_srid=input_srid,
+            preferred_locale=request.headers.get("accept-language", "en")
+        )
         created_by_me = (
             strtobool(request.query_params.get("createdByMe"))
             if request.query_params.get("createdByMe")
@@ -773,7 +775,7 @@ async def get(request: Request):
         )
         if created_by_me:
             search_dto.project_author = authenticated_user_id
-        search_dto.validate()
+        # search_dto.validate()
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return {
@@ -781,7 +783,7 @@ async def get(request: Request):
             "SubCode": "InvalidData",
         }, 400
     try:
-        geojson = ProjectSearchService.get_projects_geojson(search_dto)
+        geojson = await ProjectSearchService.get_projects_geojson(search_dto, db)
         return geojson, 200
     except BBoxTooBigError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
@@ -790,8 +792,7 @@ async def get(request: Request):
 
 
 @router.get("/queries/myself/owner/")
-@requires("authenticated")
-async def get(request: Request):
+async def get(request: Request, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
     """
     Get all projects for logged in admin
     ---
@@ -825,8 +826,8 @@ async def get(request: Request):
             description: Internal Server Error
     """
     authenticated_user_id = request.user.display_name if request.user else None
-    orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-        authenticated_user_id
+    orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+        authenticated_user_id, db
     )
     if len(orgs_dto.organisations) < 1:
         return {
@@ -834,14 +835,16 @@ async def get(request: Request):
             "SubCode": "UserPermissionError",
         }, 403
 
-    search_dto = setup_search_dto()
-    admin_projects = ProjectAdminService.get_projects_for_admin(
+    search_dto = setup_search_dto(request)
+    preferred_locale = request.headers.get("accept-language", "en")
+    admin_projects = await ProjectAdminService.get_projects_for_admin(
         authenticated_user_id,
-        request.headers.get("accept-language"),
+        preferred_locale,
         search_dto,
+        db
     )
-    return admin_projects.model_dump(by_alias=True), 200
-
+    # return admin_projects.model_dump(by_alias=True), 200
+    return admin_projects
 
 # class ProjectsQueriesTouchedAPI():
 @router.get("/queries/{username}/touched/")
@@ -883,7 +886,6 @@ async def get(request: Request, username):
     return user_dto.model_dump(by_alias=True), 200
 
 
-# class ProjectsQueriesSummaryAPI():
 @router.get("/{project_id}/queries/summary/")
 async def get(request: Request, project_id: int):
     """
@@ -919,7 +921,6 @@ async def get(request: Request, project_id: int):
     return summary.model_dump(by_alias=True), 200
 
 
-# class ProjectsQueriesNoGeometriesAPI():
 @router.get("/{project_id}/queries/nogeometries/")
 async def get(request: Request, project_id):
     """
@@ -988,8 +989,6 @@ async def get(request: Request, project_id):
             logger.critical(str(e))
 
 
-# class ProjectsQueriesNoTasksAPI():
-    # @token_auth.login_required
 @router.get("/{project_id}/queries/notasks/")
 @requires("authenticated")
 async def get(request: Request, project_id):
@@ -1088,7 +1087,6 @@ async def get(request: Request, project_id):
     return project_aoi, 200
 
 
-# class ProjectsQueriesPriorityAreasAPI():
 @router.get("/{project_id}/queries/priority-areas/")
 async def get(project_id):
     """
@@ -1122,9 +1120,8 @@ async def get(project_id):
         return {"Error": "Unable to fetch project"}, 403
 
 
-# class ProjectsQueriesFeaturedAPI():
 @router.get("/queries/featured/")
-async def get(request: Request, session: AsyncSession = Depends(get_session)):
+async def get(request: Request, db: Database = Depends(get_db)):
     """
     Get featured projects
     ---
@@ -1146,12 +1143,10 @@ async def get(request: Request, session: AsyncSession = Depends(get_session)):
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
-    projects_dto = await ProjectService.get_featured_projects(preferred_locale, session)
-    return projects_dto.model_dump(by_alias=True), 200
+    projects_dto = await ProjectService.get_featured_projects(preferred_locale, db)
+    return projects_dto
 
 
-# class ProjectQueriesSimilarProjectsAPI():
-    # @token_auth.login_required(optional=True)
 @router.get("/{project_id}/queries/similar-projects/")
 async def get(request: Request, project_id: int):
     """
@@ -1198,10 +1193,8 @@ async def get(request: Request, project_id: int):
     return projects_dto.model_dump(by_alias=True), 200
 
 
-# class ProjectQueriesActiveProjectsAPI():
-    # @token_auth.login_required(optional=True)
 @router.get("/queries/active/")
-async def get(request: Request, session: AsyncSession = Depends(get_session)):
+async def get(request: Request, db: Database = Depends(get_db)):
         """
         Get active projects
         ---
@@ -1240,5 +1233,5 @@ async def get(request: Request, session: AsyncSession = Depends(get_session)):
             return {
                 "Error": "Interval must be a number greater than 0 and less than or equal to 24"
             }, 400
-        projects_dto = await ProjectService.get_active_projects(interval, session)
-        return projects_dto, 200
+        projects_dto = await ProjectService.get_active_projects(interval, db)
+        return projects_dto
