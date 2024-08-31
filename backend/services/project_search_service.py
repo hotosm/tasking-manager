@@ -43,6 +43,7 @@ from backend.services.users.user_service import UserService
 from backend.db import get_session
 from databases import Database
 from fastapi import HTTPException
+from typing import List
 
 
 session = get_session()
@@ -140,7 +141,7 @@ class ProjectSearchService:
         
         if filters:
             query += " AND " + " AND ".join(filters)
-
+            
         return query, params
 
     @staticmethod
@@ -173,28 +174,53 @@ class ProjectSearchService:
         list_dto.campaigns = await Project.get_project_campaigns(project.id, db)
         return list_dto
 
+    # @staticmethod
+    # def get_total_contributions(paginated_results):
+    #     paginated_projects_ids = [p.id for p in paginated_results]
+
+    #     # We need to make a join to return projects without contributors.
+    #     project_contributors_count = (
+    #         session.query(Project).with_entities(
+    #             Project.id, func.count(distinct(TaskHistory.user_id)).label("total")
+    #         )
+    #         .filter(Project.id.in_(paginated_projects_ids))
+    #         .outerjoin(
+    #             TaskHistory,
+    #             and_(
+    #                 TaskHistory.project_id == Project.id,
+    #                 TaskHistory.action != "COMMENT",
+    #             ),
+    #         )
+    #         .group_by(Project.id)
+    #         .all()
+    #     )
+
+    #     return [p.total for p in project_contributors_count]
+
     @staticmethod
-    def get_total_contributions(paginated_results):
-        paginated_projects_ids = [p.id for p in paginated_results]
+    async def get_total_contributions(project_ids: List[int], db: Database) -> List[int]:
+        """Fetch total contributions for given project IDs."""
+        
+        if not project_ids:
+            return []
 
-        # We need to make a join to return projects without contributors.
-        project_contributors_count = (
-            session.query(Project).with_entities(
-                Project.id, func.count(distinct(TaskHistory.user_id)).label("total")
-            )
-            .filter(Project.id.in_(paginated_projects_ids))
-            .outerjoin(
-                TaskHistory,
-                and_(
-                    TaskHistory.project_id == Project.id,
-                    TaskHistory.action != "COMMENT",
-                ),
-            )
-            .group_by(Project.id)
-            .all()
-        )
-
-        return [p.total for p in project_contributors_count]
+        query = """
+        SELECT
+            p.id AS id,
+            COUNT(DISTINCT th.user_id) AS total
+        FROM projects p
+        LEFT JOIN task_history th ON th.project_id = p.id
+            AND th.action != 'COMMENT'
+        WHERE p.id = ANY(:project_ids)
+        GROUP BY p.id
+        """
+        
+        params = {'project_ids': project_ids}
+        
+        result = await db.fetch_all(query, params)
+        
+        return [row['total'] for row in result]
+    
 
     @staticmethod
     @cached(search_cache)

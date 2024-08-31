@@ -537,23 +537,33 @@ class ProjectService:
         project = ProjectService.get_project_by_id(project_id)
         project.unset_as_featured()
 
-    @staticmethod
-    async def get_featured_projects(preferred_locale, session):
-        """Sets project as featured"""
-        query = ProjectSearchService.create_search_query()
-        projects = query.filter(Project.featured == true()).group_by(Project.id).all()
 
-        # Get total contributors.
-        contrib_counts = ProjectSearchService.get_total_contributions(projects)
+    @staticmethod
+    async def get_featured_projects(preferred_locale: str, db: Database) -> ProjectSearchResultsDTO:
+        """Fetch featured projects and return results."""
+        
+        # Create the search query
+        query, params = await ProjectSearchService.create_search_query(db)
+
+        # Append filtering for featured projects
+        query += " AND p.featured = TRUE"
+
+        projects = await db.fetch_all(query, params)
+        project_ids = [project['id'] for project in projects]
+
+        # Get total contributors
+        contrib_counts = await ProjectSearchService.get_total_contributions(project_ids, db)
         zip_items = zip(projects, contrib_counts)
 
         dto = ProjectSearchResultsDTO()
         dto.results = [
-            ProjectSearchService.create_result_dto(p, preferred_locale, t)
-            for p, t in zip_items
+            await ProjectSearchService.create_result_dto(project, preferred_locale, total_contributors, db)
+            for project, total_contributors in zip_items
         ]
-
+        #TODO Check if pagination needed.
+        dto.pagination = None
         return dto
+
 
     @staticmethod
     def is_favorited(project_id: int, user_id: int) -> bool:
@@ -639,44 +649,45 @@ class ProjectService:
                 ),
             ).start()
 
+
     @staticmethod
-    async def get_active_projects(interval, session: AsyncSession):
+    async def get_active_projects(interval: int, db: Database):
         # Calculate the action_date and make it naive
         action_date = (datetime.now(timezone.utc) - timedelta(hours=interval)).replace(tzinfo=None)
-        
         # First query to get distinct project_ids
-        result = await session.execute(
-            select(TaskHistory.project_id)
-            .distinct()
-            .filter(TaskHistory.action_date >= action_date)
-        )
-        project_ids = [row.project_id for row in result.scalars().all()]
+        query_project_ids = """
+        SELECT DISTINCT project_id 
+        FROM task_history 
+        WHERE action_date >= :action_date
+        """
+        project_ids_result = await db.fetch_all(query_project_ids, {"action_date": action_date})
+        project_ids = [row["project_id"] for row in project_ids_result]
+
+        # If there are no project IDs, return an empty FeatureCollection
+        if not project_ids:
+            return geojson.FeatureCollection([])
+
         # Second query to get project details
-        project_query = (
-            select(
-                Project.id,
-                Project.mapping_types,
-                Project.geometry.ST_AsGeoJSON().label("geometry"),
-            )
-            .filter(
-                Project.status == ProjectStatus.PUBLISHED.value,
-                Project.id.in_(project_ids),
-            )
-        )
-        
-        project_result = await session.execute(project_query)
-        projects = project_result.all()
-        
+        query_projects = """
+        SELECT 
+            id, 
+            mapping_types, 
+            ST_AsGeoJSON(geometry) AS geometry 
+        FROM projects 
+        WHERE status = :status 
+        AND id = ANY(:project_ids)
+        """
+        project_result = await db.fetch_all(query_projects, {"status": ProjectStatus.PUBLISHED.value, "project_ids": project_ids})
+
         # Building GeoJSON FeatureCollection
-        features = []
-        for project in projects:
-            properties = {
-                "project_id": project.id,
-                "mapping_types": project.mapping_types,
-            }
-            feature = geojson.Feature(
-                geometry=geojson.loads(project.geometry), properties=properties
-            )
-            features.append(feature)
-            
+        features = [
+            geojson.Feature(
+                geometry=geojson.loads(project["geometry"]),
+                properties={
+                    "project_id": project["id"],
+                    "mapping_types": project["mapping_types"],
+                }
+            ) for project in project_result
+        ]
+
         return geojson.FeatureCollection(features)
