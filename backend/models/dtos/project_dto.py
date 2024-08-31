@@ -16,118 +16,148 @@ from backend.models.postgis.statuses import (
 )
 from backend.models.dtos.campaign_dto import CampaignDTO
 
-from pydantic import BaseModel, Field, ValidationError, validator
-from typing import List, Optional
+from pydantic import BaseModel, Field, ValidationError, field_validator
+from typing import List, Optional, Union
 from datetime import datetime
 from typing_extensions import Annotated
+from fastapi import HTTPException
 
-
-def is_known_project_status(value):
-    """Validates that Project Status is known value"""
-    if isinstance(value, list):
-        return  # Don't validate the entire list, just the individual values
-
+def is_known_project_status(value: str) -> str:
+    """Validates that Project Status is a known value."""
     try:
         ProjectStatus[value.upper()]
     except KeyError:
-        raise ValidationError(
-            f"Unknown projectStatus: {value} Valid values are {ProjectStatus.DRAFT.name}, "
-            f"{ProjectStatus.PUBLISHED.name}, {ProjectStatus.ARCHIVED.name}"
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unknown projectStatus: {value}. Valid values are: "
+                f"{ProjectStatus.DRAFT.name}, "
+                f"{ProjectStatus.PUBLISHED.name}, "
+                f"{ProjectStatus.ARCHIVED.name}."
+            )
         )
+    return value
 
-
-def is_known_project_priority(value):
-    """Validates Project priority is known value"""
+def is_known_project_priority(value: str) -> str:
+    """Validates that Project Priority is a known value."""
     try:
         ProjectPriority[value.upper()]
     except KeyError:
-        raise ValidationError(
-            f"Unknown projectStatus: {value} Valid values are {ProjectPriority.LOW.name}, "
-            f"{ProjectPriority.MEDIUM.name}, {ProjectPriority.HIGH.name}, "
-            f"{ProjectPriority.URGENT.name}"
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unknown projectPriority: {value}. Valid values are: "
+                f"{ProjectPriority.LOW.name}, "
+                f"{ProjectPriority.MEDIUM.name}, "
+                f"{ProjectPriority.HIGH.name}, "
+                f"{ProjectPriority.URGENT.name}."
+            )
         )
+    return value
 
-
-def is_known_mapping_type(value):
-    """Validates Mapping Type is known value"""
-    if isinstance(value, list):
-        return  # Don't validate the entire list, just the individual values
-
+def is_known_mapping_type(value: str) -> str:
+    """Validates that Mapping Type is a known value."""
     try:
         MappingTypes[value.upper()]
     except KeyError:
-        raise ValidationError(
-            f"Unknown mappingType: {value} Valid values are {MappingTypes.ROADS.name}, "
-            f"{MappingTypes.BUILDINGS.name}, {MappingTypes.WATERWAYS.name}, "
-            f"{MappingTypes.LAND_USE.name}, {MappingTypes.OTHER.name}"
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unknown mappingType: {value}. Valid values are: "
+                f"{MappingTypes.ROADS.name}, "
+                f"{MappingTypes.BUILDINGS.name}, "
+                f"{MappingTypes.WATERWAYS.name}, "
+                f"{MappingTypes.LAND_USE.name}, "
+                f"{MappingTypes.OTHER.name}."
+            )
         )
+    return value
 
-
-def is_known_editor(value):
-    """Validates Editor is known value"""
-    if isinstance(value, list):
-        return  # Don't validate the entire list, just the individual values
-
+def is_known_editor(value: str) -> str:
+    """Validates that Editor is a known value."""
     try:
         Editors[value.upper()]
     except KeyError:
-        raise ValidationError(
-            f"Unknown editor: {value} Valid values are {Editors.ID.name}, "
-            f"{Editors.JOSM.name}, {Editors.POTLATCH_2.name}, "
-            f"{Editors.FIELD_PAPERS.name}, "
-            f"{Editors.RAPID.name} "
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unknown editor: {value}. Valid values are: "
+                f"{Editors.ID.name}, "
+                f"{Editors.JOSM.name}, "
+                f"{Editors.POTLATCH_2.name}, "
+                f"{Editors.FIELD_PAPERS.name}, "
+                f"{Editors.RAPID.name}."
+            )
         )
+    return value
 
-
-def is_known_task_creation_mode(value):
-    """Validates Task Creation Mode is known value"""
+def is_known_task_creation_mode(value: str) -> str:
+    """Validates that Task Creation Mode is a known value."""
     try:
         TaskCreationMode[value.upper()]
     except KeyError:
-        raise ValidationError(
-            f"Unknown taskCreationMode: {value} Valid values are {TaskCreationMode.GRID.name}, "
-            f"{TaskCreationMode.ARBITRARY.name}"
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unknown taskCreationMode: {value}. Valid values are: "
+                f"{TaskCreationMode.GRID.name}, "
+                f"{TaskCreationMode.ARBITRARY.name}."
+            )
         )
+    return value
 
-
-def is_known_mapping_permission(value):
-    """Validates Mapping Permission String"""
+def is_known_mapping_permission(value: str) -> str:
+    """Validates that Mapping Permission is a known value."""
     try:
         MappingPermission[value.upper()]
     except KeyError:
-        raise ValidationError(
-            f"Unknown mappingPermission: {value} Valid values are {MappingPermission.ANY.name}, "
-            f"{MappingPermission.LEVEL.name}"
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unknown mappingPermission: {value}. Valid values are: "
+                f"{MappingPermission.ANY.name}, "
+                f"{MappingPermission.LEVEL.name}."
+            )
         )
+    return value
 
-
-def is_known_validation_permission(value):
-    """Validates Validation Permission String"""
+def is_known_validation_permission(value: str) -> str:
+    """Validates that Validation Permission is a known value."""
     try:
         ValidationPermission[value.upper()]
     except KeyError:
-        raise ValidationError(
-            f"Unknown validationPermission: {value} Valid values are {ValidationPermission.ANY.name}, "
-            f"{ValidationPermission.LEVEL.name}, {ValidationPermission.TEAMS.name}, "
-            f"{ValidationPermission.TEAMS_LEVEL.name}"
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unknown validationPermission: {value}. Valid values are: "
+                f"{ValidationPermission.ANY.name}, "
+                f"{ValidationPermission.LEVEL.name}, "
+                f"{ValidationPermission.TEAMS.name}, "
+                f"{ValidationPermission.TEAMS_LEVEL.name}."
+            )
         )
+    return value
 
-
-def is_known_project_difficulty(value):
-    """Validates that supplied project difficulty is known value"""
+def is_known_project_difficulty(value: str) -> str:
+    """Validates that Project Difficulty is a known value."""
     if value.upper() == "ALL":
-        return True
+        return value
 
     try:
-        value = value.split(",")
-        for difficulty in value:
+        value_list = value.split(",")
+        for difficulty in value_list:
             ProjectDifficulty[difficulty.upper()]
     except KeyError:
-        raise ValidationError(
-            f"Unknown projectDifficulty: {value} Valid values are {ProjectDifficulty.EASY.name}, "
-            f"{ProjectDifficulty.MODERATE.name}, {ProjectDifficulty.CHALLENGING.name} and ALL."
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unknown projectDifficulty: {value}. Valid values are: "
+                f"{ProjectDifficulty.EASY.name}, "
+                f"{ProjectDifficulty.MODERATE.name}, "
+                f"{ProjectDifficulty.CHALLENGING.name}, and ALL."
+            )
         )
-
+    return value
 
 class DraftProjectDTO(BaseModel):
     """Describes JSON model used for creating draft project"""
@@ -378,85 +408,76 @@ class ProjectContribsDTO(BaseModel):
 
 
 class ProjectSummary(BaseModel):
-    """Model used for PM dashboard"""
+    project_id: int = Field(..., serialization_alias="projectId")
+    default_locale: Optional[str] = Field(None, serialization_alias="defaultLocale")
+    author: Optional[str] = None
+    created: Optional[datetime] = None
+    due_date: Optional[datetime] = Field(None, serialization_alias="dueDate")
+    last_updated: Optional[datetime] = Field(None, serialization_alias="lastUpdated")
+    priority: Optional[str] = Field(None, serialization_alias="projectPriority")
+    campaigns: List[CampaignDTO] = Field(default_factory=list)
+    organisation: Optional[int] = None
+    organisation_name: Optional[str] = Field(None, serialization_alias="organisationName")
+    organisation_slug: Optional[str] = Field(None, serialization_alias="organisationSlug")
+    organisation_logo: Optional[str] = Field(None, serialization_alias="organisationLogo")
+    country_tag: List[str] = Field(default_factory=list, serialization_alias="countryTag")
+    osmcha_filter_id: Optional[str] = Field(None, serialization_alias="osmchaFilterId")
+    mapping_types: List[str] = Field(default_factory=list, serialization_alias="mappingTypes")
+    changeset_comment: Optional[str] = Field(None, serialization_alias="changesetComment")
+    percent_mapped: Optional[int] = Field(None, serialization_alias="percentMapped")
+    percent_validated: Optional[int] = Field(None, serialization_alias="percentValidated")
+    percent_bad_imagery: Optional[int] = Field(None, serialization_alias="percentBadImagery")
+    aoi_centroid: Optional[Union[dict, None]] = Field(None, serialization_alias="aoiCentroid")
+    difficulty: Optional[str] = Field(None, serialization_alias="difficulty")
+    mapping_permission: Optional[int] = Field(None, serialization_alias="mappingPermission")
+    validation_permission: Optional[int] = Field(None, serialization_alias="validationPermission")
+    allowed_usernames: List[str] = Field(default_factory=list, serialization_alias="allowedUsernames")
+    random_task_selection_enforced: bool = Field(default=False, serialization_alias="enforceRandomTaskSelection")
+    private: Optional[bool] = Field(None, serialization_alias="private")
+    allowed_users: List[str] = Field(default_factory=list, serialization_alias="allowedUsernames")
+    project_teams: List[ProjectTeamDTO] = Field(default_factory=list, serialization_alias="teams")
+    project_info: Optional[ProjectInfoDTO] = Field(None, serialization_alias="projectInfo")
+    short_description: Optional[str] = Field(None, serialization_alias="shortDescription")
+    status: Optional[str] = None
+    imagery: Optional[str] = None
+    license_id: Optional[int] = Field(None, serialization_alias="licenseId")
+    id_presets: List[str] = Field(default_factory=list, serialization_alias="idPresets")
+    extra_id_params: Optional[str] = Field(None, serialization_alias="extraIdParams")
+    rapid_power_user: bool = Field(default=False, serialization_alias="rapidPowerUser")
+    mapping_editors: List[str] = Field(..., min_items=1, serialization_alias="mappingEditors")
+    validation_editors: List[str] = Field(..., min_items=1, serialization_alias="validationEditors")
+    custom_editor: Optional[CustomEditorDTO] = Field(None, serialization_alias="customEditor")
 
-    project_id: int = Field(required=True, alias="projectId")
-    default_locale: str = Field(alias="defaultLocale")
-    author: str
-    created: datetime
-    due_date: datetime = Field(alias="dueDate")
-    last_updated: datetime = Field(alias="lastUpdated")
-    priority: str = Field(alias="projectPriority")
-    campaigns: List[CampaignDTO] = []
-    organisation: int
-    organisation_name: str = Field(alias="organisationName")
-    organisation_slug: str = Field(alias="organisationSlug")
-    organisation_logo: str = Field(alias="organisationLogo")
-    country_tag: List[str] = Field(alias="countryTag")
-    osmcha_filter_id: str = Field(alias="osmchaFilterId")
-    mapping_types: List[str] = Field(alias="mappingTypes", validators=[is_known_mapping_type])
+    #TODO: Make Validators work.
 
-    changeset_comment: str = Field(alias="changesetComment")
-    percent_mapped: int = Field(alias="percentMapped")
-    percent_validated: int = Field(alias="percentValidated")
-    percent_bad_imagery: int = Field(alias="percentBadImagery")
-    aoi_centroid: str = Field(alias="aoiCentroid")
-    difficulty: str = Field(alias="difficulty")
-    mapping_permission: int = Field(
-        alias="mappingPermission", validators=[is_known_mapping_permission]
-    )
-    validation_permission: int = Field(
-        alias="validationPermission",
-        validators=[is_known_validation_permission],
-    )
-    allowed_usernames: List[str] = Field(
-        alias="allowedUsernames", default=[]
-    )
-    random_task_selection_enforced: bool = Field(
-        required=False, default=False, alias="enforceRandomTaskSelection"
-    )
-    private: bool = Field(alias="private")
-    allowed_users: List[str] = Field(alias="allowedUsernames", default=[])
-    project_teams: List[ProjectTeamDTO] = Field(alias="teams")
-    project_info: ProjectInfoDTO = Field(alias="projectInfo", serialize_when_none=False)
-    short_description: str = Field(alias="shortDescription")
-    status: str
-    imagery: str
-    license_id: int = Field(alias="licenseId")
-    id_presets: List[str] = Field(alias="idPresets", default=[])
-    extra_id_params: str = Field(alias="extraIdParams")
-    rapid_power_user: bool = Field(
-        alias="rapidPowerUser", default=False, required=False
-    )
-    mapping_editors: List[str] = Field(
-        min_size=1,
-        required=True,
-        alias="mappingEditors",
-        validators=[is_known_editor],
-    )
-    validation_editors: List[str] = Field(
-        min_size=1,
-        required=True,
-        alias="validationEditors",
-        validators=[is_known_editor],
-    )
-    custom_editor: CustomEditorDTO = Field(alias="customEditor", serialize_when_none=False)
+    # @field_validator('mapping_types', 'mapping_editors', 'validation_editors', mode='plain')
+    # def validate_list_fields(cls, v, field):
+    #     print(field,'-----')
+    #     field_name = field.field_name
+    #     if field_name == 'mapping_types' and not is_known_mapping_type(v):
+    #         raise ValueError(f"Invalid value in {field_name}")
+    #     if field_name in ['mapping_editors', 'validation_editors'] and not is_known_editor(v):
+    #         raise ValueError(f"Invalid value in {field_name}")
+    #     return v
+    
+    # @field_validator('mapping_permission', 'validation_permission', mode='plain')
+    # def validate_permissions(cls, v, field):
+    #     if field.name == 'mapping_permission' and not is_known_mapping_permission(v):
+    #         raise ValueError(f"Invalid value in {field.name}")
+    #     if field.name == 'validation_permission' and not is_known_validation_permission(v):
+    #         raise ValueError(f"Invalid value in {field.name}")
+    #     return v
 
 
 class PMDashboardDTO(BaseModel):
     """DTO for constructing the PM Dashboard"""
 
-    def __init__(self):
-        """DTO constructor initialise all arrays to empty"""
-        super().__init__()
-        self.draft_projects = []
-        self.archived_projects = []
-        self.active_projects = []
+    draft_projects: Optional[List[ProjectSummary]] = Field(default_factory=list, alias="draftProjects")
+    active_projects: Optional[List[ProjectSummary]] = Field(default_factory=list, alias="activeProjects")
+    archived_projects: Optional[List[ProjectSummary]] = Field(default_factory=list, alias="archivedProjects")
 
-    draft_projects: List[ProjectSummary] = Field(alias="draftProjects")
-    active_projects: List[ProjectSummary] = Field(alias="activeProjects")
-    archived_projects: List[ProjectSummary] = Field(alias="archivedProjects")
-
+    class Config:
+        allow_population_by_field_name = True
 
 class ProjectTaskAnnotationsDTO(BaseModel):
     """DTO for task annotations of a project"""
