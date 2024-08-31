@@ -23,7 +23,6 @@ from backend.services.organisation_service import OrganisationService
 from backend.services.team_service import TeamService
 from databases import Database
 
-
 class ProjectAdminServiceError(Exception):
     """Custom Exception to notify callers an error occurred when validating a Project"""
 
@@ -276,11 +275,11 @@ class ProjectAdminService:
         return True  # Indicates valid default locale for unit testing
 
     @staticmethod
-    def get_projects_for_admin(
-        admin_id: int, preferred_locale: str, search_dto: ProjectSearchDTO
+    async def get_projects_for_admin(
+        admin_id: int, preferred_locale: str, search_dto: ProjectSearchDTO, db: Database
     ):
         """Get all projects for provided admin"""
-        return Project.get_projects_for_admin(admin_id, preferred_locale, search_dto)
+        return await Project.get_projects_for_admin(admin_id, preferred_locale, search_dto, db)
 
     @staticmethod
     def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
