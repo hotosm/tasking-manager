@@ -32,7 +32,7 @@ export const StatsColumn = ({ label, value }: Object) => {
 
 export const StatsSection = () => {
   const { data: tmStatsData, isSuccess: hasTmStatsLoaded } = useSystemStatisticsQuery();
-  const { data: osmStatsData, isSuccess: hasOsmStatsLoaded } = useOsmStatsQuery();
+  // const { data: osmStatsData, isSuccess: hasOsmStatsLoaded } = useOsmStatsQuery();
 
   // Mount all stats simultaneously
   const hasStatsLoaded = hasTmStatsLoaded && hasOsmStatsLoaded;
