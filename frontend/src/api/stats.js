@@ -5,7 +5,7 @@ import { HOMEPAGE_STATS_API_URL } from '../config';
 
 export const useSystemStatisticsQuery = () => {
   const fetchSystemStats = ({ signal }) => {
-    return api().get(`system/statistics/`, {
+    return api().get(HOMEPAGE_STATS_API_URL, {
       signal,
     });
   };

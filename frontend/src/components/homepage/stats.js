@@ -41,20 +41,16 @@ export const StatsSection = () => {
     <>
       <div className="pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container">
         <StatsColumn
-          label={messages.buildingsStats}
-          value={hasStatsLoaded ? osmStatsData?.data.building_count_add : undefined}
-        />
-        <StatsColumn
-          label={messages.roadsStats}
-          value={hasStatsLoaded ? osmStatsData?.data.road_km_add : undefined}
-        />
-        <StatsColumn
-          label={messages.editsStats}
-          value={hasStatsLoaded ? osmStatsData?.data.edits : undefined}
-        />
-        <StatsColumn
           label={messages.communityStats}
           value={hasStatsLoaded ? tmStatsData?.data.totalMappers : undefined}
+        />
+        <StatsColumn
+          label={messages.ohmTasksStats}
+          value={hasStatsLoaded ? tmStatsData?.data.tasksMapped : undefined}
+        />
+        <StatsColumn
+          label={messages.ohmProjectsStats}
+          value={hasStatsLoaded ? tmStatsData?.data.totalProjects : undefined}
         />
         <StatsColumn
           label={messages.mappersStats}

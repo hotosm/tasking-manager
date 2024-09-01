@@ -63,6 +63,14 @@ export default defineMessages({
     id: 'home.stats.mappers',
     defaultMessage: 'Mappers Online',
   },
+  ohmTasksStats: {
+    id: 'home.stats.tasks',
+    defaultMessage: 'Tasks Mapped',
+  },
+  ohmProjectsStats: {
+    id: 'home.stats.projects',
+    defaultMessage: 'Historical Projects',
+  },
   statsLoadingError: {
     id: 'home.stats.loading.error',
     defaultMessage: 'An error occured while loading the stats',

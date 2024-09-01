@@ -11,7 +11,7 @@ import { FeatureStats } from '../components/teamsAndOrgs/featureStats';
 export const Stats = () => {
   useSetTitleTag('Stats');
   const [query, setQuery] = useTasksStatsQueryParams();
-  const [apiState, fetchTasksStatistics] = useTasksStatsQueryAPI({ taskStats: [] }, query);
+  const [apiState, fetchTasks] = useTasksStatsQueryAPI({ taskStats: [] }, query);
 
   return (
     <div className="w-100 cf pv4">
