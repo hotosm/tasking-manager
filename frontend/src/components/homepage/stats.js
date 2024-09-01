@@ -35,7 +35,7 @@ export const StatsSection = () => {
   // const { data: osmStatsData, isSuccess: hasOsmStatsLoaded } = useOsmStatsQuery();
 
   // Mount all stats simultaneously
-  const hasStatsLoaded = hasTmStatsLoaded && hasOsmStatsLoaded;
+  const hasStatsLoaded = hasTmStatsLoaded // && hasOsmStatsLoaded;
 
   return (
     <>
