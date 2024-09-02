@@ -22,7 +22,6 @@ module.exports = {
           });
         }
       }
-      webpackConfig.module.unknownContextCritical = false;
       webpackConfig.module.noParse = /@hotosm\/id\/dist\/iD/;
       return webpackConfig;
     },
