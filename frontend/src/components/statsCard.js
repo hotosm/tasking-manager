@@ -19,10 +19,57 @@ export const StatsCard = ({ icon, description, value, className, invertColors = 
   );
 };
 
+export const StatsCardWithDelta = ({
+  icon,
+  description,
+  value,
+  className,
+  delta,
+  invertColors = false,
+}) => {
+  return (
+    <div
+      className={`cf pt3 pb3 ph3 br1 ${
+        invertColors ? 'bg-red white' : 'bg-white red shadow-6'
+      } flex flex-column ${className || ''}`}
+    >
+      <div className="flex items-center w-100" style={{ gap: '1.6rem' }}>
+        <div className="ml2">{icon}</div>
+        <StatsCardWithDeltaContent
+          value={
+            Number(value) || value === 0 ? <FormattedNumber value={Math.trunc(value)} /> : value
+          }
+          label={description}
+          className="w-70 pt3-m mb1 fl"
+          invertColors={invertColors}
+        />
+      </div>
+      <div
+        className={`ma0 ml2 gray f6 fw4 ${invertColors ? 'white' : 'blue-grey'}`}
+        style={{ marginTop: '1.5rem' }}
+      >
+        {delta}
+      </div>
+    </div>
+  );
+};
+
 export const StatsCardContent = ({ value, label, className, invertColors = false }: Object) => (
   <div className={className}>
     <h3 className={`ma0 mb1 barlow-condensed f2 fw5 ${invertColors ? 'white' : 'red'}`}>{value}</h3>
     <span className={`ma0 h2 f7 fw5 ${invertColors ? 'white' : 'blue-grey'}`}>{label}</span>
+  </div>
+);
+
+export const StatsCardWithDeltaContent = ({
+  value,
+  label,
+  className,
+  invertColors = false,
+}: Object) => (
+  <div className={className}>
+    <h3 className={`ma0 mb1 barlow-condensed f1 fw6 ${invertColors ? 'white' : 'red'}`}>{value}</h3>
+    <span className={`ma0 h2 f6 fw6 ${invertColors ? 'white' : 'blue-grey'}`}>{label}</span>
   </div>
 );
 
