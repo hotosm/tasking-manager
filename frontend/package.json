@@ -4,7 +4,7 @@
   "license": "BSD-2-Clause",
   "private": false,
   "dependencies": {
-    "@hotosm/id": "git+https://github.com/hotosm/iD.git#v2.29.0",
+    "@hotosm/id": "^2.29.0",
     "@hotosm/iso-countries-languages": "^1.1.2",
     "@hotosm/underpass-ui": "^0.0.4",
     "@mapbox/mapbox-gl-draw": "^1.4.3",

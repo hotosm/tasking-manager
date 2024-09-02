@@ -1530,9 +1530,10 @@
     intl-messageformat "10.5.11"
     tslib "^2.4.0"
 
-"@hotosm/id@git+https://github.com/hotosm/iD.git#v2.29.0":
+"@hotosm/id@^2.29.0":
   version "2.29.0"
-  resolved "git+https://github.com/hotosm/iD.git#6fa0cfadfb6d75ec47e0637f9f49ef8776be4f8b"
+  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.29.0.tgz#9f2f8647a1fe6c89c397e646d1db7a5d51b537cf"
+  integrity sha512-SrO3436t0Ym0wCn7lIl2mDjFreZpYUAdOQ1SNy12JcqARMXIPZkZHEKtiNkeq3oeolOns0nLsC4mXvXMoSMqAw==
   dependencies:
     "@mapbox/geojson-area" "^0.2.2"
     "@mapbox/sexagesimal" "1.2.0"
