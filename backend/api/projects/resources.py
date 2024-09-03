@@ -915,7 +915,6 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
-    print(request.user.display_name)
     summary = await ProjectService.get_project_summary(project_id, db, preferred_locale)
     return summary
 
