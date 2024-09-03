@@ -78,7 +78,7 @@ The easiest option to get started with all components may be using Docker.
 
 ### Running Tasking Manager
 
-Once you have the docke engine running, Quickly generate an environment file from an existing `example.env`.
+Once you have the docker engine running, Quickly generate an environment file from an existing `example.env`.
 ```bash
 cp example.env tasking-manager.env
 ```
