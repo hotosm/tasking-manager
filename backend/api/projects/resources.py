@@ -843,12 +843,10 @@ async def get(request: Request, db: Database = Depends(get_db), user: AuthUserDT
         search_dto,
         db
     )
-    # return admin_projects.model_dump(by_alias=True), 200
     return admin_projects
 
-# class ProjectsQueriesTouchedAPI():
 @router.get("/queries/{username}/touched/")
-async def get(request: Request, username):
+async def get(request: Request, username, db: Database = Depends(get_db)):
     """
     Gets projects user has mapped
     ---
@@ -882,12 +880,12 @@ async def get(request: Request, username):
         if request.headers.get("accept-language")
         else "en"
     )
-    user_dto = UserService.get_mapped_projects(username, locale)
-    return user_dto.model_dump(by_alias=True), 200
+    user_dto = await UserService.get_mapped_projects(username, locale, db)
+    return user_dto
 
 
 @router.get("/{project_id}/queries/summary/")
-async def get(request: Request, project_id: int):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Gets project summary
     ---
@@ -917,8 +915,8 @@ async def get(request: Request, project_id: int):
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
-    summary = ProjectService.get_project_summary(project_id, preferred_locale)
-    return summary.model_dump(by_alias=True), 200
+    summary = await ProjectService.get_project_summary(project_id, db, preferred_locale)
+    return summary
 
 
 @router.get("/{project_id}/queries/nogeometries/")
