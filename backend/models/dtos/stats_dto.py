@@ -74,14 +74,8 @@ class Pagination(BaseModel):
             total=total,
         )
 
-
 class ProjectActivityDTO(BaseModel):
     """DTO to hold all project activity"""
-
-    def __init__(self):
-        super().__init__()
-        self.activity = []
-
     pagination: Optional[Pagination] = None
     activity: Optional[List[TaskHistoryDTO]] = None
 
@@ -89,11 +83,7 @@ class ProjectActivityDTO(BaseModel):
 class ProjectLastActivityDTO(BaseModel):
     """DTO to hold latest status from project activity"""
 
-    def __init__(self):
-        super().__init__()
-        self.activity = []
-
-    activity: Optional[List[TaskStatusDTO]] = None
+    activity: Optional[List[TaskStatusDTO]] = Field(default_factory=list)
 
 class OrganizationProjectsStatsDTO(BaseModel):
     draft: Optional[int] = None
