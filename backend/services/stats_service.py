@@ -1,3 +1,4 @@
+from typing import Optional
 from cachetools import TTLCache, cached
 from datetime import date, timedelta
 import sqlalchemy as sa
@@ -38,6 +39,8 @@ from backend.services.organisation_service import OrganisationService
 from backend.services.campaign_service import CampaignService
 from backend.db import get_session
 session = get_session()
+from databases import Database
+from fastapi import HTTPException
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
@@ -119,42 +122,73 @@ class StatsService:
         return project, user
 
     @staticmethod
-    def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
+    async def get_latest_activity(project_id: int, page: int, db: Database) -> ProjectActivityDTO:
         """Gets all the activity on a project"""
+        
+        # Pagination setup
+        page_size = 10
+        offset = (page - 1) * page_size
 
-        if not ProjectService.exists(project_id):
-            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
+        # Query to fetch task history
+        query = """
+        SELECT 
+            th.id,
+            th.task_id,
+            th.action,
+            th.action_date,
+            th.action_text,
+            u.username
+        FROM task_history th
+        JOIN users u ON th.user_id = u.id
+        WHERE 
+            th.project_id = :project_id
+            AND th.action != :comment_action
+        ORDER BY th.action_date DESC
+        LIMIT :limit OFFSET :offset
+        """
+        rows = await db.fetch_all(query, {
+            "project_id": project_id,
+            "comment_action": "COMMENT",
+            "limit": page_size,
+            "offset": offset
+        })
 
-        results = (
-            session.query(
-                TaskHistory.id,
-                TaskHistory.task_id,
-                TaskHistory.action,
-                TaskHistory.action_date,
-                TaskHistory.action_text,
-                User.username,
+        # Creating DTO
+        activity_dto = ProjectActivityDTO(activity=[])
+        for row in rows:
+            history = TaskHistoryDTO(
+                history_id=row["id"],
+                task_id=row["task_id"],
+                action=row["action"],
+                action_text=row["action_text"],
+                action_date=row["action_date"],
+                action_by=row["username"]
             )
-            .join(User)
-            .filter(
-                TaskHistory.project_id == project_id,
-                TaskHistory.action != TaskAction.COMMENT.name,
-            )
-            .order_by(TaskHistory.action_date.desc())
-            .paginate(page=page, per_page=10, error_out=True)
-        )
-
-        activity_dto = ProjectActivityDTO()
-        for item in results.items:
-            history = TaskHistoryDTO()
-            history.task_id = item.id
-            history.task_id = item.task_id
-            history.action = item.action
-            history.action_text = item.action_text
-            history.action_date = item.action_date
-            history.action_by = item.username
             activity_dto.activity.append(history)
 
-        activity_dto.pagination = Pagination(results)
+        # Calculate total items for pagination
+        total_query = """
+        SELECT COUNT(*)
+        FROM task_history th
+        WHERE 
+            th.project_id = :project_id
+            AND th.action != :comment_action
+        """
+        total_items_result = await db.fetch_one(total_query, {
+            "project_id": project_id,
+            "comment_action": "COMMENT"
+        })
+
+
+        total_items = total_items_result["count"] if total_items_result else 0
+
+        # Use the from_total_count method to correctly initialize the Pagination DTO
+        activity_dto.pagination = Pagination.from_total_count(
+            page=page,
+            per_page=page_size,
+            total=total_items
+        )
+
         return activity_dto
 
     @staticmethod
@@ -198,53 +232,70 @@ class StatsService:
         return dto
 
     @staticmethod
-    def get_last_activity(project_id: int) -> ProjectLastActivityDTO:
+    async def get_last_activity(project_id: int, db: Database) -> ProjectLastActivityDTO:
         """Gets the last activity for a project's tasks"""
-        sq = (
-            session.query(TaskHistory).with_entities(
-                TaskHistory.task_id,
-                TaskHistory.action_date,
-                TaskHistory.user_id,
-            )
-            .filter(TaskHistory.project_id == project_id)
-            .filter(TaskHistory.action != TaskAction.COMMENT.name)
-            .order_by(TaskHistory.task_id, TaskHistory.action_date.desc())
-            .distinct(TaskHistory.task_id)
-            .subquery()
-        )
+        
+        # First subquery: Fetch the latest action date per task, excluding comments
+        subquery_latest_action = """
+        SELECT DISTINCT ON (th.task_id)
+            th.task_id,
+            th.action_date,
+            th.user_id
+        FROM task_history th
+        WHERE th.project_id = :project_id
+        AND th.action != :comment_action
+        ORDER BY th.task_id, th.action_date DESC
+        """
+        
+        latest_actions = await db.fetch_all(subquery_latest_action, {
+            "project_id": project_id,
+            "comment_action": "COMMENT"
+        })
+        
+        # Mapping the latest actions by task_id
+        latest_actions_map = {item["task_id"]: item for item in latest_actions}
 
-        sq_statuses = (
-            session.query(Task).with_entities(Task.id, Task.task_status)
-            .filter(Task.project_id == project_id)
-            .subquery()
-        )
-        results = (
-            session.query(
-                sq_statuses.c.id,
-                sq.c.action_date,
-                sq_statuses.c.task_status,
-                User.username,
-            )
-            .outerjoin(sq, sq.c.task_id == sq_statuses.c.id)
-            .outerjoin(User, User.id == sq.c.user_id)
-            .order_by(sq_statuses.c.id)
-            .all()
-        )
+        # Second subquery: Fetch the task statuses
+        query_task_statuses = """
+        SELECT
+            t.id as task_id,
+            t.task_status,
+            u.username,
+            la.action_date
+        FROM tasks t
+        LEFT JOIN (
+            SELECT 
+                th.task_id,
+                th.action_date,
+                th.user_id
+            FROM task_history th
+            WHERE th.project_id = :project_id
+            AND th.action != :comment_action
+            ORDER BY th.task_id, th.action_date DESC
+        ) la ON la.task_id = t.id
+        LEFT JOIN users u ON u.id = la.user_id
+        WHERE t.project_id = :project_id
+        ORDER BY t.id
+        """
 
-        dto = ProjectLastActivityDTO()
-        dto.activity = [
-            TaskStatusDTO(
-                dict(
-                    task_id=r.id,
-                    task_status=TaskStatus(r.task_status).name,
-                    action_date=r.action_date,
-                    action_by=r.username,
-                )
+        results = await db.fetch_all(query_task_statuses, {
+            "project_id": project_id,
+            "comment_action": "COMMENT"
+        })
+
+        # Creating DTO
+        dto = ProjectLastActivityDTO(activity=[])
+        for row in results:
+            task_status_dto = TaskStatusDTO(
+                task_id=row["task_id"],
+                task_status=TaskStatus(row["task_status"]).name,
+                action_date=row["action_date"],
+                action_by=row["username"]
             )
-            for r in results
-        ]
+            dto.activity.append(task_status_dto)
 
         return dto
+
 
     @staticmethod
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:
