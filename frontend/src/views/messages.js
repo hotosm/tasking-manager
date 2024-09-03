@@ -814,4 +814,8 @@ export default defineMessages({
     id: 'pages.create_campaign.error',
     defaultMessage: 'There was an error saving this campaign.',
   },
+  mapswipeInfo: {
+    id: 'management.partner.stats.mapswipe.info',
+    defaultMessage: 'It may take up to 48 hours for updates',
+  },
 });
