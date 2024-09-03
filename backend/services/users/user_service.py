@@ -60,8 +60,8 @@ class UserService:
         return user
 
     @staticmethod
-    def get_user_by_username(username: str, db) -> User:
-        user = User.get_by_username(username, db)
+    async def get_user_by_username(username: str, db) -> User:
+        user = await User.get_by_username(username, db)
 
         if user is None:
             raise NotFound(sub_code="USER_NOT_FOUND", username=username)
@@ -602,7 +602,6 @@ class UserService:
         countries_dto = UserCountriesContributed()
         countries_dto.countries_contributed = result
         countries_dto.total = len(result)
-
         return countries_dto
 
     @staticmethod
@@ -611,10 +610,10 @@ class UserService:
         User.upsert_mapped_projects(user_id, project_id)
 
     @staticmethod
-    def get_mapped_projects(user_name: str, preferred_locale: str):
+    async def get_mapped_projects(user_name: str, preferred_locale: str, db: Database):
         """Gets all projects a user has mapped or validated on"""
-        user = UserService.get_user_by_username(user_name)
-        return User.get_mapped_projects(user.id, preferred_locale)
+        user = await UserService.get_user_by_username(user_name, db)
+        return await User.get_mapped_projects(user.id, preferred_locale, db)
 
     @staticmethod
     def get_recommended_projects(user_name: str, preferred_locale: str):

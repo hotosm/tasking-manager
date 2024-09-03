@@ -25,6 +25,7 @@ from backend.models.postgis.statuses import (
     UserRole,
     UserGender,
 )
+
 from backend.models.postgis.utils import timestamp
 from backend.models.postgis.interests import Interest, user_interests
 from backend.db import Base, get_session
@@ -264,87 +265,68 @@ class User(Base):
         user.projects_mapped.append(project_id)
         session.commit()
 
+    #TODO Optimization: Get only project name instead of all the locale attributes. 
     @staticmethod
-    def get_mapped_projects(
-        user_id: int, preferred_locale: str
+    async def get_mapped_projects(
+        user_id: int, preferred_locale: str, db: Database
     ) -> UserMappedProjectsDTO:
         """Get all projects a user has mapped on"""
 
-        from backend.models.postgis.task import Task
-        from backend.models.postgis.project import Project
+        # Subquery for validated tasks
+        query_validated = """
+            SELECT project_id, COUNT(validated_by) AS validated
+            FROM tasks
+            WHERE project_id IN (
+                SELECT unnest(projects_mapped) FROM users WHERE id = :user_id
+            ) AND validated_by = :user_id
+            GROUP BY project_id, validated_by
+        """
 
-        query = session.query(func.unnest(User.projects_mapped)).filter_by(
-            id=user_id
-        )
-        query_validated = (
-            session.query(
-                Task.project_id.label("project_id"),
-                func.count(Task.validated_by).label("validated"),
-            )
-            .filter(Task.project_id.in_(query))
-            .filter_by(validated_by=user_id)
-            .group_by(Task.project_id, Task.validated_by)
-            .subquery()
-        )
+        # Subquery for mapped tasks
+        query_mapped = """
+            SELECT project_id, COUNT(mapped_by) AS mapped
+            FROM tasks
+            WHERE project_id IN (
+                SELECT unnest(projects_mapped) FROM users WHERE id = :user_id
+            ) AND mapped_by = :user_id
+            GROUP BY project_id, mapped_by
+        """
 
-        query_mapped = (
-            session.query(
-                Task.project_id.label("project_id"),
-                func.count(Task.mapped_by).label("mapped"),
-            )
-            .filter(Task.project_id.in_(query))
-            .filter_by(mapped_by=user_id)
-            .group_by(Task.project_id, Task.mapped_by)
-            .subquery()
-        )
+        # Union of validated and mapped tasks
+        query_union = f"""
+            SELECT COALESCE(v.project_id, m.project_id) AS project_id,
+                COALESCE(v.validated, 0) AS validated,
+                COALESCE(m.mapped, 0) AS mapped
+            FROM ({query_validated}) v
+            FULL OUTER JOIN ({query_mapped}) m
+            ON v.project_id = m.project_id
+        """
 
-        query_union = (
-            session.query(
-                func.coalesce(
-                    query_validated.c.project_id, query_mapped.c.project_id
-                ).label("project_id"),
-                func.coalesce(query_validated.c.validated, 0).label("validated"),
-                func.coalesce(query_mapped.c.mapped, 0).label("mapped"),
-            )
-            .join(
-                query_mapped,
-                query_validated.c.project_id == query_mapped.c.project_id,
-                full=True,
-            )
-            .subquery()
-        )
+        # Main query to get project details
+        query_projects = f"""
+            SELECT p.id, p.status, p.default_locale, u.mapped, u.validated, ST_AsGeoJSON(p.centroid) AS centroid
+            FROM projects p
+            JOIN ({query_union}) u ON p.id = u.project_id
+            ORDER BY p.id DESC
+        """
 
-        results = (
-            session.query(
-                Project.id,
-                Project.status,
-                Project.default_locale,
-                query_union.c.mapped,
-                query_union.c.validated,
-                functions.ST_AsGeoJSON(Project.centroid),
-            )
-            .filter(Project.id == query_union.c.project_id)
-            .order_by(desc(Project.id))
-            .all()
-        )
+        results = await db.fetch_all(query_projects, {"user_id": user_id})
 
         mapped_projects_dto = UserMappedProjectsDTO()
         for row in results:
             mapped_project = MappedProject()
-            mapped_project.project_id = row[0]
-            mapped_project.status = ProjectStatus(row[1]).name
-            mapped_project.tasks_mapped = row[3]
-            mapped_project.tasks_validated = row[4]
-            mapped_project.centroid = geojson.loads(row[5])
-
-            project_info = ProjectInfo.get_dto_for_locale(
-                row[0], preferred_locale, row[2]
+            mapped_project.project_id = row["id"]
+            mapped_project.status = ProjectStatus(row["status"]).name
+            mapped_project.tasks_mapped = row["mapped"]
+            mapped_project.tasks_validated = row["validated"]
+            mapped_project.centroid = geojson.loads(row["centroid"])
+            project_info = await ProjectInfo.get_dto_for_locale(
+                db, row["id"], preferred_locale, row["default_locale"]
             )
             mapped_project.name = project_info.name
-
             mapped_projects_dto.mapped_projects.append(mapped_project)
-
         return mapped_projects_dto
+
 
     def set_user_role(self, role: UserRole):
         """Sets the supplied role on the user"""

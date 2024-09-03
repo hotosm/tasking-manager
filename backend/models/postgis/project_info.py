@@ -116,9 +116,9 @@ class ProjectInfo(Base):
         if default_locale_info is None:
             error_message = f"BAD DATA: no info for project {project_id}, locale: {locale}, default {default_locale}"
             raise ValueError(error_message)
-
-        # Pass through default_locale in case of partial translation
-        return ProjectInfoDTO(**project_info, **default_locale_info)
+        
+        combined_info = {**default_locale_info, **project_info}
+        return ProjectInfoDTO(**combined_info)
     
     # def get_dto(self, default_locale=ProjectInfoDTO()) -> ProjectInfoDTO:
     #     """

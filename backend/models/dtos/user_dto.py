@@ -142,26 +142,27 @@ class UserOSMDTO(BaseModel):
     account_created: Optional[str] = Field(None, alias="accountCreated")
     changeset_count: Optional[int] = Field(None, alias="changesetCount")
 
-
 class MappedProject(BaseModel):
     """Describes a single project a user has mapped"""
 
-    project_id: int = Field(alias="projectId")
-    name: str
-    tasks_mapped: int = Field(alias="tasksMapped")
-    tasks_validated: int = Field(alias="tasksValidated")
-    status: str
-    centroid: str
+    project_id: Optional[int] = Field(None, alias="projectId")
+    name: Optional[str] = None
+    tasks_mapped: Optional[int] = Field(None, alias="tasksMapped")
+    tasks_validated: Optional[int] = Field(None, alias="tasksValidated")
+    status: Optional[str] = None
+    centroid: Optional[str] = None  
+
+    class Config:
+        populate_by_name = True
 
 
 class UserMappedProjectsDTO(BaseModel):
     """DTO for projects a user has mapped"""
 
-    def __init__(self):
-        super().__init__()
-        self.mapped_projects = []
+    mapped_projects: Optional[List[MappedProject]] = Field(default_factory=list, alias="mappedProjects")
 
-    mapped_projects: List[MappedProject] = Field(alias="mappedProjects")
+    class Config:
+        populate_by_name = True
 
 
 class UserSearchQuery(BaseModel):

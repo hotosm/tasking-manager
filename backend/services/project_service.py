@@ -500,6 +500,8 @@ class ProjectService:
 
         return True, "User allowed to validate"
 
+
+    #TODO: Implement Caching.
     @staticmethod
     @cached(summary_cache)
     def get_cached_project_summary(
@@ -510,26 +512,71 @@ class ProjectService:
         # We don't want to cache the project stats, so we set calculate_completion to False
         return project.get_project_summary(preferred_locale, calculate_completion=False)
 
+
     @staticmethod
-    def get_project_summary(
-        project_id: int, preferred_locale: str = "en"
+    async def get_project_summary(
+        project_id: int, db: Database, preferred_locale: str = "en"
     ) -> ProjectSummary:
+        query = """
+        SELECT
+            p.id AS id,
+            p.difficulty,
+            p.priority,
+            p.default_locale,
+            ST_AsGeoJSON(p.centroid) AS centroid,
+            p.organisation_id,
+            p.tasks_bad_imagery,
+            p.tasks_mapped,
+            p.tasks_validated,
+            p.status,
+            p.mapping_types,
+            p.total_tasks,
+            p.last_updated,
+            p.due_date,
+            p.country,
+            p.changeset_comment,
+            p.created,
+            p.osmcha_filter_id,
+            p.mapping_permission,
+            p.validation_permission,
+            p.enforce_random_task_selection,
+            p.private,
+            p.license_id,
+            p.id_presets,
+            p.extra_id_params,
+            p.rapid_power_user,
+            p.imagery,
+            p.mapping_editors,
+            p.validation_editors,
+            u.username AS author,
+            o.name AS organisation_name,
+            o.slug AS organisation_slug,
+            o.logo AS organisation_logo,
+            ARRAY(SELECT user_id FROM project_allowed_users WHERE project_id = p.id) AS allowed_users
+        FROM projects p
+        LEFT JOIN organisations o ON o.id = p.organisation_id
+        LEFT JOIN users u ON u.id = p.author_id
+        WHERE p.id = :id
+        """
+        params = {'id': project_id}
+        # Execute query
+        project = await db.fetch_one(query, params)
+        
         """Gets the project summary DTO"""
-        project = ProjectService.get_project_by_id(project_id)
-        summary = ProjectService.get_cached_project_summary(
-            project_id, preferred_locale
-        )
-        # Since we don't want to cache the project stats, we need to update them
-        summary.percent_mapped = project.calculate_tasks_percent("mapped")
-        summary.percent_validated = project.calculate_tasks_percent("validated")
-        summary.percent_bad_imagery = project.calculate_tasks_percent("bad_imagery")
+
+        summary = await Project.get_project_summary(project, preferred_locale, db, calculate_completion=False)
+        summary.percent_mapped = Project.calculate_tasks_percent("mapped", project.tasks_mapped, project.tasks_validated, project.total_tasks, project.tasks_bad_imagery)
+        summary.percent_validated = Project.calculate_tasks_percent("validated", project.tasks_validated, project.tasks_validated, project.total_tasks, project.tasks_bad_imagery)
+        summary.percent_bad_imagery = Project.calculate_tasks_percent("bad_imagery", project.tasks_mapped, project.tasks_validated, project.total_tasks, project.tasks_bad_imagery)
         return summary
+
 
     @staticmethod
     def set_project_as_featured(project_id: int):
         """Sets project as featured"""
         project = ProjectService.get_project_by_id(project_id)
         project.set_as_featured()
+
 
     @staticmethod
     def unset_project_as_featured(project_id: int):
