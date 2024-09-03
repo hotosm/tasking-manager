@@ -961,11 +961,12 @@ class Project(Base):
         if summary.private:
             allowed_user_ids = project_row.allowed_users if project_row.allowed_users else []
             if allowed_user_ids:
-                query = "SELECT username FROM users WHERE id IN :allowed_user_ids"
+                query = "SELECT username FROM users WHERE id = ANY(:allowed_user_ids)"
                 allowed_users = await db.fetch_all(query, {"allowed_user_ids": allowed_user_ids})
                 summary.allowed_users = [user["username"] for user in allowed_users]
             else:
                 summary.allowed_users = []
+
         # AOI centroid
         summary.aoi_centroid = geojson.loads(project_row.centroid)
 
@@ -984,7 +985,8 @@ class Project(Base):
         """
 
         campaigns = await db.fetch_all(query=query, values={"project_id": project_id})
-        summary.campaigns = Campaign.campaign_list_as_dto(campaigns)
+        campaigns_dto = [CampaignDTO(**campaign) for campaign in campaigns] if campaigns else []
+        summary.campaigns = campaigns_dto
 
         # Project teams
         query = """
