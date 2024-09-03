@@ -1,6 +1,7 @@
 import { FormattedMessage } from 'react-intl';
 
 import { InfoIcon } from '../components/svgIcons';
+import { Overview } from '../components/partnerMapswipeStats/overview';
 import messages from './messages';
 import './partnersMapswipeStats.css';
 
@@ -19,6 +20,7 @@ export const PartnersMapswipeStats = () => {
   return (
     <div className="pa4 bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
       <InfoBanner />
+      <Overview />
     </div>
   );
 };
