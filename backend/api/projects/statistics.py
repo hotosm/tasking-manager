@@ -12,7 +12,6 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# class ProjectsStatisticsQueriesPopularAPI(Resource):
 @router.get("/queries/popular/")
 async def get():
     """
@@ -32,7 +31,6 @@ async def get():
     return stats.model_dump(by_alias=True), 200
 
 
-# class ProjectsStatisticsAPI(Resource):
 @router.get("/{project_id}/statistics/")
 async def get(project_id: int, session: AsyncSession = Depends(get_session)):
     """
