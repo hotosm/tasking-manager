@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, Request
 from backend.services.stats_service import StatsService
 from backend.services.project_service import ProjectService
-from backend.db import get_session
-
+from backend.db import get_db, get_session
+from databases import Database
+from fastapi import HTTPException
 
 
 router = APIRouter(
@@ -12,9 +13,8 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# class ProjectsActivitiesAPI(Resource):
 @router.get("/{project_id}/activities/")
-async def get(request: Request, project_id):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get all user activity on a project
     ---
@@ -41,15 +41,14 @@ async def get(request: Request, project_id):
         500:
             description: Internal Server Error
     """
-    ProjectService.exists(project_id)
+    await ProjectService.exists(project_id, db)
     page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
-    activity = StatsService.get_latest_activity(project_id, page)
-    return activity.model_dump(by_alias=True), 200
+    activity = await StatsService.get_latest_activity(project_id, page, db)
+    return activity
 
 
-# class ProjectsLastActivitiesAPI(Resource):
 @router.get("/{project_id}/activities/latest/")
-async def get(request: Request, project_id):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get latest user activity on all of project task
     ---
@@ -71,6 +70,6 @@ async def get(request: Request, project_id):
         500:
             description: Internal Server Error
     """
-    ProjectService.exists(project_id)
-    activity = StatsService.get_last_activity(project_id)
-    return activity.model_dump(by_alias=True), 200
+    await ProjectService.exists(project_id, db)
+    activity = await StatsService.get_last_activity(project_id, db)
+    return activity

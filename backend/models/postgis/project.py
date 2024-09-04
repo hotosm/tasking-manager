@@ -546,12 +546,20 @@ class Project(Base):
         session.commit()
 
     @staticmethod
-    async def exists(project_id: int, session):
-        query = select(literal(True)).where(
-            select(Project.id).filter(Project.id == project_id).exists()
-        )
-        result = await session.execute(query)
-        return result.scalar()
+    async def exists(project_id: int, db: Database) -> bool:
+        query = """
+            SELECT 1
+            FROM projects
+            WHERE id = :project_id
+        """
+
+        # Execute the query
+        result = await db.fetch_one(query=query, values={"project_id": project_id})
+
+        if result is None:
+            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
+        
+        return True
     
     def is_favorited(self, user_id: int) -> bool:
         user = session.get(User, user_id)
@@ -961,11 +969,12 @@ class Project(Base):
         if summary.private:
             allowed_user_ids = project_row.allowed_users if project_row.allowed_users else []
             if allowed_user_ids:
-                query = "SELECT username FROM users WHERE id IN :allowed_user_ids"
+                query = "SELECT username FROM users WHERE id = ANY(:allowed_user_ids)"
                 allowed_users = await db.fetch_all(query, {"allowed_user_ids": allowed_user_ids})
                 summary.allowed_users = [user["username"] for user in allowed_users]
             else:
                 summary.allowed_users = []
+
         # AOI centroid
         summary.aoi_centroid = geojson.loads(project_row.centroid)
 
@@ -984,7 +993,8 @@ class Project(Base):
         """
 
         campaigns = await db.fetch_all(query=query, values={"project_id": project_id})
-        summary.campaigns = Campaign.campaign_list_as_dto(campaigns)
+        campaigns_dto = [CampaignDTO(**campaign) for campaign in campaigns] if campaigns else []
+        summary.campaigns = campaigns_dto
 
         # Project teams
         query = """
@@ -1372,16 +1382,15 @@ class Project(Base):
                 )
         except ZeroDivisionError:
             return 0
+        
 
-    def as_dto_for_admin(self, project_id):
+    @staticmethod
+    async def as_dto_for_admin(project_id: int, db: Database ):
         """Creates a Project DTO suitable for transmitting to project admins"""
-        project, project_dto = self.get_project_and_base_dto()
-
-        if project is None:
-            return None
-
-        project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(
-            project_id
+        project_dto = await Project.get_project_and_base_dto(project_id, db)
+        
+        project_dto.project_info_locales = await ProjectInfo.get_dto_for_all_locales(
+            db, project_id
         )
 
         return project_dto

@@ -53,7 +53,7 @@ class TaskHistoryDTO(BaseModel):
     """Describes an individual action that was performed on a mapping task"""
 
     history_id : Optional[int] = Field(alias="historyId", default=None)
-    task_id: Optional[str] = Field(alias="taskId", default=None)
+    task_id: Optional[int] = Field(alias="taskId", default=None)
     action: Optional[str] = None
     action_text: Optional[str] = Field(alias="actionText", default=None)
     action_date: datetime = Field(alias="actionDate", default=None)
@@ -61,20 +61,20 @@ class TaskHistoryDTO(BaseModel):
     picture_url: Optional[str] = Field(alias="pictureUrl", default=None)
     issues: Optional[List[TaskMappingIssueDTO]] = None
 
+    class Config:
+        populate_by_name = True
+
 
 class TaskStatusDTO(BaseModel):
     """Describes a DTO for the current status of the task"""
-    def __init__(self, task_status, **data):
-        super().__init__(**data)
-        self.task_id = task_status["task_id"]
-        self.task_status = task_status["task_status"]
-        self.action_date = task_status["action_date"]
-        self.action_by = task_status["action_by"]
 
     task_id: Optional[int] = Field(alias="taskId", default=None)
     task_status: Optional[str] = Field(alias="taskStatus", default=None)
     action_date: Optional[datetime] = Field(alias="actionDate", default=None)
     action_by: Optional[str] = Field(alias="actionBy", default=None)
+
+    class Config:
+        populate_by_name = True
 
 
 class TaskDTO(BaseModel):
