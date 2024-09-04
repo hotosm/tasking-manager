@@ -202,27 +202,30 @@ class ProjectSearchService:
     @cached(csv_download_cache)
     def search_projects_as_csv(search_dto: ProjectSearchDTO, user) -> str:
         all_results, _ = ProjectSearchService._filter_projects(search_dto, user)
+        is_user_admin = user is not None and user.role == UserRole.ADMIN.value
         results_as_dto = [
             ProjectSearchService.create_result_dto(
                 p,
                 search_dto.preferred_locale,
                 Project.get_project_total_contributions(p[0]),
-                with_partner_names=(
-                    user is not None and user.role == UserRole.ADMIN.value
-                ),
+                with_partner_names=is_user_admin,
                 with_author_name=False,
             ).to_primitive()
             for p in all_results
         ]
 
         df = pd.json_normalize(results_as_dto)
+        columns_to_drop = [
+            "locale",
+            "shortDescription",
+            "organisationLogo",
+            "campaigns",
+        ]
+        if not is_user_admin:
+            columns_to_drop.append("partnerNames")
+
         df.drop(
-            columns=[
-                "locale",
-                "shortDescription",
-                "organisationLogo",
-                "campaigns",
-            ],
+            columns=columns_to_drop,
             inplace=True,
             axis=1,
         )
