@@ -36,10 +36,10 @@ WORKDIR /opt/python
 # Setup backend build-time dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
         build-essential \
-        postgresql-server-dev-15 \
-        python3-dev \
         libffi-dev \
-        libgeos-dev
+        libgeos-dev \
+        postgresql-server-dev-15 \
+        python3-dev
 # Setup backend Python dependencies
 COPY --from=extract-deps \
     /opt/python/requirements.txt /opt/python/
@@ -62,7 +62,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Setup backend runtime dependencies
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
-        postgresql-client libgeos3.11.1 proj-bin && \
+        libgeos3.11.1 postgresql-client proj-bin && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY --from=build \
     /home/appuser/.local \
