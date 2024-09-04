@@ -437,7 +437,7 @@ const Resources = {
           'git clone --recursive https://github.com/hotosm/tasking-manager.git /opt/tasking-manager',
           'cd /opt/tasking-manager/',
           cf.sub('git reset --hard ${GitSha}'),
-          'pip install --upgrade pip pdm==2.7.4',
+          'pip install --upgrade pip pdm==2.18.1',
           'pdm export --prod > requirements.txt',
           'wget -6 https://s3.dualstack.us-east-1.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz -O /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
           'pip install /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
