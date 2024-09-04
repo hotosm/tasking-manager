@@ -172,6 +172,7 @@ class ProjectSearchService:
         list_dto.total_area = project_obj.query.with_entities(
             func.coalesce(func.sum(func.ST_Area(project_obj.geometry, True) / 1000000))
         ).scalar()
+        list_dto.total_area = round(list_dto.total_area, 3)
 
         return list_dto
 
