@@ -36,6 +36,26 @@ class UserContribution(BaseModel):
     date_registered: Optional[datetime] = Field(alias="dateRegistered", default=None)
 
 
+# class UserContribution(BaseModel):
+#     """User contribution for a project"""
+
+#     username: Optional[str] = None
+#     mapping_level: Optional[str] = Field(None, alias="mappingLevel")
+#     picture_url: Optional[str] = Field(None, alias="pictureUrl")
+#     mapped: Optional[int] = None
+#     validated: Optional[int] = None
+#     bad_imagery: Optional[int] = Field(None, alias="badImagery")
+#     total: Optional[int] = None
+#     mapped_tasks: Optional[List[int]] = Field(default_factory=list, alias="mappedTasks")
+#     validated_tasks: Optional[List[int]] = Field(default_factory=list, alias="validatedTasks")
+#     bad_imagery_tasks: Optional[List[int]] = Field(default_factory=list, alias="badImageryTasks")
+#     name: Optional[str] = None
+#     date_registered: Optional[datetime] = Field(None, alias="dateRegistered")
+
+#     class Config:
+#         allow_population_by_field_name = True 
+
+
 class ProjectContributionsDTO(BaseModel):
     """DTO for all user contributions on a project"""
 

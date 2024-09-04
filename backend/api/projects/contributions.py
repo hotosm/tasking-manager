@@ -1,9 +1,12 @@
 # from flask_restful import Resource
 
+from backend.models.postgis.project import Project
 from backend.services.project_service import ProjectService
 from backend.services.stats_service import StatsService
 from fastapi import APIRouter, Depends
 from backend.db import get_session
+from backend.db import get_db
+from databases import Database
 
 router = APIRouter(
     prefix="/projects",
@@ -12,9 +15,8 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# class ProjectsContributionsAPI(Resource):
 @router.get("/{project_id}/contributions/")
-async def get(project_id):
+async def get(project_id: int, db: Database = Depends(get_db)):
     """
     Get all user contributions on a project
     ---
@@ -37,14 +39,13 @@ async def get(project_id):
         500:
             description: Internal Server Error
     """
-    ProjectService.exists(project_id)
-    contributions = StatsService.get_user_contributions(project_id)
-    return contributions.model_dump(by_alias=True), 200
+    await Project.exists(project_id, db)
+    contributions = await StatsService.get_user_contributions(project_id, db)
+    return contributions
 
 
-# class ProjectsContributionsQueriesDayAPI(Resource):
 @router.get("/{project_id}/contributions/queries/day/")
-async def get(project_id):
+async def get(project_id: int, db: Database = Depends(get_db)):
     """
     Get contributions by day for a project
     ---
@@ -67,5 +68,5 @@ async def get(project_id):
         500:
             description: Internal Server Error
     """
-    contribs = ProjectService.get_contribs_by_day(project_id)
-    return contribs.model_dump(by_alias=True), 200
+    contribs = await ProjectService.get_contribs_by_day(project_id, db)
+    return contribs

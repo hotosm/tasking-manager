@@ -37,6 +37,7 @@ from backend.models.dtos.project_dto import ProjectSearchDTO
 from starlette.authentication import requires
 import json
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from backend.db import get_db
 from databases import Database
 from backend.services.users.authentication_service import login_required
@@ -921,7 +922,7 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
 
 
 @router.get("/{project_id}/queries/nogeometries/")
-async def get(request: Request, project_id):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get HOT Project for mapping
     ---
@@ -964,11 +965,10 @@ async def get(request: Request, project_id):
             else False
         )
         locale = request.headers.get("accept-language")
-        project_dto = ProjectService.get_project_dto_for_mapper(
-            project_id, None, locale, True
+        project_dto = await ProjectService.get_project_dto_for_mapper(
+            project_id, None, db, locale, True
         )
-        project_dto = project_dto.model_dump(by_alias=True)
-
+        #TODO Send file.
         if as_file:
             return send_file(
                 io.BytesIO(geojson.dumps(project_dto).encode("utf-8")),
@@ -977,7 +977,7 @@ async def get(request: Request, project_id):
                 download_name=f"project_{str(project_id)}.json",
             )
 
-        return project_dto, 200
+        return project_dto
     except ProjectServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
     finally:
@@ -989,8 +989,7 @@ async def get(request: Request, project_id):
 
 
 @router.get("/{project_id}/queries/notasks/")
-@requires("authenticated")
-async def get(request: Request, project_id):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
     """
     Retrieves a Tasking-Manager project
     ---
@@ -1023,21 +1022,20 @@ async def get(request: Request, project_id):
         500:
             description: Internal Server Error
     """
-    if not ProjectAdminService.is_user_action_permitted_on_project(
-        request.user.display_name, project_id
+    if not await ProjectAdminService.is_user_action_permitted_on_project(
+        request.user.display_name, project_id, db
     ):
         return {
             "Error": "User is not a manager of the project",
             "SubCode": "UserPermissionError",
         }, 403
 
-    project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
-    return project_dto.model_dump(by_alias=True), 200
+    project_dto = await ProjectAdminService.get_project_dto_for_admin(project_id, db)
+    return project_dto
 
 
-# class ProjectsQueriesAoiAPI():
 @router.get("/{project_id}/queries/aoi/")
-async def get(request: Request, project_id):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get AOI of Project
     ---
@@ -1070,11 +1068,11 @@ async def get(request: Request, project_id):
     as_file = (
         strtobool(request.query_params.get("as_file"))
         if request.query_params.get("as_file")
-        else True
+        else False
     )
 
-    project_aoi = ProjectService.get_project_aoi(project_id)
-
+    project_aoi = await ProjectService.get_project_aoi(project_id, db)
+    #TODO as file.
     if as_file:
         return send_file(
             io.BytesIO(geojson.dumps(project_aoi).encode("utf-8")),
@@ -1083,11 +1081,11 @@ async def get(request: Request, project_id):
             download_name=f"{str(project_id)}.geojson",
         )
 
-    return project_aoi, 200
+    return project_aoi
 
 
 @router.get("/{project_id}/queries/priority-areas/")
-async def get(project_id):
+async def get(project_id: int, db: Database = Depends(get_db)):
     """
     Get Priority Areas of a project
     ---
@@ -1113,8 +1111,8 @@ async def get(project_id):
             description: Internal Server Error
     """
     try:
-        priority_areas = ProjectService.get_project_priority_areas(project_id)
-        return priority_areas, 200
+        priority_areas = await ProjectService.get_project_priority_areas(project_id, db)
+        return priority_areas
     except ProjectServiceError:
         return {"Error": "Unable to fetch project"}, 403
 

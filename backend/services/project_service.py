@@ -41,6 +41,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from fastapi import HTTPException
 from databases import Database
+import json
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -92,9 +93,11 @@ class ProjectService:
 
         return project
 
+
     @staticmethod
     async def auto_unlock_tasks(project_id: int, session):
         await Task.auto_unlock_tasks(project_id, session)
+
 
     @staticmethod
     def delete_tasks(project_id: int, tasks_ids):
@@ -113,64 +116,48 @@ class ProjectService:
         # Delete task one by one.
         [t["obj"].delete() for t in tasks]
 
-    @staticmethod
-    def get_contribs_by_day(project_id: int) -> ProjectContribsDTO:
-        # Validate that project exists
-        project = ProjectService.get_project_by_id(project_id)
 
-        # Fetch all state change with date and task ID
-        stats = (
-            session.query(TaskHistory).with_entities(
-                TaskHistory.action_text.label("action_text"),
-                func.DATE(TaskHistory.action_date).label("day"),
-                TaskHistory.task_id.label("task_id"),
-            )
-            .filter(TaskHistory.project_id == project_id)
-            .filter(
-                TaskHistory.action == "STATE_CHANGE",
-                or_(
-                    TaskHistory.action_text == "MAPPED",
-                    TaskHistory.action_text == "VALIDATED",
-                    TaskHistory.action_text == "INVALIDATED",
-                ),
-            )
-            .group_by("action_text", "day", "task_id")
-            .order_by("day")
-        ).all()
+    @staticmethod
+    async def get_contribs_by_day(project_id: int, db: Database) -> ProjectContribsDTO:
+        project = await ProjectService.get_project_by_id(project_id, db)
+        query = """
+            SELECT 
+                action_text,
+                DATE(action_date) AS day,
+                task_id
+            FROM task_history
+            WHERE project_id = :project_id
+            AND action = 'STATE_CHANGE'
+            AND action_text IN ('MAPPED', 'VALIDATED', 'INVALIDATED')
+            GROUP BY action_text, day, task_id
+            ORDER BY day ASC
+        """
+        rows = await db.fetch_all(query=query, values={"project_id": project_id})
 
         contribs_dto = ProjectContribsDTO()
-        # Filter and store unique dates
-        dates = list(set(r[1] for r in stats))
-        dates.sort(
-            reverse=False
-        )  # Why was this reversed? To have the dates in ascending order
-        dates_list = []
+        dates = sorted({row["day"] for row in rows})
+
         cumulative_mapped = 0
         cumulative_validated = 0
-        # A hashmap to track task state change updates
         tasks = {
             "MAPPED": {"total": 0},
             "VALIDATED": {"total": 0},
             "INVALIDATED": {"total": 0},
         }
 
+        dates_list = []
         for date in dates:
             dto = ProjectContribDTO(
-                {
-                    "date": date,
-                    "mapped": 0,
-                    "validated": 0,
-                    "total_tasks": project.total_tasks,
-                }
+                date=date,
+                mapped=0,
+                validated=0,
+                total_tasks=project.total_tasks
             )
-            # s -> ('LOCKED_FOR_MAPPING', datetime.date(2019, 4, 23), 1)
-            # s[0] -> action, s[1] -> date, s[2] -> task_id
-            values = [(s[0], s[2]) for s in stats if date == s[1]]
-            values.sort(reverse=True)  # Most recent action comes first
-            for val in values:
-                task_id = val[1]
-                task_status = val[0]
-
+            
+            values = [(row["action_text"], row["task_id"]) for row in rows if row["day"] == date]
+            values.sort(reverse=True)
+            
+            for task_status, task_id in values:
                 if task_status == "MAPPED":
                     if task_id not in tasks["MAPPED"]:
                         tasks["MAPPED"][task_id] = 1
@@ -188,7 +175,7 @@ class ProjectService:
                             tasks["MAPPED"][task_id] = 1
                             tasks["MAPPED"]["total"] += 1
                             dto.mapped += 1
-                else:
+                else:  # "INVALIDATED"
                     if task_id not in tasks["INVALIDATED"]:
                         tasks["INVALIDATED"][task_id] = 1
                         tasks["INVALIDATED"]["total"] += 1
@@ -207,10 +194,10 @@ class ProjectService:
                 cumulative_validated = tasks["VALIDATED"]["total"]
                 dto.cumulative_mapped = cumulative_mapped
                 dto.cumulative_validated = cumulative_validated
+
             dates_list.append(dto)
 
         contribs_dto.stats = dates_list
-
         return contribs_dto
     
 
@@ -289,16 +276,25 @@ class ProjectService:
         return project.tasks_as_geojson(task_ids_str, order_by, order_by_type, status)
 
     @staticmethod
-    def get_project_aoi(project_id):
-        project = ProjectService.get_project_by_id(project_id)
-        return project.get_aoi_geometry_as_geojson()
+    async def get_project_aoi(project_id, db: Database):
+        project = await Project.exists(project_id, db)
+        return await Project.get_aoi_geometry_as_geojson(project_id, db)
+
 
     @staticmethod
-    def get_project_priority_areas(project_id):
-        project = ProjectService.get_project_by_id(project_id)
-        geojson_areas = []
-        for priority_area in project.priority_areas:
-            geojson_areas.append(priority_area.get_as_geojson())
+    async def get_project_priority_areas(project_id: int, db: Database) -> list:
+        project = await Project.exists(project_id, db)
+
+        # Fetch the priority areas' geometries as GeoJSON
+        query = """
+            SELECT ST_AsGeoJSON(pa.geometry) AS geojson
+            FROM priority_areas pa
+            JOIN project_priority_areas ppa ON pa.id = ppa.priority_area_id
+            WHERE ppa.project_id = :project_id;
+        """
+        rows = await db.fetch_all(query, values={"project_id": project_id})
+        geojson_areas = [json.loads(row['geojson']) for row in rows] if rows else []
+
         return geojson_areas
 
     @staticmethod
