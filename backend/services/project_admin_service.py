@@ -113,10 +113,10 @@ class ProjectAdminService:
         return project
 
     @staticmethod
-    def get_project_dto_for_admin(project_id: int) -> ProjectDTO:
+    async def get_project_dto_for_admin(project_id: int, db: Database) -> ProjectDTO:
         """Get the project as DTO for project managers"""
-        project = ProjectAdminService._get_project_by_id(project_id)
-        return project.as_dto_for_admin(project_id)
+        project = await Project.exists(project_id, db)
+        return await Project.as_dto_for_admin(project_id, db)
 
     @staticmethod
     def update_project(project_dto: ProjectDTO, authenticated_user_id: int):
