@@ -571,12 +571,20 @@ class Project(Base):
         session.commit()
 
     @staticmethod
-    async def exists(project_id: int, session):
-        query = select(literal(True)).where(
-            select(Project.id).filter(Project.id == project_id).exists()
-        )
-        result = await session.execute(query)
-        return result.scalar()
+    async def exists(project_id: int, db: Database) -> bool:
+        query = """
+            SELECT 1
+            FROM projects
+            WHERE id = :project_id
+        """
+
+        # Execute the query
+        result = await db.fetch_one(query=query, values={"project_id": project_id})
+
+        if result is None:
+            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
+        
+        return True
     
     def is_favorited(self, user_id: int) -> bool:
         user = session.get(User, user_id)
@@ -1399,16 +1407,15 @@ class Project(Base):
                 )
         except ZeroDivisionError:
             return 0
+        
 
-    def as_dto_for_admin(self, project_id):
+    @staticmethod
+    async def as_dto_for_admin(project_id: int, db: Database ):
         """Creates a Project DTO suitable for transmitting to project admins"""
-        project, project_dto = self.get_project_and_base_dto()
-
-        if project is None:
-            return None
-
-        project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(
-            project_id
+        project_dto = await Project.get_project_and_base_dto(project_id, db)
+        
+        project_dto.project_info_locales = await ProjectInfo.get_dto_for_all_locales(
+            db, project_id
         )
 
         return project_dto
