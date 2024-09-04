@@ -1,10 +1,13 @@
 ARG DEBIAN_IMG_TAG=slim-bookworm
 ARG PYTHON_IMG_TAG=3.10
 
+
+
 FROM docker.io/python:${PYTHON_IMG_TAG}-${DEBIAN_IMG_TAG} as base
 ARG APP_VERSION=0.1.0
 ARG DOCKERFILE_VERSION=0.5.0
 ARG ALPINE_IMG_TAG
+ARG DEBIAN_IMG_TAG
 ARG PYTHON_IMG_TAG
 ARG MAINTAINER=sysadmin@hotosm.org
 LABEL org.hotosm.tasks.app-version="${APP_VERSION}" \
@@ -39,7 +42,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         libffi-dev \
         libgeos-dev \
         postgresql-server-dev-15 \
-        python3-dev
+        python3-dev \
+    && rm -rf /var/lib/apt/lists/*
 # Setup backend Python dependencies
 COPY --from=extract-deps \
     /opt/python/requirements.txt /opt/python/
@@ -63,7 +67,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         libgeos3.11.1 postgresql-client proj-bin && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*
 COPY --from=build \
     /home/appuser/.local \
     /home/appuser/.local
@@ -90,7 +94,6 @@ FROM runtime as prod
 USER root
 RUN apt-get update && \
 	apt-get install -y curl && \
-	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 # Pre-compile packages to .pyc (init speed gains)
 RUN python -c "import compileall; compileall.compile_path(maxlevels=10, quiet=1)"
