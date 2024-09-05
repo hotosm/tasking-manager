@@ -31,9 +31,14 @@ class License(Base):
     )  # Many to Many relationship
 
     @staticmethod
-    def get_by_id(license_id: int):
+    async def get_by_id(license_id: int, db: Database):
         """Get license by id"""
-        map_license = session.get(License, license_id)
+        query = """
+            SELECT id AS "licenseId", name, description, plain_text AS "plainText"
+            FROM licenses
+            WHERE id = :license_id
+        """
+        map_license = await db.fetch_one(query, {"license_id": license_id})
 
         if map_license is None:
             raise NotFound(sub_code="LICENSE_NOT_FOUND", license_id=license_id)

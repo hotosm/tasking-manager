@@ -338,11 +338,21 @@ class User(Base):
         self.mapping_level = level.value
         session.commit()
 
-    def accept_license_terms(self, license_id: int):
+    async def accept_license_terms(self, user_id, license_id: int, db: Database):
         """Associate the user in scope with the supplied license"""
-        image_license = License.get_by_id(license_id)
-        self.accepted_licenses.append(image_license)
-        session.commit()
+        _ = await License.get_by_id(license_id, db)
+
+        query_check = """
+            SELECT 1 FROM user_licenses WHERE "user" = :user_id AND "license" = :license_id
+        """
+        record = await db.fetch_one(query_check, values={"user_id": user_id, "license_id": license_id})
+        
+        if not record:
+            query = """
+                INSERT INTO user_licenses ("user", "license")
+                VALUES (:user_id, :license_id)
+            """
+            await db.execute(query, values={"user_id": user_id, "license_id": license_id})
 
     def has_user_accepted_licence(self, license_id: int):
         """Test to see if the user has accepted the terms of the specified license"""
