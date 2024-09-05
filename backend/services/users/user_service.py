@@ -730,10 +730,10 @@ class UserService:
         return user
 
     @staticmethod
-    def accept_license_terms(user_id: int, license_id: int):
+    async def accept_license_terms(user_id: int, license_id: int, db: Database):
         """Saves the fact user has accepted license terms"""
-        user = UserService.get_user_by_id(user_id)
-        user.accept_license_terms(license_id)
+        user = await UserService.get_user_by_id(user_id, db)
+        await user.accept_license_terms(user_id, license_id, db)
 
     @staticmethod
     def has_user_accepted_license(user_id: int, license_id: int):
