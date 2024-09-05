@@ -1,7 +1,11 @@
 from backend.services.users.user_service import UserService
+from backend.services.users.authentication_service import login_required
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
+from backend.models.dtos.user_dto import AuthUserDTO
+from databases import Database
+from backend.db import get_db
 
 router = APIRouter(
     prefix="/licenses",
@@ -14,7 +18,12 @@ router = APIRouter(
 #     @token_auth.login_required
 @router.post("/{license_id}/actions/accept-for-me/")
 @requires("authenticated")
-async def post(request: Request, license_id):
+async def post(
+    request: Request,
+    license_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db)
+):
     """
     Capture user acceptance of license terms
     ---
@@ -45,5 +54,5 @@ async def post(request: Request, license_id):
         500:
             description: Internal Server Error
     """
-    UserService.accept_license_terms(request.user.display_name, license_id)
+    await UserService.accept_license_terms(user.id, license_id, db)
     return {"Success": "Terms Accepted"}, 200
