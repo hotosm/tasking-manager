@@ -36,13 +36,16 @@ class MessagesDTO(BaseModel):
 class ChatMessageDTO(BaseModel):
     """DTO describing an individual project chat message"""
 
-    id: int = Field(required=False, serialize_when_none=False)
+    id: Optional[int] = Field(None, alias="id", serialize_when_none=False)
     message: str = Field(required=True)
     user_id: int = Field(required=True, serialize_when_none=False)
     project_id: int = Field(required=True, serialize_when_none=False)
     picture_url: str = Field(default=None, alias="pictureUrl")
     timestamp: datetime
     username: str
+
+    class Config:
+        populate_by_name = True
 
 
 class ProjectChatDTO(BaseModel):

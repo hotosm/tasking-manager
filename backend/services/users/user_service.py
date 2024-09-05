@@ -539,9 +539,9 @@ class UserService:
         return False
 
     @staticmethod
-    def is_user_blocked(user_id: int) -> bool:
+    async def is_user_blocked(user_id: int, db: Database) -> bool:
         """Determines if a user is blocked"""
-        user = UserService.get_user_by_id(user_id)
+        user = await UserService.get_user_by_id(user_id, db)
 
         if UserRole(user.role) == UserRole.READ_ONLY:
             return True
