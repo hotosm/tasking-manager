@@ -44,4 +44,24 @@ export default defineMessages({
     id: 'management.partners.stats.mapswipe.groupMembers.error',
     defaultMessage: 'Something went wrong!',
   },
+  contributions: {
+    id: 'management.partners.stats.mapswipe.contributions',
+    defaultMessage: 'Contributions',
+  },
+  contributionsGridLegendLess: {
+    id: 'management.partners.stats.mapswipe.contributions.legendLess',
+    defaultMessage: 'Low',
+  },
+  contributionsGridLegendMore: {
+    id: 'management.partners.stats.mapswipe.contributions.legendMore',
+    defaultMessage: 'High',
+  },
+  contributionsGridEmpty: {
+    id: 'management.partners.stats.mapswipe.contributions.empty',
+    defaultMessage: 'No contribution',
+  },
+  contributionsGridTooltip: {
+    id: 'management.partners.stats.mapswipe.contributions.tooltip',
+    defaultMessage: 'contribution(s)',
+  },
 });

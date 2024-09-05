@@ -96,6 +96,7 @@ export const GroupMembers = () => {
   });
 
   const isEmpty = false;
+  const isError = false;
 
   return (
     <div>
@@ -177,7 +178,7 @@ export const GroupMembers = () => {
             </div>
           )}
         </div>
-        
+
         <div className="mt3">
           <PaginatorLine
             activePage={1}
