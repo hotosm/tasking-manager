@@ -2,16 +2,23 @@
 # from schematics.exceptions import Exception
 
 from backend.models.dtos.message_dto import ChatMessageDTO
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.dtos.mapping_dto import TaskCommentDTO
 from backend.services.messaging.chat_service import ChatService
 from backend.services.users.user_service import UserService
 from backend.services.project_service import ProjectService
 from backend.services.mapping_service import MappingService, MappingServiceError
 from backend.services.users.authentication_service import tm
+from backend.services.users.authentication_service import login_required
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
+from databases import Database
+from backend.db import get_db
+from datetime import datetime
+session = get_session()
+
 
 router = APIRouter(
     prefix="/projects",
@@ -20,13 +27,13 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# class CommentsProjectsAllAPI():
-#     @tm.pm_only(False)
-#     @token_auth.login_required
 @router.post("/{project_id}/comments/")
-@requires("authenticated")
-@tm.pm_only(False)
-async def post(request: Request, project_id: int):
+async def post(
+    project_id: int,
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Add a message to project chat
     ---
@@ -64,32 +71,25 @@ async def post(request: Request, project_id: int):
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name
-    if UserService.is_user_blocked(authenticated_user_id):
+    user = await UserService.get_user_by_id(user.id, db)
+    if await UserService.is_user_blocked(user.id, db):
         return {"Error": "User is on read only mode", "SubCode": "ReadOnly"}, 403
 
+    request_json = await request.json()
+    message = request_json.get("message")
+    chat_dto = ChatMessageDTO(
+        message=message, user_id=user.id, project_id=project_id, timestamp=datetime.now(), username=user.username
+    )
     try:
-        chat_dto = ChatMessageDTO(request.get_json())
-        chat_dto.user_id = authenticated_user_id
-        chat_dto.project_id = project_id
-        chat_dto.validate()
-    except Exception as e:
-        logger.error(f"Error validating request: {str(e)}")
-        return {
-            "Error": "Unable to add chat message",
-            "SubCode": "InvalidData",
-        }, 400
-
-    try:
-        project_messages = ChatService.post_message(
-            chat_dto, project_id, authenticated_user_id
+        project_messages = await ChatService.post_message(
+            chat_dto, project_id, user.id, db
         )
-        return project_messages.model_dump(by_alias=True), 201
+        return project_messages
     except ValueError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 @router.get("/{project_id}/comments/")
-async def get(request: Request, project_id):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get all chat messages for a project
     ---
@@ -122,18 +122,22 @@ async def get(request: Request, project_id):
         500:
             description: Internal Server Error
     """
-    ProjectService.exists(project_id)
+    await ProjectService.exists(project_id, db)
     page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
     per_page = int(request.query_params.get("perPage", 20))
-    project_messages = ChatService.get_messages(project_id, page, per_page)
-    return project_messages.model_dump(by_alias=True), 200
+    project_messages = await ChatService.get_messages(project_id, db, page, per_page)
+    return project_messages
 
 
 # class CommentsProjectsRestAPI():
     # @token_auth.login_required
 @router.delete("/{project_id}/comments/{comment_id}/")
-@requires("authenticated")
-async def delete(request: Request, project_id: int, comment_id: int):
+async def delete(
+    project_id: int, 
+    comment_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
         """
         Delete a chat message
         ---
@@ -170,10 +174,10 @@ async def delete(request: Request, project_id: int, comment_id: int):
             500:
                 description: Internal Server Error
         """
-        authenticated_user_id = request.user.display_name
+        authenticated_user_id = user.id
         try:
-            ChatService.delete_project_chat_by_id(
-                project_id, comment_id, authenticated_user_id
+            await ChatService.delete_project_chat_by_id(
+                project_id, comment_id, authenticated_user_id, db
             )
             return {"Success": "Comment deleted"}, 200
         except ValueError as e:
