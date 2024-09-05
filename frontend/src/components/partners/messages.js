@@ -132,4 +132,8 @@ export default defineMessages({
     id: 'management.partners.titles.partner.currentProjects',
     defaultMessage: 'Current projects',
   },
+  mapSwipeGroupId: {
+    id: 'management.partners.titles.partner_mapSwipeGroupId',
+    defaultMessage: 'MapSwipe Group ID',
+  },
 });
