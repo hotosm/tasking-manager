@@ -1,14 +1,18 @@
 from json import JSONEncoder
 from datetime import date, timedelta
-from flask_restful import Resource, request
-import requests
+# from flask_restful import Resource, request
 
 from backend.services.users.user_service import UserService
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
-from backend.services.users.authentication_service import token_auth
+# from backend.services.users.authentication_service import token_auth
+from backend.services.users.authentication_service import login_required
 from backend.api.utils import validate_date_input
 from backend.config import EnvironmentConfig
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.user import User
+from backend.db import get_db
+from databases import Database
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
@@ -61,8 +65,8 @@ async def get(request: Request, username):
 
 
 @router.get("/{user_id}/statistics/interests/")
-@requires("authenticated")
-async def get(request: Request, user_id: int):
+# @requires("authenticated")
+async def get(user_id: int, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
     """
     Get rate of contributions from a user given their interests
     ---
@@ -90,8 +94,8 @@ async def get(request: Request, user_id: int):
         500:
             description: Internal Server Error
     """
-    rate = InterestService.compute_contributions_rate(user_id)
-    return rate.model_dump(by_alias=True), 200
+    rate = await InterestService.compute_contributions_rate(user_id, db)
+    return rate
 
 
 # class UsersStatisticsAllAPI(Resource):
