@@ -6,10 +6,15 @@ from backend.models.dtos.user_dto import UserSearchQuery
 # from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService
 from backend.services.project_service import ProjectService
+from backend.services.users.authentication_service import login_required
+from backend.models.dtos.user_dto import AuthUserDTO
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
 from sqlalchemy.ext.asyncio import AsyncSession
+from databases import Database
+from backend.db import get_db
+
 
 router = APIRouter(
     prefix="/users",
@@ -326,11 +331,8 @@ async def get(request: Request):
         return locked_tasks.model_dump(by_alias=True), 200
 
 
-# class UsersQueriesInterestsAPI():
-    # @token_auth.login_required
 @router.get("/{username}/queries/interests/")
-@requires("authenticated")
-async def get(request: Request, username):
+async def get(request: Request, username: str, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
         """
         Get interests by username
         ---
@@ -358,9 +360,17 @@ async def get(request: Request, username):
             500:
                 description: Internal Server Error
         """
-        user = UserService.get_user_by_username(username)
-        interests_dto = UserService.get_interests(user)
-        return interests_dto.model_dump(by_alias=True), 200
+        query = """
+            SELECT u.id, u.username, array_agg(i.name) AS interests
+            FROM users u
+            LEFT JOIN user_interests ui ON u.id = ui.user_id
+            LEFT JOIN interests i ON ui.interest_id = i.id
+            WHERE u.username = :username
+            GROUP BY u.id, u.username
+        """
+        user = await db.fetch_one(query, {"username": username})
+        interests_dto = await UserService.get_interests(user, db)
+        return interests_dto
 
 
 # class UsersRecommendedProjectsAPI():
