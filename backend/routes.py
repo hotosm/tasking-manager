@@ -17,6 +17,7 @@ from backend.api.annotations import resources as annotation_resources
 from backend.api.interests import resources as interest_resources
 from backend.api.users import (
     resources as user_resources,
+    statistics as user_statistics,
     openstreetmap as users_openstreetmap,
     tasks as users_tasks
 )
@@ -81,6 +82,7 @@ def add_api_end_points(api):
     v2.include_router(user_resources.router)
     v2.include_router(users_openstreetmap.router)
     v2.include_router(users_tasks.router)
+    v2.include_router(user_statistics.router)
 
     # Licenses REST endpoint
     v2.include_router(license_resources.router)

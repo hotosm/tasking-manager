@@ -128,28 +128,31 @@ class InterestService:
         return dto
 
     @staticmethod
-    def compute_contributions_rate(user_id):
-        # 1. Get all projects that user has contributed.
-        stmt = (
-            TaskHistory.query.with_entities(TaskHistory.project_id)
-            .distinct()
-            .filter(TaskHistory.user_id == user_id)
-            .subquery()
-        )
+    async def compute_contributions_rate(user_id: int, db: Database):
+        stmt = """
+            SELECT DISTINCT project_id
+            FROM task_history
+            WHERE user_id = :user_id
+        """
+        project_ids = await db.fetch_all(stmt, values={"user_id": user_id})
 
-        res = (
-            session.query(
-                Interest.name,
-                func.count(project_interests.c.interest_id)
-                / func.sum(func.count(project_interests.c.interest_id)).over(),
-            )
-            .group_by(project_interests.c.interest_id, Interest.name)
-            .filter(project_interests.c.project_id.in_(stmt))
-            .join(Interest, Interest.id == project_interests.c.interest_id)
-        )
+        if not project_ids:
+            return InterestRateListDTO()
 
-        rates = [InterestRateDTO({"name": r[0], "rate": r[1]}) for r in res.all()]
+        project_ids_list = [row['project_id'] for row in project_ids]
+
+        query = """
+            SELECT i.name, COUNT(pi.interest_id) / SUM(COUNT(pi.interest_id)) OVER() as rate
+            FROM project_interests pi
+            JOIN interests i ON i.id = pi.interest_id
+            WHERE pi.project_id = ANY(:project_ids)
+            GROUP BY pi.interest_id, i.name
+        """
+        res = await db.fetch_all(query, values={"project_ids": project_ids_list})
+
         results = InterestRateListDTO()
-        results.rates = rates
+
+        for r in res:
+            results.rates.append(InterestRateDTO(name=r['name'], rate=r['rate']))
 
         return results
