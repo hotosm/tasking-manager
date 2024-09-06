@@ -48,6 +48,6 @@ class InterestRateListDTO(BaseModel):
 
     def __init__(self):
         super().__init__()
-        self.interests = []
+        self.rates = []
 
-    rates: List[InterestRateDTO]
+    rates: Optional[List[InterestRateDTO]] = None
