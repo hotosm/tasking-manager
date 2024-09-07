@@ -4,6 +4,7 @@ import { InfoIcon } from '../components/svgIcons';
 import { Overview } from '../components/partnerMapswipeStats/overview';
 import { GroupMembers } from '../components/partnerMapswipeStats/groupMembers';
 import { ContributionsGrid } from '../components/partnerMapswipeStats/contributionsGrid';
+import { TimeSpentContributingByDay } from '../components/partnerMapswipeStats/timeSpentContributingByDay';
 import messages from './messages';
 import './partnersMapswipeStats.css';
 
@@ -30,6 +31,10 @@ export const PartnersMapswipeStats = () => {
 
       <div className="mt3">
         <ContributionsGrid />
+      </div>
+
+      <div className="mt3">
+        <TimeSpentContributingByDay />
       </div>
     </div>
   );
