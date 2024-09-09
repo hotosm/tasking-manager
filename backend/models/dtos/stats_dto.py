@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 
+
 class UserContribution(BaseModel):
     """User contribution for a project"""
 
@@ -21,7 +22,6 @@ class UserContribution(BaseModel):
         self.name = UserContribution["name"]
         self.date_registered = UserContribution["date_registered"]
 
-
     username: Optional[str] = None
     mapping_level: Optional[str] = Field(alias="mappingLevel", default=None)
     picture_url: Optional[str] = Field(alias="pictureUrl", default=None)
@@ -31,7 +31,9 @@ class UserContribution(BaseModel):
     total: Optional[int] = None
     mapped_tasks: Optional[List[int]] = Field(alias="mappedTasks", default=None)
     validated_tasks: Optional[List[int]] = Field(alias="validatedTasks", default=None)
-    bad_imagery_tasks: Optional[List[int]] = Field(alias="badImageryTasks", default=None)
+    bad_imagery_tasks: Optional[List[int]] = Field(
+        alias="badImageryTasks", default=None
+    )
     name: Optional[str] = None
     date_registered: Optional[datetime] = Field(alias="dateRegistered", default=None)
 
@@ -53,7 +55,7 @@ class UserContribution(BaseModel):
 #     date_registered: Optional[datetime] = Field(None, alias="dateRegistered")
 
 #     class Config:
-#         allow_population_by_field_name = True 
+#         allow_population_by_field_name = True
 
 
 class ProjectContributionsDTO(BaseModel):
@@ -63,7 +65,10 @@ class ProjectContributionsDTO(BaseModel):
         super().__init__()
         self.user_contributions = []
 
-    user_contributions: Optional[List[UserContribution]] = Field(alias="userContributions", default=None)
+    user_contributions: Optional[List[UserContribution]] = Field(
+        alias="userContributions", default=None
+    )
+
 
 class Pagination(BaseModel):
     has_next: Optional[bool] = Field(serialization_alias="hasNext", default=False)
@@ -94,8 +99,10 @@ class Pagination(BaseModel):
             total=total,
         )
 
+
 class ProjectActivityDTO(BaseModel):
     """DTO to hold all project activity"""
+
     pagination: Optional[Pagination] = None
     activity: Optional[List[TaskHistoryDTO]] = None
 
@@ -105,6 +112,7 @@ class ProjectLastActivityDTO(BaseModel):
 
     activity: Optional[List[TaskStatusDTO]] = Field(default_factory=list)
 
+
 class OrganizationProjectsStatsDTO(BaseModel):
     draft: Optional[int] = None
     published: Optional[int] = None
@@ -112,18 +120,24 @@ class OrganizationProjectsStatsDTO(BaseModel):
     recent: Optional[int] = None
     stale: Optional[int] = None
 
+
 class OrganizationTasksStatsDTO(BaseModel):
     ready: Optional[int] = 0
-    locked_for_mapping: Optional[int] = Field(0, serialization_alias='lockedForMapping')
-    locked_for_validation: Optional[int] = Field(0, serialization_alias='lockedForValidation')
+    locked_for_mapping: Optional[int] = Field(0, serialization_alias="lockedForMapping")
+    locked_for_validation: Optional[int] = Field(
+        0, serialization_alias="lockedForValidation"
+    )
     mapped: Optional[int] = 0
     validated: Optional[int] = 0
     invalidated: Optional[int] = 0
-    badimagery: Optional[int] = Field(0, serialization_alias='badImagery')
+    badimagery: Optional[int] = Field(0, serialization_alias="badImagery")
+
 
 class OrganizationStatsDTO(BaseModel):
     projects: Optional[OrganizationProjectsStatsDTO] = None
-    active_tasks: Optional[OrganizationTasksStatsDTO] = Field(None, serialization_alias='activeTasks')
+    active_tasks: Optional[OrganizationTasksStatsDTO] = Field(
+        None, serialization_alias="activeTasks"
+    )
 
 
 class OrganizationListStatsDTO(BaseModel):
@@ -165,7 +179,7 @@ class HomePageStatsDTO(BaseModel):
     total_validated_area: Optional[float] = Field(None, alias="totalValidatedArea")
     total_organisations: Optional[int] = Field(None, alias="totalOrganisations")
     total_campaigns: Optional[int] = Field(None, alias="totalCampaigns")
-    avg_completion_time: Optional[int] = Field(None, alias='averageCompletionTime')
+    avg_completion_time: Optional[int] = Field(None, alias="averageCompletionTime")
     organisations: Optional[List[OrganizationListStatsDTO]] = None
     campaigns: Optional[List[CampaignStatsDTO]] = None
 

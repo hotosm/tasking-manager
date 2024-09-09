@@ -6,8 +6,6 @@ from backend.services.messaging.smtp_service import SMTPService
 from backend.models.postgis.release_version import ReleaseVersion
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
-from fastapi.openapi.utils import get_openapi
-from fastapi import FastAPI
 
 router = APIRouter(
     prefix="/system",
@@ -144,127 +142,127 @@ async def get():
 
 @router.get("/heartbeat/")
 async def get():
-        """
-        Simple health-check, if this is unreachable load balancers should be configures to raise an alert
-        ---
-        tags:
-          - system
-        produces:
-          - application/json
-        responses:
-          200:
-            description: Service is Healthy
-        """
-        release = ReleaseVersion.get()
-        if release is not None:
-            release = {
-                "version": release.tag_name,
-                "published_at": str(release.published_at),
-            }
-        return {"status": "healthy", "release": release}, 200
+    """
+    Simple health-check, if this is unreachable load balancers should be configures to raise an alert
+    ---
+    tags:
+      - system
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Service is Healthy
+    """
+    release = ReleaseVersion.get()
+    if release is not None:
+        release = {
+            "version": release.tag_name,
+            "published_at": str(release.published_at),
+        }
+    return {"status": "healthy", "release": release}, 200
 
 
 # class SystemLanguagesAPI():
 @router.get("/languages/")
 async def get():
-        """
-        Gets all supported languages
-        ---
-        tags:
-          - system
-        produces:
-          - application/json
-        responses:
-            200:
-                description: Supported Languages
-            500:
-                description: Internal Server Error
-        """
-        languages = SettingsService.get_settings()
-        return languages.model_dump(by_alias=True), 200
+    """
+    Gets all supported languages
+    ---
+    tags:
+      - system
+    produces:
+      - application/json
+    responses:
+        200:
+            description: Supported Languages
+        500:
+            description: Internal Server Error
+    """
+    languages = SettingsService.get_settings()
+    return languages.model_dump(by_alias=True), 200
 
 
 # class SystemContactAdminRestAPI():
 @router.post("/contact-admin/")
 async def post(request: Request):
-        """
-        Send an email to the system admin
-        ---
-        tags:
-          - system
-        produces:
-          - application/json
-        parameters:
-          - in: body
-            name: body
-            required: true
-            description: JSON object with the data of the message to send to the system admin
-            schema:
-                properties:
-                    name:
-                        type: string
-                        default: The name of the sender
-                    email:
-                        type: string
-                        default: The email of the sender
-                    content:
-                        type: string
-                        default: The content of the message
-        responses:
-          201:
-            description: Email sent successfully
-          400:
-              description: Invalid Request
-          501:
-            description: Not Implemented
-          500:
-            description: A problem occurred
-        """
-        try:
-            data = await request.json()
-            SMTPService.send_contact_admin_email(data)
-            return {"Success": "Email sent"}, 201
-        except ValueError as e:
-            return {"Error": str(e), "SubCode": "NotImplemented"}, 501
+    """
+    Send an email to the system admin
+    ---
+    tags:
+      - system
+    produces:
+      - application/json
+    parameters:
+      - in: body
+        name: body
+        required: true
+        description: JSON object with the data of the message to send to the system admin
+        schema:
+            properties:
+                name:
+                    type: string
+                    default: The name of the sender
+                email:
+                    type: string
+                    default: The email of the sender
+                content:
+                    type: string
+                    default: The content of the message
+    responses:
+      201:
+        description: Email sent successfully
+      400:
+          description: Invalid Request
+      501:
+        description: Not Implemented
+      500:
+        description: A problem occurred
+    """
+    try:
+        data = await request.json()
+        SMTPService.send_contact_admin_email(data)
+        return {"Success": "Email sent"}, 201
+    except ValueError as e:
+        return {"Error": str(e), "SubCode": "NotImplemented"}, 501
 
 
 # class SystemReleaseAPI():
 @router.post("/release/")
 async def post():
-        """
-        Fetch latest release version form github and save to database.
-        ---
-        tags:
-          - system
-        produces:
-          - application/json
-        responses:
-          201:
-            description: Saved version successfully to database
-          502:
-            description: Couldn't fetch latest release from github
-          500:
-            description: Internal server error
-        """
-        response = requests.get(
-            "https://api.github.com/repos/hotosm/tasking-manager/releases/latest"
-        )
-        try:
-            tag_name = response.json()["tag_name"]
-            published_date = response.json()["published_at"]
-            release = ReleaseVersion.get()
-            if release is None:
-                release = ReleaseVersion()
-            if tag_name != release.tag_name:
-                release.tag_name = tag_name
-                release.published_at = published_date
-                release.save()
-            return {
-                "release_version": release.tag_name,
-                "published_at": str(release.published_at),
-            }, 201
-        except KeyError:
-            return {
-                "Error": "Couldn't fetch latest release from github",
-                "SubCode": "GithubFetchError",
-            }, 502
+    """
+    Fetch latest release version form github and save to database.
+    ---
+    tags:
+      - system
+    produces:
+      - application/json
+    responses:
+      201:
+        description: Saved version successfully to database
+      502:
+        description: Couldn't fetch latest release from github
+      500:
+        description: Internal server error
+    """
+    response = requests.get(
+        "https://api.github.com/repos/hotosm/tasking-manager/releases/latest"
+    )
+    try:
+        tag_name = response.json()["tag_name"]
+        published_date = response.json()["published_at"]
+        release = ReleaseVersion.get()
+        if release is None:
+            release = ReleaseVersion()
+        if tag_name != release.tag_name:
+            release.tag_name = tag_name
+            release.published_at = published_date
+            release.save()
+        return {
+            "release_version": release.tag_name,
+            "published_at": str(release.published_at),
+        }, 201
+    except KeyError:
+        return {
+            "Error": "Couldn't fetch latest release from github",
+            "SubCode": "GithubFetchError",
+        }, 502

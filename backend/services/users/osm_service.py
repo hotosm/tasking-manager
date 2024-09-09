@@ -21,9 +21,7 @@ class OSMService:
         :param user_id: user_id in scope
         :raises OSMServiceError
         """
-        osm_user_details_url = (
-            f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
-        )
+        osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
         response = requests.get(osm_user_details_url)
 
         if response.status_code != 200:

@@ -20,7 +20,7 @@ def validate_team_visibility(value: str) -> str:
                 f"Unknown teamVisibility: {value}. Valid values are: "
                 f"{TeamVisibility.PUBLIC.name}, "
                 f"{TeamVisibility.PRIVATE.name}."
-            )
+            ),
         )
     return value
 
@@ -37,7 +37,7 @@ def validate_team_join_method(value: str):
                 f"Valid values are: {TeamJoinMethod.ANY.name}, "
                 f"{TeamJoinMethod.BY_INVITE.name}, "
                 f"{TeamJoinMethod.BY_REQUEST.name}."
-            )
+            ),
         )
     return value
 
@@ -53,7 +53,7 @@ def validate_team_member_function(value: str):
                 f"Unknown teamMemberFunction: {value}. "
                 f"Valid values are: {TeamMemberFunctions.MEMBER.name}, "
                 f"{TeamMemberFunctions.MANAGER.name}."
-            )
+            ),
         )
     return value
 
@@ -62,7 +62,9 @@ class TeamMembersDTO(BaseModel):
     username: str
     function: str
     active: bool
-    join_request_notifications: bool = Field(default=False, serialization_alias="joinRequestNotifications")
+    join_request_notifications: bool = Field(
+        default=False, serialization_alias="joinRequestNotifications"
+    )
     picture_url: Optional[str] = Field(None, serialization_alias="pictureUrl")
 
     @field_validator("function")
@@ -90,7 +92,9 @@ class TeamDetailsDTO(BaseModel):
     team_id: Optional[int] = Field(None, serialization_alias="teamId")
     organisation_id: int
     organisation: str
-    organisation_slug: Optional[str] = Field(None, serialization_alias="organisationSlug")
+    organisation_slug: Optional[str] = Field(
+        None, serialization_alias="organisationSlug"
+    )
     name: str
     logo: Optional[str] = None
     description: Optional[str] = None
@@ -145,7 +149,6 @@ class TeamsListDTO(BaseModel):
     pagination: Optional[Pagination] = None
 
 
-
 class ListTeamsDTO(BaseModel):
     def __init__(self):
         """DTO constructor initialise all arrays to empty"""
@@ -184,9 +187,7 @@ class UpdateTeamDTO(BaseModel):
     name: str
     logo: str
     description: str
-    join_method: str = Field(
-        validators=[validate_team_join_method], alias="joinMethod"
-    )
+    join_method: str = Field(validators=[validate_team_join_method], alias="joinMethod")
     visibility: str = Field(
         validators=[validate_team_visibility], serialize_when_none=False
     )
@@ -200,11 +201,15 @@ class TeamSearchDTO(BaseModel):
     organisation: Optional[int] = Field(None, serialization_alias="organisation")
     team_name: Optional[str] = Field(None, serialization_alias="team_name")
     omit_members: Optional[bool] = Field(False, serialization_alias="omitMemberList")
-    full_members_list: Optional[bool] = Field(True, serialization_alias="fullMemberList")
+    full_members_list: Optional[bool] = Field(
+        True, serialization_alias="fullMemberList"
+    )
     member: Optional[float] = Field(None, serialization_alias="member")
     manager: Optional[float] = Field(None, serialization_alias="manager")
     team_role: Optional[str] = Field(None, serialization_alias="team_role")
-    member_request: Optional[float] = Field(None, aliserialization_aliasas="member_request")
+    member_request: Optional[float] = Field(
+        None, aliserialization_aliasas="member_request"
+    )
     paginate: Optional[bool] = Field(False, serialization_alias="paginate")
     page: Optional[int] = Field(1, serialization_alias="page")
     per_page: Optional[int] = Field(10, serialization_alias="perPage")

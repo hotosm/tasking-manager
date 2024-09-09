@@ -1,6 +1,7 @@
 import datetime
 import json
 import re
+
 # # from flask import current_app
 from geoalchemy2 import Geometry
 from geoalchemy2.functions import GenericFunction

@@ -1,20 +1,13 @@
-import contextlib
-from typing import Any, AsyncIterator
-
 from backend.config import settings
-from sqlalchemy.ext.asyncio import (
-    AsyncConnection,
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
 from sqlalchemy.orm import declarative_base
 
 from databases import Database
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
+
+
 class DatabaseConnection:
     """Manages database connection (sqlalchemy & encode databases)"""
 
@@ -51,7 +44,8 @@ class DatabaseConnection:
 
 db_connection = DatabaseConnection()  # Create a single instance
 
-#remove
+
+# remove
 def get_session():
     """Yield a new database session."""
     return db_connection.create_db_session()

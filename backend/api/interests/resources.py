@@ -3,14 +3,11 @@ from backend.services.interests_service import InterestService
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.authentication_service import login_required
 
-from sqlalchemy.exc import IntegrityError
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from backend.db import get_session
-from starlette.authentication import requires
 from backend.models.dtos.user_dto import AuthUserDTO
 from databases import Database
 from backend.db import get_db
-from loguru import logger
 from asyncpg.exceptions import UniqueViolationError
 
 

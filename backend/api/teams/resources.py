@@ -13,9 +13,7 @@ from fastapi import APIRouter, Depends, Request
 from backend.db import get_db, get_session
 from starlette.authentication import requires
 from loguru import logger
-from sqlalchemy.ext.asyncio import AsyncSession
 from databases import Database
-from fastapi import HTTPException
 
 
 router = APIRouter(
@@ -205,7 +203,11 @@ async def delete(request: Request, team_id: int):
 
 
 @router.get("/")
-async def list_teams(request: Request, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
+async def list_teams(
+    request: Request,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Gets all teams
     ---

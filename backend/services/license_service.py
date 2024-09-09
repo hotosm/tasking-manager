@@ -1,13 +1,12 @@
 from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
 from backend.models.postgis.licenses import License
 from databases import Database
-from backend.db import get_db
-from fastapi import Depends, Request, HTTPException
+from fastapi import HTTPException
 
 
 class LicenseService:
     @staticmethod
-    def get_license(license_id: int, db:Database) -> License:
+    def get_license(license_id: int, db: Database) -> License:
         """
         Get task from DB
         :raises: NotFound
@@ -16,7 +15,7 @@ class LicenseService:
         return map_license
 
     @staticmethod
-    async def get_license_as_dto(license_id: int, db:Database) -> LicenseDTO:
+    async def get_license_as_dto(license_id: int, db: Database) -> LicenseDTO:
         """Get License from DB"""
         query = """
             SELECT id AS "licenseId", name, description, plain_text AS "plainText"
@@ -27,13 +26,15 @@ class LicenseService:
         return LicenseDTO(**license_dto)
 
     @staticmethod
-    async def create_license(license_dto: LicenseDTO, db:Database) -> int:
+    async def create_license(license_dto: LicenseDTO, db: Database) -> int:
         """Create License in DB"""
         new_license_id = await License.create_from_dto(license_dto, db)
         return new_license_id
 
     @staticmethod
-    async def update_license(license_dto: LicenseDTO, license_id: int, db: Database) -> LicenseDTO:
+    async def update_license(
+        license_dto: LicenseDTO, license_id: int, db: Database
+    ) -> LicenseDTO:
         """Create License in DB"""
 
         query = """
@@ -47,7 +48,7 @@ class LicenseService:
             "description": license_dto.description,
             "plain_text": license_dto.plain_text,
         }
-        await db.execute(query, values={**values, 'license_id': license_id})
+        await db.execute(query, values={**values, "license_id": license_id})
 
     @staticmethod
     async def delete_license(license_id: int, db: Database):
@@ -60,9 +61,7 @@ class LicenseService:
             async with db.transaction():
                 await db.execute(query, {"license_id": license_id})
         except Exception as e:
-            raise HTTPException(
-                status_code=500, detail="Deletion failed"
-            ) from e
+            raise HTTPException(status_code=500, detail="Deletion failed") from e
 
     @staticmethod
     async def get_all_licenses(db: Database) -> LicenseListDTO:

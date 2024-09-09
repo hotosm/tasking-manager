@@ -22,10 +22,10 @@ def is_valid_mapped_status(value):
 class LockTaskDTO(BaseModel):
     """DTO used to lock a task for mapping"""
 
-    user_id : int
-    task_id : int
-    project_id : int
-    preferred_locale : str ="en"
+    user_id: int
+    task_id: int
+    project_id: int
+    preferred_locale: str = "en"
 
 
 class MappedTaskDTO(BaseModel):
@@ -52,7 +52,7 @@ class StopMappingTaskDTO(BaseModel):
 class TaskHistoryDTO(BaseModel):
     """Describes an individual action that was performed on a mapping task"""
 
-    history_id : Optional[int] = Field(alias="historyId", default=None)
+    history_id: Optional[int] = Field(alias="historyId", default=None)
     task_id: Optional[int] = Field(alias="taskId", default=None)
     action: Optional[str] = None
     action_text: Optional[str] = Field(alias="actionText", default=None)
@@ -83,9 +83,13 @@ class TaskDTO(BaseModel):
     task_id: Optional[int] = Field(None, alias="taskId")
     project_id: Optional[int] = Field(None, alias="projectId")
     task_status: Optional[str] = Field(None, alias="taskStatus")
-    lock_holder: Optional[str] = Field(None, alias="lockHolder", serialize_when_none=False)
+    lock_holder: Optional[str] = Field(
+        None, alias="lockHolder", serialize_when_none=False
+    )
     task_history: Optional[List[TaskHistoryDTO]] = Field(None, alias="taskHistory")
-    task_annotations: Optional[List[TaskAnnotationDTO]] = Field(None, alias="taskAnnotation")
+    task_annotations: Optional[List[TaskAnnotationDTO]] = Field(
+        None, alias="taskAnnotation"
+    )
     per_task_instructions: Optional[str] = Field(
         None, alias="perTaskInstructions", serialize_when_none=False
     )

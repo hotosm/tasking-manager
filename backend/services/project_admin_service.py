@@ -23,6 +23,7 @@ from backend.services.organisation_service import OrganisationService
 from backend.services.team_service import TeamService
 from databases import Database
 
+
 class ProjectAdminServiceError(Exception):
     """Custom Exception to notify callers an error occurred when validating a Project"""
 
@@ -279,7 +280,9 @@ class ProjectAdminService:
         admin_id: int, preferred_locale: str, search_dto: ProjectSearchDTO, db: Database
     ):
         """Get all projects for provided admin"""
-        return await Project.get_projects_for_admin(admin_id, preferred_locale, search_dto, db)
+        return await Project.get_projects_for_admin(
+            admin_id, preferred_locale, search_dto, db
+        )
 
     @staticmethod
     def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
@@ -324,7 +327,6 @@ class ProjectAdminService:
                 args=(project_id, username, transferred_by),
             ).start()
 
-
     @staticmethod
     async def is_user_action_permitted_on_project(
         authenticated_user_id: int, project_id: int, db: Database
@@ -332,11 +334,13 @@ class ProjectAdminService:
         """Is user action permitted on project"""
         # Fetch the project details
         project_query = """
-            SELECT author_id, organisation_id 
-            FROM projects 
+            SELECT author_id, organisation_id
+            FROM projects
             WHERE id = :project_id
         """
-        project = await db.fetch_one(query=project_query, values={"project_id": project_id})
+        project = await db.fetch_one(
+            query=project_query, values={"project_id": project_id}
+        )
         if not project:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
@@ -344,12 +348,12 @@ class ProjectAdminService:
         organisation_id = project.organisation_id
 
         is_admin = await UserService.is_user_an_admin(authenticated_user_id, db)
-        
+
         # Check if the user is the project author
         is_author = authenticated_user_id == author_id
         is_org_manager = False
         is_manager_team = False
-        
+
         # If the user is neither an admin nor the author, check further permissions
         if not (is_admin or is_author):
             if organisation_id:
@@ -360,7 +364,10 @@ class ProjectAdminService:
                 if not is_org_manager:
                     # Check if the user is a project manager in the team
                     is_manager_team = await TeamService.check_team_membership(
-                        project_id, [TeamRoles.PROJECT_MANAGER.value], authenticated_user_id, db
+                        project_id,
+                        [TeamRoles.PROJECT_MANAGER.value],
+                        authenticated_user_id,
+                        db,
                     )
 
         return is_admin or is_author or is_org_manager or is_manager_team

@@ -1,17 +1,11 @@
-from backend import db
-
-from sqlalchemy import func
-
 from backend.models.dtos.interests_dto import (
     InterestRateDTO,
     InterestRateListDTO,
     InterestsListDTO,
     InterestDTO,
 )
-from backend.models.postgis.task import TaskHistory
 from backend.models.postgis.interests import (
     Interest,
-    project_interests,
 )
 from backend.services.project_service import ProjectService
 from backend.services.users.user_service import UserService
@@ -101,9 +95,7 @@ class InterestService:
             async with db.transaction():
                 await db.execute(query, {"interest_id": interest_id})
         except Exception as e:
-            raise HTTPException(
-                status_code=500, detail="Deletion failed"
-            ) from e
+            raise HTTPException(status_code=500, detail="Deletion failed") from e
 
     @staticmethod
     def create_or_update_project_interests(project_id, interests):
@@ -139,7 +131,7 @@ class InterestService:
         if not project_ids:
             return InterestRateListDTO()
 
-        project_ids_list = [row['project_id'] for row in project_ids]
+        project_ids_list = [row["project_id"] for row in project_ids]
 
         query = """
             SELECT i.name, COUNT(pi.interest_id) / SUM(COUNT(pi.interest_id)) OVER() as rate
@@ -153,6 +145,6 @@ class InterestService:
         results = InterestRateListDTO()
 
         for r in res:
-            results.rates.append(InterestRateDTO(name=r['name'], rate=r['rate']))
+            results.rates.append(InterestRateDTO(name=r["name"], rate=r["rate"]))
 
         return results

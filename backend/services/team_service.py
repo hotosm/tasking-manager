@@ -1,8 +1,8 @@
 # from flask import current_app
-from sqlalchemy import and_, or_
+from sqlalchemy import and_
 from markdown import markdown
 
-from backend import create_app, db
+from backend import create_app
 from backend.exceptions import NotFound
 from backend.models.dtos.team_dto import (
     ListTeamsDTO,
@@ -19,7 +19,6 @@ from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.project import ProjectTeams
-from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.statuses import (
     TeamJoinMethod,
     TeamMemberFunctions,
@@ -31,10 +30,10 @@ from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
 from backend.services.messaging.message_service import MessageService
 from backend.db import get_session
+
 session = get_session()
 from sqlalchemy import select
 from databases import Database
-
 
 
 class TeamServiceError(Exception):
@@ -210,9 +209,16 @@ class TeamService:
 
     @staticmethod
     def delete_team_project(team_id, project_id):
-        project = session.query(ProjectTeams).filter(
-            and_(ProjectTeams.team_id == team_id, ProjectTeams.project_id == project_id)
-        ).one()
+        project = (
+            session.query(ProjectTeams)
+            .filter(
+                and_(
+                    ProjectTeams.team_id == team_id,
+                    ProjectTeams.project_id == project_id,
+                )
+            )
+            .one()
+        )
         project.delete()
 
     @staticmethod
@@ -229,7 +235,7 @@ class TeamService:
 
         if search_dto.organisation:
             query_parts.append("t.organisation_id = :organisation_id")
-            params['organisation_id'] = search_dto.organisation
+            params["organisation_id"] = search_dto.organisation
 
         if search_dto.manager and search_dto.manager == search_dto.user_id:
             manager_teams_query = """
@@ -237,8 +243,8 @@ class TeamService:
                 JOIN team_members tm ON t.id = tm.team_id
                 WHERE tm.user_id = :manager_id AND tm.active = true AND tm.function = :manager_function
             """
-            params['manager_id'] = search_dto.manager
-            params['manager_function'] = TeamMemberFunctions.MANAGER.value
+            params["manager_id"] = search_dto.manager
+            params["manager_function"] = TeamMemberFunctions.MANAGER.value
 
             orgs_teams_query = """
                 SELECT t.id FROM teams t
@@ -247,11 +253,13 @@ class TeamService:
                 )
             """
 
-            query_parts.append(f"t.id IN ({manager_teams_query} UNION {orgs_teams_query})")
+            query_parts.append(
+                f"t.id IN ({manager_teams_query} UNION {orgs_teams_query})"
+            )
 
         if search_dto.team_name:
             query_parts.append("t.name ILIKE :team_name")
-            params['team_name'] = f"%{search_dto.team_name}%"
+            params["team_name"] = f"%{search_dto.team_name}%"
 
         if search_dto.team_role:
             try:
@@ -260,7 +268,7 @@ class TeamService:
                     SELECT pt.team_id FROM project_teams pt WHERE pt.role = :team_role
                 """
                 query_parts.append(f"t.id IN ({project_teams_query})")
-                params['team_role'] = role
+                params["team_role"] = role
             except KeyError:
                 pass
 
@@ -270,7 +278,7 @@ class TeamService:
                 WHERE tm.user_id = :member_id AND tm.active = true
             """
             query_parts.append(f"t.id IN ({team_member_query})")
-            params['member_id'] = search_dto.member
+            params["member_id"] = search_dto.member
 
         if search_dto.member_request:
             team_member_request_query = """
@@ -278,7 +286,7 @@ class TeamService:
                 WHERE tm.user_id = :member_request_id AND tm.active = false
             """
             query_parts.append(f"t.id IN ({team_member_request_query})")
-            params['member_request_id'] = search_dto.member_request
+            params["member_request_id"] = search_dto.member_request
 
         user = await UserService.get_user_by_id(search_dto.user_id, db)
         is_admin = UserRole(user.role) == UserRole.ADMIN
@@ -290,8 +298,8 @@ class TeamService:
                 )
             """
             query_parts.append(f"({public_or_member_query})")
-            params['public_visibility'] = TeamVisibility.PUBLIC.value
-            params['user_id'] = search_dto.user_id
+            params["public_visibility"] = TeamVisibility.PUBLIC.value
+            params["user_id"] = search_dto.user_id
 
         if query_parts:
             final_query = f"{base_query} WHERE {' AND '.join(query_parts)}"
@@ -300,36 +308,40 @@ class TeamService:
 
         if search_dto.paginate:
             final_query += " LIMIT :limit OFFSET :offset"
-            params['limit'] = search_dto.per_page
-            params['offset'] = (search_dto.page - 1) * search_dto.per_page
+            params["limit"] = search_dto.per_page
+            params["offset"] = (search_dto.page - 1) * search_dto.per_page
 
         rows = await db.fetch_all(query=final_query, values=params)
 
         teams_list_dto = TeamsListDTO()
         for row in rows:
             team_dto = TeamDTO(
-                team_id=row['id'],
-                name=row['name'],
-                join_method=TeamJoinMethod(row['join_method']).name,
-                visibility=TeamVisibility(row['visibility']).name,
-                description=row['description'],
-                logo=row['logo'],
-                organisation=row['organisation_name'],
-                organisation_id=row['organisation_id'],
+                team_id=row["id"],
+                name=row["name"],
+                join_method=TeamJoinMethod(row["join_method"]).name,
+                visibility=TeamVisibility(row["visibility"]).name,
+                description=row["description"],
+                logo=row["logo"],
+                organisation=row["organisation_name"],
+                organisation_id=row["organisation_id"],
                 members=[],
             )
 
             if not search_dto.omit_members:
                 if search_dto.full_members_list:
-                    team_dto.members = await Team.get_all_members(db, row['id'], None)
+                    team_dto.members = await Team.get_all_members(db, row["id"], None)
                 else:
-                    team_managers = await Team.get_team_managers(db, row['id'], 10)
-                    team_members = await Team.get_team_members(db, row['id'], 10)
+                    team_managers = await Team.get_team_managers(db, row["id"], 10)
+                    team_members = await Team.get_team_members(db, row["id"], 10)
                     team_members.extend(team_managers)
                     team_dto.members = team_members
 
-                team_dto.members_count = await Team.get_members_count_by_role(db, row['id'], TeamMemberFunctions.MEMBER)
-                team_dto.managers_count = await Team.get_members_count_by_role(db, row['id'], TeamMemberFunctions.MANAGER)
+                team_dto.members_count = await Team.get_members_count_by_role(
+                    db, row["id"], TeamMemberFunctions.MEMBER
+                )
+                team_dto.managers_count = await Team.get_members_count_by_role(
+                    db, row["id"], TeamMemberFunctions.MANAGER
+                )
 
             teams_list_dto.teams.append(team_dto)
 
@@ -341,15 +353,13 @@ class TeamService:
             )
         return teams_list_dto
 
-
     async def get_team_as_dto(
         team_id: int, user_id: int, abbreviated: bool, db: Database
     ) -> TeamDetailsDTO:
-        
         # Query to fetch team and organisation details
         team_query = """
-            SELECT t.id as team_id, t.name as team_name, t.join_method, t.visibility, 
-                t.description, o.logo as org_logo, o.name as org_name, 
+            SELECT t.id as team_id, t.name as team_name, t.join_method, t.visibility,
+                t.description, o.logo as org_logo, o.name as org_name,
                 o.id as org_id, o.slug as org_slug
             FROM teams t
             JOIN organisations o ON t.organisation_id = o.id
@@ -372,7 +382,7 @@ class TeamService:
             logo=team_details["org_logo"],
             organisation=team_details["org_name"],
             organisation_id=team_details["org_id"],
-            organisation_slug=team_details["org_slug"]
+            organisation_slug=team_details["org_slug"],
         )
 
         # Check for admin roles if user_id is provided
@@ -390,17 +400,19 @@ class TeamService:
             SELECT user_id FROM team_members WHERE team_id = :team_id
         """
         members = await db.fetch_all(query=members_query, values={"team_id": team_id})
-        
-        team_dto.members = [
-            await Team.as_dto_team_member(member.user_id, db) 
-            for member in members
-        ] if members else []
-        team_projects = await TeamService.get_projects_by_team_id(team_id, db)
-        team_dto.team_projects = [
-            Team.as_dto_team_project(project) for project in team_projects
-        ] if team_projects else []
-        return team_dto
 
+        team_dto.members = (
+            [await Team.as_dto_team_member(member.user_id, db) for member in members]
+            if members
+            else []
+        )
+        team_projects = await TeamService.get_projects_by_team_id(team_id, db)
+        team_dto.team_projects = (
+            [Team.as_dto_team_project(project) for project in team_projects]
+            if team_projects
+            else []
+        )
+        return team_dto
 
     @staticmethod
     async def get_projects_by_team_id(team_id: int, db: Database):
@@ -430,7 +442,9 @@ class TeamService:
             JOIN teams t ON pt.team_id = t.id
             WHERE pt.project_id = :project_id
         """
-        project_teams = await db.fetch_all(query=query, values={"project_id": project_id})
+        project_teams = await db.fetch_all(
+            query=query, values={"project_id": project_id}
+        )
         # Initialize the DTO
         teams_list_dto = ListTeamsDTO()
 
@@ -439,12 +453,11 @@ class TeamService:
             team_dto = ProjectTeamDTO(
                 team_id=project_team["team_id"],
                 team_name=project_team["team_name"],
-                role=str(project_team["role"])
+                role=str(project_team["role"]),
             )
             teams_list_dto.teams.append(team_dto)
 
         return teams_list_dto
-
 
     @staticmethod
     async def change_team_role(team_id: int, project_id: int, role: str, session):
@@ -476,9 +489,7 @@ class TeamService:
             raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_id)
 
         return team_record
-    
 
-    
     @staticmethod
     def get_team_by_name(team_name: str) -> Team:
         team = Team.get_team_by_name(team_name)
@@ -575,9 +586,10 @@ class TeamService:
         ).exists()
         return session.query(query).scalar()
 
-
     @staticmethod
-    async def is_user_an_active_team_member(team_id: int, user_id: int, db: Database) -> bool:
+    async def is_user_an_active_team_member(
+        team_id: int, user_id: int, db: Database
+    ) -> bool:
         """
         Check if a user is an active member of a team.
         :param team_id: ID of the team
@@ -588,7 +600,7 @@ class TeamService:
         # Raw SQL query to check if the user is an active team member
         query = """
             SELECT EXISTS(
-                SELECT 1 
+                SELECT 1
                 FROM team_members
                 WHERE team_id = :team_id
                 AND user_id = :user_id
@@ -597,7 +609,9 @@ class TeamService:
         """
 
         # Execute the query and fetch the result
-        result = await db.fetch_one(query=query, values={"team_id": team_id, "user_id": user_id})
+        result = await db.fetch_one(
+            query=query, values={"team_id": team_id, "user_id": user_id}
+        )
         # Return the boolean value indicating if the user is an active team member
         return result["is_active"]
 
@@ -637,7 +651,9 @@ class TeamService:
             }, 400
 
     @staticmethod
-    async def check_team_membership(project_id: int, allowed_roles: list, user_id: int, db):
+    async def check_team_membership(
+        project_id: int, allowed_roles: list, user_id: int, db
+    ):
         """Given a project and permitted team roles, check user's membership in the team list"""
         teams_dto = await TeamService.get_project_teams_as_dto(project_id, db)
         teams_allowed = [
@@ -646,7 +662,9 @@ class TeamService:
         user_membership = [
             team_dto.team_id
             for team_dto in teams_allowed
-            if await TeamService.is_user_an_active_team_member(team_dto.team_id, user_id, db)
+            if await TeamService.is_user_an_active_team_member(
+                team_dto.team_id, user_id, db
+            )
         ]
         return len(user_membership) > 0
 

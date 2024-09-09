@@ -4,6 +4,7 @@ from backend.exceptions import NotFound
 from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
 from backend.db import Base, get_session
 from databases import Database
+
 session = get_session()
 
 # Secondary table defining the many-to-many join
@@ -44,7 +45,7 @@ class License(Base):
             raise NotFound(sub_code="LICENSE_NOT_FOUND", license_id=license_id)
 
         return map_license
-    
+
     async def create_from_dto(license_dto: LicenseDTO, db: Database) -> int:
         """Creates a new License class from dto"""
         query = """
