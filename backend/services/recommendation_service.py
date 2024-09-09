@@ -12,6 +12,7 @@ from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
 from backend.db import get_session
+
 session = get_session()
 
 similar_projects_cache = TTLCache(maxsize=1000, ttl=60 * 60 * 24)  # 24 hours
@@ -56,13 +57,17 @@ class ProjectRecommendationService:
 
         # Only fetch the columns required for recommendation
         # Should be in order of the columns defined in the project_columns line 13
-        query = session.query(Project).options(joinedload(Project.interests)).with_entities(
-            Project.id,
-            Project.default_locale,
-            Project.difficulty,
-            Project.mapping_types,
-            Project.country,
-            func.array_agg(subquery.c.interest_id).label("interests"),
+        query = (
+            session.query(Project)
+            .options(joinedload(Project.interests))
+            .with_entities(
+                Project.id,
+                Project.default_locale,
+                Project.difficulty,
+                Project.mapping_types,
+                Project.country,
+                func.array_agg(subquery.c.interest_id).label("interests"),
+            )
         )
         # Outerjoin so that projects without interests are also returned
         query = (

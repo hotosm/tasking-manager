@@ -4,7 +4,9 @@ from backend.models.dtos.mapping_issues_dto import (
     MappingIssueCategoriesDTO,
 )
 from backend.db import Base, get_session
+
 session = get_session()
+
 
 class MappingIssueCategory(Base):
     """Represents a category of task mapping issues identified during validaton"""

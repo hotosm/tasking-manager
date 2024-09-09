@@ -3,6 +3,7 @@ import json
 from shapely.geometry import MultiPolygon, mapping
 from shapely.ops import unary_union
 import shapely.geometry
+
 # # from flask import current_app
 from backend.models.dtos.grid_dto import GridDTO
 from backend.models.postgis.utils import InvalidGeoJson

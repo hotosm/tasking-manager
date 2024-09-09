@@ -4,7 +4,10 @@ import urllib.parse
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
 from starlette.authentication import (
-    AuthCredentials, AuthenticationBackend, AuthenticationError, SimpleUser
+    AuthCredentials,
+    AuthenticationBackend,
+    AuthenticationError,
+    SimpleUser,
 )
 from loguru import logger
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
@@ -14,7 +17,7 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService, NotFound
 from random import SystemRandom
 from backend.config import settings
-from fastapi import FastAPI, Depends, HTTPException, Header, Request
+from fastapi import Depends, HTTPException, Header, Request
 from databases import Database
 
 # token_auth = HTTPTokenAuth(scheme="Token")
@@ -41,20 +44,18 @@ def verify_token(token):
     try:
         decoded_token = base64.b64decode(token).decode("utf-8")
     except UnicodeDecodeError:
-        logger.debug(f"Unable to decode token")
+        logger.debug("Unable to decode token")
         return False  # Can't decode token, so fail login
 
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:
-        logger.debug(f"Token not valid")
+        logger.debug("Token not valid")
         return False
 
     tm.authenticated_user_id = (
         user_id  # Set the user ID on the decorator as a convenience
     )
     return user_id  # All tests passed token is good for the requested resource
-
-
 
 
 class TokenAuthBackend(AuthenticationBackend):
@@ -65,19 +66,21 @@ class TokenAuthBackend(AuthenticationBackend):
         auth = conn.headers["authorization"]
         try:
             scheme, credentials = auth.split()
-            if scheme.lower() != 'token':
+            if scheme.lower() != "token":
                 return
             try:
                 decoded_token = base64.b64decode(credentials).decode("ascii")
             except UnicodeDecodeError:
-                logger.debug(f"Unable to decode token")
-                return False 
-        except (ValueError, UnicodeDecodeError, binascii.Error) as exc:
-            raise AuthenticationError('Invalid auth credentials')
+                logger.debug("Unable to decode token")
+                return False
+        except (ValueError, UnicodeDecodeError, binascii.Error):
+            raise AuthenticationError("Invalid auth credentials")
 
-        valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
+        valid_token, user_id = AuthenticationService.is_valid_token(
+            decoded_token, 604800
+        )
         if not valid_token:
-            logger.debug(f"Token not valid")
+            logger.debug("Token not valid")
             return AuthCredentials([]), None
 
         tm.authenticated_user_id = (
@@ -222,12 +225,14 @@ class AuthenticationService:
         return True, tokenised_user_id
 
 
-async def login_required(request: Request, db: Database = Depends(get_db), authorization: str = Header(None)):
+async def login_required(
+    request: Request, db: Database = Depends(get_db), authorization: str = Header(None)
+):
     if not authorization:
         raise HTTPException(status_code=401, detail="Authorization header missing")
     try:
         scheme, credentials = authorization.split()
-        if scheme.lower() != 'token':
+        if scheme.lower() != "token":
             raise HTTPException(status_code=401, detail="Invalid authentication scheme")
         try:
             decoded_token = base64.b64decode(credentials).decode("ascii")
@@ -235,10 +240,10 @@ async def login_required(request: Request, db: Database = Depends(get_db), autho
             logger.debug("Unable to decode token")
             raise HTTPException(status_code=401, detail="Invalid token")
     except (ValueError, UnicodeDecodeError, binascii.Error):
-        raise AuthenticationError('Invalid auth credentials')
+        raise AuthenticationError("Invalid auth credentials")
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:
         logger.debug("Token not valid")
         raise HTTPException(status_code=401, detail="Token not valid")
-    
+
     return AuthUserDTO(id=user_id)

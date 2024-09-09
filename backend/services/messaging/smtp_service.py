@@ -147,10 +147,10 @@ class SMTPService:
         current_app.logger.debug(f"Test if email required {to_address}")
         from_user_link = f"{settings.APP_BASE_URL}/users/{from_username}"
         project_link = f"{settings.APP_BASE_URL}/projects/{project_id}"
-        task_link = f"{settings.APP_BASE_URL}/projects/{project_id}/tasks/?search={task_id}"
-        settings_url = "{}/settings#notifications".format(
-            settings.APP_BASE_URL
+        task_link = (
+            f"{settings.APP_BASE_URL}/projects/{project_id}/tasks/?search={task_id}"
         )
+        settings_url = "{}/settings#notifications".format(settings.APP_BASE_URL)
 
         if not to_address:
             return False  # Many users will not have supplied email address so return
@@ -187,9 +187,7 @@ class SMTPService:
             raise ValueError("Missing TM_EMAIL_FROM_ADDRESS environment variable")
         msg = Message()
         msg.subject = subject
-        msg.sender = "{} Tasking Manager <{}>".format(
-            settings.ORG_CODE, from_address
-        )
+        msg.sender = "{} Tasking Manager <{}>".format(settings.ORG_CODE, from_address)
         msg.add_recipient(to_address)
 
         msg.body = text_message

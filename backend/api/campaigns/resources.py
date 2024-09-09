@@ -1,13 +1,13 @@
-from backend.models.dtos.campaign_dto import CampaignDTO, CampaignListDTO, NewCampaignDTO
+from backend.models.dtos.campaign_dto import (
+    CampaignDTO,
+    CampaignListDTO,
+    NewCampaignDTO,
+)
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_db
-from starlette.authentication import requires
-from loguru import logger
-from sqlalchemy.ext.asyncio import AsyncSession
 from databases import Database
-from fastapi import HTTPException
 from backend.services.users.authentication_service import login_required
 from backend.models.dtos.user_dto import AuthUserDTO
 
@@ -18,8 +18,11 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get("/{campaign_id}/", response_model=CampaignDTO)
-async def retrieve_campaign(request: Request, campaign_id: int, db: Database = Depends(get_db)):
+async def retrieve_campaign(
+    request: Request, campaign_id: int, db: Database = Depends(get_db)
+):
     """
     Get an active campaign's information
     ---
@@ -58,7 +61,13 @@ async def retrieve_campaign(request: Request, campaign_id: int, db: Database = D
 
 
 @router.patch("/{campaign_id}/")
-async def update_campaign(campaign_dto : CampaignDTO,request: Request, campaign_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
+async def update_campaign(
+    campaign_dto: CampaignDTO,
+    request: Request,
+    campaign_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Updates an existing campaign
     ---
@@ -122,7 +131,9 @@ async def update_campaign(campaign_dto : CampaignDTO,request: Request, campaign_
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(user.id, db)
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user.id, db
+        )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
@@ -134,10 +145,15 @@ async def update_campaign(campaign_dto : CampaignDTO,request: Request, campaign_
     except ValueError:
         error_msg = "Campaign PATCH - name already exists"
         return {"Error": error_msg, "SubCode": "NameExists"}
-    
+
 
 @router.delete("/{campaign_id}/")
-async def delete_campaign(request: Request, campaign_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
+async def delete_campaign(
+    request: Request,
+    campaign_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Deletes an existing campaign
     ---
@@ -214,7 +230,12 @@ async def list_campaigns(
 
 
 @router.post("/")
-async def create_campaign(campaign_dto: NewCampaignDTO,request: Request, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
+async def create_campaign(
+    campaign_dto: NewCampaignDTO,
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Creates a new campaign
     ---

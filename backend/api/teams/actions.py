@@ -63,6 +63,7 @@ async def post(request: Request, team_id):
     except TeamServiceError as e:
         return {"Error": str(e), "SubCode": "InvalidRequest"}, 400
 
+
 @router.patch("/{team_id}/actions/join/")
 @requires("authenticated")
 @tm.pm_only(False)
@@ -220,65 +221,65 @@ async def post(request: Request, team_id):
 @router.post("/{team_id}/actions/leave/")
 @requires("authenticated")
 async def post(request: Request, team_id: int):
-        """
-        Removes a user from a team
-        ---
-        tags:
-          - teams
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: team_id
-              in: path
-              description: Unique team ID
-              required: true
-              type: integer
-              default: 1
-            - in: body
-              name: body
-              required: true
-              description: JSON object to remove user from team
-              schema:
-                properties:
-                    username:
-                        type: string
-                        default: 1
-                        required: true
-        responses:
-            200:
-                description: Member deleted
-            403:
-                description: Forbidden, if user attempting to ready other messages
-            404:
-                description: Not found
-            500:
-                description: Internal Server Error
-        """
-        authenticated_user_id = request.user.display_name
-        username = request.get_json(force=True)["username"]
-        request_user = User.get_by_id(authenticated_user_id)
-        if (
-            TeamService.is_user_team_manager(team_id, authenticated_user_id)
-            or request_user.username == username
-        ):
-            TeamService.leave_team(team_id, username)
-            return {"Success": "User removed from the team"}, 200
-        else:
-            return (
-                {
-                    "Error": "You don't have permissions to remove {} from this team.".format(
-                        username
-                    ),
-                    "SubCode": "RemoveUserError",
-                },
-                403,
-            )
+    """
+    Removes a user from a team
+    ---
+    tags:
+      - teams
+    produces:
+      - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: team_id
+          in: path
+          description: Unique team ID
+          required: true
+          type: integer
+          default: 1
+        - in: body
+          name: body
+          required: true
+          description: JSON object to remove user from team
+          schema:
+            properties:
+                username:
+                    type: string
+                    default: 1
+                    required: true
+    responses:
+        200:
+            description: Member deleted
+        403:
+            description: Forbidden, if user attempting to ready other messages
+        404:
+            description: Not found
+        500:
+            description: Internal Server Error
+    """
+    authenticated_user_id = request.user.display_name
+    username = request.get_json(force=True)["username"]
+    request_user = User.get_by_id(authenticated_user_id)
+    if (
+        TeamService.is_user_team_manager(team_id, authenticated_user_id)
+        or request_user.username == username
+    ):
+        TeamService.leave_team(team_id, username)
+        return {"Success": "User removed from the team"}, 200
+    else:
+        return (
+            {
+                "Error": "You don't have permissions to remove {} from this team.".format(
+                    username
+                ),
+                "SubCode": "RemoveUserError",
+            },
+            403,
+        )
 
 
 @router.post("/{team_id}/actions/message-members/")
@@ -334,9 +335,7 @@ async def post(request: Request, team_id: int):
         # Validate if team is present
         team = TeamService.get_team_by_id(team_id)
 
-        is_manager = TeamService.is_user_team_manager(
-            team_id, authenticated_user_id
-        )
+        is_manager = TeamService.is_user_team_manager(team_id, authenticated_user_id)
         if not is_manager:
             raise ValueError
         message_dto.from_user_id = authenticated_user_id

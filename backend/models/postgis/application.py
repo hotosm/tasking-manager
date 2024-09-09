@@ -3,7 +3,9 @@ from backend.models.dtos.application_dto import ApplicationDTO, ApplicationsDTO
 from backend.models.postgis.utils import timestamp
 from backend.services.users.authentication_service import AuthenticationService
 from backend.db import Base, get_session
+
 session = get_session()
+
 
 class Application(Base):
     """Describes an application that is authorized to access the TM"""
@@ -11,9 +13,7 @@ class Application(Base):
     __tablename__ = "application_keys"
 
     id = Column(BigInteger, primary_key=True)
-    user = Column(
-        BigInteger, ForeignKey("users.id", name="fk_users"), nullable=False
-    )
+    user = Column(BigInteger, ForeignKey("users.id", name="fk_users"), nullable=False)
     app_key = Column(String, nullable=False)
     created = Column(DateTime, default=timestamp)
 

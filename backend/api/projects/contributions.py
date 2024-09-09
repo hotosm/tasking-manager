@@ -15,6 +15,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get("/{project_id}/contributions/")
 async def get(project_id: int, db: Database = Depends(get_db)):
     """

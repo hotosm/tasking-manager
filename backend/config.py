@@ -3,14 +3,16 @@ import os
 from functools import lru_cache
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
-from typing import Optional, Union
+from typing import Optional
 import json
 from pydantic import PostgresDsn, field_validator, ValidationInfo
+
 
 class Settings(BaseSettings):
     """Base class for configuration."""
 
     """ Most settings can be defined through environment variables. """
+
     class Config:
         ignored_types = (type(json),)
 
@@ -25,7 +27,9 @@ class Settings(BaseSettings):
     EXTRA_CORS_ORIGINS: list = []
 
     # The base url the application is reachable
-    APP_BASE_URL: str = os.getenv("TM_APP_BASE_URL", "http://127.0.0.1:5000/").rstrip("/")
+    APP_BASE_URL: str = os.getenv("TM_APP_BASE_URL", "http://127.0.0.1:5000/").rstrip(
+        "/"
+    )
 
     API_VERSION: str = os.getenv("TM_APP_API_VERSION", "v2")
     ORG_CODE: str = os.getenv("TM_ORG_CODE", "HOT")
@@ -41,10 +45,14 @@ class Settings(BaseSettings):
     )
 
     # The address to use as the sender on auto generated emails
-    EMAIL_FROM_ADDRESS: str = os.getenv("TM_EMAIL_FROM_ADDRESS", "noreply@hotosmmail.org")
+    EMAIL_FROM_ADDRESS: str = os.getenv(
+        "TM_EMAIL_FROM_ADDRESS", "noreply@hotosmmail.org"
+    )
 
     # The address to use as the receiver in contact form.
-    EMAIL_CONTACT_ADDRESS: str = os.getenv("TM_EMAIL_CONTACT_ADDRESS", "sysadmin@hotosm.org")
+    EMAIL_CONTACT_ADDRESS: str = os.getenv(
+        "TM_EMAIL_CONTACT_ADDRESS", "sysadmin@hotosm.org"
+    )
 
     # A freely definable secret key for connecting the front end with the back end
     SECRET_KEY: str = os.getenv("TM_SECRET", None)
@@ -65,7 +73,9 @@ class Settings(BaseSettings):
 
     @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
     @classmethod
-    def assemble_db_connection(cls, v: Optional[str], info: ValidationInfo) -> Optional[str]:
+    def assemble_db_connection(
+        cls, v: Optional[str], info: ValidationInfo
+    ) -> Optional[str]:
         """Build Postgres connection from environment variables or JSON config."""
         if v:
             return v
@@ -83,7 +93,7 @@ class Settings(BaseSettings):
                 port=str(params.get("port")),
                 path=f"{params.get('dbname')}",
             )
-        
+
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
             username=info.data.get("POSTGRES_USER"),
@@ -111,7 +121,9 @@ class Settings(BaseSettings):
     MAIL_USE_SSL: bool = bool(int(os.getenv("TM_SMTP_USE_SSL", False)))
     MAIL_USERNAME: Optional[str] = os.getenv("TM_SMTP_USER", None)
     MAIL_PASSWORD: Optional[str] = os.getenv("TM_SMTP_PASSWORD", None)
-    MAIL_DEFAULT_SENDER: str = os.getenv("TM_EMAIL_FROM_ADDRESS", "noreply@hotosmmail.org")
+    MAIL_DEFAULT_SENDER: str = os.getenv(
+        "TM_EMAIL_FROM_ADDRESS", "noreply@hotosmmail.org"
+    )
     MAIL_DEBUG: bool = True if LOG_LEVEL == "DEBUG" else False
 
     if os.getenv("SMTP_CREDENTIALS", False):
@@ -129,7 +141,9 @@ class Settings(BaseSettings):
         MAIL_PASSWORD: str = _params.get("SMTP_PASSWORD", None)
 
     # If disabled project update emails will not be sent.
-    SEND_PROJECT_EMAIL_UPDATES: bool = bool(os.getenv("TM_SEND_PROJECT_EMAIL_UPDATES", True))
+    SEND_PROJECT_EMAIL_UPDATES: bool = bool(
+        os.getenv("TM_SEND_PROJECT_EMAIL_UPDATES", True)
+    )
 
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.
@@ -246,6 +260,7 @@ class Settings(BaseSettings):
     # Sentry backend DSN
     SENTRY_BACKEND_DSN: str = os.getenv("TM_SENTRY_BACKEND_DSN", None)
 
+
 @lru_cache
 def get_settings():
     """Cache settings when accessed throughout app."""
@@ -260,6 +275,7 @@ def get_settings():
 
 settings = get_settings()
 
+
 class TestEnvironmentConfig(Settings):
     POSTGRES_TEST_DB: str = os.getenv("POSTGRES_TEST_DB", None)
 
@@ -273,4 +289,3 @@ class TestEnvironmentConfig(Settings):
         + f"/{POSTGRES_TEST_DB}"
     )
     LOG_LEVEL: str = "DEBUG"
-

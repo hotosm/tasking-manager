@@ -8,7 +8,6 @@ from backend.models.dtos.project_dto import (
     ProjectDTO,
     ProjectSearchDTO,
     ProjectSearchBBoxDTO,
-    ProjectSearchResultsDTO,
 )
 from backend.services.project_search_service import (
     ProjectSearchService,
@@ -32,10 +31,8 @@ from backend.services.recommendation_service import ProjectRecommendationService
 from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
 from backend.db import get_session
-from backend.models.dtos.project_dto import ProjectSearchDTO
 from starlette.authentication import requires
 import json
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.db import get_db
 from databases import Database
@@ -48,6 +45,7 @@ router = APIRouter(
     dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.get("/{project_id}/")
 async def get_project(
@@ -104,18 +102,9 @@ async def get_project(
             description: Internal Server Error
     """
     try:
-
         authenticated_user_id = request.user.display_name if request.user else None
-        as_file = bool(
-            strtobool(as_file)
-            if as_file
-            else False
-        )
-        abbreviated = bool(
-            strtobool(abbreviated)
-            if abbreviated
-            else False
-        )
+        as_file = bool(strtobool(as_file) if as_file else False)
+        abbreviated = bool(strtobool(abbreviated) if abbreviated else False)
         project_dto = await ProjectService.get_project_dto_for_mapper(
             project_id,
             authenticated_user_id,
@@ -129,11 +118,11 @@ async def get_project(
                 return FileResponse(
                     geojson.dumps(project_dto).encode("utf-8"),
                     media_type="application/json",
-                    content_disposition_type = "attachment",
+                    content_disposition_type="attachment",
                     filename=f"project_{str(project_id)}.json",
                 )
             return project_dto
-        
+
         else:
             return {
                 "Error": "User not permitted: Private Project",
@@ -149,7 +138,10 @@ async def get_project(
         except Exception as e:
             logger.critical(str(e))
 
+
 router.post("/")
+
+
 @requires("authenticated")
 async def post(request: Request, db: Session = Depends(get_session)):
     """
@@ -225,14 +217,13 @@ async def post(request: Request, db: Session = Depends(get_session)):
         return {"Error": "Unable to create project", "SubCode": "InvalidData"}, 400
 
     try:
-        draft_project_id = ProjectAdminService.create_draft_project(
-            draft_project_dto
-        )
+        draft_project_id = ProjectAdminService.create_draft_project(draft_project_dto)
         return {"projectId": draft_project_id}, 201
     except ProjectAdminServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
     except (InvalidGeoJson, InvalidData) as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+
 
 # @router.head("/{project_id}", response_model=ProjectDTO)
 # @requires('authenticated')
@@ -282,9 +273,10 @@ def head(request: Request, project_id):
     project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
     return project_dto.model_dump(by_alias=True), 200
 
+
 @router.patch("/{project_id}/")
-@requires('authenticated')
-def patch(request: Request, project_id: int, db: Database = Depends(get_session) ):
+@requires("authenticated")
+def patch(request: Request, project_id: int, db: Database = Depends(get_session)):
     """
     Updates a Tasking-Manager project
     ---
@@ -429,6 +421,7 @@ def patch(request: Request, project_id: int, db: Database = Depends(get_session)
         return {"Invalid GeoJson": str(e)}, 400
     except ProjectAdminServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+
 
 @router.delete("/{project_id}/")
 @requires("authenticated")
@@ -696,14 +689,18 @@ async def get(request: Request, db: Database = Depends(get_db)):
         results_dto = await ProjectSearchService.search_projects(search_dto, user, db)
         return results_dto
     except NotFound:
-        return {"mapResults": {}, "results": []}, 200 
+        return {"mapResults": {}, "results": []}, 200
     except (KeyError, ValueError) as e:
         error_msg = f"Projects GET - {str(e)}"
         return {"Error": error_msg}, 400
 
 
 @router.get("/queries/bbox/")
-async def get(request: Request, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
+async def get(
+    request: Request,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     List and search projects by bounding box
     ---
@@ -767,7 +764,7 @@ async def get(request: Request, db: Database = Depends(get_db), user: AuthUserDT
         search_dto = ProjectSearchBBoxDTO(
             bbox=bbox,
             input_srid=input_srid,
-            preferred_locale=request.headers.get("accept-language", "en")
+            preferred_locale=request.headers.get("accept-language", "en"),
         )
         created_by_me = (
             strtobool(request.query_params.get("createdByMe"))
@@ -793,7 +790,11 @@ async def get(request: Request, db: Database = Depends(get_db), user: AuthUserDT
 
 
 @router.get("/queries/myself/owner/")
-async def get(request: Request, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
+async def get(
+    request: Request,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Get all projects for logged in admin
     ---
@@ -839,12 +840,10 @@ async def get(request: Request, db: Database = Depends(get_db), user: AuthUserDT
     search_dto = setup_search_dto(request)
     preferred_locale = request.headers.get("accept-language", "en")
     admin_projects = await ProjectAdminService.get_projects_for_admin(
-        authenticated_user_id,
-        preferred_locale,
-        search_dto,
-        db
+        authenticated_user_id, preferred_locale, search_dto, db
     )
     return admin_projects
+
 
 @router.get("/queries/{username}/touched/")
 async def get(request: Request, username, db: Database = Depends(get_db)):
@@ -967,7 +966,7 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
         project_dto = await ProjectService.get_project_dto_for_mapper(
             project_id, None, db, locale, True
         )
-        #TODO Send file.
+        # TODO Send file.
         if as_file:
             return send_file(
                 io.BytesIO(geojson.dumps(project_dto).encode("utf-8")),
@@ -988,7 +987,12 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
 
 
 @router.get("/{project_id}/queries/notasks/")
-async def get(request: Request, project_id: int, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
+async def get(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Retrieves a Tasking-Manager project
     ---
@@ -1071,7 +1075,7 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
     )
 
     project_aoi = await ProjectService.get_project_aoi(project_id, db)
-    #TODO as file.
+    # TODO as file.
     if as_file:
         return send_file(
             io.BytesIO(geojson.dumps(project_aoi).encode("utf-8")),
@@ -1178,9 +1182,7 @@ async def get(request: Request, project_id: int):
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = (
-        request.user.display_name if request.user else None
-    )
+    authenticated_user_id = request.user.display_name if request.user else None
     limit = int(request.query_params.get("limit", 4))
     preferred_locale = request.headers.get("accept-language", "en")
     projects_dto = ProjectRecommendationService.get_similar_projects(
@@ -1191,43 +1193,43 @@ async def get(request: Request, project_id: int):
 
 @router.get("/queries/active/")
 async def get(request: Request, db: Database = Depends(get_db)):
-        """
-        Get active projects
-        ---
-        tags:
-            - projects
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: false
-              type: string
-              default: Token sessionTokenHere==
-            - name: interval
-              in: path
-              description: Time interval in hours to get active project
-              required: false
-              type: integer
-              default: 24
-        responses:
-            200:
-                description: Active projects geojson
-            404:
-                description: Project not found or project is not published
-            500:
-                description: Internal Server Error
-        """
-        interval = request.query_params.get("interval", "24")
-        if not interval.isdigit():
-            return {
-                "Error": "Interval must be a number greater than 0 and less than or equal to 24"
-            }, 400
-        interval = int(interval)
-        if interval <= 0 or interval > 24:
-            return {
-                "Error": "Interval must be a number greater than 0 and less than or equal to 24"
-            }, 400
-        projects_dto = await ProjectService.get_active_projects(interval, db)
-        return projects_dto
+    """
+    Get active projects
+    ---
+    tags:
+        - projects
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: false
+          type: string
+          default: Token sessionTokenHere==
+        - name: interval
+          in: path
+          description: Time interval in hours to get active project
+          required: false
+          type: integer
+          default: 24
+    responses:
+        200:
+            description: Active projects geojson
+        404:
+            description: Project not found or project is not published
+        500:
+            description: Internal Server Error
+    """
+    interval = request.query_params.get("interval", "24")
+    if not interval.isdigit():
+        return {
+            "Error": "Interval must be a number greater than 0 and less than or equal to 24"
+        }, 400
+    interval = int(interval)
+    if interval <= 0 or interval > 24:
+        return {
+            "Error": "Interval must be a number greater than 0 and less than or equal to 24"
+        }, 400
+    projects_dto = await ProjectService.get_active_projects(interval, db)
+    return projects_dto
