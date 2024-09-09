@@ -29,6 +29,7 @@ from backend.services.messaging.template_service import (
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService, User
 
+from databases import Database
 
 message_cache = TTLCache(maxsize=512, ttl=30)
 
@@ -815,11 +816,51 @@ class MessageService:
         Message.mark_multiple_messages_read(message_ids, user_id)
 
     @staticmethod
-    def get_message_as_dto(message_id: int, user_id: int):
+    async def get_message_as_dto(message_id: int, user_id: int, db: Database):
         """Gets the selected message and marks it as read"""
-        message = MessageService.get_message(message_id, user_id)
-        message.mark_as_read()
-        return message.as_dto()
+        query = """
+            SELECT 
+                m.id AS message_id,
+                m.subject, 
+                m.message, 
+                m.to_user_id, 
+                m.from_user_id, 
+                m.task_id, 
+                m.message_type, 
+                m.date AS sent_date, 
+                m.read, 
+                u.username AS from_username, 
+                u.picture_url AS display_picture_url, 
+                m.project_id, 
+                pi.name AS project_title 
+            FROM 
+                messages m
+            LEFT JOIN 
+                users u ON m.from_user_id = u.id
+            LEFT JOIN 
+                project_info pi ON m.project_id = pi.project_id
+            WHERE 
+                m.id = :message_id
+        """
+        message = await db.fetch_one(query, {"message_id": message_id})
+
+        if message is None:
+            raise NotFound(sub_code="MESSAGE_NOT_FOUND", message_id=message_id)
+
+        if message["to_user_id"] != user_id:
+            raise MessageServiceError(
+                "AccessOtherUserMessage- "
+                + f"User {user_id} attempting to access another user's message {message_id}"
+            )
+        
+        update_query = """
+            UPDATE messages SET read = TRUE WHERE id = :message_id
+        """
+        await db.execute(update_query, {"message_id": message_id})
+        
+        message_dict = dict(message)
+        message_dict['message_type'] = MessageType(message_dict['message_type']).name
+        return message_dict
 
     @staticmethod
     def delete_message(message_id: int, user_id: int):
