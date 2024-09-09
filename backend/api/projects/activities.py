@@ -3,7 +3,6 @@ from backend.services.stats_service import StatsService
 from backend.services.project_service import ProjectService
 from backend.db import get_db, get_session
 from databases import Database
-from fastapi import HTTPException
 
 
 router = APIRouter(
@@ -12,6 +11,7 @@ router = APIRouter(
     dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.get("/{project_id}/activities/")
 async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
@@ -42,7 +42,9 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             description: Internal Server Error
     """
     await ProjectService.exists(project_id, db)
-    page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
+    page = (
+        int(request.query_params.get("page")) if request.query_params.get("page") else 1
+    )
     activity = await StatsService.get_latest_activity(project_id, page, db)
     return activity
 

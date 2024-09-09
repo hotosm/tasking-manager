@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, ForeignKey, Table
 from geoalchemy2 import Geometry
 from backend.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON
 from backend.db import Base, get_session
+
 session = get_session()
 
 # Priority areas aren't shared, however, this arch was taken from TM2 to ease data migration
@@ -13,6 +14,7 @@ project_priority_areas = Table(
     Column("project_id", Integer, ForeignKey("projects.id")),
     Column("priority_area_id", Integer, ForeignKey("priority_areas.id")),
 )
+
 
 class PriorityArea(Base):
     """Describes an individual priority area"""

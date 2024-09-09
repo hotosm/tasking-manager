@@ -1,7 +1,7 @@
 from backend.models.postgis.statuses import TaskStatus
 from backend.models.dtos.stats_dto import Pagination
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List
 from datetime import datetime
 
 
@@ -77,7 +77,9 @@ class LockForValidationDTO(BaseModel):
 class ValidationMappingIssue(BaseModel):
     """Describes one or more occurrences of an identified mapping problem during validation"""
 
-    mapping_issue_category_id: int = Field(None, serialized_name="mappingIssueCategoryId")
+    mapping_issue_category_id: int = Field(
+        None, serialized_name="mappingIssueCategoryId"
+    )
     issue: str
     count: int
 
@@ -88,7 +90,9 @@ class ValidatedTask(BaseModel):
     task_id: int = Field(None, serialized_name="taskId")
     status: str = Field(None, validators=[is_valid_validated_status])
     comment: str = Field()
-    issues: List[ValidationMappingIssue] = Field(None, serialized_name="validationIssues")
+    issues: List[ValidationMappingIssue] = Field(
+        None, serialized_name="validationIssues"
+    )
 
 
 class ResetValidatingTask(BaseModel):
@@ -96,7 +100,9 @@ class ResetValidatingTask(BaseModel):
 
     task_id: int = Field(None, serialized_name="taskId")
     comment: str = Field()
-    issues: List[ValidationMappingIssue] = Field(None, serialized_name="validationIssues")
+    issues: List[ValidationMappingIssue] = Field(
+        None, serialized_name="validationIssues"
+    )
 
 
 class UnlockAfterValidationDTO(BaseModel):

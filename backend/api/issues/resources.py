@@ -46,67 +46,69 @@ async def get(category_id: int):
     )
     return category_dto.model_dump(by_alias=True), 200
 
+
 @router.patch("/issues/categories/{category_id}/")
 @requires("authenticated")
 @tm.pm_only()
 async def patch(request: Request, category_id: int):
-        """
-        Update an existing mapping-issue category
-        ---
-        tags:
-            - issues
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: category_id
-              in: path
-              description: The unique mapping-issue category ID
-              required: true
-              type: integer
-              default: 1
-            - in: body
-              name: body
-              required: true
-              description: JSON object for updating a mapping-issue category
-              schema:
-                  properties:
-                      name:
-                          type: string
-                      description:
-                          type: string
-        responses:
-            200:
-                description: Mapping-issue category updated
-            400:
-                description: Invalid Request
-            401:
-                description: Unauthorized - Invalid credentials
-            404:
-                description: Mapping-issue category not found
-            500:
-                description: Internal Server Error
-        """
-        try:
-            category_dto = MappingIssueCategoryDTO(request.get_json())
-            category_dto.category_id = category_id
-            category_dto.validate()
-        except Exception as e:
-            logger.error(f"Error validating request: {str(e)}")
-            return {
-                "Error": "Unable to update mapping issue category",
-                "SubCode": "InvalidData",
-            }, 400
+    """
+    Update an existing mapping-issue category
+    ---
+    tags:
+        - issues
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: category_id
+          in: path
+          description: The unique mapping-issue category ID
+          required: true
+          type: integer
+          default: 1
+        - in: body
+          name: body
+          required: true
+          description: JSON object for updating a mapping-issue category
+          schema:
+              properties:
+                  name:
+                      type: string
+                  description:
+                      type: string
+    responses:
+        200:
+            description: Mapping-issue category updated
+        400:
+            description: Invalid Request
+        401:
+            description: Unauthorized - Invalid credentials
+        404:
+            description: Mapping-issue category not found
+        500:
+            description: Internal Server Error
+    """
+    try:
+        category_dto = MappingIssueCategoryDTO(request.get_json())
+        category_dto.category_id = category_id
+        category_dto.validate()
+    except Exception as e:
+        logger.error(f"Error validating request: {str(e)}")
+        return {
+            "Error": "Unable to update mapping issue category",
+            "SubCode": "InvalidData",
+        }, 400
 
-        updated_category = MappingIssueCategoryService.update_mapping_issue_category(
-            category_dto
-        )
-        return updated_category.model_dump(by_alias=True), 200
+    updated_category = MappingIssueCategoryService.update_mapping_issue_category(
+        category_dto
+    )
+    return updated_category.model_dump(by_alias=True), 200
+
 
 @router.delete("/issues/categories/{category_id}/")
 @requires("authenticated")
@@ -177,56 +179,57 @@ async def get(request: Request):
     )
     return categories.model_dump(by_alias=True), 200
 
+
 @router.post("/issues/categories/")
 @requires("authenticated")
 @tm.pm_only()
 def post(request: Request):
-        """
-        Creates a new mapping-issue category
-        ---
-        tags:
-            - issues
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - in: body
-              name: body
-              required: true
-              description: JSON object for creating a new mapping-issue category
-              schema:
-                  properties:
-                      name:
-                          type: string
-                          required: true
-                      description:
-                          type: string
-        responses:
-            200:
-                description: New mapping-issue category created
-            400:
-                description: Invalid Request
-            401:
-                description: Unauthorized - Invalid credentials
-            500:
-                description: Internal Server Error
-        """
-        try:
-            category_dto = MappingIssueCategoryDTO(request.json())
-            category_dto.validate()
-        except Exception as e:
-            logger.error(f"Error validating request: {str(e)}")
-            return {
-                "Error": "Unable to create a new mapping issue category",
-                "SubCode": "InvalidData",
-            }, 400
+    """
+    Creates a new mapping-issue category
+    ---
+    tags:
+        - issues
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - in: body
+          name: body
+          required: true
+          description: JSON object for creating a new mapping-issue category
+          schema:
+              properties:
+                  name:
+                      type: string
+                      required: true
+                  description:
+                      type: string
+    responses:
+        200:
+            description: New mapping-issue category created
+        400:
+            description: Invalid Request
+        401:
+            description: Unauthorized - Invalid credentials
+        500:
+            description: Internal Server Error
+    """
+    try:
+        category_dto = MappingIssueCategoryDTO(request.json())
+        category_dto.validate()
+    except Exception as e:
+        logger.error(f"Error validating request: {str(e)}")
+        return {
+            "Error": "Unable to create a new mapping issue category",
+            "SubCode": "InvalidData",
+        }, 400
 
-        new_category_id = MappingIssueCategoryService.create_mapping_issue_category(
-            category_dto
-        )
-        return {"categoryId": new_category_id}, 200
+    new_category_id = MappingIssueCategoryService.create_mapping_issue_category(
+        category_dto
+    )
+    return {"categoryId": new_category_id}, 200

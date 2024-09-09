@@ -1,5 +1,5 @@
 # from flask import current_app, request
-# from flask_restful import 
+# from flask_restful import
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
 from backend import osm
@@ -23,7 +23,6 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # class SystemAuthenticationLoginAPI():
 @router.get("/authentication/login/")
@@ -45,9 +44,7 @@ async def get(request: Request):
       200:
         description: oauth2 params
     """
-    redirect_uri = request.query_params.get(
-        "redirect_uri", settings.OAUTH_REDIRECT_URI
-    )
+    redirect_uri = request.query_params.get("redirect_uri", settings.OAUTH_REDIRECT_URI)
     authorize_url = f"{settings.OSM_SERVER_URL}/oauth2/authorize"
     state = AuthenticationService.generate_random_state()
 
@@ -56,6 +53,7 @@ async def get(request: Request):
 
     login_url, state = osm.authorization_url(authorize_url)
     return {"auth_url": login_url, "state": state}, 200
+
 
 # class SystemAuthenticationCallbackAPI():
 @router.get("/authentication/callback/")
@@ -101,9 +99,7 @@ async def get(request: Request, db: Database = Depends(get_db)):
         return {"SubCode": "InvalidData", "Error": "Missing code parameter"}, 400
 
     email = request.query_params.get("email_address", None)
-    redirect_uri = request.query_params.get(
-        "redirect_uri", settings.OAUTH_REDIRECT_URI
-    )
+    redirect_uri = request.query_params.get("redirect_uri", settings.OAUTH_REDIRECT_URI)
     osm.redirect_uri = redirect_uri
     try:
         osm_resp = osm.fetch_token(
@@ -134,11 +130,14 @@ async def get(request: Request, db: Database = Depends(get_db)):
         }, 502
 
     try:
-        user_params = await AuthenticationService.login_user(osm_response.json(), email, db)
+        user_params = await AuthenticationService.login_user(
+            osm_response.json(), email, db
+        )
         user_params["session"] = osm_resp
         return user_params, 200
     except AuthServiceError:
         return {"Error": "Unable to authenticate", "SubCode": "AuthError"}, 500
+
 
 # class SystemAuthenticationEmailAPI():
 @router.get("/authentication/email/")

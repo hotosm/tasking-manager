@@ -1,10 +1,16 @@
 from fastapi import HTTPException
 from databases import Database
-from sqlalchemy.orm import selectinload
-from sqlalchemy import select
 from slugify import slugify
 
-from sqlalchemy import Column, Integer, String, DateTime, BigInteger, ForeignKey, Table, UniqueConstraint
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    BigInteger,
+    ForeignKey,
+    Table,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import relationship, backref
 from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import (
@@ -17,6 +23,7 @@ from backend.models.postgis.user import User
 from backend.models.postgis.campaign import Campaign, campaign_organisations
 from backend.models.postgis.statuses import OrganisationType
 from backend.db import Base, get_session
+
 session = get_session()
 
 
@@ -24,9 +31,7 @@ session = get_session()
 organisation_managers = Table(
     "organisation_managers",
     Base.metadata,
-    Column(
-        "organisation_id", Integer, ForeignKey("organisations.id"), nullable=False
-    ),
+    Column("organisation_id", Integer, ForeignKey("organisations.id"), nullable=False),
     Column("user_id", BigInteger, ForeignKey("users.id"), nullable=False),
     UniqueConstraint("organisation_id", "user_id", name="organisation_user_key"),
 )
@@ -101,7 +106,10 @@ class Organisation(Base):
                     INSERT INTO organisation_managers (organisation_id, user_id)
                     VALUES (:organisation_id, :user_id)
                     """
-                    await db.execute(manager_query, {"organisation_id": organisation_id, "user_id": user.id})
+                    await db.execute(
+                        manager_query,
+                        {"organisation_id": organisation_id, "user_id": user.id},
+                    )
 
                 return organisation_id
 
@@ -114,41 +122,48 @@ class Organisation(Base):
             try:
                 org_id = organisation_dto.organisation_id
                 org_dict = organisation_dto.dict(exclude_unset=True)
-                if 'type' in org_dict and org_dict['type'] is not None:
-                    org_dict['type'] = OrganisationType[org_dict['type'].upper()].value
+                if "type" in org_dict and org_dict["type"] is not None:
+                    org_dict["type"] = OrganisationType[org_dict["type"].upper()].value
 
-                update_keys = {key: org_dict[key]
-                               for key in org_dict.keys() if key not in ["organisation_id", "managers"]}
+                update_keys = {
+                    key: org_dict[key]
+                    for key in org_dict.keys()
+                    if key not in ["organisation_id", "managers"]
+                }
                 set_clause = ", ".join(f"{key} = :{key}" for key in update_keys.keys())
                 update_query = f"""
                 UPDATE organisations
                 SET {set_clause}
                 WHERE id = :id
                 """
-                await db.execute(update_query, values={**update_keys, 'id': org_id})
+                await db.execute(update_query, values={**update_keys, "id": org_id})
 
                 if organisation_dto.managers:
                     clear_managers_query = """
                     DELETE FROM organisation_managers
                     WHERE organisation_id = :id
                     """
-                    await db.execute(clear_managers_query, values={'id': org_id})
+                    await db.execute(clear_managers_query, values={"id": org_id})
 
                     for manager_username in organisation_dto.managers:
                         user_query = "SELECT id FROM users WHERE username = :username"
-                        user = await db.fetch_one(user_query, {"username": manager_username})
+                        user = await db.fetch_one(
+                            user_query, {"username": manager_username}
+                        )
 
                         if not user:
-                            raise NotFound(sub_code="USER_NOT_FOUND", username=manager_username)
+                            raise NotFound(
+                                sub_code="USER_NOT_FOUND", username=manager_username
+                            )
 
                         insert_manager_query = """
                         INSERT INTO organisation_managers (organisation_id, user_id)
                         VALUES (:organisation_id, :user_id)
                         """
-                        await db.execute(insert_manager_query, {
-                            'organisation_id': org_id,
-                            'user_id': user.id
-                        })
+                        await db.execute(
+                            insert_manager_query,
+                            {"organisation_id": org_id, "user_id": user.id},
+                        )
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e)) from e
 
@@ -160,18 +175,22 @@ class Organisation(Base):
     async def can_be_deleted(organisation_id: int, db) -> bool:
         # Check if the organization has any projects
         projects_query = """
-            SELECT COUNT(*) 
-            FROM projects 
+            SELECT COUNT(*)
+            FROM projects
             WHERE organisation_id = :organisation_id
         """
-        projects_count = await db.fetch_val(projects_query, values={"organisation_id": organisation_id})
+        projects_count = await db.fetch_val(
+            projects_query, values={"organisation_id": organisation_id}
+        )
         # Check if the organization has any teams
         teams_query = """
-            SELECT COUNT(*) 
-            FROM teams 
+            SELECT COUNT(*)
+            FROM teams
             WHERE organisation_id = :organisation_id
         """
-        teams_count = await db.fetch_val(teams_query, values={"organisation_id": organisation_id})
+        teams_count = await db.fetch_val(
+            teams_query, values={"organisation_id": organisation_id}
+        )
         # Organisation can be deleted if it has no projects and no teams
         return projects_count == 0 and teams_count == 0
 
@@ -217,7 +236,7 @@ class Organisation(Base):
                 o.logo,
                 o.description,
                 o.url,
-                CASE 
+                CASE
                     WHEN o.type = 1 THEN 'FREE'
                     WHEN o.type = 2 THEN 'DISCOUNTED'
                     WHEN o.type = 3 THEN 'FULL_FEE'
@@ -241,7 +260,6 @@ class Organisation(Base):
         result = await db.fetch_all(query)
         return result
 
-
     @staticmethod
     async def get_organisations_managed_by_user(user_id: int, db: Database):
         """Gets organisations a user can manage"""
@@ -253,7 +271,7 @@ class Organisation(Base):
             o.logo,
             o.description,
             o.url,
-            CASE 
+            CASE
                 WHEN o.type = {OrganisationType.FREE.value} THEN 'FREE'
                 WHEN o.type = {OrganisationType.DISCOUNTED.value} THEN 'DISCOUNTED'
                 WHEN o.type = {OrganisationType.FULL_FEE.value} THEN 'FULL_FEE'
@@ -282,7 +300,7 @@ class Organisation(Base):
 
     async def fetch_managers(self, session):
         """Fetch managers asynchronously"""
-        await session.refresh(self, ['managers'])
+        await session.refresh(self, ["managers"])
 
     def as_dto(self, omit_managers=False):
         """Returns a dto for an organisation"""

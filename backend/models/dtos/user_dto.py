@@ -69,21 +69,18 @@ class UserDTO(BaseModel):
     )
     projects_notifications: bool = Field(None, alias="projectsNotifications")
     tasks_notifications: bool = Field(None, alias="tasksNotifications")
-    tasks_comments_notifications: bool = Field(
-        None, alias="taskCommentsNotifications"
-    )
+    tasks_comments_notifications: bool = Field(None, alias="taskCommentsNotifications")
     teams_announcement_notifications: bool = Field(
         None, alias="teamsAnnouncementNotifications"
     )
 
     # these are read only
     gender: Optional[str] = Field(
-        None, alias="gender",
+        None,
+        alias="gender",
         choices=("MALE", "FEMALE", "SELF_DESCRIBE", "PREFER_NOT"),
     )
-    self_description_gender: Optional[str] = Field(
-        None, alias="selfDescriptionGender"
-    )
+    self_description_gender: Optional[str] = Field(None, alias="selfDescriptionGender")
 
     def validate_self_description(self, data, value):
         if (
@@ -126,7 +123,9 @@ class UserStatsDTO(BaseModel):
     time_spent_mapping: int = Field(alias="timeSpentMapping")
     time_spent_validating: int = Field(alias="timeSpentValidating")
     projects_mapped: int = Field(alias="projectsMapped")
-    countries_contributed: UserCountriesContributed = Field(alias="countriesContributed")
+    countries_contributed: UserCountriesContributed = Field(
+        alias="countriesContributed"
+    )
     contributions_by_day: List[UserContributionDTO] = Field(alias="contributionsByDay")
     tasks_mapped: int = Field(alias="tasksMapped")
     tasks_validated: int = Field(alias="tasksValidated")
@@ -142,6 +141,7 @@ class UserOSMDTO(BaseModel):
     account_created: Optional[str] = Field(None, alias="accountCreated")
     changeset_count: Optional[int] = Field(None, alias="changesetCount")
 
+
 class MappedProject(BaseModel):
     """Describes a single project a user has mapped"""
 
@@ -150,7 +150,7 @@ class MappedProject(BaseModel):
     tasks_mapped: Optional[int] = Field(None, alias="tasksMapped")
     tasks_validated: Optional[int] = Field(None, alias="tasksValidated")
     status: Optional[str] = None
-    centroid: Optional[str] = None  
+    centroid: Optional[str] = None
 
     class Config:
         populate_by_name = True
@@ -159,7 +159,9 @@ class MappedProject(BaseModel):
 class UserMappedProjectsDTO(BaseModel):
     """DTO for projects a user has mapped"""
 
-    mapped_projects: Optional[List[MappedProject]] = Field(default_factory=list, alias="mappedProjects")
+    mapped_projects: Optional[List[MappedProject]] = Field(
+        default_factory=list, alias="mappedProjects"
+    )
 
     class Config:
         populate_by_name = True

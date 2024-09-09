@@ -5,7 +5,6 @@ from backend.services.grid.split_service import SplitService, SplitServiceError
 from backend.services.users.user_service import UserService
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
-from backend.services.users.authentication_service import tm
 from backend.models.dtos.validator_dto import (
     LockForValidationDTO,
     UnlockAfterValidationDTO,
@@ -35,6 +34,7 @@ router = APIRouter(
     dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.post("{project_id}/tasks/actions/lock-for-mapping/{task_id}/")
 @requires("authenticated")
@@ -172,9 +172,7 @@ async def post(request: Request, project_id: int, task_id: int):
             description: Internal Server Error
     """
     try:
-        stop_task = StopMappingTaskDTO(
-            request.json() if request else {}
-        )
+        stop_task = StopMappingTaskDTO(request.json() if request else {})
         stop_task.user_id = request.user.display_name
         stop_task.task_id = task_id
         stop_task.project_id = project_id
@@ -863,9 +861,7 @@ async def post(request: Request, project_id: int, task_id: int):
         split_task_dto.user_id = request.user.display_name
         split_task_dto.project_id = project_id
         split_task_dto.task_id = task_id
-        split_task_dto.preferred_locale = request.environ.get(
-            "HTTP_ACCEPT_LANGUAGE"
-        )
+        split_task_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
         split_task_dto.validate()
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")

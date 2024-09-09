@@ -1,12 +1,7 @@
 from backend.models.dtos.licenses_dto import LicenseDTO
-from backend.models.dtos.user_dto import AuthUserDTO
-from backend.models.postgis.user import User
 from backend.services.license_service import LicenseService
-from backend.services.users.authentication_service import tm, login_required
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from backend.db import get_session
-from starlette.authentication import requires
-from loguru import logger
 from databases import Database
 from backend.db import get_db
 

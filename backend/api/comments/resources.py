@@ -17,6 +17,7 @@ from loguru import logger
 from databases import Database
 from backend.db import get_db
 from datetime import datetime
+
 session = get_session()
 
 
@@ -26,6 +27,7 @@ router = APIRouter(
     dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.post("/{project_id}/comments/")
 async def post(
@@ -78,7 +80,11 @@ async def post(
     request_json = await request.json()
     message = request_json.get("message")
     chat_dto = ChatMessageDTO(
-        message=message, user_id=user.id, project_id=project_id, timestamp=datetime.now(), username=user.username
+        message=message,
+        user_id=user.id,
+        project_id=project_id,
+        timestamp=datetime.now(),
+        username=user.username,
     )
     try:
         project_messages = await ChatService.post_message(
@@ -87,6 +93,7 @@ async def post(
         return project_messages
     except ValueError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+
 
 @router.get("/{project_id}/comments/")
 async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
@@ -123,212 +130,215 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             description: Internal Server Error
     """
     await ProjectService.exists(project_id, db)
-    page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
+    page = (
+        int(request.query_params.get("page")) if request.query_params.get("page") else 1
+    )
     per_page = int(request.query_params.get("perPage", 20))
     project_messages = await ChatService.get_messages(project_id, db, page, per_page)
     return project_messages
 
 
 # class CommentsProjectsRestAPI():
-    # @token_auth.login_required
+# @token_auth.login_required
 @router.delete("/{project_id}/comments/{comment_id}/")
 async def delete(
-    project_id: int, 
+    project_id: int,
     comment_id: int,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
 ):
-        """
-        Delete a chat message
-        ---
-        tags:
-          - comments
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: project_id
-              in: path
-              description: Project ID to attach the chat message to
-              required: true
-              type: integer
-              default: 1
-            - name: comment_id
-              in: path
-              description: Comment ID to delete
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: Comment deleted
-            403:
-                description: User is not authorized to delete comment
-            404:
-                description: Comment not found
-            500:
-                description: Internal Server Error
-        """
-        authenticated_user_id = user.id
-        try:
-            await ChatService.delete_project_chat_by_id(
-                project_id, comment_id, authenticated_user_id, db
-            )
-            return {"Success": "Comment deleted"}, 200
-        except ValueError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+    """
+    Delete a chat message
+    ---
+    tags:
+      - comments
+    produces:
+      - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: project_id
+          in: path
+          description: Project ID to attach the chat message to
+          required: true
+          type: integer
+          default: 1
+        - name: comment_id
+          in: path
+          description: Comment ID to delete
+          required: true
+          type: integer
+          default: 1
+    responses:
+        200:
+            description: Comment deleted
+        403:
+            description: User is not authorized to delete comment
+        404:
+            description: Comment not found
+        500:
+            description: Internal Server Error
+    """
+    authenticated_user_id = user.id
+    try:
+        await ChatService.delete_project_chat_by_id(
+            project_id, comment_id, authenticated_user_id, db
+        )
+        return {"Success": "Comment deleted"}, 200
+    except ValueError as e:
+        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
 # class CommentsTasksRestAPI():
-    # @token_auth.login_required
+# @token_auth.login_required
 @router.post("/{project_id}/comments/tasks/{task_id}/")
 @requires("authenticated")
 @tm.pm_only(False)
 def post(request: Request, project_id: int, task_id: int):
-        """
-        Adds a comment to the task outside of mapping/validation
-        ---
-        tags:
-            - comments
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: project_id
-              in: path
-              description: Project ID the task is associated with
-              required: true
-              type: integer
-              default: 1
-            - name: task_id
-              in: path
-              description: Unique task ID
-              required: true
-              type: integer
-              default: 1
-            - in: body
-              name: body
-              required: true
-              description: JSON object representing the comment
-              schema:
-                id: TaskComment
-                required:
-                    - comment
-                properties:
-                    comment:
-                        type: string
-                        description: user comment about the task
-        responses:
-            200:
-                description: Comment added
-            400:
-                description: Client Error
-            401:
-                description: Unauthorized - Invalid credentials
-            403:
-                description: Forbidden
-            404:
-                description: Task not found
-            500:
-                description: Internal Server Error
-        """
-        authenticated_user_id = request.user.display_name
-        if UserService.is_user_blocked(authenticated_user_id):
-            return {"Error": "User is on read only mode", "SubCode": "ReadOnly"}, 403
+    """
+    Adds a comment to the task outside of mapping/validation
+    ---
+    tags:
+        - comments
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: project_id
+          in: path
+          description: Project ID the task is associated with
+          required: true
+          type: integer
+          default: 1
+        - name: task_id
+          in: path
+          description: Unique task ID
+          required: true
+          type: integer
+          default: 1
+        - in: body
+          name: body
+          required: true
+          description: JSON object representing the comment
+          schema:
+            id: TaskComment
+            required:
+                - comment
+            properties:
+                comment:
+                    type: string
+                    description: user comment about the task
+    responses:
+        200:
+            description: Comment added
+        400:
+            description: Client Error
+        401:
+            description: Unauthorized - Invalid credentials
+        403:
+            description: Forbidden
+        404:
+            description: Task not found
+        500:
+            description: Internal Server Error
+    """
+    authenticated_user_id = request.user.display_name
+    if UserService.is_user_blocked(authenticated_user_id):
+        return {"Error": "User is on read only mode", "SubCode": "ReadOnly"}, 403
 
-        try:
-            task_comment = TaskCommentDTO(request.json())
-            task_comment.user_id = request.user.display_name
-            task_comment.task_id = task_id
-            task_comment.project_id = project_id
-            task_comment.validate()
-        except Exception as e:
-            logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to add comment", "SubCode": "InvalidData"}, 400
+    try:
+        task_comment = TaskCommentDTO(request.json())
+        task_comment.user_id = request.user.display_name
+        task_comment.task_id = task_id
+        task_comment.project_id = project_id
+        task_comment.validate()
+    except Exception as e:
+        logger.error(f"Error validating request: {str(e)}")
+        return {"Error": "Unable to add comment", "SubCode": "InvalidData"}, 400
 
-        try:
-            task = MappingService.add_task_comment(task_comment)
-            return task.model_dump(by_alias=True), 201
-        except MappingServiceError:
-            return {"Error": "Task update failed"}, 403
+    try:
+        task = MappingService.add_task_comment(task_comment)
+        return task.model_dump(by_alias=True), 201
+    except MappingServiceError:
+        return {"Error": "Task update failed"}, 403
+
 
 @router.get("/{project_id}/comments/tasks/{task_id}/")
 async def get(request: Request, project_id, task_id):
-        """
-        Get comments for a task
-        ---
-        tags:
-            - comments
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: project_id
-              in: path
-              description: Project ID the task is associated with
-              required: true
-              type: integer
-              default: 1
-            - name: task_id
-              in: path
-              description: Unique task ID
-              required: true
-              type: integer
-              default: 1
-            - in: body
-              name: body
-              required: true
-              description: JSON object representing the comment
-              schema:
-                id: TaskComment
-                required:
-                    - comment
-                properties:
-                    comment:
-                        type: string
-                        description: user comment about the task
-        responses:
-            200:
-                description: Comment retrieved
-            400:
-                description: Client Error
-            404:
-                description: Task not found
-            500:
-                description: Internal Server Error
-        """
-        try:
-            task_comment = TaskCommentDTO(request.json())
-            task_comment.user_id = request.user.display_name
-            task_comment.task_id = task_id
-            task_comment.project_id = project_id
-            task_comment.validate()
-        except Exception as e:
-            logger.error(f"Error validating request: {str(e)}")
-            return {
-                "Error": "Unable to fetch task comments",
-                "SubCode": "InvalidData",
-            }, 400
+    """
+    Get comments for a task
+    ---
+    tags:
+        - comments
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: project_id
+          in: path
+          description: Project ID the task is associated with
+          required: true
+          type: integer
+          default: 1
+        - name: task_id
+          in: path
+          description: Unique task ID
+          required: true
+          type: integer
+          default: 1
+        - in: body
+          name: body
+          required: true
+          description: JSON object representing the comment
+          schema:
+            id: TaskComment
+            required:
+                - comment
+            properties:
+                comment:
+                    type: string
+                    description: user comment about the task
+    responses:
+        200:
+            description: Comment retrieved
+        400:
+            description: Client Error
+        404:
+            description: Task not found
+        500:
+            description: Internal Server Error
+    """
+    try:
+        task_comment = TaskCommentDTO(request.json())
+        task_comment.user_id = request.user.display_name
+        task_comment.task_id = task_id
+        task_comment.project_id = project_id
+        task_comment.validate()
+    except Exception as e:
+        logger.error(f"Error validating request: {str(e)}")
+        return {
+            "Error": "Unable to fetch task comments",
+            "SubCode": "InvalidData",
+        }, 400
 
-        try:
-            # NEW FUNCTION HAS TO BE ADDED
-            # task = MappingService.add_task_comment(task_comment)
-            # return task.model_dump(by_alias=True), 200
-            return
-        except MappingServiceError as e:
-            return {"Error": str(e)}, 403
+    try:
+        # NEW FUNCTION HAS TO BE ADDED
+        # task = MappingService.add_task_comment(task_comment)
+        # return task.model_dump(by_alias=True), 200
+        return
+    except MappingServiceError as e:
+        return {"Error": str(e)}, 403

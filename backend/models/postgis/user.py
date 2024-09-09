@@ -1,9 +1,7 @@
 import geojson
-import sqlalchemy as sa
 from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Boolean, ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy import desc, func
-from geoalchemy2 import functions
 
 from backend.exceptions import NotFound
 from backend.models.dtos.user_dto import (
@@ -29,10 +27,10 @@ from backend.models.postgis.statuses import (
 from backend.models.postgis.utils import timestamp
 from backend.models.postgis.interests import Interest, user_interests
 from backend.db import Base, get_session
+
 session = get_session()
-from sqlalchemy import select
 from databases import Database
-from sqlalchemy import text
+
 
 class User(Base):
     """Describes the history associated with a task"""
@@ -64,15 +62,11 @@ class User(Base):
     self_description_gender = Column(String)
     default_editor = Column(String, default="ID", nullable=False)
     mentions_notifications = Column(Boolean, default=True, nullable=False)
-    projects_comments_notifications = Column(
-        Boolean, default=False, nullable=False
-    )
+    projects_comments_notifications = Column(Boolean, default=False, nullable=False)
     projects_notifications = Column(Boolean, default=True, nullable=False)
     tasks_notifications = Column(Boolean, default=True, nullable=False)
     tasks_comments_notifications = Column(Boolean, default=False, nullable=False)
-    teams_announcement_notifications = Column(
-        Boolean, default=True, nullable=False
-    )
+    teams_announcement_notifications = Column(Boolean, default=True, nullable=False)
     date_registered = Column(DateTime, default=timestamp)
     # Represents the date the user last had one of their tasks validated
     last_validation_date = Column(DateTime, default=timestamp)
@@ -121,7 +115,7 @@ class User(Base):
         # Execute the query and fetch the result
         result = await db.fetch_one(query, values={"username": username})
         return result if result else None
-    
+
     def update_username(self, username: str):
         """Update the username"""
         self.username = username
@@ -265,7 +259,7 @@ class User(Base):
         user.projects_mapped.append(project_id)
         session.commit()
 
-    #TODO Optimization: Get only project name instead of all the locale attributes. 
+    # TODO Optimization: Get only project name instead of all the locale attributes.
     @staticmethod
     async def get_mapped_projects(
         user_id: int, preferred_locale: str, db: Database
@@ -327,7 +321,6 @@ class User(Base):
             mapped_projects_dto.mapped_projects.append(mapped_project)
         return mapped_projects_dto
 
-
     def set_user_role(self, role: UserRole):
         """Sets the supplied role on the user"""
         self.role = role.value
@@ -345,14 +338,18 @@ class User(Base):
         query_check = """
             SELECT 1 FROM user_licenses WHERE "user" = :user_id AND "license" = :license_id
         """
-        record = await db.fetch_one(query_check, values={"user_id": user_id, "license_id": license_id})
-        
+        record = await db.fetch_one(
+            query_check, values={"user_id": user_id, "license_id": license_id}
+        )
+
         if not record:
             query = """
                 INSERT INTO user_licenses ("user", "license")
                 VALUES (:user_id, :license_id)
             """
-            await db.execute(query, values={"user_id": user_id, "license_id": license_id})
+            await db.execute(
+                query, values={"user_id": user_id, "license_id": license_id}
+            )
 
     def has_user_accepted_licence(self, license_id: int):
         """Test to see if the user has accepted the terms of the specified license"""

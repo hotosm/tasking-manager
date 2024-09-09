@@ -12,6 +12,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get("/statistics/")
 @requires("authenticated")
 async def get(request: Request):
@@ -77,7 +78,9 @@ async def get(request: Request):
                 "Error": "Start date is required",
                 "SubCode": "MissingDate",
             }, 400
-        end_date = validate_date_input(request.query_params.get("endDate", date.today()))
+        end_date = validate_date_input(
+            request.query_params.get("endDate", date.today())
+        )
         if end_date < start_date:
             raise ValueError(
                 "InvalidDateRange- Start date must be earlier than end date"

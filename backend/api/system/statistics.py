@@ -10,6 +10,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get("/statistics/")
 async def get(request: Request, session=Depends(get_session)):
     """

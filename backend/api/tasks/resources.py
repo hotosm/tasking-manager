@@ -24,6 +24,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get("/{project_id}/tasks/{task_id}/")
 async def get(request: Request, project_id: int, task_id: int):
     """
@@ -103,7 +104,11 @@ async def get(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        tasks = request.query_params.get("tasks") if request.query_params.get("tasks") else None
+        tasks = (
+            request.query_params.get("tasks")
+            if request.query_params.get("tasks")
+            else None
+        )
         as_file = (
             strtobool(request.query_params.get("as_file"))
             if request.query_params.get("as_file")
@@ -124,6 +129,7 @@ async def get(request: Request, project_id: int):
         return tasks_json, 200
     except ProjectServiceError as e:
         return {"Error": str(e)}, 403
+
 
 @router.delete("/{project_id}/tasks/")
 @requires("authenticated")
@@ -231,7 +237,9 @@ async def get(request: Request, project_id: int):
         500:
             description: Internal Server Error
     """
-    tasks = request.query_params.get("tasks") if request.query_params.get("tasks") else None
+    tasks = (
+        request.query_params.get("tasks") if request.query_params.get("tasks") else None
+    )
     as_file = (
         strtobool(request.query_params.get("as_file"))
         if request.query_params.get("as_file")
@@ -412,92 +420,92 @@ async def get(project_id: int):
 @router.get("/{username}/tasks/queries/own/invalidated/")
 @requires("authenticated")
 async def get(request: Request, username: str):
-        """
-        Get invalidated tasks either mapped by user or invalidated by user
-        ---
-        tags:
-            - tasks
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - in: header
-              name: Accept-Language
-              description: Language user is requesting
-              type: string
-              required: true
-              default: en
-            - name: username
-              in: path
-              description: The users username
-              required: true
-              type: string
-            - in: query
-              name: asValidator
-              description: treats user as validator, rather than mapper, if true
-              type: string
-            - in: query
-              name: sortBy
-              description: field to sort by, defaults to action_date
-              type: string
-            - in: query
-              name: sortDirection
-              description: direction of sort, defaults to desc
-              type: string
-            - in: query
-              name: page
-              description: Page of results user requested
-              type: integer
-            - in: query
-              name: pageSize
-              description: Size of page, defaults to 10
-              type: integer
-            - in: query
-              name: project
-              description: Optional project filter
-              type: integer
-            - in: query
-              name: closed
-              description: Optional filter for open/closed invalidations
-              type: boolean
-        responses:
-            200:
-                description: Invalidated tasks user has invalidated
-            404:
-                description: No invalidated tasks
-            500:
-                description: Internal Server Error
-        """
-        sort_column = {"updatedDate": "updated_date", "projectId": "project_id"}
-        if request.query_params.get("sortBy", "updatedDate") in sort_column:
-            sort_column = sort_column[request.query_params.get("sortBy", "updatedDate")]
-        else:
-            sort_column = sort_column["updatedDate"]
-        # closed needs to be set to True, False, or None
-        closed = None
-        if request.query_params.get("closed") == "true":
-            closed = True
-        elif request.query_params.get("closed") == "false":
-            closed = False
-        # sort direction should only be desc or asc
-        if request.query_params.get("sortDirection") in ["asc", "desc"]:
-            sort_direction = request.query_params.get("sortDirection")
-        else:
-            sort_direction = "desc"
-        invalidated_tasks = ValidatorService.get_user_invalidated_tasks(
-            request.query_params.get("asValidator") == "true",
-            username,
-            request.environ.get("HTTP_ACCEPT_LANGUAGE"),
-            closed,
-            request.query_params.get("project", None),
-            request.query_params.get("page", None),
-            request.query_params.get("pageSize", None),
-            sort_column,
-            sort_direction,
-        )
-        return invalidated_tasks.model_dump(by_alias=True), 200
+    """
+    Get invalidated tasks either mapped by user or invalidated by user
+    ---
+    tags:
+        - tasks
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - in: header
+          name: Accept-Language
+          description: Language user is requesting
+          type: string
+          required: true
+          default: en
+        - name: username
+          in: path
+          description: The users username
+          required: true
+          type: string
+        - in: query
+          name: asValidator
+          description: treats user as validator, rather than mapper, if true
+          type: string
+        - in: query
+          name: sortBy
+          description: field to sort by, defaults to action_date
+          type: string
+        - in: query
+          name: sortDirection
+          description: direction of sort, defaults to desc
+          type: string
+        - in: query
+          name: page
+          description: Page of results user requested
+          type: integer
+        - in: query
+          name: pageSize
+          description: Size of page, defaults to 10
+          type: integer
+        - in: query
+          name: project
+          description: Optional project filter
+          type: integer
+        - in: query
+          name: closed
+          description: Optional filter for open/closed invalidations
+          type: boolean
+    responses:
+        200:
+            description: Invalidated tasks user has invalidated
+        404:
+            description: No invalidated tasks
+        500:
+            description: Internal Server Error
+    """
+    sort_column = {"updatedDate": "updated_date", "projectId": "project_id"}
+    if request.query_params.get("sortBy", "updatedDate") in sort_column:
+        sort_column = sort_column[request.query_params.get("sortBy", "updatedDate")]
+    else:
+        sort_column = sort_column["updatedDate"]
+    # closed needs to be set to True, False, or None
+    closed = None
+    if request.query_params.get("closed") == "true":
+        closed = True
+    elif request.query_params.get("closed") == "false":
+        closed = False
+    # sort direction should only be desc or asc
+    if request.query_params.get("sortDirection") in ["asc", "desc"]:
+        sort_direction = request.query_params.get("sortDirection")
+    else:
+        sort_direction = "desc"
+    invalidated_tasks = ValidatorService.get_user_invalidated_tasks(
+        request.query_params.get("asValidator") == "true",
+        username,
+        request.environ.get("HTTP_ACCEPT_LANGUAGE"),
+        closed,
+        request.query_params.get("project", None),
+        request.query_params.get("page", None),
+        request.query_params.get("pageSize", None),
+        sort_column,
+        sort_direction,
+    )
+    return invalidated_tasks.model_dump(by_alias=True), 200

@@ -5,12 +5,11 @@ from backend.models.dtos.campaign_dto import CampaignProjectDTO
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.project_admin_service import ProjectAdminService
+
 # from backend.services.users.authentication_service import token_auth
 from backend.services.users.authentication_service import login_required
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from backend.db import get_db, get_session
-from starlette.authentication import requires
-from sqlalchemy.ext.asyncio import AsyncSession
 from databases import Database
 
 
@@ -20,6 +19,7 @@ router = APIRouter(
     dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.post("/{project_id}/campaigns/{campaign_id}/")
 async def post(
@@ -73,28 +73,30 @@ async def post(
             "Error": "User is not a manager of the project",
             "SubCode": "UserPermissionError",
         }, 403
-    
+
     # Check if the project is already assigned to the campaign
     query = """
     SELECT COUNT(*)
     FROM campaign_projects
     WHERE project_id = :project_id AND campaign_id = :campaign_id
     """
-    result = await db.fetch_val(query, values={"project_id": project_id, "campaign_id": campaign_id})
+    result = await db.fetch_val(
+        query, values={"project_id": project_id, "campaign_id": campaign_id}
+    )
 
     if result > 0:
         return {
             "Error": "Project is already assigned to this campaign",
             "SubCode": "CampaignAssignmentError",
         }, 400
-    
-    campaign_project_dto = CampaignProjectDTO(project_id=project_id,campaign_id=campaign_id )
+
+    campaign_project_dto = CampaignProjectDTO(
+        project_id=project_id, campaign_id=campaign_id
+    )
 
     await CampaignService.create_campaign_project(campaign_project_dto, db)
-    message = (
-        "campaign with id {} assigned successfully for project with id {}".format(
-            campaign_id, project_id
-        )
+    message = "campaign with id {} assigned successfully for project with id {}".format(
+        campaign_id, project_id
     )
     return ({"Success": message}, 200)
 

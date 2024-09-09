@@ -12,18 +12,24 @@ from typing import Optional, List
 #     count_projects = IntType(serialize_when_none=False, serialized_name="countProjects")
 #     count_users = IntType(serialize_when_none=False, serialized_name="countUsers")
 
+
 class InterestDTO(BaseModel):
     id: Optional[int] = None
     name: Optional[str] = Field(default=None, min_length=1)
-    user_selected: Optional[bool] = Field(serialization_alias="userSelected", default=None, none_if_default=True)
-    count_projects: Optional[int] = Field(serialize=False, serialization_alias="countProjects", default=None)
-    count_users: Optional[int] = Field(serialize=False, serialization_alias="countUsers", default=None)
+    user_selected: Optional[bool] = Field(
+        serialization_alias="userSelected", default=None, none_if_default=True
+    )
+    count_projects: Optional[int] = Field(
+        serialize=False, serialization_alias="countProjects", default=None
+    )
+    count_users: Optional[int] = Field(
+        serialize=False, serialization_alias="countUsers", default=None
+    )
 
 
 class ListInterestDTO(BaseModel):
     id: Optional[int] = None
     name: Optional[str] = Field(default=None, min_length=1)
-
 
 
 class InterestsListDTO(BaseModel):

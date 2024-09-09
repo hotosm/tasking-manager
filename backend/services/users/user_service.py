@@ -1,12 +1,11 @@
 from cachetools import TTLCache, cached
+
 # # from flask import current_app
 import datetime
 from sqlalchemy.sql.expression import literal
 from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column
-from sqlalchemy import select
 
 from backend.exceptions import NotFound
-from backend import db
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
 from backend.models.dtos.user_dto import (
     UserDTO,
@@ -20,7 +19,11 @@ from backend.models.dtos.user_dto import (
     UserCountryContributed,
     UserCountriesContributed,
 )
-from backend.models.dtos.interests_dto import InterestsListDTO, InterestDTO, ListInterestDTO
+from backend.models.dtos.interests_dto import (
+    InterestsListDTO,
+    InterestDTO,
+    ListInterestDTO,
+)
 from backend.models.postgis.interests import Interest, project_interests
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.project import Project
@@ -36,6 +39,7 @@ from backend.services.messaging.template_service import (
     template_var_replacing,
 )
 from backend.db import get_session
+
 session = get_session()
 from databases import Database
 
@@ -51,7 +55,6 @@ class UserServiceError(Exception):
 
 
 class UserService:
-
     @staticmethod
     async def get_user_by_id(user_id: int, db: Database) -> User:
         user = await User.get_by_id(user_id, db)
@@ -72,7 +75,8 @@ class UserService:
     def get_contributions_by_day(user_id: int):
         # Validate that user exists.
         stats = (
-            session.query(TaskHistory).with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 func.DATE(TaskHistory.action_date).label("day"),
                 func.count(TaskHistory.action).label("cnt"),
             )
@@ -111,7 +115,9 @@ class UserService:
         return users
 
     @staticmethod
-    async def update_user(user_id: int, osm_username: str, picture_url: str, session) -> User:
+    async def update_user(
+        user_id: int, osm_username: str, picture_url: str, session
+    ) -> User:
         user = await UserService.get_user_by_id(user_id)
         if user.username != osm_username:
             user.update_username(osm_username)
@@ -196,7 +202,8 @@ class UserService:
     def get_interests_stats(user_id):
         # Get all projects that the user has contributed.
         stmt = (
-            session.query(TaskHistory).with_entities(TaskHistory.project_id)
+            session.query(TaskHistory)
+            .with_entities(TaskHistory.project_id)
             .distinct()
             .filter(TaskHistory.user_id == user_id)
         )
@@ -241,7 +248,8 @@ class UserService:
         sort_by: str = None,
     ) -> UserTaskDTOs:
         base_query = (
-            session.query(TaskHistory).with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 TaskHistory.project_id.label("project_id"),
                 TaskHistory.task_id.label("task_id"),
                 func.max(TaskHistory.action_date).label("max"),
@@ -265,7 +273,8 @@ class UserService:
         task_id_list = base_query.subquery()
 
         comments_query = (
-            session.query(TaskHistory).with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 TaskHistory.project_id,
                 TaskHistory.task_id,
                 func.count(TaskHistory.action).label("count"),
@@ -350,7 +359,8 @@ class UserService:
 
         # Get only rows with the given actions.
         filtered_actions = (
-            session.query(TaskHistory).with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 TaskHistory.user_id,
                 TaskHistory.project_id,
                 TaskHistory.task_id,
@@ -426,7 +436,8 @@ class UserService:
         stats_dto.time_spent_validating = 0
 
         query = (
-            session.query(TaskHistory).with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 func.date_trunc("minute", TaskHistory.action_date).label("trn"),
                 func.max(TaskHistory.action_text).label("tm"),
             )
@@ -551,7 +562,8 @@ class UserService:
     @staticmethod
     def get_countries_contributed(user_id: int):
         query = (
-            session.query(TaskHistory).with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 func.unnest(Project.country).label("country"),
                 TaskHistory.action_text,
                 func.count(TaskHistory.action_text).label("count"),
@@ -622,7 +634,8 @@ class UserService:
 
         limit = 20
         user = (
-            session.query(User).with_entities(User.id, User.mapping_level)
+            session.query(User)
+            .with_entities(User.id, User.mapping_level)
             .filter(User.username == user_name)
             .one_or_none()
         )
@@ -631,14 +644,16 @@ class UserService:
 
         # Get all projects that the user has contributed
         sq = (
-            session.query(TaskHistory).with_entities(TaskHistory.project_id.label("project_id"))
+            session.query(TaskHistory)
+            .with_entities(TaskHistory.project_id.label("project_id"))
             .distinct(TaskHistory.project_id)
             .filter(TaskHistory.user_id == user.id)
             .subquery()
         )
         # Get all campaigns for all contributed projects.
         campaign_tags = (
-            session.query(Project).with_entities(Project.campaign.label("tag"))
+            session.query(Project)
+            .with_entities(Project.campaign.label("tag"))
             .filter(or_(Project.author_id == user.id, Project.id == sq.c.project_id))
             .subquery()
         )
@@ -825,7 +840,11 @@ class UserService:
     def register_user_with_email(user_dto: UserRegisterEmailDTO):
         # Validate that user is not within the general users table.
         user_email = user_dto.email.lower()
-        user = session.query(User).filter(func.lower(User.email_address) == user_email).first()
+        user = (
+            session.query(User)
+            .filter(func.lower(User.email_address) == user_email)
+            .first()
+        )
         if user is not None:
             details_msg = f"Email address {user_email} already exists"
             raise ValueError(details_msg)

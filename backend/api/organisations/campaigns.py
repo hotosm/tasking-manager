@@ -2,7 +2,6 @@ from backend.models.dtos.campaign_dto import CampaignListDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
 from fastapi import APIRouter, Depends, Request
-from fastapi import HTTPException
 from databases import Database
 from backend.db import get_db
 from backend.services.users.authentication_service import login_required
@@ -18,7 +17,13 @@ router = APIRouter(
 
 
 @router.post("/{organisation_id}/campaigns/{campaign_id}/")
-async def post(request: Request, organisation_id: int, campaign_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
+async def post(
+    request: Request,
+    organisation_id: int,
+    campaign_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Assigns a campaign to an organisation
     ---
@@ -68,7 +73,9 @@ async def post(request: Request, organisation_id: int, campaign_id: int, user: A
             )
             return {"Error": message, "SubCode": "CampaignAlreadyAssigned"}, 400
 
-        await CampaignService.create_campaign_organisation(organisation_id, campaign_id, db)
+        await CampaignService.create_campaign_organisation(
+            organisation_id, campaign_id, db
+        )
         message = "campaign with id {} assigned for organisation with id {}".format(
             campaign_id, organisation_id
         )
@@ -110,12 +117,20 @@ async def get(organisation_id: int, db: Database = Depends(get_db)):
         500:
             description: Internal Server Error
     """
-    campaigns = await CampaignService.get_organisation_campaigns_as_dto(organisation_id, db)
+    campaigns = await CampaignService.get_organisation_campaigns_as_dto(
+        organisation_id, db
+    )
     return campaigns
 
 
 @router.delete("/{organisation_id}/campaigns/{campaign_id}/")
-async def delete(request: Request, organisation_id: int, campaign_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
+async def delete(
+    request: Request,
+    organisation_id: int,
+    campaign_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Un-assigns an organization from an campaign
     ---
@@ -125,7 +140,7 @@ async def delete(request: Request, organisation_id: int, campaign_id: int, user:
         - application/json
     parameters:
         - in: header
-            name: Authorization 
+            name: Authorization
             description: Base64 encoded session token
             required: true
             type: string
@@ -157,7 +172,9 @@ async def delete(request: Request, organisation_id: int, campaign_id: int, user:
     if await OrganisationService.can_user_manage_organisation(
         organisation_id, request.user.display_name, db
     ):
-        await CampaignService.delete_organisation_campaign(organisation_id, campaign_id, db)
+        await CampaignService.delete_organisation_campaign(
+            organisation_id, campaign_id, db
+        )
         return (
             {"Success": "Organisation and campaign unassociated successfully"},
             200,

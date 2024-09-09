@@ -3,7 +3,6 @@ from backend.services.messaging.message_service import (
     MessageServiceError,
 )
 from backend.services.notification_service import NotificationService
-from backend.services.users.authentication_service import tm
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
@@ -14,6 +13,7 @@ router = APIRouter(
     dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.get("/{message_id}/")
 @requires("authenticated")
@@ -55,6 +55,7 @@ async def get(request: Request, message_id: int):
         return user_message.model_dump(by_alias=True), 200
     except MessageServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+
 
 @router.delete("/{message_id}/")
 @requires("authenticated")

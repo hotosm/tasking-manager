@@ -1,10 +1,10 @@
 # # from flask import current_app
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from typing import List
-import sqlalchemy as sa
 from sqlalchemy import Column, String, Integer, ForeignKey, Index
 from backend.models.dtos.project_dto import ProjectInfoDTO
 from backend.db import Base, get_session
+
 session = get_session()
 from databases import Database
 
@@ -61,10 +61,7 @@ class ProjectInfo(Base):
 
     @staticmethod
     async def get_dto_for_locale(
-        db: Database,
-        project_id: int,
-        locale: str,
-        default_locale: str = "en"
+        db: Database, project_id: int, locale: str, default_locale: str = "en"
     ) -> ProjectInfoDTO:
         """
         Gets the ProjectInfoDTO for the project for the requested locale. If not found, then the default locale is used.
@@ -75,31 +72,36 @@ class ProjectInfo(Base):
         :return: ProjectInfoDTO
         :raises: ValueError if no info found for Default Locale
         """
-        
+
         # Define the SQL query to get project info by locale
         query = """
             SELECT * FROM project_info
             WHERE project_id = :project_id AND locale = :locale
         """
-        
+
         # Execute the query for the requested locale
-        project_info = await db.fetch_one(query, values={"project_id": project_id, "locale": locale})
+        project_info = await db.fetch_one(
+            query, values={"project_id": project_id, "locale": locale}
+        )
         if project_info is None:
             # Define the SQL query to get project info by default locale
             query_default = """
                 SELECT * FROM project_info
                 WHERE project_id = :project_id AND locale = :default_locale
             """
-            
+
             # Execute the query for the default locale
-            project_info = await db.fetch_one(query_default, values={"project_id": project_id, "default_locale": default_locale})
+            project_info = await db.fetch_one(
+                query_default,
+                values={"project_id": project_id, "default_locale": default_locale},
+            )
 
             if project_info is None:
                 error_message = f"BAD DATA: no info for project {project_id}, locale: {locale}, default {default_locale}"
                 raise ValueError(error_message)
-            
+
             return ProjectInfoDTO(**project_info)
-        
+
         if locale == default_locale:
             # Return the DTO for the default locale
             return ProjectInfoDTO(**project_info)
@@ -109,17 +111,20 @@ class ProjectInfo(Base):
             SELECT * FROM project_info
             WHERE project_id = :project_id AND locale = :default_locale
         """
-        
+
         # Execute the query for the default locale
-        default_locale_info = await db.fetch_one(query_default, values={"project_id": project_id, "default_locale": default_locale})
+        default_locale_info = await db.fetch_one(
+            query_default,
+            values={"project_id": project_id, "default_locale": default_locale},
+        )
 
         if default_locale_info is None:
             error_message = f"BAD DATA: no info for project {project_id}, locale: {locale}, default {default_locale}"
             raise ValueError(error_message)
-        
+
         combined_info = {**default_locale_info, **project_info}
         return ProjectInfoDTO(**combined_info)
-    
+
     # def get_dto(self, default_locale=ProjectInfoDTO()) -> ProjectInfoDTO:
     #     """
     #     Get DTO for current ProjectInfo
@@ -158,7 +163,6 @@ class ProjectInfo(Base):
 
     #     return project_info_dtos
 
-
     # Function to get a single ProjectInfoDTO
     async def get_project_info_dto(locale_record) -> ProjectInfoDTO:
         """
@@ -177,7 +181,9 @@ class ProjectInfo(Base):
         )
 
     # Function to get DTOs for all locales of a project
-    async def get_dto_for_all_locales(db: Database, project_id: int) -> List[ProjectInfoDTO]:
+    async def get_dto_for_all_locales(
+        db: Database, project_id: int
+    ) -> List[ProjectInfoDTO]:
         """
         Get DTOs for all locales associated with a project
         :param database: The database connection
@@ -191,9 +197,13 @@ class ProjectInfo(Base):
         """
         locales = await db.fetch_all(query=query, values={"project_id": project_id})
 
-        project_info_dtos = [
-            await ProjectInfo.get_project_info_dto(locale_record)
-            for locale_record in locales
-        ] if locales else []
+        project_info_dtos = (
+            [
+                await ProjectInfo.get_project_info_dto(locale_record)
+                for locale_record in locales
+            ]
+            if locales
+            else []
+        )
 
         return project_info_dtos

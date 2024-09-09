@@ -1,5 +1,4 @@
 from backend.services.messaging.message_service import MessageService
-from backend.services.users.authentication_service import tm
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
@@ -10,6 +9,7 @@ router = APIRouter(
     dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.delete("/delete-multiple/")
 @requires("authenticated")
@@ -46,9 +46,7 @@ async def delete(request: Request):
     """
     message_ids = await request.json()["messageIds"]
     if message_ids:
-        MessageService.delete_multiple_messages(
-            message_ids, request.user.display_name
-        )
+        MessageService.delete_multiple_messages(message_ids, request.user.display_name)
 
     return {"Success": "Messages deleted"}, 200
 

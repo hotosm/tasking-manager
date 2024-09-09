@@ -2,6 +2,7 @@ import geojson
 from shapely.geometry import Polygon, MultiPolygon, LineString, shape as shapely_shape
 from shapely.ops import split
 from backend import db
+
 # from flask import current_app
 from geoalchemy2 import shape
 

@@ -21,14 +21,13 @@ from backend.models.postgis.statuses import (
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
 from backend.db import Base, get_session
+
 session = get_session()
 
 
 class TeamMembers(Base):
     __tablename__ = "team_members"
-    team_id = Column(
-        Integer, ForeignKey("teams.id", name="fk_teams"), primary_key=True
-    )
+    team_id = Column(Integer, ForeignKey("teams.id", name="fk_teams"), primary_key=True)
     user_id = Column(
         BigInteger, ForeignKey("users.id", name="fk_users"), primary_key=True
     )
@@ -80,12 +79,8 @@ class Team(Base):
     name = Column(String(512), nullable=False)
     logo = Column(String)  # URL of a logo
     description = Column(String)
-    join_method = Column(
-        Integer, default=TeamJoinMethod.ANY.value, nullable=False
-    )
-    visibility = Column(
-        Integer, default=TeamVisibility.PUBLIC.value, nullable=False
-    )
+    join_method = Column(Integer, default=TeamJoinMethod.ANY.value, nullable=False)
+    visibility = Column(Integer, default=TeamVisibility.PUBLIC.value, nullable=False)
 
     # organisation = relationship(Organisation, backref="teams", lazy="joined")
     organisation = relationship(Organisation, backref="teams")
@@ -248,7 +243,7 @@ class Team(Base):
             function=TeamMemberFunctions(member["function"]).name,
             picture_url=user["picture_url"],
             active=member["active"],
-            join_request_notifications=member["join_request_notifications"]
+            join_request_notifications=member["join_request_notifications"],
         )
 
     def as_dto_team_project(project) -> TeamProjectDTO:
@@ -257,7 +252,7 @@ class Team(Base):
         return TeamProjectDTO(
             project_name=project.name,
             project_id=project.project_id,
-            role=TeamRoles(project.role).name
+            role=TeamRoles(project.role).name,
         )
 
     async def _get_team_members(self, session):
@@ -289,14 +284,14 @@ class Team(Base):
         """
 
         query = f"""
-            SELECT u.username, 
-                CASE 
+            SELECT u.username,
+                CASE
                     WHEN tm.function = {TeamMemberFunctions.MANAGER.value} THEN '{TeamMemberFunctions.MANAGER.name}'
                     WHEN tm.function = {TeamMemberFunctions.MEMBER.value} THEN '{TeamMemberFunctions.MEMBER.name}'
-                    ELSE 'UNKNOWN' 
-                END as function, 
-                tm.active, 
-                tm.join_request_notifications, 
+                    ELSE 'UNKNOWN'
+                END as function,
+                tm.active,
+                tm.join_request_notifications,
                 u.picture_url
             FROM team_members tm
             JOIN users u ON tm.user_id = u.id
@@ -324,14 +319,14 @@ class Team(Base):
         :return: List of team managers with specified attributes
         """
         query = f"""
-            SELECT u.username, 
-                CASE 
+            SELECT u.username,
+                CASE
                     WHEN tm.function = {TeamMemberFunctions.MANAGER.value} THEN '{TeamMemberFunctions.MANAGER.name}'
                     WHEN tm.function = {TeamMemberFunctions.MEMBER.value} THEN '{TeamMemberFunctions.MEMBER.name}'
-                    ELSE 'UNKNOWN' 
-                END as function, 
-                tm.active, 
-                tm.join_request_notifications, 
+                    ELSE 'UNKNOWN'
+                END as function,
+                tm.active,
+                tm.join_request_notifications,
                 u.picture_url
             FROM team_members tm
             JOIN users u ON tm.user_id = u.id
@@ -361,14 +356,14 @@ class Team(Base):
         """
 
         query = f"""
-            SELECT u.username, 
-                CASE 
+            SELECT u.username,
+                CASE
                     WHEN tm.function = {TeamMemberFunctions.MANAGER.value} THEN '{TeamMemberFunctions.MANAGER.name}'
                     WHEN tm.function = {TeamMemberFunctions.MEMBER.value} THEN '{TeamMemberFunctions.MEMBER.name}'
-                    ELSE 'UNKNOWN' 
-                END as function, 
-                tm.active, 
-                tm.join_request_notifications, 
+                    ELSE 'UNKNOWN'
+                END as function,
+                tm.active,
+                tm.join_request_notifications,
                 u.picture_url
             FROM team_members tm
             JOIN users u ON tm.user_id = u.id
@@ -387,7 +382,9 @@ class Team(Base):
         results = await db.fetch_all(query=query, values=values)
         return [TeamMembersDTO(**result) for result in results]
 
-    async def get_members_count_by_role(db: Database, team_id: int, role: TeamMemberFunctions):
+    async def get_members_count_by_role(
+        db: Database, team_id: int, role: TeamMemberFunctions
+    ):
         """
         Returns the number of members with the specified role in the team.
         --------------------------------

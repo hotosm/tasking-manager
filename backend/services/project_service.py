@@ -1,5 +1,6 @@
 import threading
 from cachetools import TTLCache, cached
+
 # # from flask import current_app
 import geojson
 from datetime import datetime, timedelta, timezone
@@ -27,18 +28,15 @@ from backend.models.postgis.statuses import (
     EncouragingEmailType,
     MappingLevel,
 )
-from backend.models.postgis.task import Task, TaskHistory
+from backend.models.postgis.task import Task
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.users.user_service import UserService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.team_service import TeamService
-from sqlalchemy import func, or_
-from sqlalchemy.sql.expression import true
 from backend.db import get_session
+
 session = get_session()
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from fastapi import HTTPException
 from databases import Database
 import json
@@ -55,7 +53,6 @@ class ProjectServiceError(Exception):
 
 
 class ProjectService:
-    
     @staticmethod
     async def get_project_by_id(project_id: int, db: Database):
         query = """
@@ -67,7 +64,7 @@ class ProjectService:
             raise HTTPException(status_code=404, detail="Project not found")
 
         return project
-    
+
     @staticmethod
     async def exists(project_id: int, db: Database) -> bool:
         # Query to check if the project exists
@@ -82,7 +79,7 @@ class ProjectService:
 
         if result is None:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
-        
+
         return True
 
     @staticmethod
@@ -93,11 +90,9 @@ class ProjectService:
 
         return project
 
-
     @staticmethod
     async def auto_unlock_tasks(project_id: int, session):
         await Task.auto_unlock_tasks(project_id, session)
-
 
     @staticmethod
     def delete_tasks(project_id: int, tasks_ids):
@@ -116,12 +111,11 @@ class ProjectService:
         # Delete task one by one.
         [t["obj"].delete() for t in tasks]
 
-
     @staticmethod
     async def get_contribs_by_day(project_id: int, db: Database) -> ProjectContribsDTO:
         project = await ProjectService.get_project_by_id(project_id, db)
         query = """
-            SELECT 
+            SELECT
                 action_text,
                 DATE(action_date) AS day,
                 task_id
@@ -148,15 +142,16 @@ class ProjectService:
         dates_list = []
         for date in dates:
             dto = ProjectContribDTO(
-                date=date,
-                mapped=0,
-                validated=0,
-                total_tasks=project.total_tasks
+                date=date, mapped=0, validated=0, total_tasks=project.total_tasks
             )
-            
-            values = [(row["action_text"], row["task_id"]) for row in rows if row["day"] == date]
+
+            values = [
+                (row["action_text"], row["task_id"])
+                for row in rows
+                if row["day"] == date
+            ]
             values.sort(reverse=True)
-            
+
             for task_status, task_id in values:
                 if task_status == "MAPPED":
                     if task_id not in tasks["MAPPED"]:
@@ -199,10 +194,11 @@ class ProjectService:
 
         contribs_dto.stats = dates_list
         return contribs_dto
-    
 
     @staticmethod
-    async def get_project_dto_for_mapper(project_id, current_user_id, db: Database , locale="en", abbrev=False) -> ProjectDTO:
+    async def get_project_dto_for_mapper(
+        project_id, current_user_id, db: Database, locale="en", abbrev=False
+    ) -> ProjectDTO:
         """
         Get the project DTO for mappers
         :param project_id: ID of the Project mapper has requested
@@ -212,7 +208,9 @@ class ProjectService:
         project = await ProjectService.get_project_by_id(project_id, db)
         # if project is public and is not draft, we don't need to check permissions
         if not project.private and not project.status == ProjectStatus.DRAFT.value:
-            return await Project.as_dto_for_mapping(project.id, db, current_user_id, locale, abbrev)
+            return await Project.as_dto_for_mapping(
+                project.id, db, current_user_id, locale, abbrev
+            )
 
         is_allowed_user = True
         is_team_member = None
@@ -242,10 +240,10 @@ class ProjectService:
                     FROM project_allowed_users pau
                     WHERE pau.project_id = :project_id AND pau.user_id = :user_id
                 """
-                result = await db.fetch_one(allowed_user_check_query, {
-                    "project_id": project.id,
-                    "user_id": current_user_id
-                })
+                result = await db.fetch_one(
+                    allowed_user_check_query,
+                    {"project_id": project.id, "user_id": current_user_id},
+                )
                 is_allowed_user = result is not None
 
         if not (is_allowed_user or is_manager_permission):
@@ -260,7 +258,9 @@ class ProjectService:
                 )
 
         if is_allowed_user or is_manager_permission or is_team_member:
-            return await Project.as_dto_for_mapping(project.id, db, current_user_id, locale, abbrev)
+            return await Project.as_dto_for_mapping(
+                project.id, db, current_user_id, locale, abbrev
+            )
         else:
             return None
 
@@ -280,7 +280,6 @@ class ProjectService:
         project = await Project.exists(project_id, db)
         return await Project.get_aoi_geometry_as_geojson(project_id, db)
 
-
     @staticmethod
     async def get_project_priority_areas(project_id: int, db: Database) -> list:
         project = await Project.exists(project_id, db)
@@ -293,7 +292,7 @@ class ProjectService:
             WHERE ppa.project_id = :project_id;
         """
         rows = await db.fetch_all(query, values={"project_id": project_id})
-        geojson_areas = [json.loads(row['geojson']) for row in rows] if rows else []
+        geojson_areas = [json.loads(row["geojson"]) for row in rows] if rows else []
 
         return geojson_areas
 
@@ -496,8 +495,7 @@ class ProjectService:
 
         return True, "User allowed to validate"
 
-
-    #TODO: Implement Caching.
+    # TODO: Implement Caching.
     @staticmethod
     @cached(summary_cache)
     def get_cached_project_summary(
@@ -507,7 +505,6 @@ class ProjectService:
         project = ProjectService.get_project_by_id(project_id)
         # We don't want to cache the project stats, so we set calculate_completion to False
         return project.get_project_summary(preferred_locale, calculate_completion=False)
-
 
     @staticmethod
     async def get_project_summary(
@@ -554,18 +551,37 @@ class ProjectService:
         LEFT JOIN users u ON u.id = p.author_id
         WHERE p.id = :id
         """
-        params = {'id': project_id}
+        params = {"id": project_id}
         # Execute query
         project = await db.fetch_one(query, params)
-        
+
         """Gets the project summary DTO"""
 
-        summary = await Project.get_project_summary(project, preferred_locale, db, calculate_completion=False)
-        summary.percent_mapped = Project.calculate_tasks_percent("mapped", project.tasks_mapped, project.tasks_validated, project.total_tasks, project.tasks_bad_imagery)
-        summary.percent_validated = Project.calculate_tasks_percent("validated", project.tasks_validated, project.tasks_validated, project.total_tasks, project.tasks_bad_imagery)
-        summary.percent_bad_imagery = Project.calculate_tasks_percent("bad_imagery", project.tasks_mapped, project.tasks_validated, project.total_tasks, project.tasks_bad_imagery)
+        summary = await Project.get_project_summary(
+            project, preferred_locale, db, calculate_completion=False
+        )
+        summary.percent_mapped = Project.calculate_tasks_percent(
+            "mapped",
+            project.tasks_mapped,
+            project.tasks_validated,
+            project.total_tasks,
+            project.tasks_bad_imagery,
+        )
+        summary.percent_validated = Project.calculate_tasks_percent(
+            "validated",
+            project.tasks_validated,
+            project.tasks_validated,
+            project.total_tasks,
+            project.tasks_bad_imagery,
+        )
+        summary.percent_bad_imagery = Project.calculate_tasks_percent(
+            "bad_imagery",
+            project.tasks_mapped,
+            project.tasks_validated,
+            project.total_tasks,
+            project.tasks_bad_imagery,
+        )
         return summary
-
 
     @staticmethod
     def set_project_as_featured(project_id: int):
@@ -573,18 +589,18 @@ class ProjectService:
         project = ProjectService.get_project_by_id(project_id)
         project.set_as_featured()
 
-
     @staticmethod
     def unset_project_as_featured(project_id: int):
         """Sets project as featured"""
         project = ProjectService.get_project_by_id(project_id)
         project.unset_as_featured()
 
-
     @staticmethod
-    async def get_featured_projects(preferred_locale: str, db: Database) -> ProjectSearchResultsDTO:
+    async def get_featured_projects(
+        preferred_locale: str, db: Database
+    ) -> ProjectSearchResultsDTO:
         """Fetch featured projects and return results."""
-        
+
         # Create the search query
         query, params = await ProjectSearchService.create_search_query(db)
 
@@ -592,21 +608,24 @@ class ProjectService:
         query += " AND p.featured = TRUE"
 
         projects = await db.fetch_all(query, params)
-        project_ids = [project['id'] for project in projects]
+        project_ids = [project["id"] for project in projects]
 
         # Get total contributors
-        contrib_counts = await ProjectSearchService.get_total_contributions(project_ids, db)
+        contrib_counts = await ProjectSearchService.get_total_contributions(
+            project_ids, db
+        )
         zip_items = zip(projects, contrib_counts)
 
         dto = ProjectSearchResultsDTO()
         dto.results = [
-            await ProjectSearchService.create_result_dto(project, preferred_locale, total_contributors, db)
+            await ProjectSearchService.create_result_dto(
+                project, preferred_locale, total_contributors, db
+            )
             for project, total_contributors in zip_items
         ]
-        #TODO Check if pagination needed.
+        # TODO Check if pagination needed.
         dto.pagination = None
         return dto
-
 
     @staticmethod
     def is_favorited(project_id: int, user_id: int) -> bool:
@@ -638,7 +657,9 @@ class ProjectService:
         return await Project.get_project_stats(project_id, db)
 
     @staticmethod
-    async def get_project_user_stats(project_id: int, username: str, db: Database) -> ProjectUserStatsDTO:
+    async def get_project_user_stats(
+        project_id: int, username: str, db: Database
+    ) -> ProjectUserStatsDTO:
         """Gets the user stats for a specific project"""
         await ProjectService.exists(project_id, db)
         user = await UserService.get_user_by_username(username, db)
@@ -692,18 +713,21 @@ class ProjectService:
                 ),
             ).start()
 
-
     @staticmethod
     async def get_active_projects(interval: int, db: Database):
         # Calculate the action_date and make it naive
-        action_date = (datetime.now(timezone.utc) - timedelta(hours=interval)).replace(tzinfo=None)
+        action_date = (datetime.now(timezone.utc) - timedelta(hours=interval)).replace(
+            tzinfo=None
+        )
         # First query to get distinct project_ids
         query_project_ids = """
-        SELECT DISTINCT project_id 
-        FROM task_history 
+        SELECT DISTINCT project_id
+        FROM task_history
         WHERE action_date >= :action_date
         """
-        project_ids_result = await db.fetch_all(query_project_ids, {"action_date": action_date})
+        project_ids_result = await db.fetch_all(
+            query_project_ids, {"action_date": action_date}
+        )
         project_ids = [row["project_id"] for row in project_ids_result]
 
         # If there are no project IDs, return an empty FeatureCollection
@@ -712,15 +736,18 @@ class ProjectService:
 
         # Second query to get project details
         query_projects = """
-        SELECT 
-            id, 
-            mapping_types, 
-            ST_AsGeoJSON(geometry) AS geometry 
-        FROM projects 
-        WHERE status = :status 
+        SELECT
+            id,
+            mapping_types,
+            ST_AsGeoJSON(geometry) AS geometry
+        FROM projects
+        WHERE status = :status
         AND id = ANY(:project_ids)
         """
-        project_result = await db.fetch_all(query_projects, {"status": ProjectStatus.PUBLISHED.value, "project_ids": project_ids})
+        project_result = await db.fetch_all(
+            query_projects,
+            {"status": ProjectStatus.PUBLISHED.value, "project_ids": project_ids},
+        )
 
         # Building GeoJSON FeatureCollection
         features = [
@@ -729,8 +756,9 @@ class ProjectService:
                 properties={
                     "project_id": project["id"],
                     "mapping_types": project["mapping_types"],
-                }
-            ) for project in project_result
+                },
+            )
+            for project in project_result
         ]
 
         return geojson.FeatureCollection(features)

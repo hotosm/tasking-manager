@@ -1,5 +1,5 @@
 from backend.models.postgis.project import Project
-from databases import Database
+
 
 class TagsService:
     @staticmethod
