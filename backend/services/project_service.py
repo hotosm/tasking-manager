@@ -632,17 +632,17 @@ class ProjectService:
 
     @staticmethod
     @cached(TTLCache(maxsize=1024, ttl=600))
-    async def get_project_stats(project_id: int, session) -> ProjectStatsDTO:
+    async def get_project_stats(project_id: int, db: Database) -> ProjectStatsDTO:
         """Gets the project stats DTO"""
-        project = await ProjectService.get_project_by_id(project_id, session)
-        return await project.get_project_stats()
+        project = await ProjectService.exists(project_id, db)
+        return await Project.get_project_stats(project_id, db)
 
     @staticmethod
-    def get_project_user_stats(project_id: int, username: str) -> ProjectUserStatsDTO:
+    async def get_project_user_stats(project_id: int, username: str, db: Database) -> ProjectUserStatsDTO:
         """Gets the user stats for a specific project"""
-        project = ProjectService.get_project_by_id(project_id)
-        user = UserService.get_user_by_username(username)
-        return project.get_project_user_stats(user.id)
+        await ProjectService.exists(project_id, db)
+        user = await UserService.get_user_by_username(username, db)
+        return await Project.get_project_user_stats(project_id, user.id, db)
 
     def get_project_teams(project_id: int):
         project = ProjectService.get_project_by_id(project_id)
