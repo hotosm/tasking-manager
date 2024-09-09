@@ -545,27 +545,32 @@ class ProjectTaskAnnotationsDTO(BaseModel):
 class ProjectStatsDTO(BaseModel):
     """DTO for detailed stats on a project"""
 
-    project_id: Optional[int] = Field(alias="projectId", default=None)
-    area: float = Field(None, alias="projectArea(in sq.km)")
-    total_mappers: int = Field(None, alias="totalMappers")
-    total_tasks: int = Field(None, alias="totalTasks")
-    total_comments: int = Field(None, alias="totalComments")
-    total_mapping_time: int = Field(None, alias="totalMappingTime")
-    total_validation_time: int = Field(None, alias="totalValidationTime")
-    total_time_spent: int = Field(None, alias="totalTimeSpent")
-    average_mapping_time: int = Field(None, alias="averageMappingTime")
-    average_validation_time: int = Field(None, alias="averageValidationTime")
-    percent_mapped: int = Field(None, alias="percentMapped")
-    percent_validated: int = Field(None, alias="percentValidated")
-    percent_bad_imagery: int = Field(None, alias="percentBadImagery")
-    aoi_centroid: str = Field(None, alias="aoiCentroid")
-    time_to_finish_mapping: int = Field(None, alias="timeToFinishMapping")
-    time_to_finish_validating: int = Field(None, alias="timeToFinishValidating")
+    project_id: Optional[int] = Field(None, alias="projectId")
+    area: Optional[float] = Field(None, alias="projectArea(in sq.km)")
+    total_mappers: Optional[int] = Field(None, alias="totalMappers")
+    total_tasks: Optional[int] = Field(None, alias="totalTasks")
+    total_comments: Optional[int] = Field(None, alias="totalComments")
+    total_mapping_time: Optional[int] = Field(None, alias="totalMappingTime")
+    total_validation_time: Optional[int] = Field(None, alias="totalValidationTime")
+    total_time_spent: Optional[int] = Field(None, alias="totalTimeSpent")
+    average_mapping_time: Optional[int] = Field(None, alias="averageMappingTime")
+    average_validation_time: Optional[int] = Field(None, alias="averageValidationTime")
+    percent_mapped: Optional[int] = Field(None, alias="percentMapped")
+    percent_validated: Optional[int] = Field(None, alias="percentValidated")
+    percent_bad_imagery: Optional[int] = Field(None, alias="percentBadImagery")
+    aoi_centroid: Optional[str] = Field(None, alias="aoiCentroid")
+    time_to_finish_mapping: Optional[int] = Field(None, alias="timeToFinishMapping")
+    time_to_finish_validating: Optional[int] = Field(None, alias="timeToFinishValidating")
 
-
+    class Config:
+        populate_by_name = True
+        
 class ProjectUserStatsDTO(BaseModel):
     """DTO for time spent by users on a project"""
 
-    time_spent_mapping: int = Field(alias="timeSpentMapping")
-    time_spent_validating: int = Field(alias="timeSpentValidating")
-    total_time_spent: int = Field(alias="totalTimeSpent")
+    time_spent_mapping: Optional[int] = Field(default=0, alias="timeSpentMapping")
+    time_spent_validating: Optional[int] = Field(default=0, alias="timeSpentValidating")
+    total_time_spent: Optional[int] = Field(default=0, alias="totalTimeSpent")
+
+    class Config:
+        populate_by_name = True
