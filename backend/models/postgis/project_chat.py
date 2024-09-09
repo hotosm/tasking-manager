@@ -8,16 +8,16 @@ from backend.models.postgis.utils import timestamp
 from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO, Pagination
 from backend.db import Base, get_session
 from databases import Database
+
 session = get_session()
+
 
 class ProjectChat(Base):
     """Contains all project info localized into supported languages"""
 
     __tablename__ = "project_chat"
     id = Column(BigInteger, primary_key=True)
-    project_id = Column(
-        Integer, ForeignKey("projects.id"), index=True, nullable=False
-    )
+    project_id = Column(Integer, ForeignKey("projects.id"), index=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     time_stamp = Column(DateTime, nullable=False, default=timestamp)
     message = Column(String, nullable=False)
@@ -92,7 +92,9 @@ class ProjectChat(Base):
         )
 
     @staticmethod
-    async def get_messages(project_id: int, db:Database, page: int, per_page: int = 20) -> ProjectChatDTO:
+    async def get_messages(
+        project_id: int, db: Database, page: int, per_page: int = 20
+    ) -> ProjectChatDTO:
         """Get all messages on the project"""
 
         offset = (page - 1) * per_page
@@ -133,9 +135,15 @@ class ProjectChat(Base):
                 user_id=message["user_id"],
             )
             chat_dto_dict = chat_dto.dict()
-            filtered_chat_dto_dict = {k: v for k, v in chat_dto_dict.items() if k not in ["project_id", "user_id"]}
+            filtered_chat_dto_dict = {
+                k: v
+                for k, v in chat_dto_dict.items()
+                if k not in ["project_id", "user_id"]
+            }
             dto.chat.append(filtered_chat_dto_dict)
 
-        dto.pagination = Pagination.from_total_count(page=page, per_page=per_page, total=total_count)
+        dto.pagination = Pagination.from_total_count(
+            page=page, per_page=per_page, total=total_count
+        )
 
         return dto

@@ -1,7 +1,9 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from backend.models.dtos.project_dto import CustomEditorDTO
 from backend.db import Base, get_session
+
 session = get_session()
+
 
 class CustomEditor(Base):
     """Model for user defined editors for a project"""

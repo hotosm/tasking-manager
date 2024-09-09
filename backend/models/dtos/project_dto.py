@@ -3,7 +3,7 @@
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.dtos.team_dto import ProjectTeamDTO
-from backend.models.dtos.interests_dto import InterestDTO, ListInterestDTO
+from backend.models.dtos.interests_dto import InterestDTO
 from backend.models.postgis.statuses import (
     ProjectStatus,
     ProjectPriority,
@@ -15,12 +15,12 @@ from backend.models.postgis.statuses import (
     ProjectDifficulty,
 )
 from backend.models.dtos.campaign_dto import CampaignDTO
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from pydantic import BaseModel, Field
 from typing import Dict, List, Optional, Union
 from datetime import datetime
 from datetime import date
-from typing_extensions import Annotated
 from fastapi import HTTPException
+
 
 def is_known_project_status(value: str) -> str:
     """Validates that Project Status is a known value."""
@@ -34,9 +34,10 @@ def is_known_project_status(value: str) -> str:
                 f"{ProjectStatus.DRAFT.name}, "
                 f"{ProjectStatus.PUBLISHED.name}, "
                 f"{ProjectStatus.ARCHIVED.name}."
-            )
+            ),
         )
     return value
+
 
 def is_known_project_priority(value: str) -> str:
     """Validates that Project Priority is a known value."""
@@ -51,9 +52,10 @@ def is_known_project_priority(value: str) -> str:
                 f"{ProjectPriority.MEDIUM.name}, "
                 f"{ProjectPriority.HIGH.name}, "
                 f"{ProjectPriority.URGENT.name}."
-            )
+            ),
         )
     return value
+
 
 def is_known_mapping_type(value: str) -> str:
     """Validates that Mapping Type is a known value."""
@@ -69,9 +71,10 @@ def is_known_mapping_type(value: str) -> str:
                 f"{MappingTypes.WATERWAYS.name}, "
                 f"{MappingTypes.LAND_USE.name}, "
                 f"{MappingTypes.OTHER.name}."
-            )
+            ),
         )
     return value
+
 
 def is_known_editor(value: str) -> str:
     """Validates that Editor is a known value."""
@@ -87,9 +90,10 @@ def is_known_editor(value: str) -> str:
                 f"{Editors.POTLATCH_2.name}, "
                 f"{Editors.FIELD_PAPERS.name}, "
                 f"{Editors.RAPID.name}."
-            )
+            ),
         )
     return value
+
 
 def is_known_task_creation_mode(value: str) -> str:
     """Validates that Task Creation Mode is a known value."""
@@ -102,9 +106,10 @@ def is_known_task_creation_mode(value: str) -> str:
                 f"Unknown taskCreationMode: {value}. Valid values are: "
                 f"{TaskCreationMode.GRID.name}, "
                 f"{TaskCreationMode.ARBITRARY.name}."
-            )
+            ),
         )
     return value
+
 
 def is_known_mapping_permission(value: str) -> str:
     """Validates that Mapping Permission is a known value."""
@@ -117,9 +122,10 @@ def is_known_mapping_permission(value: str) -> str:
                 f"Unknown mappingPermission: {value}. Valid values are: "
                 f"{MappingPermission.ANY.name}, "
                 f"{MappingPermission.LEVEL.name}."
-            )
+            ),
         )
     return value
+
 
 def is_known_validation_permission(value: str) -> str:
     """Validates that Validation Permission is a known value."""
@@ -134,9 +140,10 @@ def is_known_validation_permission(value: str) -> str:
                 f"{ValidationPermission.LEVEL.name}, "
                 f"{ValidationPermission.TEAMS.name}, "
                 f"{ValidationPermission.TEAMS_LEVEL.name}."
-            )
+            ),
         )
     return value
+
 
 def is_known_project_difficulty(value: str) -> str:
     """Validates that Project Difficulty is a known value."""
@@ -155,9 +162,10 @@ def is_known_project_difficulty(value: str) -> str:
                 f"{ProjectDifficulty.EASY.name}, "
                 f"{ProjectDifficulty.MODERATE.name}, "
                 f"{ProjectDifficulty.CHALLENGING.name}, and ALL."
-            )
+            ),
         )
     return value
+
 
 class DraftProjectDTO(BaseModel):
     """Describes JSON model used for creating draft project"""
@@ -176,10 +184,15 @@ class ProjectInfoDTO(BaseModel):
 
     locale: str
     name: Optional[str] = ""  # Optional, with default as empty string
-    short_description: Optional[str] = Field(default="", serialization_alias="shortDescription")  # Optional, with default as empty string
+    short_description: Optional[str] = Field(
+        default="", serialization_alias="shortDescription"
+    )  # Optional, with default as empty string
     description: Optional[str] = ""  # Optional, with default as empty string
     instructions: Optional[str] = ""  # Optional, with default as empty string
-    per_task_instructions: Optional[str] = Field(default="", serialization_alias="perTaskInstructions")
+    per_task_instructions: Optional[str] = Field(
+        default="", serialization_alias="perTaskInstructions"
+    )
+
 
 class CustomEditorDTO(BaseModel):
     """DTO to define a custom editor"""
@@ -187,6 +200,7 @@ class CustomEditorDTO(BaseModel):
     name: str = Field(required=True)
     description: Optional[str]
     url: str = Field(required=True)
+
 
 class ProjectDTO(BaseModel):
     """Describes JSON model for a tasking manager project"""
@@ -199,11 +213,15 @@ class ProjectDTO(BaseModel):
     tasks: Optional[dict] = None
     default_locale: str = Field(alias="defaultLocale")
     project_info: Optional[ProjectInfoDTO] = Field(None, alias="projectInfo")
-    project_info_locales: Optional[List["ProjectInfoDTO"]] = Field(None, alias="projectInfoLocales")
+    project_info_locales: Optional[List["ProjectInfoDTO"]] = Field(
+        None, alias="projectInfoLocales"
+    )
     difficulty: str = Field(alias="difficulty")
     mapping_permission: str = Field(alias="mappingPermission")
     validation_permission: str = Field(alias="validationPermission")
-    enforce_random_task_selection: Optional[bool] = Field(False, alias="enforceRandomTaskSelection")
+    enforce_random_task_selection: Optional[bool] = Field(
+        False, alias="enforceRandomTaskSelection"
+    )
     private: bool
     changeset_comment: Optional[str] = Field(None, alias="changesetComment")
     osmcha_filter_id: Optional[str] = Field(None, alias="osmchaFilterId")
@@ -240,7 +258,7 @@ class ProjectDTO(BaseModel):
     class Config:
         populate_by_name = True
 
-    #TODO CHeck validators.
+    # TODO CHeck validators.
     # @validator('project_status')
     # def validate_project_status(cls, value):
     #     if not is_known_project_status(value):
@@ -380,11 +398,15 @@ class ProjectSearchDTO(BaseModel):
             )
         )
 
+
 class ProjectSearchBBoxDTO(BaseModel):
     bbox: List[float] = Field(..., min_items=4, max_items=4)
     input_srid: int = Field(..., choices=[4326])
     preferred_locale: Optional[str] = Field(default="en")
-    project_author: Optional[int] = Field(default=None, serialization_alias="projectAuthor")
+    project_author: Optional[int] = Field(
+        default=None, serialization_alias="projectAuthor"
+    )
+
 
 class ListSearchResultDTO(BaseModel):
     project_id: Optional[int] = Field(alias="projectId", default=None)
@@ -404,6 +426,7 @@ class ListSearchResultDTO(BaseModel):
     due_date: Optional[str] = Field(alias="dueDate", default=None)
     total_contributors: Optional[int] = Field(alias="totalContributors", default=None)
     country: Optional[str] = Field(default="", serialize=False)
+
 
 class ProjectSearchResultsDTO(BaseModel):
     map_results: Optional[List] = []
@@ -443,6 +466,7 @@ class ProjectCommentsDTO(BaseModel):
 
     comments: List[ProjectComment]
 
+
 class ProjectContribDTO(BaseModel):
     date: date
     mapped: int
@@ -468,38 +492,78 @@ class ProjectSummary(BaseModel):
     priority: Optional[str] = Field(None, serialization_alias="projectPriority")
     campaigns: List[CampaignDTO] = Field(default_factory=list)
     organisation: Optional[int] = None
-    organisation_name: Optional[str] = Field(None, serialization_alias="organisationName")
-    organisation_slug: Optional[str] = Field(None, serialization_alias="organisationSlug")
-    organisation_logo: Optional[str] = Field(None, serialization_alias="organisationLogo")
-    country_tag: List[str] = Field(default_factory=list, serialization_alias="countryTag")
+    organisation_name: Optional[str] = Field(
+        None, serialization_alias="organisationName"
+    )
+    organisation_slug: Optional[str] = Field(
+        None, serialization_alias="organisationSlug"
+    )
+    organisation_logo: Optional[str] = Field(
+        None, serialization_alias="organisationLogo"
+    )
+    country_tag: List[str] = Field(
+        default_factory=list, serialization_alias="countryTag"
+    )
     osmcha_filter_id: Optional[str] = Field(None, serialization_alias="osmchaFilterId")
-    mapping_types: List[str] = Field(default_factory=list, serialization_alias="mappingTypes")
-    changeset_comment: Optional[str] = Field(None, serialization_alias="changesetComment")
+    mapping_types: List[str] = Field(
+        default_factory=list, serialization_alias="mappingTypes"
+    )
+    changeset_comment: Optional[str] = Field(
+        None, serialization_alias="changesetComment"
+    )
     percent_mapped: Optional[int] = Field(None, serialization_alias="percentMapped")
-    percent_validated: Optional[int] = Field(None, serialization_alias="percentValidated")
-    percent_bad_imagery: Optional[int] = Field(None, serialization_alias="percentBadImagery")
-    aoi_centroid: Optional[Union[dict, None]] = Field(None, serialization_alias="aoiCentroid")
+    percent_validated: Optional[int] = Field(
+        None, serialization_alias="percentValidated"
+    )
+    percent_bad_imagery: Optional[int] = Field(
+        None, serialization_alias="percentBadImagery"
+    )
+    aoi_centroid: Optional[Union[dict, None]] = Field(
+        None, serialization_alias="aoiCentroid"
+    )
     difficulty: Optional[str] = Field(None, serialization_alias="difficulty")
-    mapping_permission: Optional[int] = Field(None, serialization_alias="mappingPermission")
-    validation_permission: Optional[int] = Field(None, serialization_alias="validationPermission")
-    allowed_usernames: List[str] = Field(default_factory=list, serialization_alias="allowedUsernames")
-    random_task_selection_enforced: bool = Field(default=False, serialization_alias="enforceRandomTaskSelection")
+    mapping_permission: Optional[int] = Field(
+        None, serialization_alias="mappingPermission"
+    )
+    validation_permission: Optional[int] = Field(
+        None, serialization_alias="validationPermission"
+    )
+    allowed_usernames: List[str] = Field(
+        default_factory=list, serialization_alias="allowedUsernames"
+    )
+    random_task_selection_enforced: bool = Field(
+        default=False, serialization_alias="enforceRandomTaskSelection"
+    )
     private: Optional[bool] = Field(None, serialization_alias="private")
-    allowed_users: List[str] = Field(default_factory=list, serialization_alias="allowedUsernames")
-    project_teams: List[ProjectTeamDTO] = Field(default_factory=list, serialization_alias="teams")
-    project_info: Optional[ProjectInfoDTO] = Field(None, serialization_alias="projectInfo")
-    short_description: Optional[str] = Field(None, serialization_alias="shortDescription")
+    allowed_users: List[str] = Field(
+        default_factory=list, serialization_alias="allowedUsernames"
+    )
+    project_teams: List[ProjectTeamDTO] = Field(
+        default_factory=list, serialization_alias="teams"
+    )
+    project_info: Optional[ProjectInfoDTO] = Field(
+        None, serialization_alias="projectInfo"
+    )
+    short_description: Optional[str] = Field(
+        None, serialization_alias="shortDescription"
+    )
     status: Optional[str] = None
     imagery: Optional[str] = None
     license_id: Optional[int] = Field(None, serialization_alias="licenseId")
     id_presets: List[str] = Field(default_factory=list, serialization_alias="idPresets")
     extra_id_params: Optional[str] = Field(None, serialization_alias="extraIdParams")
     rapid_power_user: bool = Field(default=False, serialization_alias="rapidPowerUser")
-    mapping_editors: List[str] = Field(..., min_items=1, serialization_alias="mappingEditors")
-    validation_editors: List[str] = Field(..., min_items=1, serialization_alias="validationEditors")
-    custom_editor: Optional[CustomEditorDTO] = Field(None, serialization_alias="customEditor")
+    mapping_editors: List[str] = Field(
+        ..., min_items=1, serialization_alias="mappingEditors"
+    )
+    validation_editors: List[str] = Field(
+        ..., min_items=1, serialization_alias="validationEditors"
+    )
+    custom_editor: Optional[CustomEditorDTO] = Field(
+        None, serialization_alias="customEditor"
+    )
 
-    #TODO: Make Validators work.
+    # TODO: Make Validators work.
 
     # @field_validator('mapping_types', 'mapping_editors', 'validation_editors', mode='plain')
     # def validate_list_fields(cls, v, field):
@@ -510,7 +574,7 @@ class ProjectSummary(BaseModel):
     #     if field_name in ['mapping_editors', 'validation_editors'] and not is_known_editor(v):
     #         raise ValueError(f"Invalid value in {field_name}")
     #     return v
-    
+
     # @field_validator('mapping_permission', 'validation_permission', mode='plain')
     # def validate_permissions(cls, v, field):
     #     if field.name == 'mapping_permission' and not is_known_mapping_permission(v):
@@ -523,12 +587,19 @@ class ProjectSummary(BaseModel):
 class PMDashboardDTO(BaseModel):
     """DTO for constructing the PM Dashboard"""
 
-    draft_projects: Optional[List[ProjectSummary]] = Field(default_factory=list, alias="draftProjects")
-    active_projects: Optional[List[ProjectSummary]] = Field(default_factory=list, alias="activeProjects")
-    archived_projects: Optional[List[ProjectSummary]] = Field(default_factory=list, alias="archivedProjects")
+    draft_projects: Optional[List[ProjectSummary]] = Field(
+        default_factory=list, alias="draftProjects"
+    )
+    active_projects: Optional[List[ProjectSummary]] = Field(
+        default_factory=list, alias="activeProjects"
+    )
+    archived_projects: Optional[List[ProjectSummary]] = Field(
+        default_factory=list, alias="archivedProjects"
+    )
 
     class Config:
         allow_population_by_field_name = True
+
 
 class ProjectTaskAnnotationsDTO(BaseModel):
     """DTO for task annotations of a project"""
@@ -560,11 +631,14 @@ class ProjectStatsDTO(BaseModel):
     percent_bad_imagery: Optional[int] = Field(None, alias="percentBadImagery")
     aoi_centroid: Optional[str] = Field(None, alias="aoiCentroid")
     time_to_finish_mapping: Optional[int] = Field(None, alias="timeToFinishMapping")
-    time_to_finish_validating: Optional[int] = Field(None, alias="timeToFinishValidating")
+    time_to_finish_validating: Optional[int] = Field(
+        None, alias="timeToFinishValidating"
+    )
 
     class Config:
         populate_by_name = True
-        
+
+
 class ProjectUserStatsDTO(BaseModel):
     """DTO for time spent by users on a project"""
 

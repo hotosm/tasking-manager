@@ -5,6 +5,7 @@ import bleach
 
 from cachetools import TTLCache, cached
 from typing import List
+
 # # from flask import current_app
 from sqlalchemy import text, func
 from markdown import markdown

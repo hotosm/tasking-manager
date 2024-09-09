@@ -1,9 +1,20 @@
 from backend.models.postgis.utils import timestamp
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, JSON, Index, ForeignKeyConstraint
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    ForeignKey,
+    JSON,
+    Index,
+    ForeignKeyConstraint,
+)
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from backend.models.dtos.project_dto import ProjectTaskAnnotationsDTO
 from backend.db import Base, get_session
+
 session = get_session()
+
 
 class TaskAnnotation(Base):
     """Describes Task annotaions like derived ML attributes"""
@@ -62,9 +73,13 @@ class TaskAnnotation(Base):
     @staticmethod
     def get_task_annotation(task_id, project_id, annotation_type):
         """Get annotations for a task with supplied type"""
-        return session.query(TaskAnnotation).filter_by(
-            project_id=project_id, task_id=task_id, annotation_type=annotation_type
-        ).one_or_none()
+        return (
+            session.query(TaskAnnotation)
+            .filter_by(
+                project_id=project_id, task_id=task_id, annotation_type=annotation_type
+            )
+            .one_or_none()
+        )
 
     def get_dto(self):
         task_annotation_dto = TaskAnnotationDTO()
@@ -78,9 +93,11 @@ class TaskAnnotation(Base):
     @staticmethod
     def get_task_annotations_by_project_id_type(project_id, annotation_type):
         """Get annotatiols for a project with the supplied type"""
-        project_task_annotations = session.query(TaskAnnotation).filter_by(
-            project_id=project_id, annotation_type=annotation_type
-        ).all()
+        project_task_annotations = (
+            session.query(TaskAnnotation)
+            .filter_by(project_id=project_id, annotation_type=annotation_type)
+            .all()
+        )
 
         project_task_annotations_dto = ProjectTaskAnnotationsDTO()
         project_task_annotations_dto.project_id = project_id
@@ -101,9 +118,9 @@ class TaskAnnotation(Base):
     @staticmethod
     def get_task_annotations_by_project_id(project_id):
         """Get annotatiols for a project with the supplied type"""
-        project_task_annotations = session.query(TaskAnnotation).filter_by(
-            project_id=project_id
-        ).all()
+        project_task_annotations = (
+            session.query(TaskAnnotation).filter_by(project_id=project_id).all()
+        )
 
         project_task_annotations_dto = ProjectTaskAnnotationsDTO()
         project_task_annotations_dto.project_id = project_id

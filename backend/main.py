@@ -10,6 +10,7 @@ from backend.routes import add_api_end_points
 from backend.services.users.authentication_service import TokenAuthBackend
 from backend.config import settings
 
+
 def get_application() -> FastAPI:
     """Get the FastAPI app instance, with settings."""
     _app = FastAPI(
@@ -32,6 +33,7 @@ def get_application() -> FastAPI:
     PROFILING = True  # Set this from a settings model
 
     if PROFILING:
+
         @_app.middleware("http")
         async def pyinstrument_middleware(request, call_next):
             profiling = request.query_params.get("profile", False)
@@ -53,11 +55,14 @@ def get_application() -> FastAPI:
         expose_headers=["Content-Disposition"],
     )
 
-    _app.add_middleware(AuthenticationMiddleware, backend=TokenAuthBackend(), on_error=None)
+    _app.add_middleware(
+        AuthenticationMiddleware, backend=TokenAuthBackend(), on_error=None
+    )
 
     add_api_end_points(_app)
 
     return _app
+
 
 class InterceptHandler(logging.Handler):
     """Intercept python standard lib logging."""
@@ -69,6 +74,7 @@ class InterceptHandler(logging.Handler):
         """
         logger_opt = log.opt(depth=6, exception=record.exc_info)
         logger_opt.log(record.levelno, record.getMessage())
+
 
 def get_logger():
     """Override FastAPI logger with custom loguru."""
@@ -121,6 +127,7 @@ def get_logger():
 
 
 api = get_application()
+
 
 @api.get("/")
 async def home():

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import typing as t
-from typing import Any, Optional
+from typing import Optional
 from math import ceil
 
 import sqlalchemy as sa
@@ -9,10 +9,11 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.selectable import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+
 def abort(code):
     raise Exception
 
- 
+
 class Pagination:
     """Apply an offset and limit to the query based on the current page and number of
     items per page.
@@ -344,27 +345,32 @@ class QueryPagination(Pagination):
     async def _query_items(self) -> list[t.Any]:
         query = self._query_args["query"]
         session = self._query_args["session"]
-        out = await session.execute(query.limit(self.per_page).offset(self._query_offset))
+        out = await session.execute(
+            query.limit(self.per_page).offset(self._query_offset)
+        )
         return out  # type: ignore[no-any-return]
 
     async def _query_count(self) -> int:
         # Query.count automatically disables eager loads
         session = self._query_args["session"]
-        out = await session.scalar(sa.select(sa.func.count()).select_from(self._query_args["query"]))
+        out = await session.scalar(
+            sa.select(sa.func.count()).select_from(self._query_args["query"])
+        )
         return out  # type: ignore[no-any-return]
-    
+
+
 # @inherit_cache
 class CustomQuery(Select):
     async def paginate(
-            self,
-            *,
-            session: AsyncSession,
-            page: Optional[int] = None,
-            per_page: Optional[int] = None,
-            max_per_page: Optional[int] = None,
-            error_out: bool = True,
-            count: bool = True,
-        ) -> Pagination:
+        self,
+        *,
+        session: AsyncSession,
+        page: Optional[int] = None,
+        per_page: Optional[int] = None,
+        max_per_page: Optional[int] = None,
+        error_out: bool = True,
+        count: bool = True,
+    ) -> Pagination:
         """Apply an offset and limit to the query based on the current page and number
         of items per page, returning a :class:`.Pagination` object.
 

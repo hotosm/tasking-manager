@@ -3,15 +3,26 @@ import datetime
 import geojson
 import json
 from enum import Enum
+
 # # from flask import current_app
-from sqlalchemy.types import Float, Text
-from sqlalchemy import desc, cast, func, distinct
+from sqlalchemy import desc, func, distinct
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
 from typing import List
 
-from sqlalchemy import Column, Integer, BigInteger, DateTime, String, ForeignKey, Boolean, Index, ForeignKeyConstraint, Unicode
+from sqlalchemy import (
+    Column,
+    Integer,
+    BigInteger,
+    DateTime,
+    String,
+    ForeignKey,
+    Boolean,
+    Index,
+    ForeignKeyConstraint,
+    Unicode,
+)
 from sqlalchemy.orm import relationship
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
@@ -34,6 +45,7 @@ from backend.models.postgis.utils import (
 )
 from backend.models.postgis.task_annotation import TaskAnnotation
 from backend.db import Base, get_session
+
 session = get_session()
 from backend.config import settings
 from sqlalchemy import select
@@ -64,16 +76,12 @@ class TaskInvalidationHistory(Base):
     is_closed = Column(Boolean, default=False)
     mapper_id = Column(BigInteger, ForeignKey("users.id", name="fk_mappers"))
     mapped_date = Column(DateTime)
-    invalidator_id = Column(
-        BigInteger, ForeignKey("users.id", name="fk_invalidators")
-    )
+    invalidator_id = Column(BigInteger, ForeignKey("users.id", name="fk_invalidators"))
     invalidated_date = Column(DateTime)
     invalidation_history_id = Column(
         Integer, ForeignKey("task_history.id", name="fk_invalidation_history")
     )
-    validator_id = Column(
-        BigInteger, ForeignKey("users.id", name="fk_validators")
-    )
+    validator_id = Column(BigInteger, ForeignKey("users.id", name="fk_validators"))
     validated_date = Column(DateTime)
     updated_date = Column(DateTime, default=timestamp)
 
@@ -87,9 +95,7 @@ class TaskInvalidationHistory(Base):
             "invalidator_id",
             "is_closed",
         ),
-        Index(
-            "idx_task_validation_mapper_status_composite", "mapper_id", "is_closed"
-        ),
+        Index("idx_task_validation_mapper_status_composite", "mapper_id", "is_closed"),
         {},
     )
 
@@ -405,7 +411,6 @@ class TaskHistory(Base):
 
         dupe.delete()
 
-
     @staticmethod
     async def update_expired_and_locked_actions(
         project_id: int, task_id: int, expiry_date: datetime, action_text: str, session
@@ -420,8 +425,7 @@ class TaskHistory(Base):
         :return:
         """
         result = await session.execute(
-            select(TaskHistory)
-            .filter(
+            select(TaskHistory).filter(
                 TaskHistory.task_id == task_id,
                 TaskHistory.project_id == project_id,
                 TaskHistory.action_text.is_(None),
@@ -448,7 +452,6 @@ class TaskHistory(Base):
             task_history.action_text = action_text
 
         await session.commit()
-
 
     @staticmethod
     def get_all_comments(project_id: int) -> ProjectCommentsDTO:
@@ -565,7 +568,6 @@ class TaskHistory(Base):
         result = await session.execute(query)
         return result.scalars().first()
 
-
     @staticmethod
     def get_last_locked_action(project_id: int, task_id: int):
         """Gets the most recent task history record with locked action for the task"""
@@ -579,10 +581,12 @@ class TaskHistory(Base):
         )
 
     @staticmethod
-    async def get_last_locked_or_auto_unlocked_action(project_id: int, task_id: int, session):
+    async def get_last_locked_or_auto_unlocked_action(
+        project_id: int, task_id: int, session
+    ):
         """Gets the most recent task history record with locked or auto unlocked action for the task"""
-        
-        result =  await TaskHistory.get_last_action_of_type(
+
+        result = await TaskHistory.get_last_action_of_type(
             project_id,
             task_id,
             [
@@ -590,7 +594,8 @@ class TaskHistory(Base):
                 TaskAction.LOCKED_FOR_VALIDATION.name,
                 TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name,
                 TaskAction.AUTO_UNLOCKED_FOR_VALIDATION.name,
-            ], session
+            ],
+            session,
         )
         return result
 
@@ -714,14 +719,20 @@ class Task(Base):
         """
         # LIKELY PROBLEM AREA
 
-        return session.query(Task).filter_by(id=task_id, project_id=project_id).one_or_none()
+        return (
+            session.query(Task)
+            .filter_by(id=task_id, project_id=project_id)
+            .one_or_none()
+        )
 
     @staticmethod
     def get_tasks(project_id: int, task_ids: List[int]):
         """Get all tasks that match supplied list"""
-        return session.query(Task).filter(
-            Task.project_id == project_id, Task.id.in_(task_ids)
-        ).all()
+        return (
+            session.query(Task)
+            .filter(Task.project_id == project_id, Task.id.in_(task_ids))
+            .all()
+        )
 
     @staticmethod
     def get_all_tasks(project_id: int):
@@ -731,9 +742,14 @@ class Task(Base):
     @staticmethod
     def get_tasks_by_status(project_id: int, status: str):
         "Returns all tasks filtered by status in a project"
-        return session.query(Task).filter(
-            Task.project_id == project_id, Task.task_status == TaskStatus[status].value
-        ).all()
+        return (
+            session.query(Task)
+            .filter(
+                Task.project_id == project_id,
+                Task.task_status == TaskStatus[status].value,
+            )
+            .all()
+        )
 
     # @staticmethod
     # def auto_unlock_delta():
@@ -788,7 +804,11 @@ class Task(Base):
 
         old_tasks = await session.execute(
             select(Task.id)
-            .join(TaskHistory, (Task.id == TaskHistory.task_id) & (Task.project_id == TaskHistory.project_id))
+            .join(
+                TaskHistory,
+                (Task.id == TaskHistory.task_id)
+                & (Task.project_id == TaskHistory.project_id),
+            )
             .filter(Task.task_status.in_([1, 3]))
             .filter(
                 TaskHistory.action.in_(
@@ -808,12 +828,13 @@ class Task(Base):
         if not old_tasks:
             # no tasks older than the delta found, return without further processing
             return
-        
+
         for old_task_id in old_tasks:
             task = await session.get(Task, (old_task_id, project_id))
             if task:
-                await task.auto_unlock_expired_tasks(expiry_date, lock_duration, session)
-
+                await task.auto_unlock_expired_tasks(
+                    expiry_date, lock_duration, session
+                )
 
     async def auto_unlock_expired_tasks(self, expiry_date, lock_duration, session):
         """Unlock all tasks locked before expiry date. Clears task lock if needed"""
@@ -1111,8 +1132,6 @@ class Task(Base):
 
     #     return geojson.FeatureCollection(tasks_features)
 
-
-
     @staticmethod
     async def get_tasks_as_geojson_feature_collection(
         db: Database,
@@ -1120,7 +1139,7 @@ class Task(Base):
         task_ids_str: Optional[str] = None,
         order_by: Optional[str] = None,
         order_by_type: str = "ASC",
-        status: Optional[int] = None
+        status: Optional[int] = None,
     ) -> geojson.FeatureCollection:
         """
         Creates a geoJson.FeatureCollection object for tasks related to the supplied project ID.
@@ -1134,7 +1153,7 @@ class Task(Base):
         """
         # Base query
         query = """
-            SELECT 
+            SELECT
                 t.id,
                 t.x,
                 t.y,
@@ -1149,18 +1168,18 @@ class Task(Base):
         """
 
         # Initialize query parameters
-        filters = {'project_id': project_id}
-        
+        filters = {"project_id": project_id}
+
         # Add task_id filter
         if task_ids_str:
             task_ids = [int(task_id) for task_id in task_ids_str.split(",")]
             query += " AND t.id IN :task_ids"
-            filters['task_ids'] = tuple(task_ids)
-        
+            filters["task_ids"] = tuple(task_ids)
+
         # Add status filter
         if status is not None:
             query += " AND t.task_status = :status"
-            filters['status'] = status
+            filters["status"] = status
 
         # Add ordering
         if order_by == "effort_prediction":
@@ -1203,12 +1222,10 @@ class Task(Base):
             tasks_features.append(feature)
 
         return geojson.FeatureCollection(tasks_features)
-    
 
     @staticmethod
     async def get_tasks_as_geojson_feature_collection_no_geom(
-        db: Database,
-        project_id: int
+        db: Database, project_id: int
     ) -> geojson.FeatureCollection:
         """
         Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID without geometry.
@@ -1247,7 +1264,6 @@ class Task(Base):
             tasks_features.append(feature)
 
         return geojson.FeatureCollection(tasks_features)
-
 
     @staticmethod
     def get_mapped_tasks_by_user(project_id: int):

@@ -4,7 +4,9 @@ from markdown import markdown
 from sqlalchemy import Column, Integer, String, Boolean
 from backend.models.dtos.banner_dto import BannerDTO
 from backend.db import Base, get_session
+
 session = get_session()
+
 
 class Banner(Base):
     """Model for Banners"""

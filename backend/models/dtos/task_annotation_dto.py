@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 
+
 class TaskAnnotationDTO(BaseModel):
     """Model for a single task annotation"""
 

@@ -14,6 +14,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 # class LicensesActionsAcceptAPI(Resource):
 #     @token_auth.login_required
 @router.post("/{license_id}/actions/accept-for-me/")
@@ -22,7 +23,7 @@ async def post(
     request: Request,
     license_id: int,
     user: AuthUserDTO = Depends(login_required),
-    db: Database = Depends(get_db)
+    db: Database = Depends(get_db),
 ):
     """
     Capture user acceptance of license terms

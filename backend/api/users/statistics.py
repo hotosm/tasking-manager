@@ -1,16 +1,15 @@
-from json import JSONEncoder
 from datetime import date, timedelta
 # from flask_restful import Resource, request
 
 from backend.services.users.user_service import UserService
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
+
 # from backend.services.users.authentication_service import token_auth
 from backend.services.users.authentication_service import login_required
 from backend.api.utils import validate_date_input
 from backend.config import EnvironmentConfig
 from backend.models.dtos.user_dto import AuthUserDTO
-from backend.models.postgis.user import User
 from backend.db import get_db
 from databases import Database
 from fastapi import APIRouter, Depends, Request
@@ -26,7 +25,7 @@ router = APIRouter(
 
 
 # class UsersStatisticsAPI(Resource, JSONEncoder):
-    # @token_auth.login_required
+# @token_auth.login_required
 @router.get("/{username}/statistics/")
 @requires("authenticated")
 async def get(request: Request, username):
@@ -66,7 +65,11 @@ async def get(request: Request, username):
 
 @router.get("/{user_id}/statistics/interests/")
 # @requires("authenticated")
-async def get(user_id: int, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
+async def get(
+    user_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Get rate of contributions from a user given their interests
     ---
@@ -99,7 +102,7 @@ async def get(user_id: int, db: Database = Depends(get_db), user: AuthUserDTO = 
 
 
 # class UsersStatisticsAllAPI(Resource):
-    # @token_auth.login_required
+# @token_auth.login_required
 @router.get("/statistics/")
 @requires("authenticated")
 async def get(request: Request):
@@ -144,7 +147,9 @@ async def get(request: Request):
                 "Error": "Start date is required",
                 "SubCode": "MissingDate",
             }, 400
-        end_date = validate_date_input(request.query_params.get("endDate", date.today()))
+        end_date = validate_date_input(
+            request.query_params.get("endDate", date.today())
+        )
         if end_date < start_date:
             raise ValueError(
                 "InvalidDateRange- Start date must be earlier than end date"

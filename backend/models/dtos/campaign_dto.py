@@ -1,7 +1,9 @@
 from backend.models.dtos.organisation_dto import OrganisationDTO
+
 # from schematics.exceptions import ValidationError
 from pydantic import BaseModel, Field
 from typing import List, Optional
+
 
 def is_existent(value):
     if value.strip() == "":
@@ -25,7 +27,9 @@ class CampaignDTO(BaseModel):
     logo: Optional[str] = None
     url: Optional[str] = None
     description: Optional[str] = None
-    organisations: List[OrganisationDTO] = Field(default=None, serialization_alias="organisations")
+    organisations: List[OrganisationDTO] = Field(
+        default=None, serialization_alias="organisations"
+    )
 
 
 class CampaignProjectDTO(BaseModel):
@@ -41,9 +45,11 @@ class CampaignOrganisationDTO(BaseModel):
     organisation_id: int
     campaign_id: int
 
+
 class ListCampaignDTO(BaseModel):
     id: Optional[int] = None
     name: Optional[str] = None
+
 
 class CampaignListDTO(BaseModel):
     """DTO used to define available campaigns"""

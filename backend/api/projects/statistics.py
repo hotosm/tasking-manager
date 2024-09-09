@@ -3,7 +3,6 @@ from backend.services.stats_service import StatsService
 from backend.services.project_service import ProjectService
 from fastapi import APIRouter, Depends
 from backend.db import get_session
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.db import get_db
 from databases import Database
@@ -14,6 +13,7 @@ router = APIRouter(
     dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.get("/queries/popular/")
 async def get():

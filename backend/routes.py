@@ -7,7 +7,7 @@ from backend.api.projects import (
     teams as project_teams,
     campaigns as project_campaigns,
     actions as project_actions,
-    favorites as project_favorites
+    favorites as project_favorites,
 )
 
 from backend.api.comments import resources as comment_resources
@@ -19,20 +19,20 @@ from backend.api.users import (
     resources as user_resources,
     statistics as user_statistics,
     openstreetmap as users_openstreetmap,
-    tasks as users_tasks
+    tasks as users_tasks,
 )
 from backend.api.licenses import (
     resources as license_resources,
-    actions as license_actions
+    actions as license_actions,
 )
 from backend.api.organisations import (
     resources as organisation_resources,
-    campaigns as organisation_campaigns
+    campaigns as organisation_campaigns,
 )
 from backend.api.tasks import (
     resources as task_resources,
     actions as task_actions,
-    statistics as task_statistics
+    statistics as task_statistics,
 )
 from backend.api.teams import (
     resources as teams_resources,
@@ -44,10 +44,11 @@ from backend.api.system import (
     banner as system_banner,
     statistics as system_statistics,
     authentication as system_authentication,
-    image_upload as system_image_upload
+    image_upload as system_image_upload,
 )
 
 v2 = APIRouter(prefix="/api/v2")
+
 
 def add_api_end_points(api):
     v2.include_router(project_resources.router)

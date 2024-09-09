@@ -21,6 +21,7 @@ from logging.handlers import RotatingFileHandler
 # from flask_cors import CORS
 # from flask_migrate import Migrate
 from requests_oauthlib import OAuth2Session
+
 # from flask_restful import Api
 import sqlalchemy
 # from flask_mail import Mail

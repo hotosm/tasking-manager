@@ -1,4 +1,11 @@
-from sqlalchemy import Column, Integer, BigInteger, DateTime, ForeignKey, ForeignKeyConstraint
+from sqlalchemy import (
+    Column,
+    Integer,
+    BigInteger,
+    DateTime,
+    ForeignKey,
+    ForeignKeyConstraint,
+)
 from sqlalchemy.orm import relationship
 from backend.models.postgis.user import User
 from backend.models.postgis.message import Message
@@ -6,7 +13,9 @@ from backend.models.postgis.utils import timestamp
 from backend.models.dtos.notification_dto import NotificationDTO
 from datetime import datetime, timedelta
 from backend.db import Base, get_session
+
 session = get_session()
+
 
 class Notification(Base):
     """Describes a Notification for a user"""
