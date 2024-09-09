@@ -1,7 +1,6 @@
 import requests
 import json
 
-from backend.services.settings_service import SettingsService
 from backend.services.messaging.smtp_service import SMTPService
 from backend.models.postgis.release_version import ReleaseVersion
 from fastapi import APIRouter, Depends, Request
@@ -183,7 +182,6 @@ async def get():
 #     return languages.model_dump(by_alias=True), 200
 
 
-
 @router.get("/heartbeat/")
 async def get(db: Database = Depends(get_db)):
     """
@@ -204,7 +202,7 @@ async def get(db: Database = Depends(get_db)):
         LIMIT 1
     """
     release = await db.fetch_one(query)
-    
+
     if release:
         release_info = {
             "version": release["tag_name"],
@@ -214,7 +212,6 @@ async def get(db: Database = Depends(get_db)):
         release_info = None
 
     return {"status": "Fastapi healthy", "release": release_info}, 200
-
 
 
 # class SystemContactAdminRestAPI():
