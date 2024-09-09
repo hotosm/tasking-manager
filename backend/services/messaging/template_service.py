@@ -1,7 +1,7 @@
 import os
 import re
 
-from flask import current_app, render_template
+# # from flask import current_app, render_template
 
 
 def get_txt_template(template_name: str):

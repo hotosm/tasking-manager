@@ -1,12 +1,9 @@
-from schematics import Model
-from schematics.types import (
-    BooleanType,
-    StringType,
-)
+from pydantic import BaseModel, Field
+from typing import Optional
 
 
-class BannerDTO(Model):
+class BannerDTO(BaseModel):
     """Describes a JSON model for a banner"""
 
-    message = StringType(required=True, max_length=255)
-    visible = BooleanType()
+    message: Optional[str] = Field(None, max_length=255)
+    visible: Optional[bool] = None

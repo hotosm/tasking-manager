@@ -1,21 +1,22 @@
-from schematics.types import IntType, ListType, ModelType, StringType, UTCDateTimeType
-from schematics import Model
+from pydantic import BaseModel, Field
+from datetime import datetime
+from typing import List, Optional
 
 
-class ApplicationDTO(Model):
+class ApplicationDTO(BaseModel):
     """Describes JSON model used for creating grids"""
 
-    id = IntType(required=True, serialized_name="keyId")
-    user = IntType(required=True, serialized_name="userId")
-    app_key = StringType(required=True, serialized_name="applicationkey")
-    created = UTCDateTimeType(required=True, serialized_name="createdDate")
+    id: Optional[int] = Field(None, alias="keyId")
+    user: Optional[int] = Field(None, alias="userId")
+    app_key: Optional[str] = Field(None, alias="applicationkey")
+    created: Optional[datetime] = Field(None, alias="createdDate")
 
 
-class ApplicationsDTO(Model):
+class ApplicationsDTO(BaseModel):
     """Describes an array of Application DTOs"""
 
     def __init__(self):
         super().__init__()
         self.applications = []
 
-    applications = ListType(ModelType(ApplicationDTO))
+    applications: List[ApplicationDTO]

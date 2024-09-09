@@ -25,7 +25,7 @@ FROM base as extract-deps
 RUN pip install --no-cache-dir --upgrade pip
 WORKDIR /opt/python
 COPY pyproject.toml pdm.lock README.md /opt/python/
-RUN pip install --no-cache-dir pdm==2.7.4
+RUN pip install --no-cache-dir pdm==2.8.0
 RUN pdm export --prod --without-hashes > requirements.txt
 
 
@@ -34,13 +34,14 @@ FROM base as build
 RUN pip install --no-cache-dir --upgrade pip
 WORKDIR /opt/python
 # Setup backend build-time dependencies
-RUN apt-get update
-RUN apt-get install --no-install-recommends -y build-essential
-RUN apt-get install --no-install-recommends -y \
-        postgresql-server-dev-15 \
-        python3-dev \
-        libffi-dev \
-        libgeos-dev
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get -q install --no-install-recommends -y \
+      build-essential \
+      postgresql-server-dev-15 \
+      python3-dev \
+      libffi-dev \
+      libgeos-dev
 # Setup backend Python dependencies
 COPY --from=extract-deps \
     /opt/python/requirements.txt /opt/python/
@@ -62,8 +63,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 # Setup backend runtime dependencies
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y \
-        postgresql-client libgeos3.11.1 proj-bin && \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get -q install --no-install-recommends -y \
+        postgresql-client libgeos3.11.1 proj-bin curl && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY --from=build \
     /home/appuser/.local \
@@ -79,24 +81,19 @@ COPY manage.py .
 
 FROM runtime as debug
 RUN pip install --user --no-warn-script-location \
-    --no-cache-dir debugpy==1.6.7
+    --no-cache-dir debugpy==1.8.1
 EXPOSE 5678/tcp
 CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678", \
-    "-m", "gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
+    "-m", "uvicorn", "backend.main:api", "--host", "0.0.0.0", "--port", "5000", \
     "--reload", "--log-level", "error"]
-
 
 
 FROM runtime as prod
 USER root
-RUN apt-get update && \
-	apt-get install -y curl && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
 # Pre-compile packages to .pyc (init speed gains)
 RUN python -c "import compileall; compileall.compile_path(maxlevels=10, quiet=1)"
 RUN python -m compileall .
 EXPOSE 5000/tcp
 USER appuser:appuser
-CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
-    "--workers", "1", "--log-level", "error"]
+CMD ["uvicorn", "backend.main:api", "--host", "0.0.0.0", "--port", "5000", \
+     "--log-level", "error","--reload"]

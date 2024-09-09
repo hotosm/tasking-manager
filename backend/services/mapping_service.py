@@ -1,7 +1,7 @@
 import datetime
 import xml.etree.ElementTree as ET
 
-from flask import current_app
+# from flask import current_app
 from geoalchemy2 import shape
 
 from backend.exceptions import NotFound
@@ -196,10 +196,10 @@ class MappingService:
         return task
 
     @staticmethod
-    def add_task_comment(task_comment: TaskCommentDTO) -> TaskDTO:
+    async def add_task_comment(task_comment: TaskCommentDTO) -> TaskDTO:
         """Adds the comment to the task history"""
         # Check if project exists
-        ProjectService.exists(task_comment.project_id)
+        await ProjectService.exists(task_comment.project_id)
 
         task = Task.get(task_comment.task_id, task_comment.project_id)
         if task is None:

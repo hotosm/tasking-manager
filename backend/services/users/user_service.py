@@ -1,11 +1,11 @@
 from cachetools import TTLCache, cached
-from flask import current_app
+
+# # from flask import current_app
 import datetime
 from sqlalchemy.sql.expression import literal
 from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column
 
 from backend.exceptions import NotFound
-from backend import db
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
 from backend.models.dtos.user_dto import (
     UserDTO,
@@ -19,7 +19,11 @@ from backend.models.dtos.user_dto import (
     UserCountryContributed,
     UserCountriesContributed,
 )
-from backend.models.dtos.interests_dto import InterestsListDTO, InterestDTO
+from backend.models.dtos.interests_dto import (
+    InterestsListDTO,
+    InterestDTO,
+    ListInterestDTO,
+)
 from backend.models.postgis.interests import Interest, project_interests
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.project import Project
@@ -34,7 +38,10 @@ from backend.services.messaging.template_service import (
     get_txt_template,
     template_var_replacing,
 )
+from backend.db import get_session
 
+session = get_session()
+from databases import Database
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -49,17 +56,15 @@ class UserServiceError(Exception):
 
 class UserService:
     @staticmethod
-    def get_user_by_id(user_id: int) -> User:
-        user = User.get_by_id(user_id)
-
+    async def get_user_by_id(user_id: int, db: Database) -> User:
+        user = await User.get_by_id(user_id, db)
         if user is None:
             raise NotFound(sub_code="USER_NOT_FOUND", user_id=user_id)
-
         return user
 
     @staticmethod
-    def get_user_by_username(username: str) -> User:
-        user = User.get_by_username(username)
+    async def get_user_by_username(username: str, db) -> User:
+        user = await User.get_by_username(username, db)
 
         if user is None:
             raise NotFound(sub_code="USER_NOT_FOUND", username=username)
@@ -70,7 +75,8 @@ class UserService:
     def get_contributions_by_day(user_id: int):
         # Validate that user exists.
         stats = (
-            TaskHistory.query.with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 func.DATE(TaskHistory.action_date).label("day"),
                 func.count(TaskHistory.action).label("cnt"),
             )
@@ -92,7 +98,7 @@ class UserService:
 
     @staticmethod
     def get_project_managers() -> User:
-        users = User.query.filter(User.role == 2).all()
+        users = session.query(User).filter(User.role == 2).all()
 
         if users is None:
             raise NotFound(sub_code="USER_NOT_FOUND")
@@ -101,7 +107,7 @@ class UserService:
 
     @staticmethod
     def get_general_admins() -> User:
-        users = User.query.filter(User.role == 1).all()
+        users = session.query(User).filter(User.role == 1).all()
 
         if users is None:
             raise NotFound(sub_code="USER_NOT_FOUND")
@@ -109,8 +115,10 @@ class UserService:
         return users
 
     @staticmethod
-    def update_user(user_id: int, osm_username: str, picture_url: str) -> User:
-        user = UserService.get_user_by_id(user_id)
+    async def update_user(
+        user_id: int, osm_username: str, picture_url: str, session
+    ) -> User:
+        user = await UserService.get_user_by_id(user_id)
         if user.username != osm_username:
             user.update_username(osm_username)
 
@@ -194,7 +202,8 @@ class UserService:
     def get_interests_stats(user_id):
         # Get all projects that the user has contributed.
         stmt = (
-            TaskHistory.query.with_entities(TaskHistory.project_id)
+            session.query(TaskHistory)
+            .with_entities(TaskHistory.project_id)
             .distinct()
             .filter(TaskHistory.user_id == user_id)
         )
@@ -239,7 +248,8 @@ class UserService:
         sort_by: str = None,
     ) -> UserTaskDTOs:
         base_query = (
-            TaskHistory.query.with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 TaskHistory.project_id.label("project_id"),
                 TaskHistory.task_id.label("task_id"),
                 func.max(TaskHistory.action_date).label("max"),
@@ -263,7 +273,8 @@ class UserService:
         task_id_list = base_query.subquery()
 
         comments_query = (
-            TaskHistory.query.with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 TaskHistory.project_id,
                 TaskHistory.task_id,
                 func.count(TaskHistory.action).label("count"),
@@ -273,7 +284,7 @@ class UserService:
         ).subquery()
 
         sq = (
-            db.session.query(
+            session.query(
                 func.coalesce(comments_query.c.count, 0).label("comments"), task_id_list
             )
             .select_from(task_id_list)
@@ -335,12 +346,12 @@ class UserService:
         ]
 
         actions_table = (
-            db.session.query(literal(TaskStatus.VALIDATED.name).label("action_text"))
+            session.query(literal(TaskStatus.VALIDATED.name).label("action_text"))
             .union(
-                db.session.query(
+                session.query(
                     literal(TaskStatus.INVALIDATED.name).label("action_text")
                 ),
-                db.session.query(literal(TaskStatus.MAPPED.name).label("action_text")),
+                session.query(literal(TaskStatus.MAPPED.name).label("action_text")),
             )
             .subquery()
             .alias("actions_table")
@@ -348,7 +359,8 @@ class UserService:
 
         # Get only rows with the given actions.
         filtered_actions = (
-            TaskHistory.query.with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 TaskHistory.user_id,
                 TaskHistory.project_id,
                 TaskHistory.task_id,
@@ -360,7 +372,7 @@ class UserService:
         )
 
         user_tasks = (
-            db.session.query(filtered_actions)
+            session.query(filtered_actions)
             .filter(filtered_actions.c.user_id == user.id)
             .distinct(
                 filtered_actions.c.project_id,
@@ -372,7 +384,7 @@ class UserService:
         )
 
         others_tasks = (
-            db.session.query(filtered_actions)
+            session.query(filtered_actions)
             .filter(filtered_actions.c.user_id != user.id)
             .filter(filtered_actions.c.task_id == user_tasks.c.task_id)
             .filter(filtered_actions.c.project_id == user_tasks.c.project_id)
@@ -387,7 +399,7 @@ class UserService:
         )
 
         user_stats = (
-            db.session.query(
+            session.query(
                 actions_table.c.action_text, func.count(user_tasks.c.action_text)
             )
             .outerjoin(
@@ -397,7 +409,7 @@ class UserService:
         )
 
         others_stats = (
-            db.session.query(
+            session.query(
                 func.concat(actions_table.c.action_text, "_BY_OTHERS"),
                 func.count(others_tasks.c.action_text),
             )
@@ -424,7 +436,8 @@ class UserService:
         stats_dto.time_spent_validating = 0
 
         query = (
-            TaskHistory.query.with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 func.date_trunc("minute", TaskHistory.action_date).label("trn"),
                 func.max(TaskHistory.action_text).label("tm"),
             )
@@ -433,7 +446,7 @@ class UserService:
             .group_by("trn")
             .subquery()
         )
-        total_validation_time = db.session.query(
+        total_validation_time = session.query(
             func.sum(cast(func.to_timestamp(query.c.tm, "HH24:MI:SS"), Time))
         ).scalar()
 
@@ -442,7 +455,7 @@ class UserService:
             stats_dto.total_time_spent += stats_dto.time_spent_validating
 
         total_mapping_time = (
-            db.session.query(
+            session.query(
                 func.sum(
                     cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
                 )
@@ -493,9 +506,9 @@ class UserService:
         return dict(verificationEmailSent=verification_email_sent)
 
     @staticmethod
-    def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
+    async def get_all_users(query: UserSearchQuery, session) -> UserSearchDTO:
         """Gets paginated list of users"""
-        return User.get_all_users(query)
+        return await User.get_all_users(query, session)
 
     @staticmethod
     @cached(user_filter_cache)
@@ -504,9 +517,9 @@ class UserService:
         return User.filter_users(username, project_id, page)
 
     @staticmethod
-    def is_user_an_admin(user_id: int) -> bool:
+    async def is_user_an_admin(user_id: int, db: Database) -> bool:
         """Is the user an admin"""
-        user = UserService.get_user_by_id(user_id)
+        user = await UserService.get_user_by_id(user_id, db)
         if UserRole(user.role) == UserRole.ADMIN:
             return True
 
@@ -537,9 +550,9 @@ class UserService:
         return False
 
     @staticmethod
-    def is_user_blocked(user_id: int) -> bool:
+    async def is_user_blocked(user_id: int, db: Database) -> bool:
         """Determines if a user is blocked"""
-        user = UserService.get_user_by_id(user_id)
+        user = await UserService.get_user_by_id(user_id, db)
 
         if UserRole(user.role) == UserRole.READ_ONLY:
             return True
@@ -549,7 +562,8 @@ class UserService:
     @staticmethod
     def get_countries_contributed(user_id: int):
         query = (
-            TaskHistory.query.with_entities(
+            session.query(TaskHistory)
+            .with_entities(
                 func.unnest(Project.country).label("country"),
                 TaskHistory.action_text,
                 func.count(TaskHistory.action_text).label("count"),
@@ -600,19 +614,18 @@ class UserService:
         countries_dto = UserCountriesContributed()
         countries_dto.countries_contributed = result
         countries_dto.total = len(result)
-
         return countries_dto
 
     @staticmethod
-    def upsert_mapped_projects(user_id: int, project_id: int, local_session=None):
+    def upsert_mapped_projects(user_id: int, project_id: int):
         """Add project to mapped projects if it doesn't exist, otherwise return"""
-        User.upsert_mapped_projects(user_id, project_id, local_session=local_session)
+        User.upsert_mapped_projects(user_id, project_id)
 
     @staticmethod
-    def get_mapped_projects(user_name: str, preferred_locale: str):
+    async def get_mapped_projects(user_name: str, preferred_locale: str, db: Database):
         """Gets all projects a user has mapped or validated on"""
-        user = UserService.get_user_by_username(user_name)
-        return User.get_mapped_projects(user.id, preferred_locale)
+        user = await UserService.get_user_by_username(user_name, db)
+        return await User.get_mapped_projects(user.id, preferred_locale, db)
 
     @staticmethod
     def get_recommended_projects(user_name: str, preferred_locale: str):
@@ -621,7 +634,8 @@ class UserService:
 
         limit = 20
         user = (
-            User.query.with_entities(User.id, User.mapping_level)
+            session.query(User)
+            .with_entities(User.id, User.mapping_level)
             .filter(User.username == user_name)
             .one_or_none()
         )
@@ -630,14 +644,16 @@ class UserService:
 
         # Get all projects that the user has contributed
         sq = (
-            TaskHistory.query.with_entities(TaskHistory.project_id.label("project_id"))
+            session.query(TaskHistory)
+            .with_entities(TaskHistory.project_id.label("project_id"))
             .distinct(TaskHistory.project_id)
             .filter(TaskHistory.user_id == user.id)
             .subquery()
         )
         # Get all campaigns for all contributed projects.
         campaign_tags = (
-            Project.query.with_entities(Project.campaign.label("tag"))
+            session.query(Project)
+            .with_entities(Project.campaign.label("tag"))
             .filter(or_(Project.author_id == user.id, Project.id == sq.c.project_id))
             .subquery()
         )
@@ -729,10 +745,10 @@ class UserService:
         return user
 
     @staticmethod
-    def accept_license_terms(user_id: int, license_id: int):
+    async def accept_license_terms(user_id: int, license_id: int, db: Database):
         """Saves the fact user has accepted license terms"""
-        user = UserService.get_user_by_id(user_id)
-        user.accept_license_terms(license_id)
+        user = await UserService.get_user_by_id(user_id, db)
+        await user.accept_license_terms(user_id, license_id, db)
 
     @staticmethod
     def has_user_accepted_license(user_id: int, license_id: int):
@@ -824,7 +840,11 @@ class UserService:
     def register_user_with_email(user_dto: UserRegisterEmailDTO):
         # Validate that user is not within the general users table.
         user_email = user_dto.email.lower()
-        user = User.query.filter(func.lower(User.email_address) == user_email).first()
+        user = (
+            session.query(User)
+            .filter(func.lower(User.email_address) == user_email)
+            .first()
+        )
         if user is not None:
             details_msg = f"Email address {user_email} already exists"
             raise ValueError(details_msg)
@@ -839,12 +859,18 @@ class UserService:
         return user
 
     @staticmethod
-    def get_interests(user: User) -> InterestsListDTO:
-        dto = InterestsListDTO()
-        for interest in Interest.query.all():
-            int_dto = interest.as_dto()
+    async def get_interests(user: User, db: Database) -> InterestsListDTO:
+        query = """
+            SELECT * FROM interests
+        """
+        interests = await db.fetch_all(query)
+        interest_list_dto = InterestsListDTO()
+
+        for interest in interests:
+            int_dto = ListInterestDTO(**interest)
+
             if interest in user.interests:
                 int_dto.user_selected = True
-            dto.interests.append(int_dto)
+            interest_list_dto.interests.append(int_dto)
 
-        return dto
+        return interest_list_dto

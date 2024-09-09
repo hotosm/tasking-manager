@@ -1,16 +1,26 @@
 import base64
+import binascii
 import urllib.parse
-
-from flask import current_app, request
-from flask_httpauth import HTTPTokenAuth
+from backend.db import get_db
+from backend.models.dtos.user_dto import AuthUserDTO
+from starlette.authentication import (
+    AuthCredentials,
+    AuthenticationBackend,
+    AuthenticationError,
+    SimpleUser,
+)
+from loguru import logger
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 from backend.api.utils import TMAPIDecorators
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService, NotFound
 from random import SystemRandom
+from backend.config import settings
+from fastapi import Depends, HTTPException, Header, Request
+from databases import Database
 
-token_auth = HTTPTokenAuth(scheme="Token")
+# token_auth = HTTPTokenAuth(scheme="Token")
 tm = TMAPIDecorators()
 
 UNICODE_ASCII_CHARACTER_SET = (
@@ -18,13 +28,13 @@ UNICODE_ASCII_CHARACTER_SET = (
 )
 
 
-@token_auth.error_handler
+# @token_auth.error_handler
 def handle_unauthorized_token():
-    current_app.logger.debug("Token not valid")
+    logger.debug("Token not valid")
     return {"Error": "Token is expired or invalid", "SubCode": "InvalidToken"}, 401
 
 
-@token_auth.verify_token
+# @token_auth.verify_token
 def verify_token(token):
     """Verify the supplied token and check user role is correct for the requested resource"""
     tm.authenticated_user_id = None
@@ -34,12 +44,12 @@ def verify_token(token):
     try:
         decoded_token = base64.b64decode(token).decode("utf-8")
     except UnicodeDecodeError:
-        current_app.logger.debug(f"Unable to decode token {request.base_url}")
+        logger.debug("Unable to decode token")
         return False  # Can't decode token, so fail login
 
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:
-        current_app.logger.debug(f"Token not valid {request.base_url}")
+        logger.debug("Token not valid")
         return False
 
     tm.authenticated_user_id = (
@@ -48,17 +58,48 @@ def verify_token(token):
     return user_id  # All tests passed token is good for the requested resource
 
 
+class TokenAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        if "authorization" not in conn.headers:
+            return
+
+        auth = conn.headers["authorization"]
+        try:
+            scheme, credentials = auth.split()
+            if scheme.lower() != "token":
+                return
+            try:
+                decoded_token = base64.b64decode(credentials).decode("ascii")
+            except UnicodeDecodeError:
+                logger.debug("Unable to decode token")
+                return False
+        except (ValueError, UnicodeDecodeError, binascii.Error):
+            raise AuthenticationError("Invalid auth credentials")
+
+        valid_token, user_id = AuthenticationService.is_valid_token(
+            decoded_token, 604800
+        )
+        if not valid_token:
+            logger.debug("Token not valid")
+            return AuthCredentials([]), None
+
+        tm.authenticated_user_id = (
+            user_id  # Set the user ID on the decorator as a convenience
+        )
+        return AuthCredentials(["authenticated"]), SimpleUser(user_id)
+
+
 class AuthServiceError(Exception):
     """Custom Exception to notify callers an error occurred when authenticating"""
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.debug(message)
+            logger.debug(message)
 
 
 class AuthenticationService:
     @staticmethod
-    def login_user(osm_user_details, email, user_element="user") -> dict:
+    async def login_user(osm_user_details, email, session, user_element="user") -> dict:
         """
         Generates authentication details for user, creating in DB if user is unknown to us
         :param osm_user_details: XML response from OSM
@@ -82,8 +123,8 @@ class AuthenticationService:
             user_picture = None
 
         try:
-            UserService.get_user_by_id(osm_id)
-            UserService.update_user(osm_id, username, user_picture)
+            await UserService.get_user_by_id(osm_id, session)
+            UserService.update_user(osm_id, username, user_picture, session)
         except NotFound:
             # User not found, so must be new user
             changesets = osm_user.get("changesets")
@@ -122,7 +163,7 @@ class AuthenticationService:
     @staticmethod
     def _get_email_validated_url(is_valid: bool) -> str:
         """Helper function to generate redirect url for email verification"""
-        base_url = current_app.config["APP_BASE_URL"]
+        base_url = settings.get("APP_BASE_URL")
 
         verification_params = {"is_valid": is_valid}
         verification_url = "{0}/validate-email?{1}".format(
@@ -133,7 +174,7 @@ class AuthenticationService:
     @staticmethod
     def get_authentication_failed_url():
         """Generates the auth-failed URL for the running app"""
-        base_url = current_app.config["APP_BASE_URL"]
+        base_url = settings.get("APP_BASE_URL")
         auth_failed_url = f"{base_url}/auth-failed"
         return auth_failed_url
 
@@ -144,7 +185,7 @@ class AuthenticationService:
         :param osm_id: OSM ID of the user authenticating
         :return: Token
         """
-        entropy = current_app.secret_key if current_app.secret_key else "un1testingmode"
+        entropy = settings.SECRET_KEY if settings.SECRET_KEY else "un1testingmode"
 
         serializer = URLSafeTimedSerializer(entropy)
         return serializer.dumps(osm_id)
@@ -169,16 +210,40 @@ class AuthenticationService:
         :param token_expiry: When the token expires in seconds
         :return: True if token is valid, and user_id contained in token
         """
-        entropy = current_app.secret_key if current_app.secret_key else "un1testingmode"
+        entropy = settings.SECRET_KEY if settings.SECRET_KEY else "un1testingmode"
         serializer = URLSafeTimedSerializer(entropy)
 
         try:
             tokenised_user_id = serializer.loads(token, max_age=token_expiry)
         except SignatureExpired:
-            current_app.logger.debug("Token has expired")
+            # current_app.logger.debug("Token has expired")
             return False, "ExpiredToken- Token has expired"
         except BadSignature:
-            current_app.logger.debug("Bad Token Signature")
+            # current_app.logger.debug("Bad Token Signature")
             return False, "BadSignature- Bad Token Signature"
 
         return True, tokenised_user_id
+
+
+async def login_required(
+    request: Request, db: Database = Depends(get_db), authorization: str = Header(None)
+):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header missing")
+    try:
+        scheme, credentials = authorization.split()
+        if scheme.lower() != "token":
+            raise HTTPException(status_code=401, detail="Invalid authentication scheme")
+        try:
+            decoded_token = base64.b64decode(credentials).decode("ascii")
+        except UnicodeDecodeError:
+            logger.debug("Unable to decode token")
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except (ValueError, UnicodeDecodeError, binascii.Error):
+        raise AuthenticationError("Invalid auth credentials")
+    valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
+    if not valid_token:
+        logger.debug("Token not valid")
+        raise HTTPException(status_code=401, detail="Token not valid")
+
+    return AuthUserDTO(id=user_id)

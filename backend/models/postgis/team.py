@@ -1,4 +1,6 @@
-from backend import db
+from databases import Database
+from sqlalchemy import Column, Integer, BigInteger, Boolean, ForeignKey, String
+from sqlalchemy.orm import relationship, backref
 from backend.exceptions import NotFound
 from backend.models.dtos.team_dto import (
     TeamDTO,
@@ -15,41 +17,42 @@ from backend.models.postgis.statuses import (
     TeamRoles,
 )
 from backend.models.postgis.user import User
+from backend.db import Base, get_session
+
+session = get_session()
 
 
-class TeamMembers(db.Model):
+class TeamMembers(Base):
     __tablename__ = "team_members"
-    team_id = db.Column(
-        db.Integer, db.ForeignKey("teams.id", name="fk_teams"), primary_key=True
+    team_id = Column(Integer, ForeignKey("teams.id", name="fk_teams"), primary_key=True)
+    user_id = Column(
+        BigInteger, ForeignKey("users.id", name="fk_users"), primary_key=True
     )
-    user_id = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", name="fk_users"), primary_key=True
-    )
-    function = db.Column(db.Integer, nullable=False)  # either 'editor' or 'manager'
-    active = db.Column(db.Boolean, default=False)
-    join_request_notifications = db.Column(
-        db.Boolean, nullable=False, default=False
+    function = Column(Integer, nullable=False)  # either 'editor' or 'manager'
+    active = Column(Boolean, default=False)
+    join_request_notifications = Column(
+        Boolean, nullable=False, default=False
     )  # Managers can turn notifications on/off for team join requests
-    member = db.relationship(
-        User, backref=db.backref("teams", cascade="all, delete-orphan")
+    member = relationship(
+        User, backref=backref("teams", cascade="all, delete-orphan", lazy="joined")
     )
-    team = db.relationship(
-        "Team", backref=db.backref("members", cascade="all, delete-orphan")
+    team = relationship(
+        "Team", backref=backref("members", cascade="all, delete-orphan", lazy="joined")
     )
 
     def create(self):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     def update(self):
         """Updates the current model in the DB"""
-        db.session.commit()
+        session.commit()
 
     @staticmethod
     def get(team_id: int, user_id: int):
@@ -57,34 +60,31 @@ class TeamMembers(db.Model):
         return TeamMembers.query.filter_by(team_id=team_id, user_id=user_id).first()
 
 
-class Team(db.Model):
+class Team(Base):
     """Describes a team"""
 
     __tablename__ = "teams"
 
     # Columns
-    id = db.Column(db.Integer, primary_key=True)
-    organisation_id = db.Column(
-        db.Integer,
-        db.ForeignKey("organisations.id", name="fk_organisations"),
+    id = Column(Integer, primary_key=True)
+    organisation_id = Column(
+        Integer,
+        ForeignKey("organisations.id", name="fk_organisations"),
         nullable=False,
     )
-    name = db.Column(db.String(512), nullable=False)
-    logo = db.Column(db.String)  # URL of a logo
-    description = db.Column(db.String)
-    join_method = db.Column(
-        db.Integer, default=TeamJoinMethod.ANY.value, nullable=False
-    )
-    visibility = db.Column(
-        db.Integer, default=TeamVisibility.PUBLIC.value, nullable=False
-    )
+    name = Column(String(512), nullable=False)
+    logo = Column(String)  # URL of a logo
+    description = Column(String)
+    join_method = Column(Integer, default=TeamJoinMethod.ANY.value, nullable=False)
+    visibility = Column(Integer, default=TeamVisibility.PUBLIC.value, nullable=False)
 
-    organisation = db.relationship(Organisation, backref="teams")
+    # organisation = relationship(Organisation, backref="teams", lazy="joined")
+    organisation = relationship(Organisation, backref="teams")
 
     def create(self):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        session.add(self)
+        session.commit()
 
     @classmethod
     def create_from_dto(cls, new_team_dto: NewTeamDTO):
@@ -160,12 +160,12 @@ class Team(db.Model):
                         member["function"]
                     ].value
 
-        db.session.commit()
+        session.commit()
 
     def delete(self):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        session.delete(self)
+        session.commit()
 
     def can_be_deleted(self) -> bool:
         """A Team can be deleted if it doesn't have any projects"""
@@ -177,7 +177,7 @@ class Team(db.Model):
         :param team_id: team ID in scope
         :return: Team if found otherwise None
         """
-        return db.session.get(Team, team_id)
+        return session.get(Team, team_id)
 
     def get_team_by_name(team_name: str):
         """
@@ -201,38 +201,56 @@ class Team(db.Model):
         team_dto.visibility = TeamVisibility(self.visibility).name
         return team_dto
 
-    def as_dto_inside_org(self):
+    async def as_dto_inside_org(self, session):
         """Returns a dto for the team"""
         team_dto = OrganisationTeamsDTO()
+
         team_dto.team_id = self.id
         team_dto.name = self.name
         team_dto.description = self.description
         team_dto.join_method = TeamJoinMethod(self.join_method).name
-        team_dto.members = self._get_team_members()
+        team_dto.members = await self._get_team_members(session)
         team_dto.visibility = TeamVisibility(self.visibility).name
+
         return team_dto
 
-    def as_dto_team_member(self, member) -> TeamMembersDTO:
-        """Returns a dto for the team  member"""
-        member_dto = TeamMembersDTO()
-        user = User.get_by_id(member.user_id)
-        member_function = TeamMemberFunctions(member.function).name
-        member_dto.username = user.username
-        member_dto.function = member_function
-        member_dto.picture_url = user.picture_url
-        member_dto.active = member.active
-        member_dto.join_request_notifications = member.join_request_notifications
-        return member_dto
+    async def as_dto_team_member(user_id: int, db: Database) -> TeamMembersDTO:
+        """Returns a DTO for the team member"""
+        user_query = """
+            SELECT username, picture_url FROM users WHERE id = :user_id
+        """
+        user = await db.fetch_one(query=user_query, values={"user_id": user_id})
 
-    def as_dto_team_project(self, project) -> TeamProjectDTO:
+        if not user:
+            raise NotFound(sub_code="USER_NOT_FOUND", user_id=user_id)
+
+        member_query = """
+            SELECT function, active, join_request_notifications
+            FROM team_members WHERE user_id = :user_id
+        """
+        member = await db.fetch_one(query=member_query, values={"user_id": user_id})
+
+        if not member:
+            raise NotFound(sub_code="MEMBER_NOT_FOUND", user_id=user_id)
+
+        return TeamMembersDTO(
+            username=user["username"],
+            function=TeamMemberFunctions(member["function"]).name,
+            picture_url=user["picture_url"],
+            active=member["active"],
+            join_request_notifications=member["join_request_notifications"],
+        )
+
+    def as_dto_team_project(project) -> TeamProjectDTO:
         """Returns a dto for the team project"""
-        project_team_dto = TeamProjectDTO()
-        project_team_dto.project_name = project.name
-        project_team_dto.project_id = project.project_id
-        project_team_dto.role = TeamRoles(project.role).name
-        return project_team_dto
 
-    def _get_team_members(self):
+        return TeamProjectDTO(
+            project_name=project.name,
+            project_id=project.project_id,
+            role=TeamRoles(project.role).name,
+        )
+
+    async def _get_team_members(self, session):
         """Helper to get JSON serialized members"""
         members = []
         for mem in self.members:
@@ -247,43 +265,132 @@ class Team(db.Model):
 
         return members
 
-    def get_team_managers(self, count: int = None):
+    async def get_all_members(db: Database, team_id: int, count: int = None):
         """
-        Returns users with manager role in the team
+        Returns all users in the team regardless of their role (manager or member).
         --------------------------------
-        :param count: number of managers to return
-        :return: list of team managers
+        :param db: Database session
+        :param team_id: ID of the team
+        :param count: Number of members to return
+        :return: List of team members with specified attributes
         """
-        base_query = TeamMembers.query.filter_by(
-            team_id=self.id, function=TeamMemberFunctions.MANAGER.value, active=True
-        )
-        if count:
-            return base_query.limit(count).all()
-        else:
-            return base_query.all()
 
-    def get_team_members(self, count: int = None):
+        query = f"""
+            SELECT u.username,
+                CASE
+                    WHEN tm.function = {TeamMemberFunctions.MANAGER.value} THEN '{TeamMemberFunctions.MANAGER.name}'
+                    WHEN tm.function = {TeamMemberFunctions.MEMBER.value} THEN '{TeamMemberFunctions.MEMBER.name}'
+                    ELSE 'UNKNOWN'
+                END as function,
+                tm.active,
+                tm.join_request_notifications,
+                u.picture_url
+            FROM team_members tm
+            JOIN users u ON tm.user_id = u.id
+            WHERE tm.team_id = :team_id AND tm.active = true
         """
-        Returns users with member role in the team
-        --------------------------------
-        :param count: number of members to return
-        :return: list of members in the team
-        """
-        base_query = TeamMembers.query.filter_by(
-            team_id=self.id, function=TeamMemberFunctions.MEMBER.value, active=True
-        )
-        if count:
-            return base_query.limit(count).all()
-        else:
-            return base_query.all()
 
-    def get_members_count_by_role(self, role: TeamMemberFunctions):
+        values = {
+            "team_id": team_id,
+        }
+
+        if count:
+            query += " LIMIT :count"
+            values["count"] = count
+
+        results = await db.fetch_all(query=query, values=values)
+        return [TeamMembersDTO(**result) for result in results]
+
+    async def get_team_managers(db: Database, team_id: int, count: int = None):
         """
-        Returns number of members with specified role in the team
+        Returns users with manager role in the team.
         --------------------------------
-        :param role: role to count
-        :return: number of members with specified role in the team
+        :param db: Database session
+        :param team_id: ID of the team
+        :param count: Number of managers to return
+        :return: List of team managers with specified attributes
         """
-        return TeamMembers.query.filter_by(
-            team_id=self.id, function=role.value, active=True
-        ).count()
+        query = f"""
+            SELECT u.username,
+                CASE
+                    WHEN tm.function = {TeamMemberFunctions.MANAGER.value} THEN '{TeamMemberFunctions.MANAGER.name}'
+                    WHEN tm.function = {TeamMemberFunctions.MEMBER.value} THEN '{TeamMemberFunctions.MEMBER.name}'
+                    ELSE 'UNKNOWN'
+                END as function,
+                tm.active,
+                tm.join_request_notifications,
+                u.picture_url
+            FROM team_members tm
+            JOIN users u ON tm.user_id = u.id
+            WHERE tm.team_id = :team_id AND tm.function = :function_value AND tm.active = true
+        """
+
+        values = {
+            "team_id": team_id,
+            "function_value": TeamMemberFunctions.MANAGER.value,
+        }
+
+        if count:
+            query += " LIMIT :count"
+            values["count"] = count
+
+        results = await db.fetch_all(query=query, values=values)
+        return [TeamMembersDTO(**result) for result in results]
+
+    async def get_team_members(db: Database, team_id: int, count: int = None):
+        """
+        Returns users with member role in the team.
+        --------------------------------
+        :param db: Database session
+        :param team_id: ID of the team
+        :param count: Number of members to return
+        :return: List of team members with specified attributes
+        """
+
+        query = f"""
+            SELECT u.username,
+                CASE
+                    WHEN tm.function = {TeamMemberFunctions.MANAGER.value} THEN '{TeamMemberFunctions.MANAGER.name}'
+                    WHEN tm.function = {TeamMemberFunctions.MEMBER.value} THEN '{TeamMemberFunctions.MEMBER.name}'
+                    ELSE 'UNKNOWN'
+                END as function,
+                tm.active,
+                tm.join_request_notifications,
+                u.picture_url
+            FROM team_members tm
+            JOIN users u ON tm.user_id = u.id
+            WHERE tm.team_id = :team_id AND tm.function = :function_value AND tm.active = true
+        """
+
+        values = {
+            "team_id": team_id,
+            "function_value": TeamMemberFunctions.MEMBER.value,
+        }
+
+        if count:
+            query += " LIMIT :count"
+            values["count"] = count
+
+        results = await db.fetch_all(query=query, values=values)
+        return [TeamMembersDTO(**result) for result in results]
+
+    async def get_members_count_by_role(
+        db: Database, team_id: int, role: TeamMemberFunctions
+    ):
+        """
+        Returns the number of members with the specified role in the team.
+        --------------------------------
+        :param db: Database session
+        :param team_id: ID of the team
+        :param role: Role to count
+        :return: Number of members with the specified role in the team
+        """
+        query = """
+            SELECT COUNT(*)
+            FROM team_members
+            WHERE team_id = :team_id AND function = :function AND active = true
+        """
+
+        values = {"team_id": team_id, "function": role.value}
+
+        return await db.fetch_val(query=query, values=values)

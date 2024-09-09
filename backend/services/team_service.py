@@ -1,10 +1,11 @@
-from flask import current_app
-from sqlalchemy import and_, or_
+# from flask import current_app
+from sqlalchemy import and_
 from markdown import markdown
 
-from backend import create_app, db
+from backend import create_app
 from backend.exceptions import NotFound
 from backend.models.dtos.team_dto import (
+    ListTeamsDTO,
     TeamDTO,
     NewTeamDTO,
     TeamsListDTO,
@@ -18,7 +19,6 @@ from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.project import ProjectTeams
-from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.statuses import (
     TeamJoinMethod,
     TeamMemberFunctions,
@@ -29,6 +29,11 @@ from backend.models.postgis.statuses import (
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
 from backend.services.messaging.message_service import MessageService
+from backend.db import get_session
+
+session = get_session()
+from sqlalchemy import select
+from databases import Database
 
 
 class TeamServiceError(Exception):
@@ -204,234 +209,286 @@ class TeamService:
 
     @staticmethod
     def delete_team_project(team_id, project_id):
-        project = ProjectTeams.query.filter(
-            and_(ProjectTeams.team_id == team_id, ProjectTeams.project_id == project_id)
-        ).one()
+        project = (
+            session.query(ProjectTeams)
+            .filter(
+                and_(
+                    ProjectTeams.team_id == team_id,
+                    ProjectTeams.project_id == project_id,
+                )
+            )
+            .one()
+        )
         project.delete()
 
     @staticmethod
-    def get_all_teams(search_dto: TeamSearchDTO) -> TeamsListDTO:
-        query = db.session.query(Team)
+    async def get_all_teams(search_dto: TeamSearchDTO, db: Database) -> TeamsListDTO:
+        query_parts = []
+        params = {}
 
-        orgs_query = None
-        user = UserService.get_user_by_id(search_dto.user_id)
-        is_admin = UserRole(user.role) == UserRole.ADMIN
+        base_query = """
+            SELECT t.id, t.name, t.join_method, t.visibility, t.description,
+                   o.logo, o.name as organisation_name, o.id as organisation_id
+            FROM teams t
+            JOIN organisations o ON t.organisation_id = o.id
+        """
+
         if search_dto.organisation:
-            orgs_query = query.filter(Team.organisation_id == search_dto.organisation)
+            query_parts.append("t.organisation_id = :organisation_id")
+            params["organisation_id"] = search_dto.organisation
+
         if search_dto.manager and search_dto.manager == search_dto.user_id:
-            manager_teams = query.filter(
-                TeamMembers.user_id == search_dto.manager,
-                TeamMembers.active == True,  # noqa
-                TeamMembers.function == TeamMemberFunctions.MANAGER.value,
-                Team.id == TeamMembers.team_id,
-            )
+            manager_teams_query = """
+                SELECT t.id FROM teams t
+                JOIN team_members tm ON t.id = tm.team_id
+                WHERE tm.user_id = :manager_id AND tm.active = true AND tm.function = :manager_function
+            """
+            params["manager_id"] = search_dto.manager
+            params["manager_function"] = TeamMemberFunctions.MANAGER.value
 
-            manager_orgs_teams = query.filter(
-                Team.organisation_id.in_(
-                    [
-                        org.id
-                        for org in OrganisationService.get_organisations(
-                            search_dto.manager
-                        )
-                    ]
+            orgs_teams_query = """
+                SELECT t.id FROM teams t
+                WHERE t.organisation_id IN (
+                    SELECT id FROM organisations WHERE user_id = :manager_id
                 )
-            )
+            """
 
-            query = manager_teams.union(manager_orgs_teams)
+            query_parts.append(
+                f"t.id IN ({manager_teams_query} UNION {orgs_teams_query})"
+            )
 
         if search_dto.team_name:
-            query = query.filter(
-                Team.name.ilike("%" + search_dto.team_name + "%"),
-            )
+            query_parts.append("t.name ILIKE :team_name")
+            params["team_name"] = f"%{search_dto.team_name}%"
 
         if search_dto.team_role:
             try:
                 role = TeamRoles[search_dto.team_role.upper()].value
-                project_teams = (
-                    db.session.query(ProjectTeams)
-                    .filter(ProjectTeams.role == role)
-                    .subquery()
-                )
-                query = query.join(project_teams)
+                project_teams_query = """
+                    SELECT pt.team_id FROM project_teams pt WHERE pt.role = :team_role
+                """
+                query_parts.append(f"t.id IN ({project_teams_query})")
+                params["team_role"] = role
             except KeyError:
                 pass
 
         if search_dto.member:
-            team_member = (
-                db.session.query(TeamMembers)
-                .filter(
-                    TeamMembers.user_id == search_dto.member,
-                    TeamMembers.active.is_(True),
-                )
-                .subquery()
-            )
-            query = query.join(team_member)
+            team_member_query = """
+                SELECT tm.team_id FROM team_members tm
+                WHERE tm.user_id = :member_id AND tm.active = true
+            """
+            query_parts.append(f"t.id IN ({team_member_query})")
+            params["member_id"] = search_dto.member
 
         if search_dto.member_request:
-            team_member = (
-                db.session.query(TeamMembers)
-                .filter(
-                    TeamMembers.user_id == search_dto.member_request,
-                    TeamMembers.active.is_(False),
-                )
-                .subquery()
-            )
-            query = query.join(team_member)
-        if orgs_query:
-            query = query.union(orgs_query)
+            team_member_request_query = """
+                SELECT tm.team_id FROM team_members tm
+                WHERE tm.user_id = :member_request_id AND tm.active = false
+            """
+            query_parts.append(f"t.id IN ({team_member_request_query})")
+            params["member_request_id"] = search_dto.member_request
 
-        # Only show public teams and teams that the user is a member of
+        user = await UserService.get_user_by_id(search_dto.user_id, db)
+        is_admin = UserRole(user.role) == UserRole.ADMIN
+
         if not is_admin:
-            query = query.filter(
-                or_(
-                    Team.visibility == TeamVisibility.PUBLIC.value,
-                    # Since user.teams returns TeamMembers, we need to get the team_id
-                    Team.id.in_([team.team_id for team in user.teams]),
+            public_or_member_query = """
+                t.visibility = :public_visibility OR t.id IN (
+                    SELECT tm.team_id FROM team_members tm WHERE tm.user_id = :user_id
                 )
-            )
-        teams_list_dto = TeamsListDTO()
+            """
+            query_parts.append(f"({public_or_member_query})")
+            params["public_visibility"] = TeamVisibility.PUBLIC.value
+            params["user_id"] = search_dto.user_id
+
+        if query_parts:
+            final_query = f"{base_query} WHERE {' AND '.join(query_parts)}"
+        else:
+            final_query = base_query
 
         if search_dto.paginate:
-            paginated = query.paginate(
-                page=search_dto.page, per_page=search_dto.per_page, error_out=True
+            final_query += " LIMIT :limit OFFSET :offset"
+            params["limit"] = search_dto.per_page
+            params["offset"] = (search_dto.page - 1) * search_dto.per_page
+
+        rows = await db.fetch_all(query=final_query, values=params)
+
+        teams_list_dto = TeamsListDTO()
+        for row in rows:
+            team_dto = TeamDTO(
+                team_id=row["id"],
+                name=row["name"],
+                join_method=TeamJoinMethod(row["join_method"]).name,
+                visibility=TeamVisibility(row["visibility"]).name,
+                description=row["description"],
+                logo=row["logo"],
+                organisation=row["organisation_name"],
+                organisation_id=row["organisation_id"],
+                members=[],
             )
-            teams_list_dto.pagination = Pagination(paginated)
-            teams_list = paginated.items
-        else:
-            teams_list = query.all()
-        for team in teams_list:
-            team_dto = TeamDTO()
-            team_dto.team_id = team.id
-            team_dto.name = team.name
-            team_dto.join_method = TeamJoinMethod(team.join_method).name
-            team_dto.visibility = TeamVisibility(team.visibility).name
-            team_dto.description = team.description
-            team_dto.logo = team.organisation.logo
-            team_dto.organisation = team.organisation.name
-            team_dto.organisation_id = team.organisation.id
-            team_dto.members = []
-            # Skip if members are not included
+
             if not search_dto.omit_members:
                 if search_dto.full_members_list:
-                    team_members = team.members
+                    team_dto.members = await Team.get_all_members(db, row["id"], None)
                 else:
-                    team_managers = team.get_team_managers(10)
-                    team_members = team.get_team_members(10)
+                    team_managers = await Team.get_team_managers(db, row["id"], 10)
+                    team_members = await Team.get_team_members(db, row["id"], 10)
                     team_members.extend(team_managers)
-                team_dto.members = [
-                    team.as_dto_team_member(member) for member in team_members
-                ]
-                team_dto.members_count = team.get_members_count_by_role(
-                    TeamMemberFunctions.MEMBER
+                    team_dto.members = team_members
+
+                team_dto.members_count = await Team.get_members_count_by_role(
+                    db, row["id"], TeamMemberFunctions.MEMBER
                 )
-                team_dto.managers_count = team.get_members_count_by_role(
-                    TeamMemberFunctions.MANAGER
+                team_dto.managers_count = await Team.get_members_count_by_role(
+                    db, row["id"], TeamMemberFunctions.MANAGER
                 )
+
             teams_list_dto.teams.append(team_dto)
+
+        if search_dto.paginate:
+            total_query = "SELECT COUNT(*) FROM (" + final_query + ") as total"
+            total = await db.fetch_val(query=total_query, values=params)
+            teams_list_dto.pagination = Pagination(
+                total=total, page=search_dto.page, per_page=search_dto.per_page
+            )
         return teams_list_dto
 
-    @staticmethod
-    def get_team_as_dto(
-        team_id: int, user_id: int, abbreviated: bool
+    async def get_team_as_dto(
+        team_id: int, user_id: int, abbreviated: bool, db: Database
     ) -> TeamDetailsDTO:
-        team = TeamService.get_team_by_id(team_id)
+        # Query to fetch team and organisation details
+        team_query = """
+            SELECT t.id as team_id, t.name as team_name, t.join_method, t.visibility,
+                t.description, o.logo as org_logo, o.name as org_name,
+                o.id as org_id, o.slug as org_slug
+            FROM teams t
+            JOIN organisations o ON t.organisation_id = o.id
+            WHERE t.id = :team_id
+        """
 
-        if team is None:
+        # Fetch the team details
+        team_details = await db.fetch_one(query=team_query, values={"team_id": team_id})
+
+        if not team_details:
             raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_id)
 
-        team_dto = TeamDetailsDTO()
-        team_dto.team_id = team.id
-        team_dto.name = team.name
-        team_dto.join_method = TeamJoinMethod(team.join_method).name
-        team_dto.visibility = TeamVisibility(team.visibility).name
-        team_dto.description = team.description
-        team_dto.logo = team.organisation.logo
-        team_dto.organisation = team.organisation.name
-        team_dto.organisation_id = team.organisation.id
-        team_dto.organisation_slug = team.organisation.slug
+        # Create the TeamDetailsDTO
+        team_dto = TeamDetailsDTO(
+            team_id=team_details["team_id"],
+            name=team_details["team_name"],
+            join_method=TeamJoinMethod(team_details["join_method"]).name,
+            visibility=TeamVisibility(team_details["visibility"]).name,
+            description=team_details["description"],
+            logo=team_details["org_logo"],
+            organisation=team_details["org_name"],
+            organisation_id=team_details["org_id"],
+            organisation_slug=team_details["org_slug"],
+        )
 
+        # Check for admin roles if user_id is provided
         if user_id != 0:
-            if UserService.is_user_an_admin(user_id):
-                team_dto.is_general_admin = True
-
-            if OrganisationService.is_user_an_org_manager(
-                team.organisation.id, user_id
-            ):
-                team_dto.is_org_admin = True
-        else:
-            team_dto.is_general_admin = False
-            team_dto.is_org_admin = False
+            team_dto.is_general_admin = await UserService.is_user_an_admin(user_id, db)
+            team_dto.is_org_admin = await OrganisationService.is_user_an_org_manager(
+                team_details["org_id"], user_id, db
+            )
 
         if abbreviated:
             return team_dto
 
-        team_dto.members = [team.as_dto_team_member(member) for member in team.members]
+        # Fetch and add team members to the DTO
+        members_query = """
+            SELECT user_id FROM team_members WHERE team_id = :team_id
+        """
+        members = await db.fetch_all(query=members_query, values={"team_id": team_id})
 
-        team_projects = TeamService.get_projects_by_team_id(team.id)
-
-        team_dto.team_projects = [
-            team.as_dto_team_project(project) for project in team_projects
-        ]
-
+        team_dto.members = (
+            [await Team.as_dto_team_member(member.user_id, db) for member in members]
+            if members
+            else []
+        )
+        team_projects = await TeamService.get_projects_by_team_id(team_id, db)
+        team_dto.team_projects = (
+            [Team.as_dto_team_project(project) for project in team_projects]
+            if team_projects
+            else []
+        )
         return team_dto
 
     @staticmethod
-    def get_projects_by_team_id(team_id: int):
-        projects = (
-            db.session.query(
-                ProjectInfo.name, ProjectTeams.project_id, ProjectTeams.role
-            )
-            .join(ProjectTeams, ProjectInfo.project_id == ProjectTeams.project_id)
-            .filter(ProjectTeams.team_id == team_id)
-            .all()
-        )
+    async def get_projects_by_team_id(team_id: int, db: Database):
+        # SQL query to fetch project details associated with the team
+        projects_query = """
+            SELECT p.name, pt.project_id, pt.role
+            FROM project_teams pt
+            JOIN project_info p ON p.project_id = pt.project_id
+            WHERE pt.team_id = :team_id
+        """
 
-        if projects is None:
+        # Execute the query and fetch all results
+        projects = await db.fetch_all(query=projects_query, values={"team_id": team_id})
+
+        if not projects:
             raise NotFound(sub_code="PROJECTS_NOT_FOUND", team_id=team_id)
 
         return projects
 
     @staticmethod
-    def get_project_teams_as_dto(project_id: int) -> TeamsListDTO:
-        """Gets all the teams for a specified project"""
-        project_teams = ProjectTeams.query.filter(
-            ProjectTeams.project_id == project_id
-        ).all()
-        teams_list_dto = TeamsListDTO()
+    async def get_project_teams_as_dto(project_id: int, db: Database) -> TeamsListDTO:
+        """Gets all the teams for a specified project with their roles and names"""
+        # Raw SQL query to get project teams with team names
+        query = """
+            SELECT pt.team_id, t.name AS team_name, pt.role
+            FROM project_teams pt
+            JOIN teams t ON pt.team_id = t.id
+            WHERE pt.project_id = :project_id
+        """
+        project_teams = await db.fetch_all(
+            query=query, values={"project_id": project_id}
+        )
+        # Initialize the DTO
+        teams_list_dto = ListTeamsDTO()
 
+        # Populate the DTO with team data
         for project_team in project_teams:
-            team = TeamService.get_team_by_id(project_team.team_id)
-            team_dto = ProjectTeamDTO()
-            team_dto.team_id = project_team.team_id
-            team_dto.team_name = team.name
-            team_dto.role = project_team.role
-
+            team_dto = ProjectTeamDTO(
+                team_id=project_team["team_id"],
+                team_name=project_team["team_name"],
+                role=str(project_team["role"]),
+            )
             teams_list_dto.teams.append(team_dto)
 
         return teams_list_dto
 
     @staticmethod
-    def change_team_role(team_id: int, project_id: int, role: str):
-        project = ProjectTeams.query.filter(
+    async def change_team_role(team_id: int, project_id: int, role: str, session):
+        query = select(ProjectTeams).filter(
             and_(ProjectTeams.team_id == team_id, ProjectTeams.project_id == project_id)
-        ).one()
+        )
+        result = await session.execute(query)
+        project = result.scalar_one()
         project.role = TeamRoles[role].value
-        project.save()
+        await session.commit()
 
     @staticmethod
-    def get_team_by_id(team_id: int) -> Team:
+    async def get_team_by_id(team_id: int, db: Database):
         """
         Get team from DB
         :param team_id: ID of team to fetch
         :returns: Team
         :raises: Not Found
         """
-        team = Team.get(team_id)
-
-        if team is None:
+        # Raw SQL query to select the team by ID
+        query = """
+            SELECT id, name, organisation_id
+            FROM teams
+            WHERE id = :team_id
+        """
+        # Execute the query and fetch the team
+        team_record = await db.fetch_one(query=query, values={"team_id": team_id})
+        if team_record is None:
             raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_id)
 
-        return team
+        return team_record
 
     @staticmethod
     def get_team_by_name(team_name: str) -> Team:
@@ -511,8 +568,8 @@ class TeamService:
             TeamMembers.team_id == team_id, TeamMembers.user_id == user_id
         ).first()
         member.active = True
-        db.session.add(member)
-        db.session.commit()
+        session.add(member)
+        session.commit()
 
     @staticmethod
     def delete_invite(team_id: int, user_id: int):
@@ -527,16 +584,36 @@ class TeamService:
             TeamMembers.team_id == team_id,
             TeamMembers.user_id == user_id,
         ).exists()
-        return db.session.query(query).scalar()
+        return session.query(query).scalar()
 
     @staticmethod
-    def is_user_an_active_team_member(team_id: int, user_id: int):
-        query = TeamMembers.query.filter(
-            TeamMembers.team_id == team_id,
-            TeamMembers.user_id == user_id,
-            TeamMembers.active.is_(True),
-        ).exists()
-        return db.session.query(query).scalar()
+    async def is_user_an_active_team_member(
+        team_id: int, user_id: int, db: Database
+    ) -> bool:
+        """
+        Check if a user is an active member of a team.
+        :param team_id: ID of the team
+        :param user_id: ID of the user
+        :param db: Database connection
+        :returns: True if the user is an active member, False otherwise
+        """
+        # Raw SQL query to check if the user is an active team member
+        query = """
+            SELECT EXISTS(
+                SELECT 1
+                FROM team_members
+                WHERE team_id = :team_id
+                AND user_id = :user_id
+                AND active = true
+            ) AS is_active
+        """
+
+        # Execute the query and fetch the result
+        result = await db.fetch_one(
+            query=query, values={"team_id": team_id, "user_id": user_id}
+        )
+        # Return the boolean value indicating if the user is an active team member
+        return result["is_active"]
 
     @staticmethod
     def is_user_team_manager(team_id: int, user_id: int):
@@ -574,16 +651,20 @@ class TeamService:
             }, 400
 
     @staticmethod
-    def check_team_membership(project_id: int, allowed_roles: list, user_id: int):
+    async def check_team_membership(
+        project_id: int, allowed_roles: list, user_id: int, db
+    ):
         """Given a project and permitted team roles, check user's membership in the team list"""
-        teams_dto = TeamService.get_project_teams_as_dto(project_id)
+        teams_dto = await TeamService.get_project_teams_as_dto(project_id, db)
         teams_allowed = [
             team_dto for team_dto in teams_dto.teams if team_dto.role in allowed_roles
         ]
         user_membership = [
             team_dto.team_id
             for team_dto in teams_allowed
-            if TeamService.is_user_an_active_team_member(team_dto.team_id, user_id)
+            if await TeamService.is_user_an_active_team_member(
+                team_dto.team_id, user_id, db
+            )
         ]
         return len(user_membership) > 0
 

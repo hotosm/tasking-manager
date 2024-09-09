@@ -1,30 +1,29 @@
-from schematics import Model
-from schematics.types import IntType, StringType, BooleanType, ModelType
-from schematics.types.compound import ListType
+from pydantic import BaseModel, Field
+from typing import List, Optional
 
 
-class MappingIssueCategoryDTO(Model):
+class MappingIssueCategoryDTO(BaseModel):
     """DTO used to define a mapping-issue category"""
 
-    category_id = IntType(serialized_name="categoryId")
-    name = StringType(required=True)
-    description = StringType(required=False)
-    archived = BooleanType(required=False)
+    category_id: int = Field(alias="categoryId")
+    name: str
+    description: str
+    archived: bool
 
 
-class MappingIssueCategoriesDTO(Model):
+class MappingIssueCategoriesDTO(BaseModel):
     """DTO for all mapping-issue categories"""
 
     def __init__(self):
         super().__init__()
         self.categories = []
 
-    categories = ListType(ModelType(MappingIssueCategoryDTO))
+    categories: List[MappingIssueCategoryDTO]
 
 
-class TaskMappingIssueDTO(Model):
+class TaskMappingIssueDTO(BaseModel):
     """DTO used to define a single mapping issue recorded with a task invalidation"""
 
-    category_id = IntType(serialized_name="categoryId")
-    name = StringType(required=True)
-    count = IntType(required=True)
+    category_id: Optional[int] = Field(alias="categoryId", default=None)
+    name: Optional[str] = None
+    count: Optional[int] = None
