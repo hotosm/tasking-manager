@@ -8,13 +8,13 @@ from backend.services.interests_service import InterestService
 # from backend.services.users.authentication_service import token_auth
 from backend.services.users.authentication_service import login_required
 from backend.api.utils import validate_date_input
-from backend.config import EnvironmentConfig
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.db import get_db
 from databases import Database
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
+import os
 
 router = APIRouter(
     prefix="/users",
@@ -165,41 +165,45 @@ async def get(request: Request):
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
 
 
-class OhsomeProxyAPI(Resource):
-    @token_auth.login_required
-    def get(self):
-        """
-        Get HomePage Stats
-        ---
-        tags:
-          - system
-        produces:
-          - application/json
-        parameters:
-        - in: header
-          name: Authorization
-          description: Base64 encoded session token
-          required: true
-          type: string
-          default: Token sessionTokenHere==
-        - in: query
-          name: url
-          type: string
-          description: get user stats for osm contributions
-        responses:
-            200:
-                description: User stats
-            500:
-                description: Internal Server Error
-        """
-        url = request.args.get("url")
-        if not url:
-            return {"Error": "URL is None", "SubCode": "URL not provided"}, 400
-        try:
-            headers = {"Authorization": f"Basic {EnvironmentConfig.OHSOME_STATS_TOKEN}"}
+# class OhsomeProxyAPI(Resource):
+#     @token_auth.login_required
+@router.get("/statistics/ohsome/")
+@requires("authenticated")
+async def get(request: Request):
+    """
+    Get HomePage Stats
+    ---
+    tags:
+        - system
+    produces:
+        - application/json
+    parameters:
+    - in: header
+        name: Authorization
+        description: Base64 encoded session token
+        required: true
+        type: string
+        default: Token sessionTokenHere==
+    - in: query
+        name: url
+        type: string
+        description: get user stats for osm contributions
+    responses:
+        200:
+            description: User stats
+        500:
+            description: Internal Server Error
+    """
+    url = request.args.get("url")
+    token = os.environ.get("TM_APP_BASE_URL", None)
+    if not url:
+        return {"Error": "URL is None", "SubCode": "URL not provided"}, 400
+    try:
+        # headers = {"Authorization": f"Basic {EnvironmentConfig.OHSOME_STATS_TOKEN}"}
+        headers = {"Authorization": f"Basic {token}"}
 
-            # Make the GET request with headers
-            response = requests.get(url, headers=headers)
-            return response.json(), 200
-        except Exception as e:
-            return {"Error": str(e), "SubCode": "Error fetching data"}, 400
+        # Make the GET request with headers
+        response = requests.get(url, headers=headers)
+        return response.json(), 200
+    except Exception as e:
+        return {"Error": str(e), "SubCode": "Error fetching data"}, 400

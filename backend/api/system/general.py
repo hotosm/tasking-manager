@@ -5,7 +5,8 @@ from backend.services.settings_service import SettingsService
 from backend.services.messaging.smtp_service import SMTPService
 from backend.models.postgis.release_version import ReleaseVersion
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
+from backend.db import get_db, get_session
+from databases import Database
 
 router = APIRouter(
     prefix="/system",
@@ -162,24 +163,58 @@ async def get():
     return {"status": "healthy", "release": release}, 200
 
 
-# class SystemLanguagesAPI():
-@router.get("/languages/")
-async def get():
+# # class SystemLanguagesAPI():
+# @router.get("/languages/")
+# async def get():
+#     """
+#     Gets all supported languages
+#     ---
+#     tags:
+#       - system
+#     produces:
+#       - application/json
+#     responses:
+#         200:
+#             description: Supported Languages
+#         500:
+#             description: Internal Server Error
+#     """
+#     languages = SettingsService.get_settings()
+#     return languages.model_dump(by_alias=True), 200
+
+
+
+@router.get("/heartbeat/")
+async def get(db: Database = Depends(get_db)):
     """
-    Gets all supported languages
+    Simple health-check, if this is unreachable load balancers should be configured to raise an alert
     ---
     tags:
       - system
     produces:
       - application/json
     responses:
-        200:
-            description: Supported Languages
-        500:
-            description: Internal Server Error
+      200:
+        description: Service is Healthy
     """
-    languages = SettingsService.get_settings()
-    return languages.model_dump(by_alias=True), 200
+    query = """
+        SELECT tag_name, published_at
+        FROM release_version
+        ORDER BY published_at DESC
+        LIMIT 1
+    """
+    release = await db.fetch_one(query)
+    
+    if release:
+        release_info = {
+            "version": release["tag_name"],
+            "published_at": release["published_at"].isoformat(),
+        }
+    else:
+        release_info = None
+
+    return {"status": "Fastapi healthy", "release": release_info}, 200
+
 
 
 # class SystemContactAdminRestAPI():
