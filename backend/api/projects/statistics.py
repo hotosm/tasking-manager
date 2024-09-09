@@ -5,6 +5,9 @@ from fastapi import APIRouter, Depends
 from backend.db import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.db import get_db
+from databases import Database
+
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
@@ -32,7 +35,7 @@ async def get():
 
 
 @router.get("/{project_id}/statistics/")
-async def get(project_id: int, session: AsyncSession = Depends(get_session)):
+async def get(project_id: int, db: Database = Depends(get_db)):
     """
     Get Project Stats
     ---
@@ -61,14 +64,12 @@ async def get(project_id: int, session: AsyncSession = Depends(get_session)):
         500:
             description: Internal Server Error
     """
-    # preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-    summary = await ProjectService.get_project_stats(project_id, session)
-    return summary.model_dump(by_alias=True), 200
+    summary = await ProjectService.get_project_stats(project_id, db)
+    return summary
 
 
-# class ProjectsStatisticsQueriesUsernameAPI(Resource):
 @router.get("/{project_id}/statistics/queries/{username}/")
-async def get(project_id, username):
+async def get(project_id: int, username: str, db: Database = Depends(get_db)):
     """
     Get detailed stats about user
     ---
@@ -97,5 +98,5 @@ async def get(project_id, username):
         500:
             description: Internal Server Error
     """
-    stats_dto = ProjectService.get_project_user_stats(project_id, username)
-    return stats_dto.model_dump(by_alias=True), 200
+    stats_dto = await ProjectService.get_project_user_stats(project_id, username, db)
+    return stats_dto

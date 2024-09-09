@@ -685,222 +685,233 @@ class Project(Base):
                 raise HTTPException(status_code=500, detail=f"Unexpected state project {row['id']}")
 
         return admin_projects_dto
-    
-    def get_project_user_stats(self, user_id: int) -> ProjectUserStatsDTO:
-        """Compute project specific stats for a given user"""
+
+
+    @staticmethod
+    async def get_project_user_stats(project_id: int, user_id: int, db: Database) -> ProjectUserStatsDTO:
+        """Compute project-specific stats for a given user"""
         stats_dto = ProjectUserStatsDTO()
-        stats_dto.time_spent_mapping = 0
-        stats_dto.time_spent_validating = 0
-        stats_dto.total_time_spent = 0
 
-        total_mapping_time = (
-            session.query(
-                func.sum(
-                    cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
-                )
-            )
-            .filter(
-                or_(
-                    TaskHistory.action == "LOCKED_FOR_MAPPING",
-                    TaskHistory.action == "AUTO_UNLOCKED_FOR_MAPPING",
-                )
-            )
-            .filter(TaskHistory.user_id == user_id)
-            .filter(TaskHistory.project_id == self.id)
-        )
-        for time in total_mapping_time:
-            total_mapping_time = time[0]
-            if total_mapping_time:
-                stats_dto.time_spent_mapping = total_mapping_time.total_seconds()
-                stats_dto.total_time_spent += stats_dto.time_spent_mapping
+        total_mapping_query = """
+            SELECT
+                SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME - '00:00:00'::TIME) AS total_time
+            FROM task_history
+            WHERE action IN ('LOCKED_FOR_MAPPING', 'AUTO_UNLOCKED_FOR_MAPPING')
+            AND project_id = :project_id
+            AND user_id = :user_id
+        """
+        total_mapping_result = await db.fetch_one(total_mapping_query, {"project_id": project_id, "user_id": user_id})
 
-        query = (
-            session.query(TaskHistory)
-            .with_entities(
-                func.date_trunc("minute", TaskHistory.action_date).label("trn"),
-                func.max(TaskHistory.action_text).label("tm"),
-            )
-            .filter(TaskHistory.user_id == user_id)
-            .filter(TaskHistory.project_id == self.id)
-            .filter(TaskHistory.action == "LOCKED_FOR_VALIDATION")
-            .group_by("trn")
-            .subquery()
-        )
-        total_validation_time = session.query(
-            func.sum(cast(func.to_timestamp(query.c.tm, "HH24:MI:SS"), Time))
-        ).all()
+        total_mapping_time = total_mapping_result["total_time"].total_seconds() if total_mapping_result and total_mapping_result["total_time"] else 0
+        stats_dto.time_spent_mapping = total_mapping_time
+        stats_dto.total_time_spent += total_mapping_time
 
-        for time in total_validation_time:
-            total_validation_time = time[0]
-            if total_validation_time:
-                stats_dto.time_spent_validating = total_validation_time.total_seconds()
-                stats_dto.total_time_spent += stats_dto.time_spent_validating
+        total_validation_query = """
+            SELECT
+                SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME - '00:00:00'::TIME) AS total_time
+            FROM task_history
+            WHERE action IN ('LOCKED_FOR_VALIDATION', 'AUTO_UNLOCKED_FOR_VALIDATION')
+            AND project_id = :project_id
+            AND user_id = :user_id
+        """
+        total_validation_result = await db.fetch_one(total_validation_query, {"project_id": project_id, "user_id": user_id})
 
+        total_validation_time = total_validation_result["total_time"].total_seconds() if total_validation_result and total_validation_result["total_time"] else 0
+        stats_dto.time_spent_validating = total_validation_time
+        stats_dto.total_time_spent += total_validation_time
         return stats_dto
 
-    def get_project_stats(self) -> ProjectStatsDTO:
-        """Create Project Stats model for postgis project object"""
+
+    @staticmethod
+    async def get_project_stats(project_id: int, database: Database) -> ProjectStatsDTO:
+        """Create Project Stats model for postgis project object."""
         project_stats = ProjectStatsDTO()
-        project_stats.project_id = self.id
-        project_stats.area = (
-            session.query(func.ST_Area(Project.geometry, True))
-            .where(Project.id == self.id)
-            .first()[0]
-            / 1000000
+        project_stats.project_id = project_id
+        project_query = """
+            SELECT 
+                ST_Area(geometry, TRUE) / 1000000 AS area,
+                ST_AsGeoJSON(centroid) AS centroid_geojson,
+                tasks_mapped,
+                tasks_validated,
+                total_tasks,
+                tasks_bad_imagery
+            FROM projects
+            WHERE id = :project_id
+        """
+        
+        result = await database.fetch_one(project_query, values={"project_id": project_id})
+
+        project_stats.area = result["area"]
+        project_stats.aoi_centroid = geojson.loads(result["centroid_geojson"]) if result["centroid_geojson"] else None
+        tasks_mapped = result["tasks_mapped"]
+        tasks_validated = result["tasks_validated"]
+        total_tasks = result["total_tasks"]
+        tasks_bad_imagery = result["tasks_bad_imagery"]
+
+        # Calculate task percentages
+        project_stats.total_tasks = total_tasks
+
+        project_stats.percent_mapped = Project.calculate_tasks_percent(
+            "mapped", tasks_mapped, tasks_validated, total_tasks, tasks_bad_imagery
+        )
+        project_stats.percent_validated = Project.calculate_tasks_percent(
+            "validated", tasks_mapped, tasks_validated, total_tasks, tasks_bad_imagery
+        )
+        project_stats.percent_bad_imagery = Project.calculate_tasks_percent(
+            "bad_imagery", tasks_mapped, tasks_validated, total_tasks, tasks_bad_imagery
         )
 
-        project_stats.total_mappers = (
-            session.query(User).filter(User.projects_mapped.any(self.id)).count()
-        )
-        project_stats.total_tasks = self.total_tasks
-        project_stats.total_comments = (
-            session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
-        )
-        project_stats.percent_mapped = self.calculate_tasks_percent("mapped")
-        project_stats.percent_validated = self.calculate_tasks_percent("validated")
-        project_stats.percent_bad_imagery = self.calculate_tasks_percent("bad_imagery")
-        centroid_geojson = session.scalar(self.centroid.ST_AsGeoJSON())
-        project_stats.aoi_centroid = geojson.loads(centroid_geojson)
+        # Query for total mappers
+        total_mappers_query = """
+            SELECT COUNT(*)
+            FROM users
+            WHERE :project_id = ANY(projects_mapped)
+        """
+        total_mappers_result = await database.fetch_one(total_mappers_query, values={"project_id": project_id})
+        project_stats.total_mappers = total_mappers_result[0] if total_mappers_result else 0
+        
+        # Query for total comments
+        total_comments_query = """
+            SELECT COUNT(*)
+            FROM project_chat
+            WHERE project_id = :project_id
+        """
+        total_comments_result = await database.fetch_one(total_comments_query, values={"project_id": project_id})
+        project_stats.total_comments = total_comments_result[0] if total_comments_result else 0
+        
+        # Initialize time stats
         project_stats.total_time_spent = 0
         project_stats.total_mapping_time = 0
         project_stats.total_validation_time = 0
         project_stats.average_mapping_time = 0
         project_stats.average_validation_time = 0
 
+        # Query total mapping time and tasks
+        total_mapping_query = """
+            SELECT
+                SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME - '00:00:00'::TIME) AS total_time,
+                COUNT(action) AS total_tasks
+            FROM task_history
+            WHERE action IN ('LOCKED_FOR_MAPPING', 'AUTO_UNLOCKED_FOR_MAPPING')
+            AND project_id = :project_id
+        """
+        total_mapping_result = await database.fetch_one(total_mapping_query, values={"project_id": project_id})
         total_mapping_time, total_mapping_tasks = (
-            session.query(
-                func.sum(
-                    cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
-                ),
-                func.count(TaskHistory.action),
-            )
-            .filter(
-                or_(
-                    TaskHistory.action == "LOCKED_FOR_MAPPING",
-                    TaskHistory.action == "AUTO_UNLOCKED_FOR_MAPPING",
-                )
-            )
-            .filter(TaskHistory.project_id == self.id)
-            .one()
-        )
+            total_mapping_result["total_time"], total_mapping_result["total_tasks"]
+        ) if total_mapping_result else (0, 0)
 
         if total_mapping_tasks > 0:
             total_mapping_time = total_mapping_time.total_seconds()
             project_stats.total_mapping_time = total_mapping_time
-            project_stats.average_mapping_time = (
-                total_mapping_time / total_mapping_tasks
-            )
+            project_stats.average_mapping_time = total_mapping_time / total_mapping_tasks
             project_stats.total_time_spent += total_mapping_time
 
-        total_validation_time, total_validation_tasks = (
-            session.query(
-                func.sum(
-                    cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
-                ),
-                func.count(TaskHistory.action),
-            )
-            .filter(
-                or_(
-                    TaskHistory.action == "LOCKED_FOR_VALIDATION",
-                    TaskHistory.action == "AUTO_UNLOCKED_FOR_VALIDATION",
-                )
-            )
-            .filter(TaskHistory.project_id == self.id)
-            .one()
-        )
+        # Query total validation time and tasks
+        total_validation_query = """
+            SELECT
+                SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME - '00:00:00'::TIME) AS total_time,
+                COUNT(action) AS total_tasks
+            FROM task_history
+            WHERE action IN ('LOCKED_FOR_VALIDATION', 'AUTO_UNLOCKED_FOR_VALIDATION')
+            AND project_id = :project_id
+        """
+        total_validation_result = await database.fetch_one(total_validation_query, values={"project_id": project_id})
 
+        # Safely unpack the results, or default to (0, 0) if the query returns no results
+        total_validation_time, total_validation_tasks = (
+            total_validation_result["total_time"], total_validation_result["total_tasks"]
+        ) if total_validation_result else (0, 0)
+
+        # If there are validation tasks, convert the time to total seconds and update project stats
         if total_validation_tasks > 0:
             total_validation_time = total_validation_time.total_seconds()
             project_stats.total_validation_time = total_validation_time
-            project_stats.average_validation_time = (
-                total_validation_time / total_validation_tasks
-            )
+            project_stats.average_validation_time = total_validation_time / total_validation_tasks
             project_stats.total_time_spent += total_validation_time
 
-        actions = []
-        if project_stats.average_mapping_time <= 0:
-            actions.append(TaskStatus.LOCKED_FOR_MAPPING.name)
-        if project_stats.average_validation_time <= 0:
-            actions.append(TaskStatus.LOCKED_FOR_VALIDATION.name)
+            
+        #TODO: Understand the functionality of subquery used and incorporate this part.
 
-        zoom_levels = []
-        # Check that averages are non-zero.
-        if len(actions) != 0:
-            zoom_levels = (
-                session.query(Task)
-                .with_entities(Task.zoom.distinct())
-                .filter(Task.project_id == self.id)
-                .all()
-            )
-            zoom_levels = [z[0] for z in zoom_levels]
+        # actions = []
+        # if project_stats.average_mapping_time <= 0:
+        #     actions.append(TaskStatus.LOCKED_FOR_MAPPING.name)
+        # if project_stats.average_validation_time <= 0:
+        #     actions.append(TaskStatus.LOCKED_FOR_VALIDATION.name)
 
-        # Validate project has arbitrary tasks.
-        is_square = True
-        if None in zoom_levels:
-            is_square = False
-        sq = (
-            session.query(TaskHistory)
-            .with_entities(
-                Task.zoom,
-                TaskHistory.action,
-                (
-                    cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
-                ).label("ts"),
-            )
-            .filter(Task.is_square == is_square)
-            .filter(TaskHistory.project_id == Task.project_id)
-            .filter(TaskHistory.task_id == Task.id)
-            .filter(TaskHistory.action.in_(actions))
-        )
-        if is_square is True:
-            sq = sq.filter(Task.zoom.in_(zoom_levels))
+        # zoom_levels = []
+        # if actions:
+        #     # Query for distinct zoom levels
+        #     zoom_levels_query = """
+        #         SELECT DISTINCT zoom
+        #         FROM tasks
+        #         WHERE project_id = :project_id
+        #     """
+        #     zoom_levels_result = await database.fetch_all(zoom_levels_query, values={"project_id": project_id})
+        #     zoom_levels = [row['zoom'] for row in zoom_levels_result]
 
-        sq = sq.subquery()
+        # is_square = None not in zoom_levels
 
-        nz = (
-            session.query(sq.c.zoom, sq.c.action, sq.c.ts)
-            .filter(sq.c.ts > datetime.time(0))
-            .limit(10000)
-            .subquery()
-        )
+        # subquery = f"""
+        #     SELECT
+        #         t.zoom,
+        #         th.action,
+        #         EXTRACT(EPOCH FROM TO_TIMESTAMP(th.action_text, 'HH24:MI:SS')) AS ts
+        #     FROM task_history th
+        #     JOIN tasks t ON th.task_id = t.id
+        #     WHERE th.action IN :actions
+        #     AND th.project_id = :project_id
+        #     AND t.is_square = :is_square
+        #     AND (t.zoom IN :zoom_levels OR :is_square IS FALSE)
+        # """
+        # subquery_params = {
+        #     "project_id": project_id,
+        #     "actions": tuple(actions),
+        #     "is_square": is_square,
+        #     "zoom_levels": tuple(zoom_levels) if zoom_levels else (None,)
+        # }
+        # subquery_result = await database.fetch_all(subquery, values=subquery_params)
 
-        if project_stats.average_mapping_time <= 0:
-            mapped_avg = (
-                session.query(nz.c.zoom, (func.avg(nz.c.ts)).label("avg"))
-                .filter(nz.c.action == TaskStatus.LOCKED_FOR_MAPPING.name)
-                .group_by(nz.c.zoom)
-                .all()
-            )
-            if len(mapped_avg) != 0:
-                mapping_time = sum([t.avg.total_seconds() for t in mapped_avg]) / len(
-                    mapped_avg
-                )
-                project_stats.average_mapping_time = mapping_time
+        # # Query for average mapping time
+        # if project_stats.average_mapping_time <= 0:
+        #     mapping_avg_query = """
+        #         SELECT zoom, AVG(ts) AS avg
+        #         FROM (
+        #             SELECT zoom, ts
+        #             FROM subquery_result
+        #             WHERE action = 'LOCKED_FOR_MAPPING'
+        #         ) AS mapping_times
+        #         GROUP BY zoom
+        #     """
+        #     mapping_avg_result = await database.fetch_all(mapping_avg_query)
+        #     if mapping_avg_result:
+        #         mapping_time = sum(row['avg'].total_seconds() for row in mapping_avg_result) / len(mapping_avg_result)
+        #         project_stats.average_mapping_time = mapping_time
 
-        if project_stats.average_validation_time <= 0:
-            val_avg = (
-                session.query(nz.c.zoom, (func.avg(nz.c.ts)).label("avg"))
-                .filter(nz.c.action == TaskStatus.LOCKED_FOR_VALIDATION.name)
-                .group_by(nz.c.zoom)
-                .all()
-            )
-            if len(val_avg) != 0:
-                validation_time = sum([t.avg.total_seconds() for t in val_avg]) / len(
-                    val_avg
-                )
-                project_stats.average_validation_time = validation_time
+        # # Query for average validation time
+        # if project_stats.average_validation_time <= 0:
+        #     validation_avg_query = """
+        #         SELECT zoom, AVG(ts) AS avg
+        #         FROM (
+        #             SELECT zoom, ts
+        #             FROM subquery_result
+        #             WHERE action = 'LOCKED_FOR_VALIDATION'
+        #         ) AS validation_times
+        #         GROUP BY zoom
+        #     """
+        #     validation_avg_result = await database.fetch_all(validation_avg_query)
+        #     if validation_avg_result:
+        #         validation_time = sum(row['avg'].total_seconds() for row in validation_avg_result) / len(validation_avg_result)
+        #         project_stats.average_validation_time = validation_time
 
-        time_to_finish_mapping = (
-            self.total_tasks
-            - (self.tasks_mapped + self.tasks_bad_imagery + self.tasks_validated)
+        # Calculate time to finish mapping and validation
+        project_stats.time_to_finish_mapping = (
+            total_tasks - (tasks_mapped + tasks_bad_imagery + tasks_validated)
         ) * project_stats.average_mapping_time
-        project_stats.time_to_finish_mapping = time_to_finish_mapping
         project_stats.time_to_finish_validating = (
-            self.total_tasks - (self.tasks_validated + self.tasks_bad_imagery)
+            total_tasks - (tasks_validated + tasks_bad_imagery)
         ) * project_stats.average_validation_time
 
         return project_stats
-
 
     @staticmethod
     async def get_project_summary(
