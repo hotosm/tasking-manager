@@ -16,3 +16,4 @@ class PartnerDTO(Model):
     current_projects = StringType(serialized_name="current_projects")
     permalink = StringType(serialized_name="permalink")
     website_links = ListType(StringType, serialized_name="website_links")
+    mapswipe_group_id = StringType()

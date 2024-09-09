@@ -2,9 +2,9 @@ const cf = require('@mapbox/cloudfriend');
 
 const Parameters = {
   TaskingManagerBackendAMI: {
-    Type: "AWS::EC2::Image::Id",
+    Type: "String",
     Description: 'AMI ID of Backend VM, currently Ubuntu 20.04 LTS - Was ami-00fa576fb10a52a1c',
-    Default: "ami-0aa2b7722dc1b5612",
+    Default: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id",
   },
   TaskingManagerBackendInstanceType: {
     Type: 'String',
@@ -380,7 +380,7 @@ const Resources = {
         IamInstanceProfile: {
           Name: cf.ref('TaskingManagerEC2InstanceProfile'),
         },
-        ImageId: cf.ref('TaskingManagerBackendAMI'),
+        ImageId: cf.join(':', ["resolve:ssm", cf.ref('TaskingManagerBackendAMI')]),
         InstanceType: cf.ref('TaskingManagerBackendInstanceType'),
         KeyName: 'mbtiles',
         Monitoring: {
@@ -447,7 +447,7 @@ const Resources = {
           'git clone --recursive https://github.com/hotosm/tasking-manager.git /opt/tasking-manager',
           'cd /opt/tasking-manager/',
           cf.sub('git reset --hard ${GitSha}'),
-          'pip install --upgrade pip pdm==2.7.4',
+          'pip install --upgrade pip pdm==2.18.1',
           'pdm export --prod > requirements.txt',
           'wget -6 https://s3.dualstack.us-east-1.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz -O /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',
           'pip install /tmp/aws-cfn-bootstrap-py3-latest.tar.gz',

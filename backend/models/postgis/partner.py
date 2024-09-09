@@ -20,6 +20,7 @@ class Partner(db.Model):
     current_projects = db.Column(db.String)
     permalink = db.Column(db.String(500), unique=True)
     website_links = db.Column(db.String)
+    mapswipe_group_id = db.Column(db.String, nullable=True)
 
     def create(self):
         """Creates and saves the current model to the DB"""
@@ -67,5 +68,6 @@ class Partner(db.Model):
         partner_dto.current_projects = self.current_projects
         partner_dto.permalink = self.permalink
         partner_dto.website_links = json.loads(self.website_links)
+        partner_dto.mapswipe_group_id = self.mapswipe_group_id
 
         return partner_dto

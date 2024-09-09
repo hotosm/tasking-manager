@@ -18,7 +18,27 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 * Read the monthly update blogs on [OSM Discourse](https://community.openstreetmap.org/c/general/38/all).
 
 ## Product Roadmap
-We have included below a [high level roadmap/plan](https://github.com/orgs/hotosm/projects/28/) [subject to change] that can be used as an overview.
+
+
+
+Status | Feature
+-------|---------
+✅ | Up-to-date OSM Statistics: Integrated with [ohsome Now](https://stats.now.ohsome.org/) for real-time data insights. Released in [v4.6.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.6.2).
+✅ | Downloadable OSM Exports: Export data directly from each project. Available in[ v4.7.0](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.0).
+✅ | Live Data Quality Monitoring: Monitor project data quality in real-time. Introduced in [v4.7.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.2).
+✅ | Rapid Editor Upgrade: Enhanced mapping experience with the latest rapid editor updates.
+✅ | Public-Facing Partner Pages: Create and display dedicated pages for partners running remote mapathons.
+⚙️| Downloadable Project List View: Allow users to explore projects via a downloadable list. [View issue](https://github.com/hotosm/tasking-manager/issues/3394).
+⚙️| MapSwipe Stats Integration: Display MapSwipe statistics on Partner Pages.
+⚙️| iD Editor Latest Features: Integrate the newest features of the iD editor.
+⚙️| FastAPI Migration: Improve performance and scalability of Tasking Manager to handle large scale validation and mapping efforts.
+| | Latest Translations Update: Keep all content current with the latest translations.
+| | OSM Practice Projects: Enable users to engage in OSM practice projects within Tasking Manager workflow.
+| | Improved Project Sorting & Filtering: Enhance the user experience with better sorting and filtering options.
+| | UI/UX Enhancements: Continuous improvements to the user interface and experience.
+
+
+
 
 
 ## Developers

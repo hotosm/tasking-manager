@@ -43,6 +43,7 @@ class PartnerService:
             current_projects=data.get("current_projects"),
             permalink=data.get("permalink"),
             website_links=json.dumps(website_links),
+            mapswipe_group_id=data.get("mapswipe_group_id"),
         )
         new_partner.create()
         return new_partner

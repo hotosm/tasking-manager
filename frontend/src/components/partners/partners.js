@@ -41,7 +41,7 @@ export function PartnersManagement({ partners, isAdmin, isPartnersFetched }) {
         delay={10}
         ready={isPartnersFetched}
       >
-        <div style={{ marginBottom: '0.5rem' }} className="w-20-l w-25-m ">
+        <div className="w-20-l w-25-m mb2">
           <TextField
             value={searchQuery}
             placeholderMsg={messages.searchPartners}
@@ -71,37 +71,23 @@ export function PartnersManagement({ partners, isAdmin, isPartnersFetched }) {
 
 export function PartnersCard({ details }) {
   return (
-    <div
-      className="card"
-      style={{
-        backgroundColor: '#ffffff',
-        color: '#002366',
-        padding: '1rem',
-        borderRadius: '0.25rem',
-        border: '1px solid #cbd5e0',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        display: 'flex',
-        flexWrap: 'wrap',
-      }}
-    >
-      <div style={{ flex: '2 1 100%', textAlign: 'center' }}>
-        <div className="h3">
+    <div className="bg-white flex flex-column items-center pa4 justify-between shadow-4">
+      <div className="flex flex-column items-center">
+        <div className="h2">
           {details.logo_url && (
-            <img src={details.logo_url} alt={`${details.name} logo`} className="h2 mt2" />
+            <img src={details.logo_url} alt={`${details.name} logo`} className="h2" />
           )}
         </div>
-        <div>
-          <h3 className="barlow-condensed ttu f3 mb2 mt2 truncate" lang="en">
-            {details.name}
-          </h3>
-          <h4 className="ttu blue-grey f6">
-            {details?.primary_hashtag?.split(',')?.slice(0, 2)?.join(',')}
-          </h4>
-        </div>
+        <h3 className="barlow-condensed ttu f3 truncate" lang="en">
+          {details.name}
+        </h3>
+        <h4 className="ttu blue-grey f6 card-text-ellipsis ma0 tc" title={details?.primary_hashtag}>
+          {details?.primary_hashtag}
+        </h4>
       </div>
 
-      <div style={{ flex: '1 1 100%', textAlign: 'center', paddingTop: '1rem' }}>
-        <Link to={`${details.id}/`} style={{ textDecoration: 'none', flex: 1 }}>
+      <div className="flex flex-column items-center" style={{ gap: '1.2rem' }}>
+        <Link to={`${details.id}/`}>
           <CustomButton
             className="bg-red ba b--red white pv2 ph3"
             icon={<EditIcon className="h1 v-mid" />}
@@ -109,9 +95,7 @@ export function PartnersCard({ details }) {
             <FormattedMessage {...messages.edit} />
           </CustomButton>
         </Link>
-      </div>
-      <div style={{ flex: '1 1 100%', textAlign: 'center', paddingTop: '1rem' }}>
-        <Link to={`/partners/${details.permalink}/stats/`} style={{ textDecoration: 'none' }}>
+        <Link to={`/partners/${details.permalink}/stats/`}>
           <CustomButton
             style={{ backgroundColor: '#e2e2e2' }}
             className="blue-dark ba b--grey-light pa2 br1 f5 pointer"
@@ -156,13 +140,17 @@ export function PartnersForm(props) {
               </form>
               {props.errorMessage && (
                 <div className="mt2">
-                  <Alert type="error" compact>
-                    {props.errorMessage ? (
-                      <span>{props.errorMessage}</span>
-                    ) : (
-                      <FormattedMessage {...viewsMessages[`errorFallback`]} />
-                    )}
-                  </Alert>
+                  {props.errorMessage && (
+                    <Alert type="error" compact>
+                      {viewsMessages[`partnerEdit${props.errorMessage}Error`] ? (
+                        <FormattedMessage
+                          {...viewsMessages[`partnerEdit${props.errorMessage}Error`]}
+                        />
+                      ) : (
+                        <FormattedMessage {...viewsMessages[`errorFallback`]} />
+                      )}
+                    </Alert>
+                  )}
                 </div>
               )}
             </div>
@@ -297,6 +285,15 @@ export function PartnersInformation({ hasSlug, setFormState, formState }) {
           <FormattedMessage {...messages.image} />
         </label>
         <Field name="logo_url" component="input" type="text" className={fieldClasses} />
+      </div>
+
+      <div className={rowClass}>
+        <div className={containerClases}>
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.mapSwipeGroupId} />
+          </label>
+          <Field name="mapswipe_group_id" component="input" type="text" className={fieldClasses} />
+        </div>
       </div>
     </>
   );

@@ -81,7 +81,7 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get -y install libgeos-dev # Required for shapely
       - run: sudo apt-get -y install proj-bin libproj-dev
-      - run: pip install --upgrade pip pdm==2.7.4
+      - run: pip install --upgrade pip pdm==2.18.1
       - run: pdm export --dev --without-hashes > requirements.txt
       - run: pip install -r requirements.txt
       - run: mkdir --mode 766 -p /tmp/logs
@@ -294,7 +294,7 @@ workflows:
           name: Deploy backend production
           gitsha: $CIRCLE_SHA1
           stack_name: "tm4-production"
-          host_ami: "ami-01e5ff16fd6e8c542"
+          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
           backend_instance_type: c6a.large
           pg_version: "13.10"
           pg_param_group: "default.postgres13"
@@ -357,7 +357,7 @@ workflows:
           name: Deploy backend production
           gitsha: $CIRCLE_SHA1
           stack_name: "tm4-production"
-          host_ami: "ami-01e5ff16fd6e8c542"
+          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
           backend_instance_type: c6a.large
           pg_version: "13.10"
           pg_param_group: "default.postgres13"
@@ -384,7 +384,7 @@ workflows:
           name: Deploy TeachOSM Backend
           gitsha: $CIRCLECI_SHA1
           stack_name: "teachosm"
-          host_ami: "ami-01e5ff16fd6e8c542"
+          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
           requires:
             - backend-functional-tests
           context: tasking-manager-teachosm
@@ -422,7 +422,7 @@ workflows:
           name: Deploy staging backend
           gitsha: $CIRCLE_SHA1
           stack_name: "staging"
-          host_ami: "ami-01e5ff16fd6e8c542"
+          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
           pg_version: "14.8"
           pg_param_group: "default.postgres14"
           db_instance_type: "db.t4g.small"
@@ -473,8 +473,8 @@ workflows:
           name: Deploy development backend
           gitsha: $CIRCLE_SHA1
           stack_name: "dev"
-          host_ami: "ami-01e5ff16fd6e8c542"
-          pg_version: "14.8"
+          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
+          pg_version: "14.10"
           pg_param_group: "default.postgres14"
           db_instance_type: "db.t4g.small"
           backend_instance_type: "t3.medium"

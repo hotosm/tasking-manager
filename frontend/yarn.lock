@@ -12258,10 +12258,9 @@ react-onclickoutside@^6.13.0:
   resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.13.0.tgz#e165ea4e5157f3da94f4376a3ab3e22a565f4ffc"
   integrity sha512-ty8So6tcUpIb+ZE+1HAhbLROvAIJYyJe/1vRrrcmW+jLsaM+/powDRqxzo6hSh9CuRZGSL1Q8mvcF5WRD93a0A==
 
-react-placeholder@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/react-placeholder/-/react-placeholder-4.1.0.tgz#943128820b3b0a6f94371655aadec18d306e05e3"
-  integrity sha512-z1HGD86NWJTYTQumHsmGH9jkozv4QHa9dju/vHVUd4f1svu23pf5v7QoBLBfs3kA1S9GLJaCeRMHLbO2SCdz5A==
+"react-placeholder@git+https://github.com/hotosm/react-placeholder.git":
+  version "4.2.0"
+  resolved "git+https://github.com/hotosm/react-placeholder.git#ef6301c4a017b91513c2c4b091d291d82d8b5916"
 
 react-popper@^2.3.0:
   version "2.3.0"
