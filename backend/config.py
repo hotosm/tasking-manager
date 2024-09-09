@@ -90,10 +90,9 @@ class Settings(BaseSettings):
                 username=params.get("username"),
                 password=params.get("password"),
                 host=params.get("host"),
-                port=str(params.get("port")),
+                port=int(params.get("port")),
                 path=f"{params.get('dbname')}",
             )
-
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
             username=info.data.get("POSTGRES_USER"),
@@ -268,9 +267,6 @@ def get_settings():
     if _settings.DEBUG:
         print(f"Loaded settings: {_settings.model_dump()}")
     return _settings
-
-    # Ohsome Stats Token
-    OHSOME_STATS_TOKEN = os.getenv("OHSOME_STATS_TOKEN", None)
 
 
 settings = get_settings()
