@@ -879,27 +879,27 @@ class MessageService:
     async def get_message_as_dto(message_id: int, user_id: int, db: Database):
         """Gets the selected message and marks it as read"""
         query = """
-            SELECT
+            SELECT 
                 m.id AS message_id,
-                m.subject,
-                m.message,
-                m.to_user_id,
-                m.from_user_id,
-                m.task_id,
-                m.message_type,
-                m.date AS sent_date,
-                m.read,
-                m.project_id,
-                u.username AS from_username,
-                u.picture_url AS display_picture_url,
-                pi.name AS project_title
-            FROM
+                m.subject, 
+                m.message, 
+                m.to_user_id, 
+                m.from_user_id, 
+                m.task_id, 
+                m.message_type, 
+                m.date AS sent_date, 
+                m.read, 
+                u.username AS from_username, 
+                u.picture_url AS display_picture_url, 
+                m.project_id, 
+                pi.name AS project_title 
+            FROM 
                 messages m
-            LEFT JOIN
+            LEFT JOIN 
                 users u ON m.from_user_id = u.id
-            LEFT JOIN
+            LEFT JOIN 
                 project_info pi ON m.project_id = pi.project_id
-            WHERE
+            WHERE 
                 m.id = :message_id
         """
         message = await db.fetch_one(query, {"message_id": message_id})
@@ -912,14 +912,14 @@ class MessageService:
                 "AccessOtherUserMessage- "
                 + f"User {user_id} attempting to access another user's message {message_id}"
             )
-
+        
         update_query = """
             UPDATE messages SET read = TRUE WHERE id = :message_id
         """
         await db.execute(update_query, {"message_id": message_id})
-
+        
         message_dict = dict(message)
-        message_dict["message_type"] = MessageType(message_dict["message_type"]).name
+        message_dict['message_type'] = MessageType(message_dict['message_type']).name
         return message_dict
 
     @staticmethod
