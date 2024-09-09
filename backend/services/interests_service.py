@@ -3,6 +3,7 @@ from backend.models.dtos.interests_dto import (
     InterestRateListDTO,
     InterestsListDTO,
     InterestDTO,
+    ListInterestDTO,
 )
 from backend.models.postgis.interests import (
     Interest,
@@ -109,14 +110,38 @@ class InterestService:
         return dto
 
     @staticmethod
-    def create_or_update_user_interests(user_id, interests):
-        user = UserService.get_user_by_id(user_id)
-        user.create_or_update_interests(interests)
+    async def create_or_update_user_interests(user_id, interests_ids, db: Database):
+        """
+        Create or update the user's interests by directly interacting with the database.
+        """
+        async with db.transaction():
+            delete_query = """
+                DELETE FROM user_interests WHERE user_id = :user_id
+            """
+            await db.execute(delete_query, {"user_id": user_id})
+            insert_query = """
+                INSERT INTO user_interests (user_id, interest_id) 
+                VALUES (:user_id, :interest_id)
+            """
+            values = [{"user_id": user_id, "interest_id": interest_id} for interest_id in interests_ids]
+            await db.execute_many(insert_query, values)
+            return await InterestService.get_user_interests(user_id, db)
 
-        # Return DTO.
+    @staticmethod
+    async def get_user_interests(user_id, db: Database) -> InterestsListDTO:
+        """
+        Fetch the updated interests for the user and return the DTO.
+        """
+        query = """
+            SELECT i.id, i.name
+            FROM interests i
+            JOIN user_interests ui ON i.id = ui.interest_id
+            WHERE ui.user_id = :user_id
+        """
+        rows = await db.fetch_all(query, {"user_id": user_id})
+
         dto = InterestsListDTO()
-        dto.interests = [i.as_dto() for i in user.interests]
-
+        dto.interests = [ListInterestDTO(id=row['id'], name=row['name']) for row in rows]
         return dto
 
     @staticmethod
