@@ -47,6 +47,9 @@ from backend.api.system import (
     authentication as system_authentication,
     image_upload as system_image_upload,
 )
+from backend.api.notifications import (
+    resources as notification_resources,
+)
 
 v2 = APIRouter(prefix="/api/v2")
 
@@ -107,5 +110,8 @@ def add_api_end_points(api):
     v2.include_router(system_statistics.router)
     v2.include_router(system_authentication.router)
     v2.include_router(system_image_upload.router)
+
+    # Notifications REST endpoint
+    v2.include_router(notification_resources.router)
 
     api.include_router(v2)
