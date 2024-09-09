@@ -3,9 +3,15 @@ from backend.services.messaging.message_service import (
     MessageServiceError,
 )
 from backend.services.notification_service import NotificationService
+from backend.services.users.authentication_service import tm, login_required
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.user import User
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
+from databases import Database
+from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
+from backend.db import get_db
 
 router = APIRouter(
     prefix="/notifications",
@@ -15,9 +21,8 @@ router = APIRouter(
 )
 
 
-@router.get("/{message_id}/")
-@requires("authenticated")
-async def get(request: Request, message_id: int):
+@router.get("/{message_id}/", response_model=MessageDTO)
+async def get(message_id: int, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
     """
     Gets the specified message
     ---
@@ -49,10 +54,10 @@ async def get(request: Request, message_id: int):
             description: Internal Server Error
     """
     try:
-        user_message = MessageService.get_message_as_dto(
-            message_id, request.user.display_name
-        )
-        return user_message.model_dump(by_alias=True), 200
+      user_message = await MessageService.get_message_as_dto(
+          message_id, user.id, db
+      )
+      return user_message
     except MessageServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
