@@ -63,12 +63,16 @@ export const PartnersStats = () => {
             ) : (
               <h3 className="f2 fw6 ttu barlow-condensed white">{partner.name}</h3>
             )}
-            {/* new to mapping button */}
-            <Link to={`/learn/map/`}>
-              <Button className="bg-grey-dark white mr3 br1 f5 bn">
-                <FormattedMessage {...messages.newToMapping} />
-              </Button>
-            </Link>
+            <div className="flex">
+              {/* new to mapping button */}
+              <Link to={`/learn/map/`}>
+                <Button className="bg-grey-dark white mr3 br1 f5 bn">
+                  <FormattedMessage {...messages.newToMapping} />
+                </Button>
+              </Link>
+              {/* resources button */}
+              <Resources partner={partner} />
+            </div>
           </div>
           {/* social logos */}
           <div className="pa4 bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
@@ -116,16 +120,6 @@ export const PartnersStats = () => {
             <StatsSection partner={partnerStats} />
 
             <CurrentProjects currentProjects={partner.current_projects} />
-
-            {/* resources section */}
-            {Object.keys(partner).some((key) => key.includes('name_')) && (
-              <div className="w-100 fl cf">
-                <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb3">
-                  <FormattedMessage {...messages.resources} />
-                </h3>
-                <Resources partner={partner} />
-              </div>
-            )}
 
             {/* activity section */}
             <div className="w-100 fl cf">

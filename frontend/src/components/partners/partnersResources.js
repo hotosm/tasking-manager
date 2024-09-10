@@ -1,4 +1,7 @@
-import { CustomButton } from '../button';
+import { FormattedMessage } from 'react-intl';
+
+import { CustomDropdown } from './customDropdown';
+import messages from '../../views/messages';
 
 export const Resources = ({ partner }) => {
   const renderWebsiteLinks = () => {
@@ -11,20 +14,17 @@ export const Resources = ({ partner }) => {
       name: partner[nameKey],
       url: partner[urlKeys[index]],
     }));
+
+    const resourcesData = websiteLinks.map((link) => ({
+      ...link,
+      label: link.name,
+      onClick: (item) => {
+        window.open(item.url, '_blank');
+      },
+    }));
+
     return (
-      <div className="">
-        {websiteLinks.map((link, index) => (
-          <a
-            key={index}
-            href={link.url}
-            target="_blank"
-            rel="noreferrer"
-            className="link ttu di-l dib center m1"
-          >
-            <CustomButton className="ba b--red red pa2 mv2 mh2 w4">{link.name}</CustomButton>
-          </a>
-        ))}
-      </div>
+      <CustomDropdown title={<FormattedMessage {...messages.resources} />} data={resourcesData} />
     );
   };
 
