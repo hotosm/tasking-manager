@@ -72,4 +72,8 @@ export default defineMessages({
     id: 'management.partners.stats.mapswipe.timeSpentContributingByDay',
     defaultMessage: 'Time Spent Contributing by Day of Week',
   },
+  swipesByProjectType: {
+    id: 'management.partners.stats.mapswipe.swipesByProjectType',
+    defaultMessage: 'Swipes by Project Type',
+  }
 });
