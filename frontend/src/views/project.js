@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useEffect, useState, useLayoutEffect, useRef } f
 import { useSelector } from 'react-redux';
 import ReactPlaceholder from 'react-placeholder';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import { ProjectNav } from '../components/projects/projectNav';
 import { MyProjectNav } from '../components/projects/myProjectNav';
@@ -44,6 +45,9 @@ export const ProjectsPage = () => {
   const action = useSelector((state) => state.preferences['action']);
   const [fullProjectsQuery, setProjectQuery] = useExploreProjectsQueryParams();
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
+  const isExploreProjectsTableView = useSelector(
+    (state) => state.preferences['isExploreProjectsTableView'],
+  );
   const searchResultWidth = isMapShown ? 'two-column' : 'one-column';
 
   const {
@@ -58,17 +62,18 @@ export const ProjectsPage = () => {
 
   return (
     <div className="pull-center" id="projects-container">
-      <ProjectNav>
+      <ProjectNav isExploreProjectsPage>
         <Outlet />
       </ProjectNav>
       <section className={`${searchResultWidth} explore-projects-container`}>
-        <div>
+        <div className={`${isExploreProjectsTableView ? 'overflow-auto' : ''}`}>
           <ProjectSearchResults
             className={`${isMapShown ? 'pl3' : 'ph3'}`}
             status={status}
             projects={projects?.results}
             pagination={projects?.pagination}
             retryFn={refetch}
+            isExploreProjectsPage
           />
           <ProjectCardPaginator
             status={status}
@@ -152,6 +157,10 @@ export const UserProjectsPage = ({ management }) => {
       </section>
     </div>
   );
+};
+
+UserProjectsPage.propTypes = {
+  management: PropTypes.bool.isRequired,
 };
 
 export const ProjectsPageIndex = (props) => {

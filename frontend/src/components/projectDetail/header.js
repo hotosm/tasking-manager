@@ -30,7 +30,7 @@ export function HeaderLine({ author, projectId, priority, showEditLink, organisa
         )}
         {priority && (
           <div className="mw4 dib">
-            <PriorityBox priority={priority} extraClasses={'pv2 ph3 ml2'} showIcon />
+            <PriorityBox priority={priority} extraClasses={'pv2 ph3 ml2 f8'} showIcon />
           </div>
         )}
       </div>

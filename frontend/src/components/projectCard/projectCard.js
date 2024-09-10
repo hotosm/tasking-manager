@@ -110,7 +110,7 @@ export function ProjectCard({
                 ) : (
                   <PriorityBox
                     priority={priority}
-                    extraClasses={'pv1 ph2 dib'}
+                    extraClasses={'pv1 ph2 dib f8'}
                     showIcon={!['URGENT', 'MEDIUM'].includes(priority)} // inside the cards, don't show the icon for urgent or medium, due to the space required
                   />
                 )}

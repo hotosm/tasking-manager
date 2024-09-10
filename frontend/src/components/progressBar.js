@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 import { useHover } from '../hooks/UseHover';
 
 export const ProgressBar = ({
@@ -34,7 +36,8 @@ export const ProgressBar = ({
           aria-valuemax="100"
         />
         <div className={`bg-tan br-pill ${small ? heightClassname : 'h-pill'} overflow-y-hidden`} />
-        {isHovered && (
+
+        {children && isHovered && (
           <span
             className={`db absolute z-1 dib bg-blue-dark ba br2 b--blue-dark pa2 shadow-5 bottom-${
               height === 'half' ? '2' : height
@@ -52,3 +55,12 @@ export const ProgressBar = ({
     </div>
   );
 };
+
+ProgressBar.propTypes = {
+  className: PropTypes.string,
+  small: PropTypes.bool,
+  height: PropTypes.string,
+  firstBarValue: PropTypes.number.isRequired,
+  secondBarValue: PropTypes.number,
+  children: PropTypes.node
+}

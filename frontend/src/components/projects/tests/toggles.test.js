@@ -2,7 +2,7 @@ import { act } from 'react-test-renderer';
 
 import { store } from '../../../store';
 import { createComponentWithReduxAndIntl } from '../../../utils/testWithIntl';
-import { ShowMapToggle, ProjetListViewToggle } from '../projectNav';
+import { ShowMapToggle, ProjectListViewToggle } from '../projectNav';
 import { GripIcon, ListIcon } from '../../svgIcons';
 
 describe('test if ShowMapToggle component', () => {
@@ -26,8 +26,8 @@ describe('test if ShowMapToggle component', () => {
   });
 });
 
-describe('test if ProjetListViewToggle', () => {
-  const element = createComponentWithReduxAndIntl(<ProjetListViewToggle />);
+describe('test if ProjectListViewToggle', () => {
+  const element = createComponentWithReduxAndIntl(<ProjectListViewToggle />);
   const instance = element.root;
   it('has the correct CSS classes', () => {
     expect(() => instance.findByType('div')).not.toThrow(
