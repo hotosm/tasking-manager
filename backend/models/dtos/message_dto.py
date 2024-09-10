@@ -10,9 +10,10 @@ class MessageDTO(BaseModel):
     message_id: int = Field(serialization_alias="messageId")
     subject: str
     message: str
-    from_user_id: Optional[int] = Field(None, serialization_alias="fromUserId")
     from_username: Optional[str] = Field("", serialization_alias="fromUsername")
-    display_picture_url: Optional[str] = Field("", serialization_alias="displayPictureUrl")
+    display_picture_url: Optional[str] = Field(
+        "", serialization_alias="displayPictureUrl"
+    )
     project_id: Optional[int] = Field(None, serialization_alias="projectId")
     project_title: Optional[str] = Field(None, serialization_alias="projectTitle")
     task_id: Optional[int] = Field(None, serialization_alias="taskId")
@@ -29,8 +30,10 @@ class MessagesDTO(BaseModel):
         super().__init__()
         self.user_messages = []
 
-    pagination: Pagination
-    user_messages: List[MessageDTO] = Field(alias="userMessages")
+    pagination: Optional[Pagination] = None
+    user_messages: Optional[List[MessageDTO]] = Field(
+        [], serialization_alias="userMessages"
+    )
 
 
 class ChatMessageDTO(BaseModel):
