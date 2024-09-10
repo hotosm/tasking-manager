@@ -3,6 +3,7 @@ import json
 
 from backend.services.messaging.smtp_service import SMTPService
 from backend.models.postgis.release_version import ReleaseVersion
+from backend.services.settings_service import SettingsService
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_db, get_session
 from databases import Database
@@ -140,46 +141,46 @@ async def get():
     return json.dumps(swag)
 
 
-@router.get("/heartbeat/")
-async def get():
-    """
-    Simple health-check, if this is unreachable load balancers should be configures to raise an alert
-    ---
-    tags:
-      - system
-    produces:
-      - application/json
-    responses:
-      200:
-        description: Service is Healthy
-    """
-    release = ReleaseVersion.get()
-    if release is not None:
-        release = {
-            "version": release.tag_name,
-            "published_at": str(release.published_at),
-        }
-    return {"status": "healthy", "release": release}, 200
-
-
-# # class SystemLanguagesAPI():
-# @router.get("/languages/")
+# @router.get("/heartbeat/")
 # async def get():
 #     """
-#     Gets all supported languages
+#     Simple health-check, if this is unreachable load balancers should be configures to raise an alert
 #     ---
 #     tags:
 #       - system
 #     produces:
 #       - application/json
 #     responses:
-#         200:
-#             description: Supported Languages
-#         500:
-#             description: Internal Server Error
+#       200:
+#         description: Service is Healthy
 #     """
-#     languages = SettingsService.get_settings()
-#     return languages.model_dump(by_alias=True), 200
+#     release = ReleaseVersion.get()
+#     if release is not None:
+#         release = {
+#             "version": release.tag_name,
+#             "published_at": str(release.published_at),
+#         }
+#     return {"status": "healthy", "release": release}, 200
+
+
+# class SystemLanguagesAPI():
+@router.get("/languages/")
+async def get():
+    """
+    Gets all supported languages
+    ---
+    tags:
+      - system
+    produces:
+      - application/json
+    responses:
+        200:
+            description: Supported Languages
+        500:
+            description: Internal Server Error
+    """
+    languages = SettingsService.get_settings()
+    return languages.model_dump(by_alias=True), 200
 
 
 @router.get("/heartbeat/")
