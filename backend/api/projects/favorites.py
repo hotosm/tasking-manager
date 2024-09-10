@@ -1,26 +1,25 @@
-# from flask_restful import Resource
-
-from backend.models.dtos.project_dto import ProjectFavoriteDTO
 from backend.services.project_service import ProjectService
-
-# from backend.services.users.authentication_service import token_auth
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from starlette.authentication import requires
+from backend.db import get_db
+from databases import Database
+from backend.services.users.authentication_service import login_required
+from backend.models.dtos.user_dto import AuthUserDTO
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 
-# class ProjectsFavoritesAPI(Resource):
-# @token_auth.login_required
 @router.get("/{project_id}/favorite/")
-@requires("authenticated")
-async def get(request: Request, project_id: int):
+async def get(
+    request: Request,
+    project_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Validate that project is favorited
     ---
@@ -51,17 +50,19 @@ async def get(request: Request, project_id: int):
             description: Internal Server Error
     """
     user_id = request.user.display_name if request.user else None
-    favorited = ProjectService.is_favorited(project_id, user_id)
+    favorited = await ProjectService.is_favorited(project_id, user_id, db)
     if favorited is True:
-        return {"favorited": True}, 200
+        return {"favorited": True}
+    return {"favorited": False}
 
-    return {"favorited": False}, 200
 
-
-# @token_auth.login_required
 @router.post("/{project_id}/favorite/")
-@requires("authenticated")
-async def post(request: Request, project_id: int):
+async def post(
+    request: Request,
+    project_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Set a project as favorite
     ---
@@ -91,19 +92,18 @@ async def post(request: Request, project_id: int):
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name if request.user else None
-    favorite_dto = ProjectFavoriteDTO()
-    favorite_dto.project_id = project_id
-    favorite_dto.user_id = authenticated_user_id
 
-    ProjectService.favorite(project_id, authenticated_user_id)
-    return {"project_id": project_id}, 200
+    await ProjectService.favorite(project_id, user.id, db)
+    return {"project_id": project_id}
 
 
-# @token_auth.login_required
 @router.delete("/{project_id}/favorite/")
-@requires("authenticated")
-async def delete(request: Request, project_id: int):
+async def delete(
+    request: Request,
+    project_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Unsets a project as favorite
     ---
@@ -134,8 +134,7 @@ async def delete(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        ProjectService.unfavorite(project_id, request.user.display_name)
+        await ProjectService.unfavorite(project_id, user.id, db)
     except ValueError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-
-    return {"project_id": project_id}, 200
+    return {"project_id": project_id}
