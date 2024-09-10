@@ -16,7 +16,7 @@ router = APIRouter(
 
 
 @router.get("/queries/popular/")
-async def get():
+async def get(db: Database = Depends(get_db)):
     """
     Get popular projects
     ---
@@ -30,8 +30,8 @@ async def get():
         500:
             description: Internal Server Error
     """
-    stats = StatsService.get_popular_projects()
-    return stats.model_dump(by_alias=True), 200
+    stats = await StatsService.get_popular_projects(db)
+    return stats
 
 
 @router.get("/{project_id}/statistics/")
