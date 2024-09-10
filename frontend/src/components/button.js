@@ -10,7 +10,15 @@ export const AnimatedLoadingIcon = () => (
   </IconSpace>
 );
 
-export function Button({ onClick, children, icon, className, disabled, loading = false }: Object) {
+export function Button({
+  onClick,
+  children,
+  icon,
+  className,
+  disabled,
+  loading = false,
+  ...rest
+}: Object) {
   return (
     <button
       onClick={onClick}
@@ -19,6 +27,7 @@ export function Button({ onClick, children, icon, className, disabled, loading =
       className={`${className || ''} br1 f5 bn ${disabled || loading ? 'o-50' : 'pointer'}`}
       style={{ padding: '.75rem 1.5rem' }}
       disabled={disabled || loading}
+      {...rest}
     >
       {loading ? <AnimatedLoadingIcon /> : icon && <IconSpace>{icon}</IconSpace>}
       {children}
