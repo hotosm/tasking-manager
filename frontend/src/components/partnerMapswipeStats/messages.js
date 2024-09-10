@@ -64,6 +64,10 @@ export default defineMessages({
     id: 'management.partners.stats.mapswipe.contributions.tooltip',
     defaultMessage: 'contribution(s)',
   },
+  timeSpentContributing: {
+    id: 'management.partners.stats.mapswipe.timeSpentContributing',
+    defaultMessage: 'Time Spent Contributing',
+  },
   timeSpentContributingByDay: {
     id: 'management.partners.stats.mapswipe.timeSpentContributingByDay',
     defaultMessage: 'Time Spent Contributing by Day of Week',
