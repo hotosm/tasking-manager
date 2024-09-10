@@ -3,22 +3,30 @@ from backend.models.postgis.task_annotation import TaskAnnotation
 from backend.services.project_service import ProjectService
 from backend.services.task_annotations_service import TaskAnnotationsService
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
+from backend.db import get_db
+from databases import Database
+from backend.services.users.authentication_service import login_required
+from backend.models.dtos.user_dto import AuthUserDTO
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 
-# class AnnotationsRestAPI(Resource):
 @router.get("/{project_id}/annotations/{annotation_type}/")
 @router.get("/{project_id}/annotations/")
-async def get(request: Request, project_id: int, annotation_type: str = None):
+async def get(
+    request: Request,
+    project_id: int,
+    annotation_type: str = None,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Get all task annotations for a project
     ---
