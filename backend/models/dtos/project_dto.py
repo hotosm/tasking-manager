@@ -322,6 +322,9 @@ class ProjectFavoritesDTO(BaseModel):
 
     favorited_projects: List[ProjectDTO] = Field(default=[], alias="favoritedProjects")
 
+    class Config:
+        populate_by_name = True
+
 
 class ProjectSearchDTO(BaseModel):
     """Describes the criteria users use to filter active projects"""
