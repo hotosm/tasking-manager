@@ -1148,7 +1148,7 @@ async def get(request: Request, db: Database = Depends(get_db)):
 
 
 @router.get("/{project_id}/queries/similar-projects/")
-async def get(request: Request, project_id: int):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get similar projects
     ---
@@ -1185,10 +1185,10 @@ async def get(request: Request, project_id: int):
     authenticated_user_id = request.user.display_name if request.user else None
     limit = int(request.query_params.get("limit", 4))
     preferred_locale = request.headers.get("accept-language", "en")
-    projects_dto = ProjectRecommendationService.get_similar_projects(
-        project_id, authenticated_user_id, preferred_locale, limit
+    projects_dto = await ProjectRecommendationService.get_similar_projects(
+        db, project_id, authenticated_user_id, preferred_locale, limit
     )
-    return projects_dto.model_dump(by_alias=True), 200
+    return projects_dto
 
 
 @router.get("/queries/active/")

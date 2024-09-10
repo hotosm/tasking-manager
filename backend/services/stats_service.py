@@ -1,8 +1,7 @@
 import datetime
 from cachetools import TTLCache, cached
 from datetime import date, timedelta
-from sqlalchemy import func, desc, cast, extract, or_
-from sqlalchemy.types import Time
+from sqlalchemy import func, or_
 
 from backend.exceptions import NotFound
 from backend.models.dtos.stats_dto import (
@@ -190,40 +189,56 @@ class StatsService:
         return activity_dto
 
     @staticmethod
-    def get_popular_projects() -> ProjectSearchResultsDTO:
-        """Get all projects ordered by task_history"""
+    async def get_popular_projects(db: Database) -> ProjectSearchResultsDTO:
+        """Get all projects ordered by task history."""
 
-        rate_func = func.count(TaskHistory.user_id) / extract(
-            "epoch", func.sum(cast(TaskHistory.action_date, Time))
+        # Query to calculate the "popularity" rate based on task history
+        popularity_query = """
+        SELECT
+            th.project_id AS id,
+            COUNT(th.user_id) / EXTRACT(EPOCH FROM SUM(th.action_date::time)) AS rate
+        FROM task_history th
+        WHERE th.action_date >= :start_date
+        AND (th.action = :locked_for_mapping OR th.action = :locked_for_validation)
+        AND th.action_text IS NOT NULL
+        AND th.action_text != ''
+        GROUP BY th.project_id
+        ORDER BY rate DESC
+        LIMIT 10
+        """
+
+        start_date = date.today() - timedelta(days=90)
+        params = {
+            "start_date": start_date,
+            "locked_for_mapping": TaskAction.LOCKED_FOR_MAPPING.name,
+            "locked_for_validation": TaskAction.LOCKED_FOR_VALIDATION.name,
+        }
+
+        # Fetch the popular projects based on the rate calculated above
+        popular_projects = await db.fetch_all(popularity_query, params)
+        project_ids = [row["id"] for row in popular_projects]
+
+        if not project_ids:
+            return ProjectSearchResultsDTO(results=[])
+
+        # Use the existing `create_search_query` function to fetch detailed project data
+        project_query, query_params = await ProjectSearchService.create_search_query(db)
+        project_query += " AND p.id = ANY(:project_ids)"
+        query_params["project_ids"] = project_ids
+
+        projects = await db.fetch_all(project_query, query_params)
+
+        # Get total contributors for each project
+        contrib_counts = await ProjectSearchService.get_total_contributions(
+            project_ids, db
         )
-
-        query = (
-            session.query(TaskHistory)
-            .with_entities(TaskHistory.project_id.label("id"), rate_func.label("rate"))
-            .filter(TaskHistory.action_date >= date.today() - timedelta(days=90))
-            .filter(
-                or_(
-                    TaskHistory.action == TaskAction.LOCKED_FOR_MAPPING.name,
-                    TaskHistory.action == TaskAction.LOCKED_FOR_VALIDATION.name,
-                )
-            )
-            .filter(TaskHistory.action_text is not None)
-            .filter(TaskHistory.action_text != "")
-            .group_by(TaskHistory.project_id)
-            .order_by(desc("rate"))
-            .limit(10)
-            .subquery()
-        )
-
-        projects_query = ProjectSearchService.create_search_query()
-        projects = projects_query.filter(Project.id == query.c.id).all()
-        # Get total contributors.
-        contrib_counts = ProjectSearchService.get_total_contributions(projects)
         zip_items = zip(projects, contrib_counts)
 
+        # Prepare the final DTO with all project details
         dto = ProjectSearchResultsDTO()
         dto.results = [
-            ProjectSearchService.create_result_dto(p, "en", t) for p, t in zip_items
+            await ProjectSearchService.create_result_dto(p, "en", t, db)
+            for p, t in zip_items
         ]
 
         return dto
