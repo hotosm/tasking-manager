@@ -7,7 +7,7 @@ import ReactPlaceholder from 'react-placeholder';
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { PaginatorLine } from '../paginator';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { Alert } from '../alert';
 import { MessageStatus } from '../comments/status';
 import { UserAvatar } from '../user/avatar';

@@ -12,7 +12,7 @@ export function SelectTask() {
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
   const { data, status, error } = useProjectSummaryQuery(id, {
-    useErrorBoundary: (error) => error.response.status !== 404,
+    throwOnError: (error) => error.response.status !== 404,
   });
 
   useEffect(() => {

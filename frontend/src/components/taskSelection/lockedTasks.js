@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { useGetLockedTasks } from '../../hooks/UseLockedTasks';
 
 export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Object) {
@@ -19,9 +19,9 @@ export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Obj
       <div className="mv4 lh-title">
         <FormattedMessage
           {...messages[
-            lockedTasksLength > 1
-              ? 'anotherProjectLockTextPlural'
-              : 'anotherProjectLockTextSingular'
+          lockedTasksLength > 1
+            ? 'anotherProjectLockTextPlural'
+            : 'anotherProjectLockTextSingular'
           ]}
           values={{
             project: <span className="fw6">{projectId}</span>,
@@ -53,9 +53,9 @@ export function SameProjectLock({ lockedTasks, action }: Object) {
       <div className="mv4 lh-title">
         <FormattedMessage
           {...messages[
-            lockedTasks.tasks.length > 1
-              ? 'currentProjectLockTextPlural'
-              : 'currentProjectLockTextSingular'
+          lockedTasks.tasks.length > 1
+            ? 'currentProjectLockTextPlural'
+            : 'currentProjectLockTextSingular'
           ]}
           values={{ taskId: <span className="fw6">{lockedTasks.tasks}</span> }}
         />
