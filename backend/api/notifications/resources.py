@@ -3,14 +3,13 @@ from backend.services.messaging.message_service import (
     MessageServiceError,
 )
 from backend.services.notification_service import NotificationService
-from backend.services.users.authentication_service import tm, login_required
+from backend.services.users.authentication_service import login_required
 from backend.models.dtos.user_dto import AuthUserDTO
-from backend.models.postgis.user import User
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
 from databases import Database
-from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
+from backend.models.dtos.message_dto import MessageDTO
 from backend.db import get_db
 
 router = APIRouter(
@@ -22,7 +21,11 @@ router = APIRouter(
 
 
 @router.get("/{message_id}/", response_model=MessageDTO)
-async def get(message_id: int, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
+async def get(
+    message_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Gets the specified message
     ---
@@ -54,10 +57,8 @@ async def get(message_id: int, db: Database = Depends(get_db), user: AuthUserDTO
             description: Internal Server Error
     """
     try:
-      user_message = await MessageService.get_message_as_dto(
-          message_id, user.id, db
-      )
-      return user_message
+        user_message = await MessageService.get_message_as_dto(message_id, user.id, db)
+        return user_message
     except MessageServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
@@ -103,8 +104,11 @@ async def delete(request: Request, message_id: int):
 
 
 @router.get("/")
-@requires("authenticated")
-async def get(request: Request):
+async def get(
+    request: Request,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Get all messages for logged in user
     ---
@@ -178,8 +182,9 @@ async def get(request: Request):
     project = request.query_params.get("project", None)
     task_id = request.query_params.get("taskId", None)
     status = request.query_params.get("status", None)
-    user_messages = MessageService.get_all_messages(
-        request.user.display_name,
+    user_messages = await MessageService.get_all_messages(
+        db,
+        user.id,
         preferred_locale,
         page,
         page_size,
@@ -191,7 +196,7 @@ async def get(request: Request):
         task_id,
         status,
     )
-    return user_messages.model_dump(by_alias=True), 200
+    return user_messages
 
 
 @router.get("/queries/own/count-unread/")
