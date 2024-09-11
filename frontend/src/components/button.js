@@ -17,6 +17,7 @@ export function Button({
   className,
   disabled,
   loading = false,
+  style,
   ...rest
 }: Object) {
   return (
@@ -25,7 +26,7 @@ export function Button({
       aria-pressed="false"
       focusindex="0"
       className={`${className || ''} br1 f5 bn ${disabled || loading ? 'o-50' : 'pointer'}`}
-      style={{ padding: '.75rem 1.5rem' }}
+      style={{ padding: '.75rem 1.5rem', ...style }}
       disabled={disabled || loading}
       {...rest}
     >
