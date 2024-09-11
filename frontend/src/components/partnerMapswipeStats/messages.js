@@ -80,4 +80,28 @@ export default defineMessages({
     id: 'management.partners.stats.mapswipe.swipesByOrganisation',
     defaultMessage: 'Swipes by Organisation',
   },
+  areaSwipesByProjectType: {
+    id: 'management.partners.stats.mapswipe.areaSwipes',
+    defaultMessage: 'Area Swipes',
+  },
+  find: {
+    id: 'management.partners.stats.mapswipe.area.find',
+    defaultMessage: 'Find',
+  },
+  featuresCheckedByProjectType: {
+    id: 'management.partners.stats.mapswipe.featuresChecked',
+    defaultMessage: 'Features Checked',
+  },
+  validate: {
+    id: 'management.partners.stats.mapswipe.area.validate',
+    defaultMessage: 'Validate',
+  },
+  sceneComparedByProjectType: {
+    id: 'management.partners.stats.mapswipe.sceneCompared',
+    defaultMessage: 'Area Swipes',
+  },
+  compare: {
+    id: 'management.partners.stats.mapswipe.area.compare',
+    defaultMessage: 'Compare',
+  },
 });
