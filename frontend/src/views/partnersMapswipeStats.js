@@ -6,6 +6,8 @@ import { GroupMembers } from '../components/partnerMapswipeStats/groupMembers';
 import { ContributionsGrid } from '../components/partnerMapswipeStats/contributionsGrid';
 import { TimeSpentContributing } from '../components/partnerMapswipeStats/timeSpentContributing';
 import { TimeSpentContributingByDay } from '../components/partnerMapswipeStats/timeSpentContributingByDay';
+import { SwipesByProjectType } from '../components/partnerMapswipeStats/swipesByProjectType';
+import { SwipesByOrganisation } from '../components/partnerMapswipeStats/swipesByOrganisation';
 import messages from './messages';
 import './partnersMapswipeStats.css';
 
@@ -40,6 +42,11 @@ export const PartnersMapswipeStats = () => {
 
       <div className="mt3">
         <TimeSpentContributingByDay />
+      </div>
+
+      <div className="mt3 flex items-center justify-between">
+        <SwipesByProjectType />
+        <SwipesByOrganisation />
       </div>
     </div>
   );
