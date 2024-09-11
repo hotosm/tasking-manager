@@ -702,9 +702,9 @@ class MessageService:
 
     @staticmethod
     @cached(message_cache)
-    def has_user_new_messages(user_id: int) -> dict:
+    async def has_user_new_messages(user_id: int, db: Database) -> dict:
         """Determines if the user has any unread messages"""
-        count = Notification.get_unread_message_count(user_id)
+        count = await Notification.get_unread_message_count(user_id, db)
 
         new_messages = False
         if count > 0:
