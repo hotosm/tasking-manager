@@ -848,27 +848,32 @@ class MessageService:
         return message
 
     @staticmethod
-    def mark_all_messages_read(user_id: int, message_type: str = None):
+    async def mark_all_messages_read(
+        user_id: int, db: Database, message_type: str = None
+    ):
         """Marks all messages as read for the user
         -----------------------------------------
         :param user_id: The user id
+        :param db: Database connection
         :param message_type: The message types to mark as read
         returns: None
         """
         if message_type is not None:
-            # Wrap in list for unit tests to work
             message_type = list(map(int, message_type.split(",")))
-        Message.mark_all_messages_read(user_id, message_type)
+        await Message.mark_all_messages_read(user_id, db, message_type)
 
     @staticmethod
-    def mark_multiple_messages_read(message_ids: list, user_id: int):
+    async def mark_multiple_messages_read(
+        message_ids: list, user_id: int, db: Database
+    ):
         """Marks the specified messages as read for the user
         ---------------------------------------------------
         :param message_ids: List of message ids to mark as read
         :param user_id: The user id
+        :param db: Database connection
         returns: None
         """
-        Message.mark_multiple_messages_read(message_ids, user_id)
+        await Message.mark_multiple_messages_read(message_ids, user_id, db)
 
     @staticmethod
     async def get_message_as_dto(message_id: int, user_id: int, db: Database):
