@@ -27,8 +27,12 @@ export const CustomDropdown = ({ title, data, buttonClassname }) => {
       {/* dropdown list */}
       {isActive && (
         <ul
-          className="absolute list bg-grey-dark white pv3"
-          style={{ width: '17rem', right: '1rem', paddingInlineStart: '2rem' }}
+          className="absolute list bg-grey-dark white pv3 mt2"
+          style={{
+            width: '17rem',
+            right: '0',
+            padding: '0.5rem 2rem',
+          }}
         >
           {data.map((option) => (
             <li
