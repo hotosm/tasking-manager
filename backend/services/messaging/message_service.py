@@ -923,28 +923,31 @@ class MessageService:
         return message_dict
 
     @staticmethod
-    def delete_message(message_id: int, user_id: int):
+    async def delete_message(message_id: int, user_id: int, db: Database):
         """Deletes the specified message"""
-        message = MessageService.get_message(message_id, user_id)
-        message.delete()
+        delete_query = """
+            DELETE FROM messages WHERE id = :message_id AND to_user_id = :user_id
+        """
+        await db.execute(delete_query, {"message_id": message_id, "user_id": user_id})
 
     @staticmethod
-    def delete_multiple_messages(message_ids: list, user_id: int):
+    async def delete_multiple_messages(message_ids: list, user_id: int, db: Database):
         """Deletes the specified messages to the user"""
-        Message.delete_multiple_messages(message_ids, user_id)
+        await Message.delete_multiple_messages(message_ids, user_id, db)
 
     @staticmethod
-    def delete_all_messages(user_id: int, message_type: str = None):
+    async def delete_all_messages(user_id: int, db: Database, message_type: str = None):
         """Deletes all messages to the user
         ----------------------------------
         :param user_id: The user id
+        :param db: Database connection
         :param message_type: The message types to delete (comma separated)
         returns: None
         """
         if message_type is not None:
             # Wrap in list for unit tests to work
             message_type = list(map(int, message_type.split(",")))
-        Message.delete_all_messages(user_id, message_type)
+        await Message.delete_all_messages(user_id, db, message_type)
 
     @staticmethod
     def get_task_link(
