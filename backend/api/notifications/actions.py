@@ -59,7 +59,11 @@ async def delete(
 
 
 @router.delete("/delete-all/")
-async def delete(request: Request, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
+async def delete(
+    request: Request,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Delete all messages for logged in user
     ---
