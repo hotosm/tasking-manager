@@ -6,8 +6,10 @@ import { GroupMembers } from '../components/partnerMapswipeStats/groupMembers';
 import { ContributionsGrid } from '../components/partnerMapswipeStats/contributionsGrid';
 import { TimeSpentContributing } from '../components/partnerMapswipeStats/timeSpentContributing';
 import { TimeSpentContributingByDay } from '../components/partnerMapswipeStats/timeSpentContributingByDay';
+import { ProjectTypeAreaStats } from '../components/partnerMapswipeStats/projectTypeAreaStats';
 import { SwipesByProjectType } from '../components/partnerMapswipeStats/swipesByProjectType';
 import { SwipesByOrganisation } from '../components/partnerMapswipeStats/swipesByOrganisation';
+import { StatsCardWithDelta } from '../components/statsCard';
 import messages from './messages';
 import './partnersMapswipeStats.css';
 
@@ -29,10 +31,6 @@ export const PartnersMapswipeStats = () => {
       <Overview />
 
       <div className="mt3">
-        <GroupMembers />
-      </div>
-
-      <div className="mt3">
         <ContributionsGrid />
       </div>
 
@@ -44,9 +42,31 @@ export const PartnersMapswipeStats = () => {
         <TimeSpentContributingByDay />
       </div>
 
+      <div className="mt4">
+        <ProjectTypeAreaStats />
+      </div>
+
+      <div className="mt4 flex items-center justify-between">
+        <StatsCardWithDelta
+          description={<FormattedMessage {...messages.swipes} />}
+          value="338K"
+          style={{ width: '48.5%' }}
+        />
+        <StatsCardWithDelta
+          description={<FormattedMessage {...messages.timeSpentContributing} />}
+          value="11 days 5 hrs"
+          className="w-100"
+          style={{ width: '48.5%' }}
+        />
+      </div>
+
       <div className="mt3 flex items-center justify-between">
         <SwipesByProjectType />
         <SwipesByOrganisation />
+      </div>
+
+      <div className="mt3">
+        <GroupMembers />
       </div>
     </div>
   );
