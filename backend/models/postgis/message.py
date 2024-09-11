@@ -21,6 +21,7 @@ from backend.models.postgis.task import Task, TaskHistory, TaskAction
 from backend.models.postgis.project import Project
 from backend.models.postgis.utils import timestamp
 from backend.db import Base, get_session
+from databases import Database
 
 session = get_session()
 
@@ -210,29 +211,45 @@ class Message(Base):
         session.commit()
 
     @staticmethod
-    def mark_multiple_messages_read(message_ids: list, user_id: int):
+    async def mark_multiple_messages_read(
+        message_ids: list, user_id: int, db: Database
+    ):
         """Marks the specified messages as read
         ----------------------------------------
         :param message_ids: list of message ids to mark as read
         :param user_id: user id of the user who is marking the messages as read
+        :param db: database connection
         """
-        Message.query.filter(
-            Message.to_user_id == user_id, Message.id.in_(message_ids)
-        ).update({Message.read: True}, synchronize_session=False)
-        session.commit()
+        async with db.transaction():
+            query = """
+                UPDATE messages
+                SET read = True
+                WHERE to_user_id = :user_id AND id = ANY(:message_ids)
+            """
+            await db.execute(query, {"user_id": user_id, "message_ids": message_ids})
 
     @staticmethod
-    def mark_all_messages_read(user_id: int, message_type_filters: list = None):
+    async def mark_all_messages_read(
+        user_id: int, db: Database, message_type_filters: list = None
+    ):
         """Marks all messages as read
         ----------------------------------------
         :param user_id: user id of the user who is marking the messages as read
+        :param db: database connection
         :param message_type_filters: list of message types to filter by
         """
-        # https://docs.sqlalchemy.org/en/13/orm/query.html#sqlalchemy.orm.query.Query.update
-        query = Message.query.filter(
-            Message.to_user_id == user_id, Message.read == false()
-        )
-        if message_type_filters:
-            query = query.filter(Message.message_type.in_(message_type_filters))
-        query.update({Message.read: True}, synchronize_session=False)
-        session.commit()
+        async with db.transaction():
+            query = """
+                UPDATE messages
+                SET read = TRUE
+                WHERE to_user_id = :user_id
+                AND read = FALSE
+            """
+
+            if message_type_filters:
+                query += " AND message_type = ANY(:message_type_filters)"
+
+            await db.execute(
+                query,
+                {"user_id": user_id, "message_type_filters": message_type_filters},
+            )
