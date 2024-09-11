@@ -24,7 +24,11 @@ export const Resources = ({ partner }) => {
     }));
 
     return (
-      <CustomDropdown title={<FormattedMessage {...messages.resources} />} data={resourcesData} />
+      <CustomDropdown
+        buttonClassname="bg-transparent"
+        title={<FormattedMessage {...messages.resources} />}
+        data={resourcesData}
+      />
     );
   };
 

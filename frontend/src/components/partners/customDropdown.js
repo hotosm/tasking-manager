@@ -4,19 +4,24 @@ import { Button } from '../button';
 import { ChevronDownIcon } from '../svgIcons/chevron-down';
 import { ChevronUpIcon } from '../svgIcons/chevron-up';
 
-export const CustomDropdown = ({ title, data }) => {
+export const CustomDropdown = ({ title, data, buttonClassname }) => {
   const [isActive, setIsActive] = useState(false);
 
   return (
     <div className="relative">
       {/* dropdown select */}
       <Button
-        className="bg-grey-dark white mr3 br1 f5 bn flex items-center"
+        className={`white br1 f5 bn flex items-center ${buttonClassname}`}
         onClick={() => setIsActive(!isActive)}
         onBlur={() => setIsActive(false)}
+        style={{ padding: '0.75rem 0' }}
       >
-        {isActive ? <ChevronUpIcon className="mr2" /> : <ChevronDownIcon className="mr2" />}
         {title}
+        {isActive ? (
+          <ChevronUpIcon style={{ width: '12px' }} className="ml2" />
+        ) : (
+          <ChevronDownIcon style={{ width: '12px' }} className="ml2" />
+        )}
       </Button>
 
       {/* dropdown list */}
