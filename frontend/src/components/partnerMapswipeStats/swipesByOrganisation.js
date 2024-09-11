@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Chart from 'chart.js/auto';
 
+import { CHART_COLOURS } from '../../config';
 import messages from './messages';
 
 export const SwipesByOrganisation = () => {
@@ -31,11 +32,11 @@ export const SwipesByOrganisation = () => {
           {
             data: [35, 25, 20, 15, 5],
             backgroundColor: [
-              'rgba(255, 159, 64, 0.8)', // Orange for American Red Cross
-              'rgba(255, 205, 86, 0.8)', // Yellow for Arizona State University
-              'rgba(75, 192, 192, 0.8)', // Green for HOT
-              'rgba(54, 162, 235, 0.8)', // Blue for Médecins Sans Frontières
-              'rgba(201, 203, 207, 0.8)', // Grey for Others
+              CHART_COLOURS.red, // Orange for American Red Cross
+              CHART_COLOURS.orange, // Yellow for Arizona State University
+              CHART_COLOURS.green, // Green for HOT
+              CHART_COLOURS.blue, // Blue for Médecins Sans Frontières
+              CHART_COLOURS.gray, // Gray for Others
             ],
             borderColor: '#fff',
             borderWidth: 2,
@@ -65,7 +66,7 @@ export const SwipesByOrganisation = () => {
   }, []);
 
   return (
-    <div style={{ width: '48%' }}>
+    <div style={{ width: '48.5%' }}>
       <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb4">
         <FormattedMessage {...messages.swipesByOrganization} />
       </h3>

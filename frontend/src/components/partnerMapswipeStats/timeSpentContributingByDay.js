@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Chart } from 'chart.js/auto';
 
+import { CHART_COLOURS } from '../../config';
 import messages from './messages';
 
 const MOCK_DATA = [
@@ -23,11 +24,6 @@ export const TimeSpentContributingByDay = () => {
       chartInstance.current.destroy();
     }
 
-    const timeSpentData = [];
-    for (const data of MOCK_DATA) {
-      timeSpentData.push(data.y);
-    }
-
     chartInstance.current = new Chart(chartRef.current.getContext('2d'), {
       type: 'bar',
       data: {
@@ -35,8 +31,8 @@ export const TimeSpentContributingByDay = () => {
         datasets: [
           {
             label: 'Time Spent',
-            backgroundColor: '#d73f3f',
-            data: timeSpentData,
+            backgroundColor: CHART_COLOURS.red,
+            data: MOCK_DATA.map((entry) => entry.y),
           },
         ],
       },

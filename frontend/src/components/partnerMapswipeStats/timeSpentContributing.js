@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { Chart } from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
 
+import { CHART_COLOURS } from '../../config';
 import messages from './messages';
 
 const MOCK_DATA = [
@@ -29,8 +30,8 @@ export const TimeSpentContributing = () => {
     const context = chartRef.current.getContext('2d');
     // Create gradient for the area
     const gradient = context.createLinearGradient(0, 0, 0, 450);
-    gradient.addColorStop(0, 'rgba(215, 63, 63, 1)');
-    gradient.addColorStop(0.4, 'rgba(215, 63, 63, 1)');
+    gradient.addColorStop(0, CHART_COLOURS.red);
+    gradient.addColorStop(0.4, CHART_COLOURS.red);
     gradient.addColorStop(1, 'rgba(215, 63, 63, 0)');
 
     chartInstance.current = new Chart(context, {
