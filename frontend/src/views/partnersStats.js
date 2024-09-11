@@ -12,6 +12,20 @@ import { OHSOME_STATS_BASE_URL } from '../config';
 import { Button } from '../components/button';
 import { TwitterIcon, FacebookIcon, InstagramIcon } from '../components/svgIcons';
 
+function getSocialIcons(link) {
+  const socialName = link.split('_')?.[1];
+  switch (socialName) {
+    case 'x':
+      return <TwitterIcon noBg className="partners-social-icon" />;
+    case 'meta':
+      return <FacebookIcon className="partners-social-icon" />;
+    case 'instagram':
+      return <InstagramIcon className="partners-social-icon" />;
+    default:
+      return <></>;
+  }
+}
+
 const tabData = [{ id: 'leaderboard', title: 'Leaderboard' }];
 
 export const PartnersStats = () => {
@@ -61,6 +75,10 @@ export const PartnersStats = () => {
         return <></>;
     }
   }
+
+  const socialLinks = Object.keys(partner)
+    .filter((key) => key.startsWith('link'))
+    .filter((link) => partner[link]);
 
   return (
     <ReactPlaceholder
@@ -116,38 +134,20 @@ export const PartnersStats = () => {
                 <Resources partner={partner} />
 
                 {/* social logos */}
-                <div className="flex items-center" style={{ gap: '0.625rem' }}>
-                  {!!partner.link_x && (
-                    <a
-                      href={partner.link_x}
-                      className="link barlow-condensed white f4 ttu di-l dib"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <TwitterIcon noBg className="partners-social-icon" />
-                    </a>
-                  )}
-                  {!!partner.link_meta && (
-                    <a
-                      href={partner.link_meta}
-                      className="link barlow-condensed white f4 ttu di-l dib"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <FacebookIcon className="partners-social-icon" />
-                    </a>
-                  )}
-                  {!!partner.link_instagram && (
-                    <a
-                      href={partner.link_instagram}
-                      className="link barlow-condensed white f4 ttu di-l dib"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <InstagramIcon className="partners-social-icon" />
-                    </a>
-                  )}
-                </div>
+                {!!socialLinks.length && (
+                  <div className="flex items-center" style={{ gap: '0.625rem' }}>
+                    {socialLinks.map((link) => (
+                      <a
+                        href={partner[link]}
+                        className="link barlow-condensed white f4 ttu di-l dib"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {getSocialIcons(link)}
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
