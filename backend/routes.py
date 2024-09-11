@@ -49,6 +49,7 @@ from backend.api.system import (
 )
 from backend.api.notifications import (
     resources as notification_resources,
+    actions as notification_actions,
 )
 
 v2 = APIRouter(prefix="/api/v2")
@@ -113,5 +114,6 @@ def add_api_end_points(api):
 
     # Notifications REST endpoint
     v2.include_router(notification_resources.router)
+    v2.include_router(notification_actions.router)
 
     api.include_router(v2)
