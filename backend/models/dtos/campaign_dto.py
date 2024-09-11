@@ -3,22 +3,29 @@ from backend.models.dtos.organisation_dto import OrganisationDTO
 # from schematics.exceptions import ValidationError
 from pydantic import BaseModel, Field
 from typing import List, Optional
+from pydantic.functional_validators import field_validator
 
 
 def is_existent(value):
     if value.strip() == "":
-        raise ValidationError("Empty campaign name string")
+        raise ValueError("Empty campaign name string")
     return value
 
 
 class NewCampaignDTO(BaseModel):
     """Describes JSON model to create a campaign"""
 
-    name: str = Field(serialize_when_none=False, validators=[is_existent])
+    name: str = Field(serialize_when_none=False)
     logo: Optional[str] = Field(None, serialize_when_none=False)
     url: Optional[str] = Field(None, serialize_when_none=False)
     description: Optional[str] = Field(None, serialize_when_none=False)
     organisations: Optional[List[int]] = Field(None, serialize_when_none=False)
+
+    @field_validator('name', mode="before")
+    def validate_type(cls, value):
+        if value is None:
+            return value
+        return is_existent(value)
 
 
 class CampaignDTO(BaseModel):
