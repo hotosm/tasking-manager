@@ -193,9 +193,7 @@ class Message(Base):
         await db.execute(delete_query, {"user_id": user_id, "message_ids": message_ids})
 
     @staticmethod
-    async def delete_all_messages(
-        user_id: int, db: Database, message_type_filters: list = None
-    ):
+    async def delete_all_messages(user_id: int, db: Database, message_type_filters: list = None):
         """Deletes all messages to the user
         -----------------------------------
         :param user_id: user id of the user whose messages are to be deleted
@@ -210,10 +208,7 @@ class Message(Base):
         if message_type_filters:
             delete_query += " AND message_type = ANY(:message_type_filters)"
 
-        await db.execute(
-            delete_query,
-            {"user_id": user_id, "message_type_filters": message_type_filters},
-        )
+        await db.execute(delete_query, {"user_id": user_id, "message_type_filters": message_type_filters})
 
     def delete(self):
         """Deletes the current model from the DB"""

@@ -63,11 +63,7 @@ async def get(
 
 
 @router.delete("/{message_id}/")
-async def delete(
-    message_id: int,
-    user: AuthUserDTO = Depends(login_required),
-    db: Database = Depends(get_db),
-):
+async def delete(message_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
     """
     Deletes the specified message
     ---
