@@ -113,7 +113,7 @@ def add_api_end_points(api):
     v2.include_router(system_image_upload.router)
 
     # Notifications REST endpoint
-    v2.include_router(notification_resources.router)
     v2.include_router(notification_actions.router)
+    v2.include_router(notification_resources.router)
 
     api.include_router(v2)
