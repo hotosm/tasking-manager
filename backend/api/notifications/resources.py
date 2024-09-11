@@ -7,7 +7,6 @@ from backend.services.users.authentication_service import login_required
 from backend.models.dtos.user_dto import AuthUserDTO
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
-from starlette.authentication import requires
 from databases import Database
 from backend.models.dtos.message_dto import MessageDTO
 from backend.db import get_db
@@ -64,7 +63,11 @@ async def get(
 
 
 @router.delete("/{message_id}/")
-async def delete(message_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
+async def delete(
+    message_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Deletes the specified message
     ---
@@ -227,8 +230,9 @@ async def get(
 
 
 @router.post("/queries/own/post-unread/")
-@requires("authenticated")
-async def post(request: Request):
+async def post(
+    user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)
+):
     """
     Updates notification datetime for user
     ---
@@ -251,6 +255,5 @@ async def post(request: Request):
         500:
             description: Internal Server Error
     """
-    user_id = request.user.display_name
-    unread_count = NotificationService.update(user_id)
+    unread_count = await NotificationService.update(user.id, db)
     return unread_count, 200
