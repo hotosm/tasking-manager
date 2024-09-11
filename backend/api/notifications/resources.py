@@ -200,7 +200,9 @@ async def get(
 
 
 @router.get("/queries/own/count-unread/")
-async def get(request: Request):
+async def get(
+    user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)
+):
     """
     Gets count of unread messages
     ---
@@ -221,7 +223,7 @@ async def get(request: Request):
         500:
             description: Internal Server Error
     """
-    unread_count = MessageService.has_user_new_messages(request.user.display_name)
+    unread_count = await MessageService.has_user_new_messages(user.id, db)
     return unread_count, 200
 
 
