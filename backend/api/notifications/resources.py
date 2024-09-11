@@ -64,8 +64,7 @@ async def get(
 
 
 @router.delete("/{message_id}/")
-@requires("authenticated")
-async def delete(request: Request, message_id: int):
+async def delete(message_id: int, user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
     """
     Deletes the specified message
     ---
@@ -97,7 +96,7 @@ async def delete(request: Request, message_id: int):
             description: Internal Server Error
     """
     try:
-        MessageService.delete_message(message_id, request.user.display_name)
+        await MessageService.delete_message(message_id, user.id, db)
         return {"Success": "Message deleted"}, 200
     except MessageServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403

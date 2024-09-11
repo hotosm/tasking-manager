@@ -184,26 +184,31 @@ class Message(Base):
         return messages_dto
 
     @staticmethod
-    def delete_multiple_messages(message_ids: list, user_id: int):
+    async def delete_multiple_messages(message_ids: list, user_id: int, db: Database):
         """Deletes the specified messages to the user"""
-        Message.query.filter(
-            Message.to_user_id == user_id, Message.id.in_(message_ids)
-        ).delete(synchronize_session=False)
-        session.commit()
+        delete_query = """
+            DELETE FROM messages
+            WHERE to_user_id = :user_id AND id = ANY(:message_ids)
+        """
+        await db.execute(delete_query, {"user_id": user_id, "message_ids": message_ids})
 
     @staticmethod
-    def delete_all_messages(user_id: int, message_type_filters: list = None):
+    async def delete_all_messages(user_id: int, db: Database, message_type_filters: list = None):
         """Deletes all messages to the user
         -----------------------------------
         :param user_id: user id of the user whose messages are to be deleted
         :param message_type_filters: list of message types to filter by
         returns: None
         """
-        query = Message.query.filter(Message.to_user_id == user_id)
+        delete_query = """
+            DELETE FROM messages
+            WHERE to_user_id = :user_id
+        """
+
         if message_type_filters:
-            query = query.filter(Message.message_type.in_(message_type_filters))
-        query.delete(synchronize_session=False)
-        session.commit()
+            delete_query += " AND message_type = ANY(:message_type_filters)"
+
+        await db.execute(delete_query, {"user_id": user_id, "message_type_filters": message_type_filters})
 
     def delete(self):
         """Deletes the current model from the DB"""
