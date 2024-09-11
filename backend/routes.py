@@ -117,6 +117,7 @@ def add_api_end_points(api):
     # Notifications REST endpoint
     v2.include_router(notification_actions.router)
     v2.include_router(notification_resources.router)
+    v2.include_router(notification_actions.router)
 
     # Issues REST endpoint
     v2.include_router(issue_resources.router)
