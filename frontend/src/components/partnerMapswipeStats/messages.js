@@ -75,5 +75,9 @@ export default defineMessages({
   swipesByProjectType: {
     id: 'management.partners.stats.mapswipe.swipesByProjectType',
     defaultMessage: 'Swipes by Project Type',
-  }
+  },
+  swipesByOrganization: {
+    id: 'management.partners.stats.mapswipe.swipesByOrganisation',
+    defaultMessage: 'Swipes by Organisation',
+  },
 });
