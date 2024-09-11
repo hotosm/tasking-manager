@@ -1,9 +1,14 @@
-from backend.models.dtos.partner_stats_dto import ProjectStatsDTO
+from backend.models.dtos.partner_stats_dto import PartnerStatsDTO
+from cachetools import TTLCache, cached
+import requests
+
+partner_stats_cache = TTLCache(maxsize=10_000, ttl=60 * 60 * 2)
+MAPSWIPE_API_URL = "https://api.mapswipe.org/graphql/"
 
 
 class MapswipeService:
     @staticmethod
-    def _build_query_user_group_stats(group_id: str):
+    def __build_query_user_group_stats(group_id: str):
         """A private method to build a graphQl query for fetching a user group's stats from Mapswipe."""
 
         operationName = "UserGroupStats"
@@ -51,7 +56,7 @@ class MapswipeService:
         variables = {"limit": 10, "offset": 0, "pk": group_id}
         return {operationName, query, variables}
 
-    def _build_query_filtered_user_group_stats(
+    def __build_query_filtered_user_group_stats(
         group_id: str, from_date: str, to_date: str
     ):
         """A private method to build a graphQl query for fetching a user group's stats within a timerange from Mapswipe."""
@@ -110,3 +115,18 @@ class MapswipeService:
         """
         variables = {"fromDate": from_date, "toDate": to_date, "pk": group_id}
         return {operationName, query, variables}
+
+    @cached(partner_stats_cache)
+    def fetch_stats(
+        self, group_id: str, from_date: str, to_date: str
+    ) -> PartnerStatsDTO:
+        group_stats = requests.post(
+            MAPSWIPE_API_URL, self.__build_query_user_group_stats(group_id)
+        )
+        filtered_group_stats = requests.post(
+            MAPSWIPE_API_URL,
+            self.__build_query_filtered_user_group_stats(group_id, from_date, to_date),
+        )
+
+        # Load fetched stats into the DTO
+        parter_stats_dto = PartnerStatsDTO()
