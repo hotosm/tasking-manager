@@ -44,10 +44,16 @@ class OrganisationDTO(BaseModel):
     teams: List[OrganisationTeamsDTO] = None
     campaigns: Optional[List[List[str]]] = None
     stats: Optional[OrganizationStatsDTO] = None
-    type: Optional[str] = Field(None, validators=[is_known_organisation_type])
+    type: Optional[str] = Field(None)
     subscription_tier: Optional[int] = Field(
         None, serialization_alias="subscriptionTier"
     )
+
+    @field_validator("type", mode="before")
+    def validate_type(cls, value):
+        if value is None:
+            return value
+        return is_known_organisation_type(value)
 
 
 class ListOrganisationsDTO(BaseModel):
