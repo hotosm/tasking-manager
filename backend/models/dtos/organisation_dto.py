@@ -49,7 +49,7 @@ class OrganisationDTO(BaseModel):
         None, serialization_alias="subscriptionTier"
     )
 
-    @field_validator('type', mode="before")
+    @field_validator("type", mode="before")
     def validate_type(cls, value):
         if value is None:
             return value
