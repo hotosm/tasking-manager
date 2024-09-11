@@ -21,7 +21,7 @@ class NewCampaignDTO(BaseModel):
     description: Optional[str] = Field(None, serialize_when_none=False)
     organisations: Optional[List[int]] = Field(None, serialize_when_none=False)
 
-    @field_validator('name', mode="before")
+    @field_validator("name", mode="before")
     def validate_type(cls, value):
         if value is None:
             return value
