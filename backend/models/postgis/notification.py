@@ -56,6 +56,7 @@ class Notification(Base):
             SELECT unread_count, date
             FROM notifications
             WHERE user_id = :user_id
+            ORDER BY id
             LIMIT 1
         """
         notification = await db.fetch_one(query, {"user_id": user_id})

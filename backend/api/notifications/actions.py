@@ -1,7 +1,6 @@
 from backend.services.messaging.message_service import MessageService
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
-from starlette.authentication import requires
 from backend.services.users.authentication_service import login_required
 from backend.models.dtos.user_dto import AuthUserDTO
 from databases import Database
@@ -60,7 +59,11 @@ async def delete(
 
 
 @router.delete("/delete-all/")
-async def delete(request: Request, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
+async def delete(
+    request: Request,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Delete all messages for logged in user
     ---
