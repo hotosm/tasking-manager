@@ -11,7 +11,7 @@ export const CustomDropdown = ({ title, data, buttonClassname }) => {
     <div className="relative">
       {/* dropdown select */}
       <Button
-        className={`white br1 f5 bn flex items-center ${buttonClassname}`}
+        className={`white br1 f5 fw5 bn flex items-center ${buttonClassname}`}
         onClick={() => setIsActive(!isActive)}
         onBlur={() => setIsActive(false)}
         style={{ padding: '0.75rem 0' }}

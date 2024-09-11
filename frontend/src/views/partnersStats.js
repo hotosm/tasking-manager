@@ -123,7 +123,7 @@ export const PartnersStats = () => {
                 {/* new to mapping button */}
                 <Link to={`/learn/map/`}>
                   <Button
-                    className="bg-transparent white br1 f5 bn"
+                    className="bg-transparent white br1 f5 fw5 bn"
                     style={{ padding: '0.75rem 0' }}
                   >
                     <FormattedMessage {...messages.newToMapping} />
