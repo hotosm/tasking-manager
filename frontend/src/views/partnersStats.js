@@ -94,7 +94,9 @@ export const PartnersStats = () => {
           <div className="flex flex-column bg-blue-dark ph4">
             {/* logo */}
             {partner.logo_url ? (
-              <img src={partner.logo_url} alt="logo" height={70} />
+              <div style={{ margin: '2.25rem  0 1.75rem 0' }}>
+                <img src={partner.logo_url} alt="logo" height={70} />
+              </div>
             ) : (
               <h3 className="f2 fw6 ttu barlow-condensed white" style={{ marginBottom: '1.75rem' }}>
                 {partner.name}
