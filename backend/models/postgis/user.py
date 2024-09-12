@@ -1,6 +1,7 @@
 import geojson
 from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Boolean, ARRAY
 from sqlalchemy.orm import relationship
+from sqlalchemy import desc
 
 from backend.exceptions import NotFound
 from backend.models.dtos.user_dto import (
