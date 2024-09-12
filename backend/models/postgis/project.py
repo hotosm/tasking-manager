@@ -1512,15 +1512,18 @@ class Project(Base):
 
         return project_dto
 
-    def tasks_as_geojson(
-        self, task_ids_str: str, order_by=None, order_by_type="ASC", status=None
+    @staticmethod
+    async def tasks_as_geojson(
+        db: Database,
+        project_id: int,
+        task_ids_str: Optional[str],
+        order_by: Optional[str] = None,
+        order_by_type: str = "ASC",
+        status: Optional[int] = None,
     ):
-        """Creates a geojson of all areas"""
-        project_tasks = Task.get_tasks_as_geojson_feature_collection(
-            self.id, task_ids_str, order_by, order_by_type, status
+        return await Task.get_tasks_as_geojson_feature_collection(
+            db, project_id, task_ids_str, order_by, order_by_type, status
         )
-
-        return project_tasks
 
     @staticmethod
     async def get_all_countries(database: Database) -> TagsDTO:

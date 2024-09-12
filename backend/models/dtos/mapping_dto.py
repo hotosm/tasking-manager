@@ -99,6 +99,9 @@ class TaskDTO(BaseModel):
     )
     comments_number: Optional[int] = Field(None, alias="numberOfComments")
 
+    class Config:
+        populate_by_name = True
+
 
 class TaskDTOs(BaseModel):
     """Describes an array of Task DTOs"""

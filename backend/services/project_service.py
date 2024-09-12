@@ -265,15 +265,18 @@ class ProjectService:
             return None
 
     @staticmethod
-    def get_project_tasks(
-        project_id,
+    async def get_project_tasks(
+        db: Database,
+        project_id: int,
         task_ids_str: str,
         order_by: str = None,
         order_by_type: str = "ASC",
         status: int = None,
     ):
-        project = ProjectService.get_project_by_id(project_id)
-        return project.tasks_as_geojson(task_ids_str, order_by, order_by_type, status)
+        await Project.exists(project_id, db)
+        return await Project.tasks_as_geojson(
+            db, project_id, task_ids_str, order_by, order_by_type, status
+        )
 
     @staticmethod
     async def get_project_aoi(project_id, db: Database):
@@ -293,7 +296,6 @@ class ProjectService:
         """
         rows = await db.fetch_all(query, values={"project_id": project_id})
         geojson_areas = [json.loads(row["geojson"]) for row in rows] if rows else []
-
         return geojson_areas
 
     @staticmethod
