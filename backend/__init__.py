@@ -248,6 +248,9 @@ def add_api_endpoints(app):
         PartnersByProjectAPI,
     )
 
+    # Partner statistics API
+    from backend.api.partners.statistics import PartnerStatisticsAPI
+
     # Tasks API import
     from backend.api.tasks.resources import (
         TasksRestAPI,
@@ -589,6 +592,11 @@ def add_api_endpoints(app):
         PartnerRestAPI,
         format_url("partners/<int:partner_id>/"),
         methods=["GET", "DELETE", "PUT"],
+    )
+    api.add_resource(
+        PartnerStatisticsAPI,
+        format_url("/partners/<int:partner_id>/statistics"),
+        methods=["GET"],
     )
     api.add_resource(
         PartnerPermalinkRestAPI,

@@ -1,8 +1,9 @@
 from backend.models.dtos.partner_stats_dto import PartnerStatsDTO
 from cachetools import TTLCache, cached
 import requests
+from typing import Optional
 
-partner_stats_cache = TTLCache(maxsize=16, ttl=60 * 60 * 24)
+partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
 MAPSWIPE_API_URL = "https://api.mapswipe.org/graphql/"
 
 
@@ -117,16 +118,25 @@ class MapswipeService:
         return {operationName, query, variables}
 
     @cached(partner_stats_cache)
-    def fetch_stats(
-        self, group_id: str, from_date: str, to_date: str
+    def fetch_partner_stats(
+        self, group_id: str, from_date: Optional[str], to_date: Optional[str]
     ) -> PartnerStatsDTO:
         group_stats = requests.post(
-            MAPSWIPE_API_URL, self.__build_query_user_group_stats(group_id)
+            MAPSWIPE_API_URL, data=self.__build_query_user_group_stats(group_id)
         )
         filtered_group_stats = requests.post(
             MAPSWIPE_API_URL,
-            self.__build_query_filtered_user_group_stats(group_id, from_date, to_date),
+            data=self.__build_query_filtered_user_group_stats(
+                group_id, from_date, to_date
+            ),
         )
+
+        print("group_stats", group_stats)
+        print("filtered_group_stats", filtered_group_stats)
 
         # Load fetched stats into the DTO
         parter_stats_dto = PartnerStatsDTO()
+        parter_stats_dto.provider = "mapswipe"
+        parter_stats_dto.id_inside_provider = group_id
+        
+        return parter_stats_dto

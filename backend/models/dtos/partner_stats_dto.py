@@ -50,6 +50,7 @@ class ContributionsByProjectTypeDTO(Model):
 
 
 class PartnerStatsDTO(Model):
+    id: LongType()
     provider: StringType()
     id_inside_provider: StringType(serialized_name="idInsideProvider")
     name_inside_provider: StringType(serialized_name="nameInsideProvider")
