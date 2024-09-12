@@ -143,7 +143,9 @@ class InterestService:
         rows = await db.fetch_all(query, {"user_id": user_id})
 
         dto = InterestsListDTO()
-        dto.interests = [ListInterestDTO(id=row['id'], name=row['name']) for row in rows]
+        dto.interests = [
+            ListInterestDTO(id=row["id"], name=row["name"]) for row in rows
+        ]
         return dto
 
     @staticmethod

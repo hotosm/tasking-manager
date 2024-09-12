@@ -20,7 +20,7 @@ from backend.api.users import (
     statistics as user_statistics,
     openstreetmap as users_openstreetmap,
     tasks as users_tasks,
-    actions as user_actions
+    actions as user_actions,
 )
 from backend.api.issues import resources as issue_resources
 from backend.api.licenses import (
