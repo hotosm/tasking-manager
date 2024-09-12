@@ -9,7 +9,6 @@ from backend.models.postgis.interests import (
     Interest,
 )
 from backend.services.project_service import ProjectService
-from backend.services.users.user_service import UserService
 from databases import Database
 from fastapi import HTTPException
 
@@ -120,10 +119,13 @@ class InterestService:
             """
             await db.execute(delete_query, {"user_id": user_id})
             insert_query = """
-                INSERT INTO user_interests (user_id, interest_id) 
+                INSERT INTO user_interests (user_id, interest_id)
                 VALUES (:user_id, :interest_id)
             """
-            values = [{"user_id": user_id, "interest_id": interest_id} for interest_id in interests_ids]
+            values = [
+                {"user_id": user_id, "interest_id": interest_id}
+                for interest_id in interests_ids
+            ]
             await db.execute_many(insert_query, values)
             return await InterestService.get_user_interests(user_id, db)
 
@@ -141,7 +143,9 @@ class InterestService:
         rows = await db.fetch_all(query, {"user_id": user_id})
 
         dto = InterestsListDTO()
-        dto.interests = [ListInterestDTO(id=row['id'], name=row['name']) for row in rows]
+        dto.interests = [
+            ListInterestDTO(id=row["id"], name=row["name"]) for row in rows
+        ]
         return dto
 
     @staticmethod
