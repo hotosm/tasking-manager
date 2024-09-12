@@ -1,4 +1,7 @@
-from backend.models.dtos.partner_stats_dto import PartnerStatsDTO
+from backend.models.dtos.partner_stats_dto import (
+    GroupedPartnerStatsDTO,
+    FilteredPartnerStatsDTO,
+)
 from cachetools import TTLCache, cached
 import requests
 from typing import Optional
@@ -9,7 +12,7 @@ MAPSWIPE_API_URL = "https://api.mapswipe.org/graphql/"
 
 class MapswipeService:
     @staticmethod
-    def __build_query_user_group_stats(group_id: str):
+    def __build_query_user_group_stats(group_id: str, limit: int, offset: int):
         """A private method to build a graphQl query for fetching a user group's stats from Mapswipe."""
 
         operationName = "UserGroupStats"
@@ -54,7 +57,7 @@ class MapswipeService:
              }
         }
         """
-        variables = {"limit": 10, "offset": 0, "pk": group_id}
+        variables = {"limit": limit, "offset": offset, "pk": group_id}
         return {operationName, query, variables}
 
     def __build_query_filtered_user_group_stats(
@@ -118,25 +121,35 @@ class MapswipeService:
         return {operationName, query, variables}
 
     @cached(partner_stats_cache)
-    def fetch_partner_stats(
-        self, group_id: str, from_date: Optional[str], to_date: Optional[str]
-    ) -> PartnerStatsDTO:
+    def fetch_grouped_partner_stats(
+        self, group_id: str, limit: int, offset: int
+    ) -> GroupedPartnerStatsDTO:
         group_stats = requests.post(
-            MAPSWIPE_API_URL, data=self.__build_query_user_group_stats(group_id)
+            MAPSWIPE_API_URL,
+            data=self.__build_query_user_group_stats(group_id, limit, offset),
         )
+        print("group_stats", group_stats)
+
+        grouped_parter_stats_dto = GroupedPartnerStatsDTO()
+        grouped_parter_stats_dto.provider = "mapswipe"
+        grouped_parter_stats_dto.id_inside_provider = group_id
+
+        return grouped_parter_stats_dto
+
+    @cached(partner_stats_cache)
+    def fetch_filtered_partner_stats(
+        self, group_id: str, from_date: Optional[str], to_date: Optional[str]
+    ) -> FilteredPartnerStatsDTO:
         filtered_group_stats = requests.post(
             MAPSWIPE_API_URL,
             data=self.__build_query_filtered_user_group_stats(
                 group_id, from_date, to_date
             ),
         )
-
-        print("group_stats", group_stats)
         print("filtered_group_stats", filtered_group_stats)
 
-        # Load fetched stats into the DTO
-        parter_stats_dto = PartnerStatsDTO()
-        parter_stats_dto.provider = "mapswipe"
-        parter_stats_dto.id_inside_provider = group_id
-        
-        return parter_stats_dto
+        filtered_parter_stats_dto = FilteredPartnerStatsDTO()
+        filtered_parter_stats_dto.provider = "mapswipe"
+        filtered_parter_stats_dto.id_inside_provider = group_id
+
+        return filtered_parter_stats_dto

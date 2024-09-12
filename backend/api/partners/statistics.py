@@ -74,6 +74,9 @@ class PartnerStatisticsAPI(Resource):
 
         partner = PartnerService.get_partner_by_id(partner_id)
 
-        return mapswipe.fetch_partner_stats(
-            partner.mapswipe_group_id, from_date, to_date
-        ).to_primitive(), 200
+        return (
+            mapswipe.fetch_partner_stats(
+                partner.mapswipe_group_id, from_date, to_date
+            ).to_primitive(),
+            200,
+        )
