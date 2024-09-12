@@ -350,7 +350,11 @@ async def post(request: Request):
 # class UsersActionsSetInterestsAPI(Resource):
 # @token_auth.login_required
 @router.post("/me/actions/set-interests/")
-async def post(request: Request, db: Database = Depends(get_db), user: AuthUserDTO = Depends(login_required)):
+async def post(
+    request: Request,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Creates a relationship between user and interests
     ---
