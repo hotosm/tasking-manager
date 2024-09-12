@@ -27,3 +27,6 @@ class TaskMappingIssueDTO(BaseModel):
     category_id: Optional[int] = Field(alias="categoryId", default=None)
     name: Optional[str] = None
     count: Optional[int] = None
+
+    class Config:
+        populate_by_name = True
