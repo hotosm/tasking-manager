@@ -29,6 +29,7 @@ from backend.services.messaging.template_service import (
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService, User
 
+from databases import Database
 
 message_cache = TTLCache(maxsize=512, ttl=30)
 
@@ -701,9 +702,9 @@ class MessageService:
 
     @staticmethod
     @cached(message_cache)
-    def has_user_new_messages(user_id: int) -> dict:
+    async def has_user_new_messages(user_id: int, db: Database) -> dict:
         """Determines if the user has any unread messages"""
-        count = Notification.get_unread_message_count(user_id)
+        count = await Notification.get_unread_message_count(user_id, db)
 
         new_messages = False
         if count > 0:
@@ -712,7 +713,8 @@ class MessageService:
         return dict(newMessages=new_messages, unread=count)
 
     @staticmethod
-    def get_all_messages(
+    async def get_all_messages(
+        db: Database,
         user_id: int,
         locale: str,
         page: int,
@@ -726,53 +728,107 @@ class MessageService:
         status=None,
     ):
         """Get all messages for user"""
-        sort_column = Message.__table__.columns.get(sort_by)
-        if sort_column is None:
-            sort_column = Message.date
+
         sort_column = (
-            sort_column.asc() if sort_direction.lower() == "asc" else sort_column.desc()
+            sort_by
+            if sort_by in ["date", "message_type", "from_user_id", "project_id", "read"]
+            else "date"
         )
-        query = Message.query
+        sort_direction = (
+            "ASC" if sort_direction and sort_direction.lower() == "asc" else "DESC"
+        )
 
-        if project is not None:
-            query = query.filter(Message.project_id == project)
+        query = """
+            SELECT
+                m.id AS message_id,
+                m.subject,
+                m.message,
+                m.to_user_id,
+                m.task_id,
+                m.message_type,
+                m.date AS sent_date,
+                m.read,
+                m.project_id,
+                u.username AS from_username,
+                u.picture_url AS display_picture_url,
+                pi.name AS project_title
+            FROM
+                messages m
+            LEFT JOIN
+                project_info pi ON m.project_id = pi.project_id
+            LEFT JOIN
+                users u ON m.from_user_id = u.id
+            WHERE
+                m.to_user_id = :user_id
+        """
 
-        if task_id is not None:
-            query = query.filter(Message.task_id == task_id)
+        filters = []
+        params = {"user_id": user_id}
+
+        if project:
+            filters.append("m.project_id = :project")
+            params["project"] = int(project)
+
+        if task_id:
+            filters.append("m.task_id = :task_id")
+            params["task_id"] = int(task_id)
 
         if status in ["read", "unread"]:
-            query = query.filter(Message.read == (True if status == "read" else False))
+            filters.append("m.read = :read_status")
+            params["read_status"] = True if status == "read" else False
 
         if message_type:
-            message_type_filters = map(int, message_type.split(","))
-            query = query.filter(Message.message_type.in_(message_type_filters))
+            filters.append("m.message_type = ANY(:message_types)")
+            params["message_types"] = list(map(int, message_type.split(",")))
 
-        if from_username is not None:
-            query = query.join(Message.from_user).filter(
-                User.username.ilike(from_username + "%")
-            )
+        if from_username:
+            filters.append("u.username ILIKE :from_username")
+            params["from_username"] = from_username + "%"
 
-        results = (
-            query.filter(Message.to_user_id == user_id)
-            .order_by(sort_column)
-            .paginate(page=page, per_page=page_size, error_out=True)
-        )
-        # if results.total == 0:
-        #     raise NotFound()
+        if filters:
+            query += " AND " + " AND ".join(filters)
+
+        query += f" ORDER BY {sort_column} {sort_direction} LIMIT :limit OFFSET :offset"
+        params["limit"] = int(page_size)
+        params["offset"] = (int(page) - 1) * int(page_size)
+
+        messages = await db.fetch_all(query, params)
 
         messages_dto = MessagesDTO()
-        for item in results.items:
-            if isinstance(item, tuple):
-                message_dto = item[0].as_dto()
-                message_dto.project_title = item[1].name
-            else:
-                message_dto = item.as_dto()
-                if item.project_id is not None:
-                    message_dto.project_title = item.project.get_project_title(locale)
+        for msg in messages:
+            message_dict = dict(msg)
+            if message_dict["message_type"]:
+                message_dict["message_type"] = MessageType(
+                    message_dict["message_type"]
+                ).name
+            msg_dto = MessageDTO(**message_dict)
+            messages_dto.user_messages.append(msg_dto)
 
-            messages_dto.user_messages.append(message_dto)
+        total_count_query = """
+            SELECT COUNT(*) AS total_count
+            FROM messages m
+            WHERE m.to_user_id = :user_id
+        """
+        if filters:
+            total_count_query += " AND " + " AND ".join(filters)
 
-        messages_dto.pagination = Pagination(results)
+        total_count_params = {"user_id": params["user_id"]}
+        if "project" in params:
+            total_count_params["project"] = params["project"]
+        if "task_id" in params:
+            total_count_params["task_id"] = params["task_id"]
+        if "read_status" in params:
+            total_count_params["read_status"] = params["read_status"]
+        if "message_types" in params:
+            total_count_params["message_types"] = params["message_types"]
+        if "from_username" in params:
+            total_count_params["from_username"] = params["from_username"]
+
+        total_count = await db.fetch_one(total_count_query, total_count_params)
+
+        messages_dto.pagination = Pagination.from_total_count(
+            page=int(page), per_page=int(page_size), total=total_count["total_count"]
+        )
         return messages_dto
 
     @staticmethod
@@ -792,58 +848,106 @@ class MessageService:
         return message
 
     @staticmethod
-    def mark_all_messages_read(user_id: int, message_type: str = None):
+    async def mark_all_messages_read(
+        user_id: int, db: Database, message_type: str = None
+    ):
         """Marks all messages as read for the user
         -----------------------------------------
         :param user_id: The user id
+        :param db: Database connection
         :param message_type: The message types to mark as read
         returns: None
         """
         if message_type is not None:
-            # Wrap in list for unit tests to work
             message_type = list(map(int, message_type.split(",")))
-        Message.mark_all_messages_read(user_id, message_type)
+        await Message.mark_all_messages_read(user_id, db, message_type)
 
     @staticmethod
-    def mark_multiple_messages_read(message_ids: list, user_id: int):
+    async def mark_multiple_messages_read(
+        message_ids: list, user_id: int, db: Database
+    ):
         """Marks the specified messages as read for the user
         ---------------------------------------------------
         :param message_ids: List of message ids to mark as read
         :param user_id: The user id
+        :param db: Database connection
         returns: None
         """
-        Message.mark_multiple_messages_read(message_ids, user_id)
+        await Message.mark_multiple_messages_read(message_ids, user_id, db)
 
     @staticmethod
-    def get_message_as_dto(message_id: int, user_id: int):
+    async def get_message_as_dto(message_id: int, user_id: int, db: Database):
         """Gets the selected message and marks it as read"""
-        message = MessageService.get_message(message_id, user_id)
-        message.mark_as_read()
-        return message.as_dto()
+        query = """
+            SELECT
+                m.id AS message_id,
+                m.subject,
+                m.message,
+                m.to_user_id,
+                m.from_user_id,
+                m.task_id,
+                m.message_type,
+                m.date AS sent_date,
+                m.read,
+                m.project_id,
+                u.username AS from_username,
+                u.picture_url AS display_picture_url,
+                pi.name AS project_title
+            FROM
+                messages m
+            LEFT JOIN
+                users u ON m.from_user_id = u.id
+            LEFT JOIN
+                project_info pi ON m.project_id = pi.project_id
+            WHERE
+                m.id = :message_id
+        """
+        message = await db.fetch_one(query, {"message_id": message_id})
+
+        if message is None:
+            raise NotFound(sub_code="MESSAGE_NOT_FOUND", message_id=message_id)
+
+        if message["to_user_id"] != user_id:
+            raise MessageServiceError(
+                "AccessOtherUserMessage- "
+                + f"User {user_id} attempting to access another user's message {message_id}"
+            )
+
+        update_query = """
+            UPDATE messages SET read = TRUE WHERE id = :message_id
+        """
+        await db.execute(update_query, {"message_id": message_id})
+
+        message_dict = dict(message)
+        message_dict["message_type"] = MessageType(message_dict["message_type"]).name
+        return message_dict
 
     @staticmethod
-    def delete_message(message_id: int, user_id: int):
+    async def delete_message(message_id: int, user_id: int, db: Database):
         """Deletes the specified message"""
-        message = MessageService.get_message(message_id, user_id)
-        message.delete()
+        delete_query = """
+            DELETE FROM messages WHERE id = :message_id AND to_user_id = :user_id
+        """
+        await db.execute(delete_query, {"message_id": message_id, "user_id": user_id})
 
     @staticmethod
-    def delete_multiple_messages(message_ids: list, user_id: int):
+    async def delete_multiple_messages(message_ids: list, user_id: int, db: Database):
         """Deletes the specified messages to the user"""
-        Message.delete_multiple_messages(message_ids, user_id)
+        await Message.delete_multiple_messages(message_ids, user_id, db)
 
     @staticmethod
-    def delete_all_messages(user_id: int, message_type: str = None):
+    async def delete_all_messages(user_id: int, db: Database, message_type: str = None):
         """Deletes all messages to the user
         ----------------------------------
         :param user_id: The user id
+        :param db: Database connection
         :param message_type: The message types to delete (comma separated)
         returns: None
         """
         if message_type is not None:
             # Wrap in list for unit tests to work
             message_type = list(map(int, message_type.split(",")))
-        Message.delete_all_messages(user_id, message_type)
+        await Message.delete_all_messages(user_id, db, message_type)
 
     @staticmethod
     def get_task_link(

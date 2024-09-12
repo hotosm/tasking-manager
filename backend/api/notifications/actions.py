@@ -1,7 +1,10 @@
 from backend.services.messaging.message_service import MessageService
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
-from starlette.authentication import requires
+from backend.services.users.authentication_service import login_required
+from backend.models.dtos.user_dto import AuthUserDTO
+from databases import Database
+from backend.db import get_db
 
 router = APIRouter(
     prefix="/notifications",
@@ -12,8 +15,11 @@ router = APIRouter(
 
 
 @router.delete("/delete-multiple/")
-@requires("authenticated")
-async def delete(request: Request):
+async def delete(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Delete specified messages for logged in user
     ---
@@ -44,16 +50,20 @@ async def delete(request: Request):
         500:
             description: Internal Server Error
     """
-    message_ids = await request.json()["messageIds"]
+    data = await request.json()
+    message_ids = data["messageIds"]
     if message_ids:
-        MessageService.delete_multiple_messages(message_ids, request.user.display_name)
+        await MessageService.delete_multiple_messages(message_ids, user.id, db)
 
     return {"Success": "Messages deleted"}, 200
 
 
 @router.delete("/delete-all/")
-@requires("authenticated")
-async def delete(request: Request):
+async def delete(
+    request: Request,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Delete all messages for logged in user
     ---
@@ -79,13 +89,16 @@ async def delete(request: Request):
             description: Internal Server Error
     """
     message_type = request.query_params.get("messageType")
-    MessageService.delete_all_messages(request.user.display_name, message_type)
+    await MessageService.delete_all_messages(user.id, db, message_type)
     return {"Success": "Messages deleted"}, 200
 
 
 @router.post("/mark-as-read-all/")
-@requires("authenticated")
-async def post(request: Request):
+async def post(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Mark all messages as read for logged in user
     ---
@@ -111,13 +124,16 @@ async def post(request: Request):
             description: Internal Server Error
     """
     message_type = request.query_params.get("messageType")
-    MessageService.mark_all_messages_read(request.user.display_name, message_type)
+    await MessageService.mark_all_messages_read(user.id, db, message_type)
     return {"Success": "Messages marked as read"}, 200
 
 
 @router.post("/mark-as-read-multiple/")
-@requires("authenticated")
-async def post(request: Request):
+async def post(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Mark specified messages as read for logged in user
     ---
@@ -148,10 +164,9 @@ async def post(request: Request):
         500:
             description: Internal Server Error
     """
-    message_ids = request.json()["messageIds"]
+    data = await request.json()
+    message_ids = data["messageIds"]
     if message_ids:
-        MessageService.mark_multiple_messages_read(
-            message_ids, request.user.display_name
-        )
+        await MessageService.mark_multiple_messages_read(message_ids, user.id, db)
 
     return {"Success": "Messages marked as read"}, 200

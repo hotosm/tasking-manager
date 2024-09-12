@@ -8,11 +8,11 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from backend.models.postgis.user import User
-from backend.models.postgis.message import Message
 from backend.models.postgis.utils import timestamp
 from backend.models.dtos.notification_dto import NotificationDTO
 from datetime import datetime, timedelta
 from backend.db import Base, get_session
+from databases import Database
 
 session = get_session()
 
@@ -50,26 +50,37 @@ class Notification(Base):
         session.commit()
 
     @staticmethod
-    def get_unread_message_count(user_id: int) -> int:
+    async def get_unread_message_count(user_id: int, db: Database) -> int:
         """Get count of unread messages for user"""
-        notifications = Notification.query.filter(
-            Notification.user_id == user_id
-        ).first()
+        query = """
+            SELECT unread_count, date
+            FROM notifications
+            WHERE user_id = :user_id
+            ORDER BY id
+            LIMIT 1
+        """
+        notification = await db.fetch_one(query, {"user_id": user_id})
 
-        # Create if does not exist.
-        if notifications is None:
-            # In case users are new but have not logged in previously.
+        if notification is None:
             date_value = datetime.today() - timedelta(days=30)
-            notifications = Notification(
-                user_id=user_id, unread_count=0, date=date_value
+            insert_query = """
+                INSERT INTO notifications (user_id, unread_count, date)
+                VALUES (:user_id, :unread_count, :date)
+            """
+            await db.execute(
+                insert_query,
+                {"user_id": user_id, "unread_count": 0, "date": date_value},
             )
-            notifications.save()
+        else:
+            date_value = notification["date"]
 
-        # Count messages that the user has received after last check.
-        count = (
-            Message.query.filter_by(to_user_id=user_id, read=False)
-            .filter(Message.date > notifications.date)
-            .count()
+        message_query = """
+            SELECT COUNT(*)
+            FROM messages
+            WHERE to_user_id = :user_id AND read = False AND date > :date_value
+        """
+        count = await db.fetch_val(
+            message_query, {"user_id": user_id, "date_value": date_value}
         )
 
         return count

@@ -138,11 +138,12 @@ async def get(request: Request, session: AsyncSession = Depends(get_session)):
     return users_dto.model_dump(by_alias=True), 200
 
 
-# class UsersQueriesFavoritesAPI():
-# @token_auth.login_required
 @router.get("/queries/favorites/")
-@requires("authenticated")
-async def get(request: Request):
+async def get(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Get projects favorited by a user
     ---
@@ -165,8 +166,8 @@ async def get(request: Request):
         500:
             description: Internal Server Error
     """
-    favs_dto = UserService.get_projects_favorited(request.user.display_name)
-    return favs_dto.model_dump(by_alias=True), 200
+    favs_dto = await UserService.get_projects_favorited(user.id, db)
+    return favs_dto
 
 
 # class UsersQueriesUsernameAPI():

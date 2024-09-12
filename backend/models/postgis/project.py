@@ -566,24 +566,64 @@ class Project(Base):
 
         return True
 
-    def is_favorited(self, user_id: int) -> bool:
-        user = session.get(User, user_id)
-        if user not in self.favorited:
-            return False
+    # def is_favorited(self, user_id: int) -> bool:
+    #     user = session.get(User, user_id)
+    #     if user not in self.favorited:
+    #         return False
 
-        return True
+    #     return True
 
-    def favorite(self, user_id: int):
-        user = session.get(User, user_id)
-        self.favorited.append(user)
-        session.commit()
+    @staticmethod
+    async def is_favorited(project_id: int, user_id: int, db: Database) -> bool:
+        query = """
+            SELECT 1
+            FROM project_favorites
+            WHERE user_id = :user_id
+              AND project_id = :project_id
+            LIMIT 1
+        """
 
-    def unfavorite(self, user_id: int):
-        user = session.get(User, user_id)
-        if user not in self.favorited:
-            raise ValueError("NotFeatured- Project not been favorited by user")
-        self.favorited.remove(user)
-        session.commit()
+        result = await db.fetch_one(
+            query, values={"user_id": user_id, "project_id": project_id}
+        )
+        return result is not None
+
+    @staticmethod
+    async def favorite(project_id: int, user_id: int, db: Database):
+        check_query = """
+        SELECT 1 FROM project_favorites WHERE project_id = :project_id AND user_id = :user_id
+        """
+        exists = await db.fetch_one(
+            check_query, {"project_id": project_id, "user_id": user_id}
+        )
+
+        if not exists:
+            insert_query = """
+            INSERT INTO project_favorites (project_id, user_id)
+            VALUES (:project_id, :user_id)
+            """
+            await db.execute(
+                insert_query, {"project_id": project_id, "user_id": user_id}
+            )
+
+    @staticmethod
+    async def unfavorite(project_id: int, user_id: int, db: Database):
+        check_query = """
+        SELECT 1 FROM project_favorites
+        WHERE project_id = :project_id AND user_id = :user_id
+        """
+        exists = await db.fetch_one(
+            check_query, {"project_id": project_id, "user_id": user_id}
+        )
+
+        if not exists:
+            raise ValueError("NotFeatured - Project has not been favorited by user")
+
+        delete_query = """
+        DELETE FROM project_favorites
+        WHERE project_id = :project_id AND user_id = :user_id
+        """
+        await db.execute(delete_query, {"project_id": project_id, "user_id": user_id})
 
     def set_as_featured(self):
         if self.featured is True:

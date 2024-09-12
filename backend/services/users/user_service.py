@@ -128,13 +128,24 @@ class UserService:
         return user
 
     @staticmethod
-    def get_projects_favorited(user_id: int) -> ProjectFavoritesDTO:
-        user = UserService.get_user_by_id(user_id)
-        projects_dto = [f.as_dto_for_admin(f.id) for f in user.favorites]
+    async def get_projects_favorited(user_id: int, db: Database) -> ProjectFavoritesDTO:
+        # Query to get the project IDs favorited by the user
+        project_ids_query = """
+        SELECT project_id
+        FROM project_favorites
+        WHERE user_id = :user_id
+        """
+        project_ids_rows = await db.fetch_all(project_ids_query, {"user_id": user_id})
+        if not project_ids_rows:
+            return ProjectFavoritesDTO(favorited_projects=[])
+
+        projects_dto = [
+            await Project.as_dto_for_admin(row["project_id"], db)
+            for row in project_ids_rows
+        ]
 
         fav_dto = ProjectFavoritesDTO()
         fav_dto.favorited_projects = projects_dto
-
         return fav_dto
 
     @staticmethod

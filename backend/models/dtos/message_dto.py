@@ -7,17 +7,18 @@ from typing import List, Optional
 class MessageDTO(BaseModel):
     """DTO used to define a message that will be sent to a user"""
 
-    message_id: int = Field(None, alias="messageId")
+    message_id: int = Field(serialization_alias="messageId")
     subject: str
     message: str
-    from_user_id: int
-    from_username: str = ""
-    display_picture_url: str = ""
-    project_id: int
-    project_title: str
-    task_id: int
-    message_type: str
-    sent_date: datetime = Field(None, alias="sentDate")
+    from_username: Optional[str] = Field("", serialization_alias="fromUsername")
+    display_picture_url: Optional[str] = Field(
+        "", serialization_alias="displayPictureUrl"
+    )
+    project_id: Optional[int] = Field(None, serialization_alias="projectId")
+    project_title: Optional[str] = Field(None, serialization_alias="projectTitle")
+    task_id: Optional[int] = Field(None, serialization_alias="taskId")
+    message_type: Optional[str] = Field(serialization_alias="messageType")
+    sent_date: datetime = Field(None, serialization_alias="sentDate")
     read: bool = False
 
 
@@ -29,8 +30,10 @@ class MessagesDTO(BaseModel):
         super().__init__()
         self.user_messages = []
 
-    pagination: Pagination
-    user_messages: List[MessageDTO] = Field(alias="userMessages")
+    pagination: Optional[Pagination] = None
+    user_messages: Optional[List[MessageDTO]] = Field(
+        [], serialization_alias="userMessages"
+    )
 
 
 class ChatMessageDTO(BaseModel):

@@ -1,7 +1,11 @@
-from flask_restful import current_app
+# from flask_restful import Resource, current_app, request
 # from schematics.exceptions import DataError
 
 from backend.models.dtos.user_dto import UserDTO, UserRegisterEmailDTO
+from databases import Database
+from backend.db import get_db
+from backend.services.users.authentication_service import login_required
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.authentication_service import tm
 from backend.services.users.user_service import UserService, UserServiceError
@@ -346,8 +350,11 @@ async def post(request: Request):
 # class UsersActionsSetInterestsAPI(Resource):
 # @token_auth.login_required
 @router.post("/me/actions/set-interests/")
-@requires("authenticated")
-async def post(request: Request):
+async def post(
+    request: Request,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Creates a relationship between user and interests
     ---
@@ -383,10 +390,10 @@ async def post(request: Request):
             description: Internal Server Error
     """
     try:
-        data = request.get_json()
-        user_interests = InterestService.create_or_update_user_interests(
-            request.user.display_name, data["interests"]
+        data = await request.json()
+        user_interests = await InterestService.create_or_update_user_interests(
+            user.id, data["interests"], db
         )
-        return user_interests.model_dump(by_alias=True), 200
+        return user_interests
     except (ValueError, KeyError) as e:
         return {"Error": str(e)}, 400
