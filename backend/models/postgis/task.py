@@ -1,5 +1,6 @@
 import bleach
 import datetime
+from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
 import geojson
 import json
 from enum import Enum
@@ -528,21 +529,6 @@ class TaskHistory(Base):
             .first()
         )
 
-    # @staticmethod
-    # def get_last_action_of_type(
-    #     project_id: int, task_id: int, allowed_task_actions: list
-    # ):
-    #     """Gets the most recent task history record having provided TaskAction"""
-    #     return (
-    #         TaskHistory.query.filter(
-    #             TaskHistory.project_id == project_id,
-    #             TaskHistory.task_id == task_id,
-    #             TaskHistory.action.in_(allowed_task_actions),
-    #         )
-    #         .order_by(TaskHistory.action_date.desc())
-    #         .first()
-    #     )
-
     @staticmethod
     async def get_last_action_of_type(
         project_id: int, task_id: int, allowed_task_actions: list, session
@@ -710,20 +696,47 @@ class Task(Base):
         return task
 
     @staticmethod
-    def get(task_id: int, project_id: int):
+    async def get(task_id: int, project_id: int, db: Database) -> Optional[dict]:
         """
-        Gets specified task
-        :param task_id: task ID in scope
-        :param project_id: project ID in scope
-        :return: Task if found otherwise None
+        Gets the specified task.
+        :param db: The async database connection.
+        :param task_id: Task ID in scope.
+        :param project_id: Project ID in scope.
+        :return: A dictionary representing the Task if found, otherwise None.
         """
-        # LIKELY PROBLEM AREA
-
-        return (
-            session.query(Task)
-            .filter_by(id=task_id, project_id=project_id)
-            .one_or_none()
+        query = """
+            SELECT
+                id, project_id, x, y, zoom, is_square, task_status, locked_by, mapped_by, geometry
+            FROM
+                tasks
+            WHERE
+                id = :task_id AND project_id = :project_id
+            LIMIT 1
+        """
+        task = await db.fetch_one(
+            query, values={"task_id": task_id, "project_id": project_id}
         )
+        return task if task else None
+
+    @staticmethod
+    async def exists(task_id: int, project_id: int, db: Database) -> bool:
+        """
+        Checks if the specified task exists.
+        :param db: The async database connection.
+        :param task_id: Task ID in scope.
+        :param project_id: Project ID in scope.
+        :return: True if the task exists, otherwise False.
+        """
+        query = """
+            SELECT 1
+            FROM tasks
+            WHERE id = :task_id AND project_id = :project_id
+            LIMIT 1
+        """
+        task = await db.fetch_one(
+            query, values={"task_id": task_id, "project_id": project_id}
+        )
+        return task is not None
 
     @staticmethod
     def get_tasks(project_id: int, task_ids: List[int]):
@@ -750,45 +763,6 @@ class Task(Base):
             )
             .all()
         )
-
-    # @staticmethod
-    # def auto_unlock_delta():
-    #     return parse_duration(settings.TASK_AUTOUNLOCK_AFTER)
-
-    # @staticmethod
-    # async def auto_unlock_tasks(project_id: int, session):
-    #     """Unlock all tasks locked for longer than the auto-unlock delta"""
-    #     expiry_delta = Task.auto_unlock_delta()
-    #     lock_duration = (datetime.datetime.min + expiry_delta).time().isoformat()
-    #     expiry_date = datetime.datetime.utcnow() - expiry_delta
-
-    #     old_tasks = (
-    #         session.query(Task.id)
-    #         .filter(Task.id == TaskHistory.task_id)
-    #         .filter(Task.project_id == TaskHistory.project_id)
-    #         .filter(Task.task_status.in_([1, 3]))
-    #         .filter(
-    #             TaskHistory.action.in_(
-    #                 [
-    #                     "EXTENDED_FOR_MAPPING",
-    #                     "EXTENDED_FOR_VALIDATION",
-    #                     "LOCKED_FOR_VALIDATION",
-    #                     "LOCKED_FOR_MAPPING",
-    #                 ]
-    #             )
-    #         )
-    #         .filter(TaskHistory.action_text.is_(None))
-    #         .filter(Task.project_id == project_id)
-    #         .filter(TaskHistory.action_date <= str(expiry_date))
-    #     )
-
-    #     if old_tasks.count() == 0:
-    #         # no tasks older than the delta found, return without further processing
-    #         return
-
-    #     for old_task in old_tasks:
-    #         task = Task.get(old_task[0], project_id)
-    #         task.auto_unlock_expired_tasks(expiry_date, lock_duration)
 
     @staticmethod
     async def auto_unlock_delta():
@@ -1025,113 +999,6 @@ class Task(Base):
         self.locked_by = None
         self.update()
 
-    # @staticmethod
-    # def get_tasks_as_geojson_feature_collection(
-    #     project_id,
-    #     task_ids_str: str = None,
-    #     order_by: str = None,
-    #     order_by_type: str = "ASC",
-    #     status: int = None,
-    # ):
-    #     """
-    #     Creates a geoJson.FeatureCollection object for tasks related to the supplied project ID
-    #     :param project_id: Owning project ID
-    #     :order_by: sorting option: available values update_date and building_area_diff
-    #     :status: task status id to filter by
-    #     :return: geojson.FeatureCollection
-    #     """
-    #     # subquery = (
-    #     #     session.query(func.max(TaskHistory.action_date))
-    #     #     .filter(
-    #     #         Task.id == TaskHistory.task_id,
-    #     #         Task.project_id == TaskHistory.project_id,
-    #     #     )
-    #     #     .correlate(Task)
-    #     #     .group_by(Task.id)
-    #     #     .label("update_date")
-    #     # )
-    #     query = session.query(
-    #         Task.id,
-    #         Task.x,
-    #         Task.y,
-    #         Task.zoom,
-    #         Task.is_square,
-    #         Task.task_status,
-    #         Task.geometry.ST_AsGeoJSON().label("geojson"),
-    #         Task.locked_by,
-    #         Task.mapped_by,
-    #         # subquery,
-    #     )
-
-    #     filters = [Task.project_id == project_id]
-
-    #     if task_ids_str:
-    #         task_ids = list(map(int, task_ids_str.split(",")))
-    #         tasks = Task.get_tasks(project_id, task_ids)
-    #         if not tasks or len(tasks) == 0:
-    #             raise NotFound(
-    #                 sub_code="TASKS_NOT_FOUND", tasks=task_ids, project_id=project_id
-    #             )
-    #         else:
-    #             tasks_filters = [task.id for task in tasks]
-    #         filters = [Task.project_id == project_id, Task.id.in_(tasks_filters)]
-    #     else:
-    #         tasks = Task.get_all_tasks(project_id)
-    #         if not tasks or len(tasks) == 0:
-    #             raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
-
-    #     if status:
-    #         filters.append(Task.task_status == status)
-
-    #     if order_by == "effort_prediction":
-    #         query = query.outerjoin(TaskAnnotation).filter(*filters)
-    #         if order_by_type == "DESC":
-    #             query = query.order_by(
-    #                 desc(
-    #                     cast(
-    #                         cast(TaskAnnotation.properties["building_area_diff"], Text),
-    #                         Float,
-    #                     )
-    #                 )
-    #             )
-    #         else:
-    #             query = query.order_by(
-    #                 cast(
-    #                     cast(TaskAnnotation.properties["building_area_diff"], Text),
-    #                     Float,
-    #                 )
-    #             )
-    #     # elif order_by == "last_updated":
-    #     #     if order_by_type == "DESC":
-    #     #         query = query.filter(*filters).order_by(desc("update_date"))
-    #     #     else:
-    #     #         query = query.filter(*filters).order_by("update_date")
-    #     else:
-    #         query = query.filter(*filters)
-
-    #     project_tasks = query.all()
-
-    #     tasks_features = []
-    #     for task in project_tasks:
-    #         task_geometry = geojson.loads(task.geojson)
-    #         task_properties = dict(
-    #             taskId=task.id,
-    #             taskX=task.x,
-    #             taskY=task.y,
-    #             taskZoom=task.zoom,
-    #             taskIsSquare=task.is_square,
-    #             taskStatus=TaskStatus(task.task_status).name,
-    #             lockedBy=task.locked_by,
-    #             mappedBy=task.mapped_by,
-    #         )
-
-    #         feature = geojson.Feature(
-    #             geometry=task_geometry, properties=task_properties
-    #         )
-    #         tasks_features.append(feature)
-
-    #     return geojson.FeatureCollection(tasks_features)
-
     @staticmethod
     async def get_tasks_as_geojson_feature_collection(
         db: Database,
@@ -1320,102 +1187,251 @@ class Task(Base):
         for row in result:
             return row[0]
 
-    def as_dto(
-        self,
-        task_history: List[TaskHistoryDTO] = [],
-        last_updated: datetime.datetime = None,
-        comments: int = None,
-    ):
-        """Just converts to a TaskDTO"""
-        task_dto = TaskDTO()
-        task_dto.task_id = self.id
-        task_dto.project_id = self.project_id
-        task_dto.task_status = TaskStatus(self.task_status).name
-        task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
-        task_dto.task_history = task_history
-        task_dto.last_updated = last_updated if last_updated else None
-        task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
-        task_dto.comments_number = comments if isinstance(comments, int) else None
+    @staticmethod
+    async def as_dto(
+        task_id: int, project_id: int, db: Database, last_updated: str
+    ) -> TaskDTO:
+        """Fetch basic TaskDTO details without history or instructions"""
+        query = """
+        SELECT
+            t.id AS task_id,
+            t.project_id,
+            t.task_status,
+            u.username AS lock_holder
+        FROM
+            tasks t
+        LEFT JOIN
+            users u ON t.locked_by = u.id
+        WHERE
+            t.id = :task_id AND t.project_id = :project_id;
+        """
+
+        task = await db.fetch_one(
+            query=query, values={"task_id": task_id, "project_id": project_id}
+        )
+        auto_unlock_seconds = await Task.auto_unlock_delta()
+        task_dto = TaskDTO(
+            task_id=task["task_id"],
+            project_id=task["project_id"],
+            task_status=TaskStatus(task["task_status"]).name,
+            lock_holder=task["lock_holder"],
+            last_updated=last_updated,
+            auto_unlock_seconds=auto_unlock_seconds.total_seconds(),
+            comments_number=None,  # Placeholder, can be populated as needed
+        )
         return task_dto
 
-    def as_dto_with_instructions(self, preferred_locale: str = "en") -> TaskDTO:
-        """Get dto with any task instructions"""
+    @staticmethod
+    async def get_task_history(
+        task_id: int, project_id: int, db: Database
+    ) -> List[TaskHistoryDTO]:
+        """Get the task history"""
+        query = """
+            SELECT id, action, action_text, action_date, user_id
+            FROM task_history
+            WHERE task_id = :task_id AND project_id = :project_id
+            ORDER BY action_date DESC
+        """
+        task_history_records = await db.fetch_all(
+            query, values={"task_id": task_id, "project_id": project_id}
+        )
+
         task_history = []
-        for action in self.task_history:
+        for record in task_history_records:
             history = TaskHistoryDTO()
-            history.history_id = action.id
-            history.action = action.action
-            history.action_text = action.action_text
-            history.action_date = action.action_date
+            history.history_id = record.id
+            history.action = record.action
+            history.action_text = record.action_text
+            history.action_date = record.action_date
             history.action_by = (
-                action.actioned_by.username if action.actioned_by else None
-            )
+                record.user_id
+            )  # Simplified to user_id, username lookup can be done separately
             history.picture_url = (
-                action.actioned_by.picture_url if action.actioned_by else None
+                None  # Add a separate query to fetch user picture if needed
             )
-            if action.task_mapping_issues:
-                history.issues = [
-                    issue.as_dto() for issue in action.task_mapping_issues
-                ]
+            task_history.append(history)
+
+        return task_history
+
+    @staticmethod
+    async def as_dto_with_instructions(
+        task_id: int, project_id: int, db: Database, preferred_locale: str = "en"
+    ) -> TaskDTO:
+        """Get DTO with any task instructions"""
+
+        # Query to get task history and associated data
+        query = """
+            SELECT
+                th.id AS history_id,
+                th.action,
+                th.action_text,
+                th.action_date,
+                u.username AS action_by,
+                u.picture_url,
+                tmi.issue,
+                tmi.count,
+                mic.id AS issue_category_id,
+                p.default_locale
+            FROM
+                task_history th
+            LEFT JOIN
+                users u ON th.user_id = u.id
+            LEFT JOIN
+                task_mapping_issues tmi ON th.id = tmi.task_history_id
+            LEFT JOIN
+                mapping_issue_categories mic ON tmi.mapping_issue_category_id = mic.id
+            LEFT JOIN
+                projects p ON th.project_id = p.id
+            WHERE
+                th.task_id = :task_id AND th.project_id = :project_id
+            ORDER BY
+                th.action_date DESC;
+        """
+
+        rows = await db.fetch_all(
+            query=query, values={"task_id": task_id, "project_id": project_id}
+        )
+        task_history = []
+
+        for row in rows:
+            history = TaskHistoryDTO(
+                history_id=row["history_id"],
+                action=row["action"],
+                action_text=row["action_text"],
+                action_date=row["action_date"],
+                action_by=row["action_by"],
+                picture_url=row["picture_url"],
+            )
+
+            if row["issue"]:
+                issues = []
+                issue_dto = TaskMappingIssueDTO(
+                    category_id=row["issue_category_id"],
+                    count=row["count"],
+                    name=row["issue"],
+                )
+                issues.append(issue_dto)
+                history.issues = issues
 
             task_history.append(history)
 
-        last_updated = None
-        if len(task_history) > 0:
-            last_updated = task_history[0].action_date
-
-        task_dto = self.as_dto(task_history, last_updated=last_updated)
-
-        per_task_instructions = self.get_per_task_instructions(preferred_locale)
-
-        # If we don't have instructions in preferred locale try again for default locale
-        task_dto.per_task_instructions = (
-            per_task_instructions
-            if per_task_instructions
-            else self.get_per_task_instructions(self.projects.default_locale)
+        last_updated = task_history[0].action_date if task_history else None
+        task_dto = await Task.as_dto(task_id, project_id, db, last_updated)
+        per_task_instructions = await Task.get_per_task_instructions(
+            task_id, project_id, preferred_locale, db
         )
+        if not per_task_instructions:
+            default_locale = rows[0]["default_locale"]
+            per_task_instructions = await Task.get_per_task_instructions(
+                task_id, project_id, default_locale, db
+            )
 
-        annotations = self.get_per_task_annotations()
-        task_dto.task_annotations = annotations if annotations else []
-
+        task_dto.per_task_instructions = per_task_instructions
+        task_dto.task_annotations = await Task.get_task_annotations(task_id, db)
+        task_dto.task_history = task_history
         return task_dto
 
     def get_per_task_annotations(self):
         result = [ta.get_dto() for ta in self.task_annotations]
         return result
 
-    def get_per_task_instructions(self, search_locale: str) -> str:
+    @staticmethod
+    async def get_per_task_instructions(
+        task_id: int, project_id: int, search_locale: str, db: Database
+    ) -> str:
         """Gets any per task instructions attached to the project"""
-        project_info = self.projects.project_info.all()
+        query = """
+        SELECT
+            pi.per_task_instructions
+        FROM
+            project_info pi
+        WHERE
+            pi.project_id = :project_id AND pi.locale = :search_locale;
+        """
 
-        for info in project_info:
-            if info.locale == search_locale:
-                return self.format_per_task_instructions(info.per_task_instructions)
+        result = await db.fetch_one(
+            query=query,
+            values={"project_id": project_id, "search_locale": search_locale},
+        )
+        return (
+            await Task.format_per_task_instructions(
+                result["per_task_instructions"], task_id, project_id, db
+            )
+            if result
+            else ""
+        )
 
-    def format_per_task_instructions(self, instructions) -> str:
+    @staticmethod
+    async def format_per_task_instructions(
+        instructions: str, task_id: int, project_id: int, db: Database
+    ) -> str:
         """Format instructions by looking for X, Y, Z tokens and replacing them with the task values"""
         if not instructions:
-            return ""  # No instructions so return empty string
+            return ""  # No instructions, return empty string
+        # Query to get the necessary task details (x, y, zoom, etc.)
+        query = """
+        SELECT
+            t.x,
+            t.y,
+            t.zoom,
+            t.extra_properties
+        FROM
+            tasks t
+        WHERE
+            t.id = :task_id AND t.project_id = :project_id;
+        """
 
+        task = await db.fetch_one(
+            query=query, values={"task_id": task_id, "project_id": project_id}
+        )
         properties = {}
 
-        if self.x:
-            properties["x"] = str(self.x)
-        if self.y:
-            properties["y"] = str(self.y)
-        if self.zoom:
-            properties["z"] = str(self.zoom)
-        if self.extra_properties:
-            properties.update(json.loads(self.extra_properties))
+        if task["x"]:
+            properties["x"] = str(task["x"])
+        if task["y"]:
+            properties["y"] = str(task["y"])
+        if task["zoom"]:
+            properties["z"] = str(task["zoom"])
+        if task["extra_properties"]:
+            properties.update(json.loads(task["extra_properties"]))
 
         try:
             instructions = instructions.format(**properties)
         except (KeyError, ValueError, IndexError):
-            # KeyError is raised if a format string contains a key that is not in the dictionary, e.g. {foo}
-            # ValueError is raised if a format string contains a single { or }
-            # IndexError is raised if a format string contains empty braces, e.g. {}
+            # Handle formatting errors
             pass
         return instructions
+
+    @staticmethod
+    async def get_task_annotations(
+        task_id: int, db: Database
+    ) -> List[TaskAnnotationDTO]:
+        """Fetch annotations related to the task"""
+        query = """
+        SELECT
+            ta.task_id,
+            ta.annotation_type,
+            ta.annotation_source,
+            ta.annotation_markdown,
+            ta.properties
+        FROM
+            task_annotations ta
+        WHERE
+            ta.task_id = :task_id;
+        """
+        rows = await db.fetch_all(query=query, values={"task_id": task_id})
+
+        # Map the query results to TaskAnnotationDTO
+        return [
+            TaskAnnotationDTO(
+                task_id=row["task_id"],
+                annotation_type=row["annotation_type"],
+                annotation_source=row["annotation_source"],
+                annotation_markdown=row["annotation_markdown"],
+                properties=row["properties"],
+            )
+            for row in rows
+        ]
 
     def copy_task_history(self) -> list:
         copies = []

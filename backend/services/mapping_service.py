@@ -19,6 +19,7 @@ from backend.models.postgis.utils import UserLicenseError
 from backend.services.messaging.message_service import MessageService
 from backend.services.project_service import ProjectService
 from backend.services.stats_service import StatsService
+from databases import Database
 
 
 class MappingServiceError(Exception):
@@ -31,29 +32,31 @@ class MappingServiceError(Exception):
 
 class MappingService:
     @staticmethod
-    def get_task(task_id: int, project_id: int) -> Task:
+    async def get_task(task_id: int, project_id: int, db: Database) -> Task:
         """
         Get task from DB
         :raises: NotFound
         """
-        task = Task.get(task_id, project_id)
+        task = await Task.exists(task_id, project_id, db)
 
-        if task is None:
+        if not task:
             raise NotFound(
                 sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
             )
-
         return task
 
     @staticmethod
-    def get_task_as_dto(
+    async def get_task_as_dto(
         task_id: int,
         project_id: int,
+        db,
         preferred_local: str = "en",
     ) -> TaskDTO:
         """Get task as DTO for transmission over API"""
-        task = MappingService.get_task(task_id, project_id)
-        task_dto = task.as_dto_with_instructions(preferred_local)
+        task = await MappingService.get_task(task_id, project_id, db)
+        task_dto = await Task.as_dto_with_instructions(
+            task_id, project_id, db, preferred_local
+        )
         return task_dto
 
     @staticmethod

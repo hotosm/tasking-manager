@@ -10,3 +10,6 @@ class TaskAnnotationDTO(BaseModel):
     annotation_source: Optional[str] = Field(None, alias="annotationSource")
     annotation_markdown: Optional[str] = Field(None, alias="annotationMarkdown")
     properties: Optional[dict] = Field(None, alias="properties")
+
+    class Config:
+        populate_by_name = True

@@ -13,20 +13,25 @@ from backend.services.grid.grid_service import GridService
 from backend.models.postgis.statuses import UserRole
 from backend.models.postgis.utils import InvalidGeoJson
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
+
+from backend.db import get_db
+from databases import Database
+
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 
 @router.get("/{project_id}/tasks/{task_id}/")
-async def get(request: Request, project_id: int, task_id: int):
+async def get(
+    request: Request, project_id: int, task_id: int, db: Database = Depends(get_db)
+):
     """
     Get a task's metadata
     ---
@@ -62,13 +67,14 @@ async def get(request: Request, project_id: int, task_id: int):
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
-
-    task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale)
-    return task.model_dump(by_alias=True), 200
+    task = await MappingService.get_task_as_dto(
+        task_id, project_id, db, preferred_locale
+    )
+    return task
 
 
 @router.get("/{project_id}/tasks/")
-async def get(request: Request, project_id: int):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get all tasks for a project as JSON
     ---
@@ -112,10 +118,10 @@ async def get(request: Request, project_id: int):
         as_file = (
             strtobool(request.query_params.get("as_file"))
             if request.query_params.get("as_file")
-            else True
+            else False
         )
 
-        tasks_json = ProjectService.get_project_tasks(int(project_id), tasks)
+        tasks_json = await ProjectService.get_project_tasks(db, int(project_id), tasks)
 
         if as_file:
             tasks_json = str(tasks_json).encode("utf-8")
@@ -125,8 +131,7 @@ async def get(request: Request, project_id: int):
                 as_attachment=True,
                 download_name=f"{str(project_id)}-tasks.geojson",
             )
-
-        return tasks_json, 200
+        return tasks_json
     except ProjectServiceError as e:
         return {"Error": str(e)}, 403
 
