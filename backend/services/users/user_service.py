@@ -201,12 +201,14 @@ class UserService:
         return requested_user.as_dto(logged_in_user.username)
 
     @staticmethod
-    def get_user_dto_by_id(user: int, request_user: int) -> UserDTO:
+    async def get_user_dto_by_id(
+        user_id: int, request_user: int, db: Database
+    ) -> UserDTO:
         """Gets user DTO for supplied user id"""
-        user = UserService.get_user_by_id(user)
+        user = await UserService.get_user_by_id(user_id, db)
         if request_user:
-            request_username = UserService.get_user_by_id(request_user).username
-            return user.as_dto(request_username)
+            request_user = await UserService.get_user_by_id(request_user, db)
+            return user.as_dto(request_user.username)
         return user.as_dto()
 
     @staticmethod
@@ -517,9 +519,9 @@ class UserService:
         return dict(verificationEmailSent=verification_email_sent)
 
     @staticmethod
-    async def get_all_users(query: UserSearchQuery, session) -> UserSearchDTO:
+    async def get_all_users(query: UserSearchQuery, db: Database) -> UserSearchDTO:
         """Gets paginated list of users"""
-        return await User.get_all_users(query, session)
+        return await User.get_all_users(query, db)
 
     @staticmethod
     @cached(user_filter_cache)
