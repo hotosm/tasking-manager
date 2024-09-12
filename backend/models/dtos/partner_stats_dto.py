@@ -50,7 +50,6 @@ class ContributionsByProjectTypeDTO(Model):
 
 
 class PartnerStatsDTO(Model):
-    id: LongType()
     provider: StringType()
     id_inside_provider: StringType(serialized_name="idInsideProvider")
     name_inside_provider: StringType(serialized_name="nameInsideProvider")
@@ -61,6 +60,12 @@ class PartnerStatsDTO(Model):
     total_contributors: IntType(serialized_name="totalContributors")
     total_constributions: IntType(serialized_name="totalconstributions")
     total_constribution_time: IntType(serialized_name="totalconstributionTime")
+
+    # Recent contributions during the last 1 month
+
+    total_recent_contributors: IntType(serialized_name="totalRecentContributors")
+    total_recent_constributions: IntType(serialized_name="totalRecentconstributions")
+    total_recent_constribution_time: IntType(serialized_name="totalRecentconstributionTime")
 
     # Stats filtered by time range
 
