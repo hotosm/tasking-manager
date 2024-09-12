@@ -2,7 +2,7 @@ from backend.models.dtos.partner_stats_dto import PartnerStatsDTO
 from cachetools import TTLCache, cached
 import requests
 
-partner_stats_cache = TTLCache(maxsize=10_000, ttl=60 * 60 * 2)
+partner_stats_cache = TTLCache(maxsize=16, ttl=60 * 60 * 24)
 MAPSWIPE_API_URL = "https://api.mapswipe.org/graphql/"
 
 
