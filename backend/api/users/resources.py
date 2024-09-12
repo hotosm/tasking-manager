@@ -12,7 +12,6 @@ from backend.models.dtos.user_dto import AuthUserDTO
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
-from sqlalchemy.ext.asyncio import AsyncSession
 from databases import Database
 from backend.db import get_db
 
@@ -28,8 +27,12 @@ router = APIRouter(
 # class UsersRestAPI():
 # @token_auth.login_required
 @router.get("/{user_id}/")
-@requires("authenticated")
-async def get(request: Request, user_id: int):
+async def get(
+    request: Request,
+    user_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Get user information by id
     ---
@@ -60,14 +63,13 @@ async def get(request: Request, user_id: int):
         500:
             description: Internal Server Error
     """
-    user_dto = UserService.get_user_dto_by_id(user_id, request.user.display_name)
-    return user_dto.model_dump(by_alias=True), 200
+    user_dto = await UserService.get_user_dto_by_id(user_id, user.id, db)
+    return user_dto
 
 
 # class UsersAllAPI():
 @router.get("/")
-@requires("authenticated")
-async def get(request: Request, session: AsyncSession = Depends(get_session)):
+async def get(request: Request, db: Database = Depends(get_db)):
     """
     Get paged list of all usernames
     ---
@@ -125,17 +127,16 @@ async def get(request: Request, session: AsyncSession = Depends(get_session)):
                 if request.query_params.get("page")
                 else 1
             )
-        query.per_page = request.query_params.get("perPage", 20)
+        query.per_page = int(request.query_params.get("perPage", 20))
         query.username = request.query_params.get("username")
         query.mapping_level = request.query_params.get("level")
         query.role = request.query_params.get("role")
-        # query.validate()
-    except DataError:
+    except Exception:
         # logger.error(f"Error validating request: {str(e)}")
         return {"Error": "Unable to fetch user list", "SubCode": "InvalidData"}, 400
 
-    users_dto = await UserService.get_all_users(query, session)
-    return users_dto.model_dump(by_alias=True), 200
+    users_dto = await UserService.get_all_users(query, db)
+    return users_dto
 
 
 @router.get("/queries/favorites/")
