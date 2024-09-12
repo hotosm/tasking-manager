@@ -6,7 +6,8 @@ from cachetools import TTLCache, cached
 import requests
 from typing import Optional
 
-partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
+grouped_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
+filtered_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
 MAPSWIPE_API_URL = "https://api.mapswipe.org/graphql/"
 
 
@@ -120,7 +121,7 @@ class MapswipeService:
         variables = {"fromDate": from_date, "toDate": to_date, "pk": group_id}
         return {operationName, query, variables}
 
-    @cached(partner_stats_cache)
+    @cached(grouped_partner_stats_cache)
     def fetch_grouped_partner_stats(
         self, group_id: str, limit: int, offset: int
     ) -> GroupedPartnerStatsDTO:
@@ -136,7 +137,7 @@ class MapswipeService:
 
         return grouped_parter_stats_dto
 
-    @cached(partner_stats_cache)
+    @cached(filtered_partner_stats_cache)
     def fetch_filtered_partner_stats(
         self, group_id: str, from_date: Optional[str], to_date: Optional[str]
     ) -> FilteredPartnerStatsDTO:

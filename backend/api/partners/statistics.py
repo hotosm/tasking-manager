@@ -11,11 +11,11 @@ from backend.exceptions import BadRequest
 from backend.services.mapswipe_service import MapswipeService
 
 
-class PartnerStatisticsAPI(Resource):
+class FilteredPartnerStatisticsAPI(Resource):
     @token_auth.login_required
     def get(self, partner_id):
         """
-        Get partner statistics by id
+        Get partner statistics by id and time range
         ---
         tags:
           - partners
@@ -75,8 +75,68 @@ class PartnerStatisticsAPI(Resource):
         partner = PartnerService.get_partner_by_id(partner_id)
 
         return (
-            mapswipe.fetch_partner_stats(
+            mapswipe.fetch_filtered_partner_stats(
                 partner.mapswipe_group_id, from_date, to_date
             ).to_primitive(),
             200,
         )
+
+
+class GroupPartnerStatisticsAPI(Resource):
+    @token_auth.login_required
+    def get(self, partner_id):
+        """
+        Get partner statistics by id and broken down by each contributor.
+        This API is paginated with limit and offset query parameters.
+        ---
+        tags:
+          - partners
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: query
+              name: limit
+              type: integer
+              example: 10
+            - in: query
+              name: offset
+              type: integer
+              example: 0
+            - name: partner_id
+              in: path
+              description: The id of the partner
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Partner found
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: Partner not found
+            500:
+                description: Internal Server Error
+        """
+
+        request_user = User.get_by_id(token_auth.current_user())
+        if request_user.role != UserRole.ADMIN.value:
+            return {
+                "Error": "Only admin users can manage partners.",
+                "SubCode": "OnlyAdminAccess",
+            }, 403
+
+        mapswipe = MapswipeService()
+        partner = PartnerService.get_partner_by_id(partner_id)
+        limit = request.args.get("limit", 10)
+        offset = request.args.get("offset", 0)
+
+        return mapswipe.fetch_grouped_partner_stats(
+            partner.mapswipe_group_id, limit, offset
+        ), 200
