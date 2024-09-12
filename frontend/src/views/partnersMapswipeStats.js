@@ -9,7 +9,7 @@ import { TimeSpentContributingByDay } from '../components/partnerMapswipeStats/t
 import { ProjectTypeAreaStats } from '../components/partnerMapswipeStats/projectTypeAreaStats';
 import { SwipesByProjectType } from '../components/partnerMapswipeStats/swipesByProjectType';
 import { SwipesByOrganisation } from '../components/partnerMapswipeStats/swipesByOrganisation';
-import { StatsCardWithDelta } from '../components/statsCard';
+import { StatsCardWithFooter } from '../components/statsCard';
 import messages from './messages';
 import './partnersMapswipeStats.css';
 
@@ -47,12 +47,12 @@ export const PartnersMapswipeStats = () => {
       </div>
 
       <div className="mt4 flex items-center justify-between">
-        <StatsCardWithDelta
+        <StatsCardWithFooter
           description={<FormattedMessage {...messages.swipes} />}
           value="338K"
           style={{ width: '48.5%' }}
         />
-        <StatsCardWithDelta
+        <StatsCardWithFooter
           description={<FormattedMessage {...messages.timeSpentContributing} />}
           value="11 days 5 hrs"
           className="w-100"

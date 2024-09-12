@@ -19,23 +19,25 @@ export const StatsCard = ({ icon, description, value, className, invertColors = 
   );
 };
 
-export const StatsCardWithDelta = ({
+export const StatsCardWithFooter = ({
   icon,
   description,
   value,
   className,
   delta,
   invertColors = false,
+  style
 }) => {
   return (
     <div
       className={`cf pt3 pb3 ph3 br1 ${
         invertColors ? 'bg-red white' : 'bg-white red shadow-6'
       } flex flex-column ${className || ''}`}
+      style={style}
     >
       <div className="flex items-center w-100" style={{ gap: '1.6rem' }}>
         <div className="ml2">{icon}</div>
-        <StatsCardWithDeltaContent
+        <StatsCardWithFooterContent
           value={
             Number(value) || value === 0 ? <FormattedNumber value={Math.trunc(value)} /> : value
           }
@@ -44,12 +46,14 @@ export const StatsCardWithDelta = ({
           invertColors={invertColors}
         />
       </div>
-      <div
-        className={`ma0 ml2 gray f6 fw4 ${invertColors ? 'white' : 'blue-grey'}`}
-        style={{ marginTop: '1.5rem' }}
-      >
-        {delta}
-      </div>
+      {delta ? (
+        <div
+          className={`ma0 ml2 gray f6 fw4 ${invertColors ? 'white' : 'blue-grey'}`}
+          style={{ marginTop: '1.5rem' }}
+        >
+          {delta}
+        </div>
+      ) : null}
     </div>
   );
 };
@@ -61,7 +65,7 @@ export const StatsCardContent = ({ value, label, className, invertColors = false
   </div>
 );
 
-export const StatsCardWithDeltaContent = ({
+export const StatsCardWithFooterContent = ({
   value,
   label,
   className,
