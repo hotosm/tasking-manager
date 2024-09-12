@@ -1,7 +1,7 @@
 import geojson
 from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Boolean, ARRAY
 from sqlalchemy.orm import relationship
-from sqlalchemy import desc, func
+from sqlalchemy import desc
 
 from backend.exceptions import NotFound
 from backend.models.dtos.user_dto import (
@@ -156,51 +156,64 @@ class User(Base):
         session.commit()
 
     @staticmethod
-    def get_all_users(query: UserSearchQuery, session) -> UserSearchDTO:
+    async def get_all_users(query: UserSearchQuery, db) -> UserSearchDTO:
         """Search and filter all users"""
 
-        # Base query that applies to all searches
-        base = session.query(
-            User.id, User.username, User.mapping_level, User.role, User.picture_url
-        )
+        base_query = """
+            SELECT id, username, mapping_level, role, picture_url FROM users
+        """
+        filters = []
+        params = {}
 
-        # Add filter to query as required
         if query.mapping_level:
             mapping_levels = query.mapping_level.split(",")
             mapping_level_array = [
                 MappingLevel[mapping_level].value for mapping_level in mapping_levels
             ]
-            base = base.filter(User.mapping_level.in_(mapping_level_array))
+            filters.append("mapping_level = ANY(:mapping_levels)")
+            params["mapping_levels"] = tuple(mapping_level_array)
+
         if query.username:
-            base = base.filter(
-                User.username.ilike(("%" + query.username + "%"))
-            ).order_by(
-                func.strpos(func.lower(User.username), func.lower(query.username))
-            )
+            filters.append("username ILIKE :username")
+            params["username"] = f"%{query.username}%"
 
         if query.role:
             roles = query.role.split(",")
             role_array = [UserRole[role].value for role in roles]
-            base = base.filter(User.role.in_(role_array))
+            filters.append("role = ANY(:roles)")
+            params["roles"] = tuple(role_array)
+
+        if filters:
+            base_query += " WHERE " + " AND ".join(filters)
+
+        base_query += " ORDER BY username"
         if query.pagination:
-            results = base.order_by(User.username).paginate(
-                page=query.page, per_page=query.per_page, error_out=True
-            )
-        else:
-            per_page = base.count()
-            results = base.order_by(User.username).paginate(per_page=per_page)
+            base_query += " LIMIT :limit OFFSET :offset"
+            base_params = params.copy()
+            base_params["limit"] = query.per_page
+            base_params["offset"] = (query.page - 1) * query.per_page
+
+        results = await db.fetch_all(base_query, base_params)
+
         dto = UserSearchDTO()
-        for result in results.items:
+        for result in results:
             listed_user = ListedUser()
-            listed_user.id = result.id
-            listed_user.mapping_level = MappingLevel(result.mapping_level).name
-            listed_user.username = result.username
-            listed_user.picture_url = result.picture_url
-            listed_user.role = UserRole(result.role).name
+            listed_user.id = result["id"]
+            listed_user.mapping_level = MappingLevel(result["mapping_level"]).name
+            listed_user.username = result["username"]
+            listed_user.picture_url = result["picture_url"]
+            listed_user.role = UserRole(result["role"]).name
 
             dto.users.append(listed_user)
+
         if query.pagination:
-            dto.pagination = Pagination(results)
+            count_query = "SELECT COUNT(*) FROM users"
+            count_query += " WHERE " + " AND ".join(filters) if filters else ""
+            total_count = await db.fetch_val(count_query, params)
+            dto.pagination = Pagination.from_total_count(
+                query.page, query.per_page, total_count
+            )
+
         return dto
 
     @staticmethod
