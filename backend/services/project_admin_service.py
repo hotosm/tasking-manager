@@ -353,7 +353,6 @@ class ProjectAdminService:
         is_author = authenticated_user_id == author_id
         is_org_manager = False
         is_manager_team = False
-
         # If the user is neither an admin nor the author, check further permissions
         if not (is_admin or is_author):
             if organisation_id:

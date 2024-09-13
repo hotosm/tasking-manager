@@ -440,14 +440,12 @@ class ProjectSearchResultsDTO(BaseModel):
 class LockedTasksForUser(BaseModel):
     """Describes all tasks locked by an individual user"""
 
-    def __init__(self):
-        """DTO constructor initialise all arrays to empty"""
-        super().__init__()
-        self.locked_tasks = []
-
     locked_tasks: Optional[List[int]] = Field([], alias="lockedTasks")
     project: Optional[int] = Field(None, alias="projectId")
     task_status: Optional[str] = Field(None, alias="taskStatus")
+
+    class Config:
+        allow_population_by_field_name = True
 
 
 class ProjectComment(BaseModel):

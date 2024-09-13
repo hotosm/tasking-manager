@@ -10,7 +10,7 @@ from sqlalchemy import desc, func, distinct
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
-from typing import List
+from typing import Any, Dict, List
 
 from sqlalchemy import (
     Column,
@@ -307,37 +307,31 @@ class TaskHistory(Base):
         self.project_id = project_id
         self.user_id = user_id
 
-    def set_task_extend_action(self, task_action: TaskAction):
+    def set_task_extend_action(task_action: TaskAction) -> str:
         if task_action not in [
             TaskAction.EXTENDED_FOR_MAPPING,
             TaskAction.EXTENDED_FOR_VALIDATION,
         ]:
             raise ValueError("Invalid Action")
+        return task_action.name
 
-        self.action = task_action.name
-
-    def set_task_locked_action(self, task_action: TaskAction):
+    def set_task_locked_action(task_action: TaskAction) -> str:
         if task_action not in [
             TaskAction.LOCKED_FOR_MAPPING,
             TaskAction.LOCKED_FOR_VALIDATION,
         ]:
             raise ValueError("Invalid Action")
+        return task_action.name
 
-        self.action = task_action.name
+    def set_comment_action(comment: str) -> str:
+        clean_comment = bleach.clean(comment)  # Ensure no harmful scripts or tags
+        return clean_comment
 
-    def set_comment_action(self, comment):
-        self.action = TaskAction.COMMENT.name
-        clean_comment = bleach.clean(
-            comment
-        )  # Bleach input to ensure no nefarious script tags etc
-        self.action_text = clean_comment
+    def set_state_change_action(new_state: TaskStatus) -> str:
+        return new_state.name
 
-    def set_state_change_action(self, new_state):
-        self.action = TaskAction.STATE_CHANGE.name
-        self.action_text = new_state.name
-
-    def set_auto_unlock_action(self, task_action: TaskAction):
-        self.action = task_action.name
+    def set_auto_unlock_action(task_action: TaskAction) -> str:
+        return task_action.name
 
     def delete(self):
         """Deletes the current model from the DB"""
@@ -824,57 +818,123 @@ class Task(Base):
         ]:
             self.clear_lock()
 
-    def is_mappable(self):
-        """Determines if task in scope is in suitable state for mapping"""
-        if TaskStatus(self.task_status) not in [
+    @staticmethod
+    def is_mappable(task: dict) -> bool:
+        """Determines if task in scope is in a suitable state for mapping."""
+        if TaskStatus(task["task_status"]) not in [
             TaskStatus.READY,
             TaskStatus.INVALIDATED,
         ]:
             return False
         return True
 
-    def set_task_history(
-        self, action, user_id, comment=None, new_state=None, mapping_issues=None
+    async def set_task_history(
+        task_id: int,
+        project_id: int,
+        user_id: int,
+        action: TaskAction,
+        db: Database,
+        comment: Optional[str] = None,
+        new_state: Optional[TaskStatus] = None,
+        mapping_issues: Optional[
+            List[Dict[str, Any]]
+        ] = None,  # Updated to accept a list of dictionaries
     ):
-        """
-        Sets the task history for the action that the user has just performed
-        :param task: Task in scope
-        :param user_id: ID of user performing the action
-        :param action: Action the user has performed
-        :param comment: Comment user has added
-        :param new_state: New state of the task
-        :param mapping_issues: Identified issues leading to invalidation
-        """
-        history = TaskHistory(self.id, self.project_id, user_id)
+        """Sets the task history for the action that the user has just performed."""
 
+        # Determine action and action_text based on the task action
+        action_text = None
         if action in [TaskAction.LOCKED_FOR_MAPPING, TaskAction.LOCKED_FOR_VALIDATION]:
-            history.set_task_locked_action(action)
+            action_name = TaskHistory.set_task_locked_action(action)
         elif action in [
             TaskAction.EXTENDED_FOR_MAPPING,
             TaskAction.EXTENDED_FOR_VALIDATION,
         ]:
-            history.set_task_extend_action(action)
+            action_name = TaskHistory.set_task_extend_action(action)
         elif action == TaskAction.COMMENT:
-            history.set_comment_action(comment)
-        elif action == TaskAction.STATE_CHANGE:
-            history.set_state_change_action(new_state)
+            action_name = TaskHistory.set_comment_action(comment)
+            action_text = comment
+        elif action == TaskAction.STATE_CHANGE and new_state:
+            action_name = TaskHistory.set_state_change_action(new_state)
+            action_text = new_state.name
         elif action in [
             TaskAction.AUTO_UNLOCKED_FOR_MAPPING,
             TaskAction.AUTO_UNLOCKED_FOR_VALIDATION,
         ]:
-            history.set_auto_unlock_action(action)
+            action_name = TaskHistory.set_auto_unlock_action(action)
+        else:
+            raise ValueError("Invalid Action")
 
-        if mapping_issues is not None:
-            history.task_mapping_issues = mapping_issues
+        # Insert the task history into the task_history table
+        query = """
+            INSERT INTO task_history (task_id, user_id, project_id, action, action_text, action_date)
+            VALUES (:task_id, :user_id, :project_id, :action, :action_text, :action_date)
+            RETURNING id
+        """
+        values = {
+            "task_id": task_id,
+            "user_id": user_id,
+            "project_id": project_id,
+            "action": action_name,
+            "action_text": action_text,
+            "action_date": datetime.datetime.utcnow(),
+        }
+        task_history_id = await db.execute(query=query, values=values)
+        # TODO Verify this.
+        # Insert any mapping issues into the task_mapping_issues table, building the query dynamically
+        if mapping_issues:
+            for issue in mapping_issues:
+                fields = {"task_history_id": task_history_id}
+                placeholders = [":task_history_id"]
 
-        self.task_history.append(history)
-        return history
+                if "issue" in issue:
+                    fields["issue"] = issue["issue"]
+                    placeholders.append(":issue")
 
-    def lock_task_for_mapping(self, user_id: int):
-        self.set_task_history(TaskAction.LOCKED_FOR_MAPPING, user_id)
-        self.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
-        self.locked_by = user_id
-        self.update()
+                if "mapping_issue_category_id" in issue:
+                    fields["mapping_issue_category_id"] = issue[
+                        "mapping_issue_category_id"
+                    ]
+                    placeholders.append(":mapping_issue_category_id")
+
+                if "count" in issue:
+                    fields["count"] = issue["count"]
+                    placeholders.append(":count")
+
+                columns = ", ".join(fields.keys())
+                values_placeholders = ", ".join(placeholders)
+
+                mapping_issue_query = f"""
+                    INSERT INTO task_mapping_issues ({columns})
+                    VALUES ({values_placeholders})
+                """
+
+                await db.execute(query=mapping_issue_query, values=fields)
+
+        return {
+            "task_history_id": task_history_id,
+            "action": action_name,
+            "action_text": action_text,
+        }
+
+    async def lock_task_for_mapping(
+        task_id: int, project_id: int, user_id: int, db: Database
+    ):
+        """Locks a task for mapping by a user."""
+        await Task.set_task_history(
+            task_id, project_id, user_id, TaskAction.LOCKED_FOR_MAPPING, db
+        )
+        query = """
+            UPDATE tasks
+            SET task_status = :task_status, locked_by = :user_id
+            WHERE id = :task_id
+        """
+        values = {
+            "task_status": TaskStatus.LOCKED_FOR_MAPPING.value,
+            "user_id": user_id,
+            "task_id": task_id,
+        }
+        await db.execute(query=query, values=values)
 
     def lock_task_for_validating(self, user_id: int):
         self.set_task_history(TaskAction.LOCKED_FOR_VALIDATION, user_id)
@@ -1445,14 +1505,26 @@ class Task(Base):
 
         return copies
 
-    def get_locked_tasks_for_user(user_id: int):
-        """Gets tasks on project owned by specified user id"""
-        tasks = session.query(Task).filter_by(locked_by=user_id)
+    async def get_locked_tasks_for_user(
+        user_id: int, db: Database
+    ) -> LockedTasksForUser:
+        """Gets tasks on projects locked by the specified user id"""
+
+        query = """
+        SELECT id, project_id, task_status
+        FROM tasks
+        WHERE locked_by = :user_id
+        """
+
+        rows = await db.fetch_all(query=query, values={"user_id": user_id})
         tasks_dto = LockedTasksForUser()
-        for task in tasks:
-            tasks_dto.locked_tasks.append(task.id)
-            tasks_dto.project = task.project_id
-            tasks_dto.task_status = TaskStatus(task.task_status).name
+
+        if rows:
+            tasks_dto.locked_tasks = [row["id"] for row in rows]
+            tasks_dto.project = rows[0][
+                "project_id"
+            ]  # Assuming all tasks belong to the same project
+            tasks_dto.task_status = TaskStatus(rows[0]["task_status"]).name
 
         return tasks_dto
 
