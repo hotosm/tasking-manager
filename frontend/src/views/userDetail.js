@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense } from 'react';
+import { lazy, useEffect, useState, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -12,16 +12,14 @@ import { CountriesMapped } from '../components/userDetail/countriesMapped';
 import { TopProjects } from '../components/userDetail/topProjects';
 import { ContributionTimeline } from '../components/userDetail/contributionTimeline';
 import { NotFound } from './notFound';
-import { USER_STATS_API_URL } from '../config';
+import { OSM_SERVER_URL } from '../config';
 import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { useUserOsmStatsQuery } from '../api/stats';
 
-const TopCauses = React.lazy(() =>
+const TopCauses = lazy(() =>
   import('../components/userDetail/topCauses' /* webpackChunkName: "topCauses" */),
-);
-const EditsByNumbers = React.lazy(() =>
-  import('../components/userDetail/editsByNumbers' /* webpackChunkName: "editsByNumbers" */),
 );
 
 export const UserDetail = ({ withHeader = true }) => {
@@ -32,7 +30,7 @@ export const UserDetail = ({ withHeader = true }) => {
   useSetTitleTag(username);
   const token = useSelector((state) => state.auth.token);
   const currentUser = useSelector((state) => state.auth.userDetails);
-  const [osmStats, setOsmStats] = useState({});
+  const [userOsmDetails, setUserOsmDetails] = useState({});
   const [errorDetails, loadingDetails, userDetails] = useFetch(
     `users/queries/${username}/`,
     username !== undefined,
@@ -45,6 +43,7 @@ export const UserDetail = ({ withHeader = true }) => {
     `projects/queries/${username}/touched/`,
     username !== undefined,
   );
+  const { data: osmStats } = useUserOsmStatsQuery(userDetails.id);
 
   useEffect(() => {
     if (!token) {
@@ -53,12 +52,12 @@ export const UserDetail = ({ withHeader = true }) => {
   }, [navigate, token]);
 
   useEffect(() => {
-    if (token && username) {
-      fetchExternalJSONAPI(`${USER_STATS_API_URL}${username}`)
-        .then((res) => setOsmStats(res))
+    if (userDetails.id) {
+      fetchExternalJSONAPI(`${OSM_SERVER_URL}/api/0.6/user/${userDetails.id}.json`)
+        .then((res) => setUserOsmDetails(res?.user))
         .catch((e) => console.log(e));
     }
-  }, [token, username]);
+  }, [userDetails.id]);
 
   const titleClass = 'contributions-titles fw5 ttu barlow-condensed blue-dark mt0';
 
@@ -74,7 +73,10 @@ export const UserDetail = ({ withHeader = true }) => {
             rows={5}
             ready={!errorDetails && !loadingDetails}
           >
-            <HeaderProfile userDetails={userDetails} changesets={osmStats.changeset_count} />
+            <HeaderProfile
+              userDetails={userDetails}
+              changesets={userOsmDetails?.changesets?.count}
+            />
           </ReactPlaceholder>
         </div>
       )}
@@ -121,11 +123,6 @@ export const UserDetail = ({ withHeader = true }) => {
                   <TopCauses userStats={userStats} />
                 </Suspense>
               </ReactPlaceholder>
-            </div>
-            <div>
-              <Suspense fallback={<div />}>
-                <EditsByNumbers osmStats={osmStats} />
-              </Suspense>
             </div>
           </div>
         </div>

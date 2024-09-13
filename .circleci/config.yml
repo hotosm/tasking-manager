@@ -1,14 +1,16 @@
 version: 2.1
 
 orbs:
-  aws-cli: circleci/aws-cli@3.1
+  aws-cli: circleci/aws-cli@4.1.1
+  aws-ecs: circleci/aws-ecs@4.0.0
   opsgenie: opsgenie/opsgenie@1.0.8
+
 
 jobs:
   frontend-code-test:
     resource_class: large
     docker:
-      - image: cimg/node:16.20
+      - image: cimg/node:18.19.1
     working_directory: /home/circleci/tasking-manager
     steps:
       - checkout
@@ -30,7 +32,7 @@ jobs:
           name: Run yarn test
           command: |
             cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
-            CI=true yarn test -w 1
+            CI=true yarn test -w 3 --silent
             CI=true GENERATE_SOURCEMAP=false yarn build
 
   backend-code-check-PEP8:
@@ -40,7 +42,7 @@ jobs:
       - checkout
       - run:
           name: flake8 tests
-          command: | 
+          command: |
             pip install flake8
             flake8 manage.py backend tests migrations
 
@@ -51,8 +53,8 @@ jobs:
       - checkout
       - run:
           name: black tests
-          command: | 
-            pip install black
+          command: |
+            pip install 'black==23.12.1' ## TODO: Update to version 24
             black --check manage.py backend tests migrations
 
   backend-functional-tests:
@@ -68,7 +70,7 @@ jobs:
           TM_ORG_CODE: "CICode"
           TM_ORG_NAME: "CircleCI Test Organisation"
 
-      - image: cimg/postgres:14.2-postgis
+      - image: cimg/postgres:14.9-postgis
         environment:
           POSTGRES_USER: taskingmanager
           POSTGRES_DB: test_tm
@@ -79,14 +81,7 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get -y install libgeos-dev # Required for shapely
       - run: sudo apt-get -y install proj-bin libproj-dev
-      - run:
-          name: Configure Postgresql Test database
-          command: |
-            psql \
-            -d $SQLALCHEMY_DATABASE_URI \
-            -c "CREATE EXTENSION postgis;"
-      - run: pip install --upgrade pip pdm
-      - run: pdm config --global python.use_venv False
+      - run: pip install --upgrade pip pdm==2.18.1
       - run: pdm export --dev --without-hashes > requirements.txt
       - run: pip install -r requirements.txt
       - run: mkdir --mode 766 -p /tmp/logs
@@ -113,13 +108,13 @@ jobs:
         description: "Cloudformation stack name"
         type: string
     docker:
-      - image: cimg/postgres:15.1-postgis
+      - image: cimg/postgres:15.4-postgis
     steps:
       - aws-cli/setup:
-          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
-          profile-name: "OIDC-Profile"
-          role-session-name: "database-snapshot"
-          session-duration: "2700"
+          role_arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile_name: "OIDC-Profile"
+          role_session_name: "database-snapshot"
+          session_duration: "2700"
       - run:
           name: Find the instance ID of the database in the stack to backup
           command: |
@@ -189,14 +184,14 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
-      - image: cimg/python:3.10.7-node
+      - image: cimg/node:18.19.1
     steps:
       - checkout
       - aws-cli/setup:
-          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
-          profile-name: "OIDC-Profile"
-          role-session-name: "backend-deploy"
-          session-duration: "2700"
+          role_arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile_name: "OIDC-Profile"
+          role_session_name: "backend-deploy"
+          session_duration: "2700"
       - run: sudo apt-get update
       - run: sudo apt-get -y install libgeos-dev jq
       - run: sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
@@ -214,19 +209,35 @@ jobs:
               --arg DBPARAMG "<< parameters.pg_param_group >>" \
               '.GitSha = $GITSHA | .TaskingManagerBackendAMI = $AMI | .DatabaseEngineVersion = $PGVERSION | .DatabaseInstanceType = $DBTYPE | .DatabaseParameterGroupName = $DBPARAMG | .TaskingManagerBackendInstanceType = $EC2TYPE' \
               /tmp/tasking-manager.cfn.json > "$tmpfile" && mv "$tmpfile" $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
-      - deploy:
+      - run:
           name: Deploy to << parameters.stack_name >>
+          no_output_timeout: 15m
           command: |
             export NODE_PATH=/usr/local/share/.config/yarn/global/node_modules/
             validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
             export JSON_CONFIG="$(< $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json)"
             cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
 
+  backend_deploy_containers:
+    working_directory: /home/circleci/tasking-manager
+    docker:
+      - image: cimg/python:3.10.7
+    steps:
+      - checkout
+      - aws-cli/setup:
+          role_arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile_name: "OIDC-Profile"
+          role_session_name: "backend-deploy-containers"
+          session_duration: "2700"
+      - run: sudo apt-get update
+      - run: sudo apt-get -y install curl
+      - run: echo "Run AWS Fargate"
+
   frontend_deploy:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
     docker:
-      - image: cimg/python:3.10.7-node
+      - image: cimg/node:18.19.1
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"
@@ -234,10 +245,10 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup:
-          role-arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
-          profile-name: "OIDC-Profile"
-          role-session-name: "frontend-deploy"
-          session-duration: "1800"
+          role_arn: "arn:aws:iam::$ORG_AWS_ACCOUNT_ID:role/CircleCI-OIDC-Connect"
+          profile_name: "OIDC-Profile"
+          role_session_name: "frontend-deploy"
+          session_duration: "1800"
       - run:
           name: Deploy Frontend to S3
           command: |
@@ -283,7 +294,7 @@ workflows:
           name: Deploy backend production
           gitsha: $CIRCLE_SHA1
           stack_name: "tm4-production"
-          host_ami: "ami-01e5ff16fd6e8c542"
+          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
           backend_instance_type: c6a.large
           pg_version: "13.10"
           pg_param_group: "default.postgres13"
@@ -346,7 +357,7 @@ workflows:
           name: Deploy backend production
           gitsha: $CIRCLE_SHA1
           stack_name: "tm4-production"
-          host_ami: "ami-01e5ff16fd6e8c542"
+          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
           backend_instance_type: c6a.large
           pg_version: "13.10"
           pg_param_group: "default.postgres13"
@@ -373,7 +384,7 @@ workflows:
           name: Deploy TeachOSM Backend
           gitsha: $CIRCLECI_SHA1
           stack_name: "teachosm"
-          host_ami: "ami-01e5ff16fd6e8c542"
+          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
           requires:
             - backend-functional-tests
           context: tasking-manager-teachosm
@@ -384,16 +395,14 @@ workflows:
             - backend-functional-tests
           context: tasking-manager-teachosm
 
-  development-staging-all:
+  staging-all:
     when:
       and:
         - not:
             matches:
               pattern: "^deployment/.*"
               value: << pipeline.git.branch >>
-        - or:
-          - equal: [ develop, << pipeline.git.branch >> ]
-          - equal: [ staging-test, << pipeline.git.branch >> ]
+        - equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - database-backup:
           name: Backup staging database
@@ -410,10 +419,10 @@ workflows:
       - backend-code-check-Black
       - backend-functional-tests
       - backend_deploy:
-          name: Deploy development/staging backend
+          name: Deploy staging backend
           gitsha: $CIRCLE_SHA1
           stack_name: "staging"
-          host_ami: "ami-01e5ff16fd6e8c542"
+          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
           pg_version: "14.8"
           pg_param_group: "default.postgres14"
           db_instance_type: "db.t4g.small"
@@ -427,7 +436,7 @@ workflows:
             - org-global
             - tasking-manager-staging
       - frontend_deploy:
-          name: Deploy development/staging frontend
+          name: Deploy staging frontend
           stack_name: "staging"
           requires:
             - frontend-code-test
@@ -435,16 +444,68 @@ workflows:
             - org-global
             - tasking-manager-staging
 
+  development-all:
+    when:
+      and:
+        - not:
+            matches:
+              pattern: "^deployment/.*"
+              value: << pipeline.git.branch >>
+        - or:
+          ## - equal: [ develop, << pipeline.git.branch >> ] # Disabled while we use dev setup for e2e testing
+          - equal: [ dev-switch-to-sandbox, << pipeline.git.branch >> ]
+    jobs:
+      - database-backup:
+          name: Backup development database
+          stack_name: "dev"
+          requires:
+            - backend-code-check-PEP8
+            - backend-code-check-Black
+            - backend-functional-tests
+          context:
+            - org-global
+            - tasking-manager-dev
+      - frontend-code-test
+      - backend-code-check-PEP8
+      - backend-code-check-Black
+      - backend-functional-tests
+      - backend_deploy:
+          name: Deploy development backend
+          gitsha: $CIRCLE_SHA1
+          stack_name: "dev"
+          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
+          pg_version: "14.10"
+          pg_param_group: "default.postgres14"
+          db_instance_type: "db.t4g.small"
+          backend_instance_type: "t3.medium"
+          requires:
+            - Backup development database
+            - backend-code-check-PEP8
+            - backend-code-check-Black
+            - backend-functional-tests
+          context:
+            - org-global
+            - tasking-manager-dev
+      - frontend_deploy:
+          name: Deploy development frontend
+          stack_name: "dev"
+          requires:
+            - frontend-code-test
+          context:
+            - org-global
+            - tasking-manager-dev
+
   build-only-all:
     when:
       not:
-        matches:
-          pattern: "^deployment/.*"
-          value: << pipeline.git.branch >>
+        or: # don't run this workflow for deployment branches
+          - matches:
+              pattern: "^deployment/.*"
+              value: << pipeline.git.branch >>
+          - equal: [ develop, << pipeline.git.branch >> ]
+          - equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - frontend-code-test
       - backend-code-check-PEP8
       - backend-code-check-Black
       - backend-functional-tests
-
-

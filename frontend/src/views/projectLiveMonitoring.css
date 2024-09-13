@@ -1,0 +1,37 @@
+@import '@hotosm/underpass-ui/dist/index.css';
+
+.maplibregl-map {
+  height: calc(100vh - 6.05rem);
+}
+
+.top {
+  position: absolute;
+  top: 0.625rem;
+  left: 0.625rem;
+  z-index: 999;
+}
+
+svg.pl2 {
+  display: inherit;
+  height: 22px !important;
+  width: 19px !important;
+  margin-left: 0px;
+}
+
+.react-select__control {
+  border-radius: 0.25rem !important;
+  min-height: 36px !important;
+  width: 15.8rem;
+}
+
+.react-select__menu {
+  width: 15.8rem !important;
+}
+
+.title-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

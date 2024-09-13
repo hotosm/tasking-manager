@@ -1,23 +1,32 @@
-import React from 'react';
 import {
   Chart as ChartJS,
   LineElement,
   PointElement,
   LinearScale,
   CategoryScale,
-  TimeScale,
+  TimeSeriesScale,
   Legend,
   Tooltip,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import 'chartjs-adapter-date-fns';
 import { useIntl } from 'react-intl';
 
 import messages from './messages';
 import { formatTimelineData, formatTimelineTooltip } from '../../utils/formatChartJSData';
 import { CHART_COLOURS } from '../../config';
 import { useTimeDiff } from '../../hooks/UseTimeDiff';
+import { xAxisTimeSeries } from '../../utils/chart';
 
-ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, TimeScale, Legend, Tooltip);
+ChartJS.register(
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  TimeSeriesScale,
+  Legend,
+  Tooltip,
+);
 
 export default function ProjectTimeline({ tasksByDay }: Object) {
   const intl = useIntl();
@@ -41,7 +50,10 @@ export default function ProjectTimeline({ tasksByDay }: Object) {
             callbacks: { label: (context) => formatTimelineTooltip(context, true) },
           },
         },
-        scales: { xAxes: [{ type: 'time', time: { unit: unit } }] },
+        scales: {
+          y: { ticks: { beginAtZero: true } },
+          x: { ...xAxisTimeSeries(unit) },
+        },
       }}
     />
   );

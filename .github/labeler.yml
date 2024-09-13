@@ -1,12 +1,12 @@
-"Component: Frontend":
+"scope: frontend":
   - frontend/**/*
-"Component: Backend":
+"scope: backend":
   - backend/**/*
   - tests/**/*
   - migrations/**/*
   - ./manage.py
   - ./pyproject.toml
-"Component: Infrastructure":
+"scope: infrastructure":
   - .circleci/*
   - .github/**/*
   - scripts/aws/**/*
@@ -16,9 +16,5 @@
 "dependencies":
   - frontend/yarn.lock
   - ./pyproject.toml
-"javascript":
-  - frontend/yarn.lock
-"python":
-  - ./pyproject.toml
-"Type: Translations":
+"scope: translations":
   - frontend/src/locales/*

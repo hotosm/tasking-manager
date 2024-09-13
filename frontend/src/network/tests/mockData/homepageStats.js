@@ -1,15 +1,10 @@
 export const homepageStats = {
-  road_count_add: 5850597,
-  road_count_mod: 6688860,
-  building_count_add: 101367027,
-  building_count_mod: 12680746,
-  waterway_count_add: 3267982,
-  poi_count_add: 183011,
-  poi_count_mod: 251157,
-  road_km_add: 2380562.9900000077,
-  road_km_mod: 1499361.339999999,
-  waterway_km_add: 350906.79999999935,
-  waterway_km_mod: 199147.73999999985,
-  edits: 134184186,
-  users: 493238,
+  result: {
+    changesets: 10251848,
+    users: 493238,
+    roads: 2380562.9900000077,
+    buildings: 101367027,
+    edits: 134184186,
+    latest: '2023-10-03T15:28:07Z',
+  },
 };

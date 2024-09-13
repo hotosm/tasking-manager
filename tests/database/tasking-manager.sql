@@ -592,9 +592,9 @@ COPY public.project_chat (id, project_id, user_id, time_stamp, message) FROM std
 --
 
 COPY public.project_info (project_id, locale, name, short_description, description, instructions, project_id_str, text_searchable, per_task_instructions) FROM stdin;
-1	en	testing ssa	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	1	\N	
-2	en	arbitrary-project	tests tsete	tests tsete	tests tsete	2	\N	
-3	en	arbitrary-1	arbitrary- test split	arbitrary- test split	arbitrary- test split	3	\N	
+1	en	testing ssa	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	1	\N
+2	en	arbitrary-project	tests tsete	tests tsete	tests tsete	2	\N
+3	en	arbitrary-1	arbitrary- test split	arbitrary- test split	arbitrary- test split	3	\N
 \.
 
 
@@ -1501,4 +1501,3 @@ ALTER TABLE ONLY public.users_licenses
 --
 -- PostgreSQL database dump complete
 --
-

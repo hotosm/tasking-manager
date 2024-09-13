@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Field } from 'react-final-form';
 import Select from 'react-select';
@@ -28,17 +28,23 @@ export const SwitchToggle = ({
   onChange,
   labelPosition,
   small = false,
+  isDisabled = false,
 }: Object) => (
-  <div className="v-mid justify-center bg-grey-dark">
+  <div className="v-mid justify-center">
     {label && labelPosition !== 'right' && <span className="di mr2 nowrap f6 dn-m">{label}</span>}
     <div className="relative dib">
       <input
-        className="absolute z-5 w-100 h-100 o-0 pointer checkbox"
+        className={`absolute z-5 w-100 h-100 o-0 ${!isDisabled ? 'pointer' : ''} checkbox`}
         type="checkbox"
         checked={isChecked}
         onChange={onChange}
+        disabled={isDisabled}
       />
-      <div className="relative z-1 dib bg-blue-light overflow-hidden br4 v-mid bg-animate checkbox-wrapper switch-ctr">
+      <div
+        className={`relative z-1 dib ${
+          isDisabled ? 'bg-moon-gray' : 'bg-blue-light'
+        } overflow-hidden br4 v-mid bg-animate checkbox-wrapper switch-ctr`}
+      >
         <div className="absolute switch-thumb br4 bg-white t-cb bg-animate checkbox-toggle" />
       </div>
     </div>

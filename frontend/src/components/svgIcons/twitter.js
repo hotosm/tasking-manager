@@ -1,17 +1,22 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class TwitterIcon extends React.PureComponent {
+export class TwitterIcon extends PureComponent {
   render() {
     return (
-      <svg width="15" height="14" viewBox="0 0 15 14" {...this.props} aria-label="Twitter">
-        <g fill="none" fillRule="evenodd">
-          <path d="M-13-13h40v40h-40z" />
-          <path
-            d="M12.394 14h-10.5a1.75 1.75 0 0 1-1.75-1.75V1.75C.144.784.928 0 1.894 0h10.5c.966 0 1.75.784 1.75 1.75v10.5a1.75 1.75 0 0 1-1.75 1.75zM5.52 10.556c3.3 0 5.107-2.737 5.107-5.106 0-.078 0-.154-.004-.232.35-.252.655-.57.896-.93a3.637 3.637 0 0 1-1.032.283c.37-.22.654-.574.79-.994a3.57 3.57 0 0 1-1.14.434 1.797 1.797 0 0 0-3.059 1.638 5.096 5.096 0 0 1-3.7-1.876 1.8 1.8 0 0 0 .556 2.398 1.815 1.815 0 0 1-.811-.224v.024c0 .868.619 1.596 1.438 1.76a1.75 1.75 0 0 1-.808.032 1.795 1.795 0 0 0 1.676 1.246 3.6 3.6 0 0 1-2.656.745 5.105 5.105 0 0 0 2.747.802z"
-            fill="currentColor"
-            fillRule="nonzero"
-          />
-        </g>
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 15 15"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        {...this.props}
+        aria-label="Twitter"
+      >
+        {!this.props.noBg && <rect width="15" height="15" rx="1" fill="black" />}
+        <path
+          d="M8.54822 6.66248L12.644 2H11.6735L8.1156 6.04753L5.27595 2H2L6.29505 8.12111L2 13.01H2.97043L6.72541 8.7347L9.72488 13.01H13.0008L8.54822 6.66248ZM7.21864 8.17485L6.7828 7.56494L3.32038 2.71647H4.81116L7.60626 6.63082L8.04027 7.24073L11.6731 12.3285H10.1823L7.21864 8.17485Z"
+          fill="white"
+        />
       </svg>
     );
   }

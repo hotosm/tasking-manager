@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
@@ -426,7 +426,7 @@ export function TeamDetail() {
   const [error, loading, team] = useFetch(`teams/${id}/`);
   // eslint-disable-next-line
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?teamId=${id}&omitMapResults=true`,
+    `projects/?teamId=${id}&omitMapResults=true&projectStatuses=PUBLISHED,DRAFT,ARCHIVED`,
     id,
   );
   const [isMember, setIsMember] = useState(false);
