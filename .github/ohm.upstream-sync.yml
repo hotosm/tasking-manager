@@ -1,0 +1,84 @@
+name: OHM Upstream Sync
+
+on:
+  schedule:
+    - cron: "34 12 * * *"
+  workflow_dispatch:
+
+jobs:
+  upstream-sync:
+    name: Upstream Sync
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out our repository
+        uses: actions/checkout@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          fetch-depth: 0
+
+      - name: List all branches
+        run: |
+          git branch --all | egrep 'main|master|sacrifice|candidate'
+
+      - name: Delete previous sacrificial branch
+        run: |
+          if git show-ref --quiet refs/heads/release-candidate; then
+            git branch --remote -D origin/release-candidate
+          fi
+
+      - name: List all branches
+        run: |
+          git branch --all | egrep 'main|master|sacrifice|candidate'
+
+      - name: Check out upstream master
+        env:
+          UPSTREAM: https://github.com/tyrasd/overpass-turbo
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+          git remote add upstream "${UPSTREAM}"
+          git fetch upstream master
+
+      - name: List all branches
+        run: |
+          git branch --all | egrep 'main|master|sacrifice|candidate'
+
+      - name: Create 'release-candidate', our new sacrificial branch
+        uses: peterjgrainger/action-create-branch@v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check out 'release-candidate', our new sacrificial branch
+        uses: actions/checkout@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          ref: "release-candidate"
+          fetch-depth: 0
+
+      - name: List all branches
+        run: |
+          git branch --all | egrep 'main|master|sacrifice|candidate'
+
+      - name: Make our scripts executable
+        run: chmod +x ./scripts/*.sh
+      - name: Preserve upstream docs
+        run: ./scripts/preserve_upstream_docs.sh
+
+      - name: Start the merge
+        run: |
+          git merge --no-ff --no-commit upstream/master
+          git status
+
+#      - name: Continue the merge where there are no concerns
+#        run: ./scripts/upstream_sync.sh
+#
+#      - name: Push updates
+#        run: |
+#          git push release-candidate
