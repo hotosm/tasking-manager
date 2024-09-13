@@ -2,6 +2,7 @@ import json
 from backend.models.dtos.partner_stats_dto import (
     GroupedPartnerStatsDTO,
     FilteredPartnerStatsDTO,
+    UserGroupMemberDTO,
 )
 from cachetools import TTLCache, cached
 import requests
@@ -123,23 +124,65 @@ class MapswipeService:
         return {"operationName": operationName, "query": query, "variables": variables}
 
     @cached(grouped_partner_stats_cache)
-    def fetch_grouped_partner_stats(
-        self, group_id: str, limit: int, offset: int
+    def setup_group_dto(
+        self, partner_id: str, group_id: str, resp_body: str
     ) -> GroupedPartnerStatsDTO:
-        group_stats = requests.post(
+        group_stats = json.loads(resp_body)["data"]
+        group_dto = GroupedPartnerStatsDTO()
+        group_dto.id = partner_id
+        group_dto.provider = "mapswipe"
+        group_dto.id_inside_provider = group_id
+        group_dto.name_inside_provider = group_stats["userGroup"]["name"]
+        group_dto.description_inside_provider = group_stats["userGroup"]["description"]
+
+        group_dto.members_count = group_stats["userGroup"]["userMemberships"]["count"]
+        group_dto.members = []
+        for user_resp in group_stats["userGroup"]["userMemberships"]["items"]:
+            user = UserGroupMemberDTO()
+            user.id = user_resp["id"]
+            user.is_active = user_resp["isActive"]
+            user.user_id = user_resp["userId"]
+            user.username = user_resp["username"]
+            user.total_contributions = user_resp["totalSwipes"]
+            user.total_contribution_time = user_resp["totalSwipeTime"]
+            user.total_mapping_projects = user_resp["totalMappingProjects"]
+            group_dto.members.append(user)
+
+        group_dto.total_contributors = group_stats["userGroupStats"]["stats"][
+            "totalContributors"
+        ]
+        group_dto.total_contributions = group_stats["userGroupStats"]["stats"][
+            "totalSwipes"
+        ]
+        group_dto.total_contribution_time = group_stats["userGroupStats"]["stats"][
+            "totalSwipeTime"
+        ]
+        group_dto.total_recent_contributors = group_stats["userGroupStats"][
+            "statsLatest"
+        ]["totalContributors"]
+        group_dto.total_recent_contributions = group_stats["userGroupStats"][
+            "statsLatest"
+        ]["totalSwipes"]
+        group_dto.total_recent_contribution_time = group_stats["userGroupStats"][
+            "statsLatest"
+        ]["totalSwipeTime"]
+
+        print("final group dto", group_dto.total_contributors)
+        return group_dto
+
+    def fetch_grouped_partner_stats(
+        self, partner_id: int, group_id: str, limit: int = 10, offset: int = 0
+    ) -> GroupedPartnerStatsDTO:
+        """Service to fetch user group statistics by each member with pagination"""
+
+        resp_body = requests.post(
             MAPSWIPE_API_URL,
             headers={"Content-Type": "application/json"},
             data=json.dumps(
                 self.__build_query_user_group_stats(group_id, limit, offset)
             ),
-        )
-        print("group_stats", group_stats.text)
-
-        grouped_parter_stats_dto = GroupedPartnerStatsDTO()
-        grouped_parter_stats_dto.provider = "mapswipe"
-        grouped_parter_stats_dto.id_inside_provider = group_id
-
-        return grouped_parter_stats_dto
+        ).text
+        return self.setup_group_dto(partner_id, group_id, resp_body)
 
     @cached(filtered_partner_stats_cache)
     def fetch_filtered_partner_stats(

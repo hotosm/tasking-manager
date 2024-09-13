@@ -11,30 +11,25 @@ from schematics.types import (
 )
 
 
-class MemberDTO(Model):
-    id: StringType()
-    user_id: StringType(serialized_name="userId")
-    username: StringType()
-    is_active: BooleanType(serialized_name="isActive")
+class UserGroupMemberDTO(Model):
+    id = StringType()
+    user_id = StringType(serialized_name="userId")
+    username = StringType()
+    is_active = BooleanType(serialized_name="isActive")
     total_mapping_projects = IntType(serialized_name="totalMappingProjects")
-    total_constribution_time: IntType(serialized_name="totalconstributionTime")
-    total_constributions: IntType(serialized_name="totalconstributions")
-
-
-class UserMembershipsDTO(Model):
-    count: IntType()
-    users: ListType(ModelType(MemberDTO))
+    total_contribution_time = IntType(serialized_name="totalcontributionTime")
+    total_contributions = IntType(serialized_name="totalcontributions")
 
 
 class OrganizationContributionsDTO(Model):
     organization_name = StringType(serialized_name="organizationName")
-    total_constributions: IntType(serialized_name="totalconstributions")
+    total_contributions = IntType(serialized_name="totalcontributions")
 
 
 class UserContributionsDTO(Model):
     total_mapping_projects = IntType(serialized_name="totalMappingProjects")
-    total_constribution_time: IntType(serialized_name="totalconstributionTime")
-    total_constributions: IntType(serialized_name="totalconstributions")
+    total_contribution_time: IntType(serialized_name="totalcontributionTime")
+    total_contributions: IntType(serialized_name="totalcontributions")
     username = StringType()
     user_id = StringType(serialized_name="userId")
 
@@ -46,76 +41,78 @@ class GeojsonDTO(Model):
 
 class GeoContributionsDTO(Model):
     geojson = ModelType(GeojsonDTO)
-    total_constributions = IntType(serialized_name="totalconstributions")
+    total_contributions = IntType(serialized_name="totalcontributions")
 
 
 class ContributionsByDateDTO(Model):
     task_date = StringType(serialized_name="taskDate")
-    total_constributions = IntType(serialized_name="totalconstributions")
+    total_contributions = IntType(serialized_name="totalcontributions")
 
 
 class ContributionTimeByDateDTO(Model):
     date = StringType(serialized_name="date")
-    total_constribution_time: IntType(serialized_name="totalconstributionTime")
+    total_contribution_time: IntType(serialized_name="totalcontributionTime")
 
 
 class ContributionsByProjectTypeDTO(Model):
     project_type = StringType(serialized_name="projectType")
     project_type_display = StringType(serialized_name="projectTypeDisplay")
-    total_constributions = IntType(serialized_name="totalconstributions")
+    total_contributions = IntType(serialized_name="totalcontributions")
 
 
 class GroupedPartnerStatsDTO(Model):
     """General statistics of a partner and its members."""
 
-    id: LongType()
-    provider: StringType()
-    id_inside_provider: StringType(serialized_name="idInsideProvider")
-    name_inside_provider: StringType(serialized_name="nameInsideProvider")
-    total_members: IntType(serialized_name="totalMembers")
-
-    users = ModelType(UserMembershipsDTO)
+    id = LongType()
+    provider = StringType()
+    id_inside_provider = StringType(serialized_name="idInsideProvider")
+    name_inside_provider = StringType(serialized_name="nameInsideProvider")
+    description_inside_provider = StringType(
+        serialized_name="descriptionInsideProvider"
+    )
+    members_count = IntType(serialized_name="membersCount")
+    members = ListType(ModelType(UserGroupMemberDTO))
 
     # General stats of partner
-    total_contributors: IntType(serialized_name="totalContributors")
-    total_constributions: IntType(serialized_name="totalconstributions")
-    total_constribution_time: IntType(serialized_name="totalconstributionTime")
+    total_contributors = IntType(serialized_name="totalContributors")
+    total_contributions = IntType(serialized_name="totalcontributions")
+    total_contribution_time = IntType(serialized_name="totalcontributionTime")
 
     # Recent contributions during the last 1 month
-    total_recent_contributors: IntType(serialized_name="totalRecentContributors")
-    total_recent_constributions: IntType(serialized_name="totalRecentconstributions")
-    total_recent_constribution_time: IntType(
-        serialized_name="totalRecentconstributionTime"
+    total_recent_contributors = IntType(serialized_name="totalRecentContributors")
+    total_recent_contributions = IntType(serialized_name="totalRecentcontributions")
+    total_recent_contribution_time = IntType(
+        serialized_name="totalRecentcontributionTime"
     )
 
 
 class FilteredPartnerStatsDTO(Model):
     """Statistics of a partner contributions filtered by time range."""
 
-    id: LongType()
-    provider: StringType()
-    id_inside_provider: StringType(serialized_name="idInsideProvider")
-    name_inside_provider: StringType(serialized_name="nameInsideProvider")
+    id = LongType()
+    provider = StringType()
+    id_inside_provider = StringType(serialized_name="idInsideProvider")
+    name_inside_provider = StringType(serialized_name="nameInsideProvider")
 
     from_date = UTCDateTimeType(serialized_name="fromDate")
     to_date = UTCDateTimeType(serialized_name="toDate")
-    constributions_by_user = ListType(
+    contributions_by_user = ListType(
         ModelType(UserContributionsDTO), serialized_name="contributionsByUser"
     )
-    constributions_by_geo = ListType(
+    contributions_by_geo = ListType(
         ModelType(GeoContributionsDTO), serialized_name="contributionsByGeo"
     )
-    constributions_by_project_type = ListType(
+    contributions_by_project_type = ListType(
         ModelType(ContributionsByProjectTypeDTO),
         serialized_name="contributionsByProjectType",
     )
-    constributions_by_date = ListType(
+    contributions_by_date = ListType(
         ModelType(ContributionsByDateDTO), serialized_name="contributionsByDate"
     )
-    constributions_by_organization_name = ListType(
+    contributions_by_organization_name = ListType(
         ModelType(OrganizationContributionsDTO),
         serialized_name="contributionsByorganizationName",
     )
-    constribution_time_by_date = ListType(
+    contribution_time_by_date = ListType(
         ModelType(ContributionTimeByDateDTO), serialized_name="contributionTimeByDate"
     )
