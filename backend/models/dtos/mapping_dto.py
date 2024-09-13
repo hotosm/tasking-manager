@@ -2,7 +2,7 @@ from datetime import datetime
 from backend.models.postgis.statuses import TaskStatus
 from backend.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError, validator
 from typing import List, Optional
 
 
@@ -26,6 +26,10 @@ class LockTaskDTO(BaseModel):
     task_id: int
     project_id: int
     preferred_locale: str = "en"
+
+    @validator("preferred_locale", pre=True, always=True)
+    def set_default_preferred_locale(cls, v):
+        return v or "en"
 
 
 class MappedTaskDTO(BaseModel):

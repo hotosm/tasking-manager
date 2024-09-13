@@ -556,10 +556,9 @@ class UserService:
         return user_id == author_id
 
     @staticmethod
-    def get_mapping_level(user_id: int):
+    async def get_mapping_level(user_id: int, db: Database):
         """Gets mapping level user is at"""
-        user = UserService.get_user_by_id(user_id)
-
+        user = await UserService.get_user_by_id(user_id, db)
         return MappingLevel(user.mapping_level)
 
     @staticmethod
@@ -578,7 +577,6 @@ class UserService:
     async def is_user_blocked(user_id: int, db: Database) -> bool:
         """Determines if a user is blocked"""
         user = await UserService.get_user_by_id(user_id, db)
-
         if UserRole(user.role) == UserRole.READ_ONLY:
             return True
 
@@ -776,10 +774,21 @@ class UserService:
         await user.accept_license_terms(user_id, license_id, db)
 
     @staticmethod
-    def has_user_accepted_license(user_id: int, license_id: int):
-        """Checks if user has accepted specified license"""
-        user = UserService.get_user_by_id(user_id)
-        return user.has_user_accepted_licence(license_id)
+    async def has_user_accepted_license(
+        user_id: int, license_id: int, db: Database
+    ) -> bool:
+        """Checks if a user has accepted the specified license."""
+        query = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM user_licenses
+            WHERE "user" = :user_id AND license = :license_id
+        )
+        """
+        result = await db.fetch_one(
+            query, values={"user_id": user_id, "license_id": license_id}
+        )
+        return result[0] if result else False
 
     @staticmethod
     def get_osm_details_for_user(username: str) -> UserOSMDTO:
