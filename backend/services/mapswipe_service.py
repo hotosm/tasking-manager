@@ -59,7 +59,7 @@ class MapswipeService:
         }
         """
         variables = {"limit": limit, "offset": offset, "pk": group_id}
-        return {operationName, query, variables}
+        return {"operationName": operationName, "query": query, "variables": variables}
 
     def __build_query_filtered_user_group_stats(
         group_id: str, from_date: str, to_date: str
@@ -119,7 +119,7 @@ class MapswipeService:
         }
         """
         variables = {"fromDate": from_date, "toDate": to_date, "pk": group_id}
-        return {operationName, query, variables}
+        return {"operationName": operationName, "query": query, "variables": variables}
 
     @cached(grouped_partner_stats_cache)
     def fetch_grouped_partner_stats(
