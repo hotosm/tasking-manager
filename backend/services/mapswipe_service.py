@@ -1,3 +1,4 @@
+import json
 from backend.models.dtos.partner_stats_dto import (
     GroupedPartnerStatsDTO,
     FilteredPartnerStatsDTO,
@@ -127,10 +128,12 @@ class MapswipeService:
     ) -> GroupedPartnerStatsDTO:
         group_stats = requests.post(
             MAPSWIPE_API_URL,
-            data=self.__build_query_user_group_stats(group_id, limit, offset),
             headers={"Content-Type": "application/json"},
+            data=json.dumps(
+                self.__build_query_user_group_stats(group_id, limit, offset)
+            ),
         )
-        print("group_stats", group_stats)
+        print("group_stats", group_stats.text)
 
         grouped_parter_stats_dto = GroupedPartnerStatsDTO()
         grouped_parter_stats_dto.provider = "mapswipe"
@@ -144,9 +147,11 @@ class MapswipeService:
     ) -> FilteredPartnerStatsDTO:
         filtered_group_stats = requests.post(
             MAPSWIPE_API_URL,
-            data=self.__build_query_filtered_user_group_stats(
-                group_id, from_date, to_date
             headers={"Content-Type": "application/json"},
+            data=json.dumps(
+                self.__build_query_filtered_user_group_stats(
+                    group_id, from_date, to_date
+                )
             ),
         )
         print("filtered_group_stats", filtered_group_stats)
