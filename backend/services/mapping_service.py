@@ -37,8 +37,7 @@ class MappingService:
         Get task from DB
         :raises: NotFound
         """
-        task = await Task.exists(task_id, project_id, db)
-
+        task = await Task.get(task_id, project_id, db)
         if not task:
             raise NotFound(
                 sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
@@ -53,7 +52,11 @@ class MappingService:
         preferred_local: str = "en",
     ) -> TaskDTO:
         """Get task as DTO for transmission over API"""
-        task = await MappingService.get_task(task_id, project_id, db)
+        task = await Task.exists(task_id, project_id, db)
+        if not task:
+            raise NotFound(
+                sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
+            )
         task_dto = await Task.as_dto_with_instructions(
             task_id, project_id, db, preferred_local
         )
@@ -80,24 +83,30 @@ class MappingService:
         return False
 
     @staticmethod
-    def lock_task_for_mapping(lock_task_dto: LockTaskDTO) -> TaskDTO:
+    async def lock_task_for_mapping(
+        lock_task_dto: LockTaskDTO, db: Database
+    ) -> TaskDTO:
         """
         Sets the task_locked status to locked so no other user can work on it
         :param lock_task_dto: DTO with data needed to lock the task
         :raises TaskServiceError
         :return: Updated task, or None if not found
         """
-        task = MappingService.get_task(lock_task_dto.task_id, lock_task_dto.project_id)
-
+        task = await MappingService.get_task(
+            lock_task_dto.task_id, lock_task_dto.project_id, db
+        )
         if task.locked_by != lock_task_dto.user_id:
-            if not task.is_mappable():
+            if not Task.is_mappable(task):
                 raise MappingServiceError(
                     "InvalidTaskState- Task in invalid state for mapping"
                 )
 
-            user_can_map, error_reason = ProjectService.is_user_permitted_to_map(
-                lock_task_dto.project_id, lock_task_dto.user_id
+            user_can_map, error_reason = await ProjectService.is_user_permitted_to_map(
+                lock_task_dto.project_id, lock_task_dto.user_id, db
             )
+            print(user_can_map, "Yo confition to map...")
+            print(error_reason, "yo error reason...")
+            # TODO Handle error exceptions..
             if not user_can_map:
                 if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                     raise UserLicenseError("User must accept license to map this task")
@@ -118,8 +127,15 @@ class MappingService:
                         f"{error_reason}- Mapping not allowed because: {error_reason}"
                     )
 
-        task.lock_task_for_mapping(lock_task_dto.user_id)
-        return task.as_dto_with_instructions(lock_task_dto.preferred_locale)
+        await Task.lock_task_for_mapping(
+            lock_task_dto.task_id, lock_task_dto.project_id, lock_task_dto.user_id, db
+        )
+        return await Task.as_dto_with_instructions(
+            lock_task_dto.task_id,
+            lock_task_dto.project_id,
+            db,
+            lock_task_dto.preferred_locale,
+        )
 
     @staticmethod
     def unlock_task_after_mapping(mapped_task: MappedTaskDTO) -> TaskDTO:
