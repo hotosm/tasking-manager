@@ -24,21 +24,30 @@ from backend.models.dtos.mapping_dto import (
 )
 from backend.services.mapping_service import MappingService, MappingServiceError
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
 from starlette.authentication import requires
 from loguru import logger
 
+from backend.db import get_db
+from databases import Database
+from backend.services.users.authentication_service import login_required
+from backend.models.dtos.user_dto import AuthUserDTO
+
 router = APIRouter(
-    prefix="/tasks",
+    prefix="/projects",
     tags=["tasks"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 
-@router.post("{project_id}/tasks/actions/lock-for-mapping/{task_id}/")
-@requires("authenticated")
-async def post(request: Request, project_id: int, task_id: int):
+@router.post("/{project_id}/tasks/actions/lock-for-mapping/{task_id}/")
+async def post(
+    request: Request,
+    project_id: int,
+    task_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Locks a task for mapping
     ---
@@ -88,20 +97,20 @@ async def post(request: Request, project_id: int, task_id: int):
             description: Internal Server Error
     """
     try:
-        lock_task_dto = LockTaskDTO()
-        lock_task_dto.user_id = request.user.display_name
-        lock_task_dto.project_id = project_id
-        lock_task_dto.task_id = task_id
-        lock_task_dto.preferred_locale = request.header
-        lock_task_dto.validate()
+        lock_task_dto = LockTaskDTO(
+            user_id=user.id,
+            project_id=project_id,
+            task_id=task_id,
+            preferred_locale=request.headers.get("accept-language"),
+        )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return {"Error": "Unable to lock task", "SubCode": "InvalidData"}, 400
 
     try:
-        ProjectService.exists(project_id)  # Check if project exists
-        task = MappingService.lock_task_for_mapping(lock_task_dto)
-        return task.model_dump(by_alias=True), 200
+        await ProjectService.exists(project_id, db)
+        task = await MappingService.lock_task_for_mapping(lock_task_dto, db)
+        return task
     except MappingServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
     except UserLicenseError:
