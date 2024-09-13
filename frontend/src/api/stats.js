@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
-import { OHSOME_STATS_BASE_URL, defaultChangesetComment } from '../config';
+import { OHSOME_STATS_BASE_URL, defaultChangesetComment, HOMEPAGE_STATS_API_URL } from '../config';
 
 const ohsomeProxyAPI = (url) => {
   const token = localStorage.getItem('token');
