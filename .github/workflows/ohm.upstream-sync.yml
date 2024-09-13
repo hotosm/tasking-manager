@@ -80,7 +80,7 @@ jobs:
 #
 #      - name: Start the merge
 #        run: |
-#          git merge --no-ff --no-commit upstream/master
+#          git merge --no-ff --no-commit upstream/develop
 #          git status
 
 #      - name: Continue the merge where there are no concerns
