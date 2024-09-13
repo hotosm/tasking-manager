@@ -37,8 +37,7 @@ class MappingService:
         Get task from DB
         :raises: NotFound
         """
-        task = await Task.exists(task_id, project_id, db)
-
+        task = await Task.get(task_id, project_id, db)
         if not task:
             raise NotFound(
                 sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
@@ -53,7 +52,11 @@ class MappingService:
         preferred_local: str = "en",
     ) -> TaskDTO:
         """Get task as DTO for transmission over API"""
-        task = await MappingService.get_task(task_id, project_id, db)
+        task = await Task.exists(task_id, project_id, db)
+        if not task:
+            raise NotFound(
+                sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
+            )
         task_dto = await Task.as_dto_with_instructions(
             task_id, project_id, db, preferred_local
         )
