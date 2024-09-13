@@ -7,7 +7,23 @@ from schematics.types import (
     UTCDateTimeType,
     ModelType,
     FloatType,
+    BooleanType,
 )
+
+
+class MemberDTO(Model):
+    id: StringType()
+    user_id: StringType(serialized_name="userId")
+    username: StringType()
+    is_active: BooleanType(serialized_name="isActive")
+    total_mapping_projects = IntType(serialized_name="totalMappingProjects")
+    total_constribution_time: IntType(serialized_name="totalconstributionTime")
+    total_constributions: IntType(serialized_name="totalconstributions")
+
+
+class UserMembershipsDTO(Model):
+    count: IntType()
+    users: ListType(ModelType(MemberDTO))
 
 
 class OrganizationContributionsDTO(Model):
@@ -79,6 +95,7 @@ class FilteredPartnerStatsDTO(Model):
     provider: StringType()
     id_inside_provider: StringType(serialized_name="idInsideProvider")
     name_inside_provider: StringType(serialized_name="nameInsideProvider")
+    users = ModelType(UserMembershipsDTO)
 
     from_date = UTCDateTimeType(serialized_name="fromDate")
     to_date = UTCDateTimeType(serialized_name="toDate")
