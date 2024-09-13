@@ -74,13 +74,14 @@ class GroupedPartnerStatsDTO(Model):
     name_inside_provider: StringType(serialized_name="nameInsideProvider")
     total_members: IntType(serialized_name="totalMembers")
 
+    users = ModelType(UserMembershipsDTO)
+
     # General stats of partner
     total_contributors: IntType(serialized_name="totalContributors")
     total_constributions: IntType(serialized_name="totalconstributions")
     total_constribution_time: IntType(serialized_name="totalconstributionTime")
 
     # Recent contributions during the last 1 month
-
     total_recent_contributors: IntType(serialized_name="totalRecentContributors")
     total_recent_constributions: IntType(serialized_name="totalRecentconstributions")
     total_recent_constribution_time: IntType(
@@ -95,7 +96,6 @@ class FilteredPartnerStatsDTO(Model):
     provider: StringType()
     id_inside_provider: StringType(serialized_name="idInsideProvider")
     name_inside_provider: StringType(serialized_name="nameInsideProvider")
-    users = ModelType(UserMembershipsDTO)
 
     from_date = UTCDateTimeType(serialized_name="fromDate")
     to_date = UTCDateTimeType(serialized_name="toDate")
