@@ -325,23 +325,34 @@ class ProjectService:
         return task_dtos
 
     @staticmethod
-    def is_user_in_the_allowed_list(allowed_users: list, current_user_id: int):
+    async def is_user_in_the_allowed_list(
+        project_id: int, current_user_id: int, db: Database
+    ) -> bool:
         """For private projects, check if user is present in the allowed list"""
-        return (
-            len([user.id for user in allowed_users if user.id == current_user_id]) > 0
+
+        query = """
+        SELECT COUNT(1)
+        FROM project_allowed_users
+        WHERE project_id = :project_id AND user_id = :user_id
+        """
+
+        result = await db.fetch_val(
+            query, values={"project_id": project_id, "user_id": current_user_id}
         )
+        # Return True if the user is in the allowed list, False otherwise
+        return result > 0
 
     @staticmethod
-    def evaluate_mapping_permission(
-        project_id: int, user_id: int, mapping_permission: int
+    async def evaluate_mapping_permission(
+        project_id: int, user_id: int, mapping_permission: int, db: Database
     ):
         allowed_roles = [
             TeamRoles.MAPPER.value,
             TeamRoles.VALIDATOR.value,
             TeamRoles.PROJECT_MANAGER.value,
         ]
-        is_team_member = TeamService.check_team_membership(
-            project_id, allowed_roles, user_id
+        is_team_member = await TeamService.check_team_membership(
+            project_id, allowed_roles, user_id, db
         )
 
         # mapping_permission = 1(level),2(teams),3(teamsAndLevel)
@@ -350,33 +361,37 @@ class ProjectService:
                 return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
 
         elif mapping_permission == MappingPermission.LEVEL.value:
-            if not ProjectService._is_user_intermediate_or_advanced(user_id):
+            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
                 return False, MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
 
         elif mapping_permission == MappingPermission.TEAMS_LEVEL.value:
-            if not ProjectService._is_user_intermediate_or_advanced(user_id):
+            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
                 return False, MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
             if not is_team_member:
                 return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
 
     @staticmethod
-    def is_user_permitted_to_map(project_id: int, user_id: int):
+    async def is_user_permitted_to_map(project_id: int, user_id: int, db: Database):
         """Check if the user is allowed to map the on the project in scope"""
-        if UserService.is_user_blocked(user_id):
+
+        if await UserService.is_user_blocked(user_id, db):
             return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
-        project = ProjectService.get_project_by_id(project_id)
+        project = await ProjectService.get_project_by_id(project_id, db)
         if project.license_id:
-            if not UserService.has_user_accepted_license(user_id, project.license_id):
+            if not await UserService.has_user_accepted_license(
+                user_id, project.license_id, db
+            ):
                 return False, MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE
-        mapping_permission = project.mapping_permission
 
+        mapping_permission = project.mapping_permission
         is_manager_permission = (
             False  # is_admin or is_author or is_org_manager or is_manager_team
         )
-        if ProjectAdminService.is_user_action_permitted_on_project(user_id, project_id):
+        if await ProjectAdminService.is_user_action_permitted_on_project(
+            user_id, project_id, db
+        ):
             is_manager_permission = True
-
         # Draft (public/private) accessible only for is_manager_permission
         if (
             ProjectStatus(project.status) == ProjectStatus.DRAFT
@@ -386,36 +401,35 @@ class ProjectService:
 
         is_restriction = None
         if not is_manager_permission and mapping_permission:
-            is_restriction = ProjectService.evaluate_mapping_permission(
-                project_id, user_id, mapping_permission
+            is_restriction = await ProjectService.evaluate_mapping_permission(
+                project_id, user_id, mapping_permission, db
             )
-
-        tasks = Task.get_locked_tasks_for_user(user_id)
+        tasks = await Task.get_locked_tasks_for_user(user_id, db)
         if len(tasks.locked_tasks) > 0:
             return False, MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
         is_allowed_user = None
         if project.private and not is_manager_permission:
             # Check if user is in allowed user list
-            is_allowed_user = ProjectService.is_user_in_the_allowed_list(
-                project.allowed_users, user_id
+            is_allowed_user = await ProjectService.is_user_in_the_allowed_list(
+                project.id, user_id
             )
             if is_allowed_user:
                 return True, "User allowed to map"
 
         if not is_manager_permission and is_restriction:
             return is_restriction
+
         elif project.private and not (
             is_manager_permission or is_allowed_user or not is_restriction
         ):
             return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
-
         return True, "User allowed to map"
 
     @staticmethod
-    def _is_user_intermediate_or_advanced(user_id):
+    async def _is_user_intermediate_or_advanced(user_id, db: Database):
         """Helper method to determine if user level is not beginner"""
-        user_mapping_level = UserService.get_mapping_level(user_id)
+        user_mapping_level = await UserService.get_mapping_level(user_id, db)
         if user_mapping_level not in [MappingLevel.INTERMEDIATE, MappingLevel.ADVANCED]:
             return False
 
