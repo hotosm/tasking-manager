@@ -31,11 +31,13 @@ class FilteredPartnerStatisticsAPI(Resource):
             - in: query
               name: fromDate
               type: string
-              example: 2024-01-01
+              description: Fetch partner statistics from date as yyyy-mm-dd
+              example: "2024-01-01"
             - in: query
               name: toDate
               type: string
-              example: 2024-09-01
+              example: "2024-09-01"
+              description: Fetch partner statistics to date as yyyy-mm-dd
             - name: partner_id
               in: path
               description: The id of the partner
@@ -102,10 +104,12 @@ class GroupPartnerStatisticsAPI(Resource):
               default: Token sessionTokenHere==
             - in: query
               name: limit
+              description: The number of partner members to fetch
               type: integer
               example: 10
             - in: query
               name: offset
+              description: The starting index from which to fetch partner members
               type: integer
               example: 0
             - name: partner_id
