@@ -216,6 +216,7 @@ def add_api_endpoints(app):
         ProjectsQueriesPriorityAreasAPI,
         ProjectsQueriesFeaturedAPI,
         ProjectQueriesSimilarProjectsAPI,
+        ProjectQueriesActiveProjectsAPI,
     )
     from backend.api.projects.activities import (
         ProjectsActivitiesAPI,
@@ -242,6 +243,10 @@ def add_api_endpoints(app):
     )
 
     from backend.api.projects.favorites import ProjectsFavoritesAPI
+    from backend.api.projects.partnerships import (
+        ProjectPartnershipsRestApi,
+        PartnersByProjectAPI,
+    )
 
     # Tasks API import
     from backend.api.tasks.resources import (
@@ -296,6 +301,13 @@ def add_api_endpoints(app):
 
     # Campaigns API endpoint
     from backend.api.campaigns.resources import CampaignsRestAPI, CampaignsAllAPI
+
+    # Partners API import
+    from backend.api.partners.resources import (
+        PartnerRestAPI,
+        PartnersAllRestAPI,
+        PartnerPermalinkRestAPI,
+    )
 
     # Organisations API endpoint
     from backend.api.organisations.resources import (
@@ -359,6 +371,7 @@ def add_api_endpoints(app):
         UsersStatisticsAPI,
         UsersStatisticsInterestsAPI,
         UsersStatisticsAllAPI,
+        OhsomeProxyAPI,
     )
 
     # System API endpoint
@@ -428,6 +441,10 @@ def add_api_endpoints(app):
         ProjectQueriesSimilarProjectsAPI,
         format_url("projects/queries/<int:project_id>/similar-projects/"),
     )
+    api.add_resource(
+        ProjectQueriesActiveProjectsAPI,
+        format_url("projects/queries/active/"),
+    )
 
     # Projects' addtional resources
     api.add_resource(
@@ -455,6 +472,25 @@ def add_api_endpoints(app):
 
     api.add_resource(
         ProjectsStatisticsQueriesPopularAPI, format_url("projects/queries/popular/")
+    )
+
+    api.add_resource(
+        ProjectPartnershipsRestApi,
+        format_url("projects/partnerships/<int:partnership_id>/"),
+        methods=["GET", "PATCH", "DELETE"],
+    )
+
+    api.add_resource(
+        ProjectPartnershipsRestApi,
+        format_url("projects/partnerships/"),
+        endpoint="create_partnership",
+        methods=["POST"],
+    )
+
+    api.add_resource(
+        PartnersByProjectAPI,
+        format_url("/projects/<int:project_id>/partners"),
+        methods=["GET"],
     )
 
     api.add_resource(
@@ -541,6 +577,23 @@ def add_api_endpoints(app):
         InterestsRestAPI,
         format_url("interests/<int:interest_id>/"),
         methods=["GET", "PATCH", "DELETE"],
+    )
+
+    # Partners REST endoints
+    api.add_resource(
+        PartnersAllRestAPI,
+        format_url("partners/"),
+        methods=["GET", "POST"],
+    )
+    api.add_resource(
+        PartnerRestAPI,
+        format_url("partners/<int:partner_id>/"),
+        methods=["GET", "DELETE", "PUT"],
+    )
+    api.add_resource(
+        PartnerPermalinkRestAPI,
+        format_url("partners/<string:permalink>/"),
+        methods=["GET"],
     )
 
     # Tasks REST endpoint
@@ -894,6 +947,9 @@ def add_api_endpoints(app):
     api.add_resource(
         UsersStatisticsAllAPI,
         format_url("users/statistics/"),
+    )
+    api.add_resource(
+        OhsomeProxyAPI, format_url("users/statistics/ohsome/"), methods=["GET"]
     )
     # User RecommendedProjects endpoint
     api.add_resource(

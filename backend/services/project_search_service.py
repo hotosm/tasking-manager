@@ -1,3 +1,4 @@
+import pandas as pd
 from flask import current_app
 import math
 import geojson
@@ -17,6 +18,7 @@ from backend.models.dtos.project_dto import (
     ProjectSearchBBoxDTO,
 )
 from backend.models.postgis.project import Project, ProjectInfo, ProjectTeams
+from backend.models.postgis.partner import Partner
 from backend.models.postgis.statuses import (
     ProjectStatus,
     MappingLevel,
@@ -28,6 +30,7 @@ from backend.models.postgis.statuses import (
     MappingPermission,
     ProjectDifficulty,
 )
+from backend.models.postgis.project_partner import ProjectPartnership
 from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.task import TaskHistory
@@ -40,8 +43,8 @@ from backend.models.postgis.utils import (
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
 
-
 search_cache = TTLCache(maxsize=128, ttl=300)
+csv_download_cache = TTLCache(maxsize=16, ttl=600)
 
 # max area allowed for passed in bbox, calculation shown to help future maintenance
 # client resolution (mpp)* arbitrary large map size on a large screen in pixels * 50% buffer, all squared
@@ -116,7 +119,13 @@ class ProjectSearchService:
         return query
 
     @staticmethod
-    def create_result_dto(project, preferred_locale, total_contributors):
+    def create_result_dto(
+        project: Project,
+        preferred_locale: str,
+        total_contributors: int,
+        with_partner_names: bool = False,
+        with_author_name: bool = True,
+    ) -> ListSearchResultDTO:
         project_info_dto = ProjectInfo.get_dto_for_locale(
             project.id, preferred_locale, project.default_locale
         )
@@ -144,6 +153,27 @@ class ProjectSearchService:
         list_dto.organisation_logo = project.organisation_logo
         list_dto.campaigns = Project.get_project_campaigns(project.id)
 
+        list_dto.creation_date = project_obj.created
+
+        if with_author_name:
+            list_dto.author = project_obj.author.name or project_obj.author.username
+
+        if with_partner_names:
+            list_dto.partner_names = list(
+                set(
+                    map(
+                        lambda p: Partner.get_by_id(p.partner_id).name,
+                        project_obj.partnerships,
+                    )
+                )
+            )
+
+        # Use postgis to compute the total area of the geometry in square kilometers
+        list_dto.total_area = project_obj.query.with_entities(
+            func.coalesce(func.sum(func.ST_Area(project_obj.geometry, True) / 1000000))
+        ).scalar()
+        list_dto.total_area = round(list_dto.total_area, 3)
+
         return list_dto
 
     @staticmethod
@@ -170,6 +200,40 @@ class ProjectSearchService:
         return [p.total for p in project_contributors_count]
 
     @staticmethod
+    @cached(csv_download_cache)
+    def search_projects_as_csv(search_dto: ProjectSearchDTO, user) -> str:
+        all_results, _ = ProjectSearchService._filter_projects(search_dto, user)
+        is_user_admin = user is not None and user.role == UserRole.ADMIN.value
+        results_as_dto = [
+            ProjectSearchService.create_result_dto(
+                p,
+                search_dto.preferred_locale,
+                Project.get_project_total_contributions(p[0]),
+                with_partner_names=is_user_admin,
+                with_author_name=False,
+            ).to_primitive()
+            for p in all_results
+        ]
+
+        df = pd.json_normalize(results_as_dto)
+        columns_to_drop = [
+            "locale",
+            "shortDescription",
+            "organisationLogo",
+            "campaigns",
+        ]
+        if not is_user_admin:
+            columns_to_drop.append("partnerNames")
+
+        df.drop(
+            columns=columns_to_drop,
+            inplace=True,
+            axis=1,
+        )
+
+        return df.to_csv(index=False)
+
+    @staticmethod
     @cached(search_cache)
     def search_projects(search_dto: ProjectSearchDTO, user) -> ProjectSearchResultsDTO:
         """Searches all projects for matches to the criteria provided by the user"""
@@ -185,6 +249,10 @@ class ProjectSearchService:
                 p,
                 search_dto.preferred_locale,
                 Project.get_project_total_contributions(p[0]),
+                with_partner_names=(
+                    user is not None and user.role == UserRole.ADMIN.value
+                ),
+                with_author_name=True,
             )
             for p in paginated_results.items
         ]
@@ -344,11 +412,40 @@ class ProjectSearchService:
             created_lte = validate_date_input(search_dto.created_lte)
             query = query.filter(Project.created <= created_lte)
 
-        order_by = search_dto.order_by
-        if search_dto.order_by_type == "DESC":
-            order_by = desc(search_dto.order_by)
+        if search_dto.partner_id:
+            query = query.join(
+                ProjectPartnership, ProjectPartnership.project_id == Project.id
+            ).filter(ProjectPartnership.partner_id == search_dto.partner_id)
 
-        query = query.order_by(order_by).distinct(search_dto.order_by, Project.id)
+            if search_dto.partnership_from:
+                partnership_from = validate_date_input(search_dto.partnership_from)
+                query = query.filter(ProjectPartnership.started_on <= partnership_from)
+
+            if search_dto.partnership_to:
+                partnership_to = validate_date_input(search_dto.partnership_to)
+                query = query.filter(
+                    (ProjectPartnership.ended_on.is_(None))
+                    | (ProjectPartnership.ended_on >= partnership_to)
+                )
+
+        order_by = search_dto.order_by
+
+        if search_dto.order_by == "percent_mapped":
+            if search_dto.order_by_type == "DESC":
+                order_by = Project.percent_mapped.desc()
+            else:
+                order_by = Project.percent_mapped.asc()
+            query = query.order_by(order_by)
+        elif search_dto.order_by == "percent_validated":
+            if search_dto.order_by_type == "DESC":
+                order_by = Project.percent_validated.desc()
+            else:
+                order_by = Project.percent_validated.asc()
+            query = query.order_by(order_by)
+        else:
+            if search_dto.order_by_type == "DESC":
+                order_by = desc(search_dto.order_by)
+            query = query.order_by(order_by).distinct(search_dto.order_by, Project.id)
 
         if search_dto.managed_by and user.role != UserRole.ADMIN.value:
             # Get all the projects associated with the user and team.

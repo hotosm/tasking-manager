@@ -1,11 +1,13 @@
+import axios from 'axios';
 import { subMonths, format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import api from './apiClient';
+import { UNDERPASS_URL } from '../config';
 
-export const useProjectsQuery = (fullProjectsQuery, action) => {
+export const useProjectsQuery = (fullProjectsQuery, action, queryOptions) => {
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
 
@@ -33,12 +35,15 @@ export const useProjectsQuery = (fullProjectsQuery, action) => {
     queryKey: ['projects', fullProjectsQuery, action],
     queryFn: ({ signal, queryKey }) => fetchProjects(signal, queryKey),
     keepPreviousData: true,
+    ...queryOptions,
   });
 };
 
 export const useProjectQuery = (projectId) => {
+  const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences['locale']);
   const fetchProject = ({ signal }) => {
-    return api().get(`projects/${projectId}/`, {
+    return api(token, locale).get(`projects/${projectId}/`, {
       signal,
     });
   };
@@ -49,8 +54,11 @@ export const useProjectQuery = (projectId) => {
   });
 };
 export const useProjectSummaryQuery = (projectId, otherOptions = {}) => {
+  const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences['locale']);
+
   const fetchProjectSummary = ({ signal }) => {
-    return api().get(`projects/${projectId}/queries/summary/`, {
+    return api(token, locale).get(`projects/${projectId}/queries/summary/`, {
       signal,
     });
   };
@@ -185,6 +193,45 @@ export const submitValidationTask = (projectId, payload, token, locale) => {
   );
 };
 
+export const downloadAsCSV = (allQueryParams, action, token) => {
+  const paramsRemapped = remapParamsToAPI(allQueryParams, backendToQueryConversion);
+  // it's needed in order to query by action
+  if (paramsRemapped.action === undefined && action) {
+    paramsRemapped.action = action;
+  }
+
+  if (paramsRemapped.lastUpdatedTo) {
+    paramsRemapped.lastUpdatedTo = format(subMonths(Date.now(), 6), 'yyyy-MM-dd');
+  }
+  return api(token).get('projects/', {
+    params: paramsRemapped,
+  });
+};
+
+export const useAvailableCountriesQuery = () => {
+  const fetchGeojsonData = () => {
+    return axios.get(`${UNDERPASS_URL}/availability`);
+  };
+
+  return useQuery({
+    queryKey: ['priority-geojson'],
+    queryFn: fetchGeojsonData,
+    select: (res) => res.data,
+  });
+};
+
+export const useAllPartnersQuery = (token, userId) => {
+  const fetchAllPartners = () => {
+    return api(token).get('partners/');
+  };
+
+  return useQuery({
+    queryKey: ['all-partners', userId],
+    queryFn: fetchAllPartners,
+    select: (response) => response.data,
+  });
+};
+
 const backendToQueryConversion = {
   difficulty: 'difficulty',
   campaign: 'campaign',
@@ -207,4 +254,7 @@ const backendToQueryConversion = {
   stale: 'lastUpdatedTo',
   createdFrom: 'createdFrom',
   basedOnMyInterests: 'basedOnMyInterests',
+  partnerId: 'partnerId',
+  partnershipFrom: 'partnershipFrom',
+  partnershipTo: 'partnershipTo',
 };

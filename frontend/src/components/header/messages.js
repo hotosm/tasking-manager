@@ -31,6 +31,10 @@ export default defineMessages({
     id: 'header.buttons.logIn',
     defaultMessage: 'Log in',
   },
+  partners: {
+    id: 'header.nav.partners',
+    defaultMessage: 'Partners',
+  },
   signUp: {
     id: 'header.buttons.signUp',
     defaultMessage: 'Sign up',

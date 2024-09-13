@@ -4,6 +4,7 @@ const initialState = {
   locale: null,
   mapShown: false,
   projectListView: false,
+  isExploreProjectsTableView: false,
   action: 'any',
 };
 
@@ -37,6 +38,18 @@ export function preferencesReducer(state = initialState, action) {
       return {
         ...state,
         projectListView: false,
+      };
+    }
+    case types.SET_EXPLORE_PROJECTS_TABLE_VIEW: {
+      return {
+        ...state,
+        isExploreProjectsTableView: true,
+      };
+    }
+    case types.SET_EXPLORE_PROJECTS_CARD_VIEW: {
+      return {
+        ...state,
+        isExploreProjectsTableView: false,
       };
     }
     default:

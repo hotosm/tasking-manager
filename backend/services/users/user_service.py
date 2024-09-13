@@ -604,9 +604,9 @@ class UserService:
         return countries_dto
 
     @staticmethod
-    def upsert_mapped_projects(user_id: int, project_id: int):
+    def upsert_mapped_projects(user_id: int, project_id: int, local_session=None):
         """Add project to mapped projects if it doesn't exist, otherwise return"""
-        User.upsert_mapped_projects(user_id, project_id)
+        User.upsert_mapped_projects(user_id, project_id, local_session=local_session)
 
     @staticmethod
     def get_mapped_projects(user_name: str, preferred_locale: str):

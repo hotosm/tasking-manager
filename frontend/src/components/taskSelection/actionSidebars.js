@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
@@ -28,7 +28,6 @@ import { getEditors } from '../../utils/editorsList';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { getTaskContributors } from '../../utils/getTaskContributors';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { CommentInputField } from '../comments/commentInput';
 import { useFetchLockedTasks, useClearLockedTasks } from '../../hooks/UseLockedTasks';
 import {
   submitMappingTask,
@@ -37,6 +36,11 @@ import {
   stopValidation,
   submitValidationTask,
 } from '../../api/projects';
+import ReactPlaceholder from 'react-placeholder';
+
+const CommentInputField = lazy(() =>
+  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
+);
 
 export function CompletionTabForMapping({
   project,
@@ -185,9 +189,10 @@ export function CompletionTabForMapping({
       )}
       {showReadCommentsAlert && (
         <div
-          className="tc pa2 mb1 bg-grey-light blue-dark pointer"
           role="button"
+          className="tc pa2 mb1 bg-grey-light blue-dark pointer"
           onClick={() => historyTabSwitch()}
+          onKeyDown={() => {}}
         >
           <InfoIcon className="v-mid h1 w1" />
           <span className="ml2 fw1 pa1">
@@ -261,7 +266,7 @@ export function CompletionTabForMapping({
         <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.comment} />
         </h4>
-        <p>
+        <Suspense fallback={<ReactPlaceholder showLoadingAnimation={true} rows={11} delay={300} />}>
           <CommentInputField
             comment={taskComment}
             setComment={setTaskComment}
@@ -270,7 +275,7 @@ export function CompletionTabForMapping({
             enableContributorsHashtag
             isShowTabNavs
           />
-        </p>
+        </Suspense>
       </div>
       {directedFrom && (
         <div className="flex items-center">
@@ -288,7 +293,7 @@ export function CompletionTabForMapping({
           </label>
         </div>
       )}
-      <div className="cf mv2" data-tip>
+      <div className="cf mv2" data-tooltip-id="unsavedChangesEditingTooltip">
         <Button
           className="bg-red white w-100 fl"
           onClick={onSubmitTask}
@@ -303,9 +308,9 @@ export function CompletionTabForMapping({
         </Button>
       </div>
       {disabled && (
-        <ReactTooltip place="top">
+        <Tooltip place="top" id="unsavedChangesEditingTooltip">
           <FormattedMessage {...messages.unsavedChangesTooltip} />
-        </ReactTooltip>
+        </Tooltip>
       )}
       <div className="cf pb1">
         <Button
@@ -536,7 +541,7 @@ export function CompletionTabForValidation({
           </label>
         </div>
       )}
-      <div className="cf mv3" data-tip>
+      <div className="cf mv3" data-tooltip-id="unsavedChangesValidationTooltip">
         <Button
           className="bg-red white w-100 fl"
           onClick={onSubmitTask}
@@ -547,9 +552,9 @@ export function CompletionTabForValidation({
         </Button>
       </div>
       {disabled && (
-        <ReactTooltip place="top">
+        <Tooltip place="top" id="unsavedChangesValidationTooltip">
           <FormattedMessage {...messages.unsavedChangesTooltip} />
-        </ReactTooltip>
+        </Tooltip>
       )}
       <div className="cf">
         <Button
@@ -586,19 +591,12 @@ const TaskValidationSelector = ({
   // the contributors is filled only on the case of single task validation,
   // so we need to fetch the task history in the case of multiple task validation
   useEffect(() => {
-    if (showCommentInput && isValidatingMultipleTasks && !contributors.length) {
+    if (showCommentInput && isValidatingMultipleTasks) {
       fetchLocalJSONAPI(`projects/${projectId}/tasks/${id}/`).then((response) =>
         setContributorsList(getTaskContributors(response.taskHistory, userDetails.username)),
       );
     }
-  }, [
-    isValidatingMultipleTasks,
-    showCommentInput,
-    contributors,
-    id,
-    projectId,
-    userDetails.username,
-  ]);
+  }, [isValidatingMultipleTasks, showCommentInput, id, projectId, userDetails.username]);
 
   return (
     <div className="cf w-100 db pt1 pv2 blue-dark">
@@ -647,14 +645,18 @@ const TaskValidationSelector = ({
       {showCommentInput && (
         <>
           <div className="cf w-100 db pt2">
-            <CommentInputField
-              comment={comment}
-              setComment={setComment}
-              contributors={contributors.length ? contributors : contributorsList}
-              enableHashtagPaste
-              enableContributorsHashtag
-              isShowTabNavs
-            />
+            <Suspense
+              fallback={<ReactPlaceholder showLoadingAnimation={true} rows={11} delay={300} />}
+            >
+              <CommentInputField
+                comment={comment}
+                setComment={setComment}
+                contributors={isValidatingMultipleTasks ? contributorsList : contributors}
+                enableHashtagPaste
+                enableContributorsHashtag
+                isShowTabNavs
+              />
+            </Suspense>
           </div>
           {isValidatingMultipleTasks && comment && (
             <div className="fw5 tr bb b--grey-light bw1 pb2">
@@ -713,6 +715,7 @@ function CompletionInstructions({ setVisibility }: Object) {
       <span
         className="br-100 bg-grey-light white h1 w1 fr pointer tc v-mid di"
         onClick={() => setVisibility(false)}
+        onKeyDown={() => {}}
       >
         <CloseIcon className="pv1" aria-label="hide instructions" />
       </span>
@@ -763,7 +766,6 @@ export function ReopenEditor({ project, action, editor, callEditor }: Object) {
 
 export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
   const iDContext = useSelector((state) => state.editor.context);
-  const rapidContext = useSelector((state) => state.editor.rapidContext);
 
   return (
     <div>
@@ -776,7 +778,6 @@ export function SidebarToggle({ setShowSidebar, activeEditor }: Object) {
               onClick={() => {
                 setShowSidebar(false);
                 activeEditor === 'ID' && iDContext.ui().restart();
-                activeEditor === 'RAPID' && rapidContext.ui().restart();
               }}
             />
           </div>
@@ -836,6 +837,7 @@ function TaskSpecificInstructions({ instructions, open = true }: Object) {
         className="ttu blue-grey mt1 mb0 pointer"
         role="button"
         onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={() => {}}
       >
         {isOpen ? (
           <ChevronDownIcon style={{ height: '14px' }} className="pr1 pb1 v-mid" />

@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function TopBar({ pageName }: Object) {
   return (
     <div className="cf w-100 bg-mask">

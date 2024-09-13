@@ -12,6 +12,8 @@ from sqlalchemy.sql.expression import cast, or_
 from sqlalchemy import desc, func, Time, orm, literal
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.ext.hybrid import hybrid_property
+
 import requests
 
 from backend import db
@@ -61,6 +63,7 @@ from backend.models.postgis.utils import (
 )
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.interests import Interest, project_interests
+import os
 
 # Secondary table defining many-to-many join for projects that were favorited by users.
 project_favorites = db.Table(
@@ -198,6 +201,19 @@ class Project(db.Model):
     tasks_validated = db.Column(db.Integer, default=0, nullable=False)
     tasks_bad_imagery = db.Column(db.Integer, default=0, nullable=False)
 
+    # Total tasks are always >= 1
+    @hybrid_property
+    def percent_mapped(self):
+        return (
+            (self.tasks_mapped + self.tasks_validated)
+            / (self.total_tasks - self.tasks_bad_imagery)
+            * 100
+        )
+
+    @hybrid_property
+    def percent_validated(self):
+        return self.tasks_validated / (self.total_tasks - self.tasks_bad_imagery) * 100
+
     # Mapped Objects
     tasks = db.relationship(
         Task, backref="projects", cascade="all, delete, delete-orphan", lazy="dynamic"
@@ -223,6 +239,7 @@ class Project(db.Model):
     interests = db.relationship(
         Interest, secondary=project_interests, backref="projects"
     )
+    partnerships = db.relationship("ProjectPartnership", backref="project")
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
@@ -266,8 +283,16 @@ class Project(db.Model):
         url = "{0}/reverse?format=jsonv2&lat={1}&lon={2}&accept-language=en".format(
             current_app.config["OSM_NOMINATIM_SERVER_URL"], lat, lng
         )
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/58.0.3029.110 Safari/537.3"
+            ),
+            "Referer": os.environ.get("TM_APP_BASE_URL", "https://example.com"),
+        }
         try:
-            response = requests.get(url)
+            response = requests.get(url, headers=headers)
             response.raise_for_status()
             country_info = response.json()  # returns a dict
             if country_info["address"].get("country") is not None:

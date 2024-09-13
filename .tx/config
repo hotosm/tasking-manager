@@ -30,4 +30,3 @@ trans.el    = frontend/src/locales/el.json
 trans.it    = frontend/src/locales/it.json
 trans.ja    = frontend/src/locales/ja.json
 trans.zh_TW = frontend/src/locales/zh_TW.json
-

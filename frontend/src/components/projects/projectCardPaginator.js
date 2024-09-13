@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { PaginatorLine } from '../paginator';
 
 export const ProjectCardPaginator = ({ status, pagination, fullProjectsQuery, setQueryParam }) => {
@@ -15,7 +13,8 @@ export const ProjectCardPaginator = ({ status, pagination, fullProjectsQuery, se
       );
   };
 
-  if (!apiIsFetched) {
+  // do not show pagination when the data is being fetched or it has zero results
+  if (!apiIsFetched || !pagination?.total) {
     return null;
   }
   const activePage = (apiIsFetched && pagination?.page) || 1;

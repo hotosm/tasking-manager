@@ -1,12 +1,11 @@
-import React from 'react';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { ORG_CODE } from '../../config';
 import { createPopup } from '../../utils/login';
 import { getTwitterLink, getLinkedInLink, getFacebookLink } from '../../utils/shareFunctions';
-import { TwitterIconNoBg, FacebookIcon, LinkedinIcon, ShareIcon } from '../svgIcons';
+import { TwitterIcon, FacebookIcon, LinkedinIcon, ShareIcon } from '../svgIcons';
 
 export function ShareButton({ projectId }: Object) {
   const iconStyle = { width: '1.4em', height: '1.4em' };
@@ -24,13 +23,13 @@ export function ShareButton({ projectId }: Object) {
 
   return (
     <>
-      <div className="flex items-center" data-for="shareProject" data-tip="custom show">
+      <div className="flex items-center" data-tooltip-id="shareProjectTooltip">
         <ShareIcon className="pr2 blue-grey" />
         <span className="dn db-ns">
           <FormattedMessage {...messages.share} />
         </span>
       </div>
-      <ReactTooltip delayHide={500} effect="solid" clickable={true} id="shareProject">
+      <Tooltip delayHide={500} clickable={true} id="shareProjectTooltip" place={'top'}>
         <FormattedMessage
           {...messages.shareMessage}
           values={{ id: projectId, site: `${ORG_CODE} Tasking Manager` }}
@@ -41,7 +40,7 @@ export function ShareButton({ projectId }: Object) {
                 className="link no-underline base-font f6 pointer pv1"
                 onClick={() => twitterPopup(msg)}
               >
-                <TwitterIconNoBg style={iconStyle} className="light-blue v-mid pb1 pr2" />
+                <TwitterIcon style={iconStyle} className="light-blue v-mid pb1 pr2" />
                 Tweet
               </div>
               <div
@@ -58,7 +57,7 @@ export function ShareButton({ projectId }: Object) {
           <LinkedinIcon style={iconStyle} className="blue v-mid pb1 pr2" />
           <FormattedMessage {...messages.shareOnLinkedIn} />
         </div>
-      </ReactTooltip>
+      </Tooltip>
     </>
   );
 }

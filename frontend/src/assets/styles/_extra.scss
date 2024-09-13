@@ -309,7 +309,7 @@ a[href="https://www.mapbox.com/map-feedback/"]
   object-fit: contain;
 }
 
-#shareProject {
+#shareProjectTooltip {
   background-color: $white;
   color: $blue-dark;
   border-color: $blue-dark;
@@ -448,12 +448,20 @@ a[href="https://www.mapbox.com/map-feedback/"]
 .two-column {
   grid-template-columns: 6fr 4fr;
 }
-
+.graphics-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.input-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 600px));
+}
 .cards-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1rem;
-  grid-auto-rows: 370px;
+  grid-auto-rows: 360px;
 }
 
 .b--card {
@@ -615,4 +623,23 @@ a[href="https://www.mapbox.com/map-feedback/"]
 // Remove tachyons outline
 .link:focus {
   outline: revert;
+}
+
+// Override tachyons font-family for code tag
+.code {
+  font-family: inherit;
+}
+
+// margin auto
+.mt-auto {
+  margin-top: auto;
+}
+.mb-auto {
+  margin-bottom: auto;
+}
+.ml-auto {
+  margin-left: auto;
+}
+.mr-auto {
+  margin-right: auto;
 }

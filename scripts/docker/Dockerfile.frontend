@@ -1,10 +1,11 @@
-FROM node:16 as build
+FROM node:18.19.1 as build
 
 WORKDIR /usr/src/app/frontend
 COPY frontend .
 
 ## SETUP
-RUN npm install
+RUN git config --global url.https://github.com/.insteadOf git@github.com: \
+    && npm install --ignore-scripts
 
 # SERVE
 COPY tasking-manager.env ..

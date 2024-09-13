@@ -330,6 +330,10 @@ class ProjectSearchDTO(Model):
     last_updated_gte = StringType(required=False)
     created_lte = StringType(required=False)
     created_gte = StringType(required=False)
+    partner_id = IntType(required=False)
+    partnership_from = StringType(required=False)
+    partnership_to = StringType(required=False)
+    download_as_csv = BooleanType(required=False)
 
     def __hash__(self):
         """Make object hashable so we can cache user searches"""
@@ -401,6 +405,11 @@ class ListSearchResultDTO(Model):
     due_date = UTCDateTimeType(serialized_name="dueDate")
     total_contributors = IntType(serialized_name="totalContributors")
     country = StringType(serialize_when_none=False)
+
+    creation_date = UTCDateTimeType(serialized_name="creationDate", required=True)
+    author = StringType(serialize_when_none=False)
+    partner_names = ListType(StringType, serialized_name="partnerNames")
+    total_area = FloatType(required=True, serialized_name="totalAreaSquareKilometers")
 
 
 class ProjectSearchResultsDTO(Model):

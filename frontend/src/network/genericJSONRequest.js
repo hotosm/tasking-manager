@@ -1,12 +1,21 @@
 import { handleErrors } from '../utils/promise';
 import { API_URL } from '../config';
 
-export function fetchExternalJSONAPI(url): Promise<*> {
+/**
+ * Fetch data from an external JSON API
+ * @param {string} url The url to fetch from
+ * @param {RequestInit} [init={}}] Any specific init options you want to pass the fetch (such as an {@link AbortSignal})
+ * @returns {Promise<*>} A promise that returns a JSON or an error
+ */
+export function fetchExternalJSONAPI(url, init = {}): Promise<*> {
+  if (!init.headers) {
+    init.headers = { 'Content-Type': 'application/json' };
+  }
+  init.headers['Content-Type'] = 'application/json';
+
   return fetch(url, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    ...init,
   })
     .then(handleErrors)
     .then((res) => {
