@@ -4,6 +4,7 @@ import { InfoIcon } from '../components/svgIcons';
 import { Overview } from '../components/partnerMapswipeStats/overview';
 import { GroupMembers } from '../components/partnerMapswipeStats/groupMembers';
 import { ContributionsGrid } from '../components/partnerMapswipeStats/contributionsGrid';
+import { ContributionsHeatmap } from '../components/partnerMapswipeStats/contributionsHeatmap';
 import { TimeSpentContributing } from '../components/partnerMapswipeStats/timeSpentContributing';
 import { TimeSpentContributingByDay } from '../components/partnerMapswipeStats/timeSpentContributingByDay';
 import { ProjectTypeAreaStats } from '../components/partnerMapswipeStats/projectTypeAreaStats';
@@ -32,6 +33,10 @@ export const PartnersMapswipeStats = () => {
 
       <div className="mt3">
         <ContributionsGrid />
+      </div>
+
+      <div className="mt3">
+        <ContributionsHeatmap />
       </div>
 
       <div className="mt3">
