@@ -128,6 +128,7 @@ class MapswipeService:
         group_stats = requests.post(
             MAPSWIPE_API_URL,
             data=self.__build_query_user_group_stats(group_id, limit, offset),
+            headers={"Content-Type": "application/json"},
         )
         print("group_stats", group_stats)
 
@@ -145,6 +146,7 @@ class MapswipeService:
             MAPSWIPE_API_URL,
             data=self.__build_query_filtered_user_group_stats(
                 group_id, from_date, to_date
+            headers={"Content-Type": "application/json"},
             ),
         )
         print("filtered_group_stats", filtered_group_stats)
