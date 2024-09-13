@@ -1,0 +1,133 @@
+{
+  "data": {
+    "userGroup": {
+      "id": "-NL6WXPOdFyWACqwNU2O",
+      "userGroupId": "-NL6WXPOdFyWACqwNU2O",
+      "name": "American Red Cross",
+      "description": "",
+      "userMemberships": {
+        "count": 531,
+        "items": [
+          {
+            "id": "05AfE1oB5vY6EbPqEjkdR9o0s4D3--NL6WXPOdFyWACqwNU2O",
+            "userId": "05AfE1oB5vY6EbPqEjkdR9o0s4D3",
+            "username": "jaiC",
+            "isActive": true,
+            "totalMappingProjects": 3,
+            "totalSwipeTime": 6288,
+            "totalSwipes": 1380,
+            "__typename": "UserGroupUserMembershipType"
+          },
+          {
+            "id": "08zR2YnWNXh8b5sFd2xEVa2c2t53--NL6WXPOdFyWACqwNU2O",
+            "userId": "08zR2YnWNXh8b5sFd2xEVa2c2t53",
+            "username": "jainMedha",
+            "isActive": true,
+            "totalMappingProjects": 3,
+            "totalSwipeTime": 1580,
+            "totalSwipes": 518,
+            "__typename": "UserGroupUserMembershipType"
+          },
+          {
+            "id": "09G9UqZq9yODe5XRl1ekhchba3x1--NL6WXPOdFyWACqwNU2O",
+            "userId": "09G9UqZq9yODe5XRl1ekhchba3x1",
+            "username": "Micah",
+            "isActive": true,
+            "totalMappingProjects": 18,
+            "totalSwipeTime": 9469,
+            "totalSwipes": 3455,
+            "__typename": "UserGroupUserMembershipType"
+          },
+          {
+            "id": "0f1KIx0VmmRcqxdwOp2jnlZyNWx2--NL6WXPOdFyWACqwNU2O",
+            "userId": "0f1KIx0VmmRcqxdwOp2jnlZyNWx2",
+            "username": "divvs2007",
+            "isActive": true,
+            "totalMappingProjects": 1,
+            "totalSwipeTime": 381,
+            "totalSwipes": 111,
+            "__typename": "UserGroupUserMembershipType"
+          },
+          {
+            "id": "0fXvDI22YrUuiCOGbQPbln5Bbru2--NL6WXPOdFyWACqwNU2O",
+            "userId": "0fXvDI22YrUuiCOGbQPbln5Bbru2",
+            "username": "tannu365",
+            "isActive": true,
+            "totalMappingProjects": 1,
+            "totalSwipeTime": 1611,
+            "totalSwipes": 407,
+            "__typename": "UserGroupUserMembershipType"
+          },
+          {
+            "id": "0k4JHPdKrFNJhRgn7BOZX14MU2v1--NL6WXPOdFyWACqwNU2O",
+            "userId": "0k4JHPdKrFNJhRgn7BOZX14MU2v1",
+            "username": "arfah234",
+            "isActive": true,
+            "totalMappingProjects": 2,
+            "totalSwipeTime": 1459,
+            "totalSwipes": 561,
+            "__typename": "UserGroupUserMembershipType"
+          },
+          {
+            "id": "0kSwoyz6jgXhicD9r0FDsmExtk32--NL6WXPOdFyWACqwNU2O",
+            "userId": "0kSwoyz6jgXhicD9r0FDsmExtk32",
+            "username": "Gabrielle Sarsok",
+            "isActive": true,
+            "totalMappingProjects": 0,
+            "totalSwipeTime": 0,
+            "totalSwipes": 0,
+            "__typename": "UserGroupUserMembershipType"
+          },
+          {
+            "id": "0N1lhg0NJAN6lvAfEBkhzXnXgv53--NL6WXPOdFyWACqwNU2O",
+            "userId": "0N1lhg0NJAN6lvAfEBkhzXnXgv53",
+            "username": "ashleycruzc",
+            "isActive": true,
+            "totalMappingProjects": 2,
+            "totalSwipeTime": 3273,
+            "totalSwipes": 1406,
+            "__typename": "UserGroupUserMembershipType"
+          },
+          {
+            "id": "0QCwiA4kCzac6rlsedwmu5vPJb53--NL6WXPOdFyWACqwNU2O",
+            "userId": "0QCwiA4kCzac6rlsedwmu5vPJb53",
+            "username": "tanvi",
+            "isActive": true,
+            "totalMappingProjects": 7,
+            "totalSwipeTime": 28628,
+            "totalSwipes": 7103,
+            "__typename": "UserGroupUserMembershipType"
+          },
+          {
+            "id": "0QQCPKsz2Bh3HtmseOBqSFN6qiq2--NL6WXPOdFyWACqwNU2O",
+            "userId": "0QQCPKsz2Bh3HtmseOBqSFN6qiq2",
+            "username": "janyapatel",
+            "isActive": true,
+            "totalMappingProjects": 5,
+            "totalSwipeTime": 1280,
+            "totalSwipes": 836,
+            "__typename": "UserGroupUserMembershipType"
+          }
+        ],
+        "__typename": "UserGroupUserMembershipTypeCountList"
+      },
+      "__typename": "UserGroupType"
+    },
+    "userGroupStats": {
+      "id": "-NL6WXPOdFyWACqwNU2O",
+      "stats": {
+        "totalContributors": 432,
+        "totalSwipes": 1095815,
+        "totalSwipeTime": 2902427,
+        "__typename": "UserGroupStatsType"
+      },
+      "statsLatest": {
+        "totalContributors": 56,
+        "totalSwipeTime": 178588,
+        "totalSwipes": 65212,
+        "__typename": "UserGroupLatestStatsType"
+      },
+      "__typename": "UserGroupStats"
+    }
+  }
+}
