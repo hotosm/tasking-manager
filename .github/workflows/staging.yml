@@ -3,17 +3,16 @@ on:
   push:
     branches:
       - staging
-      - 202408-catchup
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js 16
-      uses: actions/setup-node@v1
+    - uses: actions/checkout@v4
+    - name: Use Node.js 18.19.1
+      uses: actions/setup-node@v4
       with:
-        node-version: '16'
+        node-version: '18.19.1'
     - name: Yarn Install
       run: |
         cd frontend && yarn cache clean && yarn install
@@ -52,8 +51,8 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
         SOURCE_DIR: "frontend/build"
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.7'
     - name: Install aws cli
