@@ -894,7 +894,7 @@ class UserService:
 
             if (
                 osm_details.changeset_count > advanced_level.value
-                and user_level != MappingLevel.ADVANCED.value
+                and user["mapping_level"] != MappingLevel.ADVANCED.value
             ):
                 update_query = """
                     UPDATE users
@@ -906,21 +906,21 @@ class UserService:
                     {"new_level": MappingLevel.ADVANCED.value, "user_id": user_id},
                 )
                 await UserService.notify_level_upgrade(
-                    user_id, user.username, "ADVANCED", db
+                    user_id, user["username"], "ADVANCED", db
                 )
 
             elif (
                 intermediate_level.value
                 < osm_details.changeset_count
                 < advanced_level.value
-                and user_level != MappingLevel.INTERMEDIATE.value
+                and user["mapping_level"] != MappingLevel.INTERMEDIATE.value
             ):
                 await db.execute(
                     update_query,
                     {"new_level": MappingLevel.INTERMEDIATE.value, "user_id": user_id},
                 )
                 await UserService.notify_level_upgrade(
-                    user_id, user.username, "INTERMEDIATE", db
+                    user_id, user["username"], "INTERMEDIATE", db
                 )
 
         except OSMServiceError:
