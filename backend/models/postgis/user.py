@@ -1,7 +1,6 @@
 import geojson
 from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Boolean, ARRAY
 from sqlalchemy.orm import relationship
-from sqlalchemy import desc
 
 from backend.exceptions import NotFound
 from backend.models.dtos.user_dto import (
@@ -222,37 +221,53 @@ class User(Base):
         return session.query(User.id).all()
 
     @staticmethod
-    def filter_users(user_filter: str, project_id: int, page: int) -> UserFilterDTO:
-        """Finds users that matches first characters, for auto-complete.
+    async def filter_users(
+        username: str, project_id: int, page: int, db: Database
+    ) -> UserFilterDTO:
+        """Finds users that match the first characters, for auto-complete.
 
         Users who have participated (mapped or validated) in the project, if given, will be
         returned ahead of those who have not.
         """
-        # Note that the projects_mapped column includes both mapped and validated projects.
-        query = (
-            session.query(
-                User.username, User.projects_mapped.any(project_id).label("participant")
-            )
-            .filter(User.username.ilike(user_filter.lower() + "%"))
-            .order_by(desc("participant").nullslast(), User.username)
-        )
+        query = """
+            SELECT u.username, :project_id = ANY(u.projects_mapped) AS participant
+            FROM users u
+            WHERE u.username ILIKE :username || '%'
+            ORDER BY participant DESC NULLS LAST, u.username
+            LIMIT 20 OFFSET :offset
+        """
 
-        results = query.paginate(page=page, per_page=20, error_out=True)
+        offset = (page - 1) * 20
+        values = {
+            "username": username.lower(),
+            "project_id": project_id,
+            "offset": offset,
+        }
 
-        if results.total == 0:
-            raise NotFound(sub_code="USER_NOT_FOUND", username=user_filter)
+        results = await db.fetch_all(query, values=values)
+
+        if not results:
+            raise NotFound(sub_code="USER_NOT_FOUND", username=username)
 
         dto = UserFilterDTO()
-        for result in results.items:
-            dto.usernames.append(result.username)
+        for result in results:
+            dto.usernames.append(result["username"])
             if project_id is not None:
-                participant = ProjectParticipantUser()
-                participant.username = result.username
-                participant.project_id = project_id
-                participant.is_participant = bool(result.participant)
+                participant = ProjectParticipantUser(
+                    username=result["username"],
+                    project_id=project_id,
+                    is_participant=bool(result["participant"]),
+                )
                 dto.users.append(participant)
 
-        dto.pagination = Pagination(results)
+        total_query = """
+            SELECT COUNT(*) FROM users u WHERE u.username ILIKE :username || '%'
+        """
+        total = await db.fetch_val(total_query, values={"username": username.lower()})
+        dto.pagination = Pagination.from_total_count(
+            page=page, per_page=20, total=total
+        )
+
         return dto
 
     @staticmethod
