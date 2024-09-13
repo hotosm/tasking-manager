@@ -174,8 +174,12 @@ async def get(
 # class UsersQueriesUsernameAPI():
 # @token_auth.login_required
 @router.get("/queries/{username}/")
-@requires("authenticated")
-async def get(request: Request, username):
+async def get(
+    request: Request,
+    username: str,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Get user information by OpenStreetMap username
     ---
@@ -206,15 +210,19 @@ async def get(request: Request, username):
         500:
             description: Internal Server Error
     """
-    user_dto = UserService.get_user_dto_by_username(username, request.user.display_name)
-    return user_dto.model_dump(by_alias=True), 200
+    user_dto = await UserService.get_user_dto_by_username(username, user.id, db)
+    return user_dto
 
 
 # class UsersQueriesUsernameFilterAPI():
 # @token_auth.login_required
 @router.get("/queries/filter/{username}/")
-@requires("authenticated")
-async def get(request: Request, username):
+async def get(
+    request: Request,
+    username,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Get paged lists of users matching OpenStreetMap username filter
     ---
@@ -255,9 +263,9 @@ async def get(request: Request, username):
     page = (
         int(request.query_params.get("page")) if request.query_params.get("page") else 1
     )
-    project_id = request.query_params.get("projectId", None)
-    users_dto = UserService.filter_users(username, project_id, page)
-    return users_dto.model_dump(by_alias=True), 200
+    project_id = int(request.query_params.get("projectId", None))
+    users_dto = await UserService.filter_users(username, project_id, page, db)
+    return users_dto
 
 
 # class UsersQueriesOwnLockedAPI():
