@@ -228,6 +228,18 @@ export default defineMessages({
     id: 'project.sortby.more_active',
     defaultMessage: 'Active projects',
   },
+  sortByDueDateAsc: {
+    id: 'project.sortby.due_date',
+    defaultMessage: 'Due Soon',
+  },
+  sortByPercentMappedDesc: {
+    id: 'project.sortby.percent_mapped',
+    defaultMessage: 'Most Mapped',
+  },
+  sortByPercentValidatedDesc: {
+    id: 'project.sortby.percent_validated',
+    defaultMessage: 'Most Validated',
+  },
   apply: {
     id: 'project.nav.apply',
     defaultMessage: 'Apply',
@@ -239,5 +251,85 @@ export default defineMessages({
   retry: {
     id: 'project.results.retry',
     defaultMessage: 'Retry',
+  },
+  partner: {
+    id: 'project.navFilters.partner',
+    defaultMessage: 'Partner',
+  },
+  partnerDates: {
+    id: 'project.navFilters.partnerDates',
+    defaultMessage: 'Partner Dates',
+  },
+  partnerFromDate: {
+    id: 'project.navFilters.partnerFromDate',
+    defaultMessage: 'Date From',
+  },
+  partnerEndDate: {
+    id: 'project.navFilters.partnerEndDate',
+    defaultMessage: 'Date To',
+  },
+  nameColumn: {
+    id: 'project.table.name.column',
+    defaultMessage: 'Name',
+  },
+  authorColumn: {
+    id: 'project.table.author.column',
+    defaultMessage: 'Author',
+  },
+  organisationColumn: {
+    id: 'project.table.organisation.column',
+    defaultMessage: 'Organisation',
+  },
+  progressColumn: {
+    id: 'project.table.progress.column',
+    defaultMessage: 'Progress',
+  },
+  contributorsColumn: {
+    id: 'project.table.contributors.column',
+    defaultMessage: 'Contributors',
+  },
+  priorityColumn: {
+    id: 'project.table.priority.column',
+    defaultMessage: 'Priority',
+  },
+  difficultyColumn: {
+    id: 'project.table.difficulty.column',
+    defaultMessage: 'Difficulty',
+  },
+  statusColumn: {
+    id: 'project.table.status.column',
+    defaultMessage: 'Status',
+  },
+  locationColumn: {
+    id: 'project.table.location.column',
+    defaultMessage: 'Location',
+  },
+  lastUpdatedColumn: {
+    id: 'project.table.lastUpdated.column',
+    defaultMessage: 'Last updated',
+  },
+  dueDateColumn: {
+    id: 'project.table.dueDate.column',
+    defaultMessage: 'Due date',
+  },
+  percentMapped: {
+    id: 'project.table.percentMapped',
+    defaultMessage: '{n}% mapped',
+  },
+  percentValidated: {
+    id: 'project.table.percentValidated',
+    defaultMessage: '{n}% validated',
+  },
+  downloadAsCSV: {
+    id: 'project.table.downloadAsCSV',
+    defaultMessage: 'Download CSV',
+  },
+  downloadAsCSVError: {
+    id: 'project.table.downloadAsCSV.error',
+    defaultMessage: 'Something went wrong. Could not download CSV.',
+  },
+  projectsTableEmpty: {
+    id: 'project.table.empty',
+    defaultMessage: 'No projects were found. Try updating the search term or filters if any.',
   },
 });

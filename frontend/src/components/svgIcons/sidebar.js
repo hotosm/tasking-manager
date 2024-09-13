@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class SidebarIcon extends React.PureComponent {
+export class SidebarIcon extends PureComponent {
   render() {
     return (
       <svg width="20px" height="20px" viewBox="0 0 20 20" {...this.props}>

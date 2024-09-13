@@ -14,8 +14,8 @@
         Hi {{ values["USERNAME"] }}
     </h1>
     <p style="margin-bottom: 1.714rem; line-height: 1.5;">
-      you recently participated in the mapping project - 
-      <a style="color: #d73f3f; font-weight: 700" href="{{values['APP_BASE_URL']}}/projects/{{values['PROJECT_ID']}}">{{values['PROJECT_NAME']}}</a> - on the 
+      you recently participated in the mapping project -
+      <a style="color: #d73f3f; font-weight: 700" href="{{values['APP_BASE_URL']}}/projects/{{values['PROJECT_ID']}}">{{values['PROJECT_NAME']}}</a> - on the
       <a style="color: #d73f3f; font-weight: 700" href="{{values['APP_BASE_URL']}}">{{values["ORG_CODE"]}} Tasking Manager</a>.
       We want to inform you the project has reached <span style=" font-weight: 700">{{ values["PROJECT_COMPLETION"] }}% </span> of completeness.
       <br> <br>
@@ -37,10 +37,10 @@
           Hi {{ values["USERNAME"] }}
       </h1>
       <p style="margin-bottom: 1.714rem; line-height: 1.5;">
-        you recently participated in the mapping project - 
-        <a style="color: #d73f3f; font-weight: 700" href="{{values['APP_BASE_URL']}}/projects/{{values['PROJECT_ID']}}">{{values['PROJECT_NAME']}}</a> - on the 
+        you recently participated in the mapping project -
+        <a style="color: #d73f3f; font-weight: 700" href="{{values['APP_BASE_URL']}}/projects/{{values['PROJECT_ID']}}">{{values['PROJECT_NAME']}}</a> - on the
         <a style="color: #d73f3f; font-weight: 700" href="{{values['APP_BASE_URL']}}">{{values["ORG_CODE"]}} Tasking Manager</a>.
-        We want to inform you the project has been completed. It is time to celebrate! 
+        We want to inform you the project has been completed. It is time to celebrate!
         <br>
         Do you want to continue? Find the suitable project for you here: <a style="color: #d73f3f" href="{{values['APP_BASE_URL']}}/explore">{{values['APP_BASE_URL']}}/explore</a>
       </p>
@@ -92,7 +92,7 @@
                   aria-label=""
                   style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; margin-bottom:2.285rem;"> <!-- Noncompliant -->
                   <th style="width:60%;">
-                    <img style="text-decoration: none; font-weight: normal;" 
+                    <img style="text-decoration: none; font-weight: normal;"
                       src={{ project.org_logo }}
                       alt="logo of the organization" height="32"/>
                   </th>
@@ -109,19 +109,19 @@
                     <p style="
                             padding: 5px 8px;
                             border-radius: 2px;
-                            border: 1px solid #faa71e; 
+                            border: 1px solid #faa71e;
                             color: #faa71e;">
                       {% elif project.priority == "MEDIUM" %}
                     <p style="
                             padding: 5px 8px;
                             border-radius: 2px;
-                            border: 1px solid #929DB3; 
+                            border: 1px solid #929DB3;
                             color: #929DB3;">
                       {% elif project.priority == "LOW" %}
                     <p style="
                             padding: 5px 8px;
                             border-radius: 2px;
-                            border: 1px solid #68707f; 
+                            border: 1px solid #68707f;
                             color: #68707f;">
                       {% endif %}
                       {{ project.priority }}
@@ -189,8 +189,8 @@
                     </div>
                   </div>
                 </div>
-                <table 
-                  aria-label=""  
+                <table
+                  aria-label=""
                   style="
                     margin-top: 4px;
                     align-items: center;

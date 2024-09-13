@@ -221,9 +221,12 @@ class User(db.Model):
         return dto
 
     @staticmethod
-    def upsert_mapped_projects(user_id: int, project_id: int):
+    def upsert_mapped_projects(user_id: int, project_id: int, local_session=None):
         """Adds projects to mapped_projects if it doesn't exist"""
-        query = User.query.filter_by(id=user_id)
+        if local_session:
+            query = local_session.query(User).filter_by(id=user_id)
+        else:
+            query = User.query.filter_by(id=user_id)
         result = query.filter(
             User.projects_mapped.op("@>")("{}".format("{" + str(project_id) + "}"))
         ).count()
@@ -235,7 +238,10 @@ class User(db.Model):
         if user.projects_mapped is None:
             user.projects_mapped = []
         user.projects_mapped.append(project_id)
-        db.session.commit()
+        if local_session:
+            local_session.commit()
+        else:
+            db.session.commit()
 
     @staticmethod
     def get_mapped_projects(

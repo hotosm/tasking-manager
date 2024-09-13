@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -6,7 +5,7 @@ import {
   BarElement,
   Tooltip,
   Legend,
-  TimeScale,
+  TimeSeriesScale,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
@@ -16,8 +15,9 @@ import messages from '../projectDetail/messages';
 import { CHART_COLOURS } from '../../config';
 import { useTimeDiff } from '../../hooks/UseTimeDiff';
 import { formatTasksStatsData, formatTimelineTooltip } from '../../utils/formatChartJSData';
+import { xAxisTimeSeries } from '../../utils/chart';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend, TimeScale);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend, TimeSeriesScale);
 
 const TasksStatsChart = ({ stats }) => {
   const intl = useIntl();
@@ -39,21 +39,16 @@ const TasksStatsChart = ({ stats }) => {
       },
     },
     scales: {
-      yAxes: [
-        {
-          stacked: true,
-          ticks: {
-            beginAtZero: true,
-          },
+      y: {
+        stacked: true,
+        ticks: {
+          beginAtZero: true,
         },
-      ],
-      xAxes: [
-        {
-          stacked: true,
-          type: 'time',
-          time: { unit: unit },
-        },
-      ],
+      },
+      x: {
+        stacked: true,
+        ...xAxisTimeSeries(unit),
+      },
     },
   };
   return (

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, matchRoutes, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
@@ -23,7 +23,7 @@ import {
 import './styles.scss';
 
 const socialNetworks = [
-  { link: ORG_TWITTER, icon: <TwitterIcon style={{ height: '20px', width: '20px' }} /> },
+  { link: ORG_TWITTER, icon: <TwitterIcon style={{ height: '20px', width: '20px' }} noBg /> },
   { link: ORG_FB, icon: <FacebookIcon style={{ height: '20px', width: '20px' }} /> },
   { link: ORG_YOUTUBE, icon: <YoutubeIcon style={{ height: '20px', width: '20px' }} /> },
   { link: ORG_INSTAGRAM, icon: <InstagramIcon style={{ height: '20px', width: '20px' }} /> },
@@ -38,12 +38,14 @@ export function Footer() {
     'projects/:id/tasks',
     'projects/:id/map',
     'projects/:id/validate',
+    'projects/:id/live',
     'manage/organisations/new/',
     'manage/teams/new',
     'manage/campaigns/new',
     'manage/projects/new',
     'manage/categories/new',
     'manage/licenses/new',
+    'manage/partners/new',
     'teams/:id/membership',
     '/api-docs/',
   ];
@@ -89,6 +91,18 @@ export function Footer() {
             ))}
           </div>
         </div>
+
+        {/* AWS logo */}
+        <div className="flex justify-end-ns">
+          <a href="https://aws.amazon.com/what-is-cloud-computing" target="_blank" rel="noreferrer">
+            <img
+              src="https://d0.awsstatic.com/logos/powered-by-aws-white.png"
+              alt="Powered by AWS Cloud Computing"
+              style={{ height: '3rem' }}
+            />
+          </a>
+        </div>
+
         <div className="flex justify-between flex-column flex-row-ns">
           <div className="pt2 mb2 f6 w-50-l w-100">
             <div className="pb3 lh-title mw6">

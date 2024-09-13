@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -34,7 +34,7 @@ export function Settings() {
         </div>
         <div className="fl w-100 w-40-l pb3 pl3-l">
           <PersonalInformationForm />
-          <OSMCard username={userDetails.username} />
+          {userDetails?.username && <OSMCard username={userDetails.username} />}
         </div>
       </div>
     </div>

@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const LocaleOption = ({ localeCode, name, isActive, hasValue, onClick }) => {
   const additionalClasses = isActive
     ? 'bg-blue-grey fw6 white'

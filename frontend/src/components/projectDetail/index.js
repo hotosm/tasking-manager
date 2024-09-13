@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
 import { supported } from 'mapbox-gl';
+import PropTypes from 'prop-types';
 
 import messages from './messages';
 import viewsMessages from '../../views/messages';
@@ -20,15 +21,19 @@ import { PermissionBox } from './permissionBox';
 import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
+import { LiveViewButton } from './liveViewButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
+import useHasLiveMonitoringFeature from '../../hooks/UseHasLiveMonitoringFeature';
 import { useProjectContributionsQuery, useProjectTimelineQuery } from '../../api/projects';
 import { Alert } from '../alert';
 
 import './styles.scss';
 import { useWindowSize } from '../../hooks/UseWindowSize';
+import { DownloadOsmData } from './downloadOsmData.js';
+import { ENABLE_EXPORT_TOOL } from '../../config/index.js';
 
 /* lazy imports must be last import */
-const ProjectTimeline = React.lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
+const ProjectTimeline = lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
 
 const ProjectDetailMap = (props) => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
@@ -78,7 +83,13 @@ const ProjectDetailMap = (props) => {
           }}
         >
           <div className="cf ttu bg-white barlow-condensed f4 pv2">
-            <span onClick={(e) => setTaskBordersOnly(false)} className="pb2 mh2 pointer ph2">
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={() => setTaskBordersOnly(false)}
+              onKeyDown={() => setTaskBordersOnly(false)}
+              className="pb2 mh2 pointer ph2 "
+            >
               <FormattedMessage {...messages.zoomToTasks} />
             </span>
           </div>
@@ -88,7 +99,7 @@ const ProjectDetailMap = (props) => {
   );
 };
 
-export const ProjectDetailLeft = ({ project, contributors, className, type }: Object) => {
+export const ProjectDetailLeft = ({ project, contributors, className, type }) => {
   const htmlShortDescription =
     project.projectInfo && htmlFromMarkdown(project.projectInfo.shortDescription);
 
@@ -134,6 +145,8 @@ export const ProjectDetail = (props) => {
   const { data: timelineData, status: timelineDataStatus } = useProjectTimelineQuery(
     props.project.projectId,
   );
+
+  const hasLiveMonitoringFeature = useHasLiveMonitoringFeature();
 
   const htmlDescription =
     props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
@@ -285,6 +298,26 @@ export const ProjectDetail = (props) => {
           />
         )}
       </div>
+
+      {/* Download OSM Data section Start */}
+      {/* Converted String to Integer */}
+      {+ENABLE_EXPORT_TOOL === 1 && (
+        <div className="bg-tan-dim">
+          <a href="#downloadOsmData" name="downloadOsmData" style={{ visibility: 'hidden' }}>
+            <FormattedMessage {...messages.downloadOsmData} />
+          </a>
+          <h3 className={`${h2Classes}`}>
+            <FormattedMessage {...messages.downloadOsmData} />
+          </h3>
+          <DownloadOsmData
+            projectMappingTypes={props?.project?.mappingTypes}
+            project={props.project}
+          />
+        </div>
+      )}
+
+      {/* Download OSM Data section End */}
+
       <a href="#contributionTimeline" style={{ visibility: 'hidden' }} name="contributionTimeline">
         <FormattedMessage {...messages.contributionsTimeline} />
       </a>
@@ -302,9 +335,9 @@ export const ProjectDetail = (props) => {
             </Alert>
           )}
           {timelineDataStatus === 'success' && (
-            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+            <Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
               <ProjectTimeline tasksByDay={timelineData} />
-            </React.Suspense>
+            </Suspense>
           )}
         </div>
         <div className="flex gap-1 nowrap flex-wrap">
@@ -317,6 +350,15 @@ export const ProjectDetail = (props) => {
             project={props.project}
             className="bg-white blue-dark ba b--grey-light pa3"
           />
+
+          {/* show live view button only when the project has live monitoring feature */}
+          {hasLiveMonitoringFeature && (
+            <LiveViewButton
+              projectId={props.project.projectId}
+              className="bg-white blue-dark ba b--grey-light pa3"
+            />
+          )}
+
           <DownloadAOIButton
             projectId={props.project.projectId}
             className="bg-white blue-dark ba b--grey-light pa3"
@@ -339,4 +381,71 @@ export const ProjectDetail = (props) => {
       <ProjectDetailFooter projectId={props.project.projectId} />
     </div>
   );
+};
+
+const GeometryPropType = PropTypes.shape({
+  type: PropTypes.oneOf([
+    'Point',
+    'MultiPoint',
+    'LineString',
+    'MultiLineString',
+    'Polygon',
+    'MultiPolygon',
+    'GeometryCollection',
+  ]),
+  coordinates: PropTypes.array,
+  geometries: PropTypes.array,
+});
+const FeaturePropType = PropTypes.shape({
+  type: PropTypes.oneOf(['Feature']),
+  geometry: GeometryPropType,
+  properties: PropTypes.object,
+});
+const FeatureCollectionPropType = PropTypes.shape({
+  type: PropTypes.oneOf(['FeatureCollection']),
+  features: PropTypes.arrayOf(FeaturePropType).isRequired,
+});
+
+ProjectDetail.propTypes = {
+  project: PropTypes.shape({
+    projectId: PropTypes.number,
+    projectInfo: PropTypes.shape({
+      description: PropTypes.string,
+    }),
+    mappingTypes: PropTypes.arrayOf(PropTypes.any).isRequired,
+    author: PropTypes.string,
+    organisationName: PropTypes.string,
+    organisationSlug: PropTypes.string,
+    organisationLogo: PropTypes.string,
+    mappingPermission: PropTypes.string,
+    validationPermission: PropTypes.string,
+    teams: PropTypes.arrayOf(PropTypes.object),
+  }).isRequired,
+  className: PropTypes.string,
+};
+
+ProjectDetailMap.propTypes = {
+  project: PropTypes.shape({
+    areaOfInterest: PropTypes.object,
+    priorityAreas: PropTypes.arrayOf(PropTypes.object),
+  }).isRequired,
+  // Tasks are a GeoJSON FeatureCollection
+  tasks: FeatureCollectionPropType,
+  navigate: PropTypes.func,
+  type: PropTypes.string,
+  tasksError: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  projectLoading: PropTypes.bool,
+};
+
+ProjectDetailLeft.propTypes = {
+  project: PropTypes.shape({
+    projectInfo: PropTypes.shape({
+      shortDescription: PropTypes.string,
+    }),
+    projectId: PropTypes.number,
+    tasks: FeatureCollectionPropType,
+  }).isRequired,
+  contributors: PropTypes.arrayOf(PropTypes.object),
+  className: PropTypes.string,
+  type: PropTypes.string,
 };

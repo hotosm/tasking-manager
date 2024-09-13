@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { format, parse } from 'date-fns';
 import DatePicker from 'react-datepicker';

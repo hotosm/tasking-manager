@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class CloseIcon extends React.PureComponent {
+export class CloseIcon extends PureComponent {
   render() {
     return (
       <svg width="8" height="8" viewBox="0 0 8 8" {...this.props}>

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from backend.models.postgis.task import Task, TaskStatus
 from backend.services.campaign_service import CampaignService, CampaignProjectDTO
@@ -105,7 +105,11 @@ class TestTasksStatisticsAPI(BaseTestCase):
         response = self.client.get(
             self.url,
             headers={"Authorization": self.user_session_token},
-            query_string={"startDate": "2023-01-01"},
+            query_string={
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                )
+            },
         )
         # Assert
         self.assertEqual(response.status_code, 200)
@@ -130,7 +134,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": "2023-01-01",
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "projectId": self.test_project_1.id,
             },
         )
@@ -152,7 +158,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": "2023-01-01",
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "projectId": f"{self.test_project_1.id}, {self.test_project_2.id}",
             },
         )
@@ -173,7 +181,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": "2023-01-01",
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "organisationId": test_organisation.id,
             },
         )
@@ -194,7 +204,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": "2023-01-01",
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "organisationName": test_organisation.name,
             },
         )
@@ -217,7 +229,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": "2023-01-01",
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "campaign": test_campaign.name,
             },
         )
@@ -239,7 +253,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": "2023-01-01",
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "country": "Nepal",
             },
         )

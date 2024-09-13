@@ -33,7 +33,7 @@ export default defineMessages({
     defaultMessage: 'Project timeline',
   },
   timelineDataError: {
-    id: 'project.stats.timeline.fetching.error',
+    id: 'project.stats.contributions.timeline.fetching.error',
     defaultMessage: 'An error occured while loading contributions data',
   },
   editsStatsError: {
@@ -84,9 +84,9 @@ export default defineMessages({
     id: 'management.stats.users.title',
     defaultMessage: 'New users',
   },
-  totalFeatures: {
-    id: 'management.stats.features',
-    defaultMessage: 'Total features',
+  newPartner: {
+    id: 'management.partner.creation',
+    defaultMessage: 'Create new partner',
   },
   newOrganisation: {
     id: 'teamsAndOrgs.management.organisation.creation',
@@ -112,10 +112,42 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.organisation.button.create',
     defaultMessage: 'Create organization',
   },
+  createPartner: {
+    id: 'management.partner.button.create',
+    defaultMessage: 'Create Partner',
+  },
+  partnerCreationNameExistsError: {
+    id: 'management.partner.creation.error',
+    defaultMessage: 'Partner name already exists',
+  },
+  partnerEditNameExistsError: {
+    id: 'management.partner.edit.error',
+    defaultMessage: 'Partner name already exists',
+  },
+  learnToMap: {
+    id: 'management.partner.learnToMap',
+    defaultMessage: 'Learn to Map',
+  },
+  currentProjects: {
+    id: 'management.partner.currentProjects',
+    defaultMessage: 'Current Projects',
+  },
+  newToMapping: {
+    id: 'management.partner.newToMapping',
+    defaultMessage: '¿New to Mapping?',
+  },
+  activity: {
+    id: 'management.partner.activity',
+    defaultMessage: 'Activity',
+  },
+  resources: {
+    id: 'management.partner.resources',
+    defaultMessage: 'Resources',
+  },
   entityCreationSuccess: {
     id: 'management.entity.creation.success',
     defaultMessage:
-      '{entity, select, organization {Organization} license {License} project {Project} category {Category} campaign {Campaign} team {Team} other {}} created successfully',
+      '{entity, select, organization {Organization} partner {Partner} license {License} project {Project} category {Category} campaign {Campaign} team {Team} other {}} created successfully',
   },
   entityCreationFailure: {
     id: 'management.entity.creation.failure',
@@ -174,6 +206,14 @@ export default defineMessages({
     defaultMessage:
       'You are not a manager of this organization, so you are not allowed to edit it.',
   },
+  editPartnerNotAllowed: {
+    id: 'teamsAndOrgs.management.partner.manage.error',
+    defaultMessage: 'You are not a manager of this partner, so you are not allowed to edit it.',
+  },
+  notAllowedCreatePartners: {
+    id: 'teamsAndOrgs.management.partner.create.error',
+    defaultMessage: 'You are not allowed to access the management area.',
+  },
   tasksStatistics: {
     id: 'teamsAndOrgs.management.organisation.stats',
     defaultMessage: 'Tasks statistics',
@@ -201,6 +241,10 @@ export default defineMessages({
   manageOrganisation: {
     id: 'teamsAndOrgs.management.organisation.manage',
     defaultMessage: 'Manage organization',
+  },
+  managePartner: {
+    id: 'management.partner.manage',
+    defaultMessage: 'Manage partner',
   },
   manageTeam: {
     id: 'teamsAndOrgs.management.team.manage',
@@ -733,6 +777,10 @@ export default defineMessages({
   projectEditSection_metadata: {
     id: 'pages.edit_project.sections.metadata',
     defaultMessage: 'Metadata',
+  },
+  projectEditSection_partners: {
+    id: 'pages.edit_project.sections.partners',
+    defaultMessage: 'Partners',
   },
   projectEditSection_priority_areas: {
     id: 'pages.edit_project.sections.priority_areas',

@@ -18,10 +18,10 @@ import {
 import { featuredProjects } from './mockData/featuredProjects';
 import {
   newUsersStats,
-  osmStatsProd,
+  userStats,
   osmStatsProject,
   userLockedTasksDetails,
-  userStats,
+  ohsomeNowUserStats,
 } from './mockData/userStats';
 import { projectContributions, projectContributionsByDay } from './mockData/contributions';
 import {
@@ -61,9 +61,15 @@ import {
 } from './mockData/teams';
 import { userTasks } from './mockData/tasksStats';
 import { homepageStats } from './mockData/homepageStats';
-import { banner, countries, josmRemote, systemStats } from './mockData/miscellaneous';
+import {
+  banner,
+  countries,
+  josmRemote,
+  systemStats,
+  ohsomeNowMetadata,
+} from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
-import { API_URL } from '../../config';
+import { API_URL, OHSOME_STATS_BASE_URL, defaultChangesetComment } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
 import { authLogin, setUser, userRegister } from './mockData/auth';
 import {
@@ -343,23 +349,29 @@ const handlers = [
     return res(ctx.json(systemStats));
   }),
   // EXTERNAL API
-  rest.get('https://osmstats-api.hotosm.org/wildcard', (req, res, ctx) => {
+  rest.get(`${OHSOME_STATS_BASE_URL}/stats/${defaultChangesetComment}-%2A`, (req, res, ctx) => {
     return res(ctx.json(homepageStats));
   }),
-  rest.get(
-    'https://osm-stats-production-api.azurewebsites.net/users/:username',
-    (req, res, ctx) => {
-      return res(ctx.json(osmStatsProd));
-    },
-  ),
-  rest.get(
-    'https://osm-stats-production-api.azurewebsites.net/stats/:projectId',
-    (req, res, ctx) => {
-      return res(ctx.json(osmStatsProject));
-    },
-  ),
+  rest.get(`${OHSOME_STATS_BASE_URL}/hot-tm-user`, (req, res, ctx) => {
+    return res(ctx.json(ohsomeNowUserStats));
+  }),
+  rest.get(`${OHSOME_STATS_BASE_URL}/stats/:projectId`, (req, res, ctx) => {
+    return res(ctx.json(osmStatsProject));
+  }),
+  rest.get(`${OHSOME_STATS_BASE_URL}/metadata`, (req, res, ctx) => {
+    return res(ctx.json(ohsomeNowMetadata));
+  }),
   rest.get('http://127.0.0.1:8111/version', (req, res, ctx) => {
     return res(ctx.json(josmRemote));
+  }),
+  rest.get('http://127.0.0.1:8111/load_data', (req, res, ctx) => {
+    return res(ctx.text('OK'));
+  }),
+  rest.get('http://127.0.0.1:8111/load_and_zoom', (req, res, ctx) => {
+    return res(ctx.text('OK'));
+  }),
+  rest.get('http://127.0.0.1:8111/import', (req, res, ctx) => {
+    return res(ctx.text('OK'));
   }),
 ];
 
