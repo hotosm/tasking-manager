@@ -1,0 +1,101 @@
+name: OHM Upstream Sync
+
+on:
+  push:
+    branches: staging
+#  schedule:
+#    - cron: '34 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  upstream-sync:
+    name: Upstream Sync
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out our repository
+        uses: actions/checkout@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          fetch-depth: 0
+
+      - name: List relevant branches & script directories
+        run: |
+          git status
+          git branch --all | egrep '\/main$|\/master$|\/staging$|sacrifice|candidate'
+          ls -lR ./scripts/ohm
+
+      - name: Delete previous sacrificial branch
+        run: |
+          if git show-ref --quiet the-sacrifice; then
+            git branch --remote -D origin/the-sacrifice
+          fi
+
+      - name: List relevant branches & script directories
+        run: |
+          git status
+          git branch --all | egrep '\/main$|\/master$|\/staging$|sacrifice|candidate'
+          ls -lR ./scripts/ohm
+
+      - name: Create 'the-sacrifice', our new sacrificial branch
+        uses: peterjgrainger/action-create-branch@v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: 'the-sacrifice'
+
+      - name: List relevant branches & script directories
+        run: |
+          git status
+          git branch --all | egrep '\/main$|\/master$|\/staging$|sacrifice|candidate'
+          ls -lR ./scripts/ohm
+
+      - name: Check out our new sacrificial branch
+        uses: actions/checkout@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          fetch-depth: 0
+
+      - name: List relevant branches & script directories
+        run: |
+          git status
+          git branch --all | egrep '\/main$|\/master$|\/staging$|sacrifice|candidate'
+          ls -lR ./scripts/ohm
+
+      - name: Add & fetch upstream master
+        env:
+          UPSTREAM: https://github.com/hotosm/tasking-manager
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@users.noreply.github.com'
+          git remote add upstream "${UPSTREAM}"
+          git fetch upstream master
+
+      - name: List relevant branches & script directories
+        run: |
+          git status
+          git branch --all | egrep '\/main$|\/master$|\/staging$|sacrifice|candidate'
+          ls -lR ./scripts/ohm
+
+      - name: Make our scripts executable
+        run: chmod +x ./scripts/ohm/*.sh
+      - name: Preserve upstream docs
+        run: ./scripts/ohm/preserve_upstream_docs.sh
+
+#      - name: Start the merge
+#        run: |
+#          git merge --no-ff --no-commit upstream/master
+#          git status
+
+#      - name: Continue the merge where there are no concerns
+#        run: ./scripts/upstream_sync.sh
+#
+#      - name: Push updates
+#        run: |
+#          git push release-candidate
