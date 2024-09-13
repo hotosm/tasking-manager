@@ -64,6 +64,10 @@ export default defineMessages({
     id: 'management.partners.stats.mapswipe.contributions.tooltip',
     defaultMessage: 'contribution(s)',
   },
+  contributionsHeatmap: {
+    id: 'management.partners.stats.mapswipe.contributions.heatmap',
+    defaultMessage: 'Contributions Heatmap',
+  },
   timeSpentContributing: {
     id: 'management.partners.stats.mapswipe.timeSpentContributing',
     defaultMessage: 'Time Spent Contributing',
