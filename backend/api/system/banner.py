@@ -38,7 +38,6 @@ async def get(db: Database = Depends(get_db)):
     banner = await Banner.get(db)
     return banner
 
-
 @router.patch("/banner/", response_model=BannerDTO)
 async def patch(
     request: Request,

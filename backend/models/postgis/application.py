@@ -1,14 +1,5 @@
 from databases import Database
-from sqlalchemy import (
-    Column,
-    BigInteger,
-    String,
-    DateTime,
-    ForeignKey,
-    select,
-    insert,
-    delete,
-)
+from sqlalchemy import Column, BigInteger, String, DateTime, ForeignKey, select, insert, delete
 from backend.models.dtos.application_dto import ApplicationDTO, ApplicationsDTO
 from backend.models.postgis.utils import timestamp
 from backend.services.users.authentication_service import AuthenticationService
