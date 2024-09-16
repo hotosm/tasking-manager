@@ -1,5 +1,5 @@
-# from flask_restful import Resource, current_app, request
-# from schematics.exceptions import DataError
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 
 from backend.models.dtos.user_dto import UserDTO, UserRegisterEmailDTO
 from databases import Database
@@ -10,7 +10,6 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.users.authentication_service import tm
 from backend.services.users.user_service import UserService, UserServiceError
 from backend.services.interests_service import InterestService
-from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
 
@@ -266,9 +265,13 @@ async def patch(request: Request, user_name, is_expert):
 #     @tm.pm_only(False)
 #     @token_auth.login_required
 @router.patch("/me/actions/verify-email/")
-@requires("authenticated")
-@tm.pm_only()
-async def patch(request: Request):
+# @requires("authenticated")
+# @tm.pm_only()
+async def patch(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Resends the verification email token to the logged in user
     ---
@@ -290,10 +293,10 @@ async def patch(request: Request):
             description: Internal Server Error
     """
     try:
-        MessageService.resend_email_validation(request.user.display_name)
-        return {"Success": "Verification email resent"}, 200
+        await MessageService.resend_email_validation(user.id, db)
+        return JSONResponse(content={"Success": "Verification email resent"}, status_code=200)
     except ValueError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+        return JSONResponse(content={"Error": str(e), "SubCode": str(e).split("-")[0]}, status_code=400)
 
 
 # class UsersActionsRegisterEmailAPI(Resource):

@@ -1,10 +1,10 @@
 import urllib.parse
-# from itsdangerous import URLSafeTimedSerializer
-# # from flask import current_app
-# from flask_mail import Message
+from loguru import logger
+from itsdangerous import URLSafeTimedSerializer
+from fastapi_mail import MessageSchema, MessageType
 
 # from backend import mail, create_app
-from backend import create_app
+from backend import create_app, mail
 from backend.models.postgis.message import Message as PostgisMessage
 from backend.models.postgis.statuses import EncouragingEmailType
 from backend.services.messaging.template_service import (
@@ -16,7 +16,7 @@ from backend.config import settings
 
 class SMTPService:
     @staticmethod
-    def send_verification_email(to_address: str, username: str):
+    async def send_verification_email(to_address: str, username: str):
         """Sends a verification email with a unique token so we can verify user owns this email address"""
         # TODO these could be localised if needed, in the future
         verification_url = SMTPService._generate_email_verification_url(
@@ -29,7 +29,7 @@ class SMTPService:
         html_template = get_template("email_verification_en.html", values)
 
         subject = "Confirm your email address"
-        SMTPService._send_message(to_address, subject, html_template)
+        await SMTPService._send_message(to_address, subject, html_template)
         return True
 
     @staticmethod
@@ -45,7 +45,7 @@ class SMTPService:
         return True
 
     @staticmethod
-    def send_contact_admin_email(data):
+    async def send_contact_admin_email(data):
         email_to = settings.EMAIL_CONTACT_ADDRESS
         if email_to is None:
             raise ValueError(
@@ -61,7 +61,7 @@ class SMTPService:
         )
 
         subject = "New contact from {name}".format(name=data.get("name"))
-        SMTPService._send_message(email_to, subject, message, message)
+        await SMTPService._send_message(email_to, subject, message, message)
 
     @staticmethod
     def send_email_to_contributors_on_project_progress(
@@ -118,7 +118,7 @@ class SMTPService:
                     and contributor.is_email_verified
                     and contributor.projects_notifications
                 ):
-                    current_app.logger.debug(
+                    logger.debug(
                         f"Sending {email_type} email to {contributor.email_address} for project {project_id}"
                     )
                     SMTPService._send_message(
@@ -144,7 +144,7 @@ class SMTPService:
         if not user_email_verified:
             return False
 
-        current_app.logger.debug(f"Test if email required {to_address}")
+        logger.debug(f"Test if email required {to_address}")
         from_user_link = f"{settings.APP_BASE_URL}/users/{from_username}"
         project_link = f"{settings.APP_BASE_URL}/projects/{project_id}"
         task_link = (
@@ -178,38 +178,33 @@ class SMTPService:
         return True
 
     @staticmethod
-    def _send_message(
+    async def _send_message(
         to_address: str, subject: str, html_message: str, text_message: str = None
     ):
         """Helper sends SMTP message"""
         from_address = settings.MAIL_DEFAULT_SENDER
         if from_address is None:
             raise ValueError("Missing TM_EMAIL_FROM_ADDRESS environment variable")
-        msg = Message()
-        msg.subject = subject
-        msg.sender = "{} Tasking Manager <{}>".format(settings.ORG_CODE, from_address)
-        msg.add_recipient(to_address)
-
-        msg.body = text_message
-        msg.html = html_message
-
-        current_app.logger.debug(f"Sending email via SMTP {to_address}")
+        msg = MessageSchema(
+            recipients=[to_address], subject=subject, body=html_message, subtype=MessageType.html
+        )
+        logger.debug(f"Sending email via SMTP {to_address}")
         if settings.LOG_LEVEL == "DEBUG":
-            current_app.logger.debug(msg.as_string())
+            logger.debug(msg.as_string())
         else:
             try:
-                mail.send(msg)
-                current_app.logger.debug(f"Email sent {to_address}")
+                await mail.send_message(msg)
+                logger.debug(f"Email sent {to_address}")
             except Exception as e:
                 # ERROR level logs are automatically captured by sentry so that admins are notified
-                current_app.logger.error(
+                logger.error(
                     f"{e}: Sending email failed. Please check SMTP configuration"
                 )
 
     @staticmethod
     def _generate_email_verification_url(email_address: str, user_name: str):
         """Generate email verification url with unique token"""
-        entropy = current_app.secret_key if current_app.secret_key else "un1testingmode"
+        entropy = settings.SECRET_KEY if settings.SECRET_KEY else "un1testingmode"
 
         serializer = URLSafeTimedSerializer(entropy)
         token = serializer.dumps(email_address)

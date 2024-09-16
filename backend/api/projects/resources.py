@@ -1147,7 +1147,7 @@ async def get(request: Request, db: Database = Depends(get_db)):
     return projects_dto
 
 
-@router.get("/{project_id}/queries/similar-projects/")
+@router.get("/queries/{project_id}/similar-projects/")
 async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get similar projects

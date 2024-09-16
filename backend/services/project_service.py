@@ -299,17 +299,18 @@ class ProjectService:
         return geojson_areas
 
     @staticmethod
-    def get_task_for_logged_in_user(user_id: int):
+    async def get_task_for_logged_in_user(user_id: int, db: Database):
         """if the user is working on a task in the project return it"""
-        tasks = Task.get_locked_tasks_for_user(user_id)
+        tasks = await Task.get_locked_tasks_for_user(user_id, db)
 
-        tasks_dto = tasks
-        return tasks_dto
+        return tasks
 
     @staticmethod
-    def get_task_details_for_logged_in_user(user_id: int, preferred_locale: str):
+    async def get_task_details_for_logged_in_user(
+        user_id: int, preferred_locale: str, db: Database
+    ):
         """if the user is working on a task in the project return it"""
-        tasks = Task.get_locked_tasks_details_for_user(user_id)
+        tasks = await Task.get_locked_tasks_details_for_user(user_id, db)
 
         if len(tasks) == 0:
             raise NotFound(sub_code="TASK_NOT_FOUND")
@@ -317,7 +318,11 @@ class ProjectService:
         # TODO put the task details in to a DTO
         dtos = []
         for task in tasks:
-            dtos.append(task.as_dto_with_instructions(preferred_locale))
+            dtos.append(
+                await Task.as_dto_with_instructions(
+                    task.id, task.project_id, db, preferred_locale
+                )
+            )
 
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
