@@ -1,7 +1,7 @@
 import datetime
 from cachetools import TTLCache, cached
 from datetime import date, timedelta
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, select
 
 from backend.exceptions import NotFound
 from backend.models.dtos.stats_dto import (
@@ -394,18 +394,22 @@ class StatsService:
                     bad_imagery=row["bad_imagery"],
                     validated=row["validated"],
                     total=row["total"],
-                    mapped_tasks=row["mapped_tasks"]
-                    if row["mapped_tasks"] is not None
-                    else [],
-                    bad_imagery_tasks=row["bad_imagery_tasks"]
-                    if row["bad_imagery_tasks"]
-                    else [],
-                    validated_tasks=row["validated_tasks"]
-                    if row["validated_tasks"] is not None
-                    else [],
-                    date_registered=row["date_registered"].date()
-                    if isinstance(row["date_registered"], datetime.datetime)
-                    else None,
+                    mapped_tasks=(
+                        row["mapped_tasks"] if row["mapped_tasks"] is not None else []
+                    ),
+                    bad_imagery_tasks=(
+                        row["bad_imagery_tasks"] if row["bad_imagery_tasks"] else []
+                    ),
+                    validated_tasks=(
+                        row["validated_tasks"]
+                        if row["validated_tasks"] is not None
+                        else []
+                    ),
+                    date_registered=(
+                        row["date_registered"].date()
+                        if isinstance(row["date_registered"], datetime.datetime)
+                        else None
+                    ),
                 )
             )
             for row in rows
@@ -416,98 +420,78 @@ class StatsService:
 
     @staticmethod
     @cached(homepage_stats_cache)
-    def get_homepage_stats(abbrev=True, session=None) -> HomePageStatsDTO:
+    async def get_homepage_stats(
+        abbrev: bool = True, db: Database = None
+    ) -> HomePageStatsDTO:
         """Get overall TM stats to give community a feel for progress that's being made"""
         dto = HomePageStatsDTO()
-        dto.total_projects = (
-            session.query(Project).with_entities(func.count(Project.id)).scalar()
+
+        # Total Projects
+        query = select(func.count(Project.id))
+        dto.total_projects = await db.fetch_val(query)
+
+        # Mappers online (distinct users who locked tasks)
+        query = select(func.count(Task.locked_by.distinct())).where(
+            Task.locked_by.isnot(None)
         )
-        dto.mappers_online = (
-            session.query(Task)
-            .with_entities(func.count(Task.locked_by.distinct()))
-            .filter(Task.locked_by.isnot(None))
-            .scalar()
+        dto.mappers_online = await db.fetch_val(query)
+
+        # Total Mappers
+        query = select(func.count(User.id))
+        dto.total_mappers = await db.fetch_val(query)
+
+        # Tasks mapped (status: MAPPED, VALIDATED)
+        query = select(func.count()).where(
+            Task.task_status.in_([TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value])
         )
-        dto.total_mappers = (
-            session.query(User).with_entities(func.count(User.id)).scalar()
-        )
-        dto.tasks_mapped = (
-            session.query(Task)
-            .with_entities(func.count())
-            .filter(
-                Task.task_status.in_(
-                    (TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value)
-                )
-            )
-            .scalar()
-        )
+        dto.tasks_mapped = await db.fetch_val(query)
+
         if not abbrev:
-            dto.total_validators = (
-                session.query(Task)
-                .filter(Task.task_status == TaskStatus.VALIDATED.value)
-                .distinct(Task.validated_by)
-                .count()
+            # Total Validators
+            query = select(func.count(Task.validated_by.distinct())).where(
+                Task.task_status == TaskStatus.VALIDATED.value
             )
-            dto.tasks_validated = (
-                session.query(Task)
-                .filter(Task.task_status == TaskStatus.VALIDATED.value)
-                .count()
+            dto.total_validators = await db.fetch_val(query)
+
+            # Tasks Validated
+            query = select(func.count()).where(
+                Task.task_status == TaskStatus.VALIDATED.value
             )
+            dto.tasks_validated = await db.fetch_val(query)
 
-            dto.total_area = (
-                session.query(Project)
-                .with_entities(
-                    func.coalesce(
-                        func.sum(func.ST_Area(Project.geometry, True) / 1000000)
-                    )
-                )
-                .scalar()
+            # Total Area (sum of project areas in km²)
+            query = select(
+                func.coalesce(func.sum(func.ST_Area(Project.geometry, True) / 1000000))
             )
+            dto.total_area = await db.fetch_val(query)
 
-            dto.total_mapped_area = (
-                session.query(Task)
-                .with_entities(
-                    func.coalesce(func.sum(func.ST_Area(Task.geometry, True) / 1000000))
-                )
-                .filter(Task.task_status == TaskStatus.MAPPED.value)
-                .scalar()
-            )
+            # Total Mapped Area
+            query = select(
+                func.coalesce(func.sum(func.ST_Area(Task.geometry, True) / 1000000))
+            ).where(Task.task_status == TaskStatus.MAPPED.value)
+            dto.total_mapped_area = await db.fetch_val(query)
 
-            dto.total_validated_area = (
-                session.query(Task)
-                .with_entities(
-                    func.coalesce(func.sum(func.ST_Area(Task.geometry, True) / 1000000))
-                )
-                .filter(Task.task_status == TaskStatus.VALIDATED.value)
-                .scalar()
-            )
+            # Total Validated Area
+            query = select(
+                func.coalesce(func.sum(func.ST_Area(Task.geometry, True) / 1000000))
+            ).where(Task.task_status == TaskStatus.VALIDATED.value)
+            dto.total_validated_area = await db.fetch_val(query)
 
-            unique_campaigns = Campaign.query.with_entities(
-                func.count(Campaign.id)
-            ).scalar()
+            # Campaign Stats
+            query = select(func.count(Campaign.id))
+            unique_campaigns = await db.fetch_val(query)
 
-            linked_campaigns_count = (
-                Campaign.query.join(
-                    campaign_projects, Campaign.id == campaign_projects.c.campaign_id
-                )
-                .with_entities(
-                    Campaign.name, func.count(campaign_projects.c.campaign_id)
-                )
+            query = (
+                select([Campaign.name, func.count()])
+                .select_from(Campaign.join(campaign_projects))
                 .group_by(Campaign.id)
-                .all()
             )
+            linked_campaigns_count = await db.fetch_all(query)
 
-            subquery = (
-                session.query(campaign_projects.c.project_id.distinct())
-                .order_by(campaign_projects.c.project_id)
-                .subquery()
-            )
-            no_campaign_count = (
-                session.query(Project)
-                .with_entities(func.count())
-                .filter(~Project.id.in_(subquery))
-                .scalar()
-            )
+            subquery = select(campaign_projects.c.project_id.distinct()).subquery()
+            query = select(func.count()).where(~Project.id.in_(subquery))
+            no_campaign_count = await db.fetch_val(query)
+
             dto.campaigns = [CampaignStatsDTO(row) for row in linked_campaigns_count]
             if no_campaign_count:
                 dto.campaigns.append(
@@ -515,27 +499,22 @@ class StatsService:
                 )
 
             dto.total_campaigns = unique_campaigns
-            unique_orgs = Organisation.query.with_entities(
-                func.count(Organisation.id)
-            ).scalar()
 
-            linked_orgs_count = (
-                session.query(Organisation.name, func.count(Project.organisation_id))
+            # Organisation Stats
+            query = select(func.count(Organisation.id))
+            unique_orgs = await db.fetch_val(query)
+
+            query = (
+                select([Organisation.name, func.count(Project.organisation_id)])
                 .join(Project.organisation)
                 .group_by(Organisation.id)
-                .all()
             )
+            linked_orgs_count = await db.fetch_all(query)
 
-            subquery = (
-                session.query(Project.organisation_id.distinct())
-                .order_by(Project.organisation_id)
-                .subquery()
-            )
-            no_org_project_count = (
-                Organisation.query.with_entities(func.count())
-                .filter(~Organisation.id.in_(subquery))
-                .scalar()
-            )
+            subquery = select(Project.organisation_id.distinct()).subquery()
+            query = select(func.count()).where(~Organisation.id.in_(subquery))
+            no_org_project_count = await db.fetch_val(query)
+
             dto.organisations = [
                 OrganizationListStatsDTO(row) for row in linked_orgs_count
             ]

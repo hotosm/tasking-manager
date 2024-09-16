@@ -1,4 +1,6 @@
-from sqlalchemy import Column, String, DateTime
+from databases import Database
+from sqlalchemy import Column, String, DateTime, insert
+
 from backend.db import Base, get_session
 
 session = get_session()
@@ -14,10 +16,14 @@ class ReleaseVersion(Base):
     def update(self):
         session.commit()
 
-    def save(self):
-        session.add(self)
-        session.commit()
+    async def save(self, db: Database):
+        query = insert(ReleaseVersion.__table__).values(
+            tag_name=self.tag_name, published_at=self.published_at
+        )
+        await db.execute(query)
 
     @staticmethod
-    def get():
-        return session.query(ReleaseVersion).first()
+    async def get(db: Database):
+        """Get the latest release version"""
+        query = """SELECT * FROM release_version LIMIT 1"""
+        return await db.fetch_one(query=query)

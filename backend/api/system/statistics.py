@@ -1,18 +1,20 @@
-from backend.services.stats_service import StatsService
+from databases import Database
 from distutils.util import strtobool
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
+
+from backend.db import get_db
+from backend.services.stats_service import StatsService
 
 router = APIRouter(
     prefix="/system",
     tags=["system"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 
 @router.get("/statistics/")
-async def get(request: Request, session=Depends(get_session)):
+async def get(request: Request, db: Database = Depends(get_db)):
     """
     Get HomePage Stats
     ---
@@ -38,5 +40,5 @@ async def get(request: Request, session=Depends(get_session)):
         else True
     )
 
-    stats = await StatsService.get_homepage_stats(abbreviated, session)
-    return stats.model_dump(by_alias=True), 200
+    stats = await StatsService.get_homepage_stats(abbreviated, db)
+    return stats.model_dump(by_alias=True)

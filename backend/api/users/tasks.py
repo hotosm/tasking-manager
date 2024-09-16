@@ -1,25 +1,27 @@
-# from flask_restful import Resource, request
+from databases import Database
 from dateutil.parser import parse as date_parse
 
-# from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from starlette.authentication import requires
+from backend.db import get_db
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 
-# class UsersTasksAPI(Resource):
-#     @token_auth.login_required
 @router.get("/{user_id}/tasks/")
-@requires(["authenticated"])
-async def get(request: Request, user_id: int):
+async def get(
+    request: Request,
+    user_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Get a list of tasks a user has interacted with
     ---
@@ -93,7 +95,7 @@ async def get(request: Request, user_id: int):
             description: Internal Server Error
     """
     try:
-        user = UserService.get_user_by_id(user_id)
+        user = await UserService.get_user_by_id(user_id, db)
         status = request.query_params.get("status")
         project_status = request.query_params.get("project_status")
         project_id = int(request.query_params.get("project_id", 0))
@@ -120,6 +122,6 @@ async def get(request: Request, user_id: int):
             page_size=request.query_params.get("page_size", 10),
             sort_by=sort_by,
         )
-        return tasks.model_dump(by_alias=True), 200
+        return tasks.model_dump(by_alias=True)
     except ValueError:
         return {"tasks": [], "pagination": {"total": 0}}, 200
