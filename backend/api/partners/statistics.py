@@ -138,8 +138,8 @@ class GroupPartnerStatisticsAPI(Resource):
 
         mapswipe = MapswipeService()
         partner = PartnerService.get_partner_by_id(partner_id)
-        limit = request.args.get("limit", 10)
-        offset = request.args.get("offset", 0)
+        limit = int(request.args.get("limit", 10))
+        offset = int(request.args.get("offset", 0))
 
         return mapswipe.fetch_grouped_partner_stats(
             partner.id, partner.mapswipe_group_id, limit, offset
