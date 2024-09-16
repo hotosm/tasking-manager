@@ -148,7 +148,9 @@ class User(Base):
         """Updates email verfied flag on successfully verified emails"""
         self.is_email_verified = is_verified
         query = "UPDATE users SET is_email_verified = :is_email_verified WHERE id = :user_id"
-        await db.execute(query, values={"is_email_verified": is_verified, "user_id": self.id})
+        await db.execute(
+            query, values={"is_email_verified": is_verified, "user_id": self.id}
+        )
 
     def set_is_expert(self, is_expert: bool):
         """Enables or disables expert mode on the user"""

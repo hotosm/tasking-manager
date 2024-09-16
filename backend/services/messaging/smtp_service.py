@@ -186,7 +186,10 @@ class SMTPService:
         if from_address is None:
             raise ValueError("Missing TM_EMAIL_FROM_ADDRESS environment variable")
         msg = MessageSchema(
-            recipients=[to_address], subject=subject, body=html_message, subtype=MessageType.html
+            recipients=[to_address],
+            subject=subject,
+            body=html_message,
+            subtype=MessageType.html,
         )
         logger.debug(f"Sending email via SMTP {to_address}")
         if settings.LOG_LEVEL == "DEBUG":
