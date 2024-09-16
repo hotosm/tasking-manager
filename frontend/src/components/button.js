@@ -17,8 +17,7 @@ export function Button({
   className,
   disabled,
   loading = false,
-  style,
-  ...rest
+  ...otherProps
 }: Object) {
   return (
     <button
@@ -26,9 +25,9 @@ export function Button({
       aria-pressed="false"
       focusindex="0"
       className={`${className || ''} br1 f5 bn ${disabled || loading ? 'o-50' : 'pointer'}`}
-      style={{ padding: '.75rem 1.5rem', ...style }}
+      style={{ padding: '.75rem 1.5rem' }}
       disabled={disabled || loading}
-      {...rest}
+      {...otherProps}
     >
       {loading ? <AnimatedLoadingIcon /> : icon && <IconSpace>{icon}</IconSpace>}
       {children}

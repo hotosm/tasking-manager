@@ -25,7 +25,7 @@ export const Resources = ({ partner }) => {
 
     return (
       <CustomDropdown
-        buttonClassname="bg-transparent"
+        buttonClassname="bg-transparent partners-banner-button"
         title={<FormattedMessage {...messages.resources} />}
         data={resourcesData}
       />

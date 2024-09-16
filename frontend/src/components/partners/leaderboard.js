@@ -7,7 +7,7 @@ import { CurrentProjects } from './currentProjects';
 
 export const Leaderboard = ({ partner, partnerStats }) => {
   return (
-    <div className="pa4 bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
+    <div className="pa4 bg-tan flex flex-column gap-1.25">
       <div className="flex justify-between items-center">
         <h3 className="f2 blue-dark fw7 ma0 barlow-condensed v-mid dib">
           {partner.primary_hashtag

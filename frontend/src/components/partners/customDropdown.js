@@ -14,31 +14,22 @@ export const CustomDropdown = ({ title, data, buttonClassname }) => {
         className={`white br1 f5 fw5 bn flex items-center ${buttonClassname}`}
         onClick={() => setIsActive(!isActive)}
         onBlur={() => setIsActive(false)}
-        style={{ padding: '0.75rem 0' }}
       >
         {title}
         {isActive ? (
-          <ChevronUpIcon style={{ width: '12px' }} className="ml2" />
+          <ChevronUpIcon className="ml2 partners-dropdown-icon" />
         ) : (
-          <ChevronDownIcon style={{ width: '12px' }} className="ml2" />
+          <ChevronDownIcon className="ml2 partners-dropdown-icon" />
         )}
       </Button>
 
       {/* dropdown list */}
       {isActive && (
-        <ul
-          className="absolute list bg-grey-dark white pv3 mt2"
-          style={{
-            width: '17rem',
-            right: '0',
-            padding: '0.5rem 2rem',
-          }}
-        >
+        <ul className="absolute list bg-grey-dark white pv3 mt2 partners-custom-dropdown">
           {data.map((option) => (
             <li
               key={option.label}
-              className="pointer"
-              style={{ padding: '0.75rem 0' }}
+              className="pointer partners-banner-button"
               onMouseDown={() => {
                 option?.onClick(option);
               }}
