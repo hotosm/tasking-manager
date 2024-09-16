@@ -13,10 +13,6 @@ describe('useImageryOption', () => {
     const { result } = renderHook(() => useImageryOption('Bing'));
     expect(result.current).toEqual({ label: 'Bing', value: 'Bing' });
   });
-  it('with Maxar-Premium', () => {
-    const { result } = renderHook(() => useImageryOption('Maxar-Premium'));
-    expect(result.current).toEqual({ label: 'Maxar Premium', value: 'Maxar-Premium' });
-  });
   it('with EsriWorldImagery', () => {
     const { result } = renderHook(() => useImageryOption('EsriWorldImagery'));
     expect(result.current).toEqual({ label: 'ESRI World Imagery', value: 'EsriWorldImagery' });

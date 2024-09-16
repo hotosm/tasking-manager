@@ -127,16 +127,6 @@ describe('Imagery', () => {
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 
-  it('with a Maxar-Premium layer', () => {
-    render(
-      <IntlProviders>
-        <Imagery value={'Maxar-Premium'} />
-      </IntlProviders>,
-    );
-    expect(screen.getByText('Maxar Premium')).toBeInTheDocument();
-    expect(screen.queryByRole('img')).not.toBeInTheDocument();
-  });
-
   it('with a Maxar-Standard layer', () => {
     render(
       <IntlProviders>

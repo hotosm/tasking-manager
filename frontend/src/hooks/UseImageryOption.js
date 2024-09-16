@@ -5,7 +5,6 @@ export const IMAGERY_OPTIONS = [
   { label: 'Mapbox Satellite', value: 'Mapbox' },
   { label: 'ESRI World Imagery', value: 'EsriWorldImagery' },
   { label: 'ESRI World Imagery (Clarity) Beta', value: 'EsriWorldImageryClarity' },
-  { label: 'Maxar Premium', value: 'Maxar-Premium' },
   { label: 'Maxar Standard', value: 'Maxar-Standard' },
   { label: 'Custom', value: 'custom' },
 ];
