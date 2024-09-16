@@ -9,6 +9,7 @@ from backend.services.users.authentication_service import (
     AuthServiceError,
 )
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 from backend.db import get_session
 from fastapi.logger import logger
 
@@ -52,7 +53,7 @@ async def get(request: Request):
     osm.state = state
 
     login_url, state = osm.authorization_url(authorize_url)
-    return {"auth_url": login_url, "state": state}, 200
+    return {"auth_url": login_url, "state": state}
 
 
 # class SystemAuthenticationCallbackAPI():
@@ -108,40 +109,48 @@ async def get(request: Request, db: Database = Depends(get_db)):
             code=authorization_code,
         )
     except InvalidGrantError:
-        return {
-            "Error": "The provided authorization grant is invalid, expired or revoked",
-            "SubCode": "InvalidGrantError",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": "The provided authorization grant is invalid, expired or revoked",
+                "SubCode": "InvalidGrantError",
+            },
+            status_code=400,
+        )
     if osm_resp is None:
         logger.critical("Couldn't obtain token from OSM.")
-        return {
-            "SubCode": "TokenFetchError",
-            "Error": "Couldn't fetch token from OSM.",
-        }, 502
+        return JSONResponse(
+            content={
+                "SubCode": "TokenFetchError",
+                "Error": "Couldn't fetch token from OSM.",
+            },
+            status_code=502,
+        )
 
     user_info_url = f"{settings.OAUTH_API_URL}/user/details.json"
 
     osm_response = osm.get(user_info_url)  # Get details for the authenticating user
     if osm_response.status_code != 200:
         logger.critical("Error response from OSM")
-        return {
-            "SubCode": "OSMServiceError",
-            "Error": "Couldn't fetch user details from OSM.",
-        }, 502
+        return JSONResponse(
+            content={
+                "SubCode": "OSMServiceError",
+                "Error": "Couldn't fetch user details from OSM.",
+            },
+            status_code=502,
+        )
 
     try:
         user_params = await AuthenticationService.login_user(
             osm_response.json(), email, db
         )
         user_params["session"] = osm_resp
-        return user_params, 200
+        return user_params
     except AuthServiceError:
-        return {"Error": "Unable to authenticate", "SubCode": "AuthError"}, 500
+        return {"Error": "Unable to authenticate", "SubCode": "AuthError"}
 
 
-# class SystemAuthenticationEmailAPI():
 @router.get("/authentication/email/")
-async def get(request: Request):
+async def get(request: Request, db: Database = Depends(get_db)):
     """
     Authenticates user owns email address
     ---
@@ -171,9 +180,12 @@ async def get(request: Request):
     try:
         username = request.query_params.get("username")
         token = request.query_params.get("token")
-        AuthenticationService.authenticate_email_token(username, token)
+        await AuthenticationService.authenticate_email_token(username, token, db)
 
-        return {"Status": "OK"}, 200
+        return JSONResponse(content={"Status": "OK"}, status_code=200)
 
     except AuthServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )

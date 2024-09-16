@@ -1,9 +1,9 @@
 from cachetools import TTLCache, cached
 
-# # from flask import current_app
 import datetime
+from loguru import logger
 from sqlalchemy.sql.expression import literal
-from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column
+from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column, select
 
 from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
@@ -791,13 +791,13 @@ class UserService:
         return result[0] if result else False
 
     @staticmethod
-    def get_osm_details_for_user(username: str) -> UserOSMDTO:
+    async def get_osm_details_for_user(username: str, db: Database) -> UserOSMDTO:
         """
         Gets OSM details for the user from OSM API
         :param username: username in scope
         :raises UserServiceError, NotFound
         """
-        user = UserService.get_user_by_username(username)
+        user = await UserService.get_user_by_username(username, db)
         osm_dto = OSMService.get_osm_details_for_user(user.id)
         return osm_dto
 
@@ -818,7 +818,7 @@ class UserService:
 
             if (
                 osm_details.changeset_count > advanced_level.value
-                and user["mapping_level"] != MappingLevel.ADVANCED.value
+                and user_level != MappingLevel.ADVANCED.value
             ):
                 update_query = """
                     UPDATE users
@@ -830,28 +830,26 @@ class UserService:
                     {"new_level": MappingLevel.ADVANCED.value, "user_id": user_id},
                 )
                 await UserService.notify_level_upgrade(
-                    user_id, user["username"], "ADVANCED", db
+                    user_id, user.username, "ADVANCED", db
                 )
 
             elif (
                 intermediate_level.value
                 < osm_details.changeset_count
                 < advanced_level.value
-                and user["mapping_level"] != MappingLevel.INTERMEDIATE.value
+                and user_level != MappingLevel.INTERMEDIATE.value
             ):
                 await db.execute(
                     update_query,
                     {"new_level": MappingLevel.INTERMEDIATE.value, "user_id": user_id},
                 )
                 await UserService.notify_level_upgrade(
-                    user_id, user["username"], "INTERMEDIATE", db
+                    user_id, user.username, "INTERMEDIATE", db
                 )
 
         except OSMServiceError:
             # Log the error and move on; don't block the process
-            current_app.logger.error(
-                "Error attempting to update mapper level for user %s", user_id
-            )
+            logger.error("Error attempting to update mapper level for user %s", user_id)
 
     @staticmethod
     async def notify_level_upgrade(
@@ -903,21 +901,19 @@ class UserService:
         return users_updated
 
     @staticmethod
-    def register_user_with_email(user_dto: UserRegisterEmailDTO):
+    def register_user_with_email(user_dto: UserRegisterEmailDTO, db: Database):
         # Validate that user is not within the general users table.
         user_email = user_dto.email.lower()
-        user = (
-            session.query(User)
-            .filter(func.lower(User.email_address) == user_email)
-            .first()
-        )
+        query = select(User).filter(func.lower(User.email_address) == user_email)
+        user = db.fetch_one(query)
         if user is not None:
             details_msg = f"Email address {user_email} already exists"
             raise ValueError(details_msg)
 
-        user = UserEmail.query.filter(
+        query = select(UserEmail).filter(
             func.lower(UserEmail.email) == user_email
-        ).one_or_none()
+        )
+        user = db.fetch_one(query)
         if user is None:
             user = UserEmail(email=user_email)
             user.create()

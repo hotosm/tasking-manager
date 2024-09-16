@@ -49,6 +49,6 @@ class MappingIssueCategoryService:
         category.delete()
 
     @staticmethod
-    def get_all_mapping_issue_categories(include_archived):
+    async def get_all_mapping_issue_categories(include_archived, db):
         """Get all mapping issue categories"""
-        return MappingIssueCategory.get_all_categories(include_archived)
+        return await MappingIssueCategory.get_all_categories(include_archived, db)

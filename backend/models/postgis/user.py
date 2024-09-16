@@ -144,10 +144,11 @@ class User(Base):
             self.self_description_gender = None
         session.commit()
 
-    def set_email_verified_status(self, is_verified: bool):
+    async def set_email_verified_status(self, is_verified: bool, db: Database):
         """Updates email verfied flag on successfully verified emails"""
         self.is_email_verified = is_verified
-        session.commit()
+        query = "UPDATE users SET is_email_verified = :is_email_verified WHERE id = :user_id"
+        await db.execute(query, values={"is_email_verified": is_verified, "user_id": self.id})
 
     def set_is_expert(self, is_expert: bool):
         """Enables or disables expert mode on the user"""

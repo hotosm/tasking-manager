@@ -1,7 +1,11 @@
 from backend.services.application_service import ApplicationService
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
 from backend.db import get_session
-from starlette.authentication import requires
+from backend.services.users.authentication_service import login_required
+from backend.models.postgis.application import Application
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.db import get_db
+from databases import Database
 
 router = APIRouter(
     prefix="/system",
@@ -12,8 +16,11 @@ router = APIRouter(
 
 
 @router.get("/authentication/applications/")
-@requires("authenticated")
-async def get(request: Request):
+async def get(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Gets application keys for a user
     ---
@@ -36,17 +43,16 @@ async def get(request: Request):
       500:
         description: A problem occurred
     """
-    tokens = ApplicationService.get_all_tokens_for_logged_in_user(
-        request.user.dispaly_name
-    )
-    if len(tokens) == 0:
-        return 400
-    return tokens.model_dump(by_alias=True), 200
+    tokens = await ApplicationService.get_all_tokens_for_logged_in_user(user.id, db)
+    return tokens.model_dump(by_alias=True)
 
 
 @router.post("/authentication/applications/")
-@requires("authenticated")
-async def post(request: Request):
+async def post(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Creates an application key for the user
     ---
@@ -69,12 +75,12 @@ async def post(request: Request):
       500:
         description: A problem occurred
     """
-    token = ApplicationService.create_token(request.user.dispaly_name)
-    return token.model_dump(by_alias=True), 200
+    token = await ApplicationService.create_token(user.id, db)
+    return token.model_dump(by_alias=True)
 
 
 @router.patch("/authentication/applications/{application_key}/")
-async def patch(request: Request, application_key):
+async def patch(request: Request, application_key: str, db: Database = Depends(get_db)):
     """
     Checks the validity of an application key
     ---
@@ -97,15 +103,20 @@ async def patch(request: Request, application_key):
       500:
         description: A problem occurred
     """
-    is_valid = ApplicationService.check_token(application_key)
+    is_valid = await ApplicationService.check_token(application_key, db)
     if is_valid:
-        return 200
+        return Response(status_code=200)
     else:
-        return 302
+        return Response(status_code=302)
 
 
 @router.delete("/authentication/applications/{application_key}/")
-async def delete(request: Request, application_key):
+async def delete(
+    request: Request,
+    application_key: str,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Deletes an application key for a user
     ---
@@ -136,9 +147,9 @@ async def delete(request: Request, application_key):
       500:
         description: A problem occurred
     """
-    token = ApplicationService.get_token(application_key)
-    if token.user == request.user.dispaly_name:
-        token.delete()
-        return 200
+    token = await ApplicationService.get_token(application_key, db)
+    if token.user == user.id:
+        await Application.delete(token, db)
+        return Response(status_code=200)
     else:
-        return 302
+        return Response(status_code=302)
