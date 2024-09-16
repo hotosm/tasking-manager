@@ -1,16 +1,17 @@
-import requests
+from fastapi import APIRouter, Depends, Request, Body
+from fastapi.responses import JSONResponse
 import json
+import requests
 
-
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from starlette.authentication import requires
+from backend.db import get_db
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.config import settings
+from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
     prefix="/system",
     tags=["system"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -18,8 +19,11 @@ router = APIRouter(
 # class SystemImageUploadRestAPI(Resource):
 # @token_auth.login_required
 @router.post("/image-upload")
-@requires("authenticated")
-async def post(request: Request):
+async def post(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    data: dict = Body(...),
+):
     """
     Uploads an image using the image upload service
     ---
@@ -62,17 +66,22 @@ async def post(request: Request):
         description: Image upload service not defined
     """
     if settings.IMAGE_UPLOAD_API_URL is None or settings.IMAGE_UPLOAD_API_KEY is None:
-        return {
-            "Error": "Image upload service not defined",
-            "SubCode": "UndefinedImageService",
-        }, 501
+        return JSONResponse(
+            content={
+                "Error": "Image upload service not defined",
+                "SubCode": "UndefinedImageService",
+            },
+            status_code=501,
+        )
 
-    data = await request.json()
     if data.get("filename") is None:
-        return {
-            "Error": "Missing filename parameter",
-            "SubCode": "MissingFilename",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": "Missing filename parameter",
+                "SubCode": "MissingFilename",
+            },
+            status_code=400,
+        )
     if data.get("mime") in [
         "image/png",
         "image/jpeg",
@@ -88,19 +97,22 @@ async def post(request: Request):
         )
         result = requests.post(url, headers=headers, data=json.dumps({"image": data}))
         if result.ok:
-            return result.json(), 201
+            return JSONResponse(content=result.json(), status_code=201)
         else:
-            return result.json(), 400
+            return JSONResponse(content=result.json(), status_code=400)
     elif data.get("mime") is None:
-        return {
-            "Error": "Missing mime parameter",
-            "SubCode": "MissingMime",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": "Missing mime parameter",
+                "SubCode": "MissingMime",
+            },
+            status_code=400,
+        )
     else:
-        return (
-            {
+        return JSONResponse(
+            content={
                 "Error": "Mimetype is not allowed. The supported formats are: png, jpeg, webp and gif.",
                 "SubCode": "UnsupportedFile",
             },
-            400,
+            status_code=400,
         )

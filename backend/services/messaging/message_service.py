@@ -4,9 +4,9 @@ import datetime
 import bleach
 
 from cachetools import TTLCache, cached
+from loguru import logger
 from typing import List
 
-# # from flask import current_app
 from sqlalchemy import text, func
 from markdown import markdown
 
@@ -30,6 +30,7 @@ from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService, User
 
 from databases import Database
+from backend.config import settings
 
 message_cache = TTLCache(maxsize=512, ttl=30)
 
@@ -38,21 +39,20 @@ class MessageServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling mapping"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class MessageService:
     @staticmethod
     def send_welcome_message(user: User):
         """Sends welcome message to new user at Sign up"""
-        org_code = current_app.config["ORG_CODE"]
+        org_code = settings.ORG_CODE
         text_template = get_txt_template("welcome_message_en.txt")
         hot_welcome_section = get_txt_template("hot_welcome_section_en.txt")
         replace_list = [
             ["[USERNAME]", user.username],
             ["[ORG_CODE]", org_code],
-            ["[ORG_NAME]", current_app.config["ORG_NAME"]],
+            ["[ORG_NAME]", settings.ORG_NAME],
             ["[SETTINGS_LINK]", MessageService.get_user_settings_link()],
             ["[HOT_WELCOME]", hot_welcome_section if org_code == "HOT" else ""],
         ]
@@ -93,7 +93,7 @@ class MessageService:
         replace_list = [
             ["[USERNAME]", user.username],
             ["[TASK_LINK]", task_link],
-            ["[ORG_NAME]", current_app.config["ORG_NAME"]],
+            ["[ORG_NAME]", settings.ORG_NAME],
         ]
         text_template = template_var_replacing(text_template, replace_list)
 
@@ -392,12 +392,12 @@ class MessageService:
 
     @staticmethod
     def get_user_link(username: str):
-        base_url = current_app.config["APP_BASE_URL"]
+        base_url = settings.APP_BASE_URL
         return f'<a href="{base_url}/users/{username}">{username}</a>'
 
     @staticmethod
     def get_team_link(team_name: str, team_id: int, management: bool):
-        base_url = current_app.config["APP_BASE_URL"]
+        base_url = settings.APP_BASE_URL
         if management is True:
             return f'<a href="{base_url}/manage/teams/{team_id}/">{team_name}</a>'
         else:
@@ -512,11 +512,11 @@ class MessageService:
                 )
                 messages = []
                 for username in usernames:
-                    current_app.logger.debug(f"Searching for {username}")
+                    logger.debug(f"Searching for {username}")
                     try:
                         user = UserService.get_user_by_username(username)
                     except NotFound:
-                        current_app.logger.error(f"Username {username} not found")
+                        logger.error(f"Username {username} not found")
                         continue  # If we can't find the user, keep going no need to fail
 
                     message = Message()
@@ -579,7 +579,7 @@ class MessageService:
 
     @staticmethod
     def send_favorite_project_activities(user_id: int):
-        current_app.logger.debug("Sending Favorite Project Activities")
+        logger.debug("Sending Favorite Project Activities")
         favorited_projects = UserService.get_projects_favorited(user_id)
         contributed_projects = UserService.get_projects_mapped(user_id)
         if contributed_projects is None:
@@ -637,12 +637,12 @@ class MessageService:
         MessageService._push_messages(messages)
 
     @staticmethod
-    def resend_email_validation(user_id: int):
+    async def resend_email_validation(user_id: int, db: Database):
         """Resends the email validation email to the logged in user"""
-        user = UserService.get_user_by_id(user_id)
+        user = await UserService.get_user_by_id(user_id, db)
         if user.email_address is None:
             raise ValueError("EmailNotSet- User does not have an email address")
-        SMTPService.send_verification_email(user.email_address, user.username)
+        await SMTPService.send_verification_email(user.email_address, user.username)
 
     @staticmethod
     def _parse_message_for_bulk_mentions(
@@ -955,7 +955,7 @@ class MessageService:
     ) -> str:
         """Helper method that generates a link to the task"""
         if not base_url:
-            base_url = current_app.config["APP_BASE_URL"]
+            base_url = settings.APP_BASE_URL
         style = ""
         if highlight:
             style = "color: #d73f3f"
@@ -971,7 +971,7 @@ class MessageService:
     ) -> str:
         """Helper method to generate a link to project chat"""
         if not base_url:
-            base_url = current_app.config["APP_BASE_URL"]
+            base_url = settings.APP_BASE_URL
         if include_chat_section:
             section = "#questionsAndComments"
         else:
@@ -986,7 +986,7 @@ class MessageService:
     def get_user_profile_link(user_name: str, base_url=None) -> str:
         """Helper method to generate a link to a user profile"""
         if not base_url:
-            base_url = current_app.config["APP_BASE_URL"]
+            base_url = settings.APP_BASE_URL
 
         return f'<a href="{base_url}/users/{user_name}">{user_name}</a>'
 
@@ -994,7 +994,7 @@ class MessageService:
     def get_user_settings_link(section=None, base_url=None) -> str:
         """Helper method to generate a link to a user profile"""
         if not base_url:
-            base_url = current_app.config["APP_BASE_URL"]
+            base_url = settings.APP_BASE_URL
 
         return f'<a href="{base_url}/settings#{section}">User Settings</a>'
 
@@ -1004,6 +1004,6 @@ class MessageService:
     ) -> str:
         """Helper method to generate a link to a user profile"""
         if not base_url:
-            base_url = current_app.config["APP_BASE_URL"]
+            base_url = settings.APP_BASE_URL
 
         return f'<a href="{base_url}/organisations/{organisation_id}">{organisation_name}</a>'

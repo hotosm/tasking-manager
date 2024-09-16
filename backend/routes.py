@@ -22,6 +22,7 @@ from backend.api.users import (
     tasks as users_tasks,
     actions as user_actions,
 )
+from backend.api.issues import resources as issue_resources
 from backend.api.licenses import (
     resources as license_resources,
     actions as license_actions,
@@ -115,5 +116,8 @@ def add_api_end_points(api):
     # Notifications REST endpoint
     v2.include_router(notification_actions.router)
     v2.include_router(notification_resources.router)
+
+    # Issues REST endpoint
+    v2.include_router(issue_resources.router)
 
     api.include_router(v2)

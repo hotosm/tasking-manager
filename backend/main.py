@@ -9,11 +9,21 @@ from pyinstrument import Profiler
 from backend.routes import add_api_end_points
 from backend.services.users.authentication_service import TokenAuthBackend
 from backend.config import settings
+from backend.db import db_connection
+from contextlib import asynccontextmanager
 
 
 def get_application() -> FastAPI:
     """Get the FastAPI app instance, with settings."""
+
+    @asynccontextmanager
+    async def lifespan(app):
+        await db_connection.connect()
+        yield
+        await db_connection.disconnect()
+
     _app = FastAPI(
+        lifespan=lifespan,
         title=settings.APP_NAME,
         description="HOTOSM Tasking Manager",
         version="0.1.0",
