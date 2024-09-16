@@ -288,10 +288,13 @@ async def list_teams(
         500:
             description: Internal Server Error
     """
-    user_id = request.user.display_name
     search_dto = TeamSearchDTO()
     search_dto.team_name = request.query_params.get("team_name", None)
-    search_dto.member = request.query_params.get("member", None)
+    search_dto.member = (
+        int(request.query_params.get("member"))
+        if request.query_params.get("member")
+        else None
+    )
     search_dto.manager = request.query_params.get("manager", None)
     search_dto.member_request = request.query_params.get("member_request", None)
     search_dto.team_role = request.query_params.get("team_role", None)
@@ -305,7 +308,7 @@ async def list_teams(
     search_dto.paginate = strtobool(request.query_params.get("paginate", "false"))
     search_dto.page = request.query_params.get("page", 1)
     search_dto.per_page = request.query_params.get("perPage", 10)
-    search_dto.user_id = user_id
+    search_dto.user_id = user.id
 
     teams = await TeamService.get_all_teams(search_dto, db)
     return teams

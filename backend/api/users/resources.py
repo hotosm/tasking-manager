@@ -1,4 +1,5 @@
 from distutils.util import strtobool
+
 # from flask_restful import , current_app, request
 # from schematics.exceptions import DataError
 
@@ -268,11 +269,12 @@ async def get(
     return users_dto
 
 
-# class UsersQueriesOwnLockedAPI():
-# @token_auth.login_required
 @router.get("/queries/tasks/locked/")
-@requires("authenticated")
-async def get(request: Request):
+async def get(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Gets any locked task on the project for the logged in user
     ---
@@ -297,15 +299,16 @@ async def get(request: Request):
         500:
             description: Internal Server Error
     """
-    locked_tasks = ProjectService.get_task_for_logged_in_user(request.user.display_name)
-    return locked_tasks.model_dump(by_alias=True), 200
+    locked_tasks = await ProjectService.get_task_for_logged_in_user(user.id, db)
+    return locked_tasks.model_dump(by_alias=True)
 
 
-# class UsersQueriesOwnLockedDetailsAPI():
-# @token_auth.login_required
 @router.get("/queries/tasks/locked/details/")
-@requires("authenticated")
-async def get(request: Request):
+async def get(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Gets details of any locked task for the logged in user
     ---
@@ -337,10 +340,10 @@ async def get(request: Request):
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
-    locked_tasks = ProjectService.get_task_details_for_logged_in_user(
-        request.user.display_name, preferred_locale
+    locked_tasks = await ProjectService.get_task_details_for_logged_in_user(
+        user.id, preferred_locale, db
     )
-    return locked_tasks.model_dump(by_alias=True), 200
+    return locked_tasks.model_dump(by_alias=True)
 
 
 @router.get("/{username}/queries/interests/")

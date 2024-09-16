@@ -259,6 +259,9 @@ class Settings(BaseSettings):
     # Sentry backend DSN
     SENTRY_BACKEND_DSN: str = os.getenv("TM_SENTRY_BACKEND_DSN", None)
 
+    # Ohsome Stats Token
+    OHSOME_STATS_TOKEN: str = os.getenv("OHSOME_STATS_TOKEN", None)
+
 
 @lru_cache
 def get_settings():

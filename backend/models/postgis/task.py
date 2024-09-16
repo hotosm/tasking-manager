@@ -1347,7 +1347,6 @@ class Task(Base):
             ORDER BY
                 th.action_date DESC;
         """
-
         rows = await db.fetch_all(
             query=query, values={"task_id": task_id, "project_id": project_id}
         )
@@ -1528,9 +1527,10 @@ class Task(Base):
 
         return tasks_dto
 
-    def get_locked_tasks_details_for_user(user_id: int):
+    async def get_locked_tasks_details_for_user(user_id: int, db: Database) -> list:
         """Gets tasks on project owned by specified user id"""
-        tasks = session.query(Task).filter_by(locked_by=user_id)
+        query = select(Task).filter_by(locked_by=user_id)
+        tasks = await db.fetch_all(query)
         locked_tasks = [task for task in tasks]
 
         return locked_tasks
