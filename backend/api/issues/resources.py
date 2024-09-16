@@ -9,8 +9,6 @@ from backend.services.users.authentication_service import tm
 from backend.db import get_session
 from starlette.authentication import requires
 from backend.db import get_db
-from backend.models.dtos.user_dto import AuthUserDTO
-from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
     prefix="/tasks",
