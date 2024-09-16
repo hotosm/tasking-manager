@@ -910,9 +910,7 @@ class UserService:
             details_msg = f"Email address {user_email} already exists"
             raise ValueError(details_msg)
 
-        query = select(UserEmail).filter(
-            func.lower(UserEmail.email) == user_email
-        )
+        query = select(UserEmail).filter(func.lower(UserEmail.email) == user_email)
         user = db.fetch_one(query)
         if user is None:
             user = UserEmail(email=user_email)

@@ -1,5 +1,6 @@
 # from flask import current_app
 from sqlalchemy.exc import IntegrityError
+
 # from psycopg2.errors import UniqueViolation, NotNullViolation
 
 from backend.exceptions import NotFound
