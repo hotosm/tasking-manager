@@ -107,10 +107,13 @@ export const PartnersStats = () => {
                 {tabData.map(({ id: tabId, title }) => (
                   <div
                     key={tabId}
+                    role="button"
+                    tabIndex={0}
                     className={`flex items-center pointer partners-tab-item ${
                       tabname === tabId ? 'bg-tan blue-dark' : 'bg-grey-dark white'
                     }`}
                     onClick={() => navigate(`/partners/${id}/stats/${tabId}`)}
+                    onKeyDown={() => {}}
                   >
                     <p className="ma0">{title}</p>
                   </div>
@@ -132,6 +135,7 @@ export const PartnersStats = () => {
                   <div className="flex items-center gap-0.625">
                     {socialLinks.map((link) => (
                       <a
+                        key={link}
                         href={partner[link]}
                         className="link barlow-condensed white f4 ttu di-l dib"
                         target="_blank"

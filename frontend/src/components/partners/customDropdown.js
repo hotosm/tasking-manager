@@ -33,6 +33,7 @@ export const CustomDropdown = ({ title, data, buttonClassname }) => {
               onMouseDown={() => {
                 option?.onClick(option);
               }}
+              onKeyDown={() => {}}
             >
               {option.label}
             </li>
