@@ -3,20 +3,7 @@ from cachetools import TTLCache, cached
 import datetime
 from loguru import logger
 from sqlalchemy.sql.expression import literal
-from sqlalchemy import (
-    func,
-    or_,
-    desc,
-    and_,
-    distinct,
-    cast,
-    Time,
-    column,
-    select,
-    union,
-    alias,
-)
-from databases import Database
+from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column, select
 
 from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
@@ -894,7 +881,7 @@ class UserService:
 
             if (
                 osm_details.changeset_count > advanced_level.value
-                and user["mapping_level"] != MappingLevel.ADVANCED.value
+                and user_level != MappingLevel.ADVANCED.value
             ):
                 update_query = """
                     UPDATE users
@@ -906,21 +893,21 @@ class UserService:
                     {"new_level": MappingLevel.ADVANCED.value, "user_id": user_id},
                 )
                 await UserService.notify_level_upgrade(
-                    user_id, user["username"], "ADVANCED", db
+                    user_id, user.username, "ADVANCED", db
                 )
 
             elif (
                 intermediate_level.value
                 < osm_details.changeset_count
                 < advanced_level.value
-                and user["mapping_level"] != MappingLevel.INTERMEDIATE.value
+                and user_level != MappingLevel.INTERMEDIATE.value
             ):
                 await db.execute(
                     update_query,
                     {"new_level": MappingLevel.INTERMEDIATE.value, "user_id": user_id},
                 )
                 await UserService.notify_level_upgrade(
-                    user_id, user["username"], "INTERMEDIATE", db
+                    user_id, user.username, "INTERMEDIATE", db
                 )
 
         except OSMServiceError:
@@ -986,7 +973,9 @@ class UserService:
             details_msg = f"Email address {user_email} already exists"
             raise ValueError(details_msg)
 
-        query = select(UserEmail).filter(func.lower(UserEmail.email) == user_email)
+        query = select(UserEmail).filter(
+            func.lower(UserEmail.email) == user_email
+        )
         user = db.fetch_one(query)
         if user is None:
             user = UserEmail(email=user_email)

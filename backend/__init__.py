@@ -25,6 +25,8 @@ from requests_oauthlib import OAuth2Session
 # from flask_restful import Api
 from fastapi_mail import FastMail, ConnectionConfig
 
+# from flask_mail import Mail
+
 from backend.config import settings
 
 
@@ -82,7 +84,7 @@ conf = ConnectionConfig(
     MAIL_FROM_NAME=settings.ORG_NAME,
     MAIL_SSL_TLS=False,
     MAIL_STARTTLS=True,
-    VALIDATE_CERTS=True,
+    VALIDATE_CERTS = True,
 )
 
 mail = FastMail(conf)
