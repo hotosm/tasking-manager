@@ -1,4 +1,6 @@
 import requests
+from loguru import logger
+
 # # from flask import current_app
 
 from backend.models.dtos.user_dto import UserOSMDTO
@@ -9,8 +11,7 @@ class OSMServiceError(Exception):
     """Custom Exception to notify callers an error occurred when in the User Service"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class OSMService:

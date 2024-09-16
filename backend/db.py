@@ -52,9 +52,6 @@ def get_session():
 
 
 async def get_db():
-    """Get the encode database connection"""
-    try:
-        await db_connection.connect()
-        yield db_connection.database
-    finally:
-        await db_connection.disconnect()
+    """Get the database connection from the pool."""
+    async with db_connection.database.connection() as connection:
+        yield connection

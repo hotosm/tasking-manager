@@ -1,14 +1,17 @@
+from databases import Database
+from fastapi import APIRouter, Depends, Request
+from loguru import logger
+
 from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
 from backend.services.mapping_issues_service import MappingIssueCategoryService
 from backend.services.users.authentication_service import tm
-from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
-from loguru import logger
+from backend.db import get_db
 
 router = APIRouter(
     prefix="/tasks",
-    tags=["tasks"],
+    tags=["issues"],
     dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
@@ -151,9 +154,8 @@ def delete(request: Request, category_id: int):
     return {"Success": "Mapping-issue category deleted"}, 200
 
 
-# class IssuesAllAPI(Resource):
 @router.get("/issues/categories/")
-async def get(request: Request):
+async def get(request: Request, db: Database = Depends(get_db)):
     """
     Gets all mapping issue categories
     ---
@@ -174,10 +176,10 @@ async def get(request: Request):
             description: Internal Server Error
     """
     include_archived = request.query_params.get("includeArchived") == "true"
-    categories = MappingIssueCategoryService.get_all_mapping_issue_categories(
-        include_archived
+    categories = await MappingIssueCategoryService.get_all_mapping_issue_categories(
+        include_archived, db
     )
-    return categories.model_dump(by_alias=True), 200
+    return categories.model_dump(by_alias=True)
 
 
 @router.post("/issues/categories/")

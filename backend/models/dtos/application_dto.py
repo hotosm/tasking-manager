@@ -15,8 +15,4 @@ class ApplicationDTO(BaseModel):
 class ApplicationsDTO(BaseModel):
     """Describes an array of Application DTOs"""
 
-    def __init__(self):
-        super().__init__()
-        self.applications = []
-
-    applications: List[ApplicationDTO]
+    applications: List[ApplicationDTO] = Field([], alias="applications")

@@ -23,8 +23,7 @@ from logging.handlers import RotatingFileHandler
 from requests_oauthlib import OAuth2Session
 
 # from flask_restful import Api
-import sqlalchemy
-# from flask_mail import Mail
+from fastapi_mail import FastMail, ConnectionConfig
 
 from backend.config import settings
 
@@ -73,7 +72,20 @@ def format_url(endpoint):
 # db = sqlalchemy
 # migrate = Migrate()
 
-# mail = Mail()
+# Define the email configuration
+conf = ConnectionConfig(
+    MAIL_USERNAME=settings.MAIL_USERNAME,
+    MAIL_PASSWORD=settings.MAIL_PASSWORD,
+    MAIL_FROM=settings.MAIL_DEFAULT_SENDER,
+    MAIL_PORT=settings.MAIL_PORT,
+    MAIL_SERVER=settings.MAIL_SERVER,
+    MAIL_FROM_NAME=settings.ORG_NAME,
+    MAIL_SSL_TLS=False,
+    MAIL_STARTTLS=True,
+    VALIDATE_CERTS=True,
+)
+
+mail = FastMail(conf)
 
 
 osm = OAuth2Session(

@@ -2,6 +2,7 @@ import base64
 import binascii
 import urllib.parse
 from backend.db import get_db
+from backend.models.postgis.user import User
 from backend.models.dtos.user_dto import AuthUserDTO
 from starlette.authentication import (
     AuthCredentials,
@@ -17,7 +18,8 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService, NotFound
 from random import SystemRandom
 from backend.config import settings
-from fastapi import Depends, HTTPException, Header, Request
+from fastapi import Depends, HTTPException, Request, Security
+from fastapi.security.api_key import APIKeyHeader
 from databases import Database
 
 # token_auth = HTTPTokenAuth(scheme="Token")
@@ -142,9 +144,9 @@ class AuthenticationService:
         }
 
     @staticmethod
-    def authenticate_email_token(username: str, token: str):
+    async def authenticate_email_token(username: str, token: str, db: Database):
         """Validate that the email token is valid"""
-        user = UserService.get_user_by_username(username)
+        user = await UserService.get_user_by_username(username, db)
 
         is_valid, tokenised_email = AuthenticationService.is_valid_token(token, 86400)
 
@@ -157,13 +159,13 @@ class AuthenticationService:
             raise AuthServiceError("InvalidEmail- Email address does not match token")
 
         # Token is valid so update DB and return
-        user.set_email_verified_status(is_verified=True)
+        await User.set_email_verified_status(user, is_verified=True, db=db)
         return AuthenticationService._get_email_validated_url(True)
 
     @staticmethod
     def _get_email_validated_url(is_valid: bool) -> str:
         """Helper function to generate redirect url for email verification"""
-        base_url = settings.get("APP_BASE_URL")
+        base_url = settings.APP_BASE_URL
 
         verification_params = {"is_valid": is_valid}
         verification_url = "{0}/validate-email?{1}".format(
@@ -174,7 +176,7 @@ class AuthenticationService:
     @staticmethod
     def get_authentication_failed_url():
         """Generates the auth-failed URL for the running app"""
-        base_url = settings.get("APP_BASE_URL")
+        base_url = settings.APP_BASE_URL
         auth_failed_url = f"{base_url}/auth-failed"
         return auth_failed_url
 
@@ -226,12 +228,14 @@ class AuthenticationService:
 
 
 async def login_required(
-    request: Request, db: Database = Depends(get_db), authorization: str = Header(None)
+    request: Request,
+    db: Database = Depends(get_db),
+    Authorization: str = Security(APIKeyHeader(name="Authorization")),
 ):
-    if not authorization:
+    if not Authorization:
         raise HTTPException(status_code=401, detail="Authorization header missing")
     try:
-        scheme, credentials = authorization.split()
+        scheme, credentials = Authorization.split()
         if scheme.lower() != "token":
             raise HTTPException(status_code=401, detail="Invalid authentication scheme")
         try:

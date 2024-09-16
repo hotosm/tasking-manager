@@ -1,4 +1,14 @@
-from sqlalchemy import Column, BigInteger, String, DateTime, ForeignKey
+from databases import Database
+from sqlalchemy import (
+    Column,
+    BigInteger,
+    String,
+    DateTime,
+    ForeignKey,
+    select,
+    insert,
+    delete,
+)
 from backend.models.dtos.application_dto import ApplicationDTO, ApplicationsDTO
 from backend.models.postgis.utils import timestamp
 from backend.services.users.authentication_service import AuthenticationService
@@ -24,33 +34,34 @@ class Application(Base):
         token = AuthenticationService.generate_session_token_for_user(user_id)
         return token
 
-    def create(self, user_id):
+    async def create(self, user_id, db: Database):
         application = Application()
         application.app_key = self.generate_application_key(user_id)
         application.user = user_id
-        session.add(application)
-        session.commit()
-
+        query = insert(Application.__table__).values(
+            app_key=application.app_key, user=application.user
+        )
+        await db.execute(query)
         return application
 
     def save(self):
         session.commit()
 
-    def delete(self):
-        session.delete(self)
-        session.commit()
+    async def delete(self, db: Database):
+        query = delete(Application).where(Application.id == self.id)
+        await db.execute(query)
 
     @staticmethod
-    def get_token(appkey: str):
-        return (
-            session.query(Application)
-            .filter(Application.app_key == appkey)
-            .one_or_none()
-        )
+    async def get_token(appkey: str, db: Database):
+        query = select(Application).where(Application.app_key == appkey)
+        result = await db.fetch_one(query)
+        return result
 
     @staticmethod
-    def get_all_for_user(user: int):
-        query = session.query(Application).filter(Application.user == user)
+    async def get_all_for_user(user: int, db: Database):
+        # query = session.query(Application).filter(Application.user == user)
+        query = select(Application).where(Application.user == user)
+        query = await db.fetch_all(query=query)
         applications_dto = ApplicationsDTO()
         for r in query:
             application_dto = ApplicationDTO()

@@ -1,23 +1,24 @@
-import requests
-import json
-
-from backend.services.messaging.smtp_service import SMTPService
-from backend.models.postgis.release_version import ReleaseVersion
-from backend.services.settings_service import SettingsService
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_db, get_session
 from databases import Database
+from datetime import datetime
+from fastapi import APIRouter, Depends, Request, Body
+from fastapi.responses import JSONResponse
+import requests
+
+from backend.db import get_db
+from backend.models.postgis.release_version import ReleaseVersion
+from backend.services.messaging.smtp_service import SMTPService
+from backend.services.settings_service import SettingsService
 
 router = APIRouter(
     prefix="/system",
     tags=["system"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 
-@router.get("/docs/json/")
-async def get():
+@router.get("/docs/json/", response_class=JSONResponse)
+async def get(request: Request):
     """
     Generates Swagger UI readable JSON
     ---
@@ -133,37 +134,14 @@ async def get():
 
 
     """
-    swag = "FastAPI.openapi()"
+    swag = request.app.openapi()
     swag["info"]["title"] = "Tasking Manager backend API"
     swag["info"]["description"] = "API endpoints for the backend"
     swag["info"]["version"] = "2.0.0"
 
-    return json.dumps(swag)
+    return JSONResponse(content=swag, status_code=200)
 
 
-# @router.get("/heartbeat/")
-# async def get():
-#     """
-#     Simple health-check, if this is unreachable load balancers should be configures to raise an alert
-#     ---
-#     tags:
-#       - system
-#     produces:
-#       - application/json
-#     responses:
-#       200:
-#         description: Service is Healthy
-#     """
-#     release = ReleaseVersion.get()
-#     if release is not None:
-#         release = {
-#             "version": release.tag_name,
-#             "published_at": str(release.published_at),
-#         }
-#     return {"status": "healthy", "release": release}, 200
-
-
-# class SystemLanguagesAPI():
 @router.get("/languages/")
 async def get():
     """
@@ -180,7 +158,7 @@ async def get():
             description: Internal Server Error
     """
     languages = SettingsService.get_settings()
-    return languages.model_dump(by_alias=True), 200
+    return languages.model_dump(by_alias=True)
 
 
 @router.get("/heartbeat/")
@@ -212,12 +190,11 @@ async def get(db: Database = Depends(get_db)):
     else:
         release_info = None
 
-    return {"status": "Fastapi healthy", "release": release_info}, 200
+    return {"status": "Fastapi healthy", "release": release_info}
 
 
-# class SystemContactAdminRestAPI():
 @router.post("/contact-admin/")
-async def post(request: Request):
+async def post(request: Request, data: dict = Body(...)):
     """
     Send an email to the system admin
     ---
@@ -252,16 +229,16 @@ async def post(request: Request):
         description: A problem occurred
     """
     try:
-        data = await request.json()
-        SMTPService.send_contact_admin_email(data)
-        return {"Success": "Email sent"}, 201
+        await SMTPService.send_contact_admin_email(data)
+        return JSONResponse(content={"Success": "Email sent"}, status_code=201)
     except ValueError as e:
-        return {"Error": str(e), "SubCode": "NotImplemented"}, 501
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "NotImplemented"}, status_code=501
+        )
 
 
-# class SystemReleaseAPI():
 @router.post("/release/")
-async def post():
+async def post(db: Database = Depends(get_db)):
     """
     Fetch latest release version form github and save to database.
     ---
@@ -283,19 +260,25 @@ async def post():
     try:
         tag_name = response.json()["tag_name"]
         published_date = response.json()["published_at"]
-        release = ReleaseVersion.get()
+        published_date = datetime.strptime(
+            published_date, "%Y-%m-%dT%H:%M:%SZ"
+        ).replace(tzinfo=None)
+        release = await ReleaseVersion.get(db)
         if release is None:
             release = ReleaseVersion()
         if tag_name != release.tag_name:
             release.tag_name = tag_name
             release.published_at = published_date
-            release.save()
+            await release.save(db)
         return {
             "release_version": release.tag_name,
             "published_at": str(release.published_at),
-        }, 201
+        }
     except KeyError:
-        return {
-            "Error": "Couldn't fetch latest release from github",
-            "SubCode": "GithubFetchError",
-        }, 502
+        return JSONResponse(
+            content={
+                "Error": "Couldn't fetch latest release from github",
+                "SubCode": "GithubFetchError",
+            },
+            status_code=502,
+        )

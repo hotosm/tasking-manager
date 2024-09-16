@@ -1,6 +1,9 @@
 from datetime import date, timedelta
-# from flask_restful import Resource, request
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
+import requests
 
+from backend.config import settings
 from backend.services.users.user_service import UserService
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
@@ -11,10 +14,8 @@ from backend.api.utils import validate_date_input
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.db import get_db
 from databases import Database
-from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
 from starlette.authentication import requires
-import os
 
 router = APIRouter(
     prefix="/users",
@@ -64,7 +65,6 @@ async def get(request: Request, username):
 
 
 @router.get("/{user_id}/statistics/interests/")
-# @requires("authenticated")
 async def get(
     user_id: int,
     db: Database = Depends(get_db),
@@ -101,8 +101,6 @@ async def get(
     return rate
 
 
-# class UsersStatisticsAllAPI(Resource):
-# @token_auth.login_required
 @router.get("/statistics/")
 @requires("authenticated")
 async def get(request: Request):
@@ -165,8 +163,6 @@ async def get(request: Request):
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
 
 
-# class OhsomeProxyAPI(Resource):
-#     @token_auth.login_required
 @router.get("/statistics/ohsome/")
 @requires("authenticated")
 async def get(request: Request):
@@ -194,16 +190,19 @@ async def get(request: Request):
         500:
             description: Internal Server Error
     """
-    url = request.args.get("url")
-    token = os.environ.get("TM_APP_BASE_URL", None)
+    url = request.query_params.get("url")
     if not url:
-        return {"Error": "URL is None", "SubCode": "URL not provided"}, 400
+        return JSONResponse(
+            content={"Error": "URL is None", "SubCode": "URL not provided"},
+            status_code=400,
+        )
     try:
-        # headers = {"Authorization": f"Basic {EnvironmentConfig.OHSOME_STATS_TOKEN}"}
-        headers = {"Authorization": f"Basic {token}"}
+        headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
 
         # Make the GET request with headers
         response = requests.get(url, headers=headers)
-        return response.json(), 200
+        return response.json()
     except Exception as e:
-        return {"Error": str(e), "SubCode": "Error fetching data"}, 400
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "Error fetching data"}, status_code=400
+        )

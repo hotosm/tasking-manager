@@ -1,9 +1,10 @@
 import bleach
 from markdown import markdown
 
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, insert, update
 from backend.models.dtos.banner_dto import BannerDTO
 from backend.db import Base, get_session
+from databases import Database
 
 session = get_session()
 
@@ -18,20 +19,28 @@ class Banner(Base):
     message = Column(String(255), nullable=False)
     visible = Column(Boolean, default=False, nullable=False)
 
-    def create(self):
+    async def create(self, db: Database):
         """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
+        query = insert(Banner.__table__).values(
+            message=self.message, visible=self.visible
+        )
+        await db.execute(query)
 
     def update(self):
         """Updates the current model in the DB"""
         session.commit()
 
-    def update_from_dto(self, dto: BannerDTO):
+    async def update_from_dto(self, db: Database, dto: BannerDTO):
         """Updates the current model in the DB"""
         self.message = dto.message
         self.visible = dto.visible
-        session.commit()
+        query = (
+            update(Banner.__table__)
+            .where(Banner.id == self.id)
+            .values(message=self.message, visible=self.visible)
+        )
+        await db.execute(query)
+        return self
 
     def as_dto(self):
         """Returns a dto for the banner"""
@@ -41,14 +50,15 @@ class Banner(Base):
         return banner_dto
 
     @staticmethod
-    def get():
+    async def get(db: Database):
         """Returns a banner and creates one if it doesn't exist"""
-        banner = session.query(Banner).first()
+        query = """SELECT * FROM banner LIMIT 1"""
+        banner = await db.fetch_one(query=query)
         if banner is None:
             banner = Banner()
             banner.message = "Welcome to the API"
             banner.visible = True
-            banner.create()
+            await banner.create(db)
         return banner
 
     @staticmethod

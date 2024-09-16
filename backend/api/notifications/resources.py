@@ -226,7 +226,7 @@ async def get(
             description: Internal Server Error
     """
     unread_count = await MessageService.has_user_new_messages(user.id, db)
-    return unread_count, 200
+    return unread_count
 
 
 @router.post("/queries/own/post-unread/")
@@ -256,4 +256,4 @@ async def post(
             description: Internal Server Error
     """
     unread_count = await NotificationService.update(user.id, db)
-    return unread_count, 200
+    return unread_count

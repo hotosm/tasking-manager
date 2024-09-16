@@ -1,7 +1,7 @@
 import os
 import sys
 
-project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_dir)
 
 from geoalchemy2 import alembic_helpers
@@ -34,9 +34,12 @@ target_metadata = Base.metadata
 config.set_main_option(
     "sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI.unicode_string()
 )
+
+
 # target_metadata = current_app.extensions["migrate"].db.metadata
 def get_url():
     return settings.SQLALCHEMY_DATABASE_URI.unicode_string()
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -84,11 +87,13 @@ def run_migrations_offline():
     with context.begin_transaction():
         context.run_migrations()
 
+
 def do_run_migrations(connection: Connection) -> None:
     context.configure(connection=connection, target_metadata=target_metadata)
 
     with context.begin_transaction():
         context.run_migrations()
+
 
 async def run_migrations_online():
     """Run migrations in 'online' mode.
