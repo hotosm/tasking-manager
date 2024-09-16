@@ -294,9 +294,13 @@ async def patch(
     """
     try:
         await MessageService.resend_email_validation(user.id, db)
-        return JSONResponse(content={"Success": "Verification email resent"}, status_code=200)
+        return JSONResponse(
+            content={"Success": "Verification email resent"}, status_code=200
+        )
     except ValueError as e:
-        return JSONResponse(content={"Error": str(e), "SubCode": str(e).split("-")[0]}, status_code=400)
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": str(e).split("-")[0]}, status_code=400
+        )
 
 
 # class UsersActionsRegisterEmailAPI(Resource):
