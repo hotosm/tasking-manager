@@ -16,7 +16,6 @@ from backend.db import get_db
 from databases import Database
 from backend.db import get_session
 from starlette.authentication import requires
-import os
 
 router = APIRouter(
     prefix="/users",
