@@ -232,7 +232,9 @@ async def post(request: Request, data: dict = Body(...)):
         await SMTPService.send_contact_admin_email(data)
         return JSONResponse(content={"Success": "Email sent"}, status_code=201)
     except ValueError as e:
-        return JSONResponse(content={"Error": str(e), "SubCode": "NotImplemented"}, status_code=501)
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "NotImplemented"}, status_code=501
+        )
 
 
 @router.post("/release/")
