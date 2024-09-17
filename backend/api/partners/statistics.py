@@ -68,7 +68,23 @@ class FilteredPartnerStatisticsAPI(Resource):
         from_date = request.args.get("fromDate")
         to_date = request.args.get("toDate")
 
-        if from_date is not None and to_date is not None and from_date > to_date:
+        if from_date is None:
+            raise BadRequest(
+                sub_code="INVALID_TIME_RANGE",
+                message="fromDate is missing",
+                from_date=from_date,
+                to_date=to_date,
+            )
+
+        if to_date is None:
+            raise BadRequest(
+                sub_code="INVALID_TIME_RANGE",
+                message="toDate is missing",
+                from_date=from_date,
+                to_date=to_date,
+            )
+
+        if from_date > to_date:
             raise BadRequest(
                 sub_code="INVALID_TIME_RANGE",
                 message="fromDate should be less than toDate",
@@ -80,7 +96,7 @@ class FilteredPartnerStatisticsAPI(Resource):
 
         return (
             mapswipe.fetch_filtered_partner_stats(
-                partner.mapswipe_group_id, from_date, to_date
+                partner.id, partner.mapswipe_group_id, from_date, to_date
             ).to_primitive(),
             200,
         )

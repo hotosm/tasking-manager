@@ -3,10 +3,17 @@ from backend.models.dtos.partner_stats_dto import (
     GroupedPartnerStatsDTO,
     FilteredPartnerStatsDTO,
     UserGroupMemberDTO,
+    UserContributionsDTO,
+    GeojsonDTO,
+    GeoContributionsDTO,
+    AreaSwipedByProjectTypeDTO,
+    ContributionsByDateDTO,
+    ContributionTimeByDateDTO,
+    ContributionsByProjectTypeDTO,
+    OrganizationContributionsDTO,
 )
 from cachetools import TTLCache, cached
 import requests
-from typing import Optional
 
 grouped_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
 filtered_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
@@ -64,7 +71,7 @@ class MapswipeService:
         return {"operationName": operationName, "query": query, "variables": variables}
 
     def __build_query_filtered_user_group_stats(
-        group_id: str, from_date: str, to_date: str
+        self, group_id: str, from_date: str, to_date: str
     ):
         """A private method to build a graphQl query for fetching a user group's stats within a timerange from Mapswipe."""
 
@@ -166,8 +173,105 @@ class MapswipeService:
             "statsLatest"
         ]["totalSwipeTime"]
 
-        print("final group dto", group_dto.total_contributors)
         return group_dto
+
+    @staticmethod
+    def setup_filtered_dto(
+        partner_id: str,
+        group_id: str,
+        from_date: str,
+        to_date: str,
+        resp_body: str,
+    ):
+        filtered_stats_dto = FilteredPartnerStatsDTO()
+        filtered_stats_dto.id = partner_id
+        filtered_stats_dto.provider = "mapswipe"
+        filtered_stats_dto.id_inside_provider = group_id
+        filtered_stats_dto.from_date = from_date
+        filtered_stats_dto.to_date = to_date
+
+        filtered_stats = json.loads(resp_body)["data"]["userGroupStats"][
+            "filteredStats"
+        ]
+
+        stats_by_user = []
+        for user_stats in filtered_stats["userStats"]:
+            user_contributions = UserContributionsDTO()
+            user_contributions.user_id = user_stats["userId"]
+            user_contributions.username = user_stats["username"]
+            user_contributions.total_contributions = user_stats["totalSwipes"]
+            user_contributions.total_contribution_time = user_stats["totalSwipeTime"]
+            user_contributions.total_mapping_projects = user_stats[
+                "totalMappingProjects"
+            ]
+            stats_by_user.append(user_contributions)
+        filtered_stats_dto.contributions_by_user = stats_by_user
+
+        contributions_by_geo = []
+        for geo_stats in filtered_stats["contributionByGeo"]:
+            geo_contributions = GeoContributionsDTO()
+            geo_contributions.total_contributions = geo_stats["totalContribution"]
+            geojson = GeojsonDTO()
+            geojson.type = geo_stats["geojson"]["type"]
+            geojson.coordinates = geo_stats["geojson"]["coordinates"]
+            geo_contributions.geojson = geojson
+            contributions_by_geo.append(geo_contributions)
+        filtered_stats_dto.contributions_by_geo = contributions_by_geo
+
+        areas_swiped = []
+        for area_swiped in filtered_stats["areaSwipedByProjectType"]:
+            area_swiped_by_project_type = AreaSwipedByProjectTypeDTO()
+            area_swiped_by_project_type.project_type = area_swiped["projectType"]
+            area_swiped_by_project_type.project_type_display = area_swiped[
+                "projectTypeDisplay"
+            ]
+            area_swiped_by_project_type.total_area = area_swiped["totalArea"]
+            areas_swiped.append(area_swiped_by_project_type)
+        filtered_stats_dto.area_swiped_by_project_type = areas_swiped
+
+        dates = []
+        for by_date in filtered_stats["swipeByDate"]:
+            contributions_by_date = ContributionsByDateDTO()
+            contributions_by_date.task_date = by_date["taskDate"]
+            contributions_by_date.total_contributions = by_date["totalSwipes"]
+            dates.append(contributions_by_date)
+        filtered_stats_dto.contributions_by_date = dates
+
+        dates = []
+        for by_date in filtered_stats["swipeTimeByDate"]:
+            contribution_time_by_date = ContributionTimeByDateDTO()
+            contribution_time_by_date.date = by_date["date"]
+            contribution_time_by_date.total_contribution_time = by_date[
+                "totalSwipeTime"
+            ]
+            dates.append(contribution_time_by_date)
+        filtered_stats_dto.contribution_time_by_date = dates
+
+        project_types = []
+        for project_type in filtered_stats["swipeByProjectType"]:
+            contributions_by_project_type = ContributionsByProjectTypeDTO()
+            contributions_by_project_type.project_type = project_type["projectType"]
+            contributions_by_project_type.project_type_display = project_type[
+                "projectTypeDisplay"
+            ]
+            contributions_by_project_type.total_contributions = project_type[
+                "totalSwipes"
+            ]
+            project_types.append(contributions_by_project_type)
+        filtered_stats_dto.contributions_by_project_type = project_types
+
+        organizations = []
+        for organization in filtered_stats["swipeByOrganizationName"]:
+            contributions_by_organization_name = OrganizationContributionsDTO()
+            contributions_by_organization_name.organization_name = organization[
+                "organizationName"
+            ]
+            contributions_by_organization_name.total_contributions = organization[
+                "totalSwipes"
+            ]
+            organizations.append(contributions_by_organization_name)
+        filtered_stats_dto.contributions_by_organization_name = organizations
+        return filtered_stats_dto
 
     # @cached(grouped_partner_stats_cache)
     def fetch_grouped_partner_stats(
@@ -197,9 +301,13 @@ class MapswipeService:
 
     # @cached(filtered_partner_stats_cache)
     def fetch_filtered_partner_stats(
-        self, group_id: str, from_date: Optional[str], to_date: Optional[str]
+        self,
+        partner_id: str,
+        group_id: str,
+        from_date: str,
+        to_date: str,
     ) -> FilteredPartnerStatsDTO:
-        filtered_group_stats = requests.post(
+        resp = requests.post(
             MAPSWIPE_API_URL,
             headers={"Content-Type": "application/json"},
             data=json.dumps(
@@ -208,10 +316,8 @@ class MapswipeService:
                 )
             ),
         )
-        print("filtered_group_stats", filtered_group_stats)
 
-        filtered_parter_stats_dto = FilteredPartnerStatsDTO()
-        filtered_parter_stats_dto.provider = "mapswipe"
-        filtered_parter_stats_dto.id_inside_provider = group_id
-
-        return filtered_parter_stats_dto
+        filtered_dto = self.setup_filtered_dto(
+            partner_id, group_id, from_date, to_date, resp.text
+        )
+        return filtered_dto
