@@ -31,6 +31,7 @@ from backend.db import get_db
 from databases import Database
 from backend.services.users.authentication_service import login_required
 from backend.models.dtos.user_dto import AuthUserDTO
+from fastapi.responses import JSONResponse
 
 router = APIRouter(
     prefix="/projects",
@@ -105,19 +106,27 @@ async def post(
         )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {"Error": "Unable to lock task", "SubCode": "InvalidData"}, 400
-
+        return JSONResponse(
+            content={"Error": "Unable to lock task", "SubCode": "InvalidData"},
+            status_code=400,
+        )
     try:
         await ProjectService.exists(project_id, db)
         task = await MappingService.lock_task_for_mapping(lock_task_dto, db)
         return task
     except MappingServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
     except UserLicenseError:
-        return {
-            "Error": "User not accepted license terms",
-            "SubCode": "UserLicenseError",
-        }, 409
+        return JSONResponse(
+            {
+                "Error": "User not accepted license terms",
+                "SubCode": "UserLicenseError",
+            },
+            status_code=409,
+        )
 
 
 @router.post("{project_id}/tasks/actions/stop-mapping/{task_id}/")
@@ -668,9 +677,13 @@ async def post(request: Request, project_id: int):
     return {"Success": "All tasks validated"}, 200
 
 
-@router.post("{project_id}/tasks/actions/invalidate-all/")
-@requires("authenticated")
-async def post(request: Request, project_id: int):
+@router.post("/{project_id}/tasks/actions/invalidate-all/")
+async def post(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Invalidate all validated tasks on a project
     ---
@@ -702,19 +715,21 @@ async def post(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
+        authenticated_user_id = user.id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
         ):
             raise ValueError()
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
-
-    ValidatorService.invalidate_all_tasks(project_id, authenticated_user_id)
-    return {"Success": "All tasks invalidated"}, 200
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
+    await ValidatorService.invalidate_all_tasks(project_id, authenticated_user_id, db)
+    return JSONResponse(content={"Success": "All tasks invalidated"}, status_code=200)
 
 
 @router.post("{project_id}/tasks/actions/reset-all-badimagery/")
