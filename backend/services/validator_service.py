@@ -28,6 +28,7 @@ from backend.services.project_service import ProjectService, ProjectAdminService
 from backend.services.stats_service import StatsService
 from backend.services.users.user_service import UserService
 from backend.services.mapping_service import MappingService
+from databases import Database
 
 
 class ValidatorServiceError(Exception):
@@ -350,20 +351,34 @@ class ValidatorService:
         return invalidated_tasks_dto
 
     @staticmethod
-    def invalidate_all_tasks(project_id: int, user_id: int):
-        """Invalidates all validated tasks on a project"""
-        validated_tasks = Task.query.filter(
-            Task.project_id == project_id,
-            Task.task_status == TaskStatus.VALIDATED.value,
-        ).all()
-        for task in validated_tasks:
-            task.lock_task_for_validating(user_id)
-            task.unlock_task(user_id, new_state=TaskStatus.INVALIDATED)
+    async def invalidate_all_tasks(project_id: int, user_id: int, db: Database):
+        """Invalidates all validated tasks on a project."""
+        query = """
+            SELECT id, task_status FROM tasks
+            WHERE project_id = :project_id
+            AND task_status = :validated_status
+        """
+        validated_tasks = await db.fetch_all(
+            query=query,
+            values={
+                "project_id": project_id,
+                "validated_status": TaskStatus.VALIDATED.value,
+            },
+        )
 
-        # Reset counters
-        project = ProjectService.get_project_by_id(project_id)
-        project.tasks_validated = 0
-        project.save()
+        for task in validated_tasks:
+            await Task.lock_task_for_validating(task["id"], project_id, user_id, db)
+            await Task.unlock_task(
+                task["id"], project_id, user_id, TaskStatus.INVALIDATED, db
+            )
+
+        # Reset counters for the project
+        project_query = """
+            UPDATE projects
+            SET tasks_validated = 0
+            WHERE id = :project_id
+        """
+        await db.execute(query=project_query, values={"project_id": project_id})
 
     @staticmethod
     def validate_all_tasks(project_id: int, user_id: int):
