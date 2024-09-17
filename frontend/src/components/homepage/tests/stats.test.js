@@ -23,8 +23,24 @@ it('test number formatting smaller than 1000', () => {
   expect(testInstance.children).not.toContain('K');
 });
 
-describe('Stats Section', () => {
-  it('should display OSM and TM stats', async () => {
+// describe('Stats Section', () => {
+//   it('should display OSM and TM stats', async () => {
+//     render(
+//       <QueryClientProviders>
+//         <IntlProviders>
+//           <StatsSection />
+//         </IntlProviders>
+//       </QueryClientProviders>,
+//     );
+//     // A stat from OSM's TM Stat
+//     await waitFor(() => expect(screen.getByText('101.4M')).toBeInTheDocument());
+//     // A stat from TM Stat
+//     await waitFor(() => expect(screen.getByText(3)).toBeInTheDocument());
+//   });
+// });
+
+describe('OHM Stats Section', () => {
+  it('should display OHM and TM stats', async () => {
     render(
       <QueryClientProviders>
         <IntlProviders>
@@ -32,9 +48,7 @@ describe('Stats Section', () => {
         </IntlProviders>
       </QueryClientProviders>,
     );
-    // A stat from OSM's TM Stat
-    await waitFor(() => expect(screen.getByText('101.4M')).toBeInTheDocument());
-    // A stat from TM Stat
-    await waitFor(() => expect(screen.getByText(3)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Historical Projects')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Mappers Online')).toBeInTheDocument());
   });
 });

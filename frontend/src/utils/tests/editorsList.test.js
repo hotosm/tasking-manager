@@ -11,7 +11,7 @@ describe('test getEditors', () => {
       {
         label: 'iD Editor',
         value: 'ID',
-        url: 'https://www.openstreetmap.org/edit?editor=id&',
+        url: 'https://www.openhistoricalmap.org/edit?editor=id&',
       },
       {
         label: 'JOSM',
@@ -36,7 +36,7 @@ describe('test getEditors', () => {
       {
         label: 'iD Editor',
         value: 'ID',
-        url: 'https://www.openstreetmap.org/edit?editor=id&',
+        url: 'https://www.openhistoricalmap.org/edit?editor=id&',
       },
       {
         label: 'JOSM',
@@ -56,7 +56,7 @@ describe('test getEditors', () => {
       {
         label: 'iD Editor',
         value: 'ID',
-        url: 'https://www.openstreetmap.org/edit?editor=id&',
+        url: 'https://www.openhistoricalmap.org/edit?editor=id&',
       },
       {
         label: 'JOSM',

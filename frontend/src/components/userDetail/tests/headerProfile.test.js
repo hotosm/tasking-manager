@@ -46,7 +46,7 @@ describe('Social Media component', () => {
     ).toHaveLength(3);
     expect(screen.queryAllByRole('link', { name: 'johndoe' })[0]).toHaveAttribute(
       'href',
-      'https://www.openstreetmap.org/user/johndoe',
+      'https://www.openhistoricalmap.org/user/johndoe',
     );
     expect(screen.queryAllByRole('link', { name: 'johndoe' })[1]).toHaveAttribute(
       'href',
