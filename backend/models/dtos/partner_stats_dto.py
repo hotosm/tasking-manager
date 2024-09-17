@@ -1,3 +1,4 @@
+import pandas as pd
 from schematics import Model
 from schematics.types import (
     StringType,
@@ -84,6 +85,10 @@ class GroupedPartnerStatsDTO(Model):
     total_recent_contribution_time = IntType(
         serialized_name="totalRecentcontributionTime"
     )
+
+    def to_csv(self):
+        df = pd.json_normalize(self.to_primitive()["members"])
+        return df.to_csv(index=False)
 
 
 class FilteredPartnerStatsDTO(Model):

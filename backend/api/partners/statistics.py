@@ -1,3 +1,5 @@
+import io
+from flask import send_file
 from flask_restful import Resource, request
 
 from backend.services.users.authentication_service import token_auth
@@ -112,6 +114,11 @@ class GroupPartnerStatisticsAPI(Resource):
               description: The starting index from which to fetch partner members
               type: integer
               example: 0
+            - in: query
+              name: downloadAsCSV
+              description: Download users in this group as CSV
+              type: boolean
+              example: false
             - name: partner_id
               in: path
               description: The id of the partner
@@ -140,7 +147,22 @@ class GroupPartnerStatisticsAPI(Resource):
         partner = PartnerService.get_partner_by_id(partner_id)
         limit = int(request.args.get("limit", 10))
         offset = int(request.args.get("offset", 0))
+        downloadAsCSV = bool(request.args.get("downloadAsCSV", "false") == "true")
 
-        return mapswipe.fetch_grouped_partner_stats(
-            partner.id, partner.mapswipe_group_id, limit, offset
-        ).to_primitive(), 200
+        group_dto = mapswipe.fetch_grouped_partner_stats(
+            partner.id,
+            partner.mapswipe_group_id,
+            limit,
+            offset,
+            downloadAsCSV,
+        )
+
+        if downloadAsCSV:
+            return send_file(
+                io.BytesIO(group_dto.to_csv().encode()),
+                mimetype="text/csv",
+                as_attachment=True,
+                download_name="partner_members.csv",
+            )
+
+        return group_dto.to_primitive(), 200

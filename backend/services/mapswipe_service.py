@@ -123,7 +123,6 @@ class MapswipeService:
         variables = {"fromDate": from_date, "toDate": to_date, "pk": group_id}
         return {"operationName": operationName, "query": query, "variables": variables}
 
-    @cached(grouped_partner_stats_cache)
     def setup_group_dto(
         self, partner_id: str, group_id: str, resp_body: str
     ) -> GroupedPartnerStatsDTO:
@@ -170,10 +169,20 @@ class MapswipeService:
         print("final group dto", group_dto.total_contributors)
         return group_dto
 
+    # @cached(grouped_partner_stats_cache)
     def fetch_grouped_partner_stats(
-        self, partner_id: int, group_id: str, limit: int = 10, offset: int = 0
+        self,
+        partner_id: int,
+        group_id: str,
+        limit: int,
+        offset: int,
+        downloadAsCSV: bool,
     ) -> GroupedPartnerStatsDTO:
         """Service to fetch user group statistics by each member with pagination"""
+
+        if downloadAsCSV:
+            limit = 1_000_000
+            offset = 0
 
         resp_body = requests.post(
             MAPSWIPE_API_URL,
@@ -182,9 +191,11 @@ class MapswipeService:
                 self.__build_query_user_group_stats(group_id, limit, offset)
             ),
         ).text
-        return self.setup_group_dto(partner_id, group_id, resp_body)
 
-    @cached(filtered_partner_stats_cache)
+        group_dto = self.setup_group_dto(partner_id, group_id, resp_body)
+        return group_dto
+
+    # @cached(filtered_partner_stats_cache)
     def fetch_filtered_partner_stats(
         self, group_id: str, from_date: Optional[str], to_date: Optional[str]
     ) -> FilteredPartnerStatsDTO:
