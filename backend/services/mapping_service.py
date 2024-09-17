@@ -25,9 +25,12 @@ from databases import Database
 class MappingServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling mapping"""
 
-    def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+    # Log the error here.
+    pass
+
+    # def __init__(self, message):
+    #     if current_app:
+    #         current_app.logger.debug(message)
 
 
 class MappingService:
@@ -104,8 +107,6 @@ class MappingService:
             user_can_map, error_reason = await ProjectService.is_user_permitted_to_map(
                 lock_task_dto.project_id, lock_task_dto.user_id, db
             )
-            print(user_can_map, "Yo confition to map...")
-            print(error_reason, "yo error reason...")
             # TODO Handle error exceptions..
             if not user_can_map:
                 if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
