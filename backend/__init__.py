@@ -598,7 +598,7 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         GroupPartnerStatisticsAPI,
-        format_url("/partners/<int:partner_id>/group-statistics"),
+        format_url("/partners/<int:partner_id>/general-statistics"),
         methods=["GET"],
     )
     api.add_resource(
