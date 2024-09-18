@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Chart } from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
 
 import { CHART_COLOURS } from '../../config';
+import { Dropdown } from '../dropdown';
 import messages from './messages';
 
 const MOCK_DATA = [
@@ -19,13 +20,12 @@ const MOCK_DATA = [
 ];
 
 export const TimeSpentContributing = () => {
+  const [chartDistribution, setChartDistribution] = useState('day'); // "day" or "month"
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
   useEffect(() => {
-    if (chartInstance.current) {
-      chartInstance.current.destroy();
-    }
+    if (!chartRef.current) return;
 
     const context = chartRef.current.getContext('2d');
     // Create gradient for the area
@@ -34,73 +34,24 @@ export const TimeSpentContributing = () => {
     gradient.addColorStop(0.4, CHART_COLOURS.red);
     gradient.addColorStop(1, 'rgba(215, 63, 63, 0)');
 
-    chartInstance.current = new Chart(context, {
-      type: 'line',
-      data: {
-        labels: MOCK_DATA.map((entry) => entry.date),
-        datasets: [
-          {
-            label: 'Time Spent',
-            backgroundColor: gradient,
-            data: MOCK_DATA.map((entry) => entry.minutesSpent),
-            fill: true,
-            tension: 0.4,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: { display: false },
-        scales: {
-          x: {
-            type: 'time',
-            time: {
-              unit: 'day',
-              tooltipFormat: 'MMM d, yyyy',
+    if (!chartInstance.current) {
+      chartInstance.current = new Chart(context, {
+        type: 'line',
+        data: {
+          labels: MOCK_DATA.map((entry) => entry.date),
+          datasets: [
+            {
+              label: 'Time Spent',
+              backgroundColor: gradient,
+              data: MOCK_DATA.map((entry) => entry.minutesSpent),
+              fill: true,
+              tension: 0.4,
             },
-          },
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function (value) {
-                const days = Math.floor(value / (24 * 60));
-                const hours = Math.floor((value % (24 * 60)) / 60);
-                const minutes = value % 60;
-
-                let label = '';
-                if (days > 0) label += `${days} day${days > 1 ? 's' : ''} `;
-                if (hours > 0 || days > 0) label += `${hours} hr${hours !== 1 ? 's' : ''}`;
-                if (minutes > 0 && days === 0)
-                  label += ` ${minutes} min${minutes !== 1 ? 's' : ''}`;
-
-                return label.trim();
-              },
-              stepSize: 60,
-            },
-          },
+          ],
         },
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                const value = context.parsed.y;
-                const days = Math.floor(value / (24 * 60));
-                const hours = Math.floor((value % (24 * 60)) / 60);
-                const minutes = value % 60;
-
-                let label = 'Time Spent: ';
-                if (days > 0) label += `${days} day${days > 1 ? 's' : ''} `;
-                if (hours > 0 || days > 0) label += `${hours} hour${hours !== 1 ? 's' : ''} `;
-                if (minutes > 0) label += `${minutes} minute${minutes !== 1 ? 's' : ''}`;
-
-                return label.trim();
-              },
-            },
-          },
-        },
-      },
-    });
+        options: getChartOptions(),
+      });
+    }
 
     return () => {
       if (chartInstance.current) {
@@ -109,11 +60,99 @@ export const TimeSpentContributing = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (chartInstance.current) {
+      chartInstance.current.options = getChartOptions();
+      chartInstance.current.update();
+    }
+  }, [chartDistribution]);
+
+  const getChartOptions = () => {
+    const xAxisTime =
+      chartDistribution === 'day'
+        ? {
+            unit: 'day',
+            tooltipFormat: 'MMM d, yyyy',
+          }
+        : {
+            unit: 'month',
+            tooltipFormat: 'MMM, yyyy',
+          };
+
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      legend: { display: false },
+      scales: {
+        x: {
+          type: 'time',
+          time: xAxisTime,
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function (value) {
+              const days = Math.floor(value / (24 * 60));
+              const hours = Math.floor((value % (24 * 60)) / 60);
+              const minutes = value % 60;
+
+              let label = '';
+              if (days > 0) label += `${days} day${days > 1 ? 's' : ''} `;
+              if (hours > 0 || days > 0) label += `${hours} hr${hours !== 1 ? 's' : ''}`;
+              if (minutes > 0 && days === 0) label += ` ${minutes} min${minutes !== 1 ? 's' : ''}`;
+
+              return label.trim();
+            },
+            stepSize: 60,
+          },
+        },
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const value = context.parsed.y;
+              const days = Math.floor(value / (24 * 60));
+              const hours = Math.floor((value % (24 * 60)) / 60);
+              const minutes = value % 60;
+
+              let label = 'Time Spent: ';
+              if (days > 0) label += `${days} day${days > 1 ? 's' : ''} `;
+              if (hours > 0 || days > 0) label += `${hours} hour${hours !== 1 ? 's' : ''} `;
+              if (minutes > 0) label += `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+
+              return label.trim();
+            },
+          },
+        },
+      },
+    };
+  };
+
+  const dropdownOptions = [
+    {
+      label: 'Day',
+      value: 'day',
+    },
+    {
+      label: 'Month',
+      value: 'month',
+    },
+  ];
+
   return (
     <div>
-      <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb4">
-        <FormattedMessage {...messages.timeSpentContributing} />
-      </h3>
+      <div className="flex items-center justify-between mb4">
+        <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb0">
+          <FormattedMessage {...messages.timeSpentContributing} />
+        </h3>
+        <Dropdown
+          onChange={(options) => setChartDistribution(options[0].value)}
+          options={dropdownOptions}
+          value={chartDistribution}
+          className="ba b--grey-light bg-white mr1 v-mid pv2 ph2"
+        />
+      </div>
 
       <div className="bg-white pa4 shadow-6" style={{ width: '100%', height: '550px' }}>
         <canvas ref={chartRef}></canvas>
