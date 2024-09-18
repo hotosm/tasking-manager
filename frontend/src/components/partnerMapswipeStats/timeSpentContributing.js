@@ -131,11 +131,11 @@ export const TimeSpentContributing = () => {
 
   const dropdownOptions = [
     {
-      label: 'Day',
+      label: <FormattedMessage {...messages.timeSpentContributingDayOption} />,
       value: 'day',
     },
     {
-      label: 'Month',
+      label: <FormattedMessage {...messages.timeSpentContributingMonthOption} />,
       value: 'month',
     },
   ];

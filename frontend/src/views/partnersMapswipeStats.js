@@ -13,6 +13,7 @@ import { SwipesByProjectType } from '../components/partnerMapswipeStats/swipesBy
 import { SwipesByOrganisation } from '../components/partnerMapswipeStats/swipesByOrganisation';
 import { StatsCardWithFooter } from '../components/statsCard';
 import messages from './messages';
+import { BanIcon } from '../components/svgIcons';
 import './partnersMapswipeStats.css';
 
 const PagePlaceholder = () => (
@@ -60,56 +61,68 @@ const InfoBanner = () => {
 
 export const PartnersMapswipeStats = () => {
   const isPageReady = true;
+  const isError = false;
 
   return (
     <ReactPlaceholder customPlaceholder={<PagePlaceholder />} ready={isPageReady}>
-      <div className="pa4 bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
-        <InfoBanner />
-        <Overview />
-
-        <div className="mt3">
-          <ContributionsGrid />
+      {isPageReady && isError ? (
+        <div className="pa4 bg-tan">
+          <div className="flex items-center justify-start pa5 gap-1 pl1">
+            <BanIcon className="red" width="20" height="20" />
+            <p className="ma0">
+              <FormattedMessage {...messages.partnersMapswipeStatsError} />
+            </p>
+          </div>
         </div>
+      ) : (
+        <div className="pa4 bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
+          <InfoBanner />
+          <Overview />
 
-        <div className="mt3">
-          <ContributionsHeatmap />
-        </div>
+          <div className="mt3">
+            <ContributionsGrid />
+          </div>
 
-        <div className="mt3">
-          <TimeSpentContributing />
-        </div>
+          <div className="mt3">
+            <ContributionsHeatmap />
+          </div>
 
-        <div className="mt3">
-          <TimeSpentContributingByDay />
-        </div>
+          <div className="mt3">
+            <TimeSpentContributing />
+          </div>
 
-        <div className="mt4">
-          <ProjectTypeAreaStats />
-        </div>
+          <div className="mt3">
+            <TimeSpentContributingByDay />
+          </div>
 
-        <div className="mt4 flex items-center justify-between">
-          <StatsCardWithFooter
-            description={<FormattedMessage {...messages.swipes} />}
-            value="338K"
-            style={{ width: '48.5%' }}
-          />
-          <StatsCardWithFooter
-            description={<FormattedMessage {...messages.timeSpentContributing} />}
-            value="11 days 5 hrs"
-            className="w-100"
-            style={{ width: '48.5%' }}
-          />
-        </div>
+          <div className="mt4">
+            <ProjectTypeAreaStats />
+          </div>
 
-        <div className="mt3 flex items-center justify-between">
-          <SwipesByProjectType />
-          <SwipesByOrganisation />
-        </div>
+          <div className="mt4 flex items-center justify-between">
+            <StatsCardWithFooter
+              description={<FormattedMessage {...messages.swipes} />}
+              value="338K"
+              style={{ width: '48.5%' }}
+            />
+            <StatsCardWithFooter
+              description={<FormattedMessage {...messages.timeSpentContributing} />}
+              value="11 days 5 hrs"
+              className="w-100"
+              style={{ width: '48.5%' }}
+            />
+          </div>
 
-        <div className="mt3">
-          <GroupMembers />
+          <div className="mt3 flex items-center justify-between">
+            <SwipesByProjectType />
+            <SwipesByOrganisation />
+          </div>
+
+          <div className="mt3">
+            <GroupMembers />
+          </div>
         </div>
-      </div>
+      )}
     </ReactPlaceholder>
   );
 };
