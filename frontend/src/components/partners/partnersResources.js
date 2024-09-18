@@ -23,6 +23,8 @@ export const Resources = ({ partner }) => {
       },
     }));
 
+    if (!resourcesData.length) return <></>;
+
     return (
       <CustomDropdown
         buttonClassname="bg-transparent partners-banner-button"
