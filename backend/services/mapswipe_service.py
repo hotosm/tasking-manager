@@ -73,7 +73,7 @@ class MapswipeService:
     def __build_query_filtered_user_group_stats(
         self, group_id: str, from_date: str, to_date: str
     ):
-        """A private method to build a graphQl query for fetching a user group's stats within a timerange from Mapswipe."""
+        """A private method to build a graphQl query to fetch a mapswipe group's stats within a timerange."""
 
         operationName = "FilteredUserGroupStats"
         query = """
