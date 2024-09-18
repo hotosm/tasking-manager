@@ -29,7 +29,7 @@ export const CustomDropdown = ({ title, data, buttonClassname }) => {
           {data.map((option) => (
             <li
               key={option.label}
-              className="pointer partners-banner-button"
+              className="pointer partners-dropdown-list-item"
               onMouseDown={() => {
                 option?.onClick(option);
               }}
