@@ -273,7 +273,7 @@ class MapswipeService:
         filtered_stats_dto.contributions_by_organization_name = organizations
         return filtered_stats_dto
 
-    # @cached(grouped_partner_stats_cache)
+    @cached(grouped_partner_stats_cache)
     def fetch_grouped_partner_stats(
         self,
         partner_id: int,
@@ -299,7 +299,7 @@ class MapswipeService:
         group_dto = self.setup_group_dto(partner_id, group_id, resp_body)
         return group_dto
 
-    # @cached(filtered_partner_stats_cache)
+    @cached(filtered_partner_stats_cache)
     def fetch_filtered_partner_stats(
         self,
         partner_id: str,
