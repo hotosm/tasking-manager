@@ -8,13 +8,25 @@ export default defineMessages({
     id: 'management.partners.stats.mapswipe.totalSwipes',
     defaultMessage: 'Total Swipes',
   },
+  recentTotalSwipesText: {
+    id: 'management.partners.stats.mapswipe.totalSwipes.recentText',
+    defaultMessage: 'swipes in the last 30 days',
+  },
   totalTimeSpent: {
     id: 'management.partners.stats.mapswipe.totalTimeSpent',
     defaultMessage: 'Total Time Spent',
   },
+  recentTotalTimeSpentText: {
+    id: 'management.partners.stats.mapswipe.totalTimeSpent.recentText',
+    defaultMessage: 'in the last 30 days',
+  },
   totalContributors: {
     id: 'management.partners.stats.mapswipe.totalContributors',
     defaultMessage: 'Total Contributors',
+  },
+  recentTotalContributorsText: {
+    id: 'management.partners.stats.mapswipe.totalContributors.recentText',
+    defaultMessage: 'active contributors in the last 30 days',
   },
   groupMembers: {
     id: 'management.partners.stats.mapswipe.groupMembers',
