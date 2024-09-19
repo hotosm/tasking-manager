@@ -7,15 +7,15 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { MAPBOX_TOKEN, MAP_STYLE } from '../../config';
 import { CHART_COLOURS } from '../../config';
 import { geoJSON } from './geoJsonData';
+import { ZoomPlusIcon, ZoomMinusIcon } from '../svgIcons';
 import messages from './messages';
+import './contributionsHeatmap.css';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
 export const ContributionsHeatmap = () => {
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const [lng, setLng] = useState(0);
-  const [lat, setLat] = useState(0);
   const [zoom, setZoom] = useState(1.25);
 
   useEffect(() => {
@@ -24,29 +24,29 @@ export const ContributionsHeatmap = () => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: MAP_STYLE,
-      center: [lng, lat],
+      center: [0, 0],
       zoom: zoom,
-      bearing: 0,
-      pitch: 0,
     });
+
+    map.current.scrollZoom.disable();
 
     const getStyle = (row) => {
       const styles = [
         {
-          color: CHART_COLOURS.orange,
+          color: CHART_COLOURS.red,
           opacity: 0.2,
         },
         {
-          color: CHART_COLOURS.orange,
+          color: CHART_COLOURS.red,
+          opacity: 0.3,
+        },
+        {
+          color: CHART_COLOURS.red,
           opacity: 0.4,
         },
         {
-          color: CHART_COLOURS.orange,
+          color: CHART_COLOURS.red,
           opacity: 0.6,
-        },
-        {
-          color: CHART_COLOURS.orange,
-          opacity: 0.7,
         },
         {
           color: CHART_COLOURS.red,
@@ -128,12 +128,34 @@ export const ContributionsHeatmap = () => {
       });
     });
 
-    map.current.on('move', () => {
-      setLng(map.current.getCenter().lng.toFixed(4));
-      setLat(map.current.getCenter().lat.toFixed(4));
-      setZoom(map.current.getZoom().toFixed(2));
+    map.current.on('wheel', (event) => {
+      if (event.originalEvent.ctrlKey) {
+        // Check if CTRL key is pressed
+        event.originalEvent.preventDefault(); // Prevent chrome/firefox default behavior
+        if (!map.current.scrollZoom._enabled) map.current.scrollZoom.enable(); // Enable zoom only if it's disabled
+      } else {
+        if (map.current.scrollZoom._enabled) map.current.scrollZoom.disable(); // Disable zoom only if it's enabled
+      }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    map.current.zoomTo(zoom, { duration: 700 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zoom]);
+
+  const handleZoom = (isZoomingOut = false) => {
+    const currentZoom = parseFloat(zoom);
+    if (!isZoomingOut) {
+      setZoom(currentZoom + 0.5);
+    } else {
+      if (currentZoom.toFixed(2) === '0.75') return;
+      setZoom(currentZoom - 0.5);
+    }
+  };
+
+  const shouldDisableZoomOut = zoom === '0.75' || zoom === 0.75;
 
   return (
     <div>
@@ -141,7 +163,31 @@ export const ContributionsHeatmap = () => {
         <FormattedMessage {...messages.contributionsHeatmap} />
       </h3>
 
-      <div ref={mapContainer} style={{ width: '100%', height: '650px' }} className="shadow-6" />
+      <div className="relative partner-mapswipe-heatmap-wrapper">
+        <div ref={mapContainer} style={{ width: '100%', height: '650px' }} className="shadow-6" />
+        <div className="flex items-center justify-between absolute top-0 left-0 right-0 pa2">
+          <div className="bg-white flex pa2 pv1 items-center ba b--black-20 br2">
+            <ZoomMinusIcon
+              height={20}
+              className={`br b--black-20 pr2 pointer ${
+                shouldDisableZoomOut ? 'moon-gray' : 'blue-dark'
+              }`}
+              onClick={() => handleZoom(true)}
+            />
+            <ZoomPlusIcon
+              height={20}
+              className="blue-dark pl2 pointer"
+              onClick={() => handleZoom()}
+            />
+          </div>
+          <p
+            className="ma0 pa1 bg-white ba b--black-20 br2 partner-mapswipe-heatmap-zoom-text"
+            style={{ userSelect: 'none' }}
+          >
+            Use Ctrl + Scroll to zoom
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
