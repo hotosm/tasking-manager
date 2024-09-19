@@ -70,6 +70,7 @@ export { EnvelopeIcon } from './envelope';
 export { LinkedinIcon } from './linkedin';
 export { MarkerIcon } from './marker';
 export { ZoomPlusIcon } from './zoomPlus';
+export { ZoomMinusIcon } from './zoomMinus';
 export { SidebarIcon } from './sidebar';
 export { QuestionCircleIcon } from './questionCircle';
 export { ChartLineIcon } from './chart';
