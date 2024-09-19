@@ -31,7 +31,9 @@ export const TimeSpentContributingByDay = () => {
         datasets: [
           {
             label: 'Time Spent',
-            backgroundColor: CHART_COLOURS.red,
+            backgroundColor: `rgba(215, 63, 63, 0.4)`,
+            borderWidth: 2,
+            borderColor: CHART_COLOURS.red,
             data: MOCK_DATA.map((entry) => entry.y),
           },
         ],

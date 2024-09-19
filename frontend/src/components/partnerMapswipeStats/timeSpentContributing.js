@@ -4,7 +4,6 @@ import { Chart } from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
 
 import { CHART_COLOURS } from '../../config';
-import { Dropdown } from '../dropdown';
 import messages from './messages';
 
 const MOCK_DATA = [
@@ -30,8 +29,7 @@ export const TimeSpentContributing = () => {
     const context = chartRef.current.getContext('2d');
     // Create gradient for the area
     const gradient = context.createLinearGradient(0, 0, 0, 450);
-    gradient.addColorStop(0, CHART_COLOURS.red);
-    gradient.addColorStop(0.4, CHART_COLOURS.red);
+    gradient.addColorStop(0, `rgba(215, 63, 63, 0.5)`);
     gradient.addColorStop(1, 'rgba(215, 63, 63, 0)');
 
     if (!chartInstance.current) {
@@ -43,6 +41,8 @@ export const TimeSpentContributing = () => {
             {
               label: 'Time Spent',
               backgroundColor: gradient,
+              borderColor: CHART_COLOURS.red,
+              borderWidth: 1.5,
               data: MOCK_DATA.map((entry) => entry.minutesSpent),
               fill: true,
               tension: 0.4,
@@ -58,6 +58,7 @@ export const TimeSpentContributing = () => {
         chartInstance.current.destroy();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -65,6 +66,7 @@ export const TimeSpentContributing = () => {
       chartInstance.current.options = getChartOptions();
       chartInstance.current.update();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartDistribution]);
 
   const getChartOptions = () => {
@@ -129,29 +131,34 @@ export const TimeSpentContributing = () => {
     };
   };
 
-  const dropdownOptions = [
-    {
-      label: <FormattedMessage {...messages.timeSpentContributingDayOption} />,
-      value: 'day',
-    },
-    {
-      label: <FormattedMessage {...messages.timeSpentContributingMonthOption} />,
-      value: 'month',
-    },
-  ];
-
   return (
     <div>
       <div className="flex items-center justify-between mb4">
         <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb0">
           <FormattedMessage {...messages.timeSpentContributing} />
         </h3>
-        <Dropdown
-          onChange={(options) => setChartDistribution(options[0].value)}
-          options={dropdownOptions}
-          value={chartDistribution}
-          className="ba b--grey-light bg-white mr1 v-mid pv2 ph2"
-        />
+        <div>
+          <button
+            className={`ph4 pv2 ba b--black-20 br--none pointer br2 br--left ${
+              chartDistribution === 'day'
+                ? 'bg-blue-grey white'
+                : 'bg-white hover-bg-near-white'
+            }`}
+            onClick={() => setChartDistribution('day')}
+          >
+            <FormattedMessage {...messages.timeSpentContributingDayOption} />
+          </button>
+          <button
+            className={`ph4 pv2 ba b--black-20 pointer br2 br--right ${
+              chartDistribution === 'month'
+                ? 'bg-blue-grey white'
+                : 'bg-white hover-bg-near-white'
+            }`}
+            onClick={() => setChartDistribution('month')}
+          >
+            <FormattedMessage {...messages.timeSpentContributingMonthOption} />
+          </button>
+        </div>
       </div>
 
       <div className="bg-white pa4 shadow-6" style={{ width: '100%', height: '550px' }}>
