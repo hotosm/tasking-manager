@@ -7,6 +7,7 @@ import messages from './messages';
 import { NotFound } from './notFound';
 import { useFetch } from '../hooks/UseFetch';
 import { Leaderboard } from '../components/partners/leaderboard';
+import { PartnersMapswipeStats } from './partnersMapswipeStats';
 import { Resources } from '../components/partners/partnersResources';
 import { OHSOME_STATS_BASE_URL } from '../config';
 import { Button } from '../components/button';
@@ -26,7 +27,10 @@ function getSocialIcons(link) {
   }
 }
 
-const tabData = [{ id: 'leaderboard', title: 'Leaderboard' }];
+const tabData = [
+  { id: 'leaderboard', title: 'Leaderboard' },
+  { id: 'mapswipe', title: 'Map Swipe' },
+];
 
 export const PartnersStats = () => {
   const { id, tabname } = useParams();
@@ -71,6 +75,8 @@ export const PartnersStats = () => {
     switch (tabname) {
       case 'leaderboard':
         return <Leaderboard partner={partner} partnerStats={partnerStats} />;
+      case 'mapswipe':
+        return <PartnersMapswipeStats />;
       default:
         return <></>;
     }
