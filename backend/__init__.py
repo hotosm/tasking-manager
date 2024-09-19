@@ -598,12 +598,12 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         GroupPartnerStatisticsAPI,
-        format_url("/partners/<int:partner_id>/general-statistics"),
+        format_url("/partners/<string:permalink>/general-statistics"),
         methods=["GET"],
     )
     api.add_resource(
         FilteredPartnerStatisticsAPI,
-        format_url("/partners/<int:partner_id>/filtered-statistics"),
+        format_url("/partners/<string:permalink>/filtered-statistics"),
         methods=["GET"],
     )
     api.add_resource(

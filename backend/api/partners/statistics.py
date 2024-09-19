@@ -20,7 +20,7 @@ def is_valid_group_id(group_id: Optional[str]) -> bool:
 
 
 class FilteredPartnerStatisticsAPI(Resource):
-    def get(self, partner_id):
+    def get(self, permalink: str):
         """
         Get partner statistics by id and time range
         ---
@@ -41,10 +41,11 @@ class FilteredPartnerStatisticsAPI(Resource):
               description: Fetch partner statistics to date as yyyy-mm-dd
             - name: partner_id
               in: path
-              description: The id of the partner
+            - name: permalink
+              in: path
+              description: The permalink of the partner
               required: true
-              type: integer
-              default: 1
+              type: string
         responses:
             200:
                 description: Partner found
@@ -83,7 +84,7 @@ class FilteredPartnerStatisticsAPI(Resource):
                 to_date=to_date,
             )
 
-        partner = PartnerService.get_partner_by_id(partner_id)
+        partner = PartnerService.get_partner_by_permalink(permalink)
 
         if not is_valid_group_id(partner.mapswipe_group_id):
             raise BadRequest(
@@ -100,7 +101,7 @@ class FilteredPartnerStatisticsAPI(Resource):
 
 
 class GroupPartnerStatisticsAPI(Resource):
-    def get(self, partner_id):
+    def get(self, permalink: str):
         """
         Get partner statistics by id and broken down by each contributor.
         This API is paginated with limit and offset query parameters.
@@ -125,12 +126,11 @@ class GroupPartnerStatisticsAPI(Resource):
               description: Download users in this group as CSV
               type: boolean
               example: false
-            - name: partner_id
+            - name: permalink
               in: path
-              description: The id of the partner
+              description: The permalink of the partner
               required: true
-              type: integer
-              default: 1
+              type: string
         responses:
             200:
                 description: Partner found
@@ -143,7 +143,7 @@ class GroupPartnerStatisticsAPI(Resource):
         """
 
         mapswipe = MapswipeService()
-        partner = PartnerService.get_partner_by_id(partner_id)
+        partner = PartnerService.get_partner_by_permalink(permalink)
 
         if not is_valid_group_id(partner.mapswipe_group_id):
             raise BadRequest(
