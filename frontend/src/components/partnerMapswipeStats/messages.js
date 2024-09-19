@@ -70,11 +70,11 @@ export default defineMessages({
   },
   contributionsGridEmpty: {
     id: 'management.partners.stats.mapswipe.contributions.empty',
-    defaultMessage: 'No contribution',
+    defaultMessage: 'No swipes',
   },
   contributionsGridTooltip: {
     id: 'management.partners.stats.mapswipe.contributions.tooltip',
-    defaultMessage: 'contribution(s)',
+    defaultMessage: 'swipes',
   },
   contributionsHeatmap: {
     id: 'management.partners.stats.mapswipe.contributions.heatmap',

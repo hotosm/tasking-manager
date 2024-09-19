@@ -24,17 +24,28 @@ const Legend = () => {
   );
 };
 
-export const ContributionsGrid = () => {
+export const ContributionsGrid = ({ contributionsByDate = [] }) => {
+  contributionsByDate = contributionsByDate.map((contribution) => ({
+    date: contribution.taskDate,
+    count: contribution.totalcontributions,
+  }));
   const intl = useIntl();
-  const today = new Date();
 
-  const shiftDate = (date, numDays) => {
-    const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + numDays);
-    return newDate;
+  const getDate = (isEndDate = false) => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+
+    const formatDate = (date) => {
+      const offset = date.getTimezoneOffset();
+      return new Date(date.getTime() - offset * 60 * 1000);
+    };
+
+    return !isEndDate
+      ? formatDate(new Date(currentYear - 1, 11, 31))
+      : formatDate(new Date(currentYear, 11, 31));
   };
 
-  const countValues = [].map((r) => r.count);
+  const countValues = contributionsByDate.map((contribution) => contribution.count);
   const maxValue = Math.max(...countValues);
 
   const getHeatmapClass = (value) => {
@@ -65,9 +76,9 @@ export const ContributionsGrid = () => {
 
       <div className="bg-white pv4 pr4 shadow-6" style={{ fontSize: '1rem' }}>
         <CalendarHeatmap
-          startDate={shiftDate(today, -365)}
-          endDate={today}
-          values={[]}
+          startDate={getDate()}
+          endDate={getDate(true)}
+          values={contributionsByDate}
           classForValue={(value) => {
             if (!value) return 'fill-tan';
             return getHeatmapClass(value);
@@ -78,7 +89,7 @@ export const ContributionsGrid = () => {
             if (value.count !== null) {
               tooltipContent = `${value.count} ${intl.formatMessage(
                 messages.contributionsGridTooltip,
-              )}`;
+              )} on ${value.date}`;
             }
 
             return {

@@ -104,7 +104,7 @@ export const PartnersMapswipeStats = () => {
         ) : (
           <>
             <div className="mt3">
-              <ContributionsGrid />
+              <ContributionsGrid contributionsByDate={data?.contributionsByDate} />
             </div>
 
             <div className="mt3">
