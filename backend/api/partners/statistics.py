@@ -4,10 +4,7 @@ from flask_restful import Resource, request
 from typing import Optional
 
 
-from backend.services.users.authentication_service import token_auth
-from backend.models.postgis.user import User
 from backend.services.partner_service import PartnerService
-from backend.services.users.user_service import UserRole
 from backend.exceptions import BadRequest
 
 # Replaceable by another service which implements the method:
@@ -23,7 +20,6 @@ def is_valid_group_id(group_id: Optional[str]) -> bool:
 
 
 class FilteredPartnerStatisticsAPI(Resource):
-    @token_auth.login_required
     def get(self, partner_id):
         """
         Get partner statistics by id and time range
@@ -33,12 +29,6 @@ class FilteredPartnerStatisticsAPI(Resource):
         produces:
           - application/json
         parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
             - in: query
               name: fromDate
               type: string
@@ -65,14 +55,6 @@ class FilteredPartnerStatisticsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-
-        request_user = User.get_by_id(token_auth.current_user())
-        if request_user.role != UserRole.ADMIN.value:
-            return {
-                "Error": "Only admin users can manage partners.",
-                "SubCode": "OnlyAdminAccess",
-            }, 403
-
         mapswipe = MapswipeService()
         from_date = request.args.get("fromDate")
         to_date = request.args.get("toDate")
@@ -118,7 +100,6 @@ class FilteredPartnerStatisticsAPI(Resource):
 
 
 class GroupPartnerStatisticsAPI(Resource):
-    @token_auth.login_required
     def get(self, partner_id):
         """
         Get partner statistics by id and broken down by each contributor.
@@ -129,12 +110,6 @@ class GroupPartnerStatisticsAPI(Resource):
         produces:
           - application/json
         parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
             - in: query
               name: limit
               description: The number of partner members to fetch
@@ -166,13 +141,6 @@ class GroupPartnerStatisticsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-
-        request_user = User.get_by_id(token_auth.current_user())
-        if request_user.role != UserRole.ADMIN.value:
-            return {
-                "Error": "Only admin users can manage partners.",
-                "SubCode": "OnlyAdminAccess",
-            }, 403
 
         mapswipe = MapswipeService()
         partner = PartnerService.get_partner_by_id(partner_id)
