@@ -1,59 +1,20 @@
 import { FormattedMessage } from 'react-intl';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import ReactPlaceholder from 'react-placeholder';
 
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { BanIcon, CircleExclamationIcon } from '../svgIcons';
 import { PaginatorLine } from '../paginator';
 import messages from './messages';
+import { GroupMembersPlaceholder } from './groupMembersPlaceholder';
 import './groupMembers.css';
-
-const MOCK_DATA = [
-  {
-    user: 'map4life',
-    totalSwipes: 12023,
-    projectContributed: 'American Red Cross',
-    timeSpent: '2 Months',
-  },
-  {
-    user: 'PinkSky234',
-    totalSwipes: 11984,
-    projectContributed: 'American Red Cross',
-    timeSpent: '1 Month',
-  },
-  {
-    user: 'swiper55',
-    totalSwipes: 3540,
-    projectContributed: 'HOT',
-    timeSpent: '3 Weeks',
-  },
-  {
-    user: 'edelweiss93',
-    totalSwipes: 1234,
-    projectContributed: 'American Red Cross',
-    timeSpent: '1 Week',
-  },
-  {
-    user: 'mappy45',
-    totalSwipes: 842,
-    projectContributed: 'HOT',
-    timeSpent: '2 Weeks',
-  },
-  {
-    user: 'sup3rMap',
-    totalSwipes: 325,
-    projectContributed: 'American Red Cross',
-    timeSpent: '5 Days',
-  },
-  {
-    user: '4weeksmapping',
-    totalSwipes: 74,
-    projectContributed: 'HOT',
-    timeSpent: '1 Day',
-  },
-];
 
 const COLUMNS = [
   {
-    accessorKey: 'user',
+    accessorKey: 'username',
     header: () => (
       <span>
         <FormattedMessage {...messages.userColumn} />
@@ -61,7 +22,7 @@ const COLUMNS = [
     ),
   },
   {
-    accessorKey: 'totalSwipes',
+    accessorKey: 'totalcontributions',
     header: () => (
       <span>
         <FormattedMessage {...messages.totalSwipesColumn} />
@@ -69,7 +30,7 @@ const COLUMNS = [
     ),
   },
   {
-    accessorKey: 'projectContributed',
+    accessorKey: 'totalMappingProjects',
     header: () => (
       <span>
         <FormattedMessage {...messages.projectContributedColumn} />
@@ -77,7 +38,7 @@ const COLUMNS = [
     ),
   },
   {
-    accessorKey: 'timeSpent',
+    accessorKey: 'totalcontributionTime',
     header: () => (
       <span>
         <FormattedMessage {...messages.timeSpentColumn} />
@@ -87,19 +48,33 @@ const COLUMNS = [
 ];
 
 export const GroupMembers = () => {
+  const { id: partnerPermalink } = useParams();
+
+  const ROWS = 10;
+  const [pageNumber, setPageNumber] = useState(0)
+
+  const { isLoading, isError, data, isRefetching } = useQuery({
+    queryKey: ['partners-mapswipe-general-statistics', partnerPermalink, pageNumber],
+    queryFn: async () => {
+      const response = await fetchLocalJSONAPI(
+        `partners/${partnerPermalink}/general-statistics/?limit=${ROWS}&offset=${pageNumber * ROWS}`,
+      );
+      return response;
+    },
+  });
+
   const table = useReactTable({
     columns: COLUMNS,
-    data: MOCK_DATA,
+    data: data?.members ?? [],
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: 'onChange',
     columnResizeDirection: 'ltr',
   });
 
   const isEmpty = false;
-  const isError = false;
 
   return (
-    <div>
+    <ReactPlaceholder customPlaceholder={<GroupMembersPlaceholder />} ready={!isLoading && !isRefetching}>
       <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb4">
         <FormattedMessage {...messages.groupMembers} />
       </h3>
@@ -126,9 +101,8 @@ export const GroupMembers = () => {
                             onDoubleClick: () => header.column.resetSize(),
                             onMouseDown: header.getResizeHandler(),
                             onTouchStart: header.getResizeHandler(),
-                            className: `partner-mapswipe-stats-column-resizer ${
-                              table.options.columnResizeDirection === 'ltr' ? 'right-0' : ''
-                            } ${header.column.getIsResizing() ? 'isResizing' : ''}`,
+                            className: `partner-mapswipe-stats-column-resizer ${table.options.columnResizeDirection === 'ltr' ? 'right-0' : ''
+                              } ${header.column.getIsResizing() ? 'isResizing' : ''}`,
                           }}
                         />
                       )}
@@ -181,13 +155,13 @@ export const GroupMembers = () => {
 
         <div className="mt3">
           <PaginatorLine
-            activePage={1}
-            setPageFn={() => {}}
-            lastPage={1}
+            activePage={pageNumber + 1}
+            setPageFn={(n) => setPageNumber(parseInt(n) - 1)}
+            lastPage={Math.max(Math.ceil((data?.membersCount ?? 0) / ROWS), 1)}
             className="flex items-center justify-center pa4"
           />
         </div>
       </div>
-    </div>
+    </ReactPlaceholder>
   );
 };
