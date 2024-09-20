@@ -87,3 +87,4 @@ export { CircleMinusIcon } from './circleMinus';
 export { CircleExclamationIcon } from './circleExclamation';
 export { TableListIcon } from './tableList';
 export { SwipeIcon } from './swipe';
+export { EmptySetIcon } from './emptySet';
