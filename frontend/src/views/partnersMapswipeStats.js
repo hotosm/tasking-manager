@@ -14,6 +14,7 @@ import { ProjectTypeAreaStats } from '../components/partnerMapswipeStats/project
 import { SwipesByProjectType } from '../components/partnerMapswipeStats/swipesByProjectType';
 import { SwipesByOrganisation } from '../components/partnerMapswipeStats/swipesByOrganisation';
 import { StatsCardWithFooter } from '../components/statsCard';
+import { getShortNumber, formatSecondsToTwoUnits } from '../components/partnerMapswipeStats/overview'; 
 import messages from './messages';
 import { BanIcon } from '../components/svgIcons';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
@@ -120,18 +121,21 @@ export const PartnersMapswipeStats = () => {
             </div>
 
             <div className="mt4">
-              <ProjectTypeAreaStats />
+              <ProjectTypeAreaStats
+                projectTypeAreaStats={data?.contributionsByProjectType}
+                areaSwipedByProjectType={data?.areaSwipedByProjectType}
+              />
             </div>
 
             <div className="mt4 flex items-center justify-between">
               <StatsCardWithFooter
                 description={<FormattedMessage {...messages.swipes} />}
-                value="338K"
+                value={getShortNumber(data?.contributionsByProjectType.map(c => c.totalcontributions).reduce((acc, t) => acc + t))}
                 style={{ width: '48.5%' }}
               />
               <StatsCardWithFooter
                 description={<FormattedMessage {...messages.timeSpentContributing} />}
-                value="11 days 5 hrs"
+                value={formatSecondsToTwoUnits(data?.contributionTimeByDate.map(c => c.totalcontributionTime).reduce((acc, t) => acc + t))}
                 className="w-100"
                 style={{ width: '48.5%' }}
               />

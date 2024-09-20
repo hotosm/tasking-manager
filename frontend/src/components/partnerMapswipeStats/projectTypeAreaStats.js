@@ -3,11 +3,12 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { StatsCardWithFooter } from '../statsCard';
 import { MappingIcon, SwipeIcon, ClockIcon } from '../svgIcons';
+import { getShortNumber } from './overview';
 
 const iconClass = 'w-100';
 const iconStyle = { height: '55px' };
 
-export const ProjectTypeAreaStats = () => {
+export const ProjectTypeAreaStats = ({ projectTypeAreaStats = [], areaSwipedByProjectType = [] }) => {
   return (
     <div
       className="flex justify-between items-center flex-wrap flex-nowrap-ns"
@@ -16,10 +17,10 @@ export const ProjectTypeAreaStats = () => {
       <StatsCardWithFooter
         icon={<SwipeIcon className={iconClass} style={iconStyle} />}
         description={<FormattedMessage {...messages.areaSwipesByProjectType} />}
-        value={'213K'}
+        value={getShortNumber(projectTypeAreaStats[0].totalcontributions)}
         delta={
           <div className="flex justify-between items-center">
-            <span>25K Sq. KM.</span>
+            <span>{Math.round(areaSwipedByProjectType[0].totalArea)} Sq. KM.</span>
             <b className="red">
               <FormattedMessage {...messages.find} />
             </b>
@@ -30,7 +31,7 @@ export const ProjectTypeAreaStats = () => {
       <StatsCardWithFooter
         icon={<ClockIcon className={iconClass} style={iconStyle} />}
         description={<FormattedMessage {...messages.featuresCheckedByProjectType} />}
-        value={'114K'}
+        value={getShortNumber(projectTypeAreaStats[2].totalcontributions)}
         delta={
           <div className="flex justify-end">
             <b className="red"><FormattedMessage {...messages.validate} /></b>
@@ -41,10 +42,10 @@ export const ProjectTypeAreaStats = () => {
       <StatsCardWithFooter
         icon={<MappingIcon className={iconClass} style={iconStyle} />}
         description={<FormattedMessage {...messages.sceneComparedByProjectType} />}
-        value={'11K'}
+        value={getShortNumber(projectTypeAreaStats[1].totalcontributions)}
         delta={
           <div className="flex justify-between items-center">
-            <span>230 Sq. KM.</span>
+            <span>{Math.round(areaSwipedByProjectType[1].totalArea)} Sq. KM.</span>
             <b className="red"><FormattedMessage {...messages.compare} /></b>
           </div>
         }
