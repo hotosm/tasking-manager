@@ -23,6 +23,32 @@ const OverviewPlaceholder = () => (
     <ReactPlaceholder type="rect" style={{ width: '100%', height: 155 }} showLoadingAnimation />
   </div>
 );
+
+export const formatSecondsToTwoUnits = (seconds) => {
+  const duration = intervalToDuration({ start: 0, end: seconds * 1000 });
+  const units = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
+
+  // Filter units that have a value greater than 0
+  const nonZeroUnits = units.filter((unit) => duration[unit] > 0).slice(0, 2);
+
+  return nonZeroUnits
+    .map((unit) => `${duration[unit]} ${duration[unit] === 1 ? unit.slice(0, -1) : unit}`)
+    .join(' ');
+};
+
+export const getShortNumber = (value) => {
+  const shortNumberValue = shortNumber(value);
+
+  return typeof shortNumberValue === 'number' ? (
+    <FormattedNumber value={shortNumberValue} />
+  ) : (
+    <span>
+      <FormattedNumber value={Number(shortNumberValue.substr(0, shortNumberValue.length - 1))} />
+      {shortNumberValue.substr(-1)}
+    </span>
+  );
+};
+
 export const Overview = () => {
   const { id: partnerPermalink } = useParams();
 
@@ -35,31 +61,6 @@ export const Overview = () => {
       return response;
     },
   });
-
-  const getShortNumber = (value) => {
-    const shortNumberValue = shortNumber(value);
-
-    return typeof shortNumberValue === 'number' ? (
-      <FormattedNumber value={shortNumberValue} />
-    ) : (
-      <span>
-        <FormattedNumber value={Number(shortNumberValue.substr(0, shortNumberValue.length - 1))} />
-        {shortNumberValue.substr(-1)}
-      </span>
-    );
-  };
-
-  const formatSecondsToTwoUnits = (seconds) => {
-    const duration = intervalToDuration({ start: 0, end: seconds * 1000 });
-    const units = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
-
-    // Filter units that have a value greater than 0
-    const nonZeroUnits = units.filter((unit) => duration[unit] > 0).slice(0, 2);
-
-    return nonZeroUnits
-      .map((unit) => `${duration[unit]} ${duration[unit] === 1 ? unit.slice(0, -1) : unit}`)
-      .join(' ');
-  };
 
   return (
     <ReactPlaceholder
