@@ -56,7 +56,7 @@ export const Overview = () => {
     queryKey: ['partners-mapswipe-general-statistics', partnerPermalink],
     queryFn: async () => {
       const response = await fetchLocalJSONAPI(
-        `partners/${partnerPermalink}/general-statistics/?limit=0&offset=0`,
+        `partners/${partnerPermalink}/general-statistics/?limit=0`,
       );
       return response;
     },
