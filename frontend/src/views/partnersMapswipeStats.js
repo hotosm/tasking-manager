@@ -139,7 +139,7 @@ export const PartnersMapswipeStats = () => {
 
             <div className="mt3 flex items-center justify-between">
               <SwipesByProjectType areaSwipedByProjectType={data?.areaSwipedByProjectType} />
-              <SwipesByOrganisation />
+              <SwipesByOrganisation contributionsByOrganization={data?.contributionsByorganizationName} />
             </div>
 
             <div className="mt3">

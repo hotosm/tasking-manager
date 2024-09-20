@@ -5,7 +5,7 @@ import Chart from 'chart.js/auto';
 import { CHART_COLOURS } from '../../config';
 import messages from './messages';
 
-export const SwipesByOrganisation = () => {
+export const SwipesByOrganisation = ( { contributionsByOrganization = [] } ) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
@@ -21,16 +21,10 @@ export const SwipesByOrganisation = () => {
     chartInstance.current = new Chart(context, {
       type: 'doughnut',
       data: {
-        labels: [
-          'American Red Cross',
-          'Arizona State University',
-          'HOT',
-          'Médecins Sans Frontières',
-          'Others',
-        ],
+        labels: contributionsByOrganization.map(c => c.organizationName),
         datasets: [
           {
-            data: [35, 25, 20, 15, 5],
+            data: contributionsByOrganization.map(c => c.totalcontributions),
             backgroundColor: [
               CHART_COLOURS.red, // Orange for American Red Cross
               CHART_COLOURS.orange, // Yellow for Arizona State University
