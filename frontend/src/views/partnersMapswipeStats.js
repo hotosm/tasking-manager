@@ -108,7 +108,7 @@ export const PartnersMapswipeStats = () => {
             </div>
 
             <div className="mt3">
-              <ContributionsHeatmap />
+              <ContributionsHeatmap contributionsByGeo={data?.contributionsByGeo} />
             </div>
 
             <div className="mt3">

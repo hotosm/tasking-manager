@@ -1,6 +1,7 @@
 import CalendarHeatmap from 'react-calendar-heatmap';
 import { Tooltip } from 'react-tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
+import PropTypes from 'prop-types';
 
 import messages from './messages';
 
@@ -104,4 +105,13 @@ export const ContributionsGrid = ({ contributionsByDate = [] }) => {
       </div>
     </div>
   );
+};
+
+ContributionsGrid.propTypes = {
+  contributionsByDate: PropTypes.arrayOf(
+    PropTypes.shape({
+      taskDate: PropTypes.string,
+      totalcontributions: PropTypes.number,
+    }),
+  ),
 };

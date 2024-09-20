@@ -2,18 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { latLngToCell, cellToBoundary } from 'h3-js';
 import { FormattedMessage } from 'react-intl';
+import PropTypes from 'prop-types';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { MAPBOX_TOKEN, MAP_STYLE } from '../../config';
 import { CHART_COLOURS } from '../../config';
-import { geoJSON } from './geoJsonData';
 import { ZoomPlusIcon, ZoomMinusIcon } from '../svgIcons';
 import messages from './messages';
 import './contributionsHeatmap.css';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
-export const ContributionsHeatmap = () => {
+export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [zoom, setZoom] = useState(1.25);
@@ -73,16 +73,16 @@ export const ContributionsHeatmap = () => {
       return styles[4];
     };
 
-    map.current.on('load', () => {
-      const hexagonsArrayCopy = geoJSON.map((data) => {
-        const h3Index = latLngToCell(data.geojson.coordinates[1], data.geojson.coordinates[0], 1);
+    const getHexagonFeatures = (res = 1) => {
+      const hexagonsArray = contributionsByGeo.map((data) => {
+        const h3Index = latLngToCell(data.geojson.coordinates[1], data.geojson.coordinates[0], res);
         return {
           hexindex7: h3Index,
           totalContributionCount: data.totalContribution,
         };
       });
 
-      const features = hexagonsArrayCopy.map((row) => {
+      const features = hexagonsArray.map((row) => {
         const style = getStyle(row);
         return {
           type: 'Feature',
@@ -98,11 +98,42 @@ export const ContributionsHeatmap = () => {
         };
       });
 
+      return features;
+    };
+
+    const zoomToH3ResMapping = {
+      1: 1,
+      2: 2,
+      3: 2,
+      4: 3,
+      5: 3,
+      6: 4,
+      7: 4,
+      8: 5,
+      9: 6,
+      10: 6,
+      11: 7,
+      12: 7,
+      13: 8,
+      14: 8,
+      15: 9,
+      16: 10,
+      17: 10,
+      18: 11,
+      19: 12,
+      20: 13,
+      21: 13,
+      22: 14,
+      23: 15,
+      24: 15,
+    };
+
+    map.current.on('load', () => {
       map.current.addSource('hexbin', {
         type: 'geojson',
         data: {
           type: 'FeatureCollection',
-          features: features,
+          features: getHexagonFeatures(),
         },
       });
 
@@ -136,6 +167,20 @@ export const ContributionsHeatmap = () => {
       } else {
         if (map.current.scrollZoom._enabled) map.current.scrollZoom.disable(); // Disable zoom only if it's enabled
       }
+    });
+
+    map.current.on('zoomend', () => {
+      const currentZoom = map.current.getZoom();
+      console.log(currentZoom, 'ZOOM');
+      const h3ResBasedOnZoom =
+        currentZoom >= 1
+          ? zoomToH3ResMapping[parseInt(currentZoom)] ?? Math.floor((currentZoom - 2) * 0.7)
+          : 1;
+
+      map.current.getSource('hexbin').setData({
+        type: 'FeatureCollection',
+        features: getHexagonFeatures(h3ResBasedOnZoom),
+      });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -190,4 +235,16 @@ export const ContributionsHeatmap = () => {
       </div>
     </div>
   );
+};
+
+ContributionsHeatmap.propTypes = {
+  contributionsByGeo: PropTypes.arrayOf(
+    PropTypes.shape({
+      totalcontributions: PropTypes.number,
+      geojson: PropTypes.shape({
+        type: PropTypes.string,
+        coordinates: PropTypes.array,
+      }),
+    }),
+  ),
 };
