@@ -1,21 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Chart } from 'chart.js/auto';
+import PropTypes from 'prop-types';
+import { parse, getDay } from 'date-fns';
 
 import { CHART_COLOURS } from '../../config';
+import { formatSecondsToTwoUnits } from './overview';
+import { EmptySetIcon } from '../svgIcons';
 import messages from './messages';
 
-const MOCK_DATA = [
-  { x: 'Sun', y: 15 * 60 + 16 }, // 15 hours 16 minutes
-  { x: 'Mon', y: 30 * 60 }, // 1 day 6 hours
-  { x: 'Tue', y: 45 * 60 }, // 1 day 21 hours
-  { x: 'Wed', y: 61 * 60 }, // 2 days 13 hours
-  { x: 'Thu', y: 61 * 60 }, // 2 days 13 hours
-  { x: 'Fri', y: 45 * 60 }, // 1 day 21 hours
-  { x: 'Sat', y: 15 * 60 + 16 }, // 15 hours 16 minutes
-];
-
-export const TimeSpentContributingByDay = () => {
+export const TimeSpentContributingByDay = ({ contributionTimeByDate = [] }) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
@@ -23,6 +17,8 @@ export const TimeSpentContributingByDay = () => {
     if (chartInstance.current) {
       chartInstance.current.destroy();
     }
+
+    const chartData = aggregateContributionTimeByWeekday();
 
     chartInstance.current = new Chart(chartRef.current.getContext('2d'), {
       type: 'bar',
@@ -34,7 +30,7 @@ export const TimeSpentContributingByDay = () => {
             backgroundColor: `rgba(215, 63, 63, 0.4)`,
             borderWidth: 2,
             borderColor: CHART_COLOURS.red,
-            data: MOCK_DATA.map((entry) => entry.y),
+            data: chartData.map((entry) => entry.totalcontributionTime),
           },
         ],
       },
@@ -47,19 +43,9 @@ export const TimeSpentContributingByDay = () => {
             beginAtZero: true,
             ticks: {
               callback: function (value) {
-                const days = Math.floor(value / (24 * 60));
-                const hours = Math.floor((value % (24 * 60)) / 60);
-                const minutes = value % 60;
-
-                let label = '';
-                if (days > 0) label += `${days} day${days > 1 ? 's' : ''} `;
-                if (hours > 0 || days > 0) label += `${hours} hr${hours !== 1 ? 's' : ''}`;
-                if (minutes > 0 && days === 0)
-                  label += ` ${minutes} min${minutes !== 1 ? 's' : ''}`;
-
-                return label.trim();
+                return formatSecondsToTwoUnits(value);
               },
-              stepSize: 24 * 60, // One day
+              stepSize: 48 * 60,
             },
           },
         },
@@ -68,16 +54,7 @@ export const TimeSpentContributingByDay = () => {
             callbacks: {
               label: function (context) {
                 const value = context.parsed.y;
-                const days = Math.floor(value / (24 * 60));
-                const hours = Math.floor((value % (24 * 60)) / 60);
-                const minutes = value % 60;
-
-                let label = 'Time Spent: ';
-                if (days > 0) label += `${days} day${days > 1 ? 's' : ''} `;
-                if (hours > 0 || days > 0) label += `${hours} hour${hours !== 1 ? 's' : ''} `;
-                if (minutes > 0) label += `${minutes} minute${minutes !== 1 ? 's' : ''}`;
-
-                return label.trim();
+                return formatSecondsToTwoUnits(value);
               },
             },
           },
@@ -90,7 +67,33 @@ export const TimeSpentContributingByDay = () => {
         chartInstance.current.destroy();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const aggregateContributionTimeByWeekday = () => {
+    const aggregatedData = {};
+    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    // Initialize aggregatedData with all weekdays
+    weekdays.forEach((day, index) => {
+      aggregatedData[index] = {
+        weekday: day,
+        totalcontributionTime: 0,
+      };
+    });
+
+    contributionTimeByDate.forEach((item) => {
+      const date = parse(item.date, 'yyyy-MM-dd', new Date());
+      const weekdayIndex = getDay(date);
+
+      aggregatedData[weekdayIndex].totalcontributionTime += item.totalcontributionTime;
+    });
+
+    // Convert to array and sort by weekday index
+    return Object.entries(aggregatedData)
+      .sort(([a], [b]) => Number(a) - Number(b))
+      .map(([_, value]) => value);
+  };
 
   return (
     <div>
@@ -98,9 +101,24 @@ export const TimeSpentContributingByDay = () => {
         <FormattedMessage {...messages.timeSpentContributingByDay} />
       </h3>
 
-      <div className="bg-white pa4 shadow-6" style={{ width: '100%', height: '550px' }}>
+      <div className="bg-white pa4 shadow-6 relative" style={{ width: '100%', height: '550px' }}>
         <canvas ref={chartRef}></canvas>
+        {contributionTimeByDate.length === 0 && (
+          <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center flex-column">
+            <EmptySetIcon className="red o2" width={30} height={30} />
+            <p>No data found</p>
+          </div>
+        )}
       </div>
     </div>
   );
+};
+
+TimeSpentContributingByDay.propTypes = {
+  contributionTimeByDate: PropTypes.arrayOf(
+    PropTypes.shape({
+      totalcontributionTime: PropTypes.number,
+      date: PropTypes.string,
+    }),
+  ),
 };

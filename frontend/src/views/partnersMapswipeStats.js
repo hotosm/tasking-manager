@@ -116,7 +116,7 @@ export const PartnersMapswipeStats = () => {
             </div>
 
             <div className="mt3">
-              <TimeSpentContributingByDay />
+              <TimeSpentContributingByDay contributionTimeByDate={data?.contributionTimeByDate} />
             </div>
 
             <div className="mt4">

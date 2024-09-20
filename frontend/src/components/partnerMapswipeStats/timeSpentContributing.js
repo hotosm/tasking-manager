@@ -114,7 +114,7 @@ export const TimeSpentContributing = ({ contributionTimeByDate = [] }) => {
             callback: function (value) {
               return formatSecondsToTwoUnits(value);
             },
-            stepSize: 1000,
+            stepSize: 36 * 60,
           },
         },
       },
