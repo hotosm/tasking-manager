@@ -2,53 +2,47 @@ import { useState, useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Chart } from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
+import PropTypes from 'prop-types';
+import { parse, format } from 'date-fns';
 
 import { CHART_COLOURS } from '../../config';
+import { formatSecondsToTwoUnits } from './overview';
+import { EmptySetIcon } from '../svgIcons';
 import messages from './messages';
 
-const MOCK_DATA = [
-  { date: '2024-01-02', minutesSpent: 10 },
-  { date: '2024-01-29', minutesSpent: 40 },
-  { date: '2024-02-26', minutesSpent: 120 },
-  { date: '2024-03-26', minutesSpent: 180 },
-  { date: '2024-04-24', minutesSpent: 230 },
-  { date: '2024-05-23', minutesSpent: 350 },
-  { date: '2024-06-21', minutesSpent: 90 },
-  { date: '2024-07-18', minutesSpent: 60 },
-  { date: '2024-09-06', minutesSpent: 45 },
-];
-
-export const TimeSpentContributing = () => {
+export const TimeSpentContributing = ({ contributionTimeByDate = [] }) => {
   const [chartDistribution, setChartDistribution] = useState('day'); // "day" or "month"
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
+
+  const aggregateTimeSpentContributingByMonth = (data) => {
+    const aggregatedData = {};
+
+    data.forEach((item) => {
+      const date = parse(item.date, 'yyyy-MM-dd', new Date());
+      const monthKey = format(date, 'yyyy-MM');
+
+      if (!aggregatedData[monthKey]) {
+        aggregatedData[monthKey] = {
+          date: format(date, 'MMM yyyy'),
+          totalcontributionTime: 0,
+        };
+      }
+
+      aggregatedData[monthKey].totalcontributionTime += item.totalcontributionTime;
+    });
+
+    return Object.values(aggregatedData).sort((a, b) => new Date(a.date) - new Date(b.date));
+  };
 
   useEffect(() => {
     if (!chartRef.current) return;
 
     const context = chartRef.current.getContext('2d');
-    // Create gradient for the area
-    const gradient = context.createLinearGradient(0, 0, 0, 450);
-    gradient.addColorStop(0, `rgba(215, 63, 63, 0.5)`);
-    gradient.addColorStop(1, 'rgba(215, 63, 63, 0)');
-
     if (!chartInstance.current) {
       chartInstance.current = new Chart(context, {
         type: 'line',
-        data: {
-          labels: MOCK_DATA.map((entry) => entry.date),
-          datasets: [
-            {
-              label: 'Time Spent',
-              backgroundColor: gradient,
-              borderColor: CHART_COLOURS.red,
-              borderWidth: 1.5,
-              data: MOCK_DATA.map((entry) => entry.minutesSpent),
-              fill: true,
-              tension: 0.4,
-            },
-          ],
-        },
+        data: getChartDataConfig(),
         options: getChartOptions(),
       });
     }
@@ -63,49 +57,64 @@ export const TimeSpentContributing = () => {
 
   useEffect(() => {
     if (chartInstance.current) {
+      chartInstance.current.data = getChartDataConfig();
       chartInstance.current.options = getChartOptions();
       chartInstance.current.update();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartDistribution]);
 
-  const getChartOptions = () => {
-    const xAxisTime =
-      chartDistribution === 'day'
-        ? {
-            unit: 'day',
-            tooltipFormat: 'MMM d, yyyy',
-          }
-        : {
-            unit: 'month',
-            tooltipFormat: 'MMM, yyyy',
-          };
+  const getChartDataConfig = () => {
+    const context = chartRef.current.getContext('2d');
+    // Create gradient for the area
+    const gradient = context.createLinearGradient(0, 0, 0, 450);
+    gradient.addColorStop(0, `rgba(215, 63, 63, 0.5)`);
+    gradient.addColorStop(1, 'rgba(215, 63, 63, 0)');
 
+    const data =
+      chartDistribution === 'day'
+        ? contributionTimeByDate
+        : aggregateTimeSpentContributingByMonth(contributionTimeByDate);
+
+    return {
+      labels: data.map((entry) => entry.date),
+      datasets: [
+        {
+          label: 'Time Spent',
+          backgroundColor: gradient,
+          borderColor: CHART_COLOURS.red,
+          borderWidth: 1.5,
+          data: data.map((entry) => entry.totalcontributionTime),
+          fill: true,
+          tension: 0.4,
+        },
+      ],
+    };
+  };
+
+  const getChartOptions = () => {
     return {
       responsive: true,
       maintainAspectRatio: false,
       legend: { display: false },
       scales: {
-        x: {
-          type: 'time',
-          time: xAxisTime,
-        },
+        x:
+          chartDistribution === 'day'
+            ? {
+                type: 'time',
+                time: {
+                  unit: 'day',
+                  tooltipFormat: 'MMM d, yyyy',
+                },
+              }
+            : {},
         y: {
           beginAtZero: true,
           ticks: {
             callback: function (value) {
-              const days = Math.floor(value / (24 * 60));
-              const hours = Math.floor((value % (24 * 60)) / 60);
-              const minutes = value % 60;
-
-              let label = '';
-              if (days > 0) label += `${days} day${days > 1 ? 's' : ''} `;
-              if (hours > 0 || days > 0) label += `${hours} hr${hours !== 1 ? 's' : ''}`;
-              if (minutes > 0 && days === 0) label += ` ${minutes} min${minutes !== 1 ? 's' : ''}`;
-
-              return label.trim();
+              return formatSecondsToTwoUnits(value);
             },
-            stepSize: 60,
+            stepSize: 1000,
           },
         },
       },
@@ -114,16 +123,7 @@ export const TimeSpentContributing = () => {
           callbacks: {
             label: function (context) {
               const value = context.parsed.y;
-              const days = Math.floor(value / (24 * 60));
-              const hours = Math.floor((value % (24 * 60)) / 60);
-              const minutes = value % 60;
-
-              let label = 'Time Spent: ';
-              if (days > 0) label += `${days} day${days > 1 ? 's' : ''} `;
-              if (hours > 0 || days > 0) label += `${hours} hour${hours !== 1 ? 's' : ''} `;
-              if (minutes > 0) label += `${minutes} minute${minutes !== 1 ? 's' : ''}`;
-
-              return label.trim();
+              return formatSecondsToTwoUnits(value);
             },
           },
         },
@@ -140,9 +140,7 @@ export const TimeSpentContributing = () => {
         <div>
           <button
             className={`ph4 pv2 ba b--black-20 br--none pointer br2 br--left ${
-              chartDistribution === 'day'
-                ? 'bg-blue-grey white'
-                : 'bg-white hover-bg-near-white'
+              chartDistribution === 'day' ? 'bg-blue-grey white' : 'bg-white hover-bg-near-white'
             }`}
             onClick={() => setChartDistribution('day')}
           >
@@ -150,9 +148,7 @@ export const TimeSpentContributing = () => {
           </button>
           <button
             className={`ph4 pv2 ba b--black-20 pointer br2 br--right ${
-              chartDistribution === 'month'
-                ? 'bg-blue-grey white'
-                : 'bg-white hover-bg-near-white'
+              chartDistribution === 'month' ? 'bg-blue-grey white' : 'bg-white hover-bg-near-white'
             }`}
             onClick={() => setChartDistribution('month')}
           >
@@ -161,9 +157,24 @@ export const TimeSpentContributing = () => {
         </div>
       </div>
 
-      <div className="bg-white pa4 shadow-6" style={{ width: '100%', height: '550px' }}>
+      <div className="bg-white pa4 shadow-6 relative" style={{ width: '100%', height: '550px' }}>
         <canvas ref={chartRef}></canvas>
+        {contributionTimeByDate.length === 0 && (
+          <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center flex-column">
+            <EmptySetIcon className="red o2" width={30} height={30} />
+            <p>No data found</p>
+          </div>
+        )}
       </div>
     </div>
   );
+};
+
+TimeSpentContributing.propTypes = {
+  contributionTimeByDate: PropTypes.arrayOf(
+    PropTypes.shape({
+      totalcontributionTime: PropTypes.number,
+      date: PropTypes.string,
+    }),
+  ),
 };
