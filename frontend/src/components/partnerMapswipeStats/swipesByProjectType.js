@@ -5,7 +5,7 @@ import Chart from 'chart.js/auto';
 import { CHART_COLOURS } from '../../config';
 import messages from './messages';
 
-export const SwipesByProjectType = () => {
+export const SwipesByProjectType = ({ areaSwipedByProjectType = [] }) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
@@ -21,14 +21,14 @@ export const SwipesByProjectType = () => {
     chartInstance.current = new Chart(context, {
       type: 'doughnut',
       data: {
-        labels: ['Find', 'Validate'],
+        labels: ['Find', 'Compare', 'Validate'],
         datasets: [
           {
-            data: [75, 25],
+            data: areaSwipedByProjectType.map(c => c.totalArea),
             backgroundColor: [
               CHART_COLOURS.orange, // Orange for Find
-              CHART_COLOURS.green, // Green for Validate
               CHART_COLOURS.blue, // Blue for Compare
+              CHART_COLOURS.green, // Green for Validate
             ],
             borderColor: '#fff',
             borderWidth: 2,
