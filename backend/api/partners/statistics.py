@@ -153,17 +153,17 @@ class GroupPartnerStatisticsAPI(Resource):
 
         limit = int(request.args.get("limit", 10))
         offset = int(request.args.get("offset", 0))
-        downloadAsCSV = bool(request.args.get("downloadAsCSV", "false") == "true")
+        download_as_csv = bool(request.args.get("downloadAsCSV", "false") == "true")
 
         group_dto = mapswipe.fetch_grouped_partner_stats(
             partner.id,
             partner.mapswipe_group_id,
             limit,
             offset,
-            downloadAsCSV,
+            download_as_csv,
         )
 
-        if downloadAsCSV:
+        if download_as_csv:
             return send_file(
                 io.BytesIO(group_dto.to_csv().encode()),
                 mimetype="text/csv",

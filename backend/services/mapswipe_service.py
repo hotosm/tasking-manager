@@ -26,7 +26,7 @@ class MapswipeService:
     def __build_query_user_group_stats(group_id: str, limit: int, offset: int):
         """A private method to build a graphQl query for fetching a user group's stats from Mapswipe."""
 
-        operationName = "UserGroupStats"
+        operation_name = "UserGroupStats"
         query = """
         query UserGroupStats($pk: ID!, $limit: Int!, $offset: Int!) {
              userGroup(pk: $pk) {
@@ -69,14 +69,14 @@ class MapswipeService:
         }
         """
         variables = {"limit": limit, "offset": offset, "pk": group_id}
-        return {"operationName": operationName, "query": query, "variables": variables}
+        return {"operationName": operation_name, "query": query, "variables": variables}
 
     def __build_query_filtered_user_group_stats(
         self, group_id: str, from_date: str, to_date: str
     ):
         """A private method to build a graphQl query to fetch a mapswipe group's stats within a timerange."""
 
-        operationName = "FilteredUserGroupStats"
+        operation_name = "FilteredUserGroupStats"
         query = """
         query FilteredUserGroupStats($pk: ID!, $fromDate: DateTime!, $toDate: DateTime!) {
             userGroup(pk: $pk) {
@@ -132,7 +132,7 @@ class MapswipeService:
         }
         """
         variables = {"fromDate": from_date, "toDate": to_date, "pk": group_id}
-        return {"operationName": operationName, "query": query, "variables": variables}
+        return {"operationName": operation_name, "query": query, "variables": variables}
 
     def setup_group_dto(
         self, partner_id: str, group_id: str, resp_body: str
@@ -297,11 +297,11 @@ class MapswipeService:
         group_id: str,
         limit: int,
         offset: int,
-        downloadAsCSV: bool,
+        download_as_csv: bool,
     ) -> GroupedPartnerStatsDTO:
         """Service to fetch user group statistics by each member with pagination"""
 
-        if downloadAsCSV:
+        if download_as_csv:
             limit = 1_000_000
             offset = 0
 
