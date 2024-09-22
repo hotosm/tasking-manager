@@ -3,8 +3,12 @@ import { useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { useQuery } from '@tanstack/react-query';
 
-import { InfoIcon } from '../components/svgIcons';
-import { Overview } from '../components/partnerMapswipeStats/overview';
+import { InfoIcon, BanIcon } from '../components/svgIcons';
+import {
+  Overview,
+  getShortNumber,
+  formatSecondsToTwoUnits,
+} from '../components/partnerMapswipeStats/overview';
 import { GroupMembers } from '../components/partnerMapswipeStats/groupMembers';
 import { ContributionsGrid } from '../components/partnerMapswipeStats/contributionsGrid';
 import { ContributionsHeatmap } from '../components/partnerMapswipeStats/contributionsHeatmap';
@@ -14,23 +18,12 @@ import { ProjectTypeAreaStats } from '../components/partnerMapswipeStats/project
 import { SwipesByProjectType } from '../components/partnerMapswipeStats/swipesByProjectType';
 import { SwipesByOrganisation } from '../components/partnerMapswipeStats/swipesByOrganisation';
 import { StatsCardWithFooter } from '../components/statsCard';
-import { getShortNumber, formatSecondsToTwoUnits } from '../components/partnerMapswipeStats/overview';
 import messages from './messages';
-import { BanIcon } from '../components/svgIcons';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import './partnersMapswipeStats.css';
 
 const PagePlaceholder = () => (
   <div className="bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
-    {/* <ReactPlaceholder type="rect" style={{ width: 300, height: 40 }} showLoadingAnimation /> */}
-    {/* <div
-      className="flex justify-between items-center flex-wrap flex-nowrap-ns mt3"
-      style={{ gap: '1.6rem' }}
-    >
-      <ReactPlaceholder type="rect" style={{ width: '100%', height: 170 }} showLoadingAnimation />
-      <ReactPlaceholder type="rect" style={{ width: '100%', height: 170 }} showLoadingAnimation />
-      <ReactPlaceholder type="rect" style={{ width: '100%', height: 170 }} showLoadingAnimation />
-    </div> */}
     <div className="mt4">
       <ReactPlaceholder type="rect" style={{ width: 300, height: 40 }} showLoadingAnimation />
       <ReactPlaceholder
@@ -87,6 +80,26 @@ export const PartnersMapswipeStats = () => {
     },
   });
 
+  const getSwipes = () => {
+    if (!data) return <span>-</span>;
+    if (data.contributionsByProjectType?.length === 0) return <span>0</span>;
+    return getShortNumber(
+      data.contributionsByProjectType
+        .map((item) => item.totalcontributions)
+        .reduce((total, value) => total + value, 0),
+    );
+  };
+
+  const getTimeSpentContributing = () => {
+    if (!data) return '-';
+    if (data.contributionTimeByDate?.length === 0) return '0';
+    return formatSecondsToTwoUnits(
+      data.contributionTimeByDate
+        .map((item) => item.totalcontributionTime)
+        .reduce((total, value) => total + value, 0),
+    );
+  };
+
   return (
     <div className="pa4 bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
       <InfoBanner />
@@ -130,12 +143,12 @@ export const PartnersMapswipeStats = () => {
             <div className="mt4 flex items-center justify-between">
               <StatsCardWithFooter
                 description={<FormattedMessage {...messages.swipes} />}
-                value={getShortNumber(data?.contributionsByProjectType.map(c => c.totalcontributions).reduce((acc, t) => acc + t, 0) ?? 0)}
+                value={getSwipes()}
                 style={{ width: '48.5%' }}
               />
               <StatsCardWithFooter
                 description={<FormattedMessage {...messages.timeSpentContributing} />}
-                value={formatSecondsToTwoUnits(data?.contributionTimeByDate.map(c => c.totalcontributionTime).reduce((acc, t) => acc + t, 0) ?? 0)}
+                value={getTimeSpentContributing()}
                 className="w-100"
                 style={{ width: '48.5%' }}
               />
@@ -143,7 +156,9 @@ export const PartnersMapswipeStats = () => {
 
             <div className="mt3 flex items-center justify-between">
               <SwipesByProjectType areaSwipedByProjectType={data?.areaSwipedByProjectType} />
-              <SwipesByOrganisation contributionsByOrganization={data?.contributionsByorganizationName} />
+              <SwipesByOrganisation
+                contributionsByOrganization={data?.contributionsByorganizationName}
+              />
             </div>
 
             <div className="mt3">
