@@ -1,15 +1,14 @@
+import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { BanIcon, CircleExclamationIcon } from '../svgIcons';
 import { PaginatorLine } from '../paginator';
 import messages from './messages';
-import { GroupMembersPlaceholder } from './groupMembersPlaceholder';
 import './groupMembers.css';
 
 const COLUMNS = [
@@ -20,6 +19,7 @@ const COLUMNS = [
         <FormattedMessage {...messages.userColumn} />
       </span>
     ),
+    cell: ({ row }) => <span className="fw5">{row.original.username}</span>,
   },
   {
     accessorKey: 'totalcontributions',
@@ -47,21 +47,45 @@ const COLUMNS = [
   },
 ];
 
+const GroupMembersPlaceholder = () => (
+  <>
+    {new Array(9).fill(
+      <tr>
+        {new Array(4).fill(
+          <td>
+            <ReactPlaceholder
+              type="rect"
+              style={{ width: '100%', height: 49 }}
+              showLoadingAnimation
+            />
+          </td>,
+        )}
+      </tr>,
+    )}
+  </>
+);
+
 export const GroupMembers = () => {
+  const [pageNumber, setPageNumber] = useState(0);
   const { id: partnerPermalink } = useParams();
 
-  const ROWS = 10;
-  const [pageNumber, setPageNumber] = useState(0)
+  const rows = 10;
 
-  const { isLoading, isError, data, isRefetching } = useQuery({
-    queryKey: ['partners-mapswipe-general-statistics', partnerPermalink, pageNumber],
+  const { isLoading, isError, data, isRefetching, refetch } = useQuery({
+    queryKey: ['partners-mapswipe-statistics-group-members', partnerPermalink],
     queryFn: async () => {
       const response = await fetchLocalJSONAPI(
-        `partners/${partnerPermalink}/general-statistics/?limit=${ROWS}&offset=${pageNumber * ROWS}`,
+        `partners/${partnerPermalink}/general-statistics/?limit=${rows}&offset=${
+          pageNumber * rows
+        }`,
       );
       return response;
     },
   });
+
+  useEffect(() => {
+    refetch();
+  }, [pageNumber]);
 
   const table = useReactTable({
     columns: COLUMNS,
@@ -71,10 +95,10 @@ export const GroupMembers = () => {
     columnResizeDirection: 'ltr',
   });
 
-  const isEmpty = false;
+  const isEmpty = !isLoading && !isRefetching && !isError && data?.members.length === 0;
 
   return (
-    <ReactPlaceholder customPlaceholder={<GroupMembersPlaceholder />} ready={!isLoading && !isRefetching}>
+    <div>
       <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb4">
         <FormattedMessage {...messages.groupMembers} />
       </h3>
@@ -95,14 +119,15 @@ export const GroupMembers = () => {
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
 
-                      {header.id !== 'timeSpent' && (
+                      {header.id !== 'totalcontributionTime' && (
                         <div
                           {...{
                             onDoubleClick: () => header.column.resetSize(),
                             onMouseDown: header.getResizeHandler(),
                             onTouchStart: header.getResizeHandler(),
-                            className: `partner-mapswipe-stats-column-resizer ${table.options.columnResizeDirection === 'ltr' ? 'right-0' : ''
-                              } ${header.column.getIsResizing() ? 'isResizing' : ''}`,
+                            className: `partner-mapswipe-stats-column-resizer ${
+                              table.options.columnResizeDirection === 'ltr' ? 'right-0' : ''
+                            } ${header.column.getIsResizing() ? 'isResizing' : ''}`,
                           }}
                         />
                       )}
@@ -112,25 +137,30 @@ export const GroupMembers = () => {
               ))}
             </thead>
             <tbody className="lh-copy">
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      className="f6 pr3 mw5 pl2 bb b--moon-gray"
-                      key={cell.id}
-                      style={{
-                        width: cell.column.getSize(),
-                        minWidth: cell.column.columnDef.minSize,
-                        maxWidth: cell.column.columnDef.size,
-                        paddingTop: '0.75rem',
-                        paddingBottom: '0.75rem',
-                      }}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              <ReactPlaceholder
+                customPlaceholder={<GroupMembersPlaceholder />}
+                ready={!isLoading && !isRefetching}
+              >
+                {table.getRowModel().rows.map((row) => (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        className="f6 pr3 mw5 pl2 bb b--moon-gray"
+                        key={cell.id}
+                        style={{
+                          width: cell.column.getSize(),
+                          minWidth: cell.column.columnDef.minSize,
+                          maxWidth: cell.column.columnDef.size,
+                          paddingTop: '0.75rem',
+                          paddingBottom: '0.75rem',
+                        }}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </ReactPlaceholder>
             </tbody>
           </table>
 
@@ -156,12 +186,12 @@ export const GroupMembers = () => {
         <div className="mt3">
           <PaginatorLine
             activePage={pageNumber + 1}
-            setPageFn={(n) => setPageNumber(parseInt(n) - 1)}
-            lastPage={Math.max(Math.ceil((data?.membersCount ?? 0) / ROWS), 1)}
+            setPageFn={(newPageNumber) => setPageNumber(newPageNumber - 1)}
+            lastPage={Math.max(Math.ceil((data?.membersCount ?? 0) / rows), 1)}
             className="flex items-center justify-center pa4"
           />
         </div>
       </div>
-    </ReactPlaceholder>
+    </div>
   );
 };
