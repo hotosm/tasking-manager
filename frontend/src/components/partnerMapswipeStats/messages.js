@@ -128,4 +128,8 @@ export default defineMessages({
     id: 'management.partners.stats.mapswipe.area.compare',
     defaultMessage: 'Compare',
   },
+  downloadMembersAsCSV: {
+    id: 'management.partners.stats.mapswipe.groupMembers.download',
+    defaultMessage: 'Download CSV',
+  },
 });

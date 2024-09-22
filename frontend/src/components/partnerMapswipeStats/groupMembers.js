@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import { useParams } from 'react-router-dom';
@@ -6,8 +6,9 @@ import { useQuery } from '@tanstack/react-query';
 import ReactPlaceholder from 'react-placeholder';
 
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { BanIcon, CircleExclamationIcon } from '../svgIcons';
+import { BanIcon, CircleExclamationIcon, DownloadIcon } from '../svgIcons';
 import { PaginatorLine } from '../paginator';
+import { API_URL } from '../../config';
 import messages from './messages';
 import './groupMembers.css';
 
@@ -71,8 +72,8 @@ export const GroupMembers = () => {
 
   const rows = 10;
 
-  const { isLoading, isError, data, isRefetching, refetch } = useQuery({
-    queryKey: ['partners-mapswipe-statistics-group-members', partnerPermalink],
+  const { isLoading, isError, data, isFetching, isPreviousData } = useQuery({
+    queryKey: ['partners-mapswipe-statistics-group-members', partnerPermalink, pageNumber],
     queryFn: async () => {
       const response = await fetchLocalJSONAPI(
         `partners/${partnerPermalink}/general-statistics/?limit=${rows}&offset=${
@@ -81,11 +82,9 @@ export const GroupMembers = () => {
       );
       return response;
     },
+    keepPreviousData: true,
+    staleTime: 5 * 60 * 1000,
   });
-
-  useEffect(() => {
-    refetch();
-  }, [pageNumber]);
 
   const table = useReactTable({
     columns: COLUMNS,
@@ -95,13 +94,24 @@ export const GroupMembers = () => {
     columnResizeDirection: 'ltr',
   });
 
-  const isEmpty = !isLoading && !isRefetching && !isError && data?.members.length === 0;
+  const isEmpty = !isLoading && !isFetching && !isError && data?.members.length === 0;
 
   return (
     <div>
-      <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb4">
-        <FormattedMessage {...messages.groupMembers} />
-      </h3>
+      <div className="flex items-center gap-1 mb4">
+        <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb0">
+          <FormattedMessage {...messages.groupMembers} />
+        </h3>
+        <a
+          href={`${API_URL}partners/${partnerPermalink}/general-statistics/?downloadAsCSV=true`}
+          download
+          className="blue-dark pt2"
+        >
+          <DownloadIcon className="mr2 self-center" />
+          <FormattedMessage {...messages.downloadMembersAsCSV} />
+        </a>
+      </div>
+
       <div className="bg-white br1 shadow-6">
         <div className="overflow-auto ph4 pv2">
           <table className="f6 w-100 center" cellSpacing="0">
@@ -139,7 +149,7 @@ export const GroupMembers = () => {
             <tbody className="lh-copy">
               <ReactPlaceholder
                 customPlaceholder={<GroupMembersPlaceholder />}
-                ready={!isLoading && !isRefetching}
+                ready={!isLoading && !isFetching}
               >
                 {table.getRowModel().rows.map((row) => (
                   <tr key={row.id}>
