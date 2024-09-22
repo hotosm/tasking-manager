@@ -122,7 +122,7 @@ export default defineMessages({
   },
   sceneComparedByProjectType: {
     id: 'management.partners.stats.mapswipe.sceneCompared',
-    defaultMessage: 'Area Swipes',
+    defaultMessage: 'Scene Compared',
   },
   compare: {
     id: 'management.partners.stats.mapswipe.area.compare',
