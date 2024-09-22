@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Chart from 'chart.js/auto';
+import PropTypes from 'prop-types';
 
 import { CHART_COLOURS } from '../../config';
+import { EmptySetIcon } from '../svgIcons';
 import messages from './messages';
 
 function withGroupedLowContributors(contributionsByOrganization, keepTop = 4) {
@@ -10,18 +12,21 @@ function withGroupedLowContributors(contributionsByOrganization, keepTop = 4) {
     return contributionsByOrganization;
   }
 
-  contributionsByOrganization.sort((a, b) => b.totalcontributions - a.totalcontributions)
-  const topContributors = contributionsByOrganization.slice(0, keepTop)
-  const others = contributionsByOrganization.slice(keepTop)
-    .reduce((acc, c) => ({ ...acc, totalcontributions: acc.totalcontributions + c.totalcontributions }),
-      { organizationName: 'Others', totalcontributions: 0 })
-  topContributors.push(others)
-  return topContributors
+  contributionsByOrganization.sort((a, b) => b.totalcontributions - a.totalcontributions);
+  const topContributors = contributionsByOrganization.slice(0, keepTop);
+  const others = contributionsByOrganization
+    .slice(keepTop)
+    .reduce(
+      (acc, c) => ({ ...acc, totalcontributions: acc.totalcontributions + c.totalcontributions }),
+      { organizationName: 'Others', totalcontributions: 0 },
+    );
+  topContributors.push(others);
+  return topContributors;
 }
 export const SwipesByOrganisation = ({ contributionsByOrganization = [] }) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
-  contributionsByOrganization = withGroupedLowContributors(contributionsByOrganization)
+  contributionsByOrganization = withGroupedLowContributors(contributionsByOrganization);
 
   useEffect(() => {
     if (chartInstance.current) {
@@ -35,10 +40,10 @@ export const SwipesByOrganisation = ({ contributionsByOrganization = [] }) => {
     chartInstance.current = new Chart(context, {
       type: 'doughnut',
       data: {
-        labels: contributionsByOrganization.map(c => c.organizationName),
+        labels: contributionsByOrganization.map((item) => item.organizationName),
         datasets: [
           {
-            data: contributionsByOrganization.map(c => c.totalcontributions),
+            data: contributionsByOrganization.map((item) => item.totalcontributions),
             backgroundColor: [
               CHART_COLOURS.red,
               CHART_COLOURS.orange,
@@ -79,9 +84,24 @@ export const SwipesByOrganisation = ({ contributionsByOrganization = [] }) => {
         <FormattedMessage {...messages.swipesByOrganization} />
       </h3>
 
-      <div className="bg-white pa4 shadow-6" style={{ height: '550px' }}>
+      <div className="bg-white pa4 shadow-6 relative" style={{ height: '550px' }}>
         <canvas ref={chartRef}></canvas>
+        {contributionsByOrganization.length === 0 && (
+          <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center flex-column">
+            <EmptySetIcon className="red" width={30} height={30} />
+            <p>No data found</p>
+          </div>
+        )}
       </div>
     </div>
   );
+};
+
+SwipesByOrganisation.propTypes = {
+  contributionsByOrganization: PropTypes.arrayOf(
+    PropTypes.shape({
+      organizationName: PropTypes.string,
+      totalcontributions: PropTypes.numberstring,
+    }),
+  ),
 };
