@@ -5,9 +5,23 @@ import Chart from 'chart.js/auto';
 import { CHART_COLOURS } from '../../config';
 import messages from './messages';
 
-export const SwipesByOrganisation = ( { contributionsByOrganization = [] } ) => {
+function withGroupedLowContributors(contributionsByOrganization, keepTop = 4) {
+  if (contributionsByOrganization.length <= keepTop) {
+    return contributionsByOrganization;
+  }
+
+  contributionsByOrganization.sort((a, b) => b.totalcontributions - a.totalcontributions)
+  const topContributors = contributionsByOrganization.slice(0, keepTop)
+  const others = contributionsByOrganization.slice(keepTop)
+    .reduce((acc, c) => ({ ...acc, totalcontributions: acc.totalcontributions + c.totalcontributions }),
+      { organizationName: 'Others', totalcontributions: 0 })
+  topContributors.push(others)
+  return topContributors
+}
+export const SwipesByOrganisation = ({ contributionsByOrganization = [] }) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
+  contributionsByOrganization = withGroupedLowContributors(contributionsByOrganization)
 
   useEffect(() => {
     if (chartInstance.current) {
@@ -26,11 +40,11 @@ export const SwipesByOrganisation = ( { contributionsByOrganization = [] } ) => 
           {
             data: contributionsByOrganization.map(c => c.totalcontributions),
             backgroundColor: [
-              CHART_COLOURS.red, // Orange for American Red Cross
-              CHART_COLOURS.orange, // Yellow for Arizona State University
-              CHART_COLOURS.green, // Green for HOT
-              CHART_COLOURS.blue, // Blue for Médecins Sans Frontières
-              CHART_COLOURS.gray, // Gray for Others
+              CHART_COLOURS.red,
+              CHART_COLOURS.orange,
+              CHART_COLOURS.green,
+              CHART_COLOURS.blue,
+              CHART_COLOURS.gray,
             ],
             borderColor: '#fff',
             borderWidth: 2,
