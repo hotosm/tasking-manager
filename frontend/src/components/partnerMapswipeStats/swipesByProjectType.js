@@ -21,10 +21,10 @@ export const SwipesByProjectType = ({ areaSwipedByProjectType = [] }) => {
     chartInstance.current = new Chart(context, {
       type: 'doughnut',
       data: {
-        labels: ['Find', 'Compare', 'Validate'],
+        labels: ['Find', 'Compare', 'Validate'].filter((_, i) => areaSwipedByProjectType[i].totalArea > 0),
         datasets: [
           {
-            data: areaSwipedByProjectType.map(c => c.totalArea),
+            data: areaSwipedByProjectType.filter((_, i) => areaSwipedByProjectType[i].totalArea > 0).map(c => c.totalArea),
             backgroundColor: [
               CHART_COLOURS.orange, // Orange for Find
               CHART_COLOURS.blue, // Blue for Compare
