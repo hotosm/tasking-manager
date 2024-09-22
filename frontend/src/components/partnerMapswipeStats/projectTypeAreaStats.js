@@ -17,10 +17,10 @@ export const ProjectTypeAreaStats = ({ projectTypeAreaStats = [], areaSwipedByPr
       <StatsCardWithFooter
         icon={<SwipeIcon className={iconClass} style={iconStyle} />}
         description={<FormattedMessage {...messages.areaSwipesByProjectType} />}
-        value={getShortNumber(projectTypeAreaStats[0].totalcontributions)}
+        value={getShortNumber(projectTypeAreaStats[0]?.totalcontributions ?? 0)}
         delta={
           <div className="flex justify-between items-center">
-            <span>{Math.round(areaSwipedByProjectType[0].totalArea)} Sq. KM.</span>
+            <span>{Math.round(areaSwipedByProjectType[0]?.totalArea ?? 0)} Sq. KM.</span>
             <b className="red">
               <FormattedMessage {...messages.find} />
             </b>
@@ -31,7 +31,7 @@ export const ProjectTypeAreaStats = ({ projectTypeAreaStats = [], areaSwipedByPr
       <StatsCardWithFooter
         icon={<ClockIcon className={iconClass} style={iconStyle} />}
         description={<FormattedMessage {...messages.featuresCheckedByProjectType} />}
-        value={getShortNumber(projectTypeAreaStats[2].totalcontributions)}
+        value={getShortNumber(projectTypeAreaStats[2]?.totalcontributions ?? 0)}
         delta={
           <div className="flex justify-end">
             <b className="red"><FormattedMessage {...messages.validate} /></b>
@@ -42,10 +42,10 @@ export const ProjectTypeAreaStats = ({ projectTypeAreaStats = [], areaSwipedByPr
       <StatsCardWithFooter
         icon={<MappingIcon className={iconClass} style={iconStyle} />}
         description={<FormattedMessage {...messages.sceneComparedByProjectType} />}
-        value={getShortNumber(projectTypeAreaStats[1].totalcontributions)}
+        value={getShortNumber(projectTypeAreaStats[1]?.totalcontributions ?? 0)}
         delta={
           <div className="flex justify-between items-center">
-            <span>{Math.round(areaSwipedByProjectType[1].totalArea)} Sq. KM.</span>
+            <span>{Math.round(areaSwipedByProjectType[1]?.totalArea ?? 0)} Sq. KM.</span>
             <b className="red"><FormattedMessage {...messages.compare} /></b>
           </div>
         }

@@ -21,7 +21,7 @@ export const SwipesByProjectType = ({ areaSwipedByProjectType = [] }) => {
     chartInstance.current = new Chart(context, {
       type: 'doughnut',
       data: {
-        labels: ['Find', 'Compare', 'Validate'].filter((_, i) => areaSwipedByProjectType[i].totalArea > 0),
+        labels: ['Find', 'Compare', 'Validate'].filter((_, i) => areaSwipedByProjectType[i]?.totalArea ?? 0 > 0),
         datasets: [
           {
             data: areaSwipedByProjectType.filter((_, i) => areaSwipedByProjectType[i].totalArea > 0).map(c => c.totalArea),

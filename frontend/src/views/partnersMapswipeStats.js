@@ -130,12 +130,12 @@ export const PartnersMapswipeStats = () => {
             <div className="mt4 flex items-center justify-between">
               <StatsCardWithFooter
                 description={<FormattedMessage {...messages.swipes} />}
-                value={getShortNumber(data?.contributionsByProjectType.map(c => c.totalcontributions).reduce((acc, t) => acc + t) ?? 0)}
+                value={getShortNumber(data?.contributionsByProjectType.map(c => c.totalcontributions).reduce((acc, t) => acc + t, 0) ?? 0)}
                 style={{ width: '48.5%' }}
               />
               <StatsCardWithFooter
                 description={<FormattedMessage {...messages.timeSpentContributing} />}
-                value={formatSecondsToTwoUnits(data?.contributionTimeByDate.map(c => c.totalcontributionTime).reduce((acc, t) => acc + t) ?? 0)}
+                value={formatSecondsToTwoUnits(data?.contributionTimeByDate.map(c => c.totalcontributionTime).reduce((acc, t) => acc + t, 0) ?? 0)}
                 className="w-100"
                 style={{ width: '48.5%' }}
               />
