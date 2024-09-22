@@ -1,4 +1,5 @@
 import json
+from backend.exceptions import Conflict
 from backend.models.dtos.partner_stats_dto import (
     GroupedPartnerStatsDTO,
     FilteredPartnerStatsDTO,
@@ -78,53 +79,56 @@ class MapswipeService:
         operationName = "FilteredUserGroupStats"
         query = """
         query FilteredUserGroupStats($pk: ID!, $fromDate: DateTime!, $toDate: DateTime!) {
+            userGroup(pk: $pk) {
+                id
+            }
             userGroupStats(userGroupId: $pk) {
                 id
-                 filteredStats(dateRange: {fromDate: $fromDate, toDate: $toDate}) {
-                     userStats {
-                         totalMappingProjects
-                         totalSwipeTime
-                         totalSwipes
-                         username
-                         userId
-                         __typename
-                     }
-                     contributionByGeo {
-                         geojson
-                         totalContribution
-                         __typename
-                     }
-                     areaSwipedByProjectType {
-                         totalArea
-                         projectTypeDisplay
-                         projectType
-                         __typename
-                     }
-                     swipeByDate {
-                         taskDate
-                         totalSwipes
-                         __typename
-                     }
-                     swipeTimeByDate {
-                         date
-                         totalSwipeTime
-                         __typename
-                     }
-                     swipeByProjectType {
-                         projectType
-                         projectTypeDisplay
-                         totalSwipes
-                         __typename
-                     }
-                     swipeByOrganizationName {
-                         organizationName
-                         totalSwipes
-                         __typename
-                     }
-                     __typename
-                 }
-                 __typename
-             }
+                filteredStats(dateRange: {fromDate: $fromDate, toDate: $toDate}) {
+                    userStats {
+                        totalMappingProjects
+                        totalSwipeTime
+                        totalSwipes
+                        username
+                        userId
+                        __typename
+                    }
+                    contributionByGeo {
+                        geojson
+                        totalContribution
+                        __typename
+                    }
+                    areaSwipedByProjectType {
+                        totalArea
+                        projectTypeDisplay
+                        projectType
+                        __typename
+                    }
+                    swipeByDate {
+                        taskDate
+                        totalSwipes
+                        __typename
+                    }
+                    swipeTimeByDate {
+                        date
+                        totalSwipeTime
+                        __typename
+                    }
+                    swipeByProjectType {
+                        projectType
+                        projectTypeDisplay
+                        totalSwipes
+                        __typename
+                    }
+                    swipeByOrganizationName {
+                        organizationName
+                        totalSwipes
+                        __typename
+                    }
+                    __typename
+                }
+                __typename
+            }
         }
         """
         variables = {"fromDate": from_date, "toDate": to_date, "pk": group_id}
@@ -138,6 +142,13 @@ class MapswipeService:
         group_dto.id = partner_id
         group_dto.provider = "mapswipe"
         group_dto.id_inside_provider = group_id
+
+        if group_stats["userGroup"] is None:
+            raise Conflict(
+                "INVALID_MAPSWIPE_GROUP_ID",
+                "The mapswipe group ID linked to this partner is invalid. Please contact an admin.",
+            )
+
         group_dto.name_inside_provider = group_stats["userGroup"]["name"]
         group_dto.description_inside_provider = group_stats["userGroup"]["description"]
 
@@ -190,9 +201,15 @@ class MapswipeService:
         filtered_stats_dto.from_date = from_date
         filtered_stats_dto.to_date = to_date
 
-        filtered_stats = json.loads(resp_body)["data"]["userGroupStats"][
-            "filteredStats"
-        ]
+        filtered_stats = json.loads(resp_body)["data"]
+
+        if filtered_stats["userGroup"] is None:
+            raise Conflict(
+                "INVALID_MAPSWIPE_GROUP_ID",
+                "The mapswipe group ID linked to this partner is invalid. Please contact an admin.",
+            )
+
+        filtered_stats = filtered_stats["userGroupStats"]["filteredStats"]
 
         stats_by_user = []
         for user_stats in filtered_stats["userStats"]:
