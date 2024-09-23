@@ -712,9 +712,9 @@ class UserService:
         return countries_dto
 
     @staticmethod
-    def upsert_mapped_projects(user_id: int, project_id: int):
+    async def upsert_mapped_projects(user_id: int, project_id: int, db: Database):
         """Add project to mapped projects if it doesn't exist, otherwise return"""
-        User.upsert_mapped_projects(user_id, project_id)
+        await User.upsert_mapped_projects(user_id, project_id, db)
 
     @staticmethod
     async def get_mapped_projects(user_name: str, preferred_locale: str, db: Database):
