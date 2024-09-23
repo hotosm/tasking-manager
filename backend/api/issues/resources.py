@@ -5,9 +5,7 @@ from loguru import logger
 
 from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
 from backend.services.mapping_issues_service import MappingIssueCategoryService
-from backend.services.users.authentication_service import tm
 from backend.db import get_session
-from starlette.authentication import requires
 from backend.db import get_db
 
 router = APIRouter(
