@@ -31,6 +31,7 @@ store.subscribe(() => {
   setItem('mapShown', store.getState().preferences['mapShown']);
   setItem('action', store.getState().preferences['action']);
   setItem('projectListView', store.getState().preferences['projectListView']);
+  setItem('isExploreProjectsTableView', store.getState().preferences['isExploreProjectsTableView']);
 });
 
 export { store, persistor };

@@ -39,6 +39,10 @@ const projectQueryAllSpecification = {
   createdFrom: StringParam,
   basedOnMyInterests: BooleanParam,
   omitMapResults: BooleanParam,
+  partnerId: NumberParam,
+  partnershipFrom: StringParam,
+  partnershipTo: StringParam,
+  downloadAsCSV: BooleanParam,
 };
 
 /* This can be passed into project API or used independently */

@@ -10,6 +10,7 @@ from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectSearchBBoxDTO,
 )
+from backend.models.postgis.statuses import UserRole
 from backend.services.project_search_service import (
     ProjectSearchService,
     ProjectSearchServiceError,
@@ -481,6 +482,10 @@ class ProjectSearchBase(Resource):
         search_dto.last_updated_lte = request.args.get("lastUpdatedTo")
         search_dto.created_gte = request.args.get("createdFrom")
         search_dto.created_lte = request.args.get("createdTo")
+        search_dto.partner_id = request.args.get("partnerId")
+        search_dto.partnership_from = request.args.get("partnershipFrom")
+        search_dto.partnership_to = request.args.get("partnershipTo")
+        search_dto.download_as_csv = request.args.get("downloadAsCSV")
 
         # See https://github.com/hotosm/tasking-manager/pull/922 for more info
         try:
@@ -550,7 +555,7 @@ class ProjectsAllAPI(ProjectSearchBase):
               name: orderBy
               type: string
               default: priority
-              enum: [id,difficulty,priority,status,last_updated,due_date]
+              enum: [id,difficulty,priority,status,last_updated,due_date,percent_mapped,percent_validated]
             - in: query
               name: orderByType
               type: string
@@ -655,9 +660,33 @@ class ProjectsAllAPI(ProjectSearchBase):
               type: boolean
               description: If true, it will not return the project centroid's geometries.
               default: false
+            - in: query
+              name: partnerId
+              type: int
+              description: Limit to projects currently linked to a specific partner ID
+              default: 1
+            - in: query
+              name: partnershipFrom
+              type: date
+              description: Limit to projects with partners that began greater than or equal to a date
+              default: "2017-04-11"
+            - in: query
+              name: partnershipTo
+              type: date
+              description: Limit to projects with partners that ended less than or equal to a date
+              default: "2018-04-11"
+            - in: query
+              name: downloadAsCSV
+              type: boolean
+              description: Set to true to download search results as a CSV
+              default: false
         responses:
             200:
                 description: Projects found
+            400:
+                description: Bad input.
+            401:
+                description: Search parameters partnerId, partnershipFrom, partnershipTo are not allowed for this user.
             404:
                 description: No projects found
             500:
@@ -668,7 +697,57 @@ class ProjectsAllAPI(ProjectSearchBase):
             user_id = token_auth.current_user()
             if user_id:
                 user = UserService.get_user_by_id(user_id)
+
             search_dto = self.setup_search_dto()
+
+            if search_dto.omit_map_results and search_dto.download_as_csv:
+                return {
+                    "Error": "omitMapResults and downloadAsCSV cannot be both set to true"
+                }, 400
+
+            if (
+                search_dto.partnership_from is not None
+                or search_dto.partnership_to is not None
+            ) and search_dto.partner_id is None:
+                return {
+                    "Error": "partnershipFrom or partnershipTo cannot be provided without partnerId"
+                }, 400
+
+            if (
+                search_dto.partner_id is not None
+                and search_dto.partnership_from is not None
+                and search_dto.partnership_to is not None
+                and search_dto.partnership_from > search_dto.partnership_to
+            ):
+                return {
+                    "Error": "partnershipFrom cannot be greater than partnershipTo"
+                }, 400
+
+            if any(
+                map(
+                    lambda x: x is not None,
+                    [
+                        search_dto.partner_id,
+                        search_dto.partnership_from,
+                        search_dto.partnership_to,
+                    ],
+                )
+            ) and (user is None or not user.role == UserRole.ADMIN.value):
+                error_msg = "Only admins can search projects by partnerId, partnershipFrom, partnershipTo"
+                return {"Error": error_msg}, 401
+
+            if search_dto.download_as_csv:
+                all_results_csv = ProjectSearchService.search_projects_as_csv(
+                    search_dto, user
+                )
+
+                return send_file(
+                    io.BytesIO(all_results_csv.encode()),
+                    mimetype="text/csv",
+                    as_attachment=True,
+                    download_name="projects_search_result.csv",
+                )
+
             results_dto = ProjectSearchService.search_projects(search_dto, user)
             return results_dto.to_primitive(), 200
         except NotFound:

@@ -116,15 +116,23 @@ export default defineMessages({
     id: 'management.partner.button.create',
     defaultMessage: 'Create Partner',
   },
-  learnToMap:{
+  partnerCreationNameExistsError: {
+    id: 'management.partner.creation.error',
+    defaultMessage: 'Partner name already exists',
+  },
+  partnerEditNameExistsError: {
+    id: 'management.partner.edit.error',
+    defaultMessage: 'Partner name already exists',
+  },
+  learnToMap: {
     id: 'management.partner.learnToMap',
     defaultMessage: 'Learn to Map',
   },
-  currentProjects:{
+  currentProjects: {
     id: 'management.partner.currentProjects',
     defaultMessage: 'Current Projects',
   },
-  newToMapping:{
+  newToMapping: {
     id: 'management.partner.newToMapping',
     defaultMessage: '¿New to Mapping?',
   },
@@ -200,13 +208,11 @@ export default defineMessages({
   },
   editPartnerNotAllowed: {
     id: 'teamsAndOrgs.management.partner.manage.error',
-    defaultMessage:
-      'You are not a manager of this partner, so you are not allowed to edit it.',
+    defaultMessage: 'You are not a manager of this partner, so you are not allowed to edit it.',
   },
-  notAllowedCreatePartners:{
+  notAllowedCreatePartners: {
     id: 'teamsAndOrgs.management.partner.create.error',
-    defaultMessage:
-      'You are not allowed to access the management area.',
+    defaultMessage: 'You are not allowed to access the management area.',
   },
   tasksStatistics: {
     id: 'teamsAndOrgs.management.organisation.stats',
@@ -771,6 +777,10 @@ export default defineMessages({
   projectEditSection_metadata: {
     id: 'pages.edit_project.sections.metadata',
     defaultMessage: 'Metadata',
+  },
+  projectEditSection_partners: {
+    id: 'pages.edit_project.sections.partners',
+    defaultMessage: 'Partners',
   },
   projectEditSection_priority_areas: {
     id: 'pages.edit_project.sections.priority_areas',

@@ -10,7 +10,7 @@ import { ProjectSearchBox } from './projectSearchBox';
 import ClearFilters from './clearFilters';
 import { ProjectFilterSelect } from './filterSelectFields';
 import { OrderBySelector } from './orderBy';
-import { ShowMapToggle, ProjetListViewToggle } from './projectNav';
+import { ShowMapToggle, ProjectListViewToggle } from './projectNav';
 import { CustomButton } from '../button';
 
 export const MyProjectNav = (props) => {
@@ -216,7 +216,7 @@ export const MyProjectNav = (props) => {
         </div>
         <div className="w-10-ns w-100 fr tr">
           <ShowMapToggle />
-          {props.management && <ProjetListViewToggle />}
+          {props.management && <ProjectListViewToggle />}
         </div>
       </div>
     </header>

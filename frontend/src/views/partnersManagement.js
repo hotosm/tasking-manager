@@ -19,6 +19,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Alert } from '../components/alert';
 import { putEntity } from '../utils/management';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import '../components/partners/styles.scss';
 
 export function ListPartners() {
   useSetTitleTag('Manage partners');
@@ -73,17 +74,19 @@ export function CreatePartner() {
         navigate('/manage/partners');
       })
       .catch((err) => {
-        setError(err.message);
+        setError(err);
       });
   };
+
   useEffect(() => {
     if (!token && !userDetails?.id) {
       navigate('/login');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails, token]);
+
   return (
-    <div style={{ backgroundColor: '#f1f1f1' }}>
+    <div>
       {userDetails.role === 'ADMIN' ? (
         <Form
           onSubmit={(values) => createPartner(values)}
@@ -99,8 +102,10 @@ export function CreatePartner() {
                     <div className="cf pv2 ml2">
                       {error && (
                         <Alert type="error" compact>
-                          {messages[`partnerCreation${error}Error`] ? (
-                            <FormattedMessage {...messages[`partnerCreation${error}Error`]} />
+                          {messages[`partnerCreation${error.message}Error`] ? (
+                            <FormattedMessage
+                              {...messages[`partnerCreation${error.message}Error`]}
+                            />
                           ) : (
                             <FormattedMessage
                               {...messages.entityCreationFailure}
@@ -196,8 +201,9 @@ export function EditPartners() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails, token]);
+
   return (
-    <div style={{ backgroundColor: '#f1f1f1' }}>
+    <div>
       <ReactPlaceholder
         showLoadingAnimation={true}
         type={'media'}

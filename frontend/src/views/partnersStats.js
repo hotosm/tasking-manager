@@ -1,25 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { NotFound } from './notFound';
 import { useFetch } from '../hooks/UseFetch';
-import { StatsSection } from '../components/partners/partnersStats';
-import { Activity } from '../components/partners/partnersActivity';
-import { CurrentProjects } from '../components/partners/currentProjects';
+import { Leaderboard } from '../components/partners/leaderboard';
 import { Resources } from '../components/partners/partnersResources';
 import { OHSOME_STATS_BASE_URL } from '../config';
 import { Button } from '../components/button';
 import { TwitterIcon, FacebookIcon, InstagramIcon } from '../components/svgIcons';
 
-const socialIconsStyle = { height: '24px', width: '24px' };
+function getSocialIcons(link) {
+  const socialName = link.split('_')?.[1];
+  switch (socialName) {
+    case 'x':
+      return <TwitterIcon noBg className="partners-social-icon" />;
+    case 'meta':
+      return <FacebookIcon className="partners-social-icon" />;
+    case 'instagram':
+      return <InstagramIcon className="partners-social-icon" />;
+    default:
+      return <></>;
+  }
+}
+
+const tabData = [{ id: 'leaderboard', title: 'Leaderboard' }];
 
 export const PartnersStats = () => {
-  const { id } = useParams();
+  const { id, tabname } = useParams();
+  const navigate = useNavigate();
   const [partnerStats, setPartnerStats] = useState(null);
   const [error, loading, partner] = useFetch(`partners/${id}/`);
+
+  // navigate to /leaderboard path when no tab param present
+  useEffect(() => {
+    if (!tabname) {
+      navigate('leaderboard');
+    }
+  }, [navigate, tabname]);
 
   const fetchData = async (name) => {
     try {
@@ -47,6 +67,19 @@ export const PartnersStats = () => {
     }
   }, [partner]);
 
+  function getTabContent() {
+    switch (tabname) {
+      case 'leaderboard':
+        return <Leaderboard partner={partner} partnerStats={partnerStats} />;
+      default:
+        return <></>;
+    }
+  }
+
+  const socialLinks = Object.keys(partner)
+    .filter((key) => key.startsWith('link'))
+    .filter((link) => partner[link]);
+
   return (
     <ReactPlaceholder
       showLoadingAnimation={true}
@@ -58,80 +91,67 @@ export const PartnersStats = () => {
         <NotFound />
       ) : (
         <div className="">
-          <div className="flex items-center justify-between bg-blue-dark pa4">
+          <div className="flex flex-column bg-blue-dark ph4">
             {/* logo */}
-            <img src={partner.logo_url} alt="logo" height={70} />
-            <Link to={`/learn/map/`}>
-              <Button className="bg-grey-dark white mr3 br1 f5 bn">
-                <FormattedMessage {...messages.newToMapping} />
-              </Button>
-            </Link>
-          </div>
-          {/* social logos */}
-          <div className="pa4 bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
-            <div className="flex justify-between items-center">
-              <h3 class="f2 blue-dark fw7 ma0 barlow-condensed v-mid dib">
-                {partner.primary_hashtag
-                  ?.split(',')
-                  ?.map((str) => `#${str}`)
-                  ?.join(', ')}
+            {partner.logo_url ? (
+              <div className="partners-banner-logo">
+                <img src={partner.logo_url} alt="logo" height={70} />
+              </div>
+            ) : (
+              <h3 className="f2 fw6 ttu barlow-condensed white" style={{ marginBottom: '1.75rem' }}>
+                {partner.name}
               </h3>
-              <div className="flex" style={{ gap: '0.5rem' }}>
-                {!!partner.link_x && (
-                  <a
-                    href={partner.link_x}
-                    className="link barlow-condensed white f4 ttu di-l dib"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <TwitterIcon className="blue-dark" style={socialIconsStyle} />
-                  </a>
-                )}
-                {!!partner.link_meta && (
-                  <a
-                    href={partner.link_meta}
-                    className="link barlow-condensed white f4 ttu di-l dib"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <FacebookIcon className="blue-dark" style={socialIconsStyle} />
-                  </a>
-                )}
-                {!!partner.link_instagram && (
-                  <a
-                    href={partner.link_instagram}
-                    className="link barlow-condensed white f4 ttu di-l dib"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <InstagramIcon className="blue-dark" style={socialIconsStyle} />
-                  </a>
-                )}
-              </div>
-            </div>
-
-            <StatsSection partner={partnerStats} />
-
-            <CurrentProjects currentProjects={partner.current_projects} />
-
-            {/* resources section */}
-            {Object.keys(partner).some((key) => key.includes('name_')) && (
-              <div className="w-100 fl cf">
-                <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
-                  <FormattedMessage {...messages.resources} />
-                </h3>
-                <Resources partner={partner} />
-              </div>
             )}
+            <div className="flex justify-between">
+              <div className="flex gap-0.75">
+                {tabData.map(({ id: tabId, title }) => (
+                  <div
+                    key={tabId}
+                    role="button"
+                    tabIndex={0}
+                    className={`flex items-center pointer partners-tab-item ${
+                      tabname === tabId ? 'bg-tan blue-dark' : 'bg-grey-dark white'
+                    }`}
+                    onClick={() => navigate(`/partners/${id}/stats/${tabId}`)}
+                    onKeyDown={() => {}}
+                  >
+                    <p className="ma0">{title}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-1.5">
+                {/* new to mapping button */}
+                <Link to={`/learn/map/`}>
+                  <Button className="bg-transparent white br1 f5 fw5 bn partners-banner-button">
+                    <FormattedMessage {...messages.newToMapping} />
+                  </Button>
+                </Link>
 
-            {/* activity section */}
-            <div className="w-100 fl cf">
-              <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
-                <FormattedMessage {...messages.activity} />
-              </h3>
-              <Activity partner={partner} />
+                {/* resources button */}
+                <Resources partner={partner} />
+
+                {/* social logos */}
+                {!!socialLinks.length && (
+                  <div className="flex items-center gap-0.625">
+                    {socialLinks.map((link) => (
+                      <a
+                        key={link}
+                        href={partner[link]}
+                        className="link barlow-condensed white f4 ttu di-l dib"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {getSocialIcons(link)}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+
+          {/* tab content */}
+          {getTabContent()}
         </div>
       )}
     </ReactPlaceholder>

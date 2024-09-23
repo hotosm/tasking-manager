@@ -143,16 +143,40 @@ class PartnerRestAPI(Resource):
               description: JSON object for updating a Partner
               schema:
                 properties:
-                    logo:
+                    name:
+                        type: string
+                        example: Cool Partner Inc.
+                    primary_hashtag:
+                        type: string
+                        example: CoolPartner
+                    secondary_hashtag:
+                        type: string
+                        example: CoolPartner,coolProject-*
+                    link_x:
+                        type: string
+                        example: https://x.com/CoolPartner
+                    link_meta:
+                        type: string
+                        example: https://facebook.com/CoolPartner
+                    link_instagram:
+                        type: string
+                        example: https://instagram.com/CoolPartner
+                    current_projects:
+                        type: string
+                        example: 3425,2134,2643
+                    permalink:
+                        type: string
+                        example: cool-partner
+                    logo_url:
                         type: string
                         example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
-                    url:
-                        type: string
-                        example: https://hotosm.org
                     website_links:
                         type: array
                         items:
                             type: string
+                    mapswipe_group_id:
+                        type: string
+                        example: -NL6WXPOdFyWACqwNU2O
         responses:
             200:
                 description: Partner updated successfully
@@ -248,18 +272,53 @@ class PartnersAllRestAPI(Resource):
               description: JSON object for creating a new Partner
               schema:
                 properties:
-                    logo:
+                    name:
+                        type: string
+                        required: true
+                        example: "American red cross"
+                    primary_hashtag:
+                        type: string
+                        required: true
+                        example: "#americanredcross"
+                    logo_url:
                         type: string
                         example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
-                    url:
+                    name:
                         type: string
-                        example: https://hotosm.org
+                        example: Cool Partner Inc.
+                    primary_hashtag:
+                        type: string
+                        example: CoolPartner
+                    secondary_hashtag:
+                        type: string
+                        example: CoolPartner,coolProject-*
+                    link_x:
+                        type: string
+                        example: https://x.com/CoolPartner
+                    link_meta:
+                        type: string
+                        example: https://facebook.com/CoolPartner
+                    link_instagram:
+                        type: string
+                        example: https://instagram.com/CoolPartner
+                    current_projects:
+                        type: string
+                        example: 3425,2134,2643
+                    permalink:
+                        type: string
+                        example: cool-partner
+                    logo_url:
+                        type: string
+                        example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
                     website_links:
                         type: array
                         items:
                             type: string
                         default: [
                         ]
+                    mapswipe_group_id:
+                        type: string
+                        example: -NL6WXPOdFyWACqwNU2O
         responses:
             201:
                 description: New partner created successfully
@@ -283,6 +342,12 @@ class PartnersAllRestAPI(Resource):
         try:
             data = request.json
             if data:
+                if data.get("name") is None:
+                    return {"message": "Partner name is not provided"}, 400
+
+                if data.get("primary_hashtag") is None:
+                    return {"message": "Partner primary_hashtag is not provided"}, 400
+
                 new_partner = PartnerService.create_partner(data)
                 partner_dict = new_partner.as_dto().to_primitive()
                 return partner_dict, 201

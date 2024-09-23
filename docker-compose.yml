@@ -1,5 +1,3 @@
-version: "3"
-
 name: tasking-manager-main
 
 volumes:
@@ -19,8 +17,8 @@ services:
       - tasking-manager.env
     restart: unless-stopped
     healthcheck:
-      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
-      start_period: 35s
+      test: psql -h 0.0.0.0 -U ${POSTGRES_USER:-tm} -d ${POSTGRES_DB:-tasking-manager} -c 'SELECT 1;'
+      start_period: 5s
       interval: 10s
       timeout: 5s
       retries: 3
@@ -38,12 +36,15 @@ services:
         condition: service_completed_successfully
     env_file:
       - tasking-manager.env
+    volumes:
+      - ./pyproject.toml:/usr/src/app/pyproject.toml:ro
+      - ./backend:/usr/src/app/backend:ro
+      - ./tests:/usr/src/app/tests:ro
     restart: unless-stopped
     healthcheck:
       test: curl --fail http://localhost:5000 || exit 1
       interval: 10s
       retries: 5
-      start_period: 10s
       timeout: 3s
     deploy:
       replicas: ${API_REPLICAS:-1}
@@ -64,14 +65,18 @@ services:
     image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
-    entrypoint: ["python", "manage.py", "db", "upgrade"]
+    entrypoint: ["python", "manage.py", "db"]
+    command: "upgrade"
     depends_on:
       tm-db:
         condition: service_healthy
     env_file:
       - tasking-manager.env
+    volumes:
+      - ./pyproject.toml:/usr/src/app/pyproject.toml:ro
+      - ./backend:/usr/src/app/backend:ro
+      - ./migrations:/usr/src/app/migrations:ro
     deploy:
-      replicas: ${API_REPLICAS:-1}
       resources:
         limits:
           cpus: "1"

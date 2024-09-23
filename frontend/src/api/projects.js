@@ -193,6 +193,21 @@ export const submitValidationTask = (projectId, payload, token, locale) => {
   );
 };
 
+export const downloadAsCSV = (allQueryParams, action, token) => {
+  const paramsRemapped = remapParamsToAPI(allQueryParams, backendToQueryConversion);
+  // it's needed in order to query by action
+  if (paramsRemapped.action === undefined && action) {
+    paramsRemapped.action = action;
+  }
+
+  if (paramsRemapped.lastUpdatedTo) {
+    paramsRemapped.lastUpdatedTo = format(subMonths(Date.now(), 6), 'yyyy-MM-dd');
+  }
+  return api(token).get('projects/', {
+    params: paramsRemapped,
+  });
+};
+
 export const useAvailableCountriesQuery = () => {
   const fetchGeojsonData = () => {
     return axios.get(`${UNDERPASS_URL}/availability`);
@@ -202,6 +217,18 @@ export const useAvailableCountriesQuery = () => {
     queryKey: ['priority-geojson'],
     queryFn: fetchGeojsonData,
     select: (res) => res.data,
+  });
+};
+
+export const useAllPartnersQuery = (token, userId) => {
+  const fetchAllPartners = () => {
+    return api(token).get('partners/');
+  };
+
+  return useQuery({
+    queryKey: ['all-partners', userId],
+    queryFn: fetchAllPartners,
+    select: (response) => response.data,
   });
 };
 
@@ -227,4 +254,7 @@ const backendToQueryConversion = {
   stale: 'lastUpdatedTo',
   createdFrom: 'createdFrom',
   basedOnMyInterests: 'basedOnMyInterests',
+  partnerId: 'partnerId',
+  partnershipFrom: 'partnershipFrom',
+  partnershipTo: 'partnershipTo',
 };
