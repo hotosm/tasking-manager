@@ -196,29 +196,25 @@ class TaskStats(BaseModel):
 class GenderStatsDTO(BaseModel):
     """DTO for genre stats of users."""
 
-    male: int
-    female: int
-    prefer_not: int = Field(alias="preferNotIdentify")
-    self_describe: int = Field(alias="selfDescribe")
+    male: int = Field(None, alias="male")
+    female: int = Field(None, alias="female")
+    prefer_not: int = Field(None, alias="preferNotIdentify")
+    self_describe: int = Field(None, alias="selfDescribe")
 
 
 class UserStatsDTO(BaseModel):
     """DTO for user stats."""
 
-    total: int
-    beginner: int
-    intermediate: int
-    advanced: int
-    contributed: int
-    email_verified: int = Field(alias="emailVerified")
-    genders: GenderStatsDTO
+    total: int = Field(None, alias="total")
+    beginner: int = Field(None, alias="beginner")
+    intermediate: int = Field(None, alias="intermediate")
+    advanced: int = Field(None, alias="advanced")
+    contributed: int = Field(None, alias="contributed")
+    email_verified: int = Field(None, alias="emailVerified")
+    genders: GenderStatsDTO = Field(None, alias="genders")
 
 
 class TaskStatsDTO(BaseModel):
     """Contains all tasks stats broken down by day"""
 
-    def __init__(self):
-        super().__init__()
-        self.stats = []
-
-    stats: List[TaskStats] = Field(alias="taskStats")
+    stats: List[TaskStats] = Field([], alias="taskStats")

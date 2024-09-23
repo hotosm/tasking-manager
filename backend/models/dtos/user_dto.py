@@ -5,22 +5,7 @@ from backend.models.postgis.statuses import MappingLevel, UserRole
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
-
-
-def is_known_mapping_level(value):
-    """Validates that supplied mapping level is known value"""
-    if value.upper() == "ALL":
-        return True
-
-    try:
-        value = value.split(",")
-        for level in value:
-            MappingLevel[level.upper()]
-    except KeyError:
-        raise ValidationError(
-            f"Unknown mappingLevel: {value} Valid values are {MappingLevel.BEGINNER.name}, "
-            f"{MappingLevel.INTERMEDIATE.name}, {MappingLevel.ADVANCED.name}, ALL"
-        )
+from pydantic.functional_validators import field_validator
 
 
 def is_known_role(value):
@@ -30,7 +15,7 @@ def is_known_role(value):
         for role in value:
             UserRole[role.upper()]
     except KeyError:
-        raise ValidationError(
+        raise ValueError(
             f"Unknown mappingRole: {value} Valid values are {UserRole.ADMIN.name}, "
             f"{UserRole.READ_ONLY.name}, {UserRole.MAPPER.name}"
         )
@@ -42,9 +27,7 @@ class UserDTO(BaseModel):
     id: Optional[int] = None
     username: Optional[str] = None
     role: Optional[str] = None
-    mapping_level: Optional[str] = Field(
-        None, alias="mappingLevel", validators=[is_known_mapping_level]
-    )
+    mapping_level: Optional[str] = Field(None, alias="mappingLevel")
     projects_mapped: Optional[int] = Field(None, alias="projectsMapped")
     email_address: Optional[str] = Field(None, alias="emailAddress")
 
@@ -81,6 +64,22 @@ class UserDTO(BaseModel):
         choices=("MALE", "FEMALE", "SELF_DESCRIBE", "PREFER_NOT"),
     )
     self_description_gender: Optional[str] = Field(None, alias="selfDescriptionGender")
+
+    @field_validator("mapping_level", mode="before")
+    def is_known_mapping_level(value):
+        """Validates that supplied mapping level is known value"""
+        if value.upper() == "ALL":
+            return True
+
+        try:
+            value = value.split(",")
+            for level in value:
+                MappingLevel[level.upper()]
+        except KeyError:
+            raise ValueError(
+                f"Unknown mappingLevel: {value} Valid values are {MappingLevel.BEGINNER.name}, "
+                f"{MappingLevel.INTERMEDIATE.name}, {MappingLevel.ADVANCED.name}, ALL"
+            )
 
     def validate_self_description(self, data, value):
         if (
@@ -119,20 +118,24 @@ class UserContributionDTO(BaseModel):
 class UserStatsDTO(BaseModel):
     """DTO containing statistics about the user"""
 
-    total_time_spent: int = Field(alias="totalTimeSpent")
-    time_spent_mapping: int = Field(alias="timeSpentMapping")
-    time_spent_validating: int = Field(alias="timeSpentValidating")
-    projects_mapped: int = Field(alias="projectsMapped")
+    total_time_spent: int = Field(None, alias="totalTimeSpent")
+    time_spent_mapping: int = Field(None, alias="timeSpentMapping")
+    time_spent_validating: int = Field(None, alias="timeSpentValidating")
+    projects_mapped: int = Field(None, alias="projectsMapped")
     countries_contributed: UserCountriesContributed = Field(
-        alias="countriesContributed"
+        None, alias="countriesContributed"
     )
-    contributions_by_day: List[UserContributionDTO] = Field(alias="contributionsByDay")
-    tasks_mapped: int = Field(alias="tasksMapped")
-    tasks_validated: int = Field(alias="tasksValidated")
-    tasks_invalidated: int = Field(alias="tasksInvalidated")
-    tasks_invalidated_by_others: int = Field(alias="tasksInvalidatedByOthers")
-    tasks_validated_by_others: int = Field(alias="tasksValidatedByOthers")
-    contributions_interest: List[InterestDTO] = Field(alias="ContributionsByInterest")
+    contributions_by_day: List[UserContributionDTO] = Field(
+        [], alias="contributionsByDay"
+    )
+    tasks_mapped: int = Field(None, alias="tasksMapped")
+    tasks_validated: int = Field(None, alias="tasksValidated")
+    tasks_invalidated: int = Field(None, alias="tasksInvalidated")
+    tasks_invalidated_by_others: int = Field(None, alias="tasksInvalidatedByOthers")
+    tasks_validated_by_others: int = Field(None, alias="tasksValidatedByOthers")
+    contributions_interest: List[InterestDTO] = Field(
+        [], alias="ContributionsByInterest"
+    )
 
 
 class UserOSMDTO(BaseModel):
@@ -171,13 +174,23 @@ class UserSearchQuery(BaseModel):
     """Describes a user search query, that a user may submit to filter the list of users"""
 
     username: Optional[str] = None
-    role: Optional[str] = Field(None, validators=[is_known_role])
-    mapping_level: Optional[str] = Field(
-        None, alias="mappingLevel", validators=[is_known_mapping_level]
-    )
+    role: Optional[str] = Field(None)
+    mapping_level: Optional[str] = Field(None, alias="mappingLevel")
     page: Optional[int] = None
     pagination: bool = True
     per_page: Optional[int] = Field(default=20, alias="perPage")
+
+    @field_validator("username", mode="before")
+    def validate_username(cls, v):
+        if v is None:
+            return None
+        return v.strip()
+
+    @field_validator("role", mode="before")
+    def validate_role(cls, v):
+        if v is None:
+            return None
+        return v.strip()
 
     def __hash__(self):
         """Make object hashable so we can cache user searches"""

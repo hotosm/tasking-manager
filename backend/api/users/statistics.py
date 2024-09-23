@@ -1,35 +1,33 @@
+from databases import Database
 from datetime import date, timedelta
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 import requests
 
+from backend.api.utils import validate_date_input
 from backend.config import settings
+from backend.db import get_db
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.users.user_service import UserService
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
-
-# from backend.services.users.authentication_service import token_auth
 from backend.services.users.authentication_service import login_required
-from backend.api.utils import validate_date_input
-from backend.models.dtos.user_dto import AuthUserDTO
-from backend.db import get_db
-from databases import Database
-from backend.db import get_session
-from starlette.authentication import requires
 
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 
-# class UsersStatisticsAPI(Resource, JSONEncoder):
-# @token_auth.login_required
 @router.get("/{username}/statistics/")
-@requires("authenticated")
-async def get(request: Request, username):
+async def get(
+    request: Request,
+    username: str,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Get detailed stats about a user by OpenStreetMap username
     ---
@@ -60,8 +58,8 @@ async def get(request: Request, username):
         500:
             description: Internal Server Error
     """
-    stats_dto = UserService.get_detailed_stats(username)
-    return stats_dto.model_dump(by_alias=True), 200
+    stats_dto = await UserService.get_detailed_stats(username, db)
+    return stats_dto.model_dump(by_alias=True)
 
 
 @router.get("/{user_id}/statistics/interests/")
@@ -102,8 +100,13 @@ async def get(
 
 
 @router.get("/statistics/")
-@requires("authenticated")
-async def get(request: Request):
+async def get(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    start_date: str = None,
+    end_date: str = date.today(),
+):
     """
     Get stats about users registered within a period of time
     ---
@@ -138,16 +141,17 @@ async def get(request: Request):
             description: Internal Server Error
     """
     try:
-        if request.query_params.get("startDate"):
-            start_date = validate_date_input(request.query_params.get("startDate"))
+        if start_date:
+            start_date = validate_date_input(start_date)
         else:
-            return {
-                "Error": "Start date is required",
-                "SubCode": "MissingDate",
-            }, 400
-        end_date = validate_date_input(
-            request.query_params.get("endDate", date.today())
-        )
+            return JSONResponse(
+                content={
+                    "Error": "Start date is required",
+                    "SubCode": "MissingDate",
+                },
+                status_code=400,
+            )
+        end_date = validate_date_input(end_date)
         if end_date < start_date:
             raise ValueError(
                 "InvalidDateRange- Start date must be earlier than end date"
@@ -157,15 +161,17 @@ async def get(request: Request):
                 "InvalidDateRange- Date range can not be bigger than 1 year"
             )
 
-        stats = StatsService.get_all_users_statistics(start_date, end_date)
-        return stats.to_primitive(), 200
+        stats = await StatsService.get_all_users_statistics(start_date, end_date, db)
+        return stats.model_dump(by_alias=True)
     except (KeyError, ValueError) as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": str(e).split("-")[0]},
+            status_code=400,
+        )
 
 
 @router.get("/statistics/ohsome/")
-@requires("authenticated")
-async def get(request: Request):
+async def get(request: Request, user: AuthUserDTO = Depends(login_required)):
     """
     Get HomePage Stats
     ---

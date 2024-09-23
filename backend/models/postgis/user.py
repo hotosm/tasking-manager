@@ -125,7 +125,7 @@ class User(Base):
         self.picture_url = picture_url
         session.commit()
 
-    def update(self, user_dto: UserDTO):
+    async def update(self, user_dto: UserDTO, db: Database):
         """Update the user details"""
         for attr, value in user_dto.items():
             if attr == "gender" and value is not None:

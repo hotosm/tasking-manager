@@ -18,7 +18,7 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService, NotFound
 from random import SystemRandom
 from backend.config import settings
-from fastapi import Depends, HTTPException, Request, Security
+from fastapi import Depends, HTTPException, Header, Request, Security
 from fastapi.security.api_key import APIKeyHeader
 from databases import Database
 

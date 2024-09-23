@@ -86,10 +86,10 @@ def add_api_end_points(api):
     v2.include_router(interest_resources.router)
 
     # Users REST endpoint
+    v2.include_router(user_statistics.router)
     v2.include_router(user_resources.router)
     v2.include_router(users_openstreetmap.router)
     v2.include_router(users_tasks.router)
-    v2.include_router(user_statistics.router)
     v2.include_router(user_actions.router)
 
     # Licenses REST endpoint

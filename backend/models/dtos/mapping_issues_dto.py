@@ -5,20 +5,16 @@ from typing import List, Optional
 class MappingIssueCategoryDTO(BaseModel):
     """DTO used to define a mapping-issue category"""
 
-    category_id: int = Field(alias="categoryId")
-    name: str
-    description: str
-    archived: bool
+    category_id: int = Field(None, alias="categoryId")
+    name: str = Field(None, alias="name")
+    description: str = Field(None, alias="description")
+    archived: bool = Field(False, alias="archived")
 
 
 class MappingIssueCategoriesDTO(BaseModel):
     """DTO for all mapping-issue categories"""
 
-    def __init__(self):
-        super().__init__()
-        self.categories = []
-
-    categories: List[MappingIssueCategoryDTO]
+    categories: List[MappingIssueCategoryDTO] = Field([], alias="categories")
 
 
 class TaskMappingIssueDTO(BaseModel):
