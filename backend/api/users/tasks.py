@@ -1,5 +1,4 @@
 from databases import Database
-from dateutil.parser import parse as date_parse
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 

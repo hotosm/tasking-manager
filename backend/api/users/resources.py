@@ -12,7 +12,6 @@ from backend.services.users.authentication_service import login_required
 from backend.models.dtos.user_dto import AuthUserDTO
 from fastapi import APIRouter, Depends, Request
 from backend.db import get_session
-from starlette.authentication import requires
 from databases import Database
 from backend.db import get_db
 
