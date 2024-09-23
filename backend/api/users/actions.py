@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Body
 from fastapi.responses import JSONResponse
+from loguru import logger
 
 from backend.models.dtos.user_dto import UserDTO, UserRegisterEmailDTO
 from databases import Database
@@ -21,12 +22,14 @@ router = APIRouter(
 )
 
 
-# class UsersActionsSetUsersAPI(Resource):
-# @token_auth.login_required
 @router.patch("/me/actions/set-user/")
-@requires("authenticated")
-@tm.pm_only(False)
-async def patch(request: Request):
+# @tm.pm_only(False)
+async def patch(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    user_dto: UserDTO = Body(...),
+):
     """
     Updates user info
     ---
@@ -88,30 +91,32 @@ async def patch(request: Request):
             description: Internal Server Error
     """
     try:
-        user_dto = UserDTO(request.get_json())
         if user_dto.email_address == "":
             user_dto.email_address = (
                 None  # Replace empty string with None so validation doesn't break
             )
-
-        user_dto.validate()
-        authenticated_user_id = request.user.display_name
-        if authenticated_user_id != user_dto.id:
-            return {
-                "Error": "Unable to authenticate",
-                "SubCode": "UnableToAuth",
-            }, 401
+        if user.id != user_dto.id:
+            return JSONResponse(
+                content={
+                    "Error": "Unable to authenticate",
+                    "SubCode": "UnableToAuth",
+                },
+                status_code=401,
+            )
     except ValueError as e:
-        return {"Error": str(e)}, 400
-    except DataError as e:
-        current_app.logger.error(f"error validating request: {str(e)}")
-        return {
-            "Error": "Unable to update user details",
-            "SubCode": "InvalidData",
-        }, 400
+        return JSONResponse(content={"Error": str(e)}, status_code=400)
+    except ValueError as e:
+        logger.error(f"error validating request: {str(e)}")
+        return JSONResponse(
+            content={
+                "Error": "Unable to update user details",
+                "SubCode": "InvalidData",
+            },
+            status_code=400,
+        )
 
-    verification_sent = UserService.update_user_details(authenticated_user_id, user_dto)
-    return verification_sent, 200
+    verification_sent = await UserService.update_user_details(user.id, user_dto, db)
+    return verification_sent
 
 
 # class UsersActionsSetLevelAPI(Resource):
@@ -165,8 +170,6 @@ async def patch(request: Request, username, level):
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
 
 
-# class UsersActionsSetRoleAPI(Resource):
-# @token_auth.login_required
 @router.patch("/{username}/actions/set-role/{role}/")
 @requires("authenticated")
 @tm.pm_only()
@@ -216,11 +219,7 @@ async def patch(request: Request, username: str, role: str):
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
-# class UsersActionsSetExpertModeAPI(Resource):
-#     @tm.pm_only(False)
-#     @token_auth.login_required
 @router.patch("/{user_name}/actions/set-expert-mode/{is_expert}/")
-@requires("authenticated")
 @tm.pm_only()
 async def patch(request: Request, user_name, is_expert):
     """
@@ -261,11 +260,7 @@ async def patch(request: Request, user_name, is_expert):
         return {"Error": "Not allowed"}, 400
 
 
-# class UsersActionsVerifyEmailAPI(Resource):
-#     @tm.pm_only(False)
-#     @token_auth.login_required
 @router.patch("/me/actions/verify-email/")
-# @requires("authenticated")
 # @tm.pm_only()
 async def patch(
     request: Request,
@@ -303,7 +298,6 @@ async def patch(
         )
 
 
-# class UsersActionsRegisterEmailAPI(Resource):
 @router.post("/actions/register/")
 async def post(request: Request):
     """
@@ -335,7 +329,7 @@ async def post(request: Request):
         user_dto = UserRegisterEmailDTO(await request.json())
         user_dto.validate()
     except DataError as e:
-        current_app.logger.error(f"error validating request: {str(e)}")
+        logger.error(f"error validating request: {str(e)}")
         return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
     try:
@@ -354,8 +348,6 @@ async def post(request: Request):
         return user_dto.model_dump(by_alias=True), 400
 
 
-# class UsersActionsSetInterestsAPI(Resource):
-# @token_auth.login_required
 @router.post("/me/actions/set-interests/")
 async def post(
     request: Request,
