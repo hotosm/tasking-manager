@@ -3,7 +3,19 @@ from cachetools import TTLCache, cached
 import datetime
 from loguru import logger
 from sqlalchemy.sql.expression import literal
-from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column, select
+from sqlalchemy import (
+    func,
+    or_,
+    desc,
+    and_,
+    distinct,
+    cast,
+    Time,
+    column,
+    select,
+    union,
+)
+from databases import Database
 
 from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
@@ -44,7 +56,6 @@ from backend.config import Settings
 
 settings = Settings()
 session = get_session()
-from databases import Database
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)
 
