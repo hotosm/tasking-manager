@@ -1,5 +1,5 @@
-import { lazy, useState, useEffect, Suspense } from 'react';
-import { useLocation } from 'react-router-dom';
+import { lazy, useState, useEffect, useCallback, Suspense } from 'react';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useQueryParam, StringParam } from 'use-query-params';
 import Popup from 'reactjs-popup';
@@ -53,13 +53,14 @@ const getRandomTaskByAction = (activities, taskAction) => {
 export function TaskSelection({ project }: Object) {
   useSetProjectPageTitleTag(project);
   const { projectId } = project;
+  const { tabname: activeSection } = useParams();
+  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.userDetails);
   const userOrgs = useSelector((state) => state.auth.organisations);
   const lockedTasks = useGetLockedTasks();
   const [zoomedTaskId, setZoomedTaskId] = useState(null);
-  const [activeSection, setActiveSection] = useState(null);
   const [selected, setSelectedTasks] = useState([]);
   const [mapInit, setMapInit] = useState(false);
   const [taskAction, setTaskAction] = useState('mapATask');
@@ -119,6 +120,14 @@ export function TaskSelection({ project }: Object) {
     }
   }, [tasksData, activities, refetchTasks]);
 
+  // use route instead of local state for active tab states
+  const setActiveSection = useCallback(
+    (section) => {
+      navigate(`/projects/${projectId}/${section}`);
+    },
+    [navigate, projectId],
+  );
+
   // show the tasks tab when the page loads if the user has already contributed
   // to the project. If no, show the instructions tab.
   useEffect(() => {
@@ -130,7 +139,7 @@ export function TaskSelection({ project }: Object) {
         setActiveSection('instructions');
       }
     }
-  }, [contributions, user.username, user, activeSection, textSearch]);
+  }, [contributions, user.username, user, activeSection, textSearch, setActiveSection]);
 
   useEffect(() => {
     // run it only when the component is initialized
