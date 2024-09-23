@@ -18,7 +18,6 @@ from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.notification import Notification
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
-from backend.models.postgis.statuses import TeamRoles
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
     get_template,
@@ -229,20 +228,35 @@ class MessageService:
             session.commit()
 
     @staticmethod
-    def send_message_after_comment(
-        comment_from: int, comment: str, task_id: int, project_id: int
+    async def send_message_after_comment(
+        comment_from: int, comment: str, task_id: int, project_id: int, db: Database
     ):
         """Will send a canned message to anyone @'d in a comment"""
-        comment_from_user = UserService.get_user_by_id(comment_from)
-        usernames = MessageService._parse_message_for_username(
-            comment, project_id, task_id
+
+        # Fetch the user who made the comment
+        comment_from_user = await UserService.get_user_by_id(comment_from, db)
+
+        # Parse the comment for mentions
+        usernames = await MessageService._parse_message_for_username(
+            comment, project_id, task_id, db
         )
+
         if comment_from_user.username in usernames:
             usernames.remove(comment_from_user.username)
-        project = Project.get(project_id)
-        default_locale = project.default_locale if project else "en"
-        project_name = ProjectInfo.get_dto_for_locale(project_id, default_locale).name
-        if len(usernames) != 0:
+
+        # Fetch project details
+        project = await db.fetch_one(
+            "SELECT * FROM projects WHERE id = :project_id", {"project_id": project_id}
+        )
+        default_locale = project["default_locale"] if project else "en"
+
+        # Get the project info DTO using the get_dto_for_locale function
+        project_info_dto = await ProjectInfo.get_dto_for_locale(
+            db, project_id, default_locale
+        )
+        project_name = project_info_dto.name  # Use the `name` field from the DTO
+
+        if usernames:
             task_link = MessageService.get_task_link(project_id, task_id)
             project_link = MessageService.get_project_link(project_id, project_name)
 
@@ -266,54 +280,58 @@ class MessageService:
                 "strong",
                 "ul",
             ]
-            allowed_atrributes = {"a": ["href", "rel"], "img": ["src", "alt"]}
+            allowed_attributes = {"a": ["href", "rel"], "img": ["src", "alt"]}
+
+            # Convert comment to HTML using markdown and sanitize it with bleach
             clean_comment = bleach.clean(
                 markdown(comment, output_format="html"),
                 tags=allowed_tags,
-                attributes=allowed_atrributes,
-            )  # Bleach input to ensure no nefarious script tags etc
-            clean_comment = bleach.linkify(clean_comment)
+                attributes=allowed_attributes,
+            )
+            clean_comment = bleach.linkify(clean_comment)  # Linkify URLs in the comment
 
             messages = []
             for username in usernames:
                 try:
-                    user = UserService.get_user_by_username(username)
+                    user = await UserService.get_user_by_username(username, db)
                 except NotFound:
-                    continue  # If we can't find the user, keep going no need to fail
+                    continue
 
-                message = Message()
-                message.message_type = MessageType.MENTION_NOTIFICATION.value
-                message.project_id = project_id
-                message.task_id = task_id
-                message.from_user_id = comment_from
-                message.to_user_id = user.id
-                message.subject = (
-                    f"You were mentioned in a comment in {task_link} "
-                    + f"of Project {project_link}"
-                )
-                message.message = clean_comment
-                messages.append(
-                    dict(message=message, user=user, project_name=project_name)
-                )
+                message = {
+                    "message_type": MessageType.MENTION_NOTIFICATION.value,
+                    "project_id": project_id,
+                    "task_id": task_id,
+                    "from_user_id": comment_from,
+                    "to_user_id": user["id"],
+                    "subject": f"You were mentioned in a comment in {task_link} of Project {project_link}",
+                    "message": clean_comment,
+                }
+                messages.append(message)
 
-            MessageService._push_messages(messages)
+            await MessageService._push_messages(messages, db)
 
-        # Notify all contributors except the user that created the comment.
-        results = (
-            TaskHistory.query.with_entities(TaskHistory.user_id.distinct())
-            .filter(TaskHistory.project_id == project_id)
-            .filter(TaskHistory.task_id == task_id)
-            .filter(TaskHistory.user_id != comment_from)
-            .filter(TaskHistory.action == TaskAction.STATE_CHANGE.name)
-            .all()
+        # Notify all contributors except the comment author
+        results = await db.fetch_all(
+            """
+            SELECT DISTINCT user_id
+            FROM task_history
+            WHERE project_id = :project_id
+            AND task_id = :task_id
+            AND user_id != :comment_from
+            AND action = 'STATE_CHANGE'
+            """,
+            {
+                "project_id": project_id,
+                "task_id": task_id,
+                "comment_from": comment_from,
+            },
         )
-        contributed_users = [r[0] for r in results]
 
-        if len(contributed_users) != 0:
-            user_from = User.query.get(comment_from)
-            if user_from is None:
-                raise ValueError("Username not found")
-            user_link = MessageService.get_user_link(user_from.username)
+        contributed_users = [r["user_id"] for r in results]
+
+        if contributed_users:
+            user_from = await UserService.get_user_by_id(comment_from, db)
+            user_link = MessageService.get_user_link(user_from["username"])
 
             task_link = MessageService.get_task_link(project_id, task_id)
             project_link = MessageService.get_project_link(project_id, project_name)
@@ -321,27 +339,24 @@ class MessageService:
             messages = []
             for user_id in contributed_users:
                 try:
-                    user = UserService.get_user_by_id(user_id)
-                    # if user was mentioned, a message has already been sent to them,
-                    # so we can skip
-                    if user.username in usernames:
+                    user = await UserService.get_user_by_id(user_id, db)
+                    if user["username"] in usernames:
                         break
                 except NotFound:
-                    continue  # If we can't find the user, keep going no need to fail
+                    continue
 
-                message = Message()
-                message.message_type = MessageType.TASK_COMMENT_NOTIFICATION.value
-                message.project_id = project_id
-                message.from_user_id = comment_from
-                message.task_id = task_id
-                message.to_user_id = user.id
-                message.subject = f"{user_link} left a comment in {task_link} of Project {project_link}"
-                message.message = comment
-                messages.append(
-                    dict(message=message, user=user, project_name=project_name)
-                )
+                message = {
+                    "message_type": MessageType.TASK_COMMENT_NOTIFICATION.value,
+                    "project_id": project_id,
+                    "from_user_id": comment_from,
+                    "task_id": task_id,
+                    "to_user_id": user["id"],
+                    "subject": f"{user_link} left a comment in {task_link} of Project {project_link}",
+                    "message": comment,
+                }
+                messages.append(message)
 
-            MessageService._push_messages(messages)
+            await MessageService._push_messages(messages, db)
 
     @staticmethod
     def send_project_transfer_message(
@@ -645,60 +660,70 @@ class MessageService:
         await SMTPService.send_verification_email(user.email_address, user.username)
 
     @staticmethod
-    def _parse_message_for_bulk_mentions(
-        message: str, project_id: int, task_id: int = None
+    async def _parse_message_for_bulk_mentions(
+        message: str, project_id: int, task_id: int, db: Database
     ) -> List[str]:
         parser = re.compile(r"((?<=#)\w+|\[.+?\])")
         parsed = parser.findall(message)
 
         usernames = []
-        project = session.get(Project, project_id)
 
-        if project is None:
+        # Fetch project details, including author username by joining users and projects
+        project_query = """
+            SELECT p.*, u.username AS author_username
+            FROM projects p
+            JOIN users u ON p.author_id = u.id
+            WHERE p.id = :project_id
+        """
+        project = await db.fetch_one(project_query, {"project_id": project_id})
+
+        if not project:
             return usernames
-        if "author" in parsed or "managers" in parsed:
-            usernames.append(project.author.username)
-            if "managers" in parsed:
-                teams = [
-                    t
-                    for t in project.teams
-                    if t.role == TeamRoles.PROJECT_MANAGER.value
-                ]
-                team_members = [
-                    [u.member.username for u in t.team.members if u.active is True]
-                    for t in teams
-                ]
 
-                team_members = [item for sublist in team_members for item in sublist]
-                usernames.extend(team_members)
+        # Add author if mentioned
+        if "author" in parsed:
+            usernames.append(project["author_username"])
 
+        # Add project managers if mentioned
+        if "managers" in parsed:
+            team_members = await db.fetch_all(
+                """
+                SELECT u.username
+                FROM users u
+                JOIN team_members tm ON u.id = tm.user_id
+                JOIN teams t ON tm.team_id = t.id
+                WHERE t.role = 'PROJECT_MANAGER'
+                AND t.project_id = :project_id
+                """,
+                {"project_id": project_id},
+            )
+            usernames.extend([member["username"] for member in team_members])
+
+        # Add contributors if task_id is provided and contributors are mentioned
         if task_id and "contributors" in parsed:
-            contributors = Message.get_all_tasks_contributors(project_id, task_id)
+            contributors = await Message.get_all_tasks_contributors(
+                project_id, task_id, db
+            )
             usernames.extend(contributors)
+
         return usernames
 
     @staticmethod
-    def _parse_message_for_username(
-        message: str, project_id: int, task_id: int = None
+    async def _parse_message_for_username(
+        message: str, project_id: int, task_id: int, db: Database
     ) -> List[str]:
-        """Extracts all usernames from a comment looks for format @[user name]"""
-
+        """Extracts all usernames from a comment looking for format @[user name]"""
         parser = re.compile(r"((?<=@)\w+|\[.+?\])")
-
-        usernames = []
-        for username in parser.findall(message):
-            username = username.replace("[", "", 1)
-            index = username.rfind("]")
-            username = username.replace("]", "", index)
-            usernames.append(username)
-
+        usernames = [
+            username.replace("[", "", 1).replace("]", "", username.rfind("]"))
+            for username in parser.findall(message)
+        ]
         usernames.extend(
-            MessageService._parse_message_for_bulk_mentions(
-                message, project_id, task_id
+            await MessageService._parse_message_for_bulk_mentions(
+                message, project_id, task_id, db
             )
         )
-        usernames = list(set(usernames))
-        return usernames
+        return list(set(usernames))
 
     @staticmethod
     @cached(message_cache)

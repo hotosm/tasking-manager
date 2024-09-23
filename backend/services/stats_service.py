@@ -43,54 +43,66 @@ homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
 class StatsService:
     @staticmethod
-    def update_stats_after_task_state_change(
+    async def update_stats_after_task_state_change(
         project_id: int,
         user_id: int,
         last_state: TaskStatus,
         new_state: TaskStatus,
-        action="change",
+        db: Database,
+        action: str = "change",
     ):
         """Update stats when a task has had a state change"""
 
+        # No stats to record for these states
         if new_state in [
             TaskStatus.LOCKED_FOR_VALIDATION,
             TaskStatus.LOCKED_FOR_MAPPING,
         ]:
-            return  # No stats to record for these states
-
-        project = ProjectService.get_project_by_id(project_id)
-        user = UserService.get_user_by_id(user_id)
-
-        project, user = StatsService._update_tasks_stats(
-            project, user, last_state, new_state, action
+            return
+        project = await ProjectService.get_project_by_id(project_id, db)
+        user = await UserService.get_user_by_id(user_id, db)
+        project, user = await StatsService._update_tasks_stats(
+            project, user, last_state, new_state, db, action
         )
-        UserService.upsert_mapped_projects(user_id, project_id)
-        project.last_updated = timestamp()
-
-        # Transaction will be saved when task is saved
+        # Upsert mapped projects for the user
+        await UserService.upsert_mapped_projects(user_id, project_id, db)
+        query = """
+            UPDATE projects
+            SET last_updated = :last_updated
+            WHERE id = :project_id
+        """
+        await db.execute(
+            query,
+            values={
+                "last_updated": datetime.datetime.utcnow(),
+                "project_id": project_id,
+            },
+        )
         return project, user
 
     @staticmethod
-    def _update_tasks_stats(
-        project: Project,
-        user: User,
+    async def _update_tasks_stats(
+        project: dict,
+        user: dict,
         last_state: TaskStatus,
         new_state: TaskStatus,
+        db: Database,
         action="change",
     ):
-        # Make sure you are aware that users table has it as incrementing counters,
-        # while projects table reflect the actual state, and both increment and decrement happens
+        project_stats = dict(project)  # Mutable copy of the project dictionary
+
         if new_state == last_state:
-            return project, user
+            return project_stats, user
 
-        # Set counters for new state
+        # Increment counters for the new state
         if new_state == TaskStatus.MAPPED:
-            project.tasks_mapped += 1
+            project_stats["tasks_mapped"] += 1
         elif new_state == TaskStatus.VALIDATED:
-            project.tasks_validated += 1
+            project_stats["tasks_validated"] += 1
         elif new_state == TaskStatus.BADIMAGERY:
-            project.tasks_bad_imagery += 1
+            project_stats["tasks_bad_imagery"] += 1
 
+        # Increment user stats if action is "change"
         if action == "change":
             if new_state == TaskStatus.MAPPED:
                 user.tasks_mapped += 1
@@ -99,14 +111,15 @@ class StatsService:
             elif new_state == TaskStatus.INVALIDATED:
                 user.tasks_invalidated += 1
 
-        # Remove counters for old state
+        # Decrement counters for the old state
         if last_state == TaskStatus.MAPPED:
-            project.tasks_mapped -= 1
+            project_stats["tasks_mapped"] -= 1
         elif last_state == TaskStatus.VALIDATED:
-            project.tasks_validated -= 1
+            project_stats["tasks_validated"] -= 1
         elif last_state == TaskStatus.BADIMAGERY:
-            project.tasks_bad_imagery -= 1
+            project_stats["tasks_bad_imagery"] -= 1
 
+        # Undo user stats if action is "undo"
         if action == "undo":
             if last_state == TaskStatus.MAPPED:
                 user.tasks_mapped -= 1
@@ -115,7 +128,39 @@ class StatsService:
             elif last_state == TaskStatus.INVALIDATED:
                 user.tasks_invalidated -= 1
 
-        return project, user
+        # Update the project and user records in the database
+        await db.execute(
+            """
+            UPDATE projects
+            SET tasks_mapped = :tasks_mapped,
+                tasks_validated = :tasks_validated,
+                tasks_bad_imagery = :tasks_bad_imagery
+            WHERE id = :project_id
+        """,
+            values={
+                "tasks_mapped": project_stats["tasks_mapped"],
+                "tasks_validated": project_stats["tasks_validated"],
+                "tasks_bad_imagery": project_stats["tasks_bad_imagery"],
+                "project_id": project_stats["id"],
+            },
+        )
+
+        await db.execute(
+            """
+            UPDATE users
+            SET tasks_mapped = :tasks_mapped,
+                tasks_validated = :tasks_validated,
+                tasks_invalidated = :tasks_invalidated
+            WHERE id = :user_id
+        """,
+            values={
+                "tasks_mapped": user.tasks_mapped,
+                "tasks_validated": user.tasks_validated,
+                "tasks_invalidated": user.tasks_invalidated,
+                "user_id": user.id,
+            },
+        )
+        return project_stats, user
 
     @staticmethod
     async def get_latest_activity(
