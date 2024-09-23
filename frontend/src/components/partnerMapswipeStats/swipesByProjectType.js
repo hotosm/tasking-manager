@@ -85,6 +85,7 @@ export const SwipesByProjectType = ({ contributionsByProjectType = [] }) => {
         chartInstance.current.destroy();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

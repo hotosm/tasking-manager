@@ -1,4 +1,6 @@
 import { FormattedNumber } from 'react-intl';
+import PropTypes from 'prop-types';
+
 import shortNumber from 'short-number';
 
 export const StatsCard = ({ icon, description, value, className, invertColors = false }) => {
@@ -26,7 +28,7 @@ export const StatsCardWithFooter = ({
   className,
   delta,
   invertColors = false,
-  style
+  style,
 }) => {
   return (
     <div
@@ -58,6 +60,16 @@ export const StatsCardWithFooter = ({
   );
 };
 
+StatsCardWithFooter.propTypes = {
+  icon: PropTypes.node,
+  description: PropTypes.node,
+  value: PropTypes.node,
+  className: PropTypes.string,
+  delta: PropTypes.node,
+  invertColors: PropTypes.bool,
+  style: PropTypes.object,
+};
+
 export const StatsCardContent = ({ value, label, className, invertColors = false }: Object) => (
   <div className={className}>
     <h3 className={`ma0 mb1 barlow-condensed f2 fw5 ${invertColors ? 'white' : 'red'}`}>{value}</h3>
@@ -65,17 +77,19 @@ export const StatsCardContent = ({ value, label, className, invertColors = false
   </div>
 );
 
-export const StatsCardWithFooterContent = ({
-  value,
-  label,
-  className,
-  invertColors = false,
-}: Object) => (
+export const StatsCardWithFooterContent = ({ value, label, className, invertColors = false }) => (
   <div className={className}>
     <h3 className={`ma0 mb1 barlow-condensed f1 fw6 ${invertColors ? 'white' : 'red'}`}>{value}</h3>
     <span className={`ma0 h2 f6 fw6 ${invertColors ? 'white' : 'blue-grey'}`}>{label}</span>
   </div>
 );
+
+StatsCardWithFooterContent.propTypes = {
+  value: PropTypes.node,
+  label: PropTypes.node,
+  className: PropTypes.string,
+  invertColors: PropTypes.bool,
+};
 
 function getFormattedNumber(num) {
   if (typeof num !== 'number') return '-';

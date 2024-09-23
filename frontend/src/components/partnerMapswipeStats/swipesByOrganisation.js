@@ -76,6 +76,7 @@ export const SwipesByOrganisation = ({ contributionsByOrganization = [] }) => {
         chartInstance.current.destroy();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -5,8 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import { MAPBOX_TOKEN, MAP_STYLE } from '../../config';
-import { CHART_COLOURS } from '../../config';
+import { MAPBOX_TOKEN, MAP_STYLE, CHART_COLOURS } from '../../config';
 import { ZoomPlusIcon, ZoomMinusIcon } from '../svgIcons';
 import messages from './messages';
 import './contributionsHeatmap.css';
@@ -164,14 +163,13 @@ export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
         // Check if CTRL key is pressed
         event.originalEvent.preventDefault(); // Prevent chrome/firefox default behavior
         if (!map.current.scrollZoom._enabled) map.current.scrollZoom.enable(); // Enable zoom only if it's disabled
-      } else {
-        if (map.current.scrollZoom._enabled) map.current.scrollZoom.disable(); // Disable zoom only if it's enabled
+      } else if (map.current.scrollZoom._enabled) {
+        map.current.scrollZoom.disable(); // Disable zoom only if it's enabled
       }
     });
 
     map.current.on('zoomend', () => {
       const currentZoom = map.current.getZoom();
-      console.log(currentZoom, 'ZOOM');
       const h3ResBasedOnZoom =
         currentZoom >= 1
           ? zoomToH3ResMapping[parseInt(currentZoom)] ?? Math.floor((currentZoom - 2) * 0.7)
@@ -200,7 +198,7 @@ export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
     }
   };
 
-  const shouldDisableZoomOut = zoom === '0.75' || zoom === 0.75;
+  const shouldDisableZoomOut = zoom === 0.75;
 
   return (
     <div>

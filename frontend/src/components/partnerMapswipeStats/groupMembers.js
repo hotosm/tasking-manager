@@ -72,7 +72,7 @@ export const GroupMembers = () => {
 
   const rows = 10;
 
-  const { isLoading, isError, data, isFetching, isPreviousData } = useQuery({
+  const { isLoading, isError, data, isFetching } = useQuery({
     queryKey: ['partners-mapswipe-statistics-group-members', partnerPermalink, pageNumber],
     queryFn: async () => {
       const response = await fetchLocalJSONAPI(
