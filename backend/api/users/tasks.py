@@ -1,8 +1,9 @@
 from databases import Database
 from dateutil.parser import parse as date_parse
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 
 from backend.services.users.user_service import UserService
-from fastapi import APIRouter, Depends, Request
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.users.authentication_service import login_required
@@ -21,6 +22,12 @@ async def get(
     user_id: int,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
+    status: str = None,
+    project_status: str = None,
+    project_id: int = None,
+    start_date: str = None,
+    end_date: str = None,
+    sort_by: str = "-action_date",
 ):
     """
     Get a list of tasks a user has interacted with
@@ -96,22 +103,7 @@ async def get(
     """
     try:
         user = await UserService.get_user_by_id(user_id, db)
-        status = request.query_params.get("status")
-        project_status = request.query_params.get("project_status")
-        project_id = int(request.query_params.get("project_id", 0))
-        start_date = (
-            date_parse(request.query_params.get("start_date"))
-            if request.query_params.get("start_date")
-            else None
-        )
-        end_date = (
-            date_parse(request.query_params.get("end_date"))
-            if request.query_params.get("end_date")
-            else None
-        )
-        sort_by = request.query_params.get("sort_by", "-action_date")
-
-        tasks = UserService.get_tasks_dto(
+        tasks = await UserService.get_tasks_dto(
             user.id,
             project_id=project_id,
             project_status=project_status,
@@ -121,7 +113,11 @@ async def get(
             page=request.query_params.get("page", None),
             page_size=request.query_params.get("page_size", 10),
             sort_by=sort_by,
+            db=db,
         )
         return tasks.model_dump(by_alias=True)
     except ValueError:
-        return {"tasks": [], "pagination": {"total": 0}}, 200
+        print("InvalidDateRange- Date range can not be bigger than 1 year")
+        return JSONResponse(
+            content={"tasks": [], "pagination": {"total": 0}}, status_code=200
+        )

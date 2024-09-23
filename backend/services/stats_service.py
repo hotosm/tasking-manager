@@ -569,41 +569,93 @@ class StatsService:
         project.save()
 
     @staticmethod
-    def get_all_users_statistics(start_date: date, end_date: date):
-        users = session.query(User).filter(
-            User.date_registered >= start_date,
-            User.date_registered <= end_date,
+    async def get_all_users_statistics(start_date: date, end_date: date, db: Database):
+        # Base query for users within the date range
+        base_query = select(User).filter(
+            User.date_registered >= start_date, User.date_registered <= end_date
         )
 
+        # Execute total user count
         stats_dto = UserStatsDTO()
-        stats_dto.total = users.count()
-        stats_dto.beginner = users.filter(
-            User.mapping_level == MappingLevel.BEGINNER.value
-        ).count()
-        stats_dto.intermediate = users.filter(
-            User.mapping_level == MappingLevel.INTERMEDIATE.value
-        ).count()
-        stats_dto.advanced = users.filter(
-            User.mapping_level == MappingLevel.ADVANCED.value
-        ).count()
-        stats_dto.contributed = users.filter(User.projects_mapped.isnot(None)).count()
-        stats_dto.email_verified = users.filter(
-            User.is_email_verified.is_(True)
-        ).count()
+        total_count_query = select(func.count()).select_from(base_query.subquery())
+        result = await db.execute(total_count_query)
+        stats_dto.total = result
 
+        # Beginner count
+        beginner_count_query = select(func.count()).select_from(
+            base_query.filter(
+                User.mapping_level == MappingLevel.BEGINNER.value
+            ).subquery()
+        )
+        result = await db.execute(beginner_count_query)
+        stats_dto.beginner = result
+
+        # Intermediate count
+        intermediate_count_query = select(func.count()).select_from(
+            base_query.filter(
+                User.mapping_level == MappingLevel.INTERMEDIATE.value
+            ).subquery()
+        )
+        result = await db.execute(intermediate_count_query)
+        stats_dto.intermediate = result
+
+        # Advanced count
+        advanced_count_query = select(func.count()).select_from(
+            base_query.filter(
+                User.mapping_level == MappingLevel.ADVANCED.value
+            ).subquery()
+        )
+        result = await db.execute(advanced_count_query)
+        stats_dto.advanced = result
+
+        # Contributed count (those with projects mapped)
+        contributed_count_query = select(func.count()).select_from(
+            base_query.filter(User.projects_mapped.isnot(None)).subquery()
+        )
+        result = await db.execute(contributed_count_query)
+        stats_dto.contributed = result
+
+        # Email verified count
+        email_verified_count_query = select(func.count()).select_from(
+            base_query.filter(User.is_email_verified.is_(True)).subquery()
+        )
+        result = await db.execute(email_verified_count_query)
+        stats_dto.email_verified = result
+
+        # Gender stats
         gender_stats = GenderStatsDTO()
-        gender_stats.male = users.filter(User.gender == UserGender.MALE.value).count()
-        gender_stats.female = users.filter(
-            User.gender == UserGender.FEMALE.value
-        ).count()
-        gender_stats.self_describe = users.filter(
-            User.gender == UserGender.SELF_DESCRIBE.value
-        ).count()
-        gender_stats.prefer_not = users.filter(
-            User.gender == UserGender.PREFER_NOT.value
-        ).count()
 
+        # Male count
+        male_count_query = select(func.count()).select_from(
+            base_query.filter(User.gender == UserGender.MALE.value).subquery()
+        )
+        result = await db.execute(male_count_query)
+        gender_stats.male = result
+
+        # Female count
+        female_count_query = select(func.count()).select_from(
+            base_query.filter(User.gender == UserGender.FEMALE.value).subquery()
+        )
+        result = await db.execute(female_count_query)
+        gender_stats.female = result
+
+        # Self-describe count
+        self_describe_count_query = select(func.count()).select_from(
+            base_query.filter(User.gender == UserGender.SELF_DESCRIBE.value).subquery()
+        )
+        result = await db.execute(self_describe_count_query)
+        gender_stats.self_describe = result
+
+        # Prefer not to say count
+        prefer_not_count_query = select(func.count()).select_from(
+            base_query.filter(User.gender == UserGender.PREFER_NOT.value).subquery()
+        )
+        result = await db.execute(prefer_not_count_query)
+        gender_stats.prefer_not = result
+
+        # Set gender stats in the stats_dto
         stats_dto.genders = gender_stats
+
         return stats_dto
 
     @staticmethod
