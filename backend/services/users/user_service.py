@@ -3,7 +3,20 @@ from cachetools import TTLCache, cached
 import datetime
 from loguru import logger
 from sqlalchemy.sql.expression import literal
-from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, column, select
+from sqlalchemy import (
+    func,
+    or_,
+    desc,
+    and_,
+    distinct,
+    cast,
+    Time,
+    column,
+    select,
+    union,
+    alias,
+)
+from databases import Database
 
 from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
@@ -53,8 +66,7 @@ class UserServiceError(Exception):
     """Custom Exception to notify callers an error occurred when in the User Service"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class UserService:
@@ -176,8 +188,8 @@ class UserService:
         if picture_url is not None:
             new_user.picture_url = picture_url
 
-        intermediate_level = current_app.config["MAPPER_LEVEL_INTERMEDIATE"]
-        advanced_level = current_app.config["MAPPER_LEVEL_ADVANCED"]
+        intermediate_level = settings.MAPPER_LEVEL_INTERMEDIATE
+        advanced_level = settings.MAPPER_LEVEL_ADVANCED
 
         if changeset_count > advanced_level:
             new_user.mapping_level = MappingLevel.ADVANCED.value
@@ -259,7 +271,7 @@ class UserService:
         return interests_dto
 
     @staticmethod
-    def get_tasks_dto(
+    async def get_tasks_dto(
         user_id: int,
         start_date: datetime.datetime = None,
         end_date: datetime.datetime = None,
@@ -269,6 +281,7 @@ class UserService:
         page=1,
         page_size=10,
         sort_by: str = None,
+        db: Database = None,
     ) -> UserTaskDTOs:
         base_query = (
             session.query(TaskHistory)
@@ -358,8 +371,8 @@ class UserService:
         return user_task_dtos
 
     @staticmethod
-    def get_detailed_stats(username: str):
-        user = UserService.get_user_by_username(username)
+    async def get_detailed_stats(username: str, db: Database) -> UserStatsDTO:
+        user = await UserService.get_user_by_username(username, db)
         stats_dto = UserStatsDTO()
 
         actions = [
@@ -368,81 +381,141 @@ class UserService:
             TaskStatus.MAPPED.name,
         ]
 
-        actions_table = (
-            session.query(literal(TaskStatus.VALIDATED.name).label("action_text"))
-            .union(
-                session.query(
-                    literal(TaskStatus.INVALIDATED.name).label("action_text")
-                ),
-                session.query(literal(TaskStatus.MAPPED.name).label("action_text")),
-            )
-            .subquery()
-            .alias("actions_table")
-        )
+        actions_table = union(
+            select(literal("VALIDATED").label("action_text")),
+            select(literal("INVALIDATED").label("action_text")),
+            select(literal("MAPPED").label("action_text")),
+        ).alias("actions_table")
 
         # Get only rows with the given actions.
+        # filtered_actions = (
+        #     session.query(TaskHistory)
+        #     .with_entities(
+        #         TaskHistory.user_id,
+        #         TaskHistory.project_id,
+        #         TaskHistory.task_id,
+        #         TaskHistory.action_text,
+        #     )
+        #     .filter(TaskHistory.action_text.in_(actions))
+        #     .subquery()
+        #     .alias("filtered_actions")
+        # )
         filtered_actions = (
-            session.query(TaskHistory)
-            .with_entities(
+            select(
                 TaskHistory.user_id,
                 TaskHistory.project_id,
                 TaskHistory.task_id,
                 TaskHistory.action_text,
             )
-            .filter(TaskHistory.action_text.in_(actions))
-            .subquery()
+            .where(TaskHistory.action_text.in_(["VALIDATED", "INVALIDATED", "MAPPED"]))
             .alias("filtered_actions")
         )
 
+        # user_tasks = (
+        #     session.query(filtered_actions)
+        #     .filter(filtered_actions.c.user_id == user.id)
+        #     .distinct(
+        #         filtered_actions.c.project_id,
+        #         filtered_actions.c.task_id,
+        #         filtered_actions.c.action_text,
+        #     )
+        #     .subquery()
+        #     .alias("user_tasks")
+        # )
         user_tasks = (
-            session.query(filtered_actions)
-            .filter(filtered_actions.c.user_id == user.id)
-            .distinct(
-                filtered_actions.c.project_id,
-                filtered_actions.c.task_id,
-                filtered_actions.c.action_text,
+            select(
+                [
+                    filtered_actions.c.user_id,
+                    filtered_actions.c.project_id,
+                    filtered_actions.c.task_id,
+                    filtered_actions.c.action_text,
+                ]
             )
-            .subquery()
+            .where(filtered_actions.c.user_id == user.id)
+            .distinct()
             .alias("user_tasks")
         )
 
+        # others_tasks = (
+        #     session.query(filtered_actions)
+        #     .filter(filtered_actions.c.user_id != user.id)
+        #     .filter(filtered_actions.c.task_id == user_tasks.c.task_id)
+        #     .filter(filtered_actions.c.project_id == user_tasks.c.project_id)
+        #     .filter(filtered_actions.c.action_text != TaskStatus.MAPPED.name)
+        #     .distinct(
+        #         filtered_actions.c.project_id,
+        #         filtered_actions.c.task_id,
+        #         filtered_actions.c.action_text,
+        #     )
+        #     .subquery()
+        #     .alias("others_tasks")
+        # )
         others_tasks = (
-            session.query(filtered_actions)
-            .filter(filtered_actions.c.user_id != user.id)
-            .filter(filtered_actions.c.task_id == user_tasks.c.task_id)
-            .filter(filtered_actions.c.project_id == user_tasks.c.project_id)
-            .filter(filtered_actions.c.action_text != TaskStatus.MAPPED.name)
-            .distinct(
-                filtered_actions.c.project_id,
-                filtered_actions.c.task_id,
-                filtered_actions.c.action_text,
+            select(
+                [
+                    filtered_actions.c.user_id,
+                    filtered_actions.c.project_id,
+                    filtered_actions.c.task_id,
+                    filtered_actions.c.action_text,
+                ]
             )
-            .subquery()
+            .where(filtered_actions.c.user_id != user.id)
+            .where(filtered_actions.c.task_id == user_tasks.c.task_id)
+            .where(filtered_actions.c.project_id == user_tasks.c.project_id)
+            .where(filtered_actions.c.action_text != "MAPPED")
+            .distinct()
             .alias("others_tasks")
         )
 
+        # user_stats = (
+        #     session.query(
+        #         actions_table.c.action_text, func.count(user_tasks.c.action_text)
+        #     )
+        #     .outerjoin(
+        #         user_tasks, actions_table.c.action_text == user_tasks.c.action_text
+        #     )
+        #     .group_by(actions_table.c.action_text)
+        # )
         user_stats = (
-            session.query(
-                actions_table.c.action_text, func.count(user_tasks.c.action_text)
-            )
-            .outerjoin(
-                user_tasks, actions_table.c.action_text == user_tasks.c.action_text
+            select([actions_table.c.action_text, func.count(user_tasks.c.action_text)])
+            .select_from(
+                actions_table.outerjoin(
+                    user_tasks, actions_table.c.action_text == user_tasks.c.action_text
+                )
             )
             .group_by(actions_table.c.action_text)
         )
 
+        # others_stats = (
+        #     session.query(
+        #         func.concat(actions_table.c.action_text, "_BY_OTHERS"),
+        #         func.count(others_tasks.c.action_text),
+        #     )
+        #     .outerjoin(
+        #         others_tasks, actions_table.c.action_text == others_tasks.c.action_text
+        #     )
+        #     .group_by(actions_table.c.action_text)
+        # )
         others_stats = (
-            session.query(
-                func.concat(actions_table.c.action_text, "_BY_OTHERS"),
-                func.count(others_tasks.c.action_text),
+            select(
+                [
+                    func.concat(actions_table.c.action_text, "_BY_OTHERS"),
+                    func.count(others_tasks.c.action_text),
+                ]
             )
-            .outerjoin(
-                others_tasks, actions_table.c.action_text == others_tasks.c.action_text
+            .select_from(
+                actions_table.outerjoin(
+                    others_tasks,
+                    actions_table.c.action_text == others_tasks.c.action_text,
+                )
             )
             .group_by(actions_table.c.action_text)
         )
+        combined_stats = user_stats.union_all(others_stats)
 
-        res = user_stats.union(others_stats).all()
+        res = await db.fetch_all(combined_stats)
+        print(res)
+        # res = user_stats.union(others_stats).all()
         results = {key: value for key, value in res}
 
         projects_mapped = UserService.get_projects_mapped(user.id)
@@ -502,10 +575,12 @@ class UserService:
         return stats_dto
 
     @staticmethod
-    def update_user_details(user_id: int, user_dto: UserDTO) -> dict:
+    async def update_user_details(
+        user_id: int, user_dto: UserDTO, db: Database
+    ) -> dict:
         """Update user with info supplied by user, if they add or change their email address a verification mail
         will be sent"""
-        user = UserService.get_user_by_id(user_id)
+        user = await UserService.get_user_by_id(user_id, db)
 
         verification_email_sent = False
         if (
@@ -516,15 +591,14 @@ class UserService:
             SMTPService.send_verification_email(
                 user_dto.email_address.lower(), user.username
             )
-            user.set_email_verified_status(is_verified=False)
+            await User.set_email_verified_status(user, is_verified=False, db=db)
             verification_email_sent = True
 
-        user.update(user_dto)
-        user_email = UserEmail.query.filter(
-            UserEmail.email == user_dto.email_address
-        ).one_or_none()
+        User.update(user, user_dto, db)
+        query = select(UserEmail).filter(UserEmail.email == user_dto.email_address)
+        user_email = await db.fetch_one(query=query)
         if user_email is not None:
-            user_email.delete()
+            UserEmail.delete(user)
 
         return dict(verificationEmailSent=verification_email_sent)
 
@@ -651,7 +725,9 @@ class UserService:
         return await User.get_mapped_projects(user.id, preferred_locale, db)
 
     @staticmethod
-    def get_recommended_projects(user_name: str, preferred_locale: str):
+    async def get_recommended_projects(
+        user_name: str, preferred_locale: str, db: Database
+    ):
         """Gets all projects a user has mapped or validated on"""
         from backend.services.project_search_service import ProjectSearchService
 
