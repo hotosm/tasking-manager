@@ -31,6 +31,7 @@ from backend.db import get_db
 from databases import Database
 from backend.services.users.authentication_service import login_required
 from backend.models.dtos.user_dto import AuthUserDTO
+from fastapi.responses import JSONResponse
 
 router = APIRouter(
     prefix="/projects",
@@ -105,19 +106,28 @@ async def post(
         )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {"Error": "Unable to lock task", "SubCode": "InvalidData"}, 400
-
+        return JSONResponse(
+            content={"Error": "Unable to lock task", "SubCode": "InvalidData"},
+            status_code=400,
+        )
     try:
         await ProjectService.exists(project_id, db)
-        task = await MappingService.lock_task_for_mapping(lock_task_dto, db)
-        return task
+        async with db.transaction():
+            task = await MappingService.lock_task_for_mapping(lock_task_dto, db)
+            return task
     except MappingServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
     except UserLicenseError:
-        return {
-            "Error": "User not accepted license terms",
-            "SubCode": "UserLicenseError",
-        }, 409
+        return JSONResponse(
+            {
+                "Error": "User not accepted license terms",
+                "SubCode": "UserLicenseError",
+            },
+            status_code=409,
+        )
 
 
 @router.post("{project_id}/tasks/actions/stop-mapping/{task_id}/")
@@ -199,9 +209,14 @@ async def post(request: Request, project_id: int, task_id: int):
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
-@router.post("{project_id}/tasks/actions/unlock-after-mapping/{task_id}/")
-@requires("authenticated")
-async def post(request: Request, project_id, task_id):
+@router.post("/{project_id}/tasks/actions/unlock-after-mapping/{task_id}/")
+async def post(
+    request: Request,
+    project_id: int,
+    task_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Set a task as mapped
     ---
@@ -216,6 +231,12 @@ async def post(request: Request, project_id, task_id):
             required: true
             type: string
             default: Token sessionTokenHere==
+        - in: header
+            name: Accept-Language
+            description: Language user is requesting
+            type: string
+            required: true
+            default: en
         - name: project_id
             in: path
             description: Project ID the task is associated with
@@ -260,34 +281,44 @@ async def post(request: Request, project_id, task_id):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name
-        mapped_task = MappedTaskDTO(request.json())
-        mapped_task.user_id = authenticated_user_id
-        mapped_task.task_id = task_id
-        mapped_task.project_id = project_id
-        mapped_task.validate()
+        request_data = await request.json()
+        mapped_task = MappedTaskDTO(
+            user_id=user.id,
+            project_id=project_id,
+            task_id=task_id,
+            status=request_data.get("status"),
+            comment=request_data.get("comment"),
+        )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {"Error": "Task unlock failed", "SubCode": "InvalidData"}, 400
-
+        return JSONResponse(
+            content={"Error": "Task unlock failed", "SubCode": "InvalidData"},
+            status_code=400,
+        )
     try:
-        ProjectService.exists(project_id)  # Check if project exists
-        task = MappingService.unlock_task_after_mapping(mapped_task)
-        return task.model_dump(by_alias=True), 200
+        await ProjectService.exists(project_id, db)
+        async with db.transaction():
+            task = await MappingService.unlock_task_after_mapping(mapped_task, db)
+            return task
+
     except MappingServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
     except NotFound as e:
-        return e.to_dict()
+        return JSONResponse(
+            content=e.to_dict(),
+            status_code=404,
+        )
     except Exception as e:
-        error_msg = f"Task Lock API - unhandled error: {str(e)}"
-        logger.critical(error_msg)
-        return {
-            "Error": "Task unlock failed",
-            "SubCode": "InternalServerError",
-        }, 500
+        logger.critical(f"Task Unlock API - unhandled error: {str(e)}")
+        return JSONResponse(
+            content={"Error": "Task unlock failed", "SubCode": "InternalServerError"},
+            status_code=500,
+        )
     finally:
-        # Refresh mapper level after mapping
-        UserService.check_and_update_mapper_level(authenticated_user_id)
+        await UserService.check_and_update_mapper_level(user.id, db)
 
 
 @router.post("{project_id}/tasks/actions/undo-last-action/{task_id}/")
@@ -668,9 +699,13 @@ async def post(request: Request, project_id: int):
     return {"Success": "All tasks validated"}, 200
 
 
-@router.post("{project_id}/tasks/actions/invalidate-all/")
-@requires("authenticated")
-async def post(request: Request, project_id: int):
+@router.post("/{project_id}/tasks/actions/invalidate-all/")
+async def post(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Invalidate all validated tasks on a project
     ---
@@ -702,19 +737,21 @@ async def post(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
+        authenticated_user_id = user.id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
         ):
             raise ValueError()
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
-
-    ValidatorService.invalidate_all_tasks(project_id, authenticated_user_id)
-    return {"Success": "All tasks invalidated"}, 200
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
+    await ValidatorService.invalidate_all_tasks(project_id, authenticated_user_id, db)
+    return JSONResponse(content={"Success": "All tasks invalidated"}, status_code=200)
 
 
 @router.post("{project_id}/tasks/actions/reset-all-badimagery/")

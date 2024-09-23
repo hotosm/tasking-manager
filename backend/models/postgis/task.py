@@ -7,7 +7,7 @@ from enum import Enum
 
 # # from flask import current_app
 from sqlalchemy import desc, func, distinct
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from sqlalchemy.orm.exc import MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
 from typing import Any, Dict, List
@@ -111,7 +111,7 @@ class TaskInvalidationHistory(Base):
         session.commit()
 
     @staticmethod
-    def get_open_for_task(project_id, task_id, local_session=None):
+    async def get_open_for_task(project_id: int, task_id: int, db: Database):
         """
         Retrieve the open TaskInvalidationHistory entry for the given project and task.
 
@@ -134,100 +134,141 @@ class TaskInvalidationHistory(Base):
             None: This method handles the MultipleResultsFound exception internally.
         """
         try:
-            if local_session:
-                return (
-                    local_session.query(TaskInvalidationHistory)
-                    .filter_by(task_id=task_id, project_id=project_id, is_closed=False)
-                    .one_or_none()
-                )
-            return TaskInvalidationHistory.query.filter_by(
-                task_id=task_id, project_id=project_id, is_closed=False
-            ).one_or_none()
+            # Fetch open entry
+            query = """
+                SELECT * FROM task_invalidation_history
+                WHERE task_id = :task_id
+                AND project_id = :project_id
+                AND is_closed = FALSE
+            """
+            entry = await db.fetch_one(
+                query=query, values={"task_id": task_id, "project_id": project_id}
+            )
+            return entry
 
         except MultipleResultsFound:
-            TaskInvalidationHistory.close_duplicate_invalidation_history_rows(
-                project_id, task_id, local_session
+            await TaskInvalidationHistory.close_duplicate_invalidation_history_rows(
+                project_id, task_id, db
             )
-
-            return TaskInvalidationHistory.get_open_for_task(
-                project_id, task_id, local_session
+            return await TaskInvalidationHistory.get_open_for_task(
+                project_id, task_id, db
             )
 
     @staticmethod
-    def close_duplicate_invalidation_history_rows(
-        project_id: int, task_id: int, local_session=None
+    async def close_duplicate_invalidation_history_rows(
+        project_id: int, task_id: int, db: Database
     ):
         """
         Closes duplicate TaskInvalidationHistory entries except for the latest one for the given project and task.
-
-        Args:
-            project_id (int): The ID of the project.
-            task_id (int): The ID of the task.
-            local_session (Session, optional): The SQLAlchemy session to use for the query.
-                                               If not provided, a default session is used.
         """
-        if local_session:
-            oldest_dupe = (
-                local_session.query(TaskInvalidationHistory)
-                .filter_by(task_id=task_id, project_id=project_id, is_closed=False)
-                .order_by(TaskInvalidationHistory.id.asc())
-                .first()
-            )
-        else:
-            oldest_dupe = (
-                TaskInvalidationHistory.query.filter_by(
-                    task_id=task_id, project_id=project_id, is_closed=False
-                )
-                .order_by(TaskInvalidationHistory.id.asc())
-                .first()
-            )
+
+        # Fetch the oldest duplicate
+        query = """
+            SELECT id FROM task_invalidation_history
+            WHERE task_id = :task_id
+            AND project_id = :project_id
+            AND is_closed = FALSE
+            ORDER BY id ASC
+            LIMIT 1
+        """
+        oldest_dupe = await db.fetch_one(
+            query=query, values={"task_id": task_id, "project_id": project_id}
+        )
 
         if oldest_dupe:
-            oldest_dupe.is_closed = True
-            if local_session:
-                local_session.commit()
-            else:
-                db.session.commit()
+            update_query = """
+                UPDATE task_invalidation_history
+                SET is_closed = TRUE
+                WHERE id = :id
+            """
+            await db.execute(query=update_query, values={"id": oldest_dupe["id"]})
 
     @staticmethod
-    def close_all_for_task(project_id, task_id):
-        TaskInvalidationHistory.query.filter_by(
-            task_id=task_id, project_id=project_id, is_closed=False
-        ).update({"is_closed": True})
+    async def close_all_for_task(project_id: int, task_id: int, db: Database):
+        """
+        Closes all open invalidation history entries for the specified task.
+        """
+        update_query = """
+            UPDATE task_invalidation_history
+            SET is_closed = TRUE, updated_date = :updated_date
+            WHERE project_id = :project_id AND task_id = :task_id AND is_closed = FALSE
+        """
+        values = {
+            "project_id": project_id,
+            "task_id": task_id,
+            "updated_date": datetime.datetime.utcnow(),
+        }
+
+        await db.execute(query=update_query, values=values)
 
     @staticmethod
-    def record_invalidation(project_id, task_id, invalidator_id, history):
+    async def record_invalidation(
+        project_id: int, task_id: int, invalidator_id: int, history, db: Database
+    ):
         # Invalidation always kicks off a new entry for a task, so close any existing ones.
-        TaskInvalidationHistory.close_all_for_task(project_id, task_id)
+        await TaskInvalidationHistory.close_all_for_task(project_id, task_id, db)
 
-        last_mapped = TaskHistory.get_last_mapped_action(project_id, task_id)
-        if last_mapped is None:
+        last_mapped = await TaskHistory.get_last_mapped_action(project_id, task_id, db)
+        if not last_mapped:
             return
 
-        entry = TaskInvalidationHistory(project_id, task_id)
-        entry.invalidation_history_id = history.id
-        entry.mapper_id = last_mapped.user_id
-        entry.mapped_date = last_mapped.action_date
-        entry.invalidator_id = invalidator_id
-        entry.invalidated_date = history.action_date
-        entry.updated_date = timestamp()
-        session.add(entry)
+        # Insert a new TaskInvalidationHistory entry
+        insert_query = """
+            INSERT INTO task_invalidation_history
+            (project_id, task_id, invalidation_history_id, mapper_id, mapped_date, invalidator_id, invalidated_date, updated_date)
+            VALUES (:project_id, :task_id, :invalidation_history_id, :mapper_id, :mapped_date, :invalidator_id, :invalidated_date, :updated_date)
+        """
+        values = {
+            "project_id": project_id,
+            "task_id": task_id,
+            "invalidation_history_id": history.id,
+            "mapper_id": last_mapped["user_id"],
+            "mapped_date": last_mapped["action_date"],
+            "invalidator_id": invalidator_id,
+            "invalidated_date": history.action_date,
+            "updated_date": datetime.datetime.utcnow(),
+        }
+
+        await db.execute(query=insert_query, values=values)
 
     @staticmethod
-    def record_validation(project_id, task_id, validator_id, history):
-        entry = TaskInvalidationHistory.get_open_for_task(project_id, task_id)
+    async def record_validation(
+        project_id: int,
+        task_id: int,
+        validator_id: int,
+        history: TaskHistoryDTO,
+        db: Database,
+    ):
+        entry = await TaskInvalidationHistory.get_open_for_task(project_id, task_id, db)
 
         # If no open invalidation to update, then nothing to do
         if entry is None:
             return
 
-        last_mapped = TaskHistory.get_last_mapped_action(project_id, task_id)
-        entry.mapper_id = last_mapped.user_id
-        entry.mapped_date = last_mapped.action_date
-        entry.validator_id = validator_id
-        entry.validated_date = history.action_date
-        entry.is_closed = True
-        entry.updated_date = timestamp()
+        last_mapped = await TaskHistory.get_last_mapped_action(project_id, task_id, db)
+
+        # Update entry with validation details
+        update_query = """
+            UPDATE task_invalidation_history
+            SET mapper_id = :mapper_id,
+                mapped_date = :mapped_date,
+                validator_id = :validator_id,
+                validated_date = :validated_date,
+                is_closed = TRUE,
+                updated_date = :updated_date
+            WHERE id = :entry_id
+        """
+        await db.execute(
+            query=update_query,
+            values={
+                "mapper_id": last_mapped["user_id"],
+                "mapped_date": last_mapped["action_date"],
+                "validator_id": validator_id,
+                "validated_date": history.action_date,
+                "updated_date": timestamp(),
+                "entry_id": entry["id"],
+            },
+        )
 
 
 class TaskMappingIssue(Base):
@@ -313,7 +354,7 @@ class TaskHistory(Base):
             TaskAction.EXTENDED_FOR_VALIDATION,
         ]:
             raise ValueError("Invalid Action")
-        return task_action.name
+        return task_action.name, None
 
     def set_task_locked_action(task_action: TaskAction) -> str:
         if task_action not in [
@@ -321,90 +362,135 @@ class TaskHistory(Base):
             TaskAction.LOCKED_FOR_VALIDATION,
         ]:
             raise ValueError("Invalid Action")
-        return task_action.name
+        return task_action.name, None
 
     def set_comment_action(comment: str) -> str:
         clean_comment = bleach.clean(comment)  # Ensure no harmful scripts or tags
-        return clean_comment
+        return TaskAction.COMMENT.name, clean_comment
 
     def set_state_change_action(new_state: TaskStatus) -> str:
-        return new_state.name
+        return TaskAction.STATE_CHANGE.name, new_state.name
 
     def set_auto_unlock_action(task_action: TaskAction) -> str:
-        return task_action.name
+        return task_action.name, None
 
     def delete(self):
         """Deletes the current model from the DB"""
         session.delete(self)
         session.commit()
 
-    @staticmethod
-    def update_task_locked_with_duration(
-        task_id: int, project_id: int, lock_action, user_id: int
+    async def update_task_locked_with_duration(
+        task_id: int,
+        project_id: int,
+        lock_action: TaskAction,
+        user_id: int,
+        db: Database,
     ):
         """
-        Calculates the duration a task was locked for and sets it on the history record
+        Calculates the duration a task was locked for and sets it on the history record.
         :param task_id: Task in scope
         :param project_id: Project ID in scope
         :param lock_action: The lock action, either Mapping or Validation
-        :param user_id: Logged in user updating the task
-        :return:
+        :param user_id: Logged-in user updating the task.
         """
         try:
-            last_locked = TaskHistory.query.filter_by(
-                task_id=task_id,
-                project_id=project_id,
-                action=lock_action.name,
-                action_text=None,
-                user_id=user_id,
-            ).one()
-        except NoResultFound:
-            # We suspect there's some kind or race condition that is occasionally deleting history records
-            # prior to user unlocking task. Most likely stemming from auto-unlock feature. However, given that
-            # we're trying to update a row that doesn't exist, it's better to return without doing anything
-            # rather than showing the user an error that they can't fix
-            return
+            # Fetch the last locked task history entry with raw SQL
+            query = """
+                SELECT id, action_date
+                FROM task_history
+                WHERE task_id = :task_id
+                AND project_id = :project_id
+                AND action = :action
+                AND action_text IS NULL
+                AND user_id = :user_id
+                ORDER BY action_date DESC
+                LIMIT 1
+            """
+            values = {
+                "task_id": task_id,
+                "project_id": project_id,
+                "action": lock_action.name,
+                "user_id": user_id,
+            }
+
+            last_locked = await db.fetch_one(query=query, values=values)
+
+            if last_locked is None:
+                # We suspect there's some kind or race condition that is occasionally deleting history records
+                # prior to user unlocking task. Most likely stemming from auto-unlock feature. However, given that
+                # we're trying to update a row that doesn't exist, it's better to return without doing anything
+                # rather than showing the user an error that they can't fix.
+                # No record found, possibly a race condition or auto-unlock scenario.
+                return
+
+            # Calculate the duration the task was locked for
+            duration_task_locked = (
+                datetime.datetime.utcnow() - last_locked["action_date"]
+            )
+
+            # Cast duration to ISO format
+            action_text = (
+                (datetime.datetime.min + duration_task_locked).time().isoformat()
+            )
+
+            # Update the task history with the duration
+            update_query = """
+                UPDATE task_history
+                SET action_text = :action_text
+                WHERE id = :id
+            """
+            update_values = {
+                "action_text": action_text,
+                "id": last_locked["id"],
+            }
+            await db.execute(query=update_query, values=update_values)
+
         except MultipleResultsFound:
             # Again race conditions may mean we have multiple rows within the Task History.  Here we attempt to
             # remove the oldest duplicate rows, and update the newest on the basis that this was the last action
             # the user was attempting to make.
-            TaskHistory.remove_duplicate_task_history_rows(
-                task_id, project_id, lock_action, user_id
+            # Handle race conditions by removing duplicates.
+            await TaskHistory.remove_duplicate_task_history_rows(
+                task_id, project_id, lock_action, user_id, db
             )
 
-            # Now duplicate is removed, we recursively call ourself to update the duration on the remaining row
-            TaskHistory.update_task_locked_with_duration(
-                task_id, project_id, lock_action, user_id
+            # Recursively call the method to update the remaining row
+            await TaskHistory.update_task_locked_with_duration(
+                task_id, project_id, lock_action, user_id, db
             )
-            return
 
-        duration_task_locked = datetime.datetime.utcnow() - last_locked.action_date
-        # Cast duration to isoformat for later transmission via api
-        last_locked.action_text = (
-            (datetime.datetime.min + duration_task_locked).time().isoformat()
-        )
-        session.commit()
-
-    @staticmethod
-    def remove_duplicate_task_history_rows(
-        task_id: int, project_id: int, lock_action: TaskStatus, user_id: int
+    async def remove_duplicate_task_history_rows(
+        task_id: int,
+        project_id: int,
+        lock_action: TaskAction,
+        user_id: int,
+        db: Database,
     ):
-        """Method used in rare cases where we have duplicate task history records for a given action by a user
-        This method will remove the oldest duplicate record, on the basis that the newest record was the
-        last action the user was attempting to perform
         """
-        dupe = (
-            TaskHistory.query.filter(
-                TaskHistory.project_id == project_id,
-                TaskHistory.task_id == task_id,
-                TaskHistory.action == lock_action.name,
-                TaskHistory.user_id == user_id,
+        Removes duplicate task history rows for the specified task, project, and action.
+        Keeps the most recent entry and deletes the older ones.
+        """
+        duplicate_query = """
+            DELETE FROM task_history
+            WHERE id IN (
+                SELECT id
+                FROM task_history
+                WHERE task_id = :task_id
+                AND project_id = :project_id
+                AND action = :action
+                AND user_id = :user_id
+                ORDER BY action_date ASC
+                OFFSET 1
             )
-            .order_by(TaskHistory.id.asc())
-            .first()
-        )
+        """
+        values = {
+            "task_id": task_id,
+            "project_id": project_id,
+            "action": lock_action.name,
+            "user_id": user_id,
+        }
 
-        dupe.delete()
+        await db.execute(query=duplicate_query, values=values)
 
     @staticmethod
     async def update_expired_and_locked_actions(
@@ -479,38 +565,43 @@ class TaskHistory(Base):
         return comments_dto
 
     @staticmethod
-    def get_last_status(project_id: int, task_id: int, for_undo: bool = False):
-        """Get the status the task was set to the last time the task had a STATUS_CHANGE"""
-        result = (
-            session.query(TaskHistory.action_text)
-            .filter(
-                TaskHistory.project_id == project_id,
-                TaskHistory.task_id == task_id,
-                TaskHistory.action == TaskAction.STATE_CHANGE.name,
-            )
-            .order_by(TaskHistory.action_date.desc())
-            .all()
+    async def get_last_status(
+        project_id: int, task_id: int, db: Database, for_undo: bool = False
+    ) -> TaskStatus:
+        """Get the status the task was set to the last time the task had a STATUS_CHANGE."""
+
+        query = """
+            SELECT action_text
+            FROM task_history
+            WHERE project_id = :project_id
+              AND task_id = :task_id
+              AND action = 'STATE_CHANGE'
+            ORDER BY action_date DESC
+        """
+        result = await db.fetch_all(
+            query, values={"project_id": project_id, "task_id": task_id}
         )
 
+        # If no results, return READY status
         if not result:
-            return TaskStatus.READY  # No result so default to ready status
-
-        if len(result) == 1 and for_undo:
-            # We're looking for the previous status, however, there isn't any so we'll return Ready
             return TaskStatus.READY
 
-        if for_undo and result[0][0] in [
+        # If we only have one result and for_undo is True, return READY
+        if len(result) == 1 and for_undo:
+            return TaskStatus.READY
+
+        # If the last status was MAPPED or BADIMAGERY and for_undo is True, return READY
+        if for_undo and result[0]["action_text"] in [
             TaskStatus.MAPPED.name,
             TaskStatus.BADIMAGERY.name,
         ]:
-            # We need to return a READY when last status of the task is badimagery or mapped.
             return TaskStatus.READY
 
+        # If for_undo is True, return the second last status
         if for_undo:
-            # Return the second last status which was status the task was previously set to
-            return TaskStatus[result[1][0]]
-        else:
-            return TaskStatus[result[0][0]]
+            return TaskStatus[result[1]["action_text"]]
+        # Otherwise, return the last status
+        return TaskStatus[result[0]["action_text"]]
 
     @staticmethod
     def get_last_action(project_id: int, task_id: int):
@@ -579,21 +670,25 @@ class TaskHistory(Base):
         )
         return result
 
-    def get_last_mapped_action(project_id: int, task_id: int):
-        """Gets the most recent mapped action, if any, in the task history"""
-        return (
-            session.query(TaskHistory)
-            .filter(
-                TaskHistory.project_id == project_id,
-                TaskHistory.task_id == task_id,
-                TaskHistory.action == TaskAction.STATE_CHANGE.name,
-                TaskHistory.action_text.in_(
-                    [TaskStatus.BADIMAGERY.name, TaskStatus.MAPPED.name]
-                ),
-            )
-            .order_by(TaskHistory.action_date.desc())
-            .first()
+    @staticmethod
+    async def get_last_mapped_action(project_id: int, task_id: int, db: Database):
+        """
+        Gets the most recent mapped action, if any, in the task history.
+        """
+
+        query = """
+            SELECT * FROM task_history
+            WHERE project_id = :project_id
+            AND task_id = :task_id
+            AND action = 'STATE_CHANGE'
+            AND action_text IN ('BADIMAGERY', 'MAPPED')
+            ORDER BY action_date DESC
+            LIMIT 1
+        """
+        last_mapped = await db.fetch_one(
+            query=query, values={"project_id": project_id, "task_id": task_id}
         )
+        return last_mapped
 
 
 class Task(Base):
@@ -828,6 +923,7 @@ class Task(Base):
             return False
         return True
 
+    @staticmethod
     async def set_task_history(
         task_id: int,
         project_id: int,
@@ -843,25 +939,22 @@ class Task(Base):
         """Sets the task history for the action that the user has just performed."""
 
         # Determine action and action_text based on the task action
-        action_text = None
         if action in [TaskAction.LOCKED_FOR_MAPPING, TaskAction.LOCKED_FOR_VALIDATION]:
-            action_name = TaskHistory.set_task_locked_action(action)
+            action_name, action_text = TaskHistory.set_task_locked_action(action)
         elif action in [
             TaskAction.EXTENDED_FOR_MAPPING,
             TaskAction.EXTENDED_FOR_VALIDATION,
         ]:
-            action_name = TaskHistory.set_task_extend_action(action)
+            action_name, action_text = TaskHistory.set_task_extend_action(action)
         elif action == TaskAction.COMMENT:
-            action_name = TaskHistory.set_comment_action(comment)
-            action_text = comment
+            action_name, action_text = TaskHistory.set_comment_action(comment)
         elif action == TaskAction.STATE_CHANGE and new_state:
-            action_name = TaskHistory.set_state_change_action(new_state)
-            action_text = new_state.name
+            action_name, action_text = TaskHistory.set_state_change_action(new_state)
         elif action in [
             TaskAction.AUTO_UNLOCKED_FOR_MAPPING,
             TaskAction.AUTO_UNLOCKED_FOR_VALIDATION,
         ]:
-            action_name = TaskHistory.set_auto_unlock_action(action)
+            action_name, action_text = TaskHistory.set_auto_unlock_action(action)
         else:
             raise ValueError("Invalid Action")
 
@@ -869,7 +962,7 @@ class Task(Base):
         query = """
             INSERT INTO task_history (task_id, user_id, project_id, action, action_text, action_date)
             VALUES (:task_id, :user_id, :project_id, :action, :action_text, :action_date)
-            RETURNING id
+            RETURNING id, action, action_text, action_date
         """
         values = {
             "task_id": task_id,
@@ -879,12 +972,13 @@ class Task(Base):
             "action_text": action_text,
             "action_date": datetime.datetime.utcnow(),
         }
-        task_history_id = await db.execute(query=query, values=values)
+        task_history = await db.fetch_one(query=query, values=values)
+
         # TODO Verify this.
         # Insert any mapping issues into the task_mapping_issues table, building the query dynamically
         if mapping_issues:
             for issue in mapping_issues:
-                fields = {"task_history_id": task_history_id}
+                fields = {"task_history_id": task_history["id"]}
                 placeholders = [":task_history_id"]
 
                 if "issue" in issue:
@@ -911,36 +1005,54 @@ class Task(Base):
 
                 await db.execute(query=mapping_issue_query, values=fields)
 
-        return {
-            "task_history_id": task_history_id,
-            "action": action_name,
-            "action_text": action_text,
-        }
+        return task_history
 
+    @staticmethod
     async def lock_task_for_mapping(
         task_id: int, project_id: int, user_id: int, db: Database
     ):
         """Locks a task for mapping by a user."""
+        # Insert a task history record for the action
         await Task.set_task_history(
             task_id, project_id, user_id, TaskAction.LOCKED_FOR_MAPPING, db
         )
+
+        # Update the task's status and set it as locked by the user for the specific project_id
         query = """
             UPDATE tasks
             SET task_status = :task_status, locked_by = :user_id
-            WHERE id = :task_id
+            WHERE id = :task_id AND project_id = :project_id
         """
         values = {
             "task_status": TaskStatus.LOCKED_FOR_MAPPING.value,
             "user_id": user_id,
             "task_id": task_id,
+            "project_id": project_id,
         }
         await db.execute(query=query, values=values)
 
-    def lock_task_for_validating(self, user_id: int):
-        self.set_task_history(TaskAction.LOCKED_FOR_VALIDATION, user_id)
-        self.task_status = TaskStatus.LOCKED_FOR_VALIDATION.value
-        self.locked_by = user_id
-        self.update()
+    @staticmethod
+    async def lock_task_for_validating(
+        task_id: int, project_id: int, user_id: int, db: Database
+    ):
+        """Lock the task for validation."""
+        # Insert a task history record for the action
+        await Task.set_task_history(
+            task_id, project_id, user_id, TaskAction.LOCKED_FOR_VALIDATION, db
+        )
+        query = """
+            UPDATE tasks
+            SET task_status = :status, locked_by = :user_id
+            WHERE id = :task_id AND project_id = :project_id
+        """
+        values = {
+            "status": TaskStatus.LOCKED_FOR_VALIDATION.value,
+            "user_id": user_id,
+            "task_id": task_id,
+            "project_id": project_id,
+        }
+
+        await db.execute(query=query, values=values)
 
     def reset_task(self, user_id: int):
         expiry_delta = Task.auto_unlock_delta()
@@ -987,57 +1099,116 @@ class Task(Base):
         auto_unlocked.action_text = lock_duration
         self.update()
 
-    def unlock_task(
-        self, user_id, new_state=None, comment=None, undo=False, issues=None
+    @staticmethod
+    async def unlock_task(
+        task_id: int,
+        project_id: int,
+        user_id: int,
+        new_state: TaskStatus,
+        db: Database,
+        comment: Optional[str] = None,
+        undo: bool = False,
+        issues: Optional[List[Dict[str, Any]]] = None,
     ):
-        """Unlock task and ensure duration task locked is saved in History"""
+        """Unlock the task and change its state."""
+        # Add task comment history if provided
         if comment:
-            self.set_task_history(
-                action=TaskAction.COMMENT,
+            await Task.set_task_history(
+                task_id,
+                project_id,
+                user_id,
+                TaskAction.COMMENT,
+                db,
                 comment=comment,
-                user_id=user_id,
                 mapping_issues=issues,
             )
-
-        history = self.set_task_history(
-            action=TaskAction.STATE_CHANGE,
+        # Record state change in history
+        history = await Task.set_task_history(
+            task_id,
+            project_id,
+            user_id,
+            TaskAction.STATE_CHANGE,
+            db,
+            comment=comment,
             new_state=new_state,
-            user_id=user_id,
             mapping_issues=issues,
         )
-        # If undo, clear the mapped_by and validated_by fields
         if undo:
             if new_state == TaskStatus.MAPPED:
-                self.validated_by = None
+                update_query = """
+                    UPDATE tasks
+                    SET validated_by = NULL
+                    WHERE id = :task_id
+                """
+                await db.execute(query=update_query, values={"task_id": task_id})
             elif new_state == TaskStatus.READY:
-                self.mapped_by = None
-        elif (
-            new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY]
-            and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION
-        ):
-            # Don't set mapped if state being set back to mapped after validation
-            self.mapped_by = user_id
-        elif new_state == TaskStatus.VALIDATED:
-            TaskInvalidationHistory.record_validation(
-                self.project_id, self.id, user_id, history
+                update_query = """
+                    UPDATE tasks
+                    SET mapped_by = NULL
+                    WHERE id = :task_id
+                """
+                await db.execute(query=update_query, values={"task_id": task_id})
+        else:
+            current_status_query = """
+                SELECT task_status FROM tasks WHERE id = :task_id
+            """
+            current_status_result = await db.fetch_one(
+                query=current_status_query, values={"task_id": task_id}
             )
-            self.validated_by = user_id
-        elif new_state == TaskStatus.INVALIDATED:
-            TaskInvalidationHistory.record_invalidation(
-                self.project_id, self.id, user_id, history
-            )
-            self.mapped_by = None
-            self.validated_by = None
+            current_status = TaskStatus(current_status_result["task_status"])
+            # Handle specific state changes
+            if new_state == TaskStatus.VALIDATED:
+                await TaskInvalidationHistory.record_validation(
+                    project_id, task_id, user_id, history, db
+                )
+                update_query = """
+                    UPDATE tasks
+                    SET validated_by = :user_id
+                    WHERE id = :task_id
+                """
+                await db.execute(
+                    query=update_query, values={"user_id": user_id, "task_id": task_id}
+                )
 
-        if not undo:
+            elif new_state == TaskStatus.INVALIDATED:
+                await TaskInvalidationHistory.record_invalidation(
+                    project_id, task_id, user_id, history, db
+                )
+                update_query = """
+                    UPDATE tasks
+                    SET mapped_by = NULL, validated_by = NULL
+                    WHERE id = :task_id
+                """
+                await db.execute(query=update_query, values={"task_id": task_id})
+
+            # Set `mapped_by` for MAPPED or BADIMAGERY states when not locked for validation
+            elif new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY]:
+                if current_status != TaskStatus.LOCKED_FOR_VALIDATION:
+                    update_query = """
+                        UPDATE tasks
+                        SET mapped_by = :user_id
+                        WHERE id = :task_id
+                    """
+                    await db.execute(
+                        query=update_query,
+                        values={"user_id": user_id, "task_id": task_id},
+                    )
+
+            # Update task locked duration in the history when `undo` is False
             # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-            TaskHistory.update_task_locked_with_duration(
-                self.id, self.project_id, TaskStatus(self.task_status), user_id
+            await TaskHistory.update_task_locked_with_duration(
+                task_id, project_id, TaskStatus(current_status), user_id, db
             )
-
-        self.task_status = new_state.value
-        self.locked_by = None
-        self.update()
+        # Final query for updating task status
+        final_update_query = """
+            UPDATE tasks
+            SET task_status = :new_status, locked_by = NULL
+            WHERE id = :task_id
+        """
+        await db.execute(
+            query=final_update_query,
+            values={"new_status": new_state.value, "task_id": task_id},
+        )
 
     def reset_lock(self, user_id, comment=None):
         """Removes a current lock from a task, resets to last status and
