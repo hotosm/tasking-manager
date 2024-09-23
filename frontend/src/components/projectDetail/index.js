@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
@@ -139,6 +139,7 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }) =>
 export const ProjectDetail = (props) => {
   useSetProjectPageTitleTag(props.project);
   const size = useWindowSize();
+  const { id: projectId } = useParams();
   const { data: contributors, status: contributorsStatus } = useProjectContributionsQuery(
     props.project.projectId,
   );
@@ -181,6 +182,12 @@ export const ProjectDetail = (props) => {
         className="ph4 w-60-l w-80-m w-100 lh-title markdown-content blue-dark-abbey"
         dangerouslySetInnerHTML={htmlDescription}
       />
+      <a
+        href={`/projects/${projectId}/instructions`}
+        className="ph4 ttu db f5 blue-dark-abbey fw6 no-underline project-instructions-link"
+      >
+        <FormattedMessage {...messages.viewProjectSpecificInstructions} />
+      </a>
       <a href="#coordination" style={{ visibility: 'hidden' }} name="coordination">
         <FormattedMessage {...messages.coordination} />
       </a>
