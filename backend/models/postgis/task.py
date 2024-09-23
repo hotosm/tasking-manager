@@ -565,38 +565,43 @@ class TaskHistory(Base):
         return comments_dto
 
     @staticmethod
-    def get_last_status(project_id: int, task_id: int, for_undo: bool = False):
-        """Get the status the task was set to the last time the task had a STATUS_CHANGE"""
-        result = (
-            session.query(TaskHistory.action_text)
-            .filter(
-                TaskHistory.project_id == project_id,
-                TaskHistory.task_id == task_id,
-                TaskHistory.action == TaskAction.STATE_CHANGE.name,
-            )
-            .order_by(TaskHistory.action_date.desc())
-            .all()
+    async def get_last_status(
+        project_id: int, task_id: int, db: Database, for_undo: bool = False
+    ) -> TaskStatus:
+        """Get the status the task was set to the last time the task had a STATUS_CHANGE."""
+
+        query = """
+            SELECT action_text
+            FROM task_history
+            WHERE project_id = :project_id
+              AND task_id = :task_id
+              AND action = 'STATE_CHANGE'
+            ORDER BY action_date DESC
+        """
+        result = await db.fetch_all(
+            query, values={"project_id": project_id, "task_id": task_id}
         )
 
+        # If no results, return READY status
         if not result:
-            return TaskStatus.READY  # No result so default to ready status
-
-        if len(result) == 1 and for_undo:
-            # We're looking for the previous status, however, there isn't any so we'll return Ready
             return TaskStatus.READY
 
-        if for_undo and result[0][0] in [
+        # If we only have one result and for_undo is True, return READY
+        if len(result) == 1 and for_undo:
+            return TaskStatus.READY
+
+        # If the last status was MAPPED or BADIMAGERY and for_undo is True, return READY
+        if for_undo and result[0]["action_text"] in [
             TaskStatus.MAPPED.name,
             TaskStatus.BADIMAGERY.name,
         ]:
-            # We need to return a READY when last status of the task is badimagery or mapped.
             return TaskStatus.READY
 
+        # If for_undo is True, return the second last status
         if for_undo:
-            # Return the second last status which was status the task was previously set to
-            return TaskStatus[result[1][0]]
-        else:
-            return TaskStatus[result[0][0]]
+            return TaskStatus[result[1]["action_text"]]
+        # Otherwise, return the last status
+        return TaskStatus[result[0]["action_text"]]
 
     @staticmethod
     def get_last_action(project_id: int, task_id: int):
@@ -1106,7 +1111,6 @@ class Task(Base):
         issues: Optional[List[Dict[str, Any]]] = None,
     ):
         """Unlock the task and change its state."""
-
         # Add task comment history if provided
         if comment:
             await Task.set_task_history(
@@ -1118,7 +1122,6 @@ class Task(Base):
                 comment=comment,
                 mapping_issues=issues,
             )
-
         # Record state change in history
         history = await Task.set_task_history(
             task_id,
@@ -1153,7 +1156,6 @@ class Task(Base):
                 query=current_status_query, values={"task_id": task_id}
             )
             current_status = TaskStatus(current_status_result["task_status"])
-
             # Handle specific state changes
             if new_state == TaskStatus.VALIDATED:
                 await TaskInvalidationHistory.record_validation(
@@ -1197,7 +1199,6 @@ class Task(Base):
             await TaskHistory.update_task_locked_with_duration(
                 task_id, project_id, TaskStatus(current_status), user_id, db
             )
-
         # Final query for updating task status
         final_update_query = """
             UPDATE tasks

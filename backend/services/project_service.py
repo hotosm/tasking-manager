@@ -2,6 +2,7 @@ import threading
 from cachetools import TTLCache, cached
 
 # # from flask import current_app
+from backend.config import get_settings
 import geojson
 from datetime import datetime, timedelta, timezone
 
@@ -17,7 +18,6 @@ from backend.models.dtos.project_dto import (
     ProjectSearchResultsDTO,
 )
 from backend.models.postgis.organisation import Organisation
-from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.project import Project, ProjectStatus
 from backend.models.postgis.statuses import (
     MappingNotAllowed,
@@ -703,13 +703,21 @@ class ProjectService:
         return project.organisation
 
     @staticmethod
-    def send_email_on_project_progress(project_id):
+    async def send_email_on_project_progress(project_id: int, db: Database):
         """Send email to all contributors on project progress"""
-        if not current_app.config["SEND_PROJECT_EMAIL_UPDATES"]:
+        current_settings = get_settings()
+        if not current_settings.SEND_PROJECT_EMAIL_UPDATES:
             return
-        project = ProjectService.get_project_by_id(project_id)
+        project = await ProjectService.get_project_by_id(project_id, db)
 
-        project_completion = project.calculate_tasks_percent("project_completion")
+        project_completion = Project.calculate_tasks_percent(
+            "project_completion",
+            project.tasks_mapped,
+            project.tasks_validated,
+            project.total_tasks,
+            project.tasks_bad_imagery,
+        )
+
         if project_completion == 50 and project.progress_email_sent:
             return  # Don't send progress email if it's already sent
         if project_completion in [50, 100]:
@@ -718,11 +726,26 @@ class ProjectService:
                 if project_completion == 100
                 else EncouragingEmailType.PROJECT_PROGRESS.value
             )
-            project_title = ProjectInfo.get_dto_for_locale(
-                project_id, project.default_locale
-            ).name
-            project.progress_email_sent = True
-            project.save()
+            project_title_query = """
+                SELECT name
+                FROM project_info
+                WHERE project_id = :project_id AND locale = :locale
+            """
+            project_title = await db.fetch_val(
+                project_title_query,
+                values={"project_id": project_id, "locale": project["default_locale"]},
+            )
+
+            # Update progress_email_sent status
+            await db.execute(
+                """
+                UPDATE projects
+                SET progress_email_sent = TRUE
+                WHERE id = :project_id
+            """,
+                values={"project_id": project_id},
+            )
+
             threading.Thread(
                 target=SMTPService.send_email_to_contributors_on_project_progress,
                 args=(
