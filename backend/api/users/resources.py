@@ -393,11 +393,13 @@ async def get(
     return interests_dto
 
 
-# class UsersRecommendedProjectsAPI():
-# @token_auth.login_required
 @router.get("/{username}/recommended-projects/")
-@requires("authenticated")
-async def get(request: Request, username):
+async def get(
+    request: Request,
+    username,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Get recommended projects for a user
     ---
@@ -441,5 +443,5 @@ async def get(request: Request, username):
         if request.headers.get("accept-language")
         else "en"
     )
-    user_dto = UserService.get_recommended_projects(username, locale)
-    return user_dto.model_dump(by_alias=True), 200
+    user_dto = await UserService.get_recommended_projects(username, locale, db)
+    return user_dto.model_dump(by_alias=True)
