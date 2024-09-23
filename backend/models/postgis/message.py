@@ -17,7 +17,7 @@ from enum import Enum
 from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.postgis.user import User
-from backend.models.postgis.task import Task, TaskHistory, TaskAction
+from backend.models.postgis.task import Task, TaskAction
 from backend.models.postgis.project import Project
 from backend.models.postgis.utils import timestamp
 from backend.db import Base, get_session
@@ -149,19 +149,26 @@ class Message(Base):
         return contributors
 
     @staticmethod
-    def get_all_tasks_contributors(project_id: int, task_id: int):
+    async def get_all_tasks_contributors(project_id: int, task_id: int, db: Database):
         """Get all contributors of a task"""
-        contributors = (
-            TaskHistory.query.distinct(TaskHistory.user_id)
-            .filter(TaskHistory.project_id == project_id)
-            .filter(TaskHistory.task_id == task_id)
-            .filter(TaskHistory.action != TaskAction.COMMENT.name)
-            .all()
+        query = """
+            SELECT DISTINCT u.username
+            FROM task_history th
+            JOIN users u ON th.user_id = u.id
+            WHERE th.project_id = :project_id
+            AND th.task_id = :task_id
+            AND th.action != :comment_action
+        """
+        contributors = await db.fetch_all(
+            query,
+            {
+                "project_id": project_id,
+                "task_id": task_id,
+                "comment_action": TaskAction.COMMENT.name,
+            },
         )
-        contributors = [
-            contributor.actioned_by.username for contributor in contributors
-        ]
-        return contributors
+
+        return [contributor["username"] for contributor in contributors]
 
     def mark_as_read(self):
         """Mark the message in scope as Read"""
