@@ -41,7 +41,9 @@ class ValidatorServiceError(Exception):
 
 class ValidatorService:
     @staticmethod
-    def lock_tasks_for_validation(validation_dto: LockForValidationDTO) -> TaskDTOs:
+    async def lock_tasks_for_validation(
+        validation_dto: LockForValidationDTO, db: Database
+    ) -> TaskDTOs:
         """
         Lock supplied tasks for validation
         :raises ValidatorServiceError
@@ -49,7 +51,7 @@ class ValidatorService:
         # Loop supplied tasks to check they can all be locked for validation
         tasks_to_lock = []
         for task_id in validation_dto.task_ids:
-            task = Task.get(task_id, validation_dto.project_id)
+            task = await Task.get(task_id, validation_dto.project_id, db)
 
             if task is None:
                 raise NotFound(
@@ -69,8 +71,8 @@ class ValidatorService:
                     raise ValidatorServiceError(
                         f"NotReadyForValidation- Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
                     )
-                user_can_validate = ValidatorService._user_can_validate_task(
-                    validation_dto.user_id, task.mapped_by
+                user_can_validate = await ValidatorService._user_can_validate_task(
+                    validation_dto.user_id, task.mapped_by, db
                 )
                 if not user_can_validate:
                     raise ValidatorServiceError(
@@ -80,8 +82,11 @@ class ValidatorService:
 
             tasks_to_lock.append(task)
 
-        user_can_validate, error_reason = ProjectService.is_user_permitted_to_validate(
-            validation_dto.project_id, validation_dto.user_id
+        (
+            user_can_validate,
+            error_reason,
+        ) = await ProjectService.is_user_permitted_to_validate(
+            validation_dto.project_id, validation_dto.user_id, db
         )
 
         if not user_can_validate:
@@ -109,16 +114,26 @@ class ValidatorService:
         # Lock all tasks for validation
         dtos = []
         for task in tasks_to_lock:
-            task.lock_task_for_validating(validation_dto.user_id)
-            dtos.append(task.as_dto_with_instructions(validation_dto.preferred_locale))
-
+            await Task.lock_task_for_validating(
+                task.id, validation_dto.project_id, validation_dto.user_id, db
+            )
+            dtos.append(
+                await Task.as_dto_with_instructions(
+                    task.id,
+                    validation_dto.project_id,
+                    db,
+                    validation_dto.preferred_locale,
+                )
+            )
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
 
         return task_dtos
 
     @staticmethod
-    def _user_can_validate_task(user_id: int, mapped_by: int) -> bool:
+    async def _user_can_validate_task(
+        user_id: int, mapped_by: int, db: Database
+    ) -> bool:
         """
         check whether a user is able to validate a task.  Users cannot validate their own tasks unless they are a PM
         (admin counts as project manager too)
@@ -126,7 +141,7 @@ class ValidatorService:
         :param mapped_by: id of user who mapped the task
         :return: Boolean
         """
-        is_admin = UserService.is_user_an_admin(user_id)
+        is_admin = await UserService.is_user_an_admin(user_id, db)
         if is_admin:
             return True
         else:
