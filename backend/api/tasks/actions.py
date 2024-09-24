@@ -377,9 +377,13 @@ async def post(request: Request, project_id, task_id):
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
-@router.post("{project_id}/tasks/actions/lock-for-validation/")
-@requires("authenticated")
-async def post(request: Request, project_id: int):
+@router.post("/{project_id}/tasks/actions/lock-for-validation/")
+async def post(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Lock tasks for validation
     ---
@@ -435,19 +439,23 @@ async def post(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        validator_dto = LockForValidationDTO(request.json())
-        validator_dto.project_id = project_id
-        validator_dto.user_id = request.user.display_name
-        validator_dto.preferred_locale = request.header
-        validator_dto.validate()
+        request_data = await request.json()
+        task_ids = request_data.get("taskIds")
+        preferred_locale = request.headers.get("accept-language", None)
+        validator_dto = LockForValidationDTO(
+            project_id=project_id, task_ids=task_ids, user_id=user.id
+        )
+        if preferred_locale:
+            validator_dto.preferred_locale = preferred_locale
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return {"Error": "Unable to lock task", "SubCode": "InvalidData"}, 400
 
     try:
-        ProjectService.exists(project_id)  # Check if project exists
-        tasks = ValidatorService.lock_tasks_for_validation(validator_dto)
-        return tasks.model_dump(by_alias=True), 200
+        await ProjectService.exists(project_id, db)
+        async with db.transaction():
+            tasks = await ValidatorService.lock_tasks_for_validation(validator_dto, db)
+            return tasks
     except ValidatorServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
     except UserLicenseError:
@@ -529,9 +537,13 @@ async def post(request: Request, project_id: int):
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
-@router.post("{project_id}/tasks/actions/unlock-after-validation/")
-@requires("authenticated")
-async def post(request: Request, project_id: int):
+@router.post("/{project_id}/tasks/actions/unlock-after-validation/")
+async def post(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Set tasks as validated
     ---
@@ -584,19 +596,24 @@ async def post(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        validated_dto = UnlockAfterValidationDTO(request.json())
-        validated_dto.project_id = project_id
-        validated_dto.user_id = request.user.display_name
-        validated_dto.preferred_locale = request.header
-        validated_dto.validate()
+        request_data = await request.json()
+        validated_tasks = request_data.get("validatedTasks")
+        preferred_locale = request.headers.get("accept-language", None)
+        validated_dto = UnlockAfterValidationDTO(
+            project_id=project_id, user_id=user.id, validated_tasks=validated_tasks
+        )
+        if preferred_locale:
+            validated_dto.preferred_locale = preferred_locale
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return {"Error": "Task unlock failed", "SubCode": "InvalidData"}, 400
-
     try:
-        ProjectService.exists(project_id)  # Check if project exists
-        tasks = ValidatorService.unlock_tasks_after_validation(validated_dto)
-        return tasks.model_dump(by_alias=True), 200
+        await ProjectService.exists(project_id, db)
+        async with db.transaction():
+            tasks = await ValidatorService.unlock_tasks_after_validation(
+                validated_dto, db
+            )
+            return tasks
     except ValidatorServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 

@@ -1,6 +1,6 @@
 # from flask import current_app
 from sqlalchemy import text
-
+import datetime
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.stats_dto import Pagination
@@ -21,7 +21,7 @@ from backend.models.postgis.task import (
     TaskInvalidationHistory,
     TaskMappingIssue,
 )
-from backend.models.postgis.utils import UserLicenseError, timestamp
+from backend.models.postgis.utils import UserLicenseError
 from backend.models.postgis.project_info import ProjectInfo
 from backend.services.messaging.message_service import MessageService
 from backend.services.project_service import ProjectService, ProjectAdminService
@@ -41,7 +41,9 @@ class ValidatorServiceError(Exception):
 
 class ValidatorService:
     @staticmethod
-    def lock_tasks_for_validation(validation_dto: LockForValidationDTO) -> TaskDTOs:
+    async def lock_tasks_for_validation(
+        validation_dto: LockForValidationDTO, db: Database
+    ) -> TaskDTOs:
         """
         Lock supplied tasks for validation
         :raises ValidatorServiceError
@@ -49,7 +51,7 @@ class ValidatorService:
         # Loop supplied tasks to check they can all be locked for validation
         tasks_to_lock = []
         for task_id in validation_dto.task_ids:
-            task = Task.get(task_id, validation_dto.project_id)
+            task = await Task.get(task_id, validation_dto.project_id, db)
 
             if task is None:
                 raise NotFound(
@@ -69,8 +71,8 @@ class ValidatorService:
                     raise ValidatorServiceError(
                         f"NotReadyForValidation- Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
                     )
-                user_can_validate = ValidatorService._user_can_validate_task(
-                    validation_dto.user_id, task.mapped_by
+                user_can_validate = await ValidatorService._user_can_validate_task(
+                    validation_dto.user_id, task.mapped_by, db
                 )
                 if not user_can_validate:
                     raise ValidatorServiceError(
@@ -80,8 +82,11 @@ class ValidatorService:
 
             tasks_to_lock.append(task)
 
-        user_can_validate, error_reason = ProjectService.is_user_permitted_to_validate(
-            validation_dto.project_id, validation_dto.user_id
+        (
+            user_can_validate,
+            error_reason,
+        ) = await ProjectService.is_user_permitted_to_validate(
+            validation_dto.project_id, validation_dto.user_id, db
         )
 
         if not user_can_validate:
@@ -109,16 +114,26 @@ class ValidatorService:
         # Lock all tasks for validation
         dtos = []
         for task in tasks_to_lock:
-            task.lock_task_for_validating(validation_dto.user_id)
-            dtos.append(task.as_dto_with_instructions(validation_dto.preferred_locale))
-
+            await Task.lock_task_for_validating(
+                task.id, validation_dto.project_id, validation_dto.user_id, db
+            )
+            dtos.append(
+                await Task.as_dto_with_instructions(
+                    task.id,
+                    validation_dto.project_id,
+                    db,
+                    validation_dto.preferred_locale,
+                )
+            )
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
 
         return task_dtos
 
     @staticmethod
-    def _user_can_validate_task(user_id: int, mapped_by: int) -> bool:
+    async def _user_can_validate_task(
+        user_id: int, mapped_by: int, db: Database
+    ) -> bool:
         """
         check whether a user is able to validate a task.  Users cannot validate their own tasks unless they are a PM
         (admin counts as project manager too)
@@ -126,7 +141,7 @@ class ValidatorService:
         :param mapped_by: id of user who mapped the task
         :return: Boolean
         """
-        is_admin = UserService.is_user_an_admin(user_id)
+        is_admin = await UserService.is_user_an_admin(user_id, db)
         if is_admin:
             return True
         else:
@@ -136,8 +151,8 @@ class ValidatorService:
             return False
 
     @staticmethod
-    def unlock_tasks_after_validation(
-        validated_dto: UnlockAfterValidationDTO,
+    async def unlock_tasks_after_validation(
+        validated_dto: UnlockAfterValidationDTO, db: Database
     ) -> TaskDTOs:
         """
         Unlocks supplied tasks after validation
@@ -146,23 +161,22 @@ class ValidatorService:
         validated_tasks = validated_dto.validated_tasks
         project_id = validated_dto.project_id
         user_id = validated_dto.user_id
-        tasks_to_unlock = ValidatorService.get_tasks_locked_by_user(
-            project_id, validated_tasks, user_id
+        tasks_to_unlock = await ValidatorService.get_tasks_locked_by_user(
+            project_id, validated_tasks, user_id, db
         )
-
         # Unlock all tasks
         dtos = []
         message_sent_to = []
         for task_to_unlock in tasks_to_unlock:
             task = task_to_unlock["task"]
-
             if task_to_unlock["comment"]:
                 # Parses comment to see if any users have been @'d
-                MessageService.send_message_after_comment(
+                await MessageService.send_message_after_comment(
                     validated_dto.user_id,
                     task_to_unlock["comment"],
                     task.id,
                     validated_dto.project_id,
+                    db,
                 )
             if (
                 task_to_unlock["new_state"] == TaskStatus.VALIDATED
@@ -171,42 +185,67 @@ class ValidatorService:
                 # All mappers get a notification if their task has been validated or invalidated.
                 # Only once if multiple tasks mapped
                 if task.mapped_by not in message_sent_to:
-                    MessageService.send_message_after_validation(
+                    await MessageService.send_message_after_validation(
                         task_to_unlock["new_state"],
                         validated_dto.user_id,
                         task.mapped_by,
                         task.id,
                         validated_dto.project_id,
+                        db,
                     )
                     message_sent_to.append(task.mapped_by)
 
+                # Set last_validation_date for the mapper to current date
                 if task_to_unlock["new_state"] == TaskStatus.VALIDATED:
-                    # Set last_validation_date for the mapper to current date
-                    task.mapper.last_validation_date = timestamp()
+                    query = """
+                    UPDATE users
+                    SET last_validation_date = :timestamp
+                    WHERE id = (
+                        SELECT mapped_by
+                        FROM tasks
+                        WHERE id = :task_id
+                        AND project_id = :project_id
+                    );
+                    """
+                    values = {
+                        "timestamp": datetime.datetime.utcnow(),
+                        "task_id": task.id,
+                        "project_id": validated_dto.project_id,
+                    }
+                    await db.execute(query=query, values=values)
 
             # Update stats if user setting task to a different state from previous state
-            prev_status = TaskHistory.get_last_status(project_id, task.id)
+            prev_status = await TaskHistory.get_last_status(project_id, task.id, db)
             if prev_status != task_to_unlock["new_state"]:
-                StatsService.update_stats_after_task_state_change(
+                await StatsService.update_stats_after_task_state_change(
                     validated_dto.project_id,
                     validated_dto.user_id,
                     prev_status,
                     task_to_unlock["new_state"],
+                    db,
                 )
-            task_mapping_issues = ValidatorService.get_task_mapping_issues(
+            task_mapping_issues = await ValidatorService.get_task_mapping_issues(
                 task_to_unlock
             )
-            task.unlock_task(
-                validated_dto.user_id,
-                task_to_unlock["new_state"],
-                task_to_unlock["comment"],
+            await Task.unlock_task(
+                task_id=task.id,
+                project_id=project_id,
+                user_id=validated_dto.user_id,
+                new_state=task_to_unlock["new_state"],
+                db=db,
+                comment=task_to_unlock["comment"],
                 issues=task_mapping_issues,
             )
-            dtos.append(task.as_dto_with_instructions(validated_dto.preferred_locale))
-        ProjectService.send_email_on_project_progress(validated_dto.project_id)
+            dtos.append(
+                await Task.as_dto_with_instructions(
+                    task.id, project_id, db, validated_dto.preferred_locale
+                )
+            )
+        await ProjectService.send_email_on_project_progress(
+            validated_dto.project_id, db
+        )
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
-
         return task_dtos
 
     @staticmethod
@@ -243,21 +282,24 @@ class ValidatorService:
         return task_dtos
 
     @staticmethod
-    def get_tasks_locked_by_user(project_id: int, unlock_tasks, user_id: int):
+    async def get_tasks_locked_by_user(
+        project_id: int, unlock_tasks: list, user_id: int, db: Database
+    ):
         """
         Returns tasks specified by project id and unlock_tasks list if found and locked for validation by user,
-        otherwise raises ValidatorServiceError, NotFound
-        :param project_id:
-        :param unlock_tasks: List of tasks to be unlocked
-        :param user_id:
-        :return: List of Tasks
-        :raises ValidatorServiceError
-        :raises NotFound
+        otherwise raises ValidatorServiceError, NotFound.
+
+        :param project_id: ID of the project.
+        :param unlock_tasks: List of tasks to be unlocked.
+        :param user_id: ID of the user attempting to unlock tasks.
+        :param db: Async database connection.
+        :return: List of tasks to unlock with new states and comments.
+        :raises ValidatorServiceError: When task is not locked for validation or owned by another user.
+        :raises NotFound: When task is not found.
         """
         tasks_to_unlock = []
-        # Loop supplied tasks to check they can all be unlocked
         for unlock_task in unlock_tasks:
-            task = Task.get(unlock_task.task_id, project_id)
+            task = await Task.get(unlock_task.task_id, project_id, db)
 
             if task is None:
                 raise NotFound(
@@ -269,19 +311,18 @@ class ValidatorService:
             current_state = TaskStatus(task.task_status)
             if current_state != TaskStatus.LOCKED_FOR_VALIDATION:
                 raise ValidatorServiceError(
-                    f"NotLockedForValidation- Task {unlock_task.task_id} is not LOCKED_FOR_VALIDATION"
+                    f"NotLockedForValidation - Task {unlock_task.task_id} is not LOCKED_FOR_VALIDATION"
                 )
-
             if task.locked_by != user_id:
                 raise ValidatorServiceError(
-                    "TaskNotOwned- Attempting to unlock a task owned by another user"
+                    "TaskNotOwned - Attempting to unlock a task owned by another user"
                 )
 
-            if hasattr(unlock_task, "status"):
-                # we know what status we ate going to be setting to on unlock
-                new_status = TaskStatus[unlock_task.status]
-            else:
-                new_status = None
+            new_status = (
+                TaskStatus[unlock_task.status]
+                if hasattr(unlock_task, "status")
+                else None
+            )
 
             tasks_to_unlock.append(
                 dict(
@@ -406,10 +447,9 @@ class ValidatorService:
         project.save()
 
     @staticmethod
-    def get_task_mapping_issues(task_to_unlock: dict):
+    async def get_task_mapping_issues(task_to_unlock: dict):
         if task_to_unlock["issues"] is None:
             return None
-
         # map ValidationMappingIssue DTOs to TaskMappingIssue instances for any issues
         # that have count above zero.
         return list(

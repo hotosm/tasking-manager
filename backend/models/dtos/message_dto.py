@@ -7,19 +7,20 @@ from typing import List, Optional
 class MessageDTO(BaseModel):
     """DTO used to define a message that will be sent to a user"""
 
-    message_id: int = Field(serialization_alias="messageId")
+    message_id: int = Field(alias="messageId")
     subject: str
     message: str
-    from_username: Optional[str] = Field("", serialization_alias="fromUsername")
-    display_picture_url: Optional[str] = Field(
-        "", serialization_alias="displayPictureUrl"
-    )
-    project_id: Optional[int] = Field(None, serialization_alias="projectId")
-    project_title: Optional[str] = Field(None, serialization_alias="projectTitle")
-    task_id: Optional[int] = Field(None, serialization_alias="taskId")
-    message_type: Optional[str] = Field(serialization_alias="messageType")
-    sent_date: datetime = Field(None, serialization_alias="sentDate")
+    from_username: Optional[str] = Field("", alias="fromUsername")
+    display_picture_url: Optional[str] = Field("", alias="displayPictureUrl")
+    project_id: Optional[int] = Field(None, alias="projectId")
+    project_title: Optional[str] = Field(None, alias="projectTitle")
+    task_id: Optional[int] = Field(None, alias="taskId")
+    message_type: Optional[str] = Field(alias="messageType")
+    sent_date: datetime = Field(None, alias="sentDate")
     read: bool = False
+
+    class Config:
+        populate_by_name = True
 
 
 class MessagesDTO(BaseModel):
@@ -31,9 +32,10 @@ class MessagesDTO(BaseModel):
         self.user_messages = []
 
     pagination: Optional[Pagination] = None
-    user_messages: Optional[List[MessageDTO]] = Field(
-        [], serialization_alias="userMessages"
-    )
+    user_messages: Optional[List[MessageDTO]] = Field([], alias="userMessages")
+
+    class Config:
+        populate_by_name = True
 
 
 class ChatMessageDTO(BaseModel):
