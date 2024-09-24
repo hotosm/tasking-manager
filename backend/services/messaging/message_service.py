@@ -27,9 +27,12 @@ from backend.services.messaging.template_service import (
 )
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService, User
+from backend.services import project_service
 
 from databases import Database
 from backend.config import settings
+from sqlalchemy import insert
+
 
 message_cache = TTLCache(maxsize=512, ttl=30)
 
@@ -67,17 +70,28 @@ class MessageService:
         return welcome_message.id
 
     @staticmethod
-    def send_message_after_validation(
-        status: int, validated_by: int, mapped_by: int, task_id: int, project_id: int
+    async def send_message_after_validation(
+        status: int,
+        validated_by: int,
+        mapped_by: int,
+        task_id: int,
+        project_id: int,
+        db: Database,
     ):
         """Sends mapper a notification after their task has been marked valid or invalid"""
         if validated_by == mapped_by:
             return  # No need to send a notification if you've verified your own task
-        project = Project.get(project_id)
-        project_name = ProjectInfo.get_dto_for_locale(
-            project_id, project.default_locale
-        ).name
-        user = UserService.get_user_by_id(mapped_by)
+        project = await project_service.ProjectService.get_project_by_id(project_id, db)
+        project_name_query = """
+            SELECT name
+            FROM project_info
+            WHERE project_id = :project_id AND locale = :locale
+        """
+        project_name = await db.fetch_val(
+            project_name_query,
+            values={"project_id": project_id, "locale": project["default_locale"]},
+        )
+        user = await UserService.get_user_by_id(mapped_by, db)
         text_template = get_txt_template(
             "invalidation_message_en.txt"
             if status == TaskStatus.INVALIDATED
@@ -115,9 +129,7 @@ class MessageService:
         messages.append(
             dict(message=validation_message, user=user, project_name=project_name)
         )
-
-        # For email alerts
-        MessageService._push_messages(messages)
+        await MessageService._push_messages(messages, db)
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
@@ -155,61 +167,72 @@ class MessageService:
             MessageService._push_messages(messages)
 
     @staticmethod
-    def _push_messages(messages):
+    async def _push_messages(messages: list, db: Database):
         if len(messages) == 0:
             return
-
         messages_objs = []
         for i, message in enumerate(messages):
             user = message.get("user")
             obj = message.get("message")
             project_name = message.get("project_name")
-            # Store message in the database only if mentions option are disabled.
+
+            # Skipping message if certain notifications are disabled
             if (
                 user.mentions_notifications is False
                 and obj.message_type == MessageType.MENTION_NOTIFICATION.value
             ):
                 messages_objs.append(obj)
                 continue
+
             if (
                 user.projects_notifications is False
                 and obj.message_type == MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
             ):
                 continue
+
             if (
                 user.projects_notifications is False
                 and obj.message_type == MessageType.BROADCAST.value
             ):
                 continue
+
             if (
                 user.teams_announcement_notifications is False
                 and obj.message_type == MessageType.TEAM_BROADCAST.value
             ):
                 messages_objs.append(obj)
                 continue
+
             if (
                 user.projects_comments_notifications is False
                 and obj.message_type == MessageType.PROJECT_CHAT_NOTIFICATION.value
             ):
                 continue
+
             if (
                 user.tasks_comments_notifications is False
                 and obj.message_type == MessageType.TASK_COMMENT_NOTIFICATION.value
             ):
                 continue
+
             if user.tasks_notifications is False and obj.message_type in (
                 MessageType.VALIDATION_NOTIFICATION.value,
                 MessageType.INVALIDATION_NOTIFICATION.value,
             ):
                 messages_objs.append(obj)
                 continue
+            # If the notification is enabled, send an email
             messages_objs.append(obj)
             SMTPService.send_email_alert(
                 user.email_address,
                 user.username,
                 user.is_email_verified,
                 message["message"].id,
-                UserService.get_user_by_id(message["message"].from_user_id).username,
+                (
+                    await UserService.get_user_by_id(
+                        message["message"].from_user_id, db
+                    )
+                ).username,
                 message["message"].project_id,
                 message["message"].task_id,
                 clean_html(message["message"].subject),
@@ -218,14 +241,29 @@ class MessageService:
                 project_name,
             )
 
-            if i + 1 % 10 == 0:
+            if (i + 1) % 10 == 0:
                 time.sleep(0.5)
 
-        # Flush messages to the database.
-        if len(messages_objs) > 0:
-            session.add_all(messages_objs)
-            session.flush()
-            session.commit()
+        # TODO Explore better approach.
+        if messages_objs:
+            insert_values = [
+                {
+                    "message": msg.message,
+                    "subject": msg.subject,
+                    "from_user_id": msg.from_user_id,
+                    "to_user_id": msg.to_user_id,
+                    "project_id": msg.project_id,
+                    "task_id": msg.task_id,
+                    "message_type": msg.message_type,
+                    "date": msg.date,
+                    "read": msg.read,
+                }
+                for msg in messages_objs
+            ]
+
+            # Insert the messages into the database
+            query = insert(Message).values(insert_values)
+            await db.execute(query)
 
     @staticmethod
     async def send_message_after_comment(
