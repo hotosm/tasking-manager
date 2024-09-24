@@ -93,6 +93,20 @@ class GroupedPartnerStatsDTO(Model):
 
     def to_csv(self):
         df = pd.json_normalize(self.to_primitive()["members"])
+
+        df.drop(
+            columns=["id"],
+            inplace=True,
+            axis=1,
+        )
+        df.rename(
+            columns={
+                "totalcontributionTime": "totalSwipeTimeInSeconds",
+                "totalcontributions": "totalSwipes",
+            },
+            inplace=True,
+        )
+
         return df.to_csv(index=False)
 
 
