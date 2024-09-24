@@ -73,6 +73,9 @@ class LockForValidationDTO(BaseModel):
     user_id: int
     preferred_locale: str = "en"
 
+    class Config:
+        populate_by_name = True
+
 
 class ValidationMappingIssue(BaseModel):
     """Describes one or more occurrences of an identified mapping problem during validation"""

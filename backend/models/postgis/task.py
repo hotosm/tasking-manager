@@ -1051,7 +1051,6 @@ class Task(Base):
             "task_id": task_id,
             "project_id": project_id,
         }
-
         await db.execute(query=query, values=values)
 
     def reset_task(self, user_id: int):
