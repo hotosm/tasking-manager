@@ -1,7 +1,7 @@
 from backend.models.postgis.statuses import TaskStatus
 from backend.models.dtos.stats_dto import Pagination
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
 
@@ -69,7 +69,7 @@ class LockForValidationDTO(BaseModel):
     """DTO used to lock multiple tasks for validation"""
 
     project_id: int
-    task_ids: List[int] = Field(None, serialized_name="taskIds")
+    task_ids: List[int] = Field(None, alias="taskIds")
     user_id: int
     preferred_locale: str = "en"
 
@@ -80,73 +80,90 @@ class LockForValidationDTO(BaseModel):
 class ValidationMappingIssue(BaseModel):
     """Describes one or more occurrences of an identified mapping problem during validation"""
 
-    mapping_issue_category_id: int = Field(
-        None, serialized_name="mappingIssueCategoryId"
-    )
+    mapping_issue_category_id: int = Field(None, alias="mappingIssueCategoryId")
     issue: str
     count: int
+
+    class Config:
+        populate_by_name = True
 
 
 class ValidatedTask(BaseModel):
     """Describes the model used to update the status of one task after validation"""
 
-    task_id: int = Field(None, serialized_name="taskId")
+    task_id: int = Field(None, alias="taskId")
     status: str = Field(None, validators=[is_valid_validated_status])
-    comment: str = Field()
-    issues: List[ValidationMappingIssue] = Field(
-        None, serialized_name="validationIssues"
+    comment: Optional[str] = None
+    issues: Optional[List[ValidationMappingIssue]] = Field(
+        None, alias="validationIssues"
     )
+
+    class Config:
+        populate_by_name = True
 
 
 class ResetValidatingTask(BaseModel):
     """Describes the model used to stop validating and reset the status of one task"""
 
-    task_id: int = Field(None, serialized_name="taskId")
+    task_id: int = Field(None, alias="taskId")
     comment: str = Field()
-    issues: List[ValidationMappingIssue] = Field(
-        None, serialized_name="validationIssues"
-    )
+    issues: List[ValidationMappingIssue] = Field(None, alias="validationIssues")
+
+    class Config:
+        populate_by_name = True
 
 
 class UnlockAfterValidationDTO(BaseModel):
     """DTO used to transmit the status of multiple tasks after validation"""
 
     project_id: int
-    validated_tasks: List[ValidatedTask] = Field(None, serialized_name="validatedTasks")
+    validated_tasks: List[ValidatedTask] = Field(None, alias="validatedTasks")
     user_id: int
     preferred_locale: str = Field(default="en")
+
+    class Config:
+        populate_by_name = True
 
 
 class StopValidationDTO(BaseModel):
     """DTO used to transmit the the request to stop validating multiple tasks"""
 
     project_id: int
-    reset_tasks: List[ResetValidatingTask] = Field(None, serialized_name="resetTasks")
+    reset_tasks: List[ResetValidatingTask] = Field(None, alias="resetTasks")
     user_id: int
     preferred_locale: str = Field(default="en")
+
+    class Config:
+        populate_by_name = True
 
 
 class MappedTasksByUser(BaseModel):
     """Describes number of tasks user has mapped on a project"""
 
     username: str = Field(None)
-    mapped_task_count: int = Field(None, serialized_name="mappedTaskCount")
-    tasks_mapped: List[int] = Field(None, serialized_name="tasksMapped")
-    last_seen: datetime = Field(None, serialized_name="lastSeen")
-    mapping_level: str = Field(None, serialized_name="mappingLevel")
-    date_registered: datetime = Field(serialized_name="dateRegistered")
-    last_validation_date: datetime = Field(serialized_name="lastValidationDate")
+    mapped_task_count: int = Field(None, alias="mappedTaskCount")
+    tasks_mapped: List[int] = Field(None, alias="tasksMapped")
+    last_seen: datetime = Field(None, alias="lastSeen")
+    mapping_level: str = Field(None, alias="mappingLevel")
+    date_registered: datetime = Field(alias="dateRegistered")
+    last_validation_date: datetime = Field(alias="lastValidationDate")
+
+    class Config:
+        populate_by_name = True
 
 
 class InvalidatedTask(BaseModel):
     """Describes invalidated tasks with which user is involved"""
 
-    task_id: int = Field(None, serialized_name="taskId")
-    project_id: int = Field(None, serialized_name="projectId")
-    project_name: str = Field(serialized_name="projectName")
-    history_id: int = Field(serialized_name="historyId")
+    task_id: int = Field(None, alias="taskId")
+    project_id: int = Field(None, alias="projectId")
+    project_name: str = Field(alias="projectName")
+    history_id: int = Field(alias="historyId")
     closed: bool
-    updated_date: datetime = Field(serialized_name="updatedDate")
+    updated_date: datetime = Field(alias="updatedDate")
+
+    class Config:
+        populate_by_name = True
 
 
 class InvalidatedTasks(BaseModel):
@@ -155,8 +172,11 @@ class InvalidatedTasks(BaseModel):
         super().__init__()
         self.invalidated_tasks = []
 
-    invalidated_tasks: List[InvalidatedTask] = Field(serialized_name="invalidatedTasks")
+    invalidated_tasks: List[InvalidatedTask] = Field(alias="invalidatedTasks")
     pagination: Pagination
+
+    class Config:
+        populate_by_name = True
 
 
 class MappedTasks(BaseModel):
@@ -167,7 +187,10 @@ class MappedTasks(BaseModel):
         super().__init__()
         self.mapped_tasks = []
 
-    mapped_tasks: List[MappedTasksByUser] = Field(serialized_name="mappedTasks")
+    mapped_tasks: List[MappedTasksByUser] = Field(alias="mappedTasks")
+
+    class Config:
+        populate_by_name = True
 
 
 class RevertUserTasksDTO(BaseModel):
@@ -181,3 +204,6 @@ class RevertUserTasksDTO(BaseModel):
     # action: ExtendedStringType = Field(
     #     validators=[is_valid_revert_status], converters=[str.upper]
     # )
+
+    class Config:
+        populate_by_name = True
