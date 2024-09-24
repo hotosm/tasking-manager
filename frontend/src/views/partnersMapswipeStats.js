@@ -16,7 +16,7 @@ import { TimeSpentContributing } from '../components/partnerMapswipeStats/timeSp
 import { TimeSpentContributingByDay } from '../components/partnerMapswipeStats/timeSpentContributingByDay';
 import { ProjectTypeAreaStats } from '../components/partnerMapswipeStats/projectTypeAreaStats';
 import { SwipesByProjectType } from '../components/partnerMapswipeStats/swipesByProjectType';
-import { SwipesByOrganisation } from '../components/partnerMapswipeStats/swipesByOrganisation';
+import { SwipesByOrganization } from '../components/partnerMapswipeStats/swipesByOrganization';
 import { StatsCardWithFooter } from '../components/statsCard';
 import messages from './messages';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
@@ -156,7 +156,7 @@ export const PartnersMapswipeStats = () => {
 
             <div className="mt3 flex items-center justify-between">
               <SwipesByProjectType contributionsByProjectType={data?.contributionsByProjectType} />
-              <SwipesByOrganisation
+              <SwipesByOrganization
                 contributionsByOrganization={data?.contributionsByorganizationName}
               />
             </div>

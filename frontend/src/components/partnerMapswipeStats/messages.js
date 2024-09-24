@@ -101,8 +101,8 @@ export default defineMessages({
     defaultMessage: 'Swipes by Project Type',
   },
   swipesByOrganization: {
-    id: 'management.partners.stats.mapswipe.swipesByOrganisation',
-    defaultMessage: 'Swipes by Organisation',
+    id: 'management.partners.stats.mapswipe.swipesByOrganization',
+    defaultMessage: 'Swipes by Organization',
   },
   areaSwipesByProjectType: {
     id: 'management.partners.stats.mapswipe.areaSwipes',

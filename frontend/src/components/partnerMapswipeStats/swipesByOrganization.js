@@ -23,7 +23,7 @@ function withGroupedLowContributors(contributionsByOrganization, keepTop = 4) {
   topContributors.push(others);
   return topContributors;
 }
-export const SwipesByOrganisation = ({ contributionsByOrganization = [] }) => {
+export const SwipesByOrganization = ({ contributionsByOrganization = [] }) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
   contributionsByOrganization = withGroupedLowContributors(contributionsByOrganization);
@@ -98,7 +98,7 @@ export const SwipesByOrganisation = ({ contributionsByOrganization = [] }) => {
   );
 };
 
-SwipesByOrganisation.propTypes = {
+SwipesByOrganization.propTypes = {
   contributionsByOrganization: PropTypes.arrayOf(
     PropTypes.shape({
       organizationName: PropTypes.string,
