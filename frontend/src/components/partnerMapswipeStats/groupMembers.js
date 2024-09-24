@@ -7,6 +7,7 @@ import ReactPlaceholder from 'react-placeholder';
 
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { BanIcon, CircleExclamationIcon, DownloadIcon } from '../svgIcons';
+import { formatSecondsToTwoUnits } from './overview';
 import { PaginatorLine } from '../paginator';
 import { API_URL } from '../../config';
 import messages from './messages';
@@ -43,6 +44,13 @@ const COLUMNS = [
     header: () => (
       <span>
         <FormattedMessage {...messages.timeSpentColumn} />
+      </span>
+    ),
+    cell: ({ row }) => (
+      <span>
+        {row.original.totalcontributionTime
+          ? formatSecondsToTwoUnits(row.original.totalcontributionTime)
+          : '0'}
       </span>
     ),
   },

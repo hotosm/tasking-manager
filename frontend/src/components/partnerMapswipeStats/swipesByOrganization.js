@@ -85,7 +85,7 @@ export const SwipesByOrganization = ({ contributionsByOrganization = [] }) => {
         <FormattedMessage {...messages.swipesByOrganization} />
       </h3>
 
-      <div className="bg-white pa4 shadow-6 relative" style={{ height: '550px' }}>
+      <div className="bg-white pa4 shadow-6 relative" style={{ height: '450px' }}>
         <canvas ref={chartRef}></canvas>
         {contributionsByOrganization.length === 0 && (
           <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center flex-column">
