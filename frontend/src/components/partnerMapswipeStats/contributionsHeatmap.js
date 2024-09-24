@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { latLngToCell, cellToBoundary } from 'h3-js';
 import { FormattedMessage } from 'react-intl';
@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { MAPBOX_TOKEN, MAP_STYLE, CHART_COLOURS } from '../../config';
-import { ZoomPlusIcon, ZoomMinusIcon } from '../svgIcons';
 import messages from './messages';
 import './contributionsHeatmap.css';
 
@@ -15,7 +14,6 @@ mapboxgl.accessToken = MAPBOX_TOKEN;
 export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const [zoom, setZoom] = useState(1.25);
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
@@ -24,10 +22,11 @@ export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
       container: mapContainer.current,
       style: MAP_STYLE,
       center: [0, 0],
-      zoom: zoom,
+      zoom: 1.25,
     });
 
     map.current.scrollZoom.disable();
+    map.current.addControl(new mapboxgl.NavigationControl());
 
     const getStyle = (row) => {
       const styles = [
@@ -183,23 +182,6 @@ export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    map.current.zoomTo(zoom, { duration: 700 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [zoom]);
-
-  const handleZoom = (isZoomingOut = false) => {
-    const currentZoom = parseFloat(zoom);
-    if (!isZoomingOut) {
-      setZoom(currentZoom + 0.5);
-    } else {
-      if (currentZoom.toFixed(2) === '0.75') return;
-      setZoom(currentZoom - 0.5);
-    }
-  };
-
-  const shouldDisableZoomOut = zoom === 0.75;
-
   return (
     <div>
       <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb4">
@@ -208,21 +190,7 @@ export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
 
       <div className="relative partner-mapswipe-heatmap-wrapper">
         <div ref={mapContainer} style={{ width: '100%', height: '650px' }} className="shadow-6" />
-        <div className="flex items-center justify-between absolute top-0 left-0 right-0 pa2">
-          <div className="bg-white flex pa2 pv1 items-center ba b--black-20 br2">
-            <ZoomMinusIcon
-              height={20}
-              className={`br b--black-20 pr2 pointer ${
-                shouldDisableZoomOut ? 'moon-gray' : 'blue-dark'
-              }`}
-              onClick={() => handleZoom(true)}
-            />
-            <ZoomPlusIcon
-              height={20}
-              className="blue-dark pl2 pointer"
-              onClick={() => handleZoom()}
-            />
-          </div>
+        <div className="flex items-center justify-start absolute top-0 left-0 right-0 pa2">
           <p
             className="ma0 pa1 bg-white ba b--black-20 br2 partner-mapswipe-heatmap-zoom-text"
             style={{ userSelect: 'none' }}
