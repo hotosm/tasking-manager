@@ -18,52 +18,45 @@ export const SwipesByProjectType = ({ contributionsByProjectType = [] }) => {
 
     if (!chartRef.current) return;
 
-    const labelData = [];
-    const data = {
-      find: {
-        totalcontributions: 0,
-      },
-      validate: {
-        totalcontributions: 0,
-      },
-      compare: {
-        totalcontributions: 0,
-      },
-    };
+    const chartData = [],
+      labelsData = [],
+      backgroundColors = [];
 
     contributionsByProjectType.forEach((stat) => {
       if (['build_area', 'buildarea'].includes(stat.projectType.toLowerCase())) {
-        data.find.totalcontributions = stat.totalcontributions || 0;
-        if (data.find.totalcontributions > 0) labelData.push('Find');
-      } else if (['change_detection', 'changedetection'].includes(stat.projectType.toLowerCase())) {
-        data.compare.totalcontributions = stat.totalcontributions || 0;
-        if (data.compare.totalcontributions > 0) labelData.push('Compare');
+        const contributionsCount = stat.totalcontributions || 0;
+        if (contributionsCount > 0) {
+          chartData.push(contributionsCount);
+          labelsData.push('Find');
+          backgroundColors.push(CHART_COLOURS.orange);
+        }
       } else if (['foot_print', 'footprint'].includes(stat.projectType.toLowerCase())) {
-        data.validate.totalcontributions = stat.totalcontributions || 0;
-        if (data.validate.totalcontributions > 0) labelData.push('Validate');
+        const contributionsCount = stat.totalcontributions || 0;
+        if (contributionsCount > 0) {
+          chartData.push(contributionsCount);
+          labelsData.push('Validate');
+          backgroundColors.push(CHART_COLOURS.green);
+        }
+      } else if (['change_detection', 'changedetection'].includes(stat.projectType.toLowerCase())) {
+        const contributionsCount = stat.totalcontributions || 0;
+        if (contributionsCount > 0) {
+          chartData.push(contributionsCount);
+          labelsData.push('Compare');
+          backgroundColors.push(CHART_COLOURS.blue);
+        }
       }
     });
-
-    const chartData = [
-      data.find.totalcontributions,
-      data.validate.totalcontributions,
-      data.compare.totalcontributions,
-    ];
 
     const context = chartRef.current.getContext('2d');
 
     chartInstance.current = new Chart(context, {
       type: 'doughnut',
       data: {
-        labels: labelData,
+        labels: labelsData,
         datasets: [
           {
             data: chartData,
-            backgroundColor: [
-              CHART_COLOURS.orange, // Orange for Find
-              CHART_COLOURS.green, // Green for Validate
-              CHART_COLOURS.blue, // Blue for Compare
-            ],
+            backgroundColor: backgroundColors,
             borderColor: '#fff',
             borderWidth: 2,
           },
@@ -94,7 +87,7 @@ export const SwipesByProjectType = ({ contributionsByProjectType = [] }) => {
         <FormattedMessage {...messages.swipesByProjectType} />
       </h3>
 
-      <div className="bg-white pa4 shadow-6 relative" style={{ height: '550px' }}>
+      <div className="bg-white pa4 shadow-6 relative" style={{ height: '450px' }}>
         <canvas ref={chartRef}></canvas>
         {contributionsByProjectType.length === 0 && (
           <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center flex-column">
