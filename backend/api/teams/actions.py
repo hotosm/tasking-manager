@@ -1,5 +1,10 @@
+from databases import Database
+from fastapi import APIRouter, Depends, Request, Body, BackgroundTasks
+from fastapi.responses import JSONResponse
+from loguru import logger
 import threading
 
+from backend.db import get_db
 from backend.models.dtos.message_dto import MessageDTO
 from backend.services.team_service import (
     TeamService,
@@ -8,15 +13,13 @@ from backend.services.team_service import (
 )
 from backend.services.users.authentication_service import tm
 from backend.models.postgis.user import User
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from starlette.authentication import requires
-from loguru import logger
+from backend.services.users.authentication_service import login_required
+from backend.models.dtos.user_dto import AuthUserDTO
 
 router = APIRouter(
     prefix="/teams",
     tags=["teams"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -24,8 +27,12 @@ TEAM_NOT_FOUND = "Team not found"
 
 
 @router.post("/{team_id}/actions/join/")
-@requires("authenticated")
-async def post(request: Request, team_id):
+async def post(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    team_id: int = None,
+):
     """
     Request to join a team
     ---
@@ -56,18 +63,26 @@ async def post(request: Request, team_id):
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name
     try:
-        TeamService.request_to_join_team(team_id, authenticated_user_id)
-        return {"Success": "Join request successful"}, 200
+        await TeamService.request_to_join_team(team_id, user.id, db)
+        return JSONResponse(
+            content={"Success": "Join request successful"}, status_code=200
+        )
     except TeamServiceError as e:
-        return {"Error": str(e), "SubCode": "InvalidRequest"}, 400
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "InvalidRequest"}, status_code=400
+        )
 
 
 @router.patch("/{team_id}/actions/join/")
-@requires("authenticated")
-@tm.pm_only(False)
-async def patch(request: Request, team_id):
+# @tm.pm_only(False)
+async def patch(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    team_id: int = None,
+    data: dict = Body(...),
+):
     """
     Take action on a team invite
     ---
@@ -120,43 +135,49 @@ async def patch(request: Request, team_id):
             description: Internal Server Error
     """
     try:
-        json_data = request.json(force=True)
-        username = json_data["username"]
-        request_type = json_data.get("type", "join-response")
-        action = json_data["action"]
-        role = json_data.get("role", "member")
+        username = data["username"]
+        request_type = data.get("type", "join-response")
+        action = data["action"]
+        role = data.get("role", "member")
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
-        return {
-            "Error": str(e),
-            "SubCode": "InvalidData",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": str(e),
+                "SubCode": "InvalidData",
+            },
+            status_code=400,
+        )
 
-    authenticated_user_id = request.user.display_name
     if request_type == "join-response":
-        if TeamService.is_user_team_manager(team_id, authenticated_user_id):
-            TeamService.accept_reject_join_request(
-                team_id, authenticated_user_id, username, role, action
+        if await TeamService.is_user_team_manager(team_id, user.id, db):
+            await TeamService.accept_reject_join_request(
+                team_id, user.id, username, role, action, db
             )
-            return {"Success": "True"}, 200
+            return JSONResponse(content={"Success": "True"}, status_code=200)
         else:
-            return (
-                {
+            return JSONResponse(
+                content={
                     "Error": "You don't have permissions to approve this join team request",
                     "SubCode": "ApproveJoinError",
                 },
-                403,
+                status_code=403,
             )
     elif request_type == "invite-response":
-        TeamService.accept_reject_invitation_request(
-            team_id, authenticated_user_id, username, role, action
+        await TeamService.accept_reject_invitation_request(
+            team_id, user.id, username, role, action, db
         )
-        return {"Success": "True"}, 200
+        return JSONResponse(content={"Success": "True"}, status_code=200)
 
 
 @router.post("/{team_id}/actions/add/")
-@requires("authenticated")
-async def post(request: Request, team_id):
+async def post(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    team_id: int = None,
+    data: dict = Body(...),
+):
     """
     Add members to the team
     ---
@@ -200,27 +221,38 @@ async def post(request: Request, team_id):
             description: Internal Server Error
     """
     try:
-        post_data = await request.json(force=True)
-        username = post_data["username"]
-        role = post_data.get("role", None)
+        username = data["username"]
+        role = data.get("role", None)
     except (Exception, KeyError) as e:
         logger.error(f"error validating request: {str(e)}")
-        return {
-            "Error": str(e),
-            "SubCode": "InvalidData",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": str(e),
+                "SubCode": "InvalidData",
+            },
+            status_code=400,
+        )
 
     try:
-        authenticated_user_id = request.user.display_name
-        TeamService.add_user_to_team(team_id, authenticated_user_id, username, role)
-        return {"Success": "User added to the team"}, 200
+        await TeamService.add_user_to_team(team_id, user.id, username, role, db)
+        return JSONResponse(
+            content={"Success": "User added to the team"}, status_code=200
+        )
     except TeamJoinNotAllowed as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.post("/{team_id}/actions/leave/")
-@requires("authenticated")
-async def post(request: Request, team_id: int):
+async def post(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    team_id: int = None,
+    data: dict = Body(...),
+):
     """
     Removes a user from a team
     ---
@@ -261,30 +293,37 @@ async def post(request: Request, team_id: int):
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name
-    username = request.get_json(force=True)["username"]
-    request_user = User.get_by_id(authenticated_user_id)
+    username = data["username"]
+    request_user = await User.get_by_id(user.id, db)
     if (
-        TeamService.is_user_team_manager(team_id, authenticated_user_id)
+        await TeamService.is_user_team_manager(team_id, user.id, db)
         or request_user.username == username
     ):
-        TeamService.leave_team(team_id, username)
-        return {"Success": "User removed from the team"}, 200
+        await TeamService.leave_team(team_id, username, db)
+        return JSONResponse(
+            content={"Success": "User removed from the team"}, status_code=200
+        )
     else:
-        return (
-            {
+        return JSONResponse(
+            content={
                 "Error": "You don't have permissions to remove {} from this team.".format(
                     username
                 ),
                 "SubCode": "RemoveUserError",
             },
-            403,
+            status_code=403,
         )
 
 
 @router.post("/{team_id}/actions/message-members/")
-@requires("authenticated")
-async def post(request: Request, team_id: int):
+async def post(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    team_id: int = None,
+    message_dto: MessageDTO = Body(...),
+):
     """
     Message all team members
     ---
@@ -330,38 +369,50 @@ async def post(request: Request, team_id: int):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name
-        message_dto = MessageDTO(request.json())
         # Validate if team is present
-        team = TeamService.get_team_by_id(team_id)
+        team = await TeamService.get_team_by_id(team_id, db)
 
-        is_manager = TeamService.is_user_team_manager(team_id, authenticated_user_id)
+        is_manager = await TeamService.is_user_team_manager(team_id, user.id, db)
         if not is_manager:
             raise ValueError
-        message_dto.from_user_id = authenticated_user_id
-        message_dto.validate()
         if not message_dto.message.strip() or not message_dto.subject.strip():
             raise Exception(
                 {"Error": "Empty message not allowed", "SubCode": "EmptyMessage"}
             )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {
-            "Error": "Request payload did not match validation",
-            "SubCode": "InvalidData",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": "Request payload did not match validation",
+                "SubCode": "InvalidData",
+            },
+            status_code=400,
+        )
     except ValueError:
-        return {
-            "Error": "Unauthorised to send message to team members",
-            "SubCode": "UserNotPermitted",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "Unauthorised to send message to team members",
+                "SubCode": "UserNotPermitted",
+            },
+            status_code=403,
+        )
 
     try:
-        threading.Thread(
-            target=TeamService.send_message_to_all_team_members,
-            args=(team_id, team.name, message_dto),
-        ).start()
+        # threading.Thread(
+        #     target=TeamService.send_message_to_all_team_members,
+        #     args=(team_id, team.name, message_dto, db),
+        # ).start()
+        background_tasks.add_task(
+            TeamService.send_message_to_all_team_members,
+            team_id,
+            team.name,
+            message_dto,
+            user.id,
+            db,
+        )
 
-        return {"Success": "Message sent successfully"}, 200
+        return JSONResponse(
+            content={"Success": "Message sent successfully"}, status_code=200
+        )
     except ValueError as e:
-        return {"Error": str(e)}, 403
+        return JSONResponse(content={"Error": str(e)}, status_code=400)

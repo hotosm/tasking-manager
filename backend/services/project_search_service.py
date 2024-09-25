@@ -391,7 +391,7 @@ class ProjectSearchService:
 
         if search_dto.mapped_by:
             mapped_projects = await UserService.get_projects_mapped(
-                search_dto.mapped_by
+                search_dto.mapped_by, db
             )
             filters.append("p.id IN :mapped_projects")
             params["mapped_projects"] = tuple(mapped_projects)

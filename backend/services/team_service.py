@@ -1,4 +1,4 @@
-# from flask import current_app
+from fastapi.responses import JSONResponse
 from sqlalchemy import and_
 from markdown import markdown
 
@@ -54,16 +54,16 @@ class TeamJoinNotAllowed(Exception):
 
 class TeamService:
     @staticmethod
-    def request_to_join_team(team_id: int, user_id: int):
-        team = TeamService.get_team_by_id(team_id)
+    async def request_to_join_team(team_id: int, user_id: int, db: Database):
+        team = await TeamService.get_team_by_id(team_id, db)
         # If user has team manager permission add directly to the team without request.E.G. Admins, Org managers
-        if TeamService.is_user_team_member(team_id, user_id):
+        if await TeamService.is_user_team_member(team_id, user_id, db):
             raise TeamServiceError(
                 "The user is already a member of the team or has requested to join."
             )
-        if TeamService.is_user_team_manager(team_id, user_id):
-            TeamService.add_team_member(
-                team_id, user_id, TeamMemberFunctions.MEMBER.value, True
+        if await TeamService.is_user_team_manager(team_id, user_id, db):
+            await TeamService.add_team_member(
+                team_id, user_id, TeamMemberFunctions.MEMBER.value, True, db
             )
             return
 
@@ -74,16 +74,16 @@ class TeamService:
             )
 
         role = TeamMemberFunctions.MEMBER.value
-        user = UserService.get_user_by_id(user_id)
+        user = await UserService.get_user_by_id(user_id, db)
         active = False
         # Set active=True for team with join method ANY as no approval is required to join this team type.
         if team.join_method == TeamJoinMethod.ANY.value:
             active = True
-        TeamService.add_team_member(team_id, user_id, role, active)
+        await TeamService.add_team_member(team_id, user_id, role, active, db)
 
         # Notify team managers about a join request in BY_REQUEST team.
         if team.join_method == TeamJoinMethod.BY_REQUEST.value:
-            team_managers = team.get_team_managers()
+            team_managers = Team.get_team_managers(db, team)
             for manager in team_managers:
                 # Only send notifications to team managers who have join request notification enabled.
                 if manager.join_request_notifications:
@@ -92,21 +92,29 @@ class TeamService:
                     )
 
     @staticmethod
-    def add_user_to_team(
-        team_id: int, requesting_user: int, username: str, role: str = None
+    async def add_user_to_team(
+        team_id: int,
+        requesting_user: int,
+        username: str,
+        role: str = None,
+        db: Database = None,
     ):
-        is_manager = TeamService.is_user_team_manager(team_id, requesting_user)
+        is_manager = await TeamService.is_user_team_manager(
+            team_id, requesting_user, db
+        )
         if not is_manager:
             raise TeamServiceError("User is not allowed to add member to the team")
-        team = TeamService.get_team_by_id(team_id)
-        from_user = UserService.get_user_by_id(requesting_user)
-        to_user = UserService.get_user_by_username(username)
-        member = TeamMembers.get(team_id, to_user.id)
+        team = await TeamService.get_team_by_id(team_id, db)
+        from_user = await UserService.get_user_by_id(requesting_user, db)
+        to_user = await UserService.get_user_by_username(username, db)
+        member = await TeamMembers.get(team_id, to_user.id, db)
         if member:
             member.function = TeamMemberFunctions[role].value
             member.active = True
-            member.update()
-            return {"Success": "User role updated"}
+            await TeamMembers.update(member, db)
+            return JSONResponse(
+                content={"Success": "User role updated"}, status_code=200
+            )
         else:
             if role:
                 try:
@@ -115,62 +123,68 @@ class TeamService:
                     raise Exception("Invalid TeamMemberFunction")
             else:
                 role = TeamMemberFunctions.MEMBER.value
-            TeamService.add_team_member(team_id, to_user.id, role, True)
-            MessageService.send_team_join_notification(
+            await TeamService.add_team_member(team_id, to_user.id, role, True, db)
+            await MessageService.send_team_join_notification(
                 requesting_user,
                 from_user.username,
                 to_user.id,
                 team.name,
                 team_id,
                 TeamMemberFunctions(role).name,
+                db,
             )
 
     @staticmethod
-    def add_team_member(team_id, user_id, function, active=False):
+    async def add_team_member(
+        team_id, user_id, function, active=False, db: Database = None
+    ):
         team_member = TeamMembers()
         team_member.team_id = team_id
         team_member.user_id = user_id
         team_member.function = function
         team_member.active = active
-        team_member.create()
+        TeamMembers.create(team_member, db)
 
     @staticmethod
-    def send_invite(team_id, from_user_id, username):
-        to_user = UserService.get_user_by_username(username)
-        from_user = UserService.get_user_by_id(from_user_id)
-        team = TeamService.get_team_by_id(team_id)
+    async def send_invite(team_id, from_user_id, username, db: Database):
+        to_user = await UserService.get_user_by_username(username, db)
+        from_user = await UserService.get_user_by_id(from_user_id, db)
+        team = await TeamService.get_team_by_id(team_id, db)
         MessageService.send_invite_to_join_team(
             from_user_id, from_user.username, to_user.id, team.name, team_id
         )
 
     @staticmethod
-    def accept_reject_join_request(team_id, from_user_id, username, function, action):
-        from_user = UserService.get_user_by_id(from_user_id)
-        to_user_id = UserService.get_user_by_username(username).id
-        team = TeamService.get_team_by_id(team_id)
+    async def accept_reject_join_request(
+        team_id, from_user_id, username, function, action, db: Database
+    ):
+        from_user = await UserService.get_user_by_id(from_user_id, db)
+        user = await UserService.get_user_by_username(username, db)
+        to_user_id = user.id
+        team = await TeamService.get_team_by_id(team_id, db)
 
-        if not TeamService.is_user_team_member(team_id, to_user_id):
+        if not await TeamService.is_user_team_member(team_id, to_user_id, db):
             raise NotFound(sub_code="JOIN_REQUEST_NOT_FOUND", username=username)
 
         if action not in ["accept", "reject"]:
             raise TeamServiceError("Invalid action type")
         if action == "accept":
-            TeamService.activate_team_member(team_id, to_user_id)
+            await TeamService.activate_team_member(team_id, to_user_id, db)
         elif action == "reject":
-            TeamService.delete_invite(team_id, to_user_id)
+            await TeamService.delete_invite(team_id, to_user_id, db)
 
-        MessageService.accept_reject_request_to_join_team(
-            from_user_id, from_user.username, to_user_id, team.name, team_id, action
+        await MessageService.accept_reject_request_to_join_team(
+            from_user_id, from_user.username, to_user_id, team.name, team_id, action, db
         )
 
     @staticmethod
-    def accept_reject_invitation_request(
-        team_id, from_user_id, username, function, action
+    async def accept_reject_invitation_request(
+        team_id, from_user_id, username, function, action, db: Database
     ):
-        from_user = UserService.get_user_by_id(from_user_id)
-        to_user = UserService.get_user_by_username(username)
-        team = TeamService.get_team_by_id(team_id)
-        team_members = team.get_team_managers()
+        from_user = await UserService.get_user_by_id(from_user_id, db)
+        to_user = await UserService.get_user_by_username(username, db)
+        team = await TeamService.get_team_by_id(team_id, db)
+        team_members = await Team.get_team_managers(team)
 
         for member in team_members:
             MessageService.accept_reject_invitation_request_for_team(
@@ -183,43 +197,76 @@ class TeamService:
                 action,
             )
         if action == "accept":
-            TeamService.add_team_member(
-                team_id, from_user_id, TeamMemberFunctions[function.upper()].value
+            await TeamService.add_team_member(
+                team_id, from_user_id, TeamMemberFunctions[function.upper()].value, db
             )
 
     @staticmethod
-    def leave_team(team_id, username):
-        user = UserService.get_user_by_username(username)
-        team_member = TeamMembers.query.filter(
-            TeamMembers.team_id == team_id, TeamMembers.user_id == user.id
-        ).one_or_none()
+    async def leave_team(team_id, username, db: Database = None):
+        user = await UserService.get_user_by_username(username, db)
+        # Query to check if the user is a member of the team
+        query = """
+            SELECT * FROM team_members
+            WHERE team_id = :team_id AND user_id = :user_id
+        """
+        team_member = await db.fetch_one(
+            query, values={"team_id": team_id, "user_id": user.id}
+        )
+
+        # Raise an exception if the team member is not found
         if not team_member:
             raise NotFound(
                 sub_code="USER_NOT_IN_TEAM", username=username, team_id=team_id
             )
-        team_member.delete()
+
+        # If found, delete the team member
+        delete_query = """
+            DELETE FROM team_members
+            WHERE team_id = :team_id AND user_id = :user_id
+        """
+        await db.execute(delete_query, values={"team_id": team_id, "user_id": user.id})
 
     @staticmethod
-    def add_team_project(team_id, project_id, role):
+    async def add_team_project(team_id, project_id, role, db: Database):
         team_project = ProjectTeams()
         team_project.project_id = project_id
         team_project.team_id = team_id
         team_project.role = TeamRoles[role].value
-        team_project.create()
+        await ProjectTeams.create(team_project, db)
 
     @staticmethod
-    def delete_team_project(team_id, project_id):
-        project = (
-            session.query(ProjectTeams)
-            .filter(
-                and_(
-                    ProjectTeams.team_id == team_id,
-                    ProjectTeams.project_id == project_id,
-                )
-            )
-            .one()
+    async def delete_team_project(team_id: int, project_id: int, db: Database):
+        """
+        Deletes a project team by team_id and project_id.
+        :param team_id: ID of the team
+        :param project_id: ID of the project
+        :param db: async database connection
+        """
+        # Query to find the project team
+        query = """
+            SELECT * FROM project_teams
+            WHERE team_id = :team_id AND project_id = :project_id
+        """
+        project_team = await db.fetch_one(
+            query, values={"team_id": team_id, "project_id": project_id}
         )
-        project.delete()
+
+        # Check if the project team exists
+        if not project_team:
+            raise NotFound(
+                sub_code="PROJECT_TEAM_NOT_FOUND",
+                team_id=team_id,
+                project_id=project_id,
+            )
+
+        # If found, delete the project team
+        delete_query = """
+            DELETE FROM project_teams
+            WHERE team_id = :team_id AND project_id = :project_id
+        """
+        await db.execute(
+            delete_query, values={"team_id": team_id, "project_id": project_id}
+        )
 
     @staticmethod
     async def get_all_teams(search_dto: TeamSearchDTO, db: Database) -> TeamsListDTO:
@@ -428,7 +475,7 @@ class TeamService:
         projects = await db.fetch_all(query=projects_query, values={"team_id": team_id})
 
         if not projects:
-            raise NotFound(sub_code="PROJECTS_NOT_FOUND", team_id=team_id)
+            projects = []
 
         return projects
 
@@ -460,14 +507,33 @@ class TeamService:
         return teams_list_dto
 
     @staticmethod
-    async def change_team_role(team_id: int, project_id: int, role: str, session):
-        query = select(ProjectTeams).filter(
-            and_(ProjectTeams.team_id == team_id, ProjectTeams.project_id == project_id)
+    async def change_team_role(team_id: int, project_id: int, role: str, db: Database):
+        """
+        Change the role of a team in a project.
+        :param team_id: ID of the team
+        :param project_id: ID of the project
+        :param role: New role to assign
+        :param db: Database instance for executing queries
+        """
+        # Assuming `TeamRoles[role].value` gives the correct integer or string value for the role
+        new_role_value = TeamRoles[role].value
+
+        # Write the raw SQL query to update the role in the `project_teams` table
+        query = """
+            UPDATE project_teams
+            SET role = :new_role_value
+            WHERE team_id = :team_id AND project_id = :project_id
+        """
+
+        # Execute the query
+        await db.execute(
+            query,
+            {
+                "new_role_value": new_role_value,
+                "team_id": team_id,
+                "project_id": project_id,
+            },
         )
-        result = await session.execute(query)
-        project = result.scalar_one()
-        project.role = TeamRoles[role].value
-        await session.commit()
 
     @staticmethod
     async def get_team_by_id(team_id: int, db: Database):
@@ -500,34 +566,34 @@ class TeamService:
         return team
 
     @staticmethod
-    def create_team(new_team_dto: NewTeamDTO) -> int:
+    async def create_team(new_team_dto: NewTeamDTO, db: Database) -> int:
         """
         Creates a new team using a team dto
         :param new_team_dto: Team DTO
         :returns: ID of new Team
         """
-        TeamService.assert_validate_organisation(new_team_dto.organisation_id)
+        await TeamService.assert_validate_organisation(new_team_dto.organisation_id, db)
 
-        team = Team.create_from_dto(new_team_dto)
-        return team.id
+        team = await Team.create_from_dto(new_team_dto, db)
+        return team
 
     @staticmethod
-    def update_team(team_dto: TeamDTO) -> Team:
+    async def update_team(team_dto: TeamDTO, db: Database) -> Team:
         """
         Updates a team
         :param team_dto: DTO with updated info
         :returns updated Team
         """
-        team = TeamService.get_team_by_id(team_dto.team_id)
-        team.update(team_dto)
+        team = await TeamService.get_team_by_id(team_dto.team_id, db)
+        team = await Team.update(team, team_dto, db)
 
-        return team
+        return team["id"] if team else None
 
     @staticmethod
-    def assert_validate_organisation(org_id: int):
+    async def assert_validate_organisation(org_id: int, db: Database):
         """Makes sure an organisation exists"""
         try:
-            OrganisationService.get_organisation_by_id(org_id)
+            await OrganisationService.get_organisation_by_id(org_id, db)
         except NotFound:
             raise TeamServiceError(f"Organisation {org_id} does not exist")
 
@@ -555,36 +621,87 @@ class TeamService:
             team_dto.members = members
 
     @staticmethod
-    def _get_team_members(team_id: int):
-        return TeamMembers.query.filter_by(team_id=team_id).all()
+    async def _get_team_members(team_id: int, db: Database):
+        # Asynchronous query to fetch team members by team_id
+        query = "SELECT * FROM team_members WHERE team_id = :team_id"
+        return await db.fetch_all(query, values={"team_id": team_id})
 
     @staticmethod
-    def _get_active_team_members(team_id: int):
-        return TeamMembers.query.filter_by(team_id=team_id, active=True).all()
+    async def _get_active_team_members(team_id: int, db: Database):
+        query = """
+            SELECT * FROM team_members
+            WHERE team_id = :team_id AND active = TRUE
+        """
+        return await db.fetch_all(query, values={"team_id": team_id})
 
     @staticmethod
-    def activate_team_member(team_id: int, user_id: int):
-        member = TeamMembers.query.filter(
-            TeamMembers.team_id == team_id, TeamMembers.user_id == user_id
-        ).first()
-        member.active = True
-        session.add(member)
-        session.commit()
+    async def activate_team_member(team_id: int, user_id: int, db: Database):
+        # Fetch the member by team_id and user_id
+        query = """
+            SELECT * FROM team_members 
+            WHERE team_id = :team_id AND user_id = :user_id
+        """
+        member = await db.fetch_one(
+            query, values={"team_id": team_id, "user_id": user_id}
+        )
+
+        if member:
+            # Update the 'active' status of the member
+            update_query = """
+                UPDATE team_members 
+                SET active = TRUE 
+                WHERE team_id = :team_id AND user_id = :user_id
+            """
+            await db.execute(
+                update_query, values={"team_id": team_id, "user_id": user_id}
+            )
+        else:
+            # Handle case where member is not found
+            raise ValueError(
+                f"No member found with team_id {team_id} and user_id {user_id}"
+            )
 
     @staticmethod
-    def delete_invite(team_id: int, user_id: int):
-        member = TeamMembers.query.filter(
-            TeamMembers.team_id == team_id, TeamMembers.user_id == user_id
-        ).first()
-        member.delete()
+    async def delete_invite(team_id: int, user_id: int, db: Database):
+        # Fetch the member by team_id and user_id to check if it exists
+        query = """
+            SELECT * FROM team_members 
+            WHERE team_id = :team_id AND user_id = :user_id
+        """
+        member = await db.fetch_one(
+            query, values={"team_id": team_id, "user_id": user_id}
+        )
+
+        if member:
+            # Delete the member from the database
+            delete_query = """
+                DELETE FROM team_members 
+                WHERE team_id = :team_id AND user_id = :user_id
+            """
+            await db.execute(
+                delete_query, values={"team_id": team_id, "user_id": user_id}
+            )
+        else:
+            # Handle case where member is not found
+            raise ValueError(
+                f"No member found with team_id {team_id} and user_id {user_id}"
+            )
 
     @staticmethod
-    def is_user_team_member(team_id: int, user_id: int):
-        query = TeamMembers.query.filter(
-            TeamMembers.team_id == team_id,
-            TeamMembers.user_id == user_id,
-        ).exists()
-        return session.query(query).scalar()
+    async def is_user_team_member(team_id: int, user_id: int, db: Database) -> bool:
+        # Query to check if the user is a member of the team
+        query = """
+            SELECT EXISTS (
+                SELECT 1 FROM team_members
+                WHERE team_id = :team_id AND user_id = :user_id
+            ) AS is_member
+        """
+        result = await db.fetch_one(
+            query, values={"team_id": team_id, "user_id": user_id}
+        )
+
+        # The result contains the 'is_member' field, which is a boolean
+        return result["is_member"]
 
     @staticmethod
     async def is_user_an_active_team_member(
@@ -616,10 +733,10 @@ class TeamService:
         return result["is_active"]
 
     @staticmethod
-    def is_user_team_manager(team_id: int, user_id: int):
+    async def is_user_team_manager(team_id: int, user_id: int, db: Database) -> bool:
         # Admin manages all teams
-        team = TeamService.get_team_by_id(team_id)
-        if UserService.is_user_an_admin(user_id):
+        team = await TeamService.get_team_by_id(team_id, db)
+        if await UserService.is_user_an_admin(user_id, db):
             return True
 
         managers = team.get_team_managers()
@@ -629,7 +746,7 @@ class TeamService:
 
         # Org admin manages teams attached to their org
         user_managed_orgs = [
-            org.id for org in OrganisationService.get_organisations(user_id)
+            org.id for org in await OrganisationService.get_organisations(user_id, db)
         ]
         if team.organisation_id in user_managed_orgs:
             return True
@@ -637,18 +754,21 @@ class TeamService:
         return False
 
     @staticmethod
-    def delete_team(team_id: int):
+    async def delete_team(team_id: int, db: Database):
         """Deletes a team"""
-        team = TeamService.get_team_by_id(team_id)
+        team = await TeamService.get_team_by_id(team_id, db)
 
-        if team.can_be_deleted():
-            team.delete()
-            return {"Success": "Team deleted"}, 200
+        if Team.can_be_deleted(team):
+            await Team.delete(team, db)
+            return JSONResponse(content={"Success": "Team deleted"}, status_code=200)
         else:
-            return {
-                "Error": "Team has projects, cannot be deleted",
-                "SubCode": "This team has projects associated. Before deleting team, unlink any associated projects.",
-            }, 400
+            return JSONResponse(
+                content={
+                    "Error": "Team has projects, cannot be deleted",
+                    "SubCode": "This team has projects associated. Before deleting team, unlink any associated projects.",
+                },
+                status_code=400,
+            )
 
     @staticmethod
     async def check_team_membership(
@@ -669,35 +789,32 @@ class TeamService:
         return len(user_membership) > 0
 
     @staticmethod
-    def send_message_to_all_team_members(
-        team_id: int, team_name: str, message_dto: MessageDTO
+    async def send_message_to_all_team_members(
+        team_id: int,
+        team_name: str,
+        message_dto: MessageDTO,
+        user_id: int,
+        db: Database,
     ):
-        """Sends supplied message to all contributors in a team.  Message all team members can take
-        over a minute to run, so this method is expected to be called on its own thread
-        """
-        app = (
-            create_app()
-        )  # Because message-all run on background thread it needs it's own app context
+        team_members = await TeamService._get_active_team_members(team_id, db)
+        user = await UserService.get_user_by_id(user_id, db)
+        sender = user.username
 
-        with app.app_context():
-            team_members = TeamService._get_active_team_members(team_id)
-            sender = UserService.get_user_by_id(message_dto.from_user_id).username
-
-            message_dto.message = (
-                "A message from {}, manager of {} team:<br/><br/>{}".format(
-                    MessageService.get_user_profile_link(sender),
-                    MessageService.get_team_link(team_name, team_id, False),
-                    markdown(message_dto.message, output_format="html"),
-                )
+        message_dto.message = (
+            "A message from {}, manager of {} team:<br/><br/>{}".format(
+                MessageService.get_user_profile_link(sender),
+                MessageService.get_team_link(team_name, team_id, False),
+                markdown(message_dto.message, output_format="html"),
             )
+        )
 
-            messages = []
-            for team_member in team_members:
-                if team_member.user_id != message_dto.from_user_id:
-                    message = Message.from_dto(team_member.user_id, message_dto)
-                    message.message_type = MessageType.TEAM_BROADCAST.value
-                    message.save()
-                    user = UserService.get_user_by_id(team_member.user_id)
-                    messages.append(dict(message=message, user=user))
+        messages = []
+        for team_member in team_members:
+            if team_member.user_id != user_id:
+                message = Message.from_dto(team_member.user_id, message_dto)
+                message.message_type = MessageType.TEAM_BROADCAST.value
+                await Message.save(message, db)
+                user = await UserService.get_user_by_id(team_member.user_id, db)
+                messages.append(dict(message=message, user=user))
 
-            MessageService._push_messages(messages)
+        MessageService._push_messages(messages)

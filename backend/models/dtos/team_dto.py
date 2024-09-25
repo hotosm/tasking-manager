@@ -75,9 +75,9 @@ class TeamMembersDTO(BaseModel):
 class TeamProjectDTO(BaseModel):
     """Describes a JSON model to create a project team"""
 
-    project_name: str
-    project_id: int
-    role: str
+    project_name: str = Field(None)
+    project_id: int = Field(None)
+    role: str = Field(None)
 
 
 class ProjectTeamDTO(BaseModel):
@@ -102,8 +102,8 @@ class TeamDetailsDTO(BaseModel):
     visibility: str
     is_org_admin: bool = Field(False)
     is_general_admin: bool = Field(False)
-    members: List[TeamMembersDTO] = Field(default_factory=list)
-    team_projects: List[TeamProjectDTO] = Field(default_factory=list)
+    members: List[TeamMembersDTO] = Field([], alias="team_members")
+    team_projects: List[TeamProjectDTO] = Field([], alias="team_projects")
 
     @field_validator("join_method")
     def validate_join_method(cls, value):
@@ -118,13 +118,13 @@ class TeamDTO(BaseModel):
     """Describes JSON model for a team"""
 
     team_id: Optional[int] = Field(None, serialization_alias="teamId")
-    organisation_id: int = Field(..., serialization_alias="organisationId")
-    organisation: str
-    name: str
+    organisation_id: int = Field(None, serialization_alias="organisation_id")
+    organisation: str = Field(None, serialization_alias="organisation")
+    name: str = Field(None, serialization_alias="name")
     logo: Optional[str] = None
     description: Optional[str] = None
-    join_method: str = Field(..., serialization_alias="joinMethod")
-    visibility: str = Field(..., serialization_alias="visibility")
+    join_method: str = Field(None, serialization_alias="joinMethod")
+    visibility: str = Field(None, serialization_alias="visibility")
     members: Optional[List[TeamMembersDTO]] = None
     members_count: Optional[int] = Field(None, serialization_alias="membersCount")
     managers_count: Optional[int] = Field(None, serialization_alias="managersCount")
@@ -163,35 +163,46 @@ class ListTeamsDTO(BaseModel):
 class NewTeamDTO(BaseModel):
     """Describes a JSON model to create a new team"""
 
-    creator: float
-    organisation_id: int
-    name: str
-    description: Optional[str]
+    creator: float = Field(None, alias="creator")
+    organisation_id: int = Field(..., alias="organisation_id")
+    name: str = Field(..., alias="name")
+    description: Optional[str] = Field(None, alias="description")
     join_method: str = Field(
-        required=True,
-        validators=[validate_team_join_method],
+        ...,
         alias="joinMethod",
     )
-    visibility: str = Field(
-        required=True, validators=[validate_team_visibility], serialize_when_none=False
-    )
+    visibility: str = Field(..., serialize_when_none=False)
+
+    @field_validator("join_method")
+    def validate_join_method(cls, value):
+        return validate_team_join_method(value)
+
+    @field_validator("visibility")
+    def validate_visibility(cls, value):
+        return validate_team_visibility(value)
 
 
 class UpdateTeamDTO(BaseModel):
     """Describes a JSON model to update a team"""
 
-    creator: float
-    team_id: int
-    organisation: str
-    organisation_id: int
-    name: str
-    logo: str
-    description: str
-    join_method: str = Field(validators=[validate_team_join_method], alias="joinMethod")
-    visibility: str = Field(
-        validators=[validate_team_visibility], serialize_when_none=False
-    )
-    # members = ListType(ModelType(TeamMembersDTO), serialize_when_none=False)
+    creator: float = Field(None, alias="creator")
+    team_id: int = Field(None, alias="team_id")
+    organisation: str = Field(None, alias="organisation")
+    organisation_id: int = Field(None, alias="organisation_id")
+    name: str = Field(None, alias="name")
+    logo: str = Field(None, alias="logo")
+    description: str = Field(None, alias="description")
+    join_method: str = Field(None, alias="joinMethod")
+    visibility: str = Field(None, serialize_when_none=False)
+    members: List[TeamMembersDTO] = Field([], serialize_when_none=False)
+
+    @field_validator("join_method")
+    def validate_join_method(cls, value):
+        return validate_team_join_method(value)
+
+    @field_validator("visibility")
+    def validate_visibility(cls, value):
+        return validate_team_visibility(value)
 
 
 class TeamSearchDTO(BaseModel):

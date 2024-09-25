@@ -7,9 +7,9 @@ from typing import List, Optional
 class MessageDTO(BaseModel):
     """DTO used to define a message that will be sent to a user"""
 
-    message_id: int = Field(serialization_alias="messageId")
-    subject: str
-    message: str
+    message_id: int = Field(None, serialization_alias="message_id")
+    subject: str = Field(None, serialization_alias="subject")
+    message: str = Field(None, serialization_alias="message")
     from_username: Optional[str] = Field("", serialization_alias="fromUsername")
     display_picture_url: Optional[str] = Field(
         "", serialization_alias="displayPictureUrl"
@@ -17,7 +17,7 @@ class MessageDTO(BaseModel):
     project_id: Optional[int] = Field(None, serialization_alias="projectId")
     project_title: Optional[str] = Field(None, serialization_alias="projectTitle")
     task_id: Optional[int] = Field(None, serialization_alias="taskId")
-    message_type: Optional[str] = Field(serialization_alias="messageType")
+    message_type: Optional[str] = Field(None, serialization_alias="message_type")
     sent_date: datetime = Field(None, serialization_alias="sentDate")
     read: bool = False
 
