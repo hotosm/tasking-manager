@@ -1,8 +1,6 @@
 from fastapi.responses import JSONResponse
-from sqlalchemy import and_
 from markdown import markdown
 
-from backend import create_app
 from backend.exceptions import NotFound
 from backend.models.dtos.team_dto import (
     ListTeamsDTO,
@@ -32,7 +30,6 @@ from backend.services.messaging.message_service import MessageService
 from backend.db import get_session
 
 session = get_session()
-from sqlalchemy import select
 from databases import Database
 
 
@@ -638,7 +635,7 @@ class TeamService:
     async def activate_team_member(team_id: int, user_id: int, db: Database):
         # Fetch the member by team_id and user_id
         query = """
-            SELECT * FROM team_members 
+            SELECT * FROM team_members
             WHERE team_id = :team_id AND user_id = :user_id
         """
         member = await db.fetch_one(
@@ -648,8 +645,8 @@ class TeamService:
         if member:
             # Update the 'active' status of the member
             update_query = """
-                UPDATE team_members 
-                SET active = TRUE 
+                UPDATE team_members
+                SET active = TRUE
                 WHERE team_id = :team_id AND user_id = :user_id
             """
             await db.execute(
@@ -665,7 +662,7 @@ class TeamService:
     async def delete_invite(team_id: int, user_id: int, db: Database):
         # Fetch the member by team_id and user_id to check if it exists
         query = """
-            SELECT * FROM team_members 
+            SELECT * FROM team_members
             WHERE team_id = :team_id AND user_id = :user_id
         """
         member = await db.fetch_one(
@@ -675,7 +672,7 @@ class TeamService:
         if member:
             # Delete the member from the database
             delete_query = """
-                DELETE FROM team_members 
+                DELETE FROM team_members
                 WHERE team_id = :team_id AND user_id = :user_id
             """
             await db.execute(
