@@ -2,7 +2,6 @@ from databases import Database
 from fastapi import APIRouter, Depends, Request, Body, BackgroundTasks
 from fastapi.responses import JSONResponse
 from loguru import logger
-import threading
 
 from backend.db import get_db
 from backend.models.dtos.message_dto import MessageDTO
@@ -11,7 +10,6 @@ from backend.services.team_service import (
     TeamJoinNotAllowed,
     TeamServiceError,
 )
-from backend.services.users.authentication_service import tm
 from backend.models.postgis.user import User
 from backend.services.users.authentication_service import login_required
 from backend.models.dtos.user_dto import AuthUserDTO
