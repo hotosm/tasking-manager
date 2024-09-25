@@ -421,13 +421,14 @@ class MessageService:
         )
 
     @staticmethod
-    def accept_reject_request_to_join_team(
+    async def accept_reject_request_to_join_team(
         from_user: int,
         from_username: str,
         to_user: int,
         team_name: str,
         team_id: int,
         response: str,
+        db: Database,
     ):
         message = Message()
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
@@ -439,11 +440,10 @@ class MessageService:
         message.message = (
             f"{user_link} has {response}ed your request to join the {team_link} team."
         )
-        message.add_message()
-        message.save()
+        await Message.save(message, db)
 
     @staticmethod
-    def accept_reject_invitation_request_for_team(
+    async def accept_reject_invitation_request_for_team(
         from_user: int,
         from_username: str,
         to_user: int,
@@ -451,6 +451,7 @@ class MessageService:
         team_name: str,
         team_id: int,
         response: str,
+        db: Database,
     ):
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
@@ -467,17 +468,17 @@ class MessageService:
             sending_member,
             MessageService.get_team_link(team_name, team_id, True),
         )
-        message.add_message()
-        message.save()
+        await Message.save(message, db)
 
     @staticmethod
-    def send_team_join_notification(
+    async def send_team_join_notification(
         from_user: int,
         from_username: str,
         to_user: int,
         team_name: str,
         team_id: int,
         role: str,
+        db: Database,
     ):
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
@@ -489,8 +490,7 @@ class MessageService:
         message.message = f"You have been added  to the team {team_link} as {role} by {user_link}.\
             Access the {team_link}'s page to view more info about this team."
 
-        message.add_message()
-        message.save()
+        await Message.save(message, db)
 
     @staticmethod
     def send_message_after_chat(
@@ -578,10 +578,10 @@ class MessageService:
                 MessageService._push_messages(messages)
 
     @staticmethod
-    def send_favorite_project_activities(user_id: int):
+    async def send_favorite_project_activities(user_id: int):
         logger.debug("Sending Favorite Project Activities")
         favorited_projects = UserService.get_projects_favorited(user_id)
-        contributed_projects = UserService.get_projects_mapped(user_id)
+        contributed_projects = await UserService.get_projects_mapped(user_id, db)
         if contributed_projects is None:
             contributed_projects = []
 
@@ -645,14 +645,18 @@ class MessageService:
         await SMTPService.send_verification_email(user.email_address, user.username)
 
     @staticmethod
-    def _parse_message_for_bulk_mentions(
-        message: str, project_id: int, task_id: int = None
+    async def _parse_message_for_bulk_mentions(
+        message: str, project_id: int, task_id: int = None, db: Database = None
     ) -> List[str]:
         parser = re.compile(r"((?<=#)\w+|\[.+?\])")
         parsed = parser.findall(message)
 
         usernames = []
-        project = session.get(Project, project_id)
+        query = """
+            SELECT * FROM projects
+            WHERE id = :project_id
+        """
+        project = await db.fetch_one(query, values={"project_id": project_id})
 
         if project is None:
             return usernames
@@ -678,8 +682,8 @@ class MessageService:
         return usernames
 
     @staticmethod
-    def _parse_message_for_username(
-        message: str, project_id: int, task_id: int = None
+    async def _parse_message_for_username(
+        message: str, project_id: int, task_id: int = None, db: Database = None
     ) -> List[str]:
         """Extracts all usernames from a comment looks for format @[user name]"""
 
@@ -693,8 +697,8 @@ class MessageService:
             usernames.append(username)
 
         usernames.extend(
-            MessageService._parse_message_for_bulk_mentions(
-                message, project_id, task_id
+            await MessageService._parse_message_for_bulk_mentions(
+                message, project_id, task_id, db
             )
         )
         usernames = list(set(usernames))
