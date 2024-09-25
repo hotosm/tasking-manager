@@ -2,6 +2,16 @@ from databases import Database
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy import Column, Integer, BigInteger, Boolean, ForeignKey, String, DateTime
+from sqlalchemy import (
+    Column,
+    Integer,
+    BigInteger,
+    Boolean,
+    ForeignKey,
+    String,
+    insert,
+    delete,
+)
 from sqlalchemy.orm import relationship, backref
 from backend.exceptions import NotFound
 from backend.models.dtos.team_dto import (
@@ -44,24 +54,55 @@ class TeamMembers(Base):
     )
     joined_date = Column(DateTime, default=timestamp)
 
-    def create(self):
+    async def create(self, db: Database):
         """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
+        team_member = await db.execute(
+            insert(TeamMembers.__table__).values(
+                team_id=self.team_id,
+                user_id=self.user_id,
+                function=self.function,
+                active=self.active,
+                join_request_notifications=self.join_request_notifications,
+            )
+        )
+        return team_member
 
     def delete(self):
         """Deletes the current model from the DB"""
         session.delete(self)
         session.commit()
 
-    def update(self):
+    async def update(self, db: Database):
         """Updates the current model in the DB"""
-        session.commit()
+        await db.execute(
+            TeamMembers.__table__.update()
+            .where(TeamMembers.team_id == self.team_id)
+            .where(TeamMembers.user_id == self.user_id)
+            .values(
+                function=self.function,
+                active=self.active,
+                join_request_notifications=self.join_request_notifications,
+            )
+        )
 
     @staticmethod
-    def get(team_id: int, user_id: int):
-        """Returns a team member by team_id and user_id"""
-        return TeamMembers.query.filter_by(team_id=team_id, user_id=user_id).first()
+    async def get(team_id: int, user_id: int, db: Database):
+        """
+        Returns a team member by team_id and user_id
+        :param team_id: ID of the team
+        :param user_id: ID of the user
+        :param db: async database connection
+        :return: Team member if found, otherwise None
+        """
+        query = """
+            SELECT * FROM team_members
+            WHERE team_id = :team_id AND user_id = :user_id
+        """
+        member = await db.fetch_one(
+            query, values={"team_id": team_id, "user_id": user_id}
+        )
+
+        return member  # Returns the team member if found, otherwise None
 
 
 class Team(Base):
@@ -85,13 +126,22 @@ class Team(Base):
     # organisation = relationship(Organisation, backref="teams", lazy="joined")
     organisation = relationship(Organisation, backref="teams")
 
-    def create(self):
+    async def create(self, db: Database):
         """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
+        team = await db.execute(
+            insert(Team.__table__).values(
+                organisation_id=self.organisation_id,
+                name=self.name,
+                logo=self.logo,
+                description=self.description,
+                join_method=self.join_method,
+                visibility=self.visibility,
+            )
+        )
+        return team if team else None
 
     @classmethod
-    def create_from_dto(cls, new_team_dto: NewTeamDTO):
+    async def create_from_dto(cls, new_team_dto: NewTeamDTO, db: Database):
         """Creates a new team from a dto"""
         new_team = cls()
 
@@ -100,8 +150,8 @@ class Team(Base):
         new_team.join_method = TeamJoinMethod[new_team_dto.join_method].value
         new_team.visibility = TeamVisibility[new_team_dto.visibility].value
 
-        org = Organisation.get(new_team_dto.organisation_id)
-        new_team.organisation = org
+        org = await Organisation.get(new_team_dto.organisation_id, db)
+        new_team.organisation_id = org
 
         # Create team member with creator as a manager
         new_member = TeamMembers()
@@ -113,17 +163,19 @@ class Team(Base):
 
         new_team.members.append(new_member)
 
-        new_team.create()
-        return new_team
+        team = await Team.create(new_team, db)
+        return team
 
-    def update(self, team_dto: TeamDTO):
+    async def update(self, team_dto: TeamDTO, db: Database):
         """Updates Team from DTO"""
         if team_dto.organisation:
-            self.organisation = Organisation().get_organisation_by_name(
-                team_dto.organisation
+            self.organisation = Organisation.get_organisation_by_name(
+                team_dto.organisation, db
             )
 
-        for attr, value in team_dto.items():
+        # Build the update query for the team attributes
+        update_fields = {}
+        for attr, value in team_dto.dict().items():
             if attr == "visibility" and value is not None:
                 value = TeamVisibility[team_dto.visibility].value
             if attr == "join_method" and value is not None:
@@ -132,65 +184,115 @@ class Team(Base):
             if attr in ("members", "organisation"):
                 continue
 
-            try:
-                is_field_nullable = self.__table__.columns[attr].nullable
-                if is_field_nullable and value is not None:
-                    setattr(self, attr, value)
-                elif value is not None:
-                    setattr(self, attr, value)
-            except KeyError:
-                continue
+            if attr in Team.__table__.columns:
+                update_fields[attr] = value
 
-        if team_dto.members != self._get_team_members() and team_dto.members:
-            for member in self.members:
-                member_name = User.get_by_id(member.user_id).username
-                if member_name not in [i["username"] for i in team_dto.members]:
-                    member.delete()
+        # Update the team in the database
+        if update_fields:
+            update_query = (
+                "UPDATE teams SET "
+                + ", ".join([f"{k} = :{k}" for k in update_fields.keys()])
+                + " WHERE id = :id"
+            )
+            await db.execute(update_query, {**update_fields, "id": self.id})
+
+        # Update team members if they have changed
+        if (
+            team_dto.members != await Team._get_team_members(self, db)
+            and team_dto.members
+        ):
+            # Get existing members from the team
+            existing_members = await db.fetch_all(
+                "SELECT user_id FROM team_members WHERE team_id = :team_id",
+                {"team_id": self.id},
+            )
+
+            # Remove members who are not in the new member list
+            new_member_usernames = [member["username"] for member in team_dto.members]
+            for member in existing_members:
+                username = await db.fetch_val(
+                    "SELECT username FROM users WHERE id = :id",
+                    {"id": member["user_id"]},
+                )
+                if username not in new_member_usernames:
+                    await db.execute(
+                        "DELETE FROM team_members WHERE team_id = :team_id AND user_id = :user_id",
+                        {"team_id": self.id, "user_id": member["user_id"]},
+                    )
+
+            # Add or update members from the new member list
             for member in team_dto.members:
-                user = User.get_by_username(member["username"])
-                if user is None:
+                user = await db.fetch_one(
+                    "SELECT id FROM users WHERE username = :username",
+                    {"username": member["username"]},
+                )
+                if not user:
                     raise NotFound(
                         sub_code="USER_NOT_FOUND", username=member["username"]
                     )
-                team_member = TeamMembers.get(self.id, user.id)
+
+                # Check if the user is already a member of the team
+                team_member = await db.fetch_one(
+                    "SELECT * FROM team_members WHERE team_id = :team_id AND user_id = :user_id",
+                    {"team_id": self.id, "user_id": user["id"]},
+                )
+
                 if team_member:
-                    team_member.join_request_notifications = member[
-                        "join_request_notifications"
-                    ]
+                    # Update member's join_request_notifications
+                    await db.execute(
+                        "UPDATE team_members SET join_request_notifications = :join_request_notifications WHERE team_id = :team_id AND user_id = :user_id",
+                        {
+                            "join_request_notifications": member[
+                                "join_request_notifications"
+                            ],
+                            "team_id": self.id,
+                            "user_id": user["id"],
+                        },
+                    )
                 else:
-                    new_team_member = TeamMembers()
-                    new_team_member.team = self
-                    new_team_member.member = user
-                    new_team_member.function = TeamMemberFunctions[
-                        member["function"]
-                    ].value
+                    # Add a new member to the team
+                    await db.execute(
+                        "INSERT INTO team_members (team_id, user_id, function, join_request_notifications) VALUES (:team_id, :user_id, :function, :join_request_notifications)",
+                        {
+                            "team_id": self.id,
+                            "user_id": user["id"],
+                            "function": TeamMemberFunctions[member["function"]].value,
+                            "join_request_notifications": member[
+                                "join_request_notifications"
+                            ],
+                        },
+                    )
 
-        session.commit()
-
-    def delete(self):
+    async def delete(self, db: Database):
         """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
+        await db.execute(delete(Team.__table__).where(Team.id == self.id))
 
     def can_be_deleted(self) -> bool:
         """A Team can be deleted if it doesn't have any projects"""
         return len(self.projects) == 0
 
-    def get(team_id: int):
+    async def get(team_id: int, db: Database):
         """
         Gets specified team by id
         :param team_id: team ID in scope
         :return: Team if found otherwise None
         """
-        return session.get(Team, team_id)
+        return db.fetch_one(Team.__table__, Team.id == team_id)
 
-    def get_team_by_name(team_name: str):
+    async def get_team_by_name(team_name: str, db: Database):
         """
         Gets specified team by name
         :param team_name: team name in scope
-        :return: Team if found otherwise None
+        :param db: async database connection
+        :return: Team if found, otherwise None
         """
-        return Team.query.filter_by(name=team_name).one_or_none()
+        query = """
+            SELECT * FROM teams
+            WHERE name = :team_name
+        """
+        team = await db.fetch_one(query, values={"team_name": team_name})
+
+        return team  # Returns the team if found, otherwise None
 
     def as_dto(self):
         """Returns a dto for the team"""
@@ -214,7 +316,7 @@ class Team(Base):
         team_dto.name = self.name
         team_dto.description = self.description
         team_dto.join_method = TeamJoinMethod(self.join_method).name
-        team_dto.members = await self._get_team_members(session)
+        team_dto.members = self._get_team_members()
         team_dto.visibility = TeamVisibility(self.visibility).name
 
         return team_dto
@@ -255,19 +357,30 @@ class Team(Base):
             role=TeamRoles(project.role).name,
         )
 
-    async def _get_team_members(self, session):
-        """Helper to get JSON serialized members"""
-        members = []
-        for mem in self.members:
-            members.append(
-                {
-                    "username": mem.member.username,
-                    "pictureUrl": mem.member.picture_url,
-                    "function": TeamMemberFunctions(mem.function).name,
-                    "active": mem.active,
-                    "joinedDate": mem.joined_date,
-                }
-            )
+    async def _get_team_members(self, db: Database):
+        """Helper to get JSON serialized members using raw SQL queries"""
+
+        # SQL query to fetch all members of the team, including their username, picture_url, function, and active status
+        query = """
+            SELECT u.username, u.picture_url, tm.function, tm.active
+            FROM team_members tm
+            JOIN users u ON tm.user_id = u.id
+            WHERE tm.team_id = :team_id
+        """
+
+        # Execute the query and fetch all team members
+        rows = await db.fetch_all(query, {"team_id": self.id})
+
+        # Convert the fetched rows into a list of dictionaries (JSON serialized format)
+        members = [
+            {
+                "username": row["username"],
+                "pictureUrl": row["picture_url"],
+                "function": TeamMemberFunctions(row["function"]).name,
+                "active": row["active"],
+            }
+            for row in rows
+        ]
 
         return members
 
