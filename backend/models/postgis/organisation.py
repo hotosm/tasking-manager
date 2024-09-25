@@ -195,13 +195,16 @@ class Organisation(Base):
         return projects_count == 0 and teams_count == 0
 
     @staticmethod
-    def get(organisation_id: int, session):
+    async def get(organisation_id: int, db: Database):
         """
         Gets specified organisation by id
         :param organisation_id: organisation ID in scope
         :return: Organisation if found otherwise None
         """
-        return session.get(Organisation, organisation_id)
+        organization = await db.fetch_one(
+            "SELECT * FROM organisations WHERE id = :id", values={"id": organisation_id}
+        )
+        return organization["id"] if organization else None
 
     @staticmethod
     async def get_organisation_by_name(organisation_name: str, db: Database):

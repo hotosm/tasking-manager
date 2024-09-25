@@ -1,3 +1,10 @@
+from databases import Database
+from distutils.util import strtobool
+from fastapi import APIRouter, Depends, Request, Body
+from fastapi.responses import JSONResponse
+from loguru import logger
+
+from backend.db import get_db
 from backend.models.dtos.team_dto import (
     NewTeamDTO,
     UpdateTeamDTO,
@@ -8,28 +15,24 @@ from backend.services.organisation_service import OrganisationService
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
 from backend.models.dtos.user_dto import AuthUserDTO
-from distutils.util import strtobool
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_db, get_session
-from starlette.authentication import requires
-from loguru import logger
-from databases import Database
 
 
 router = APIRouter(
     prefix="/teams",
     tags=["teams"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
-# class TeamsRestAPI(Resource):
-#     @token_auth.login_required
-
 
 @router.patch("/{team_id}/")
-@requires("authenticated")
-async def patch(request: Request, team_id: int):
+async def patch(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    team_id: int = None,
+    team_dto: UpdateTeamDTO = Body(...),
+):
     """
     Updates a team
     ---
@@ -89,34 +92,41 @@ async def patch(request: Request, team_id: int):
             description: Internal Server Error
     """
     try:
-        team = TeamService.get_team_by_id(team_id)
-        team_dto = UpdateTeamDTO(request.json())
+        team = await TeamService.get_team_by_id(team_id, db)
         team_dto.team_id = team_id
-        team_dto.validate()
 
-        authenticated_user_id = request.user.display_name
-        if not TeamService.is_user_team_manager(
-            team_id, authenticated_user_id
-        ) and not OrganisationService.can_user_manage_organisation(
-            team.organisation_id, authenticated_user_id
+        if not await TeamService.is_user_team_manager(
+            team_id, user.id, db
+        ) and not await OrganisationService.can_user_manage_organisation(
+            team.organisation_id, user.id, db
         ):
-            return {
-                "Error": "User is not a admin or a manager for the team",
-                "SubCode": "UserNotTeamManager",
-            }, 403
+            return JSONResponse(
+                content={
+                    "Error": "User is not a admin or a manager for the team",
+                    "SubCode": "UserNotTeamManager",
+                },
+                status_code=403,
+            )
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
+        )
 
     try:
-        TeamService.update_team(team_dto)
-        return {"Status": "Updated"}, 200
+        await TeamService.update_team(team_dto, db)
+        return JSONResponse(content={"Status": "Updated"}, status_code=200)
     except TeamServiceError as e:
-        return str(e), 402
+        return JSONResponse(content={"Error": str(e)}, status_code=402)
 
 
 @router.get("/{team_id}/")
-async def retrieve_team(request: Request, team_id: int, db: Database = Depends(get_db)):
+async def retrieve_team(
+    request: Request,
+    team_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Retrieves a Team
     ---
@@ -146,7 +156,7 @@ async def retrieve_team(request: Request, team_id: int, db: Database = Depends(g
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name
+    authenticated_user_id = user.id
     omit_members = strtobool(request.query_params.get("omitMemberList", "false"))
     if authenticated_user_id is None:
         user_id = 0
@@ -159,8 +169,12 @@ async def retrieve_team(request: Request, team_id: int, db: Database = Depends(g
 
 
 @router.delete("/{team_id}/")
-@requires("authenticated")
-async def delete(request: Request, team_id: int):
+async def delete(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    team_id: int = None,
+):
     """
     Deletes a Team
     ---
@@ -193,13 +207,16 @@ async def delete(request: Request, team_id: int):
         500:
             description: Internal Server Error
     """
-    if not TeamService.is_user_team_manager(team_id, request.user.display_name):
-        return {
-            "Error": "User is not a manager for the team",
-            "SubCode": "UserNotTeamManager",
-        }, 401
+    if not await TeamService.is_user_team_manager(team_id, user.id, db):
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager for the team",
+                "SubCode": "UserNotTeamManager",
+            },
+            status_code=403,
+        )
 
-    return TeamService.delete_team(team_id)
+    return await TeamService.delete_team(team_id, db)
 
 
 @router.get("/")
@@ -306,8 +323,8 @@ async def list_teams(
         request.query_params.get("fullMemberList", "true")
     )
     search_dto.paginate = strtobool(request.query_params.get("paginate", "false"))
-    search_dto.page = request.query_params.get("page", 1)
-    search_dto.per_page = request.query_params.get("perPage", 10)
+    search_dto.page = int(request.query_params.get("page", 1))
+    search_dto.per_page = int(request.query_params.get("perPage", 10))
     search_dto.user_id = user.id
 
     teams = await TeamService.get_all_teams(search_dto, db)
@@ -315,8 +332,12 @@ async def list_teams(
 
 
 @router.post("/")
-@requires("authenticated")
-async def post(request: Request):
+async def post(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    team_dto: NewTeamDTO = Body(...),
+):
     """
     Creates a new team
     ---
@@ -368,28 +389,30 @@ async def post(request: Request):
         500:
             description: Internal Server Error
     """
-    user_id = request.user.display_name
 
     try:
-        team_dto = NewTeamDTO(request.json())
-        team_dto.creator = user_id
-        team_dto.validate()
+        team_dto.creator = user.id
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
+        )
 
     try:
         organisation_id = team_dto.organisation_id
 
-        is_org_manager = OrganisationService.is_user_an_org_manager(
-            organisation_id, user_id
+        is_org_manager = await OrganisationService.is_user_an_org_manager(
+            organisation_id, user.id, db
         )
-        is_admin = UserService.is_user_an_admin(user_id)
+        is_admin = await UserService.is_user_an_admin(user.id, db)
         if is_admin or is_org_manager:
-            team_id = TeamService.create_team(team_dto)
-            return {"teamId": team_id}, 201
+            team_id = await TeamService.create_team(team_dto, db)
+            return JSONResponse(content={"teamId": team_id}, status_code=201)
         else:
             error_msg = "User not permitted to create team for the Organisation"
-            return {"Error": error_msg, "SubCode": "CreateTeamNotPermitted"}, 403
+            return JSONResponse(
+                content={"Error": error_msg, "SubCode": "CreateTeamNotPermitted"},
+                status_code=403,
+            )
     except TeamServiceError as e:
-        return str(e), 400
+        return JSONResponse(content={"Error": str(e)}, status_code=400)
