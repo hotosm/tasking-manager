@@ -274,21 +274,28 @@ class User(Base):
         return dto
 
     @staticmethod
-    def upsert_mapped_projects(user_id: int, project_id: int):
-        """Adds projects to mapped_projects if it doesn't exist"""
-        query = session.query(User).filter_by(id=user_id)
-        result = query.filter(
-            User.projects_mapped.op("@>")("{}".format("{" + str(project_id) + "}"))
-        ).count()
-        if result > 0:
-            return  # User has previously mapped this project so return
+    async def upsert_mapped_projects(user_id: int, project_id: int, db: Database):
+        """Add project to mapped projects if it doesn't exist"""
+        query = """
+            SELECT COUNT(*)
+            FROM users
+            WHERE id = :user_id
+              AND projects_mapped @> ARRAY[:project_id]::integer[]
+        """
+        result = await db.fetch_val(
+            query, values={"user_id": user_id, "project_id": project_id}
+        )
 
-        user = query.one_or_none()
-        # Fix for new mappers.
-        if user.projects_mapped is None:
-            user.projects_mapped = []
-        user.projects_mapped.append(project_id)
-        session.commit()
+        if result > 0:
+            return  # Project already exists in mapped projects
+
+        # Insert the project_id into the user's mapped projects array
+        query = """
+            UPDATE users
+            SET projects_mapped = array_append(projects_mapped, :project_id)
+            WHERE id = :user_id
+        """
+        await db.execute(query, values={"user_id": user_id, "project_id": project_id})
 
     # TODO Optimization: Get only project name instead of all the locale attributes.
     @staticmethod

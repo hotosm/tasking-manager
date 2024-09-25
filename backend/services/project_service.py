@@ -2,6 +2,7 @@ import threading
 from cachetools import TTLCache, cached
 
 # # from flask import current_app
+from backend.config import get_settings
 import geojson
 from datetime import datetime, timedelta, timezone
 
@@ -17,7 +18,6 @@ from backend.models.dtos.project_dto import (
     ProjectSearchResultsDTO,
 )
 from backend.models.postgis.organisation import Organisation
-from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.project import Project, ProjectStatus
 from backend.models.postgis.statuses import (
     MappingNotAllowed,
@@ -441,12 +441,12 @@ class ProjectService:
         return True
 
     @staticmethod
-    def evaluate_validation_permission(
-        project_id: int, user_id: int, validation_permission: int
+    async def evaluate_validation_permission(
+        project_id: int, user_id: int, validation_permission: int, db: Database
     ):
         allowed_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
-        is_team_member = TeamService.check_team_membership(
-            project_id, allowed_roles, user_id
+        is_team_member = await TeamService.check_team_membership(
+            project_id, allowed_roles, user_id, db
         )
         # validation_permission = 1(level),2(teams),3(teamsAndLevel)
         if validation_permission == ValidationPermission.TEAMS.value:
@@ -454,30 +454,37 @@ class ProjectService:
                 return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
         elif validation_permission == ValidationPermission.LEVEL.value:
-            if not ProjectService._is_user_intermediate_or_advanced(user_id):
+            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
                 return False, ValidatingNotAllowed.USER_IS_BEGINNER
 
         elif validation_permission == ValidationPermission.TEAMS_LEVEL.value:
-            if not ProjectService._is_user_intermediate_or_advanced(user_id):
+            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
                 return False, ValidatingNotAllowed.USER_IS_BEGINNER
             if not is_team_member:
                 return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
     @staticmethod
-    def is_user_permitted_to_validate(project_id, user_id):
+    async def is_user_permitted_to_validate(
+        project_id: int, user_id: int, db: Database
+    ):
         """Check if the user is allowed to validate on the project in scope"""
-        if UserService.is_user_blocked(user_id):
+        if await UserService.is_user_blocked(user_id, db):
             return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
-        project = ProjectService.get_project_by_id(project_id)
+        project = await ProjectService.get_project_by_id(project_id, db)
         if project.license_id:
-            if not UserService.has_user_accepted_license(user_id, project.license_id):
+            if not UserService.has_user_accepted_license(
+                user_id, project.license_id, db
+            ):
                 return False, ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE
+
         validation_permission = project.validation_permission
 
         # is_admin or is_author or is_org_manager or is_manager_team
         is_manager_permission = False
-        if ProjectAdminService.is_user_action_permitted_on_project(user_id, project_id):
+        if ProjectAdminService.is_user_action_permitted_on_project(
+            user_id, project_id, db
+        ):
             is_manager_permission = True
 
         # Draft (public/private) accessible only for is_manager_permission
@@ -489,19 +496,19 @@ class ProjectService:
 
         is_restriction = None
         if not is_manager_permission and validation_permission:
-            is_restriction = ProjectService.evaluate_validation_permission(
-                project_id, user_id, validation_permission
+            is_restriction = await ProjectService.evaluate_validation_permission(
+                project_id, user_id, validation_permission, db
             )
 
-        tasks = Task.get_locked_tasks_for_user(user_id)
+        tasks = await Task.get_locked_tasks_for_user(user_id, db)
         if len(tasks.locked_tasks) > 0:
             return False, ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
         is_allowed_user = None
         if project.private and not is_manager_permission:
             # Check if user is in allowed user list
-            is_allowed_user = ProjectService.is_user_in_the_allowed_list(
-                project.allowed_users, user_id
+            is_allowed_user = await ProjectService.is_user_in_the_allowed_list(
+                project_id, user_id, db
             )
 
             if is_allowed_user:
@@ -703,13 +710,21 @@ class ProjectService:
         return project.organisation
 
     @staticmethod
-    def send_email_on_project_progress(project_id):
+    async def send_email_on_project_progress(project_id: int, db: Database):
         """Send email to all contributors on project progress"""
-        if not current_app.config["SEND_PROJECT_EMAIL_UPDATES"]:
+        current_settings = get_settings()
+        if not current_settings.SEND_PROJECT_EMAIL_UPDATES:
             return
-        project = ProjectService.get_project_by_id(project_id)
+        project = await ProjectService.get_project_by_id(project_id, db)
 
-        project_completion = project.calculate_tasks_percent("project_completion")
+        project_completion = Project.calculate_tasks_percent(
+            "project_completion",
+            project.tasks_mapped,
+            project.tasks_validated,
+            project.total_tasks,
+            project.tasks_bad_imagery,
+        )
+
         if project_completion == 50 and project.progress_email_sent:
             return  # Don't send progress email if it's already sent
         if project_completion in [50, 100]:
@@ -718,11 +733,26 @@ class ProjectService:
                 if project_completion == 100
                 else EncouragingEmailType.PROJECT_PROGRESS.value
             )
-            project_title = ProjectInfo.get_dto_for_locale(
-                project_id, project.default_locale
-            ).name
-            project.progress_email_sent = True
-            project.save()
+            project_title_query = """
+                SELECT name
+                FROM project_info
+                WHERE project_id = :project_id AND locale = :locale
+            """
+            project_title = await db.fetch_val(
+                project_title_query,
+                values={"project_id": project_id, "locale": project["default_locale"]},
+            )
+
+            # Update progress_email_sent status
+            await db.execute(
+                """
+                UPDATE projects
+                SET progress_email_sent = TRUE
+                WHERE id = :project_id
+            """,
+                values={"project_id": project_id},
+            )
+
             threading.Thread(
                 target=SMTPService.send_email_to_contributors_on_project_progress,
                 args=(

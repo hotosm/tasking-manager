@@ -25,9 +25,12 @@ from databases import Database
 class MappingServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling mapping"""
 
-    def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+    # Log the error here.
+    pass
+
+    # def __init__(self, message):
+    #     if current_app:
+    #         current_app.logger.debug(message)
 
 
 class MappingService:
@@ -104,8 +107,6 @@ class MappingService:
             user_can_map, error_reason = await ProjectService.is_user_permitted_to_map(
                 lock_task_dto.project_id, lock_task_dto.user_id, db
             )
-            print(user_can_map, "Yo confition to map...")
-            print(error_reason, "yo error reason...")
             # TODO Handle error exceptions..
             if not user_can_map:
                 if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
@@ -138,43 +139,59 @@ class MappingService:
         )
 
     @staticmethod
-    def unlock_task_after_mapping(mapped_task: MappedTaskDTO) -> TaskDTO:
+    async def unlock_task_after_mapping(
+        mapped_task: MappedTaskDTO, db: Database
+    ) -> TaskDTO:
         """Unlocks the task and sets the task history appropriately"""
-        task = MappingService.get_task_locked_by_user(
-            mapped_task.project_id, mapped_task.task_id, mapped_task.user_id
+        # Fetch the task locked by the user
+        task = await MappingService.get_task_locked_by_user(
+            mapped_task.project_id, mapped_task.task_id, mapped_task.user_id, db
         )
-
+        # Validate the new state
         new_state = TaskStatus[mapped_task.status.upper()]
-
         if new_state not in [
             TaskStatus.MAPPED,
             TaskStatus.BADIMAGERY,
             TaskStatus.READY,
         ]:
             raise MappingServiceError(
-                "InvalidUnlockState- Can only set status to MAPPED, BADIMAGERY, READY after mapping"
+                "InvalidUnlockState - Can only set status to MAPPED, BADIMAGERY, READY after mapping"
             )
-
-        # Update stats around the change of state
-        last_state = TaskHistory.get_last_status(
-            mapped_task.project_id, mapped_task.task_id
+        last_state = await TaskHistory.get_last_status(
+            mapped_task.project_id, mapped_task.task_id, db
         )
-        StatsService.update_stats_after_task_state_change(
-            mapped_task.project_id, mapped_task.user_id, last_state, new_state
+        await StatsService.update_stats_after_task_state_change(
+            mapped_task.project_id, mapped_task.user_id, last_state, new_state, db
         )
 
         if mapped_task.comment:
-            # Parses comment to see if any users have been @'d
-            MessageService.send_message_after_comment(
+            # TODO Verify this messaging functionality.
+            await MessageService.send_message_after_comment(
                 mapped_task.user_id,
                 mapped_task.comment,
-                task.id,
+                task["id"],
                 mapped_task.project_id,
+                db,
             )
+        # Unlock the task and change its state
+        await Task.unlock_task(
+            task_id=mapped_task.task_id,
+            project_id=mapped_task.project_id,
+            user_id=mapped_task.user_id,
+            new_state=new_state,
+            db=db,
+            comment=mapped_task.comment,
+        )
+        # Send email on project progress
+        # TODO: Verify this email mechanism.
+        await ProjectService.send_email_on_project_progress(mapped_task.project_id, db)
 
-        task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
-        ProjectService.send_email_on_project_progress(mapped_task.project_id)
-        return task.as_dto_with_instructions(mapped_task.preferred_locale)
+        return await Task.as_dto_with_instructions(
+            task_id=mapped_task.task_id,
+            project_id=mapped_task.project_id,
+            db=db,
+            preferred_locale=mapped_task.preferred_locale,
+        )
 
     @staticmethod
     def stop_mapping_task(stop_task: StopMappingTaskDTO) -> TaskDTO:
@@ -193,25 +210,36 @@ class MappingService:
         return task.as_dto_with_instructions(stop_task.preferred_locale)
 
     @staticmethod
-    def get_task_locked_by_user(project_id: int, task_id: int, user_id: int) -> Task:
+    async def get_task_locked_by_user(
+        project_id: int, task_id: int, user_id: int, db: Database
+    ):
+        """Returns task specified by project id and task id if found and locked for mapping by user"""
+        query = """
+            SELECT * FROM tasks
+            WHERE id = :task_id AND project_id = :project_id
         """
-        Returns task specified by project id and task id if found and locked for mapping by user
-        :raises: MappingServiceError
-        """
-        task = MappingService.get_task(task_id, project_id)
+        task = await db.fetch_one(
+            query, values={"task_id": task_id, "project_id": project_id}
+        )
+
         if task is None:
             raise NotFound(
-                sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
+                status_code=404,
+                sub_code="TASK_NOT_FOUND",
+                project_id=project_id,
+                task_id=task_id,
             )
-        current_state = TaskStatus(task.task_status)
-        if current_state != TaskStatus.LOCKED_FOR_MAPPING:
+
+        if task["task_status"] != TaskStatus.LOCKED_FOR_MAPPING.value:
             raise MappingServiceError(
                 "LockBeforeUnlocking- Status must be LOCKED_FOR_MAPPING to unlock"
             )
-        if task.locked_by != user_id:
+
+        if task["locked_by"] != user_id:
             raise MappingServiceError(
                 "TaskNotOwned- Attempting to unlock a task owned by another user"
             )
+
         return task
 
     @staticmethod

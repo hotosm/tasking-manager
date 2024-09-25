@@ -21,6 +21,9 @@ class MessageDTO(BaseModel):
     sent_date: datetime = Field(None, serialization_alias="sentDate")
     read: bool = False
 
+    class Config:
+        populate_by_name = True
+
 
 class MessagesDTO(BaseModel):
     """DTO used to return all user messages"""
@@ -31,9 +34,10 @@ class MessagesDTO(BaseModel):
         self.user_messages = []
 
     pagination: Optional[Pagination] = None
-    user_messages: Optional[List[MessageDTO]] = Field(
-        [], serialization_alias="userMessages"
-    )
+    user_messages: Optional[List[MessageDTO]] = Field([], alias="userMessages")
+
+    class Config:
+        populate_by_name = True
 
 
 class ChatMessageDTO(BaseModel):
