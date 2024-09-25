@@ -14,7 +14,6 @@ from sqlalchemy import (
     column,
     select,
     union,
-    alias,
 )
 from databases import Database
 
@@ -57,7 +56,6 @@ from backend.config import Settings
 
 settings = Settings()
 session = get_session()
-from databases import Database
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)
 
