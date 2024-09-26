@@ -204,15 +204,30 @@ class ProjectSearchService:
     def search_projects_as_csv(search_dto: ProjectSearchDTO, user) -> str:
         all_results, _ = ProjectSearchService._filter_projects(search_dto, user)
         is_user_admin = user is not None and user.role == UserRole.ADMIN.value
+
+        project_ids = [p.id for p in all_results]
+        contributors_by_project_id = (
+            TaskHistory.query.with_entities(
+                TaskHistory.project_id, func.count(TaskHistory.user_id.distinct())
+            )
+            .filter(
+                TaskHistory.project_id.in_(project_ids), TaskHistory.action != "COMMENT"
+            )
+            .group_by(TaskHistory.project_id)
+            .all()
+        )
+
         results_as_dto = [
             ProjectSearchService.create_result_dto(
-                p,
+                project,
                 search_dto.preferred_locale,
-                Project.get_project_total_contributions(p[0]),
+                next(filter(lambda c: c[0] == project.id, contributors_by_project_id))[
+                    1
+                ],
                 with_partner_names=is_user_admin,
                 with_author_name=False,
             ).to_primitive()
-            for p in all_results
+            for project in all_results
         ]
 
         df = pd.json_normalize(results_as_dto)
