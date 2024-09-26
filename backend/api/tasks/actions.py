@@ -465,9 +465,13 @@ async def post(
         }, 409
 
 
-@router.post("{project_id}/tasks/actions/stop-validation/")
-@requires("authenticated")
-async def post(request: Request, project_id: int):
+@router.post("/{project_id}/tasks/actions/stop-validation/")
+async def post(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Unlock tasks that are locked for validation resetting them to their last status
     ---
@@ -520,19 +524,22 @@ async def post(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        validated_dto = StopValidationDTO(request.json())
-        validated_dto.project_id = project_id
-        validated_dto.user_id = request.user.display_name
-        validated_dto.preferred_locale = request.header
-        validated_dto.validate()
+        request_data = await request.json()
+        reset_tasks = request_data.get("resetTasks")
+        preferred_locale = request.headers.get("accept-language", None)
+        validated_dto = StopValidationDTO(
+            project_id=project_id, user_id=user.id, reset_tasks=reset_tasks
+        )
+        if preferred_locale:
+            validated_dto.preferred_locale = preferred_locale
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return {"Error": "Task unlock failed", "SubCode": "InvalidData"}, 400
-
     try:
-        ProjectService.exists(project_id)  # Check if project exists
-        tasks = ValidatorService.stop_validating_tasks(validated_dto)
-        return tasks.model_dump(by_alias=True), 200
+        await ProjectService.exists(project_id, db)
+        async with db.transaction():
+            tasks = await ValidatorService.stop_validating_tasks(validated_dto, db)
+            return tasks
     except ValidatorServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 

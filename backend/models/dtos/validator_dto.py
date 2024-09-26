@@ -103,11 +103,13 @@ class ValidatedTask(BaseModel):
 
 
 class ResetValidatingTask(BaseModel):
-    """Describes the model used to stop validating and reset the status of one task"""
+    """Model used to stop validating and reset the status of one task"""
 
-    task_id: int = Field(None, alias="taskId")
-    comment: str = Field()
-    issues: List[ValidationMappingIssue] = Field(None, alias="validationIssues")
+    task_id: int = Field(alias="taskId")
+    comment: Optional[str] = None
+    issues: Optional[List[ValidationMappingIssue]] = Field(
+        None, alias="validationIssues"
+    )
 
     class Config:
         populate_by_name = True
