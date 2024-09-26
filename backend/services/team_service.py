@@ -1,4 +1,6 @@
+from databases import Database
 from fastapi.responses import JSONResponse
+from loguru import logger
 from markdown import markdown
 
 from backend.exceptions import NotFound
@@ -27,29 +29,34 @@ from backend.models.postgis.statuses import (
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
 from backend.services.messaging.message_service import MessageService
-from backend.db import get_session
-
-session = get_session()
-from databases import Database
 
 
 class TeamServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling teams"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class TeamJoinNotAllowed(Exception):
     """Custom Exception to notify bad user level on joining team"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class TeamService:
+    @staticmethod
+    async def get_team_by_id_user(team_id: int, user_id: int, db: Database):
+        query = """
+            SELECT * FROM team_members
+            WHERE team_id = :team_id AND user_id = :user_id
+        """
+        team_member = await db.fetch_one(
+            query, values={"team_id": team_id, "user_id": user_id}
+        )
+        return team_member
+
     @staticmethod
     async def request_to_join_team(team_id: int, user_id: int, db: Database):
         team = await TeamService.get_team_by_id(team_id, db)
@@ -201,14 +208,7 @@ class TeamService:
     @staticmethod
     async def leave_team(team_id, username, db: Database = None):
         user = await UserService.get_user_by_username(username, db)
-        # Query to check if the user is a member of the team
-        query = """
-            SELECT * FROM team_members
-            WHERE team_id = :team_id AND user_id = :user_id
-        """
-        team_member = await db.fetch_one(
-            query, values={"team_id": team_id, "user_id": user.id}
-        )
+        team_member = await TeamService.get_team_by_id_user(team_id, user.id, db)
 
         # Raise an exception if the team member is not found
         if not team_member:
@@ -634,13 +634,7 @@ class TeamService:
     @staticmethod
     async def activate_team_member(team_id: int, user_id: int, db: Database):
         # Fetch the member by team_id and user_id
-        query = """
-            SELECT * FROM team_members
-            WHERE team_id = :team_id AND user_id = :user_id
-        """
-        member = await db.fetch_one(
-            query, values={"team_id": team_id, "user_id": user_id}
-        )
+        member = await TeamService.get_team_by_id_user(team_id, user_id, db)
 
         if member:
             # Update the 'active' status of the member
@@ -661,13 +655,7 @@ class TeamService:
     @staticmethod
     async def delete_invite(team_id: int, user_id: int, db: Database):
         # Fetch the member by team_id and user_id to check if it exists
-        query = """
-            SELECT * FROM team_members
-            WHERE team_id = :team_id AND user_id = :user_id
-        """
-        member = await db.fetch_one(
-            query, values={"team_id": team_id, "user_id": user_id}
-        )
+        member = await TeamService.get_team_by_id_user(team_id, user_id, db)
 
         if member:
             # Delete the member from the database
