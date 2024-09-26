@@ -106,10 +106,13 @@ class ProjectTeams(Base):
     )
     team = relationship(Team, backref=backref("projects", cascade="all, delete-orphan"))
 
-    def create(self):
+    async def create(self, db: Database):
         """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
+        await db.execute(
+            self.__table__.insert().values(
+                team_id=self.team_id, project_id=self.project_id, role=self.role
+            )
+        )
 
     def save(self):
         """Save changes to db"""
@@ -1365,19 +1368,24 @@ class Project(Base):
             author=record.author,
             active_mappers=active_mappers,
             task_creation_mode=TaskCreationMode(record.task_creation_mode).name,
-            mapping_types=[
-                MappingTypes(mapping_type).name for mapping_type in record.mapping_types
-            ]
-            if record.mapping_types is not None
-            else [],
-            mapping_editors=[Editors(editor).name for editor in record.mapping_editors]
-            if record.mapping_editors
-            else [],
-            validation_editors=[
-                Editors(editor).name for editor in record.validation_editors
-            ]
-            if record.validation_editors
-            else [],
+            mapping_types=(
+                [
+                    MappingTypes(mapping_type).name
+                    for mapping_type in record.mapping_types
+                ]
+                if record.mapping_types is not None
+                else []
+            ),
+            mapping_editors=(
+                [Editors(editor).name for editor in record.mapping_editors]
+                if record.mapping_editors
+                else []
+            ),
+            validation_editors=(
+                [Editors(editor).name for editor in record.validation_editors]
+                if record.validation_editors
+                else []
+            ),
             percent_mapped=percent_mapped,
             percent_validated=percent_validated,
             percent_bad_imagery=percent_bad_imagery,

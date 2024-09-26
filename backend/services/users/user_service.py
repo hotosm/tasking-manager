@@ -14,7 +14,6 @@ from sqlalchemy import (
     column,
     select,
     union,
-    alias,
 )
 from databases import Database
 
@@ -57,7 +56,6 @@ from backend.config import Settings
 
 settings = Settings()
 session = get_session()
-from databases import Database
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -78,7 +76,7 @@ class UserService:
         return user
 
     @staticmethod
-    async def get_user_by_username(username: str, db) -> User:
+    async def get_user_by_username(username: str, db: Database) -> User:
         user = await User.get_by_username(username, db)
 
         if user is None:
@@ -164,8 +162,8 @@ class UserService:
         return fav_dto
 
     @staticmethod
-    def get_projects_mapped(user_id: int):
-        user = UserService.get_user_by_id(user_id)
+    async def get_projects_mapped(user_id: int, db: Database):
+        user = await UserService.get_user_by_id(user_id, db)
         projects_mapped = user.projects_mapped
 
         # Return empty list if the user has no projects_mapped.
@@ -518,7 +516,7 @@ class UserService:
         # res = user_stats.union(others_stats).all()
         results = {key: value for key, value in res}
 
-        projects_mapped = UserService.get_projects_mapped(user.id)
+        projects_mapped = await UserService.get_projects_mapped(user.id, db)
         stats_dto.tasks_mapped = results["MAPPED"]
         stats_dto.tasks_validated = results["VALIDATED"]
         stats_dto.tasks_invalidated = results["INVALIDATED"]

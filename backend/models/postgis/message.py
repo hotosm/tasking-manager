@@ -112,15 +112,24 @@ class Message(Base):
 
         return dto
 
-    def add_message(self):
+    async def add_message(self, db: Database):
         """Add message into current transaction - DO NOT COMMIT HERE AS MESSAGES ARE PART OF LARGER TRANSACTIONS"""
         logger.debug("Adding message to session")
         session.add(self)
 
-    def save(self):
+    async def save(self, db: Database):
         """Save"""
-        session.add(self)
-        session.commit()
+        await db.execute(
+            Message.__table__.insert().values(
+                subject=self.subject,
+                message=self.message,
+                from_user_id=self.from_user_id,
+                to_user_id=self.to_user_id,
+                project_id=self.project_id,
+                task_id=self.task_id,
+                message_type=self.message_type,
+            )
+        )
 
     @staticmethod
     def get_all_contributors(project_id: int):

@@ -7,16 +7,18 @@ from typing import List, Optional
 class MessageDTO(BaseModel):
     """DTO used to define a message that will be sent to a user"""
 
-    message_id: int = Field(alias="messageId")
-    subject: str
-    message: str
-    from_username: Optional[str] = Field("", alias="fromUsername")
-    display_picture_url: Optional[str] = Field("", alias="displayPictureUrl")
-    project_id: Optional[int] = Field(None, alias="projectId")
-    project_title: Optional[str] = Field(None, alias="projectTitle")
-    task_id: Optional[int] = Field(None, alias="taskId")
-    message_type: Optional[str] = Field(alias="messageType")
-    sent_date: datetime = Field(None, alias="sentDate")
+    message_id: int = Field(None, serialization_alias="message_id")
+    subject: str = Field(None, serialization_alias="subject")
+    message: str = Field(None, serialization_alias="message")
+    from_username: Optional[str] = Field("", serialization_alias="fromUsername")
+    display_picture_url: Optional[str] = Field(
+        "", serialization_alias="displayPictureUrl"
+    )
+    project_id: Optional[int] = Field(None, serialization_alias="projectId")
+    project_title: Optional[str] = Field(None, serialization_alias="projectTitle")
+    task_id: Optional[int] = Field(None, serialization_alias="taskId")
+    message_type: Optional[str] = Field(None, serialization_alias="message_type")
+    sent_date: datetime = Field(None, serialization_alias="sentDate")
     read: bool = False
 
     class Config:

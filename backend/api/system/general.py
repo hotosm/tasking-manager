@@ -1,7 +1,7 @@
 from databases import Database
 from datetime import datetime
 from fastapi import APIRouter, Depends, Request, Body
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse
 import requests
 
 from backend.db import get_db

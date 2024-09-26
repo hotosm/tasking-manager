@@ -1,22 +1,19 @@
-# from flask_restful import Resource, request, current_app
-# from schematics.exceptions import DataError
+from databases import Database
+from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, Request, Body
+from loguru import logger
 
+from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
-from backend.services.team_service import TeamService, TeamServiceError
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
-
-# from backend.services.users.authentication_service import token_auth
+from backend.services.team_service import TeamService, TeamServiceError
 from backend.services.users.authentication_service import login_required
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_session, get_db
-from starlette.authentication import requires
-from databases import Database
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -62,12 +59,16 @@ async def get(
     teams_dto = await TeamService.get_project_teams_as_dto(project_id, db)
     return teams_dto
 
-    # @token_auth.login_required
-
 
 @router.post("/{project_id}/teams/{team_id}/")
-@requires("authenticated")
-async def post(request: Request, team_id, project_id):
+async def post(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    team_id: int = None,
+    project_id: int = None,
+    data: dict = Body(...),
+):
     """Assign a team to a project
     ---
     tags:
@@ -113,42 +114,56 @@ async def post(request: Request, team_id, project_id):
         500:
             description: Internal Server Error
     """
-    if not TeamService.is_user_team_manager(team_id, request.user.display_name):
-        return {
-            "Error": "User is not an admin or a manager for the team",
-            "SubCode": "UserPermissionError",
-        }, 401
+    if not await TeamService.is_user_team_manager(team_id, user.id, db):
+        return JSONResponse(
+            content={
+                "Error": "User is not an admin or a manager for the team",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     try:
-        role = request.get_json(force=True)["role"]
-    except DataError as e:
-        current_app.logger.error(f"Error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
+        role = data["role"]
+    except ValueError as e:
+        logger.error(f"Error validating request: {str(e)}")
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
+        )
 
     try:
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            token_auth.current_user, project_id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            user.id, project_id, db
         ):
             raise ValueError()
-        TeamService.add_team_project(team_id, project_id, role)
-        return (
-            {
+        await TeamService.add_team_project(team_id, project_id, role, db)
+        return JSONResponse(
+            content={
                 "Success": "Team {} assigned to project {} with role {}".format(
                     team_id, project_id, role
                 )
             },
-            201,
+            status_code=201,
         )
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
 
-@router.patch("/<int:team_id>/projects/<int:project_id>/")
-@requires("authenticated")
-async def patch(request: Request, team_id: int, project_id: int):
+@router.patch("/{team_id}/projects/{project_id}/")
+async def patch(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    team_id: int = None,
+    project_id: int = None,
+    data: dict = Body(...),
+):
     """Update role of a team on a project
     ---
     tags:
@@ -195,30 +210,40 @@ async def patch(request: Request, team_id: int, project_id: int):
             description: Internal Server Error
     """
     try:
-        role = request.get_json(force=True)["role"]
-    except DataError as e:
-        current_app.logger.error(f"Error validating request: {str(e)}")
+        role = data["role"]
+    except ValueError as e:
+        logger.error(f"Error validating request: {str(e)}")
         return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
     try:
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            token_auth.current_user, project_id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            user.id, project_id, db
         ):
             raise ValueError()
-        TeamService.change_team_role(team_id, project_id, role)
-        return {"Status": "Team role updated successfully."}, 200
+        await TeamService.change_team_role(team_id, project_id, role, db)
+        return JSONResponse(
+            content={"Status": "Team role updated successfully."}, status_code=201
+        )
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
     except TeamServiceError as e:
-        return str(e), 402
+        return JSONResponse(content={"Error": str(e)}, status_code=402)
 
 
-@router.delete("/<int:team_id>/projects/<int:project_id>/")
-@requires("authenticated")
-async def delete(request: Request, team_id: int, project_id: int):
+@router.delete("/{team_id}/projects/{project_id}/")
+async def delete(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    team_id: int = None,
+    project_id: int = None,
+):
     """
     Deletes the specified team project assignment
     ---
@@ -252,14 +277,17 @@ async def delete(request: Request, team_id: int, project_id: int):
             description: Internal Server Error
     """
     try:
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            request.user.display_name, project_id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            user.id, project_id, db
         ):
             raise ValueError()
-        TeamService.delete_team_project(team_id, project_id)
-        return {"Success": True}, 200
+        await TeamService.delete_team_project(team_id, project_id, db)
+        return JSONResponse(content={"Success": True}, status_code=200)
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
