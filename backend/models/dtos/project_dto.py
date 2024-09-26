@@ -445,7 +445,7 @@ class LockedTasksForUser(BaseModel):
     task_status: Optional[str] = Field(None, alias="taskStatus")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class ProjectComment(BaseModel):
@@ -599,7 +599,7 @@ class PMDashboardDTO(BaseModel):
     )
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class ProjectTaskAnnotationsDTO(BaseModel):
