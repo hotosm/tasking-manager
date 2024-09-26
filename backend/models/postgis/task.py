@@ -1209,25 +1209,68 @@ class Task(Base):
             values={"new_status": new_state.value, "task_id": task_id},
         )
 
-    def reset_lock(self, user_id, comment=None):
-        """Removes a current lock from a task, resets to last status and
-        updates history with duration of lock"""
+    @staticmethod
+    async def reset_lock(
+        task_id: int,
+        project_id: int,
+        task_status: TaskStatus,
+        user_id: int,
+        comment: Optional[str],
+        db: Database,
+    ):
+        """
+        Removes a current lock from a task, resets to the last status, and updates history with the lock duration.
+        :param task_id: The ID of the task to reset the lock for.
+        :param project_id: The project ID the task belongs to.
+        :param task_status: The current task status.
+        :param user_id: The ID of the user resetting the lock.
+        :param comment: Optional comment provided during the reset.
+        :param db: The database connection.
+        """
+        # If a comment is provided, set the task history with a comment action
         if comment:
-            self.set_task_history(
-                action=TaskAction.COMMENT, comment=comment, user_id=user_id
+            await Task.set_task_history(
+                task_id=task_id,
+                project_id=project_id,
+                user_id=user_id,
+                action=TaskAction.COMMENT,
+                comment=comment,
+                db=db,
             )
 
-        # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-        TaskHistory.update_task_locked_with_duration(
-            self.id, self.project_id, TaskStatus(self.task_status), user_id
+        # Update task lock history with duration
+        await TaskHistory.update_task_locked_with_duration(
+            task_id=task_id,
+            project_id=project_id,
+            lock_action=TaskStatus(task_status),
+            user_id=user_id,
+            db=db,
         )
-        self.clear_lock()
 
-    def clear_lock(self):
-        """Resets to last status and removes current lock from a task"""
-        self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
-        self.locked_by = None
-        self.update()
+        # Clear the lock on the task
+        await Task.clear_lock(task_id=task_id, project_id=project_id, db=db)
+
+    @staticmethod
+    async def clear_lock(task_id: int, project_id: int, db: Database):
+        """
+        Resets the task to its last status and removes the current lock from the task.
+        :param task_id: The ID of the task to clear the lock for.
+        :param project_id: The project ID the task belongs to.
+        :param db: The database connection.
+        """
+        last_status = await TaskHistory.get_last_status(project_id, task_id, db)
+        # Clear the lock by updating the task's status and lock status
+        update_query = """
+            UPDATE tasks
+            SET task_status = :task_status, locked_by = NULL
+            WHERE id = :task_id AND project_id = :project_id
+        """
+        update_values = {
+            "task_status": last_status.value,
+            "task_id": task_id,
+            "project_id": project_id,
+        }
+        await db.execute(query=update_query, values=update_values)
 
     @staticmethod
     async def get_tasks_as_geojson_feature_collection(
