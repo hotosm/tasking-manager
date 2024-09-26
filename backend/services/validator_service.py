@@ -249,7 +249,9 @@ class ValidatorService:
         return task_dtos
 
     @staticmethod
-    def stop_validating_tasks(stop_validating_dto: StopValidationDTO) -> TaskDTOs:
+    async def stop_validating_tasks(
+        stop_validating_dto: StopValidationDTO, db: Database
+    ) -> TaskDTOs:
         """
         Unlocks supplied tasks after validation
         :raises ValidatorServiceError
@@ -257,28 +259,32 @@ class ValidatorService:
         reset_tasks = stop_validating_dto.reset_tasks
         project_id = stop_validating_dto.project_id
         user_id = stop_validating_dto.user_id
-        tasks_to_unlock = ValidatorService.get_tasks_locked_by_user(
-            project_id, reset_tasks, user_id
+        tasks_to_unlock = await ValidatorService.get_tasks_locked_by_user(
+            project_id, reset_tasks, user_id, db
         )
-
         dtos = []
         for task_to_unlock in tasks_to_unlock:
             task = task_to_unlock["task"]
-
             if task_to_unlock["comment"]:
                 # Parses comment to see if any users have been @'d
-                MessageService.send_message_after_comment(
-                    user_id, task_to_unlock["comment"], task.id, project_id
+                await MessageService.send_message_after_comment(
+                    user_id, task_to_unlock["comment"], task.id, project_id, db
                 )
-
-            task.reset_lock(user_id, task_to_unlock["comment"])
-            dtos.append(
-                task.as_dto_with_instructions(stop_validating_dto.preferred_locale)
+            await Task.reset_lock(
+                task.id,
+                project_id,
+                task.task_status,
+                user_id,
+                task_to_unlock["comment"],
+                db,
             )
-
+            dtos.append(
+                await Task.as_dto_with_instructions(
+                    task.id, project_id, db, stop_validating_dto.preferred_locale
+                )
+            )
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
-
         return task_dtos
 
     @staticmethod
