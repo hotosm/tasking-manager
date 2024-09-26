@@ -130,9 +130,14 @@ async def post(
         )
 
 
-@router.post("{project_id}/tasks/actions/stop-mapping/{task_id}/")
-@requires("authenticated")
-async def post(request: Request, project_id: int, task_id: int):
+@router.post("/{project_id}/tasks/actions/stop-mapping/{task_id}/")
+async def post(
+    request: Request,
+    project_id: int,
+    task_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Unlock a task that is locked for mapping resetting it to its last status
     ---
@@ -191,20 +196,25 @@ async def post(request: Request, project_id: int, task_id: int):
             description: Internal Server Error
     """
     try:
-        stop_task = StopMappingTaskDTO(request.json() if request else {})
-        stop_task.user_id = request.user.display_name
-        stop_task.task_id = task_id
-        stop_task.project_id = project_id
-        stop_task.preferred_locale = request.header
-        stop_task.validate()
+        request_data = await request.json()
+        preferred_locale = request.headers.get("accept-language", None)
+        stop_task = StopMappingTaskDTO(
+            project_id=project_id,
+            task_id=task_id,
+            user_id=user.id,
+            comment=request_data.get("comment", None),
+        )
+        if preferred_locale:
+            stop_task.preferred_locale = preferred_locale
+
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return {"Error": "Task unlock failed", "SubCode": "InvalidData"}, 400
-
     try:
-        ProjectService.exists(project_id)  # Check if project exists
-        task = MappingService.stop_mapping_task(stop_task)
-        return task.model_dump(by_alias=True), 200
+        await ProjectService.exists(project_id, db)
+        async with db.transaction():
+            task = await MappingService.stop_mapping_task(stop_task, db)
+            return task
     except MappingServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
@@ -287,7 +297,7 @@ async def post(
             project_id=project_id,
             task_id=task_id,
             status=request_data.get("status"),
-            comment=request_data.get("comment"),
+            comment=request_data.get("comment", None),
         )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
