@@ -194,20 +194,28 @@ class MappingService:
         )
 
     @staticmethod
-    def stop_mapping_task(stop_task: StopMappingTaskDTO) -> TaskDTO:
+    async def stop_mapping_task(stop_task: StopMappingTaskDTO, db: Database) -> TaskDTO:
         """Unlocks the task and revert the task status to the last one"""
-        task = MappingService.get_task_locked_by_user(
-            stop_task.project_id, stop_task.task_id, stop_task.user_id
+        task = await MappingService.get_task_locked_by_user(
+            stop_task.project_id, stop_task.task_id, stop_task.user_id, db
         )
 
         if stop_task.comment:
             # Parses comment to see if any users have been @'d
-            MessageService.send_message_after_comment(
-                stop_task.user_id, stop_task.comment, task.id, stop_task.project_id
+            await MessageService.send_message_after_comment(
+                stop_task.user_id, stop_task.comment, task.id, stop_task.project_id, db
             )
-
-        task.reset_lock(stop_task.user_id, stop_task.comment)
-        return task.as_dto_with_instructions(stop_task.preferred_locale)
+        await Task.reset_lock(
+            task.id,
+            stop_task.project_id,
+            task.task_status,
+            stop_task.user_id,
+            stop_task.comment,
+            db,
+        )
+        return await Task.as_dto_with_instructions(
+            task.id, stop_task.project_id, db, stop_task.preferred_locale
+        )
 
     @staticmethod
     async def get_task_locked_by_user(
