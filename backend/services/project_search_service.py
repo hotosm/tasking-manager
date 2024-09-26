@@ -221,9 +221,12 @@ class ProjectSearchService:
             ProjectSearchService.create_result_dto(
                 project,
                 search_dto.preferred_locale,
-                next(filter(lambda c: c[0] == project.id, contributors_by_project_id))[
-                    1
-                ],
+                next(
+                    filter(
+                        lambda c, p=project: c[0] == p.id,
+                        contributors_by_project_id,
+                    )
+                )[1],
                 with_partner_names=is_user_admin,
                 with_author_name=False,
             ).to_primitive()
