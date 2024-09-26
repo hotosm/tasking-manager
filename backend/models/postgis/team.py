@@ -288,13 +288,13 @@ class Team(Base):
 
         return team  # Returns the team if found, otherwise None
 
-    def as_dto(self):
+    async def as_dto(self, db: Database):
         """Returns a dto for the team"""
         team_dto = TeamDTO()
         team_dto.team_id = self.id
         team_dto.description = self.description
         team_dto.join_method = TeamJoinMethod(self.join_method).name
-        team_dto.members = self._get_team_members()
+        team_dto.members = self._get_team_members(db)
         team_dto.name = self.name
         team_dto.organisation = self.organisation.name
         team_dto.organisation_id = self.organisation.id
@@ -302,7 +302,7 @@ class Team(Base):
         team_dto.visibility = TeamVisibility(self.visibility).name
         return team_dto
 
-    async def as_dto_inside_org(self, session):
+    async def as_dto_inside_org(self, db: Database):
         """Returns a dto for the team"""
         team_dto = OrganisationTeamsDTO()
 
@@ -310,7 +310,7 @@ class Team(Base):
         team_dto.name = self.name
         team_dto.description = self.description
         team_dto.join_method = TeamJoinMethod(self.join_method).name
-        team_dto.members = self._get_team_members()
+        team_dto.members = self._get_team_members(db)
         team_dto.visibility = TeamVisibility(self.visibility).name
 
         return team_dto
