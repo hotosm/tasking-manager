@@ -191,10 +191,7 @@ export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
       <div className="relative partner-mapswipe-heatmap-wrapper">
         <div ref={mapContainer} style={{ width: '100%', height: '650px' }} className="shadow-6" />
         <div className="flex items-center justify-start absolute top-0 left-0 right-0 pa2">
-          <p
-            className="ma0 pa1 bg-white ba b--black-20 br2 partner-mapswipe-heatmap-zoom-text"
-            style={{ userSelect: 'none' }}
-          >
+          <p className="ma0 pa1 bg-blue-dark white ba b--black-20 br2 partner-mapswipe-heatmap-zoom-text">
             Use Ctrl + Scroll to zoom
           </p>
         </div>

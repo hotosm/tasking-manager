@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 
 import messages from './messages';
 
+const LEGEND_INDEXES = [30, 50, 70, 100];
 const Legend = () => {
-  const indexes = [30, 50, 70, 100];
   const legendFontStyle = 'ph2 f7 blue-grey ttc';
 
   return (
@@ -15,7 +15,7 @@ const Legend = () => {
         <FormattedMessage {...messages.contributionsGridLegendLess} />
       </span>
       <div className={`dib h1 w1 bg-tan`}></div>
-      {indexes.map((i) => (
+      {LEGEND_INDEXES.map((i) => (
         <div key={i} className={`dib h1 w1 bg-red o-${i}`}></div>
       ))}
       <span className={legendFontStyle}>
@@ -26,7 +26,7 @@ const Legend = () => {
 };
 
 export const ContributionsGrid = ({ contributionsByDate = [] }) => {
-  contributionsByDate = contributionsByDate.map((contribution) => ({
+  const gridData = contributionsByDate.map((contribution) => ({
     date: contribution.taskDate,
     count: contribution.totalcontributions,
   }));
@@ -46,7 +46,7 @@ export const ContributionsGrid = ({ contributionsByDate = [] }) => {
       : formatDate(new Date(currentYear, 11, 31));
   };
 
-  const countValues = contributionsByDate.map((contribution) => contribution.count);
+  const countValues = gridData.map((contribution) => contribution.count);
   const maxValue = Math.max(...countValues);
 
   const getHeatmapClass = (value) => {
@@ -79,7 +79,7 @@ export const ContributionsGrid = ({ contributionsByDate = [] }) => {
         <CalendarHeatmap
           startDate={getDate()}
           endDate={getDate(true)}
-          values={contributionsByDate}
+          values={gridData}
           classForValue={(value) => {
             if (!value) return 'fill-tan';
             return getHeatmapClass(value);
@@ -100,7 +100,7 @@ export const ContributionsGrid = ({ contributionsByDate = [] }) => {
             };
           }}
         />
-        <Tooltip id={'partnerMapswipeContributionsGridTooltip'} />
+        <Tooltip id="partnerMapswipeContributionsGridTooltip" />
         <Legend />
       </div>
     </div>

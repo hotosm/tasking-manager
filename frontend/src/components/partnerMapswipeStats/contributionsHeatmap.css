@@ -1,5 +1,6 @@
 .partner-mapswipe-heatmap-zoom-text {
   visibility: hidden;
+  user-select: none;
 }
 .partner-mapswipe-heatmap-wrapper:hover .partner-mapswipe-heatmap-zoom-text {
   visibility: visible;
