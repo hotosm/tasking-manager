@@ -331,9 +331,14 @@ async def post(
         await UserService.check_and_update_mapper_level(user.id, db)
 
 
-@router.post("{project_id}/tasks/actions/undo-last-action/{task_id}/")
-@requires("authenticated")
-async def post(request: Request, project_id, task_id):
+@router.post("/{project_id}/tasks/actions/undo-last-action/{task_id}/")
+async def post(
+    request: Request,
+    project_id: int,
+    task_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Undo a task's mapping status
     ---
@@ -377,12 +382,18 @@ async def post(request: Request, project_id, task_id):
             description: Internal Server Error
     """
     try:
-        preferred_locale = request.headers.get("Accept-Language")
-        ProjectService.exists(project_id)  # Check if project exists
-        task = MappingService.undo_mapping(
-            project_id, task_id, request.user.display_name, preferred_locale
-        )
-        return task.model_dump(by_alias=True), 200
+        preferred_locale = request.headers.get("accept-language", None)
+        await ProjectService.exists(project_id, db)
+        async with db.transaction():
+            if preferred_locale:
+                task = await MappingService.undo_mapping(
+                    project_id, task_id, user.id, db, preferred_locale
+                )
+            else:
+                task = await MappingService.undo_mapping(
+                    project_id, task_id, user.id, db
+                )
+            return task
     except MappingServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
