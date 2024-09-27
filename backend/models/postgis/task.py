@@ -603,16 +603,27 @@ class TaskHistory(Base):
         # Otherwise, return the last status
         return TaskStatus[result[0]["action_text"]]
 
+    # @staticmethod
+    # def get_last_action(project_id: int, task_id: int):
+    #     """Gets the most recent task history record for the task"""
+    #     return (
+    #         TaskHistory.query.filter(
+    #             TaskHistory.project_id == project_id, TaskHistory.task_id == task_id
+    #         )
+    #         .order_by(TaskHistory.action_date.desc())
+    #         .first()
+    #     )
+
     @staticmethod
-    def get_last_action(project_id: int, task_id: int):
+    async def get_last_action(project_id: int, task_id: int, db: Database):
         """Gets the most recent task history record for the task"""
-        return (
-            TaskHistory.query.filter(
-                TaskHistory.project_id == project_id, TaskHistory.task_id == task_id
-            )
-            .order_by(TaskHistory.action_date.desc())
-            .first()
-        )
+        query = """
+            SELECT * FROM task_history
+            WHERE project_id = :project_id AND task_id = :task_id
+            ORDER BY action_date DESC
+            LIMIT 1
+        """
+        return await db.fetch_one(query, {"project_id": project_id, "task_id": task_id})
 
     @staticmethod
     async def get_last_action_of_type(
