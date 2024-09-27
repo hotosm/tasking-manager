@@ -66,23 +66,24 @@ class MappingService:
         return task_dto
 
     @staticmethod
-    def _is_task_undoable(logged_in_user_id: int, task: Task) -> bool:
+    async def _is_task_undoable(
+        logged_in_user_id: int, task: dict, db: Database
+    ) -> bool:
         """Determines if the current task status can be undone by the logged in user"""
-        # Test to see if user can undo status on this task
-        if logged_in_user_id and TaskStatus(task.task_status) not in [
+        if logged_in_user_id and TaskStatus(task["task_status"]) not in [
             TaskStatus.LOCKED_FOR_MAPPING,
             TaskStatus.LOCKED_FOR_VALIDATION,
             TaskStatus.READY,
         ]:
-            last_action = TaskHistory.get_last_action(task.project_id, task.id)
-
-            # User requesting task made the last change, so they are allowed to undo it.
-            is_user_permitted, _ = ProjectService.is_user_permitted_to_validate(
-                task.project_id, logged_in_user_id
+            last_action = await TaskHistory.get_last_action(
+                task["project_id"], task["id"], db
             )
-            if last_action.user_id == int(logged_in_user_id) or is_user_permitted:
+            # User requesting task made the last change, so they are allowed to undo it.
+            is_user_permitted, _ = await ProjectService.is_user_permitted_to_validate(
+                task["project_id"], logged_in_user_id, db
+            )
+            if last_action["user_id"] == logged_in_user_id or is_user_permitted:
                 return True
-
         return False
 
     @staticmethod
@@ -194,20 +195,28 @@ class MappingService:
         )
 
     @staticmethod
-    def stop_mapping_task(stop_task: StopMappingTaskDTO) -> TaskDTO:
+    async def stop_mapping_task(stop_task: StopMappingTaskDTO, db: Database) -> TaskDTO:
         """Unlocks the task and revert the task status to the last one"""
-        task = MappingService.get_task_locked_by_user(
-            stop_task.project_id, stop_task.task_id, stop_task.user_id
+        task = await MappingService.get_task_locked_by_user(
+            stop_task.project_id, stop_task.task_id, stop_task.user_id, db
         )
 
         if stop_task.comment:
             # Parses comment to see if any users have been @'d
-            MessageService.send_message_after_comment(
-                stop_task.user_id, stop_task.comment, task.id, stop_task.project_id
+            await MessageService.send_message_after_comment(
+                stop_task.user_id, stop_task.comment, task.id, stop_task.project_id, db
             )
-
-        task.reset_lock(stop_task.user_id, stop_task.comment)
-        return task.as_dto_with_instructions(stop_task.preferred_locale)
+        await Task.reset_lock(
+            task.id,
+            stop_task.project_id,
+            task.task_status,
+            stop_task.user_id,
+            stop_task.comment,
+            db,
+        )
+        return await Task.as_dto_with_instructions(
+            task.id, stop_task.project_id, db, stop_task.preferred_locale
+        )
 
     @staticmethod
     async def get_task_locked_by_user(
@@ -387,16 +396,19 @@ class MappingService:
         return xml_gpx
 
     @staticmethod
-    def undo_mapping(
-        project_id: int, task_id: int, user_id: int, preferred_locale: str = "en"
+    async def undo_mapping(
+        project_id: int,
+        task_id: int,
+        user_id: int,
+        db: Database,
+        preferred_locale: str = "en",
     ) -> TaskDTO:
         """Allows a user to Undo the task state they updated"""
-        task = MappingService.get_task(task_id, project_id)
-        if not MappingService._is_task_undoable(user_id, task):
+        task = await MappingService.get_task(task_id, project_id, db)
+        if not await MappingService._is_task_undoable(user_id, task, db):
             raise MappingServiceError(
                 "UndoPermissionError- Undo not allowed for this user"
             )
-
         current_state = TaskStatus(task.task_status)
         # Set the state to the previous state in the workflow
         if current_state == TaskStatus.VALIDATED:
@@ -406,28 +418,28 @@ class MappingService:
         elif current_state == TaskStatus.MAPPED:
             undo_state = TaskStatus.READY
         else:
-            undo_state = TaskHistory.get_last_status(project_id, task_id, True)
+            undo_state = await TaskHistory.get_last_status(
+                project_id, task_id, db, True
+            )
 
         # Refer to last action for user of it.
-        last_action = TaskHistory.get_last_action(project_id, task_id)
+        last_action = await TaskHistory.get_last_action(project_id, task_id, db)
 
-        StatsService.update_stats_after_task_state_change(
-            project_id, last_action.user_id, current_state, undo_state, "undo"
+        await StatsService.update_stats_after_task_state_change(
+            project_id, last_action.user_id, current_state, undo_state, db, "undo"
         )
-
-        task.unlock_task(
-            user_id,
-            undo_state,
-            f"Undo state from {current_state.name} to {undo_state.name}",
-            True,
+        await Task.unlock_task(
+            task_id=task_id,
+            project_id=project_id,
+            user_id=user_id,
+            new_state=undo_state,
+            db=db,
+            comment=f"Undo state from {current_state.name} to {undo_state.name}",
+            undo=True,
         )
-        # Reset the user who mapped/validated the task
-        if current_state.name == "MAPPED":
-            task.mapped_by = None
-        elif current_state.name == "VALIDATED":
-            task.validated_by = None
-        task.update()
-        return task.as_dto_with_instructions(preferred_locale)
+        return await Task.as_dto_with_instructions(
+            task_id, project_id, db, preferred_locale
+        )
 
     @staticmethod
     def map_all_tasks(project_id: int, user_id: int):

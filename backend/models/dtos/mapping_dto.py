@@ -37,20 +37,18 @@ class MappedTaskDTO(BaseModel):
 
     user_id: int
     status: str = Field(required=True, validators=[is_valid_mapped_status])
-    comment: str
+    comment: Optional[str] = None
     task_id: int
     project_id: int
     preferred_locale: str = "en"
 
 
 class StopMappingTaskDTO(BaseModel):
-    """Describes the model used to stop mapping and reset the status of one task"""
-
     user_id: int
-    comment: str
+    comment: Optional[str] = None
     task_id: int
     project_id: int
-    preferred_locale: int = "en"
+    preferred_locale: str = Field(default="en")
 
 
 class TaskHistoryDTO(BaseModel):
