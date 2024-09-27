@@ -180,25 +180,51 @@ class ProjectAdminService:
             )
 
     @staticmethod
-    def reset_all_tasks(project_id: int, user_id: int):
+    async def reset_all_tasks(project_id: int, user_id: int, db: Database):
         """Resets all tasks on project, preserving history"""
-        tasks_to_reset = Task.query.filter(
-            Task.project_id == project_id,
-            Task.task_status != TaskStatus.READY.value,
-        ).all()
 
+        # Fetch tasks that are not in the READY state
+        query = """
+            SELECT id, task_status
+            FROM tasks
+            WHERE project_id = :project_id
+            AND task_status != :ready_status
+        """
+        tasks_to_reset = await db.fetch_all(
+            query=query,
+            values={
+                "project_id": project_id,
+                "ready_status": TaskStatus.READY.value,
+            },
+        )
+
+        # Reset each task and preserve history
         for task in tasks_to_reset:
-            task.set_task_history(
-                TaskAction.COMMENT, user_id, "Task reset", TaskStatus.READY
-            )
-            task.reset_task(user_id)
+            task_id = task["id"]
 
-        # Reset project counters
-        project = ProjectAdminService._get_project_by_id(project_id)
-        project.tasks_mapped = 0
-        project.tasks_validated = 0
-        project.tasks_bad_imagery = 0
-        project.save()
+            # Add a history entry for the task reset
+            await Task.set_task_history(
+                task_id=task_id,
+                project_id=project_id,
+                user_id=user_id,
+                action=TaskAction.COMMENT,
+                db=db,
+                comment="Task reset",
+                new_state=TaskStatus.READY,
+            )
+
+            # Reset the task's status to READY
+            await Task.reset_task(task_id=task_id, user_id=user_id, db=db)
+
+        # Reset project counters using raw SQL
+        project_update_query = """
+            UPDATE projects
+            SET tasks_mapped = 0,
+                tasks_validated = 0,
+                tasks_bad_imagery = 0
+            WHERE id = :project_id
+        """
+        await db.execute(query=project_update_query, values={"project_id": project_id})
 
     @staticmethod
     def get_all_comments(project_id: int) -> ProjectCommentsDTO:
