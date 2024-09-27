@@ -442,35 +442,51 @@ class MappingService:
         )
 
     @staticmethod
-    def map_all_tasks(project_id: int, user_id: int):
-        """Marks all tasks on a project as mapped"""
-        tasks_to_map = Task.query.filter(
-            Task.project_id == project_id,
-            Task.task_status.notin_(
-                [
-                    TaskStatus.BADIMAGERY.value,
-                    TaskStatus.MAPPED.value,
-                    TaskStatus.VALIDATED.value,
-                ]
-            ),
-        ).all()
+    async def map_all_tasks(project_id: int, user_id: int, db: Database):
+        """Marks all tasks on a project as mapped using raw SQL queries"""
+
+        query = """
+            SELECT id, task_status
+            FROM tasks
+            WHERE project_id = :project_id
+            AND task_status NOT IN (:bad_imagery, :mapped, :validated)
+        """
+        tasks_to_map = await db.fetch_all(
+            query=query,
+            values={
+                "project_id": project_id,
+                "bad_imagery": TaskStatus.BADIMAGERY.value,
+                "mapped": TaskStatus.MAPPED.value,
+                "validated": TaskStatus.VALIDATED.value,
+            },
+        )
 
         for task in tasks_to_map:
-            if TaskStatus(task.task_status) not in [
+            task_id = task["id"]
+            current_status = TaskStatus(task["task_status"])
+
+            # Lock the task for mapping if it's not already locked
+            if current_status not in [
                 TaskStatus.LOCKED_FOR_MAPPING,
                 TaskStatus.LOCKED_FOR_VALIDATION,
             ]:
-                # Only lock tasks that are not already locked to avoid double lock issue
-                task.lock_task_for_mapping(user_id)
+                await Task.lock_task_for_mapping(task_id, project_id, user_id, db)
 
-            task.unlock_task(user_id, new_state=TaskStatus.MAPPED)
+            # Unlock the task and set its status to MAPPED
+            await Task.unlock_task(
+                task_id=task_id,
+                project_id=project_id,
+                user_id=user_id,
+                new_state=TaskStatus.MAPPED,
+                db=db,
+            )
 
-        # Set counters to fully mapped
-        project = ProjectService.get_project_by_id(project_id)
-        project.tasks_mapped = (
-            project.total_tasks - project.tasks_bad_imagery - project.tasks_validated
-        )
-        project.save()
+        project_update_query = """
+            UPDATE projects
+            SET tasks_mapped = (total_tasks - tasks_bad_imagery - tasks_validated)
+            WHERE id = :project_id
+        """
+        await db.execute(query=project_update_query, values={"project_id": project_id})
 
     @staticmethod
     def reset_all_badimagery(project_id: int, user_id: int):
