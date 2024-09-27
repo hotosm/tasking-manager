@@ -428,29 +428,69 @@ class ValidatorService:
         await db.execute(query=project_query, values={"project_id": project_id})
 
     @staticmethod
-    def validate_all_tasks(project_id: int, user_id: int):
-        """Validates all mapped tasks on a project"""
-        tasks_to_validate = Task.query.filter(
-            Task.project_id == project_id,
-            Task.task_status == TaskStatus.MAPPED.value,
-        ).all()
+    async def validate_all_tasks(project_id: int, user_id: int, db: Database):
+        """Validates all mapped tasks on a project using raw SQL queries"""
+
+        # Fetch tasks that are in the MAPPED state
+        query = """
+            SELECT id, task_status, mapped_by
+            FROM tasks
+            WHERE project_id = :project_id
+            AND task_status = :mapped_status
+        """
+        tasks_to_validate = await db.fetch_all(
+            query=query,
+            values={
+                "project_id": project_id,
+                "mapped_status": TaskStatus.MAPPED.value,
+            },
+        )
 
         for task in tasks_to_validate:
-            task.mapped_by = task.mapped_by or user_id  # Ensure we set mapped by value
-            if TaskStatus(task.task_status) not in [
+            task_id = task["id"]
+            mapped_by = (
+                task["mapped_by"] or user_id
+            )  # Ensure we set the 'mapped_by' value
+
+            # Lock the task for validation if it's not already locked
+            current_status = TaskStatus(task["task_status"])
+            if current_status not in [
                 TaskStatus.LOCKED_FOR_MAPPING,
                 TaskStatus.LOCKED_FOR_VALIDATION,
             ]:
-                # Only lock tasks that are not already locked to avoid double lock issue
-                task.lock_task_for_validating(user_id)
+                await Task.lock_task_for_validating(task_id, project_id, user_id, db)
 
-            task.unlock_task(user_id, new_state=TaskStatus.VALIDATED)
+            # Unlock the task and set its status to VALIDATED
+            await Task.unlock_task(
+                task_id=task_id,
+                project_id=project_id,
+                user_id=user_id,
+                new_state=TaskStatus.VALIDATED,
+                db=db,
+            )
 
-        # Set counters to fully mapped and validated
-        project = ProjectService.get_project_by_id(project_id)
-        project.tasks_validated += project.tasks_mapped
-        project.tasks_mapped = 0
-        project.save()
+            # Update the mapped_by field if necessary
+            update_mapped_by_query = """
+                UPDATE tasks
+                SET mapped_by = :mapped_by
+                WHERE id = :task_id
+            """
+            await db.execute(
+                query=update_mapped_by_query,
+                values={
+                    "mapped_by": mapped_by,
+                    "task_id": task_id,
+                },
+            )
+
+        # Update the project's task counters using raw SQL
+        project_update_query = """
+            UPDATE projects
+            SET tasks_validated = tasks_validated + tasks_mapped,
+                tasks_mapped = 0
+            WHERE id = :project_id
+        """
+        await db.execute(query=project_update_query, values={"project_id": project_id})
 
     @staticmethod
     async def get_task_mapping_issues(task_to_unlock: dict):
