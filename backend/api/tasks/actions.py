@@ -646,9 +646,13 @@ async def post(
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
-@router.post("{project_id}/tasks/actions/map-all/")
-@requires("authenticated")
-async def post(request: Request, project_id: int):
+@router.post("/{project_id}/tasks/actions/map-all/")
+async def post(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Map all tasks on a project
     ---
@@ -680,9 +684,9 @@ async def post(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
+        authenticated_user_id = user.id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
         ):
             raise ValueError()
     except ValueError:
@@ -691,13 +695,18 @@ async def post(request: Request, project_id: int):
             "SubCode": "UserPermissionError",
         }, 403
 
-    MappingService.map_all_tasks(project_id, authenticated_user_id)
-    return {"Success": "All tasks mapped"}, 200
+    async with db.transaction():
+        await MappingService.map_all_tasks(project_id, authenticated_user_id, db)
+        return JSONResponse(content={"Success": "All tasks mapped"}, status_code=200)
 
 
-@router.post("{project_id}/tasks/actions/validate-all/")
-@requires("authenticated")
-async def post(request: Request, project_id: int):
+@router.post("/{project_id}/tasks/actions/validate-all/")
+async def post(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Validate all mapped tasks on a project
     ---
@@ -729,9 +738,9 @@ async def post(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
+        authenticated_user_id = user.id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
         ):
             raise ValueError()
     except ValueError:
@@ -740,8 +749,9 @@ async def post(request: Request, project_id: int):
             "SubCode": "UserPermissionError",
         }, 403
 
-    ValidatorService.validate_all_tasks(project_id, authenticated_user_id)
-    return {"Success": "All tasks validated"}, 200
+    async with db.transaction():
+        await ValidatorService.validate_all_tasks(project_id, authenticated_user_id, db)
+        return JSONResponse(content={"Success": "All tasks validated"}, status_code=200)
 
 
 @router.post("/{project_id}/tasks/actions/invalidate-all/")
@@ -795,8 +805,13 @@ async def post(
             },
             status_code=403,
         )
-    await ValidatorService.invalidate_all_tasks(project_id, authenticated_user_id, db)
-    return JSONResponse(content={"Success": "All tasks invalidated"}, status_code=200)
+    async with db.transaction():
+        await ValidatorService.invalidate_all_tasks(
+            project_id, authenticated_user_id, db
+        )
+        return JSONResponse(
+            content={"Success": "All tasks invalidated"}, status_code=200
+        )
 
 
 @router.post("{project_id}/tasks/actions/reset-all-badimagery/")
@@ -845,12 +860,19 @@ async def post(request: Request, project_id: int):
         }, 403
 
     MappingService.reset_all_badimagery(project_id, authenticated_user_id)
-    return {"Success": "All bad imagery tasks marked ready for mapping"}, 200
+    return JSONResponse(
+        content={"Success": "All bad imagery tasks marked ready for mapping"},
+        status_code=200,
+    )
 
 
-@router.post("{project_id}/tasks/actions/reset-all/")
-@requires("authenticated")
-async def post(request: Request, project_id: int):
+@router.post("/{project_id}/tasks/actions/reset-all/")
+async def post(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Reset all tasks on project back to ready, preserving history
     ---
@@ -882,10 +904,9 @@ async def post(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name
-        authenticated_user_id = request.user.display_name
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
+        authenticated_user_id = user.id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
         ):
             raise ValueError()
     except ValueError:
@@ -893,9 +914,9 @@ async def post(request: Request, project_id: int):
             "Error": "User is not a manager of the project",
             "SubCode": "UserPermissionError",
         }, 403
-
-    ProjectAdminService.reset_all_tasks(project_id, authenticated_user_id)
-    return {"Success": "All tasks reset"}, 200
+    async with db.transaction():
+        await ProjectAdminService.reset_all_tasks(project_id, authenticated_user_id, db)
+        return JSONResponse(content={"Success": "All tasks reset"}, status_code=200)
 
 
 @router.post("{project_id}/tasks/{task_id}/actions/split/")

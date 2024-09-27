@@ -603,17 +603,6 @@ class TaskHistory(Base):
         # Otherwise, return the last status
         return TaskStatus[result[0]["action_text"]]
 
-    # @staticmethod
-    # def get_last_action(project_id: int, task_id: int):
-    #     """Gets the most recent task history record for the task"""
-    #     return (
-    #         TaskHistory.query.filter(
-    #             TaskHistory.project_id == project_id, TaskHistory.task_id == task_id
-    #         )
-    #         .order_by(TaskHistory.action_date.desc())
-    #         .first()
-    #     )
-
     @staticmethod
     async def get_last_action(project_id: int, task_id: int, db: Database):
         """Gets the most recent task history record for the task"""
@@ -627,39 +616,38 @@ class TaskHistory(Base):
 
     @staticmethod
     async def get_last_action_of_type(
-        project_id: int, task_id: int, allowed_task_actions: list, session
+        project_id: int, task_id: int, allowed_task_actions: list, db: Database
     ):
+        """Gets the most recent task history record having provided TaskAction"""
+
+        query = """
+            SELECT id, action, action_date
+            FROM task_history
+            WHERE project_id = :project_id
+            AND task_id = :task_id
+            AND action IN (:allowed_actions)
+            ORDER BY action_date DESC
+            LIMIT 1
         """
-        Gets the most recent task history record having provided TaskAction
-        :param project_id: Project ID in scope
-        :param task_id: Task ID in scope
-        :param allowed_task_actions: List of allowed TaskAction
-        :param session: SQLAlchemy async session
-        :return: Most recent TaskHistory record of the specified type
-        """
-        query = (
-            select(TaskHistory)
-            .filter(
-                TaskHistory.project_id == project_id,
-                TaskHistory.task_id == task_id,
-                TaskHistory.action.in_(allowed_task_actions),
-            )
-            .order_by(TaskHistory.action_date.desc())
-            .limit(1)
-        )
-        result = await session.execute(query)
-        return result.scalars().first()
+        values = {
+            "project_id": project_id,
+            "task_id": task_id,
+            "allowed_actions": tuple(allowed_task_actions),
+        }
+        result = await db.fetch_one(query=query, values=values)
+        return result
 
     @staticmethod
-    def get_last_locked_action(project_id: int, task_id: int):
+    async def get_last_locked_action(project_id: int, task_id: int, db: Database):
         """Gets the most recent task history record with locked action for the task"""
-        return TaskHistory.get_last_action_of_type(
+        return await TaskHistory.get_last_action_of_type(
             project_id,
             task_id,
             [
                 TaskAction.LOCKED_FOR_MAPPING.name,
                 TaskAction.LOCKED_FOR_VALIDATION.name,
             ],
+            db,
         )
 
     @staticmethod
@@ -1064,50 +1052,117 @@ class Task(Base):
         }
         await db.execute(query=query, values=values)
 
-    def reset_task(self, user_id: int):
-        expiry_delta = Task.auto_unlock_delta()
+    @staticmethod
+    async def reset_task(task_id: int, user_id: int, db: Database):
+        """Resets the task with the provided task_id and updates its status"""
+
+        # Fetch the auto-unlock duration
+        expiry_delta = await Task.auto_unlock_delta()
         lock_duration = (datetime.datetime.min + expiry_delta).time().isoformat()
-        if TaskStatus(self.task_status) in [
+
+        query = """
+            SELECT task_status, mapped_by, validated_by, locked_by
+            FROM tasks
+            WHERE id = :task_id
+        """
+        task = await db.fetch_one(query=query, values={"task_id": task_id})
+
+        if TaskStatus(task["task_status"]) in [
             TaskStatus.LOCKED_FOR_MAPPING,
             TaskStatus.LOCKED_FOR_VALIDATION,
         ]:
-            self.record_auto_unlock(lock_duration)
+            await Task.record_auto_unlock(task_id, lock_duration, db)
 
-        self.set_task_history(TaskAction.STATE_CHANGE, user_id, None, TaskStatus.READY)
-        self.mapped_by = None
-        self.validated_by = None
-        self.locked_by = None
-        self.task_status = TaskStatus.READY.value
-        self.update()
-
-    def clear_task_lock(self):
+        update_task_query = """
+            UPDATE tasks
+            SET task_status = :ready_status,
+                mapped_by = NULL,
+                validated_by = NULL,
+                locked_by = NULL
+            WHERE id = :task_id
         """
-        Unlocks task in scope in the database.  Clears the lock as though it never happened.
-        No history of the unlock is recorded.
-        :return:
-        """
-        # clear the lock action for the task in the task history
-        last_action = TaskHistory.get_last_locked_action(self.project_id, self.id)
-        last_action.delete()
-
-        # Set locked_by to null and status to last status on task
-        self.clear_lock()
-
-    def record_auto_unlock(self, lock_duration):
-        locked_user = self.locked_by
-        last_action = TaskHistory.get_last_locked_action(self.project_id, self.id)
-        next_action = (
-            TaskAction.AUTO_UNLOCKED_FOR_MAPPING
-            if last_action.action == "LOCKED_FOR_MAPPING"
-            else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
+        await db.execute(
+            query=update_task_query,
+            values={
+                "task_id": task_id,
+                "ready_status": TaskStatus.READY.value,
+            },
         )
 
-        self.clear_task_lock()
+        # Log the state change in the task history
+        await Task.set_task_history(
+            task_id=task_id,
+            project_id=None,  # Assuming project_id is not needed here or is passed earlier
+            user_id=user_id,
+            action=TaskAction.STATE_CHANGE,
+            db=db,
+            new_state=TaskStatus.READY,
+        )
+
+    @staticmethod
+    async def clear_task_lock(task_id: int, project_id: int, db: Database):
+        """Unlocks task in scope, clears the lock as though it never happened."""
+
+        # Get the last locked action and delete it from the task history
+        last_action = await TaskHistory.get_last_locked_action(project_id, task_id, db)
+        if last_action:
+            delete_action_query = """
+                DELETE FROM task_history
+                WHERE id = :history_id
+            """
+            await db.execute(
+                query=delete_action_query, values={"history_id": last_action["id"]}
+            )
+
+        # Clear the lock from the task itself
+        await Task.clear_lock(task_id=task_id, project_id=project_id, db=db)
+
+    @staticmethod
+    async def record_auto_unlock(
+        task_id: int, project_id: int, lock_duration: str, db: Database
+    ):
+        """Automatically unlocks the task and records the auto-unlock action in task history"""
+
+        # Fetch the locked user and last locked action for the task
+        locked_user_query = """
+            SELECT locked_by
+            FROM tasks
+            WHERE id = :task_id AND project_id = :project_id
+        """
+        locked_user = await db.fetch_one(
+            query=locked_user_query,
+            values={"task_id": task_id, "project_id": project_id},
+        )
+
+        last_action = await TaskHistory.get_last_locked_action(project_id, task_id, db)
+
+        if last_action and last_action["action"] == "LOCKED_FOR_MAPPING":
+            next_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING
+        else:
+            next_action = TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
+
+        # Clear the task lock (clear the lock and delete the last locked action)
+        await Task.clear_task_lock(task_id, project_id, db)
 
         # Add AUTO_UNLOCKED action in the task history
-        auto_unlocked = self.set_task_history(action=next_action, user_id=locked_user)
-        auto_unlocked.action_text = lock_duration
-        self.update()
+        auto_unlocked = await Task.set_task_history(
+            task_id=task_id,
+            project_id=project_id,
+            user_id=locked_user["locked_by"],
+            action=next_action,
+            db=db,
+        )
+
+        # Update the action_text with the lock duration
+        update_history_query = """
+            UPDATE task_history
+            SET action_text = :lock_duration
+            WHERE id = :history_id
+        """
+        await db.execute(
+            query=update_history_query,
+            values={"lock_duration": lock_duration, "history_id": auto_unlocked["id"]},
+        )
 
     @staticmethod
     async def unlock_task(
