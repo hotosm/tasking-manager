@@ -489,25 +489,39 @@ class MappingService:
         await db.execute(query=project_update_query, values={"project_id": project_id})
 
     @staticmethod
-    def reset_all_badimagery(project_id: int, user_id: int):
-        """Marks all bad imagery tasks ready for mapping"""
-        badimagery_tasks = Task.query.filter(
-            Task.task_status == TaskStatus.BADIMAGERY.value,
-            Task.project_id == project_id,
-        ).all()
+    async def reset_all_badimagery(project_id: int, user_id: int, db: Database):
+        """Marks all bad imagery tasks as ready for mapping and resets the bad imagery counter"""
 
+        # Fetch all tasks with status BADIMAGERY for the given project
+        badimagery_query = """
+            SELECT id FROM tasks
+            WHERE task_status = :task_status AND project_id = :project_id
+        """
+        badimagery_tasks = await db.fetch_all(
+            query=badimagery_query,
+            values={
+                "task_status": TaskStatus.BADIMAGERY.value,
+                "project_id": project_id,
+            },
+        )
         for task in badimagery_tasks:
-            task.lock_task_for_mapping(user_id)
-            task.unlock_task(user_id, new_state=TaskStatus.READY)
+            task_id = task["id"]
+            await Task.lock_task_for_mapping(task_id, project_id, user_id, db)
+            await Task.unlock_task(task_id, project_id, user_id, TaskStatus.READY, db)
 
-        # Reset bad imagery counter
-        project = ProjectService.get_project_by_id(project_id)
-        project.tasks_bad_imagery = 0
-        project.save()
+        # Reset bad imagery counter in the project
+        reset_query = """
+            UPDATE projects
+            SET tasks_bad_imagery = 0
+            WHERE id = :project_id
+        """
+        await db.execute(query=reset_query, values={"project_id": project_id})
 
     @staticmethod
-    def lock_time_can_be_extended(project_id, task_id, user_id):
-        task = Task.get(task_id, project_id)
+    async def lock_time_can_be_extended(
+        project_id: int, task_id: int, user_id: int, db: Database
+    ):
+        task = await Task.get(task_id, project_id, db)
         if task is None:
             raise NotFound(
                 sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
@@ -525,32 +539,62 @@ class MappingService:
                 "LockedByAnotherUser- Task is locked by another user."
             )
 
+    # @staticmethod
+    # async def extend_task_lock_time(extend_dto: ExtendLockTimeDTO, db: Database):
+    #     """
+    #     Extends expiry time of locked tasks
+    #     :raises ValidatorServiceError
+    #     """
+    #     # Loop supplied tasks to check they can all be locked for validation
+    #     tasks_to_extend = []
+    #     for task_id in extend_dto.task_ids:
+    #         await MappingService.lock_time_can_be_extended(
+    #             extend_dto.project_id, task_id, extend_dto.user_id, db
+    #         )
+    #         tasks_to_extend.append(task_id)
+
+    #     for task_id in tasks_to_extend:
+    #         task = await Task.get(task_id, extend_dto.project_id, db)
+    #         action = TaskAction.EXTENDED_FOR_MAPPING
+    #         if task.task_status == TaskStatus.LOCKED_FOR_VALIDATION:
+    #             action = TaskAction.EXTENDED_FOR_VALIDATION
+
+    #         await TaskHistory.update_task_locked_with_duration(
+    #             task_id,
+    #             extend_dto.project_id,
+    #             TaskStatus(task.task_status),
+    #             extend_dto.user_id,
+    #         )
+    #         await Task.set_task_history(action, extend_dto.user_id)
+
     @staticmethod
-    def extend_task_lock_time(extend_dto: ExtendLockTimeDTO):
+    async def extend_task_lock_time(extend_dto: ExtendLockTimeDTO, db: Database):
         """
-        Extends expiry time of locked tasks
+        Extends expiry time of locked tasks.
         :raises ValidatorServiceError
         """
-        # Loop supplied tasks to check they can all be locked for validation
-        tasks_to_extend = []
+        # Validate each task before extending lock time
         for task_id in extend_dto.task_ids:
-            MappingService.lock_time_can_be_extended(
-                extend_dto.project_id, task_id, extend_dto.user_id
+            await MappingService.lock_time_can_be_extended(
+                extend_dto.project_id, task_id, extend_dto.user_id, db
             )
-            tasks_to_extend.append(task_id)
 
-        # # Lock all tasks for validation
-        for task_id in tasks_to_extend:
-            task = Task.get(task_id, extend_dto.project_id)
-            action = TaskAction.EXTENDED_FOR_MAPPING
-            if task.task_status == TaskStatus.LOCKED_FOR_VALIDATION:
-                action = TaskAction.EXTENDED_FOR_VALIDATION
+        # Extend lock time for validated tasks
+        for task_id in extend_dto.task_ids:
+            task = await Task.get(task_id, extend_dto.project_id, db)
+            action = (
+                TaskAction.EXTENDED_FOR_MAPPING
+                if task["task_status"] == TaskStatus.LOCKED_FOR_MAPPING
+                else TaskAction.EXTENDED_FOR_VALIDATION
+            )
 
-            TaskHistory.update_task_locked_with_duration(
+            await TaskHistory.update_task_locked_with_duration(
                 task_id,
                 extend_dto.project_id,
-                TaskStatus(task.task_status),
+                TaskStatus(task["task_status"]),
                 extend_dto.user_id,
+                db,
             )
-            task.set_task_history(action, extend_dto.user_id)
-            task.update()
+            await Task.set_task_history(
+                task_id, extend_dto.project_id, extend_dto.user_id, action, db
+            )
