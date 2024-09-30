@@ -73,6 +73,7 @@ class ProjectSearchService:
         query = (
             db.session.query(
                 Project.id.label("id"),
+                ProjectInfo.name.label("project_name"),
                 Project.difficulty,
                 Project.priority,
                 Project.default_locale,
@@ -81,6 +82,8 @@ class ProjectSearchService:
                 Project.tasks_bad_imagery,
                 Project.tasks_mapped,
                 Project.tasks_validated,
+                Project.percent_mapped,
+                Project.percent_validated,
                 Project.status,
                 Project.total_tasks,
                 Project.last_updated,
@@ -88,10 +91,14 @@ class ProjectSearchService:
                 Project.country,
                 Organisation.name.label("organisation_name"),
                 Organisation.logo.label("organisation_logo"),
+                Project.created.label("creation_date"),
+                func.coalesce(
+                    func.sum(func.ST_Area(Project.geometry, True) / 1000000)
+                ).label("total_area"),
             )
             .filter(Project.geometry is not None)
             .outerjoin(Organisation, Organisation.id == Project.organisation_id)
-            .group_by(Organisation.id, Project.id)
+            .group_by(Organisation.id, Project.id, ProjectInfo.name)
         )
 
         # Get public projects only for anonymous user.
@@ -203,52 +210,59 @@ class ProjectSearchService:
     @cached(csv_download_cache)
     def search_projects_as_csv(search_dto: ProjectSearchDTO, user) -> str:
         all_results, _ = ProjectSearchService._filter_projects(search_dto, user)
+        rows = [row._asdict() for row in all_results]
         is_user_admin = user is not None and user.role == UserRole.ADMIN.value
 
-        project_ids = [p.id for p in all_results]
-        contributors_by_project_id = (
-            TaskHistory.query.with_entities(
-                TaskHistory.project_id, func.count(TaskHistory.user_id.distinct())
-            )
-            .filter(
-                TaskHistory.project_id.in_(project_ids), TaskHistory.action != "COMMENT"
-            )
-            .group_by(TaskHistory.project_id)
-            .all()
-        )
+        for row in rows:
+            row["priority"] = ProjectPriority(row["priority"]).name
+            row["difficulty"] = ProjectDifficulty(row["difficulty"]).name
+            row["status"] = ProjectStatus(row["status"]).name
+            row["total_area"] = round(row["total_area"], 3)
+            row["total_contributors"] = Project.get_project_total_contributions(row["id"])
 
-        results_as_dto = [
-            ProjectSearchService.create_result_dto(
-                project,
-                search_dto.preferred_locale,
-                next(
-                    filter(
-                        lambda c, p=project: c[0] == p.id,
-                        contributors_by_project_id,
+            if is_user_admin:
+                partners_names = (
+                    ProjectPartnership.query.with_entities(
+                        ProjectPartnership.project_id, Partner.name
                     )
-                )[1],
-                with_partner_names=is_user_admin,
-                with_author_name=False,
-            ).to_primitive()
-            for project in all_results
+                    .join(Partner, ProjectPartnership.partner_id == Partner.id)
+                    .filter(ProjectPartnership.project_id == row["id"])
+                    .group_by(ProjectPartnership.project_id, Partner.name)
+                    .all()
+                )
+                row["partner_names"] = [pn for (_, pn) in partners_names]
+
+        df = pd.json_normalize(rows)
+        columns_to_drop = [
+            "default_locale",
+            "organisation_id",
+            "organisation_logo",
+            "tasks_bad_imagery",
+            "tasks_mapped",
+            "tasks_validated",
+            "total_tasks",
+            "centroid",
         ]
 
-        df = pd.json_normalize(results_as_dto)
-        columns_to_drop = [
-            "locale",
-            "shortDescription",
-            "organisationLogo",
-            "campaigns",
-        ]
-        if not is_user_admin:
-            columns_to_drop.append("partnerNames")
+        colummns_to_rename = {
+            "id": "projectId",
+            "organisation_name": "organisationName",
+            "last_updated": "lastUpdated",
+            "due_date": "dueDate",
+            "percent_mapped": "percentMapped",
+            "percent_validated": "percentValidated",
+            "total_area": "totalArea",
+            "total_contributors": "totalContributors",
+            "partner_names": "partnerNames",
+            "project_name": "name",
+        }
 
         df.drop(
             columns=columns_to_drop,
             inplace=True,
             axis=1,
         )
-
+        df.rename(columns=colummns_to_rename, inplace=True)
         return df.to_csv(index=False)
 
     @staticmethod
