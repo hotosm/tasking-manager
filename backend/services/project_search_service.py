@@ -69,37 +69,62 @@ class BBoxTooBigError(Exception):
 
 class ProjectSearchService:
     @staticmethod
-    def create_search_query(user=None):
-        query = (
-            db.session.query(
-                Project.id.label("id"),
-                ProjectInfo.name.label("project_name"),
-                Project.difficulty,
-                Project.priority,
-                Project.default_locale,
-                Project.centroid.ST_AsGeoJSON().label("centroid"),
-                Project.organisation_id,
-                Project.tasks_bad_imagery,
-                Project.tasks_mapped,
-                Project.tasks_validated,
-                Project.percent_mapped,
-                Project.percent_validated,
-                Project.status,
-                Project.total_tasks,
-                Project.last_updated,
-                Project.due_date,
-                Project.country,
-                Organisation.name.label("organisation_name"),
-                Organisation.logo.label("organisation_logo"),
-                Project.created.label("creation_date"),
-                func.coalesce(
-                    func.sum(func.ST_Area(Project.geometry, True) / 1000000)
-                ).label("total_area"),
+    def create_search_query(user=None, as_csv: bool = False):
+        if as_csv:
+            query = (
+                db.session.query(
+                    Project.id.label("id"),
+                    ProjectInfo.name.label("project_name"),
+                    Project.difficulty,
+                    Project.priority,
+                    Project.default_locale,
+                    Project.centroid.ST_AsGeoJSON().label("centroid"),
+                    Project.organisation_id,
+                    Project.tasks_bad_imagery,
+                    Project.tasks_mapped,
+                    Project.tasks_validated,
+                    Project.percent_mapped,
+                    Project.percent_validated,
+                    Project.status,
+                    Project.total_tasks,
+                    Project.last_updated,
+                    Project.due_date,
+                    Project.country,
+                    Organisation.name.label("organisation_name"),
+                    Organisation.logo.label("organisation_logo"),
+                    Project.created.label("creation_date"),
+                    func.coalesce(
+                        func.sum(func.ST_Area(Project.geometry, True) / 1000000)
+                    ).label("total_area"),
+                )
+                .filter(Project.geometry is not None)
+                .outerjoin(Organisation, Organisation.id == Project.organisation_id)
+                .group_by(Organisation.id, Project.id, ProjectInfo.name)
             )
-            .filter(Project.geometry is not None)
-            .outerjoin(Organisation, Organisation.id == Project.organisation_id)
-            .group_by(Organisation.id, Project.id, ProjectInfo.name)
-        )
+        else:
+            query = (
+                db.session.query(
+                    Project.id.label("id"),
+                    Project.difficulty,
+                    Project.priority,
+                    Project.default_locale,
+                    Project.centroid.ST_AsGeoJSON().label("centroid"),
+                    Project.organisation_id,
+                    Project.tasks_bad_imagery,
+                    Project.tasks_mapped,
+                    Project.tasks_validated,
+                    Project.status,
+                    Project.total_tasks,
+                    Project.last_updated,
+                    Project.due_date,
+                    Project.country,
+                    Organisation.name.label("organisation_name"),
+                    Organisation.logo.label("organisation_logo"),
+                )
+                .filter(Project.geometry is not None)
+                .outerjoin(Organisation, Organisation.id == Project.organisation_id)
+                .group_by(Organisation.id, Project.id)
+            )
 
         # Get public projects only for anonymous user.
         if user is None:
@@ -209,7 +234,7 @@ class ProjectSearchService:
     @staticmethod
     @cached(csv_download_cache)
     def search_projects_as_csv(search_dto: ProjectSearchDTO, user) -> str:
-        all_results, _ = ProjectSearchService._filter_projects(search_dto, user)
+        all_results, _ = ProjectSearchService._filter_projects(search_dto, user, True)
         rows = [row._asdict() for row in all_results]
         is_user_admin = user is not None and user.role == UserRole.ADMIN.value
 
@@ -218,7 +243,9 @@ class ProjectSearchService:
             row["difficulty"] = ProjectDifficulty(row["difficulty"]).name
             row["status"] = ProjectStatus(row["status"]).name
             row["total_area"] = round(row["total_area"], 3)
-            row["total_contributors"] = Project.get_project_total_contributions(row["id"])
+            row["total_contributors"] = Project.get_project_total_contributions(
+                row["id"]
+            )
 
             if is_user_admin:
                 partners_names = (
@@ -310,10 +337,10 @@ class ProjectSearchService:
         return dto
 
     @staticmethod
-    def _filter_projects(search_dto: ProjectSearchDTO, user):
+    def _filter_projects(search_dto: ProjectSearchDTO, user, as_csv=False):
         """Filters all projects based on criteria provided by user"""
 
-        query = ProjectSearchService.create_search_query(user)
+        query = ProjectSearchService.create_search_query(user, as_csv)
 
         query = query.join(ProjectInfo).filter(
             ProjectInfo.locale.in_([search_dto.preferred_locale, "en"])
