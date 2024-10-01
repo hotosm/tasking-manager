@@ -209,6 +209,7 @@ class ProjectSearchService:
         project_ids: List[int], db: Database
     ) -> List[int]:
         """Fetch total contributions for given project IDs."""
+        print(f"Fetching total contributions for projects: {project_ids}")
 
         if not project_ids:
             return []

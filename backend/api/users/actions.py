@@ -28,7 +28,7 @@ async def patch(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
-    user_dto: UserDTO = Body(...),
+    data: dict = Body(...),
 ):
     """
     Updates user info
@@ -91,6 +91,7 @@ async def patch(
             description: Internal Server Error
     """
     try:
+        user_dto = UserDTO(**data)
         if user_dto.email_address == "":
             user_dto.email_address = (
                 None  # Replace empty string with None so validation doesn't break
@@ -122,9 +123,14 @@ async def patch(
 # class UsersActionsSetLevelAPI(Resource):
 # @token_auth.login_required
 @router.patch("/{username}/actions/set-level/{level}/")
-@requires("authenticated")
-@tm.pm_only()
-async def patch(request: Request, username, level):
+# @tm.pm_only()
+async def patch(
+    request: Request,
+    username,
+    level,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Allows PMs to set a user's mapping level
     ---
@@ -164,16 +170,24 @@ async def patch(request: Request, username, level):
             description: Internal Server Error
     """
     try:
-        UserService.set_user_mapping_level(username, level)
-        return {"Success": "Level set"}, 200
+        await UserService.set_user_mapping_level(username, level, db)
+        return JSONResponse(content={"Success": "Level set"}, status_code=200)
     except UserServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=400,
+        )
 
 
 @router.patch("/{username}/actions/set-role/{role}/")
-@requires("authenticated")
-@tm.pm_only()
-async def patch(request: Request, username: str, role: str):
+# @tm.pm_only()
+async def patch(
+    request: Request,
+    username: str,
+    role: str,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Allows PMs to set a user's role
     ---
@@ -213,15 +227,24 @@ async def patch(request: Request, username: str, role: str):
             description: Internal Server Error
     """
     try:
-        UserService.add_role_to_user(request.user.display_name, username, role)
-        return {"Success": "Role Added"}, 200
+        await UserService.add_role_to_user(user.id, username, role, db)
+        return JSONResponse(content={"Success": "Role Added"}, status_code=200)
     except UserServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.patch("/{user_name}/actions/set-expert-mode/{is_expert}/")
-@tm.pm_only()
-async def patch(request: Request, user_name, is_expert):
+# @tm.pm_only()
+async def patch(
+    request: Request,
+    user_name,
+    is_expert,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Allows user to enable or disable expert mode
     ---
@@ -254,10 +277,10 @@ async def patch(request: Request, user_name, is_expert):
             description: Internal Server Error
     """
     try:
-        UserService.set_user_is_expert(request.user.display_name, is_expert == "true")
-        return {"Success": "Expert mode updated"}, 200
+        await UserService.set_user_is_expert(user.id, is_expert == "true", db)
+        return JSONResponse(content={"Success": "Expert mode updated"}, status_code=200)
     except UserServiceError:
-        return {"Error": "Not allowed"}, 400
+        return JSONResponse(content={"Error": "Not allowed"}, status_code=400)
 
 
 @router.patch("/me/actions/verify-email/")
@@ -299,7 +322,11 @@ async def patch(
 
 
 @router.post("/actions/register/")
-async def post(request: Request):
+async def post(
+    request: Request,
+    db: Database = Depends(get_db),
+    user_dto: UserRegisterEmailDTO = Body(...),
+):
     """
     Registers users without OpenStreetMap account
     ---
@@ -326,26 +353,17 @@ async def post(request: Request):
             description: Internal Server Error
     """
     try:
-        user_dto = UserRegisterEmailDTO(await request.json())
-        user_dto.validate()
-    except DataError as e:
-        logger.error(f"error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
-
-    try:
-        user = UserService.register_user_with_email(user_dto)
-        user_dto = UserRegisterEmailDTO(
-            dict(
-                success=True,
-                email=user_dto.email,
-                details="User created successfully",
-                id=user.id,
-            )
-        )
-        return user_dto.model_dump(by_alias=True), 200
+        user = await UserService.register_user_with_email(user_dto, db)
+        result = {
+            "email": user_dto.email,
+            "success": True,
+            "details": "User created successfully",
+            "id": user,
+        }
+        user_dto = UserRegisterEmailDTO(**result)
+        return user_dto.model_dump(by_alias=True)
     except ValueError as e:
-        user_dto = UserRegisterEmailDTO(dict(email=user_dto.email, details=str(e)))
-        return user_dto.model_dump(by_alias=True), 400
+        return JSONResponse(content={"Error": str(e)}, status_code=400)
 
 
 @router.post("/me/actions/set-interests/")
@@ -353,6 +371,7 @@ async def post(
     request: Request,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
+    data: dict = Body(...),
 ):
     """
     Creates a relationship between user and interests
@@ -389,10 +408,9 @@ async def post(
             description: Internal Server Error
     """
     try:
-        data = await request.json()
         user_interests = await InterestService.create_or_update_user_interests(
             user.id, data["interests"], db
         )
         return user_interests
     except (ValueError, KeyError) as e:
-        return {"Error": str(e)}, 400
+        return JSONResponse(content={"Error": str(e)}, status_code=400)
