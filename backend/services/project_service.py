@@ -481,7 +481,7 @@ class ProjectService:
 
         # is_admin or is_author or is_org_manager or is_manager_team
         is_manager_permission = False
-        if ProjectAdminService.is_user_action_permitted_on_project(
+        if await ProjectAdminService.is_user_action_permitted_on_project(
             user_id, project_id, db
         ):
             is_manager_permission = True
