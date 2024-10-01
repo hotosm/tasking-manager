@@ -1,7 +1,6 @@
 import base64
 import binascii
 import urllib.parse
-from backend.db import get_db
 from backend.models.postgis.user import User
 from backend.models.dtos.user_dto import AuthUserDTO
 from starlette.authentication import (
@@ -18,7 +17,7 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService, NotFound
 from random import SystemRandom
 from backend.config import settings
-from fastapi import Depends, HTTPException, Request, Security
+from fastapi import HTTPException, Security
 from fastapi.security.api_key import APIKeyHeader
 from databases import Database
 from typing import Optional

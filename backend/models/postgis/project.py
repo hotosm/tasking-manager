@@ -63,10 +63,7 @@ from backend.models.postgis.user import User
 from backend.models.postgis.campaign import Campaign, campaign_projects
 
 from backend.models.postgis.utils import (
-    ST_SetSRID,
-    ST_GeomFromGeoJSON,
     timestamp,
-    ST_Centroid,
 )
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.interests import Interest, project_interests
@@ -268,8 +265,6 @@ class Project(Base):
         self.last_updated = timestamp()
 
     async def set_project_aoi(self, draft_project_dto: DraftProjectDTO, db: Database):
-        from sqlalchemy.sql import text
-
         """Sets the AOI for the supplied project"""
         aoi_geojson = geojson.loads(json.dumps(draft_project_dto.area_of_interest))
 
@@ -288,7 +283,7 @@ class Project(Base):
         result = await db.fetch_one(query=query, values={"geojson": valid_geojson})
         self.geometry = result["geometry_wkt"] if result else None
 
-        query = f"""
+        query = """
         SELECT ST_AsText(ST_Centroid(ST_SetSRID(ST_GeomFromGeoJSON(:geometry), 4326))) AS centroid
         """
 

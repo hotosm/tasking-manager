@@ -8,11 +8,9 @@ from backend.db import get_db
 from backend.services.users.authentication_service import login_required
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.messaging.message_service import MessageService
-from backend.services.users.authentication_service import tm
 from backend.services.users.user_service import UserService, UserServiceError
 from backend.services.interests_service import InterestService
 from backend.db import get_session
-from starlette.authentication import requires
 
 router = APIRouter(
     prefix="/users",

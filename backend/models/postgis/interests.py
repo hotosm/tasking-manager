@@ -5,7 +5,6 @@ from sqlalchemy import (
     BigInteger,
     Table,
     ForeignKey,
-    TextualSelect,
     select,
 )
 from backend.exceptions import NotFound
