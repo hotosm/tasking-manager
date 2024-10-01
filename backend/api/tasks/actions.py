@@ -1,37 +1,36 @@
-from backend.exceptions import NotFound
-from backend.models.dtos.grid_dto import SplitTaskDTO
-from backend.models.postgis.utils import InvalidGeoJson
-from backend.services.grid.split_service import SplitService, SplitServiceError
-from backend.services.users.user_service import UserService
-from backend.services.project_admin_service import ProjectAdminService
-from backend.services.project_service import ProjectService
-from backend.models.dtos.validator_dto import (
-    LockForValidationDTO,
-    UnlockAfterValidationDTO,
-    StopValidationDTO,
-    RevertUserTasksDTO,
-)
-from backend.services.validator_service import (
-    ValidatorService,
-    ValidatorServiceError,
-    UserLicenseError,
-)
-from backend.models.dtos.mapping_dto import (
-    LockTaskDTO,
-    StopMappingTaskDTO,
-    MappedTaskDTO,
-    ExtendLockTimeDTO,
-)
-from backend.services.mapping_service import MappingService, MappingServiceError
+from databases import Database
 from fastapi import APIRouter, Depends, Request
-from starlette.authentication import requires
+from fastapi.responses import JSONResponse
 from loguru import logger
 
 from backend.db import get_db
-from databases import Database
-from backend.services.users.authentication_service import login_required
+from backend.exceptions import NotFound
+from backend.models.dtos.grid_dto import SplitTaskDTO
+from backend.models.dtos.mapping_dto import (
+    ExtendLockTimeDTO,
+    LockTaskDTO,
+    MappedTaskDTO,
+    StopMappingTaskDTO,
+)
 from backend.models.dtos.user_dto import AuthUserDTO
-from fastapi.responses import JSONResponse
+from backend.models.dtos.validator_dto import (
+    LockForValidationDTO,
+    RevertUserTasksDTO,
+    StopValidationDTO,
+    UnlockAfterValidationDTO,
+)
+from backend.models.postgis.utils import InvalidGeoJson
+from backend.services.grid.split_service import SplitService, SplitServiceError
+from backend.services.mapping_service import MappingService, MappingServiceError
+from backend.services.project_admin_service import ProjectAdminService
+from backend.services.project_service import ProjectService
+from backend.services.users.authentication_service import login_required
+from backend.services.users.user_service import UserService
+from backend.services.validator_service import (
+    UserLicenseError,
+    ValidatorService,
+    ValidatorServiceError,
+)
 
 router = APIRouter(
     prefix="/projects",
@@ -814,9 +813,13 @@ async def post(
         )
 
 
-@router.post("{project_id}/tasks/actions/reset-all-badimagery/")
-@requires("authenticated")
-async def post(request: Request, project_id: int):
+@router.post("/{project_id}/tasks/actions/reset-all-badimagery/")
+async def post(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Set all bad imagery tasks as ready for mapping
     ---
@@ -848,9 +851,9 @@ async def post(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
+        authenticated_user_id = user.id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
         ):
             raise ValueError()
     except ValueError:
@@ -858,8 +861,8 @@ async def post(request: Request, project_id: int):
             "Error": "User is not a manager of the project",
             "SubCode": "UserPermissionError",
         }, 403
-
-    MappingService.reset_all_badimagery(project_id, authenticated_user_id)
+    async with db.transaction():
+        await MappingService.reset_all_badimagery(project_id, authenticated_user_id, db)
     return JSONResponse(
         content={"Success": "All bad imagery tasks marked ready for mapping"},
         status_code=200,
@@ -919,9 +922,14 @@ async def post(
         return JSONResponse(content={"Success": "All tasks reset"}, status_code=200)
 
 
-@router.post("{project_id}/tasks/{task_id}/actions/split/")
-@requires("authenticated")
-async def post(request: Request, project_id: int, task_id: int):
+@router.post("/{project_id}/tasks/{task_id}/actions/split/")
+async def post(
+    request: Request,
+    project_id: int,
+    task_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Split a task
     ---
@@ -969,28 +977,33 @@ async def post(request: Request, project_id: int, task_id: int):
             description: Internal Server Error
     """
     try:
-        split_task_dto = SplitTaskDTO()
-        split_task_dto.user_id = request.user.display_name
-        split_task_dto.project_id = project_id
-        split_task_dto.task_id = task_id
-        split_task_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-        split_task_dto.validate()
+        preferred_locale = request.headers.get("accept-language", None)
+        split_task_dto = SplitTaskDTO(
+            user_id=user.id, project_id=project_id, task_id=task_id
+        )
+        if preferred_locale:
+            split_task_dto.preferred_locale = preferred_locale
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return {"Error": "Unable to split task", "SubCode": "InvalidData"}, 400
     try:
-        ProjectService.exists(project_id)  # Check if project exists
-        tasks = SplitService.split_task(split_task_dto)
-        return tasks.model_dump(by_alias=True), 200
+        await ProjectService.exists(project_id, db)
+        async with db.transaction():
+            tasks = await SplitService.split_task(split_task_dto, db)
+            return tasks
     except SplitServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
     except InvalidGeoJson as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
-@router.post("{project_id}/tasks/actions/extend/")
-@requires("authenticated")
-async def post(request: Request, project_id):
+@router.post("/{project_id}/tasks/actions/extend/")
+async def post(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Extends duration of locked tasks
     ---
@@ -1044,28 +1057,33 @@ async def post(request: Request, project_id):
             description: Internal Server Error
     """
     try:
-        extend_dto = ExtendLockTimeDTO(request.json())
-        extend_dto.project_id = project_id
-        extend_dto.user_id = request.user.display_name
-        extend_dto.validate()
+        request_data = await request.json()
+        task_ids = request_data.get("taskIds", None)
+        extend_dto = ExtendLockTimeDTO(
+            project_id=project_id, task_ids=task_ids, user_id=user.id
+        )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return {
             "Error": "Unable to extend lock time",
             "SubCode": "InvalidData",
         }, 400
-
     try:
-        ProjectService.exists(project_id)  # Check if project exists
-        MappingService.extend_task_lock_time(extend_dto)
-        return {"Success": "Successfully extended task expiry"}, 200
+        await ProjectService.exists(project_id, db)
+        async with db.transaction():
+            await MappingService.extend_task_lock_time(extend_dto, db)
+            return {"Success": "Successfully extended task expiry"}, 200
     except MappingServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
 
 
-@router.post("{project_id}/tasks/actions/reset-by-user/")
-@requires("authenticated")
-async def post(request: Request, project_id: int):
+@router.post("/{project_id}/tasks/actions/reset-by-user/")
+async def post(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Revert tasks by a specific user in a project
     ---
@@ -1118,13 +1136,14 @@ async def post(request: Request, project_id: int):
             description: Internal Server Error
     """
     try:
-        revert_dto = RevertUserTasksDTO()
-        revert_dto.project_id = project_id
-        revert_dto.action = request.args.get("action")
-        user = UserService.get_user_by_username(request.args.get("username"))
-        revert_dto.user_id = user.id
-        revert_dto.action_by = request.user.display_name
-        revert_dto.validate()
+        request_data = await request.json()
+        action = request_data.get("action", None)
+        username = request_data.get("username", None)
+        if username:
+            user = await UserService.get_user_by_username(username, db)
+        revert_dto = RevertUserTasksDTO(
+            project_id=project_id, user_id=user.id, action_by=user.id, action=action
+        )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return {
@@ -1132,7 +1151,8 @@ async def post(request: Request, project_id: int):
             "SubCode": "InvalidData",
         }, 400
     try:
-        ValidatorService.revert_user_tasks(revert_dto)
-        return {"Success": "Successfully reverted tasks"}, 200
+        async with db.transaction():
+            await ValidatorService.revert_user_tasks(revert_dto, db)
+            return {"Success": "Successfully reverted tasks"}, 200
     except ValidatorServiceError as e:
         return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403

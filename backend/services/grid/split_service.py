@@ -1,17 +1,16 @@
 import geojson
-from shapely.geometry import Polygon, MultiPolygon, LineString, shape as shapely_shape
-from shapely.ops import split
-from backend import db
+from databases import Database
 
 # from flask import current_app
 from geoalchemy2 import shape
+from geoalchemy2.elements import WKBElement
+from shapely.geometry import LineString, MultiPolygon, Polygon
+from shapely.geometry import shape as shapely_shape
+from shapely.ops import split
 
-from backend.exceptions import NotFound
 from backend.models.dtos.grid_dto import SplitTaskDTO
 from backend.models.dtos.mapping_dto import TaskDTOs
-from backend.models.postgis.utils import ST_Transform, ST_Area, ST_GeogFromWKB
-from backend.models.postgis.task import Task, TaskStatus, TaskAction
-from backend.models.postgis.project import Project
+from backend.models.postgis.task import Task, TaskAction, TaskStatus
 from backend.models.postgis.utils import InvalidGeoJson
 
 
@@ -25,16 +24,12 @@ class SplitServiceError(Exception):
 
 class SplitService:
     @staticmethod
-    def _create_split_tasks(x, y, zoom, task) -> list:
+    async def _create_split_tasks(x, y, zoom, task, db) -> list:
         """
-        function for splitting a task square geometry into 4 smaller squares
-        :param geom_to_split: {geojson.Feature} the geojson feature to b split
-        :return: list of {geojson.Feature}
+        Refactored function for splitting a task square geometry into 4 smaller squares using asyncpg and encode databases.
         """
-        # If the task's geometry doesn't correspond to an OSM tile identified by an
-        # x, y, zoom then we need to take a different approach to splitting
         if x is None or y is None or zoom is None or not task.is_square:
-            return SplitService._create_split_tasks_from_geometry(task)
+            return await SplitService._create_split_tasks_from_geometry(task, db)
 
         try:
             split_geoms = []
@@ -43,7 +38,9 @@ class SplitService:
                     new_x = x * 2 + i
                     new_y = y * 2 + j
                     new_zoom = zoom + 1
-                    new_square = SplitService._create_square(new_x, new_y, new_zoom)
+                    new_square = await SplitService._create_square(
+                        new_x, new_y, new_zoom, db
+                    )
                     feature = geojson.Feature()
                     feature.geometry = new_square
                     feature.properties = {
@@ -57,62 +54,64 @@ class SplitService:
                         split_geoms.append(feature)
 
             return split_geoms
+
         except Exception as e:
             raise SplitServiceError(f"unhandled error splitting tile: {str(e)}")
 
     @staticmethod
-    def _create_square(x, y, zoom) -> geojson.MultiPolygon:
+    async def _create_square(x, y, zoom, db) -> geojson.MultiPolygon:
         """
-        Function for creating a geojson.MultiPolygon square representing a single OSM tile grid square
-        :param x: osm tile grid x
-        :param y: osm tile grid y
-        :param zoom: osm tile grid zoom level
-        :return: geojson.MultiPolygon in EPSG:4326
+        Refactored function to create a geojson.MultiPolygon square using raw SQL with encode databases.
         """
-        # Maximum resolution
         MAXRESOLUTION = 156543.0339
-
-        # X/Y axis limit
         max = MAXRESOLUTION * 256 / 2
-
-        # calculate extents
         step = max / (2 ** (zoom - 1))
+
         xmin = x * step - max
         ymin = y * step - max
         xmax = (x + 1) * step - max
         ymax = (y + 1) * step - max
 
-        # make a shapely multipolygon
+        # Create the MultiPolygon object
         multipolygon = MultiPolygon(
             [Polygon([(xmin, ymin), (xmax, ymin), (xmax, ymax), (xmin, ymax)])]
         )
 
-        # use the database to transform the geometry from 3857 to 4326
-        transformed_geometry = ST_Transform(shape.from_shape(multipolygon, 3857), 4326)
+        # Convert MultiPolygon to WKT
+        multipolygon_wkt = multipolygon.wkt
 
-        # use DB to get the geometry as geojson
-        with db.engine.connect() as conn:
-            return geojson.loads(
-                conn.execute(transformed_geometry.ST_AsGeoJSON()).scalar()
-            )
+        # Query to transform and get the GeoJSON
+        create_square_query = """
+            SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Multi(ST_GeomFromText(:multipolygon_geometry)), 3857), 4326)) AS geojson
+        """
+
+        # Use the WKT version of the multipolygon in the SQL query
+        square_geojson_str = await db.fetch_val(
+            create_square_query, values={"multipolygon_geometry": multipolygon_wkt}
+        )
+
+        # Convert the result back to GeoJSON and return
+        return geojson.loads(square_geojson_str)
 
     @staticmethod
-    def _create_split_tasks_from_geometry(task) -> list:
+    async def _create_split_tasks_from_geometry(task, db) -> list:
         """
-        Splits a task into 4 smaller tasks based purely on the task's geometry rather than
-        an OSM tile identified by x, y, zoom
-        :return: list of {geojson.Feature}
+        Splits a task into 4 smaller tasks based on its geometry (not OSM tile). Uses raw SQL with asyncpg/encode databases.
         """
-        # Load the task's geometry and calculate its centroid and bbox
-        query = session.query(
-            Task.id, Task.geometry.ST_AsGeoJSON().label("geometry")
-        ).filter(Task.id == task.id, Task.project_id == task.project_id)
-        task_geojson = geojson.loads(query[0].geometry)
+        task_query = """
+            SELECT ST_AsGeoJSON(geometry) AS geometry
+            FROM tasks
+            WHERE id = :task_id AND project_id = :project_id
+        """
+        task_geojson_str = await db.fetch_val(
+            task_query, values={"task_id": task.id, "project_id": task.project_id}
+        )
+        task_geojson = geojson.loads(task_geojson_str)
         geometry = shapely_shape(task_geojson)
         centroid = geometry.centroid
         minx, miny, maxx, maxy = geometry.bounds
 
-        # split geometry in half vertically, then split those halves in half horizontally
+        # split geometry in half vertically, then horizontally
         split_geometries = []
         vertical_dividing_line = LineString([(centroid.x, miny), (centroid.x, maxy)])
         horizontal_dividing_line = LineString([(minx, centroid.y), (maxx, centroid.y)])
@@ -128,18 +127,21 @@ class SplitService:
         # convert split geometries into GeoJSON features expected by Task
         split_features = []
         for split_geometry in split_geometries:
-            feature = geojson.Feature()
-            # Tasks expect multipolygons. Convert and use the database to get as GeoJSON
             multipolygon_geometry = shape.from_shape(split_geometry, 4326)
-            with db.engine.connect() as conn:
-                feature.geometry = geojson.loads(
-                    conn.execute(multipolygon_geometry.ST_AsGeoJSON()).scalar()
-                )
+            multipolygon_as_geojson_query = """
+                SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Multi(:multipolygon_geometry), 4326), 4326)) AS geojson
+            """
+            feature_geojson = await db.fetch_val(
+                multipolygon_as_geojson_query,
+                values={"multipolygon_geometry": multipolygon_geometry},
+            )
+            feature = geojson.Feature(geometry=geojson.loads(feature_geojson))
             feature.properties["x"] = None
             feature.properties["y"] = None
             feature.properties["zoom"] = None
             feature.properties["isSquare"] = False
             split_features.append(feature)
+
         return split_features
 
     @staticmethod
@@ -163,106 +165,210 @@ class SplitService:
         return (MultiPolygon(first_half), MultiPolygon(second_half))
 
     @staticmethod
-    def split_task(split_task_dto: SplitTaskDTO) -> TaskDTOs:
+    async def delete_task_and_related_records(task_id: int, project_id: int, db):
         """
-        Replaces a task square with 4 smaller tasks at the next OSM tile grid zoom level
-        Validates that task is:
-         - locked for mapping by current user
-        :param split_task_dto:
-        :return: new tasks in a DTO
+        Deletes a task and all its related records (task_mapping_issues, task_invalidation_history, task_history)
+        by task_id and project_id.
+
+        Args:
+            task_id (int): The ID of the task.
+            project_id (int): The ID of the project.
+            db: The database connection object (asyncpg, databases, etc.).
         """
-        # get the task to be split
-        original_task = Task.get(split_task_dto.task_id, split_task_dto.project_id)
-        if original_task is None:
-            raise NotFound(sub_code="TASK_NOT_FOUND", task_id=split_task_dto.task_id)
+        # Delete related messages
+        await db.execute(
+            """
+            DELETE FROM messages
+            WHERE task_id = :task_id AND project_id = :project_id
+            """,
+            values={"task_id": task_id, "project_id": project_id},
+        )
 
-        original_geometry = shape.to_shape(original_task.geometry)
+        # Delete related task_mapping_issues records
+        await db.execute(
+            """
+            DELETE FROM task_mapping_issues
+            WHERE task_history_id IN (
+                SELECT id FROM task_history WHERE task_id = :task_id AND project_id = :project_id
+            )
+            """,
+            values={"task_id": task_id, "project_id": project_id},
+        )
 
-        # Fetch the task geometry in meters
-        with db.engine.connect() as conn:
-            original_task_area_m = conn.execute(
-                ST_Area(ST_GeogFromWKB(original_task.geometry))
-            ).scalar()
+        # Delete related task_invalidation_history records
+        await db.execute(
+            """
+            DELETE FROM task_invalidation_history
+            WHERE task_id = :task_id AND project_id = :project_id
+            """,
+            values={"task_id": task_id, "project_id": project_id},
+        )
 
+        # Delete related task_history records
+        await db.execute(
+            """
+            DELETE FROM task_history
+            WHERE task_id = :task_id AND project_id = :project_id
+            """,
+            values={"task_id": task_id, "project_id": project_id},
+        )
+
+        # Finally, delete the task itself
+        await db.execute(
+            """
+            DELETE FROM tasks WHERE id = :task_id AND project_id = :project_id
+            """,
+            values={"task_id": task_id, "project_id": project_id},
+        )
+
+    @staticmethod
+    async def split_task(split_task_dto: SplitTaskDTO, db: Database) -> list:
+        original_task = await Task.get(
+            split_task_dto.task_id, split_task_dto.project_id, db
+        )
+
+        if not original_task:
+            raise SplitServiceError("TASK_NOT_FOUND- Task not found")
+        original_geometry = shape.to_shape(
+            WKBElement(original_task["geometry"], srid=4326)
+        )
+
+        query = """
+            SELECT ST_Area(ST_GeogFromWKB(geometry))
+            FROM tasks
+            WHERE id = :task_id AND project_id = :project_id
+        """
+        original_task_area_m = await db.fetch_val(
+            query,
+            values={
+                "task_id": split_task_dto.task_id,
+                "project_id": split_task_dto.project_id,
+            },
+        )
         if (
-            original_task.zoom and original_task.zoom >= 18
+            original_task["zoom"] and original_task["zoom"] >= 18
         ) or original_task_area_m < 25000:
             raise SplitServiceError("SmallToSplit- Task is too small to be split")
 
-        # check its locked for mapping by the current user
-        if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
+        if original_task["task_status"] != TaskStatus.LOCKED_FOR_MAPPING.value:
             raise SplitServiceError(
                 "LockToSplit- Status must be LOCKED_FOR_MAPPING to split"
             )
-
-        if original_task.locked_by != split_task_dto.user_id:
+        if original_task["locked_by"] != split_task_dto.user_id:
             raise SplitServiceError(
                 "SplitOtherUserTask- Attempting to split a task owned by another user"
             )
 
-        # create new geometries from the task geometry
-        try:
-            new_tasks_geojson = SplitService._create_split_tasks(
-                original_task.x, original_task.y, original_task.zoom, original_task
-            )
-        except Exception as e:
-            raise SplitServiceError(f"Error splitting task{str(e)}")
+        # Split the task geometry into smaller tasks
+        new_tasks_geojson = await SplitService._create_split_tasks(
+            original_task["x"],
+            original_task["y"],
+            original_task["zoom"],
+            original_task,
+            db,
+        )
 
-        # create new tasks from the new geojson
-        i = Task.get_max_task_id_for_project(split_task_dto.project_id)
+        # Fetch the highest task ID for the project
+        i = await Task.get_max_task_id_for_project(split_task_dto.project_id, db)
         new_tasks = []
         new_tasks_dto = []
+
         for new_task_geojson in new_tasks_geojson:
-            # Sanity check: ensure the new task geometry intersects the original task geometry
-            new_geometry = shapely_shape(new_task_geojson.geometry)
+            # Ensure the new task geometry intersects the original geometry
+            new_geometry = shapely_shape(new_task_geojson["geometry"])
             if not new_geometry.intersects(original_geometry):
                 raise InvalidGeoJson(
                     "SplitGeoJsonError- New split task does not intersect original task"
                 )
 
-            # insert new tasks into database
-            i = i + 1
+            # Insert new task into database
+            i += 1
             new_task = Task.from_geojson_feature(i, new_task_geojson)
-            new_task.project_id = split_task_dto.project_id
-            new_task.task_status = TaskStatus.READY.value
-            new_task.create()
-            new_task.task_history.extend(original_task.copy_task_history())
-            if new_task.task_history:
-                new_task.clear_task_lock()  # since we just copied the lock
-            new_task.set_task_history(
-                TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.SPLIT
+            task_geojson_str = geojson.dumps(new_geometry)
+            task_values = {
+                "id": new_task.id,
+                "project_id": split_task_dto.project_id,
+                "x": new_task.x,
+                "y": new_task.y,
+                "zoom": new_task.zoom,
+                "is_square": new_task.is_square,
+                "task_status": TaskStatus.READY.value,
+                "geojson": task_geojson_str,
+            }
+
+            query = """
+                INSERT INTO tasks (id, project_id, x, y, zoom, is_square, task_status, geometry)
+                VALUES (:id, :project_id, :x, :y, :zoom, :is_square, :task_status, ST_SetSRID(ST_GeomFromGeoJSON(:geojson), 4326))
+            """
+            await db.execute(query, values=task_values)
+            await Task.copy_task_history(
+                split_task_dto.task_id, new_task.id, split_task_dto.project_id, db
             )
-            new_task.set_task_history(
-                TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.READY
+            await Task.clear_task_lock(new_task.id, new_task.project_id, db)
+            await Task.set_task_history(
+                task_id=new_task.id,
+                project_id=split_task_dto.project_id,
+                user_id=split_task_dto.user_id,
+                action=TaskAction.STATE_CHANGE,
+                db=db,
+                new_state=TaskStatus.SPLIT,
             )
-            new_task.task_status = TaskStatus.READY.value
-            new_tasks.append(new_task)
-            new_task.update()
+            await Task.set_task_history(
+                task_id=new_task.id,
+                project_id=split_task_dto.project_id,
+                user_id=split_task_dto.user_id,
+                action=TaskAction.STATE_CHANGE,
+                db=db,
+                new_state=TaskStatus.READY,
+            )
+            update_status_query = """
+                UPDATE tasks
+                SET task_status = :task_status
+                WHERE id = :task_id AND project_id = :project_id
+            """
+            await db.execute(
+                update_status_query,
+                values={
+                    "task_status": TaskStatus.READY.value,
+                    "task_id": new_task.id,
+                    "project_id": split_task_dto.project_id,
+                },
+            )
             new_tasks_dto.append(
-                new_task.as_dto_with_instructions(split_task_dto.preferred_locale)
+                await Task.as_dto_with_instructions(
+                    new_task.id,
+                    split_task_dto.project_id,
+                    db,
+                    split_task_dto.preferred_locale,
+                )
             )
 
-        # delete original task from the database
-        try:
-            original_task.delete()
-        except Exception:
-            session.rollback()
-            # Ensure the new tasks are cleaned up
-            for new_task in new_tasks:
-                new_task.delete()
-            session.commit()
-            raise
+        await SplitService.delete_task_and_related_records(
+            split_task_dto.task_id, split_task_dto.project_id, db
+        )
 
-        # update project task counts
-        project = Project.get(split_task_dto.project_id)
-        project.total_tasks = project.tasks.count()
-        # update bad imagery because we may have split a bad imagery tile
-        project.tasks_bad_imagery = project.tasks.filter(
-            Task.task_status == TaskStatus.BADIMAGERY.value
-        ).count()
-        project.save()
+        query = """
+            UPDATE projects
+            SET total_tasks = (
+                SELECT COUNT(*)
+                FROM tasks
+                WHERE project_id = :project_id
+            ),
+            tasks_bad_imagery = (
+                SELECT COUNT(*)
+                FROM tasks
+                WHERE project_id = :project_id AND task_status = :bad_imagery_status
+            )
+            WHERE id = :project_id
+        """
+        await db.execute(
+            query,
+            values={
+                "project_id": split_task_dto.project_id,
+                "bad_imagery_status": TaskStatus.BADIMAGERY.value,
+            },
+        )
 
-        # return the new tasks in a DTO
         task_dtos = TaskDTOs()
         task_dtos.tasks = new_tasks_dto
         return task_dtos
