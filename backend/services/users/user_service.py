@@ -2,7 +2,6 @@ from cachetools import TTLCache, cached
 
 import datetime
 from loguru import logger
-from sqlalchemy.sql.expression import literal
 from sqlalchemy.sql import outerjoin
 from sqlalchemy import (
     func,
@@ -12,10 +11,7 @@ from sqlalchemy import (
     distinct,
     cast,
     Time,
-    column,
     select,
-    union,
-    text,
 )
 from databases import Database
 
@@ -757,7 +753,7 @@ class UserService:
         # 5. Get projects filtered by user's mapping level if fewer than the limit
         if len(projs) < limit:
             remaining_projs_query = f"""
-                {query} 
+                {query}
                 AND p.difficulty = :difficulty
                 LIMIT :remaining_limit
             """
