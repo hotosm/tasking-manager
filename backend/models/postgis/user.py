@@ -115,15 +115,21 @@ class User(Base):
         result = await db.fetch_one(query, values={"username": username})
         return result if result else None
 
-    def update_username(self, username: str):
+    async def update_username(self, username: str, db: Database):
         """Update the username"""
         self.username = username
-        session.commit()
+        await db.execute(
+            "UPDATE users SET username = :username WHERE id = :user_id",
+            values={"user_id": self.id, "username": username},
+        )
 
-    def update_picture_url(self, picture_url: str):
+    async def update_picture_url(self, picture_url: str, db: Database):
         """Update the profile picture"""
         self.picture_url = picture_url
-        session.commit()
+        await db.execute(
+            "UPDATE users SET picture_url = :picture_url WHERE id = :user_id",
+            values={"user_id": self.id, "picture_url": picture_url},
+        )
 
     async def update(self, user_dto: UserDTO, db: Database):
         """Update the user details"""
