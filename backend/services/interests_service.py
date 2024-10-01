@@ -1,3 +1,4 @@
+from backend.models.postgis.project import Project
 from backend.models.dtos.interests_dto import (
     InterestRateDTO,
     InterestRateListDTO,
@@ -98,9 +99,9 @@ class InterestService:
             raise HTTPException(status_code=500, detail="Deletion failed") from e
 
     @staticmethod
-    def create_or_update_project_interests(project_id, interests):
-        project = ProjectService.get_project_by_id(project_id)
-        project.create_or_update_interests(interests)
+    async def create_or_update_project_interests(project_id, interests, db: Database):
+        project = await ProjectService.get_project_by_id(project_id, db)
+        project = await Project.create_or_update_interests(project, interests, db)
 
         # Return DTO.
         dto = InterestsListDTO()

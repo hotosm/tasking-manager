@@ -2,12 +2,12 @@ import json
 import re
 from typing import Optional
 from cachetools import TTLCache
+from loguru import logger
 
 import geojson
-from geoalchemy2 import Geometry
+from geoalchemy2 import Geometry, WKTElement
 from geoalchemy2.shape import to_shape
-import sqlalchemy as sa
-from sqlalchemy import orm
+from sqlalchemy import orm, func, select, delete, update
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -73,12 +73,10 @@ from backend.models.postgis.utils import (
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.interests import Interest, project_interests
 import os
-from backend.db import Base, get_session
+from backend.db import Base
 from databases import Database
 from fastapi import HTTPException
-
-
-session = get_session()
+from backend.config import settings
 
 # Secondary table defining many-to-many join for projects that were favorited by users.
 project_favorites = Table(
@@ -135,10 +133,25 @@ class Project(Base):
 
     __tablename__ = "projects"
 
+    def __init__(self, **kwargs):
+        # First, initialize with provided kwargs
+        super().__init__(**kwargs)
+
+        # Then dynamically set defaults for any fields that are None
+        for column in self.__table__.columns:
+            if getattr(self, column.name) is None and column.default is not None:
+                # Retrieve the default value from the column
+                default_value = (
+                    column.default.arg
+                    if callable(column.default.arg)
+                    else column.default.arg
+                )
+                setattr(self, column.name, default_value)
+
     # Columns
     id = Column(Integer, primary_key=True)
     status = Column(Integer, default=ProjectStatus.DRAFT.value, nullable=False)
-    created = Column(DateTime, default=timestamp, nullable=False)
+    created = Column(DateTime, default=timestamp(), nullable=False)
     priority = Column(Integer, default=ProjectPriority.MEDIUM.value)
     default_locale = Column(
         String(10), default="en"
@@ -168,7 +181,7 @@ class Project(Base):
     id_presets = Column(ARRAY(String))
     extra_id_params = Column(String)
     rapid_power_user = Column(Boolean, default=False)
-    last_updated = Column(DateTime, default=timestamp)
+    last_updated = Column(DateTime, default=timestamp())
     progress_email_sent = Column(Boolean, default=False)
     license_id = Column(Integer, ForeignKey("licenses.id", name="fk_licenses"))
     geometry = Column(Geometry("MULTIPOLYGON", srid=4326), nullable=False)
@@ -262,41 +275,60 @@ class Project(Base):
         :param draft_project_dto: DTO containing draft project details
         :param aoi: Area of Interest for the project (eg boundary of project)
         """
-        self.project_info.append(
-            ProjectInfo.create_from_name(draft_project_dto.project_name)
-        )
-        self.organisation = draft_project_dto.organisation
+        organisation = dict(draft_project_dto.organisation)
+        organisation["id"] = organisation.pop("organisation_id")
+        self.organisation = Organisation(**organisation)
+        self.organisation_id = self.organisation.id
         self.status = ProjectStatus.DRAFT.value
         self.author_id = draft_project_dto.user_id
         self.last_updated = timestamp()
 
-    def set_project_aoi(self, draft_project_dto: DraftProjectDTO):
+    async def set_project_aoi(self, draft_project_dto: DraftProjectDTO, db: Database):
+        from sqlalchemy.sql import text
+
         """Sets the AOI for the supplied project"""
         aoi_geojson = geojson.loads(json.dumps(draft_project_dto.area_of_interest))
 
         aoi_geometry = GridService.merge_to_multi_polygon(aoi_geojson, dissolve=True)
 
         valid_geojson = geojson.dumps(aoi_geometry)
-        self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
-        self.centroid = ST_Centroid(self.geometry)
+
+        query = """
+        SELECT ST_AsText(
+            ST_SetSRID(
+                ST_GeomFromGeoJSON(:geojson), 4326
+            )
+        ) AS geometry_wkt;
+        """
+        # Execute the query with the GeoJSON value passed in as a parameter
+        result = await db.fetch_one(query=query, values={"geojson": valid_geojson})
+        self.geometry = result["geometry_wkt"] if result else None
+
+        query = f"""
+        SELECT ST_AsText(ST_Centroid(ST_SetSRID(ST_GeomFromGeoJSON(:geometry), 4326))) AS centroid
+        """
+
+        # Execute the query and pass the GeoJSON as a parameter
+        result = await db.fetch_one(query=query, values={"geometry": valid_geojson})
+        self.centroid = result["centroid"] if result else None
 
     def set_default_changeset_comment(self):
         """Sets the default changeset comment"""
-        default_comment = current_app.config["DEFAULT_CHANGESET_COMMENT"]
+        default_comment = settings.DEFAULT_CHANGESET_COMMENT
         self.changeset_comment = (
             f"{default_comment}-{self.id} {self.changeset_comment}"
             if self.changeset_comment is not None
             else f"{default_comment}-{self.id}"
         )
-        self.save()
 
     def set_country_info(self):
         """Sets the default country based on centroid"""
+        centroid = WKTElement(self.centroid, srid=4326)
 
-        centroid = to_shape(self.centroid)
+        centroid = to_shape(centroid)
         lat, lng = (centroid.y, centroid.x)
         url = "{0}/reverse?format=jsonv2&lat={1}&lon={2}&accept-language=en".format(
-            current_app.config["OSM_NOMINATIM_SERVER_URL"], lat, lng
+            settings.OSM_NOMINATIM_SERVER_URL, lat, lng
         )
         headers = {
             "User-Agent": (
@@ -318,24 +350,42 @@ class Project(Base):
             requests.exceptions.ConnectionError,
             requests.exceptions.HTTPError,
         ) as e:
-            current_app.logger.debug(e, exc_info=True)
+            logger.debug(e, exc_info=True)
 
-        self.save()
-
-    def create(self):
+    async def create(self, project_name: str, db: Database):
         """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
+        values = {}
+        for column in Project.__table__.columns:
+            # Get attribute value from the instance
+            attribute_value = getattr(self, column.name, None)
+            values[column.name] = attribute_value
+
+        values.pop("id", None)
+
+        project = await db.execute(Project.__table__.insert().values(**values))
+        await db.execute(
+            ProjectInfo.__table__.insert().values(
+                project_id=project, locale="en", name=project_name
+            )
+        )
+
+        await db.execute(
+            Task.__table__.insert().values(
+                project_id=project,
+            )
+        )
+
+        return project
 
     def save(self):
         """Save changes to db"""
         session.commit()
 
     @staticmethod
-    def clone(project_id: int, author_id: int):
+    async def clone(project_id: int, author_id: int, db: Database):
         """Clone project"""
 
-        orig = session.get(Project, project_id)
+        orig = await db.fetch_one(Project, id=project_id)
         if orig is None:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
@@ -375,7 +425,7 @@ class Project(Base):
         new_proj.project_info = proj_info
 
         # Replace changeset comment.
-        default_comment = current_app.config["DEFAULT_CHANGESET_COMMENT"]
+        default_comment = settings.DEFAULT_CHANGESET_COMMENT
 
         if default_comment is not None:
             orig_changeset = f"{default_comment}-{orig.id}"  # Preserve space
@@ -401,25 +451,36 @@ class Project(Base):
         return new_proj
 
     @staticmethod
-    async def get(project_id: int, session) -> Optional["Project"]:
+    async def get(project_id: int, db: Database) -> Optional["Project"]:
         """
         Gets specified project
         :param project_id: project ID in scope
+        :param db: Instance of `databases.Database` for querying
         :return: Project if found otherwise None
         """
-        result = await session.execute(
-            sa.select(Project)
-            .filter_by(id=project_id)
+        # Construct the SQLAlchemy select statement
+        query = (
+            select(Project)
+            .where(Project.id == project_id)
             .options(
                 orm.noload(Project.tasks),
                 orm.noload(Project.messages),
                 orm.noload(Project.project_chat),
             )
         )
-        project = result.scalars().first()
-        return project
 
-    async def update(self, project_dto: ProjectDTO, session):
+        # Execute the query using the `fetch_one` method of `db`
+        result = await db.fetch_one(query)
+
+        # If a result is found, map it back to the Project ORM class
+        # (If `Project` is a Core table, you can directly return `result`)
+        if result:
+            project = Project(**result)
+            return project
+
+        return None
+
+    async def update(self, project_dto: ProjectDTO, db: Database):
         """Updates project from DTO"""
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
@@ -564,10 +625,9 @@ class Project(Base):
 
         session.commit()
 
-    def delete(self):
+    async def delete(self, db: Database):
         """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
+        await db.execute(delete(Project.__table__).where(Project.id == self.id))
 
     @staticmethod
     async def exists(project_id: int, db: Database) -> bool:
@@ -644,23 +704,48 @@ class Project(Base):
         """
         await db.execute(delete_query, {"project_id": project_id, "user_id": user_id})
 
-    def set_as_featured(self):
+    async def set_as_featured(self, db: Database):
+        """
+        Sets the project as featured.
+        :param db: Instance of `databases.Database` for querying
+        """
         if self.featured is True:
             raise ValueError("AlreadyFeatured- Project is already featured")
-        self.featured = True
-        session.commit()
 
-    def unset_as_featured(self):
+        query = update(Project).where(Project.id == self.id).values(featured=True)
+
+        # Execute the update query using the async `db.execute`
+        await db.execute(query)
+
+    async def unset_as_featured(self, db: Database):
+        """
+        Unsets the project as featured.
+        :param db: Instance of `databases.Database` for querying
+        """
+        # Check if the project is already not featured
         if self.featured is False:
-            raise ValueError("NotFeatured- Project is not featured")
-        self.featured = False
-        session.commit()
+            raise ValueError("NotFeatured - Project is not featured")
 
-    def can_be_deleted(self) -> bool:
-        """Projects can be deleted if they have no mapped work"""
-        task_count = self.tasks.filter(
-            Task.task_status != TaskStatus.READY.value
-        ).count()
+        query = update(Project).where(Project.id == self.id).values(featured=False)
+
+        # Execute the update query using the async `db.execute`
+        await db.execute(query)
+
+    async def can_be_deleted(self, db: Database) -> bool:
+        """Projects can be deleted if they have no mapped work."""
+        # Build a query to count tasks associated with the project
+        query = (
+            select(func.count())
+            .select_from(Task)
+            .where(
+                Task.project_id
+                == self.id,  # Assuming `self.id` refers to the project instance ID
+                Task.task_status != TaskStatus.READY.value,
+            )
+        )
+
+        # Execute the query
+        task_count = await db.fetch_val(query)
         if task_count == 0:
             return True
         else:
@@ -1604,11 +1689,20 @@ class Project(Base):
 
         return project_dto
 
-    def create_or_update_interests(self, interests_ids):
+    async def create_or_update_interests(self, interests_ids, db):
         self.interests = []
-        objs = [Interest.get_by_id(i) for i in interests_ids]
+        objs = [Interest.get_by_id(i, db) for i in interests_ids]
         self.interests.extend(objs)
-        session.commit()
+        query = (
+            update(Project)
+            .where(Project.id == self.id)
+            .values(interests=self.interests)
+        )
+
+        # Execute the update query using the async `db.execute`
+        project = await db.execute(query)
+
+        return project
 
     @staticmethod
     async def get_project_campaigns(project_id: int, db: Database):

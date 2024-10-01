@@ -129,14 +129,14 @@ class UserService:
 
     @staticmethod
     async def update_user(
-        user_id: int, osm_username: str, picture_url: str, session
+        user_id: int, osm_username: str, picture_url: str, db: Database
     ) -> User:
-        user = await UserService.get_user_by_id(user_id)
+        user = await UserService.get_user_by_id(user_id, db)
         if user.username != osm_username:
-            user.update_username(osm_username)
+            await user.update_username(osm_username, db)
 
         if user.picture_url != picture_url:
-            user.update_picture_url(picture_url)
+            await user.update_picture_url(picture_url, db)
 
         return user
 

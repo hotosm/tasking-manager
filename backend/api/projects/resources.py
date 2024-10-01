@@ -1,44 +1,45 @@
-import geojson
 import io
-from fastapi.responses import FileResponse
-from loguru import logger
+import json
 from distutils.util import strtobool
+from typing import Optional
+
+import geojson
+from databases import Database
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import FileResponse, JSONResponse
+from loguru import logger
+
+from backend.db import get_db
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
-    ProjectSearchDTO,
     ProjectSearchBBoxDTO,
+    ProjectSearchDTO,
 )
-from backend.models.postgis.statuses import UserRole
-from backend.services.project_search_service import (
-    ProjectSearchService,
-    ProjectSearchServiceError,
-    BBoxTooBigError,
-)
-from backend.services.project_service import (
-    ProjectService,
-    ProjectServiceError,
-    NotFound,
-)
-from backend.services.users.user_service import UserService
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.organisation_service import OrganisationService
 from backend.services.project_admin_service import (
+    InvalidData,
+    InvalidGeoJson,
     ProjectAdminService,
     ProjectAdminServiceError,
-    InvalidGeoJson,
-    InvalidData,
+)
+from backend.services.project_search_service import (
+    BBoxTooBigError,
+    ProjectSearchService,
+    ProjectSearchServiceError,
+)
+from backend.services.project_service import (
+    NotFound,
+    ProjectService,
+    ProjectServiceError,
 )
 from backend.services.recommendation_service import ProjectRecommendationService
-from fastapi import APIRouter, Request, Depends
-from sqlalchemy.orm import Session
-from backend.db import get_session
-from starlette.authentication import requires
-import json
-
-from backend.db import get_db
-from databases import Database
-from backend.services.users.authentication_service import login_required
-from backend.models.dtos.user_dto import AuthUserDTO
+from backend.services.users.authentication_service import (
+    login_required,
+    login_required_optional,
+)
+from backend.services.users.user_service import UserService
 
 router = APIRouter(
     prefix="/projects",
@@ -55,6 +56,7 @@ async def get_project(
     as_file: str = "False",
     abbreviated: bool = False,
     db: Database = Depends(get_db),
+    user: Optional[AuthUserDTO] = Depends(login_required_optional),
 ):
     """
     Get a specified project including it's area
@@ -103,16 +105,17 @@ async def get_project(
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name if request.user else None
+        user_id = user.id if user else None
         as_file = bool(strtobool(as_file) if as_file else False)
         abbreviated = bool(strtobool(abbreviated) if abbreviated else False)
         project_dto = await ProjectService.get_project_dto_for_mapper(
             project_id,
-            authenticated_user_id,
+            user_id,
             db,
             request.headers.get("accept-language"),
             abbreviated,
         )
+        print(project_dto)
         if project_dto:
             if as_file:
                 project_dto = json.dumps(project_dto, default=str)
@@ -125,13 +128,19 @@ async def get_project(
             return project_dto
 
         else:
-            return {
-                "Error": "User not permitted: Private Project",
-                "SubCode": "PrivateProject",
-            }, 403
+            return JSONResponse(
+                content={
+                    "Error": "User not permitted: Private Project",
+                    "SubCode": "PrivateProject",
+                },
+                status_code=403,
+            )
 
     except ProjectServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
     finally:
         # this will try to unlock tasks that have been locked too long
         try:
@@ -140,11 +149,13 @@ async def get_project(
             logger.critical(str(e))
 
 
-router.post("/")
-
-
-@requires("authenticated")
-async def post(request: Request, db: Session = Depends(get_session)):
+@router.post("/")
+async def post(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    draft_project_dto: DraftProjectDTO = None,
+):
     """
     Creates a tasking-manager project
     ---
@@ -210,20 +221,29 @@ async def post(request: Request, db: Session = Depends(get_session)):
             description: Internal Server Error
     """
     try:
-        draft_project_dto = DraftProjectDTO(request.get_json())
-        draft_project_dto.user_id = request.user.display_name if request.user else None
-        draft_project_dto.validate()
+        draft_project_dto.user_id = user.id
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
-        return {"Error": "Unable to create project", "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": "Unable to create project", "SubCode": "InvalidData"},
+            status_code=400,
+        )
 
     try:
-        draft_project_id = ProjectAdminService.create_draft_project(draft_project_dto)
-        return {"projectId": draft_project_id}, 201
+        draft_project_id = await ProjectAdminService.create_draft_project(
+            draft_project_dto, db
+        )
+        return JSONResponse(content={"projectId": draft_project_id}, status_code=201)
     except ProjectAdminServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
     except (InvalidGeoJson, InvalidData) as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=400,
+        )
 
 
 # @router.head("/{project_id}", response_model=ProjectDTO)
@@ -276,8 +296,13 @@ def head(request: Request, project_id):
 
 
 @router.patch("/{project_id}/")
-@requires("authenticated")
-def patch(request: Request, project_id: int, db: Database = Depends(get_session)):
+async def patch(
+    request: Request,
+    project_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    project_dto: ProjectDTO = None,
+):
     """
     Updates a Tasking-Manager project
     ---
@@ -399,34 +424,44 @@ def patch(request: Request, project_id: int, db: Database = Depends(get_session)
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name if request.user else None
-    if not ProjectAdminService.is_user_action_permitted_on_project(
-        authenticated_user_id, project_id
+    if not await ProjectAdminService.is_user_action_permitted_on_project(
+        user.id, project_id, db
     ):
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
     try:
-        project_dto = ProjectDTO(request.get_json())
         project_dto.project_id = project_id
-        project_dto.model_validate()
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {"Error": "Unable to update project", "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": "Unable to update project", "SubCode": "InvalidData"},
+            status_code=400,
+        )
 
     try:
-        ProjectAdminService.update_project(project_dto, authenticated_user_id)
-        return {"Status": "Updated"}, 200
+        await ProjectAdminService.update_project(project_dto, user.id, db)
+        return JSONResponse(content={"Status": "Updated"}, status_code=200)
     except InvalidGeoJson as e:
-        return {"Invalid GeoJson": str(e)}, 400
+        return JSONResponse(content={"Invalid GeoJson": str(e)}, status_code=400)
     except ProjectAdminServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.delete("/{project_id}/")
-@requires("authenticated")
-def delete(request: Request, project_id: int, db: Session = Depends(get_session)):
+async def delete(
+    request: Request,
+    project_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Deletes a Tasking-Manager project
     ---
@@ -460,22 +495,27 @@ def delete(request: Request, project_id: int, db: Session = Depends(get_session)
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name if request.user else None
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            user.id, project_id, db
         ):
             raise ValueError()
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     try:
-        ProjectAdminService.delete_project(project_id, authenticated_user_id)
-        return {"Success": "Project deleted"}, 200
+        await ProjectAdminService.delete_project(project_id, user.id, db)
+        return JSONResponse(content={"Success": "Project deleted"}, status_code=200)
     except ProjectAdminServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 def setup_search_dto(request) -> ProjectSearchDTO:
@@ -541,7 +581,11 @@ def setup_search_dto(request) -> ProjectSearchDTO:
 
 
 @router.get("/")
-async def get(request: Request, db: Database = Depends(get_db)):
+async def get(
+    request: Request,
+    user: Optional[AuthUserDTO] = Depends(login_required_optional),
+    db: Database = Depends(get_db),
+):
     """
     List and search for projects
     ---
@@ -682,8 +726,8 @@ async def get(request: Request, db: Database = Depends(get_db)):
             description: Internal Server Error
     """
     try:
+        user_id = user.id if user else None
         user = None
-        user_id = request.user.display_name if request.user else None
         if user_id:
             user = await UserService.get_user_by_id(user_id, db)
         search_dto = setup_search_dto(request)
