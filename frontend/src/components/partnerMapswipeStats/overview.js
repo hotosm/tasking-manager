@@ -68,7 +68,7 @@ export const Overview = () => {
       ready={!isLoading && !isRefetching}
     >
       <div
-        className="flex justify-between items-center flex-wrap flex-nowrap-ns"
+        className="flex justify-between items-stretch flex-wrap flex-nowrap-ns"
         style={{ gap: '1.6rem' }}
       >
         <StatsCardWithFooter
@@ -85,7 +85,7 @@ export const Overview = () => {
               '--'
             )
           }
-          className="w-100"
+          className="w-100 justify-between"
         />
         <StatsCardWithFooter
           icon={<ClockIcon className={iconClass} style={iconStyle} />}
@@ -103,7 +103,7 @@ export const Overview = () => {
               '--'
             )
           }
-          className="w-100"
+          className="w-100 justify-between"
         />
         <StatsCardWithFooter
           icon={<MappingIcon className={iconClass} style={iconStyle} />}
@@ -119,7 +119,7 @@ export const Overview = () => {
               '--'
             )
           }
-          className="w-100"
+          className="w-100 justify-between"
         />
       </div>
     </ReactPlaceholder>

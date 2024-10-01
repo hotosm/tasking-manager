@@ -86,7 +86,7 @@ export const TimeSpentContributing = ({ contributionTimeByDate = [] }) => {
           borderWidth: 1.5,
           data: data.map((entry) => entry.totalcontributionTime),
           fill: true,
-          tension: 0.4,
+          lineTension: chartDistribution === 'day' ? 0.1 : 0.4,
         },
       ],
     };
