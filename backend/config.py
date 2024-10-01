@@ -114,12 +114,12 @@ class Settings(BaseSettings):
     TASK_AUTOUNLOCK_AFTER: str = os.getenv("TM_TASK_AUTOUNLOCK_AFTER", "2h")
 
     # Configuration for sending emails
-    MAIL_SERVER: Optional[str] = os.getenv("TM_SMTP_HOST", None)
+    MAIL_SERVER: Optional[str] = os.getenv("TM_SMTP_HOST", "")
     MAIL_PORT: str = os.getenv("TM_SMTP_PORT", "587")
     MAIL_USE_TLS: bool = bool(int(os.getenv("TM_SMTP_USE_TLS", True)))
     MAIL_USE_SSL: bool = bool(int(os.getenv("TM_SMTP_USE_SSL", False)))
-    MAIL_USERNAME: Optional[str] = os.getenv("TM_SMTP_USER", None)
-    MAIL_PASSWORD: Optional[str] = os.getenv("TM_SMTP_PASSWORD", None)
+    MAIL_USERNAME: Optional[str] = os.getenv("TM_SMTP_USER", "")
+    MAIL_PASSWORD: Optional[str] = os.getenv("TM_SMTP_PASSWORD", "")
     MAIL_DEFAULT_SENDER: str = os.getenv(
         "TM_EMAIL_FROM_ADDRESS", "noreply@hotosmmail.org"
     )
@@ -257,7 +257,7 @@ class Settings(BaseSettings):
         IMAGE_UPLOAD_API_URL: str = _params.get("IMAGE_UPLOAD_API_URL", None)
 
     # Sentry backend DSN
-    SENTRY_BACKEND_DSN: str = os.getenv("TM_SENTRY_BACKEND_DSN", None)
+    SENTRY_BACKEND_DSN: Optional[str] = os.getenv("TM_SENTRY_BACKEND_DSN", None)
 
     # Ohsome Stats Token
     OHSOME_STATS_TOKEN: str = os.getenv("OHSOME_STATS_TOKEN", "")
