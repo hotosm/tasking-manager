@@ -1,7 +1,6 @@
 import base64
 import binascii
 import urllib.parse
-from backend.db import get_db
 from backend.models.postgis.user import User
 from backend.models.dtos.user_dto import AuthUserDTO
 from starlette.authentication import (
@@ -18,9 +17,10 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService, NotFound
 from random import SystemRandom
 from backend.config import settings
-from fastapi import Depends, HTTPException, Request, Security
+from fastapi import HTTPException, Security
 from fastapi.security.api_key import APIKeyHeader
 from databases import Database
+from typing import Optional
 
 # token_auth = HTTPTokenAuth(scheme="Token")
 tm = TMAPIDecorators()
@@ -95,13 +95,12 @@ class AuthServiceError(Exception):
     """Custom Exception to notify callers an error occurred when authenticating"""
 
     def __init__(self, message):
-        if current_app:
-            logger.debug(message)
+        logger.debug(message)
 
 
 class AuthenticationService:
     @staticmethod
-    async def login_user(osm_user_details, email, session, user_element="user") -> dict:
+    async def login_user(osm_user_details, email, db, user_element="user") -> dict:
         """
         Generates authentication details for user, creating in DB if user is unknown to us
         :param osm_user_details: XML response from OSM
@@ -125,8 +124,8 @@ class AuthenticationService:
             user_picture = None
 
         try:
-            await UserService.get_user_by_id(osm_id, session)
-            UserService.update_user(osm_id, username, user_picture, session)
+            await UserService.get_user_by_id(osm_id, db)
+            await UserService.update_user(osm_id, username, user_picture, db)
         except NotFound:
             # User not found, so must be new user
             changesets = osm_user.get("changesets")
@@ -228,12 +227,36 @@ class AuthenticationService:
 
 
 async def login_required(
-    request: Request,
-    db: Database = Depends(get_db),
     Authorization: str = Security(APIKeyHeader(name="Authorization")),
 ):
     if not Authorization:
         raise HTTPException(status_code=401, detail="Authorization header missing")
+    try:
+        scheme, credentials = Authorization.split()
+        if scheme.lower() != "token":
+            raise HTTPException(status_code=401, detail="Invalid authentication scheme")
+        try:
+            decoded_token = base64.b64decode(credentials).decode("ascii")
+        except UnicodeDecodeError:
+            logger.debug("Unable to decode token")
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except (ValueError, UnicodeDecodeError, binascii.Error):
+        raise AuthenticationError("Invalid auth credentials")
+    valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
+    if not valid_token:
+        logger.debug("Token not valid")
+        raise HTTPException(status_code=401, detail="Token not valid")
+
+    return AuthUserDTO(id=user_id)
+
+
+async def login_required_optional(
+    Authorization: Optional[str] = Security(
+        APIKeyHeader(name="Authorization", auto_error=False)
+    ),
+):
+    if not Authorization:
+        return None
     try:
         scheme, credentials = Authorization.split()
         if scheme.lower() != "token":

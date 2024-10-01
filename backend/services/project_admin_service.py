@@ -1,49 +1,50 @@
 import json
-import threading
+
 import geojson
+from databases import Database
+from fastapi import BackgroundTasks
+from loguru import logger
 
-# # from flask import current_app
-
+from backend.config import settings
 from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
-    ProjectDTO,
     ProjectCommentsDTO,
+    ProjectDTO,
     ProjectSearchDTO,
 )
-from backend.models.postgis.project import Project, Task, ProjectStatus
+from backend.models.postgis.project import Project, ProjectStatus, Task
 from backend.models.postgis.statuses import TaskCreationMode, TeamRoles
-from backend.models.postgis.task import TaskHistory, TaskStatus, TaskAction
+from backend.models.postgis.task import TaskAction, TaskHistory, TaskStatus
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import InvalidData, InvalidGeoJson
 from backend.services.grid.grid_service import GridService
 from backend.services.license_service import LicenseService
 from backend.services.messaging.message_service import MessageService
-from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
 from backend.services.team_service import TeamService
-from databases import Database
+from backend.services.users.user_service import UserService
 
 
 class ProjectAdminServiceError(Exception):
     """Custom Exception to notify callers an error occurred when validating a Project"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class ProjectStoreError(Exception):
     """Custom Exception to notify callers an error occurred with database CRUD operations"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class ProjectAdminService:
     @staticmethod
-    def create_draft_project(draft_project_dto: DraftProjectDTO) -> int:
+    async def create_draft_project(
+        draft_project_dto: DraftProjectDTO, db: Database
+    ) -> int:
         """
         Validates and then persists draft projects in the DB
         :param draft_project_dto: Draft Project DTO with data from API
@@ -51,15 +52,15 @@ class ProjectAdminService:
         :returns ID of new draft project
         """
         user_id = draft_project_dto.user_id
-        is_admin = UserService.is_user_an_admin(user_id)
-        user_orgs = OrganisationService.get_organisations_managed_by_user_as_dto(
-            user_id
+        is_admin = await UserService.is_user_an_admin(user_id, db)
+        user_orgs = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user_id, db
         )
         is_org_manager = len(user_orgs.organisations) > 0
 
         # First things first, we need to validate that the author_id is a PM. issue #1715
         if not (is_admin or is_org_manager):
-            user = UserService.get_user_by_id(user_id)
+            user = await UserService.get_user_by_id(user_id, db)
             raise (
                 ProjectAdminServiceError(
                     f"NotPermittedToCreate- User {user.username} is not permitted to create project"
@@ -71,13 +72,14 @@ class ProjectAdminService:
             draft_project = Project.clone(draft_project_dto.cloneFromProjectId, user_id)
         else:
             draft_project = Project()
-            org = OrganisationService.get_organisation_by_id(
-                draft_project_dto.organisation
+            org = await OrganisationService.get_organisation_by_id(
+                draft_project_dto.organisation, db
             )
             draft_project_dto.organisation = org
+
             draft_project.create_draft_project(draft_project_dto)
 
-        draft_project.set_project_aoi(draft_project_dto)
+        await draft_project.set_project_aoi(draft_project_dto, db)
 
         # if arbitrary_tasks requested, create tasks from aoi otherwise use tasks in DTO
         if draft_project_dto.has_arbitrary_tasks:
@@ -87,27 +89,29 @@ class ProjectAdminService:
             draft_project.task_creation_mode = TaskCreationMode.ARBITRARY.value
         else:
             tasks = draft_project_dto.tasks
-        ProjectAdminService._attach_tasks_to_project(draft_project, tasks)
-
-        if draft_project_dto.cloneFromProjectId:
-            draft_project.save()  # Update the clone
-        else:
-            draft_project.create()  # Create the new project
+        await ProjectAdminService._attach_tasks_to_project(draft_project, tasks, db)
 
         draft_project.set_default_changeset_comment()
         draft_project.set_country_info()
-        return draft_project.id
+        if draft_project_dto.cloneFromProjectId:
+            draft_project.save()  # Update the clone
+        else:
+            project_id = await Project.create(
+                draft_project, draft_project_dto.project_name, db
+            )  # Create the new project
+
+        return project_id
 
     @staticmethod
     def _set_default_changeset_comment(draft_project: Project):
         """Sets the default changesset comment when project created"""
-        default_comment = current_app.config["DEFAULT_CHANGESET_COMMENT"]
+        default_comment = settings.DEFAULT_CHANGESET_COMMENT
         draft_project.changeset_comment = f"{default_comment}-{draft_project.id}"
         draft_project.save()
 
     @staticmethod
-    def _get_project_by_id(project_id: int) -> Project:
-        project = Project.get(project_id)
+    async def _get_project_by_id(project_id: int, db: Database) -> Project:
+        project = await Project.get(project_id, db)
 
         if project is None:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
@@ -121,7 +125,9 @@ class ProjectAdminService:
         return await Project.as_dto_for_admin(project_id, db)
 
     @staticmethod
-    def update_project(project_dto: ProjectDTO, authenticated_user_id: int):
+    async def update_project(
+        project_dto: ProjectDTO, authenticated_user_id: int, db: Database
+    ):
         project_id = project_dto.project_id
 
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:
@@ -133,11 +139,11 @@ class ProjectAdminService:
             ProjectAdminService._validate_imagery_licence(project_dto.license_id)
 
         # To be handled before reaching this function
-        if ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
+        if await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
         ):
-            project = ProjectAdminService._get_project_by_id(project_id)
-            project.update(project_dto)
+            project = await ProjectAdminService._get_project_by_id(project_id, db)
+            await Project.update(project, project_dto, db)
         else:
             raise ValueError(
                 str(project_id)
@@ -157,19 +163,19 @@ class ProjectAdminService:
             )
 
     @staticmethod
-    def delete_project(project_id: int, authenticated_user_id: int):
+    async def delete_project(project_id: int, authenticated_user_id: int, db: Database):
         """Deletes project if it has no completed tasks"""
 
-        project = ProjectAdminService._get_project_by_id(project_id)
-        is_admin = UserService.is_user_an_admin(authenticated_user_id)
-        user_orgs = OrganisationService.get_organisations_managed_by_user_as_dto(
-            authenticated_user_id
+        project = await ProjectAdminService._get_project_by_id(project_id, db)
+        is_admin = await UserService.is_user_an_admin(authenticated_user_id, db)
+        user_orgs = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            authenticated_user_id, db
         )
         is_org_manager = len(user_orgs.organisations) > 0
 
         if is_admin or is_org_manager:
-            if project.can_be_deleted():
-                project.delete()
+            if await Project.can_be_deleted(project, db):
+                await Project.delete(project, db)
             else:
                 raise ProjectAdminServiceError(
                     "HasMappedTasks- Project has mapped tasks, cannot be deleted"
@@ -239,7 +245,9 @@ class ProjectAdminService:
         return comments
 
     @staticmethod
-    def _attach_tasks_to_project(draft_project: Project, tasks_geojson):
+    async def _attach_tasks_to_project(
+        draft_project: Project, tasks_geojson, db: Database
+    ):
         """
         Validates then iterates over the array of tasks and attach them to the draft project
         :param draft_project: Draft project in scope
@@ -261,7 +269,7 @@ class ProjectAdminService:
         task_count = 1
         for feature in tasks["features"]:
             try:
-                task = Task.from_geojson_feature(task_count, feature)
+                task = await Task.from_geojson_feature(task_count, feature, db)
             except (InvalidData, InvalidGeoJson) as e:
                 raise e
 
@@ -314,21 +322,27 @@ class ProjectAdminService:
         )
 
     @staticmethod
-    def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
+    async def transfer_project_to(
+        project_id: int,
+        transfering_user_id: int,
+        username: str,
+        db: Database,
+        background_tasks: BackgroundTasks,
+    ):
         """Transfers project from old owner (transfering_user_id) to new owner (username)"""
-        project = ProjectAdminService._get_project_by_id(project_id)
-        new_owner = UserService.get_user_by_username(username)
+        project = await ProjectAdminService._get_project_by_id(project_id, db)
+        new_owner = await UserService.get_user_by_username(username, db)
         # No operation is required if the new owner is same as old owner
         if username == project.author.username:
             return
 
         # Check permissions for the user (transferring_user_id) who initiatied the action
-        is_admin = UserService.is_user_an_admin(transfering_user_id)
+        is_admin = await UserService.is_user_an_admin(transfering_user_id, db)
         is_author = UserService.is_user_the_project_author(
-            transfering_user_id, project.author_id
+            transfering_user_id, project.author_id, db
         )
-        is_org_manager = OrganisationService.is_user_an_org_manager(
-            project.organisation_id, transfering_user_id
+        is_org_manager = await OrganisationService.is_user_an_org_manager(
+            project.organisation_id, transfering_user_id, db
         )
         if not (is_admin or is_author or is_org_manager):
             raise ProjectAdminServiceError(
@@ -336,25 +350,28 @@ class ProjectAdminService:
             )
 
         # Check permissions for the new owner - must be project's org manager
-        is_new_owner_org_manager = OrganisationService.is_user_an_org_manager(
-            project.organisation_id, new_owner.id
+        is_new_owner_org_manager = await OrganisationService.is_user_an_org_manager(
+            project.organisation_id, new_owner.id, db
         )
-        is_new_owner_admin = UserService.is_user_an_admin(new_owner.id)
+        is_new_owner_admin = await UserService.is_user_an_admin(new_owner.id, db)
         if not (is_new_owner_org_manager or is_new_owner_admin):
             error_message = (
                 "InvalidNewOwner- New owner must be project's org manager or TM admin"
             )
-            if current_app:
-                current_app.logger.debug(error_message)
+            logger.debug(error_message)
             raise ValueError(error_message)
         else:
-            transferred_by = User.get_by_id(transfering_user_id).username
+            transferred_by = User.get_by_id(transfering_user_id, db)
+            transferred_by = transferred_by.username
             project.author_id = new_owner.id
-            project.save()
-            threading.Thread(
-                target=MessageService.send_project_transfer_message,
-                args=(project_id, username, transferred_by),
-            ).start()
+            Project.save(project, db)
+            # Adding the background task
+            background_tasks.add_task(
+                MessageService.send_project_transfer_message,
+                project_id,
+                username,
+                transferred_by,
+            )
 
     @staticmethod
     async def is_user_action_permitted_on_project(

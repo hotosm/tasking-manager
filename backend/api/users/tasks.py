@@ -1,4 +1,5 @@
 from databases import Database
+from datetime import datetime
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
@@ -24,8 +25,8 @@ async def get(
     status: str = None,
     project_status: str = None,
     project_id: int = None,
-    start_date: str = None,
-    end_date: str = None,
+    start_date: datetime = None,
+    end_date: datetime = None,
     sort_by: str = "-action_date",
 ):
     """
@@ -109,7 +110,7 @@ async def get(
             task_status=status,
             start_date=start_date,
             end_date=end_date,
-            page=request.query_params.get("page", None),
+            page=request.query_params.get("page", 1),
             page_size=request.query_params.get("page_size", 10),
             sort_by=sort_by,
             db=db,

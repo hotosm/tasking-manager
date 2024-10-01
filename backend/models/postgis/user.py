@@ -1,5 +1,16 @@
 import geojson
-from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Boolean, ARRAY
+from sqlalchemy import (
+    Column,
+    Integer,
+    BigInteger,
+    String,
+    DateTime,
+    Boolean,
+    ARRAY,
+    delete,
+    update,
+    insert,
+)
 from sqlalchemy.orm import relationship
 
 from backend.exceptions import NotFound
@@ -115,19 +126,25 @@ class User(Base):
         result = await db.fetch_one(query, values={"username": username})
         return result if result else None
 
-    def update_username(self, username: str):
+    async def update_username(self, username: str, db: Database):
         """Update the username"""
         self.username = username
-        session.commit()
+        await db.execute(
+            "UPDATE users SET username = :username WHERE id = :user_id",
+            values={"user_id": self.id, "username": username},
+        )
 
-    def update_picture_url(self, picture_url: str):
+    async def update_picture_url(self, picture_url: str, db: Database):
         """Update the profile picture"""
         self.picture_url = picture_url
-        session.commit()
+        await db.execute(
+            "UPDATE users SET picture_url = :picture_url WHERE id = :user_id",
+            values={"user_id": self.id, "picture_url": picture_url},
+        )
 
     async def update(self, user_dto: UserDTO, db: Database):
         """Update the user details"""
-        for attr, value in user_dto.items():
+        for attr, value in user_dto.dict().items():
             if attr == "gender" and value is not None:
                 value = UserGender[value].value
 
@@ -142,7 +159,15 @@ class User(Base):
 
         if user_dto.gender != UserGender.SELF_DESCRIBE.name:
             self.self_description_gender = None
-        session.commit()
+
+        # Create a dictionary for updating fields in the database
+        update_fields = {
+            attr: getattr(self, attr)
+            for attr in self.__dict__
+            if attr in self.__table__.columns
+        }
+
+        await db.execute(update(User).where(User.id == self.id).values(**update_fields))
 
     async def set_email_verified_status(self, is_verified: bool, db: Database):
         """Updates email verfied flag on successfully verified emails"""
@@ -152,10 +177,11 @@ class User(Base):
             query, values={"is_email_verified": is_verified, "user_id": self.id}
         )
 
-    def set_is_expert(self, is_expert: bool):
+    async def set_is_expert(self, is_expert: bool, db: Database):
         """Enables or disables expert mode on the user"""
         self.is_expert = is_expert
-        session.commit()
+        query = "UPDATE users SET is_expert = :is_expert WHERE id = :user_id"
+        await db.execute(query, values={"is_expert": is_expert, "user_id": self.id})
 
     @staticmethod
     async def get_all_users(query: UserSearchQuery, db) -> UserSearchDTO:
@@ -359,15 +385,29 @@ class User(Base):
             mapped_projects_dto.mapped_projects.append(mapped_project)
         return mapped_projects_dto
 
-    def set_user_role(self, role: UserRole):
+    async def set_user_role(self, role: UserRole, db: Database):
         """Sets the supplied role on the user"""
         self.role = role.value
-        session.commit()
 
-    def set_mapping_level(self, level: MappingLevel):
+        query = """
+            UPDATE users
+            SET role = :role
+            WHERE id = :user_id
+        """
+        await db.execute(query, values={"user_id": self.id, "role": role.value})
+
+    async def set_mapping_level(self, level: MappingLevel, db: Database):
         """Sets the supplied level on the user"""
         self.mapping_level = level.value
-        session.commit()
+
+        query = """
+            UPDATE users
+            SET mapping_level = :mapping_level
+            WHERE id = :user_id
+        """
+        await db.execute(
+            query, values={"user_id": self.id, "mapping_level": level.value}
+        )
 
     async def accept_license_terms(self, user_id, license_id: int, db: Database):
         """Associate the user in scope with the supplied license"""
@@ -459,18 +499,17 @@ class UserEmail(Base):
     id = Column(BigInteger, primary_key=True, index=True)
     email = Column(String, nullable=False, unique=True)
 
-    def create(self):
+    async def create(self, db: Database):
         """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
+        user = await db.execute(insert(UserEmail.__table__).values(email=self.email))
+        return user
 
     def save(self):
         session.commit()
 
-    def delete(self):
+    async def delete(self, db: Database):
         """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
+        await db.execute(delete(UserEmail.__table__).where(UserEmail.id == self.id))
 
     @staticmethod
     def get_by_email(email_address: str):

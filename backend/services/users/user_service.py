@@ -2,7 +2,7 @@ from cachetools import TTLCache, cached
 
 import datetime
 from loguru import logger
-from sqlalchemy.sql.expression import literal
+from sqlalchemy.sql import outerjoin
 from sqlalchemy import (
     func,
     or_,
@@ -11,9 +11,7 @@ from sqlalchemy import (
     distinct,
     cast,
     Time,
-    column,
     select,
-    union,
 )
 from databases import Database
 
@@ -85,17 +83,16 @@ class UserService:
         return user
 
     @staticmethod
-    def get_contributions_by_day(user_id: int):
+    async def get_contributions_by_day(user_id: int, db: Database):
         # Validate that user exists.
-        stats = (
-            session.query(TaskHistory)
-            .with_entities(
+        query = (
+            select(
                 func.DATE(TaskHistory.action_date).label("day"),
                 func.count(TaskHistory.action).label("cnt"),
             )
-            .filter(TaskHistory.user_id == user_id)
-            .filter(TaskHistory.action == TaskAction.STATE_CHANGE.name)
-            .filter(
+            .where(TaskHistory.user_id == user_id)
+            .where(TaskHistory.action == TaskAction.STATE_CHANGE.name)
+            .where(
                 func.DATE(TaskHistory.action_date)
                 > datetime.date.today() - datetime.timedelta(days=365)
             )
@@ -103,8 +100,13 @@ class UserService:
             .order_by(desc("day"))
         )
 
+        # Execute the query and fetch all results
+        results = await db.fetch_all(query)
+
+        # Transform the results into a list of `UserContributionDTO` instances
         contributions = [
-            UserContributionDTO(dict(date=str(s[0]), count=s[1])) for s in stats
+            UserContributionDTO(date=record["day"], count=record["cnt"])
+            for record in results
         ]
 
         return contributions
@@ -129,14 +131,14 @@ class UserService:
 
     @staticmethod
     async def update_user(
-        user_id: int, osm_username: str, picture_url: str, session
+        user_id: int, osm_username: str, picture_url: str, db: Database
     ) -> User:
-        user = await UserService.get_user_by_id(user_id)
+        user = await UserService.get_user_by_id(user_id, db)
         if user.username != osm_username:
-            user.update_username(osm_username)
+            await user.update_username(osm_username, db)
 
         if user.picture_url != picture_url:
-            user.update_picture_url(picture_url)
+            await user.update_picture_url(picture_url, db)
 
         return user
 
@@ -232,17 +234,17 @@ class UserService:
         return user.as_dto()
 
     @staticmethod
-    def get_interests_stats(user_id):
+    async def get_interests_stats(user_id: int, db: Database):
         # Get all projects that the user has contributed.
         stmt = (
-            session.query(TaskHistory)
-            .with_entities(TaskHistory.project_id)
+            select(TaskHistory.project_id)
             .distinct()
-            .filter(TaskHistory.user_id == user_id)
+            .where(TaskHistory.user_id == user_id)
         )
 
-        interests = (
-            Interest.query.with_entities(
+        # Prepare the query for interests
+        interests_query = (
+            select(
                 Interest.id,
                 Interest.name,
                 func.count(distinct(project_interests.c.project_id)).label(
@@ -258,11 +260,14 @@ class UserService:
             )
             .group_by(Interest.id)
             .order_by(desc("count_projects"))
-            .all()
         )
 
+        # Execute the query
+        interests = await db.fetch_all(interests_query)
+
+        # Map results to DTOs
         interests_dto = [
-            InterestDTO(dict(id=i.id, name=i.name, count_projects=i.count_projects))
+            InterestDTO(dict(id=i[0], name=i[1], count_projects=i[2]))
             for i in interests
         ]
 
@@ -281,294 +286,252 @@ class UserService:
         sort_by: str = None,
         db: Database = None,
     ) -> UserTaskDTOs:
+        # Base query to get the latest task history actions for a user
         base_query = (
-            session.query(TaskHistory)
-            .with_entities(
+            select(
                 TaskHistory.project_id.label("project_id"),
                 TaskHistory.task_id.label("task_id"),
                 func.max(TaskHistory.action_date).label("max"),
             )
-            .filter(TaskHistory.user_id == user_id)
+            .where(TaskHistory.user_id == user_id)
             .group_by(TaskHistory.task_id, TaskHistory.project_id)
         )
 
         if task_status:
-            base_query = base_query.filter(
+            base_query = base_query.where(
                 TaskHistory.action_text == TaskStatus[task_status.upper()].name
             )
 
         if start_date:
-            base_query = base_query.filter(TaskHistory.action_date >= start_date)
+            base_query = base_query.where(TaskHistory.action_date >= start_date)
 
         if end_date:
-            base_query = base_query.filter(TaskHistory.action_date <= end_date)
+            base_query = base_query.where(TaskHistory.action_date <= end_date)
 
-        user_task_dtos = UserTaskDTOs()
-        task_id_list = base_query.subquery()
+        task_id_list = base_query.alias("task_id_list")
 
+        # Query to get the number of comments per task
         comments_query = (
-            session.query(TaskHistory)
-            .with_entities(
+            select(
                 TaskHistory.project_id,
                 TaskHistory.task_id,
                 func.count(TaskHistory.action).label("count"),
             )
-            .filter(TaskHistory.action == "COMMENT")
+            .where(TaskHistory.action == "COMMENT")
             .group_by(TaskHistory.task_id, TaskHistory.project_id)
-        ).subquery()
+        ).alias("comments_query")
 
+        # Subquery for joining comments and task IDs
         sq = (
-            session.query(
-                func.coalesce(comments_query.c.count, 0).label("comments"), task_id_list
+            select(
+                func.coalesce(comments_query.c.count, 0).label("comments"),
+                task_id_list.c.project_id,
+                task_id_list.c.task_id,
+                task_id_list.c.max,
             )
             .select_from(task_id_list)
             .outerjoin(
                 comments_query,
-                (comments_query.c.task_id == task_id_list.c.task_id)
-                & (comments_query.c.project_id == task_id_list.c.project_id),
+                and_(
+                    comments_query.c.task_id == task_id_list.c.task_id,
+                    comments_query.c.project_id == task_id_list.c.project_id,
+                ),
             )
-            .subquery()
-        )
+        ).alias("sq")
 
-        tasks = Task.query.join(
-            sq,
-            and_(
-                Task.id == sq.c.task_id,
-                Task.project_id == sq.c.project_id,
-            ),
+        # Main task query joining with subquery
+        tasks_query = (
+            select(Task, sq.c.max, sq.c.comments)
+            .select_from(Task)
+            .join(
+                sq,
+                and_(
+                    Task.id == sq.c.task_id,
+                    Task.project_id == sq.c.project_id,
+                ),
+            )
         )
-        tasks = tasks.add_columns(column("max"), column("comments"))
 
         if sort_by == "action_date":
-            tasks = tasks.order_by(sq.c.max)
+            tasks_query = tasks_query.order_by(sq.c.max)
         elif sort_by == "-action_date":
-            tasks = tasks.order_by(desc(sq.c.max))
+            tasks_query = tasks_query.order_by(desc(sq.c.max))
         elif sort_by == "project_id":
-            tasks = tasks.order_by(sq.c.project_id)
+            tasks_query = tasks_query.order_by(sq.c.project_id)
         elif sort_by == "-project_id":
-            tasks = tasks.order_by(desc(sq.c.project_id))
+            tasks_query = tasks_query.order_by(desc(sq.c.project_id))
 
         if project_status:
-            tasks = tasks.filter(
-                Task.project_id == Project.id,
-                Project.status == ProjectStatus[project_status.upper()].value,
+            tasks_query = tasks_query.where(
+                and_(
+                    Task.project_id == Project.id,
+                    Project.status == ProjectStatus[project_status.upper()].value,
+                )
             )
 
         if project_id:
-            tasks = tasks.filter_by(project_id=project_id)
+            tasks_query = tasks_query.where(Task.project_id == project_id)
 
-        results = tasks.paginate(page=page, per_page=page_size, error_out=True)
+        # Pagination
+        offset = (page - 1) * page_size
+        tasks_query = tasks_query.limit(page_size).offset(offset)
 
-        task_list = []
+        # Execute the query and fetch results
+        rows = await db.fetch_all(tasks_query)
 
-        for task, action_date, comments in results.items:
-            task_list.append(task.as_dto(last_updated=action_date, comments=comments))
+        # Create list of task DTOs from the results
+        task_list = [
+            await Task.task_as_dto(
+                row, last_updated=row["max"], comments=row["comments"], db=db
+            )
+            for row in rows
+        ]
 
+        user_task_dtos = UserTaskDTOs()
         user_task_dtos.user_tasks = task_list
-        user_task_dtos.pagination = Pagination(results)
+        user_task_dtos.pagination = Pagination(
+            total_items=len(task_list), page=page, page_size=page_size
+        )
+
         return user_task_dtos
 
     @staticmethod
     async def get_detailed_stats(username: str, db: Database) -> UserStatsDTO:
-        user = await UserService.get_user_by_username(username, db)
         stats_dto = UserStatsDTO()
 
+        # Fetch user ID based on username
+        user = await UserService.get_user_by_username(username, db)
+
+        # Define actions
         actions = [
             TaskStatus.VALIDATED.name,
             TaskStatus.INVALIDATED.name,
             TaskStatus.MAPPED.name,
         ]
 
-        actions_table = union(
-            select(literal("VALIDATED").label("action_text")),
-            select(literal("INVALIDATED").label("action_text")),
-            select(literal("MAPPED").label("action_text")),
-        ).alias("actions_table")
+        # Get filtered actions
+        filtered_actions_query = select(
+            TaskHistory.user_id,
+            TaskHistory.project_id,
+            TaskHistory.task_id,
+            TaskHistory.action_text,
+        ).where(TaskHistory.action_text.in_(actions))
 
-        # Get only rows with the given actions.
-        # filtered_actions = (
-        #     session.query(TaskHistory)
-        #     .with_entities(
-        #         TaskHistory.user_id,
-        #         TaskHistory.project_id,
-        #         TaskHistory.task_id,
-        #         TaskHistory.action_text,
-        #     )
-        #     .filter(TaskHistory.action_text.in_(actions))
-        #     .subquery()
-        #     .alias("filtered_actions")
-        # )
-        filtered_actions = (
-            select(
-                TaskHistory.user_id,
-                TaskHistory.project_id,
-                TaskHistory.task_id,
-                TaskHistory.action_text,
-            )
-            .where(TaskHistory.action_text.in_(["VALIDATED", "INVALIDATED", "MAPPED"]))
-            .alias("filtered_actions")
-        )
+        filtered_actions = await db.fetch_all(filtered_actions_query)
 
-        # user_tasks = (
-        #     session.query(filtered_actions)
-        #     .filter(filtered_actions.c.user_id == user.id)
-        #     .distinct(
-        #         filtered_actions.c.project_id,
-        #         filtered_actions.c.task_id,
-        #         filtered_actions.c.action_text,
-        #     )
-        #     .subquery()
-        #     .alias("user_tasks")
-        # )
-        user_tasks = (
-            select(
-                [
-                    filtered_actions.c.user_id,
-                    filtered_actions.c.project_id,
-                    filtered_actions.c.task_id,
-                    filtered_actions.c.action_text,
-                ]
+        # Get user tasks
+        user_tasks_query = (
+            select(TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text)
+            .where(
+                TaskHistory.user_id == user["id"],
+                TaskHistory.action_text.in_(
+                    [row["action_text"] for row in filtered_actions]
+                ),
             )
-            .where(filtered_actions.c.user_id == user.id)
             .distinct()
-            .alias("user_tasks")
         )
 
-        # others_tasks = (
-        #     session.query(filtered_actions)
-        #     .filter(filtered_actions.c.user_id != user.id)
-        #     .filter(filtered_actions.c.task_id == user_tasks.c.task_id)
-        #     .filter(filtered_actions.c.project_id == user_tasks.c.project_id)
-        #     .filter(filtered_actions.c.action_text != TaskStatus.MAPPED.name)
-        #     .distinct(
-        #         filtered_actions.c.project_id,
-        #         filtered_actions.c.task_id,
-        #         filtered_actions.c.action_text,
-        #     )
-        #     .subquery()
-        #     .alias("others_tasks")
-        # )
-        others_tasks = (
-            select(
-                [
-                    filtered_actions.c.user_id,
-                    filtered_actions.c.project_id,
-                    filtered_actions.c.task_id,
-                    filtered_actions.c.action_text,
-                ]
+        user_tasks = await db.fetch_all(user_tasks_query)
+
+        # Get others' tasks
+        others_tasks_query = (
+            select(TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text)
+            .where(
+                TaskHistory.user_id != user["id"],
+                TaskHistory.task_id.in_([row["task_id"] for row in user_tasks]),
+                TaskHistory.project_id.in_([row["project_id"] for row in user_tasks]),
+                TaskHistory.action_text != TaskStatus.MAPPED.name,
             )
-            .where(filtered_actions.c.user_id != user.id)
-            .where(filtered_actions.c.task_id == user_tasks.c.task_id)
-            .where(filtered_actions.c.project_id == user_tasks.c.project_id)
-            .where(filtered_actions.c.action_text != "MAPPED")
             .distinct()
-            .alias("others_tasks")
         )
 
-        # user_stats = (
-        #     session.query(
-        #         actions_table.c.action_text, func.count(user_tasks.c.action_text)
-        #     )
-        #     .outerjoin(
-        #         user_tasks, actions_table.c.action_text == user_tasks.c.action_text
-        #     )
-        #     .group_by(actions_table.c.action_text)
-        # )
-        user_stats = (
-            select([actions_table.c.action_text, func.count(user_tasks.c.action_text)])
-            .select_from(
-                actions_table.outerjoin(
-                    user_tasks, actions_table.c.action_text == user_tasks.c.action_text
-                )
-            )
-            .group_by(actions_table.c.action_text)
-        )
+        others_tasks = await db.fetch_all(others_tasks_query)
 
-        # others_stats = (
-        #     session.query(
-        #         func.concat(actions_table.c.action_text, "_BY_OTHERS"),
-        #         func.count(others_tasks.c.action_text),
-        #     )
-        #     .outerjoin(
-        #         others_tasks, actions_table.c.action_text == others_tasks.c.action_text
-        #     )
-        #     .group_by(actions_table.c.action_text)
-        # )
-        others_stats = (
-            select(
-                [
-                    func.concat(actions_table.c.action_text, "_BY_OTHERS"),
-                    func.count(others_tasks.c.action_text),
-                ]
-            )
-            .select_from(
-                actions_table.outerjoin(
-                    others_tasks,
-                    actions_table.c.action_text == others_tasks.c.action_text,
-                )
-            )
-            .group_by(actions_table.c.action_text)
-        )
-        combined_stats = user_stats.union_all(others_stats)
+        # Combine results for user stats
+        user_stats = {action: 0 for action in actions}
 
-        res = await db.fetch_all(combined_stats)
-        print(res)
-        # res = user_stats.union(others_stats).all()
-        results = {key: value for key, value in res}
+        for task in user_tasks:
+            user_stats[task["action_text"]] += 1
 
-        projects_mapped = await UserService.get_projects_mapped(user.id, db)
-        stats_dto.tasks_mapped = results["MAPPED"]
-        stats_dto.tasks_validated = results["VALIDATED"]
-        stats_dto.tasks_invalidated = results["INVALIDATED"]
-        stats_dto.tasks_validated_by_others = results["VALIDATED_BY_OTHERS"]
-        stats_dto.tasks_invalidated_by_others = results["INVALIDATED_BY_OTHERS"]
+        # Combine results for others stats
+        others_stats = {f"{action}_BY_OTHERS": 0 for action in actions}
+
+        for task in others_tasks:
+            try:
+                others_stats[task["action_text"] + "_BY_OTHERS"] += 1
+            except KeyError:
+                pass
+
+        # Combine user stats and others stats
+        results = {**user_stats, **others_stats}
+
+        projects_mapped = await UserService.get_projects_mapped(user["id"], db)
+
+        stats_dto.tasks_mapped = results.get("MAPPED", 0)
+        stats_dto.tasks_validated = results.get("VALIDATED", 0)
+        stats_dto.tasks_invalidated = results.get("INVALIDATED", 0)
+        stats_dto.tasks_validated_by_others = results.get("VALIDATED_BY_OTHERS", 0)
+        stats_dto.tasks_invalidated_by_others = results.get("INVALIDATED_BY_OTHERS", 0)
         stats_dto.projects_mapped = len(projects_mapped)
-        stats_dto.countries_contributed = UserService.get_countries_contributed(user.id)
-        stats_dto.contributions_by_day = UserService.get_contributions_by_day(user.id)
+        stats_dto.countries_contributed = await UserService.get_countries_contributed(
+            user["id"], db
+        )
+        stats_dto.contributions_by_day = await UserService.get_contributions_by_day(
+            user["id"], db
+        )
         stats_dto.total_time_spent = 0
         stats_dto.time_spent_mapping = 0
         stats_dto.time_spent_validating = 0
 
-        query = (
-            session.query(TaskHistory)
-            .with_entities(
-                func.date_trunc("minute", TaskHistory.action_date).label("trn"),
-                func.max(TaskHistory.action_text).label("tm"),
+        # Total validation time
+        # Subquery to get max(action_date) grouped by minute
+        subquery = (
+            select(
+                func.date_trunc("minute", TaskHistory.action_date).label("minute"),
+                func.max(TaskHistory.action_date).label("max_action_date"),
             )
-            .filter(TaskHistory.user_id == user.id)
-            .filter(TaskHistory.action == "LOCKED_FOR_VALIDATION")
-            .group_by("trn")
+            .where(
+                TaskHistory.user_id == user["id"],
+                TaskHistory.action == "LOCKED_FOR_VALIDATION",
+            )
+            .group_by("minute")
             .subquery()
         )
-        total_validation_time = session.query(
-            func.sum(cast(func.to_timestamp(query.c.tm, "HH24:MI:SS"), Time))
-        ).scalar()
 
-        if total_validation_time:
-            stats_dto.time_spent_validating = total_validation_time.total_seconds()
-            stats_dto.total_time_spent += stats_dto.time_spent_validating
-
-        total_mapping_time = (
-            session.query(
-                func.sum(
-                    cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
-                )
-            )
-            .filter(
-                or_(
-                    TaskHistory.action == TaskAction.LOCKED_FOR_MAPPING.name,
-                    TaskHistory.action == TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name,
-                )
-            )
-            .filter(TaskHistory.user_id == user.id)
-            .scalar()
+        # Outer query to sum up the epoch values of the max action dates
+        total_validation_time_query = select(
+            func.sum(func.extract("epoch", subquery.c.max_action_date))
         )
 
-        if total_mapping_time:
-            stats_dto.time_spent_mapping = total_mapping_time.total_seconds()
+        # Execute the query and fetch the result
+        total_validation_time = await db.fetch_one(total_validation_time_query)
+
+        if total_validation_time and total_validation_time[0]:
+            stats_dto.time_spent_validating = total_validation_time[0]
+            stats_dto.total_time_spent += stats_dto.time_spent_validating
+
+        # Total mapping time
+        total_mapping_time_query = select(
+            func.sum(
+                cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
+            )
+        ).where(
+            or_(
+                TaskHistory.action == TaskAction.LOCKED_FOR_MAPPING.name,
+                TaskHistory.action == TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name,
+            ),
+            TaskHistory.user_id == user["id"],
+        )
+
+        total_mapping_time = await db.fetch_one(total_mapping_time_query)
+
+        if total_mapping_time and total_mapping_time[0]:
+            stats_dto.time_spent_mapping = total_mapping_time[0].total_seconds()
             stats_dto.total_time_spent += stats_dto.time_spent_mapping
 
-        stats_dto.contributions_interest = UserService.get_interests_stats(user.id)
+        stats_dto.contributions_interest = await UserService.get_interests_stats(
+            user["id"], db
+        )
 
         return stats_dto
 
@@ -586,17 +549,17 @@ class UserService:
             and user.email_address != user_dto.email_address.lower()
         ):
             # Send user verification email if they are adding or changing their email address
-            SMTPService.send_verification_email(
+            await SMTPService.send_verification_email(
                 user_dto.email_address.lower(), user.username
             )
             await User.set_email_verified_status(user, is_verified=False, db=db)
             verification_email_sent = True
 
-        User.update(user, user_dto, db)
+        await User.update(user, user_dto, db)
         query = select(UserEmail).filter(UserEmail.email == user_dto.email_address)
         user_email = await db.fetch_one(query=query)
         if user_email is not None:
-            UserEmail.delete(user)
+            await UserEmail.delete(user, db)
 
         return dict(verificationEmailSent=verification_email_sent)
 
@@ -655,16 +618,19 @@ class UserService:
         return False
 
     @staticmethod
-    def get_countries_contributed(user_id: int):
+    async def get_countries_contributed(user_id: int, db: Database):
+        # Define the base query
         query = (
-            session.query(TaskHistory)
-            .with_entities(
+            select(
                 func.unnest(Project.country).label("country"),
                 TaskHistory.action_text,
                 func.count(TaskHistory.action_text).label("count"),
             )
-            .filter(TaskHistory.user_id == user_id)
-            .filter(
+            .select_from(
+                outerjoin(TaskHistory, Project, TaskHistory.project_id == Project.id)
+            )  # Use `outerjoin` function to join TaskHistory with Project
+            .where(TaskHistory.user_id == user_id)
+            .where(
                 TaskHistory.action_text.in_(
                     [
                         TaskStatus.MAPPED.name,
@@ -674,28 +640,32 @@ class UserService:
                 )
             )
             .group_by("country", TaskHistory.action_text)
-            .outerjoin(Project, Project.id == TaskHistory.project_id)
-            .all()
         )
-        countries = list(set([q.country for q in query]))
+
+        results = await db.fetch_all(query)
+        countries = list(set([q.country for q in results if q.country]))
         result = []
         for country in countries:
-            values = [q for q in query if q.country == country]
+            values = [q for q in results if q.country == country]
 
             # Filter element to sum mapped values.
             mapped = sum(
                 [
-                    v.count
+                    v["count"]
                     for v in values
                     if v.action_text
                     in [TaskStatus.MAPPED.name, TaskStatus.BADIMAGERY.name]
                 ]
             )
             validated = sum(
-                [v.count for v in values if v.action_text == TaskStatus.VALIDATED.name]
+                [
+                    v["count"]
+                    for v in values
+                    if v.action_text == TaskStatus.VALIDATED.name
+                ]
             )
             dto = UserCountryContributed(
-                dict(
+                **dict(
                     name=country,
                     mapped=mapped,
                     validated=validated,
@@ -730,61 +700,92 @@ class UserService:
         from backend.services.project_search_service import ProjectSearchService
 
         limit = 20
-        user = (
-            session.query(User)
-            .with_entities(User.id, User.mapping_level)
-            .filter(User.username == user_name)
-            .one_or_none()
-        )
+        # 1. Retrieve the user information
+        query = select(User.id, User.mapping_level).where(User.username == user_name)
+        user = await db.fetch_one(query)
         if user is None:
             raise NotFound(sub_code="USER_NOT_FOUND", username=user_name)
 
-        # Get all projects that the user has contributed
+        user_id = user["id"]
+        user_mapping_level = user["mapping_level"]
+
+        # 2. Get all project IDs the user has contributed to
         sq = (
-            session.query(TaskHistory)
-            .with_entities(TaskHistory.project_id.label("project_id"))
-            .distinct(TaskHistory.project_id)
-            .filter(TaskHistory.user_id == user.id)
-            .subquery()
-        )
-        # Get all campaigns for all contributed projects.
-        campaign_tags = (
-            session.query(Project)
-            .with_entities(Project.campaign.label("tag"))
-            .filter(or_(Project.author_id == user.id, Project.id == sq.c.project_id))
-            .subquery()
-        )
-        # Get projects with given campaign tags but without user contributions.
-        query = ProjectSearchService.create_search_query()
-        projs = (
-            query.filter(Project.campaign.any(campaign_tags.c.tag)).limit(limit).all()
+            select(distinct(TaskHistory.project_id))
+            .where(TaskHistory.user_id == user_id)
+            .alias("contributed_projects")
         )
 
-        # Get only user mapping level projects.
-        len_projs = len(projs)
-        if len_projs < limit:
-            remaining_projs = (
-                query.filter(Project.difficulty == user.mapping_level)
-                .limit(limit - len_projs)
-                .all()
+        # 3. Get all campaigns for the contributed projects or authored by the user
+        campaign_tags_query = select(distinct(Project.campaign).label("tag")).where(
+            or_(Project.author_id == user_id, Project.id.in_(sq))
+        )
+        campaign_tags = await db.fetch_all(campaign_tags_query)
+        campaign_tags_list = [tag["tag"] for tag in campaign_tags]
+
+        # 4. Get projects that match these campaign tags but exclude those already contributed
+        query, params = await ProjectSearchService.create_search_query(db)
+
+        # Prepare the campaign tags condition
+        if campaign_tags_list:
+            campaign_tags_placeholder = ", ".join(
+                [f":tag{i}" for i in range(len(campaign_tags_list))]
             )
+            campaign_tags_condition = (
+                f" AND p.campaign IN ({campaign_tags_placeholder})"
+            )
+        else:
+            campaign_tags_condition = ""  # No condition if list is empty
+
+        # Modify the query to include the campaign tags condition and limit
+        final_query = f"{query} {campaign_tags_condition} LIMIT :limit"
+
+        campagin_params = params.copy()
+        # Update params to include campaign tags
+        for i, tag in enumerate(campaign_tags_list):
+            campagin_params[f"tag{i}"] = tag
+        campagin_params["limit"] = limit
+
+        # Execute the final query with parameters
+        projs = await db.fetch_all(final_query, campagin_params)
+        project_ids = [proj["id"] for proj in projs]
+
+        # 5. Get projects filtered by user's mapping level if fewer than the limit
+        if len(projs) < limit:
+            remaining_projs_query = f"""
+                {query}
+                AND p.difficulty = :difficulty
+                LIMIT :remaining_limit
+            """
+
+            params["difficulty"] = user_mapping_level
+            params["remaining_limit"] = limit - len(projs)
+            remaining_projs = await db.fetch_all(remaining_projs_query, params)
+            remaining_projs_ids = [proj["id"] for proj in remaining_projs]
+            project_ids.extend(remaining_projs_ids)
             projs.extend(remaining_projs)
 
+        # 6. Create DTO for the results
         dto = ProjectSearchResultsDTO()
 
-        # Get all total contributions for each paginated project.
-        contrib_counts = ProjectSearchService.get_total_contributions(projs)
+        # Get all total contributions for each project
+        contrib_counts = await ProjectSearchService.get_total_contributions(
+            project_ids, db
+        )
 
+        # Combine projects and their contribution counts
         zip_items = zip(projs, contrib_counts)
-
         dto.results = [
-            ProjectSearchService.create_result_dto(p, "en", t) for p, t in zip_items
+            await ProjectSearchService.create_result_dto(p, preferred_locale, t, db)
+            for p, t in zip_items
         ]
 
         return dto
 
     @staticmethod
-    def add_role_to_user(admin_user_id: int, username: str, role: str):
+    async def add_role_to_user(
+        admin_user_id: int, username: str, role: str, db: Database
+    ):
         """
         Add role to user
         :param admin_user_id: ID of admin attempting to add the role
@@ -800,7 +801,7 @@ class UserService:
                 + f"Unknown role {role} accepted values are ADMIN, PROJECT_MANAGER, VALIDATOR"
             )
 
-        admin = UserService.get_user_by_id(admin_user_id)
+        admin = await UserService.get_user_by_id(admin_user_id, db)
         admin_role = UserRole(admin.role)
 
         if admin_role != UserRole.ADMIN and requested_role == UserRole.ADMIN:
@@ -808,11 +809,11 @@ class UserService:
                 "NeedAdminRole- You must be an Admin to assign Admin role"
             )
 
-        user = UserService.get_user_by_username(username)
-        user.set_user_role(requested_role)
+        user = await UserService.get_user_by_username(username, db)
+        await User.set_user_role(user, requested_role, db)
 
     @staticmethod
-    def set_user_mapping_level(username: str, level: str) -> User:
+    async def set_user_mapping_level(username: str, level: str, db: Database) -> User:
         """
         Sets the users mapping level
         :raises: UserServiceError
@@ -825,19 +826,19 @@ class UserService:
                 + f"Unknown role {level} accepted values are BEGINNER, INTERMEDIATE, ADVANCED"
             )
 
-        user = UserService.get_user_by_username(username)
-        user.set_mapping_level(requested_level)
+        user = await UserService.get_user_by_username(username, db)
+        await User.set_mapping_level(user, requested_level, db)
 
         return user
 
     @staticmethod
-    def set_user_is_expert(user_id: int, is_expert: bool) -> User:
+    async def set_user_is_expert(user_id: int, is_expert: bool, db: Database) -> User:
         """
         Enabled or disables expert mode for the user
         :raises: UserServiceError
         """
-        user = UserService.get_user_by_id(user_id)
-        user.set_is_expert(is_expert)
+        user = await UserService.get_user_by_id(user_id, db)
+        await User.set_is_expert(user, is_expert, db)
 
         return user
 
@@ -975,20 +976,20 @@ class UserService:
         return users_updated
 
     @staticmethod
-    def register_user_with_email(user_dto: UserRegisterEmailDTO, db: Database):
+    async def register_user_with_email(user_dto: UserRegisterEmailDTO, db: Database):
         # Validate that user is not within the general users table.
         user_email = user_dto.email.lower()
         query = select(User).filter(func.lower(User.email_address) == user_email)
-        user = db.fetch_one(query)
+        user = await db.fetch_one(query)
         if user is not None:
             details_msg = f"Email address {user_email} already exists"
             raise ValueError(details_msg)
 
         query = select(UserEmail).filter(func.lower(UserEmail.email) == user_email)
-        user = db.fetch_one(query)
+        user = await db.fetch_one(query)
         if user is None:
             user = UserEmail(email=user_email)
-            user.create()
+            user = await user.create(db)
 
         return user
 

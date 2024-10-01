@@ -1,7 +1,16 @@
-from sqlalchemy import Column, Integer, String, BigInteger, Table, ForeignKey
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    BigInteger,
+    Table,
+    ForeignKey,
+    select,
+)
 from backend.exceptions import NotFound
 from backend.models.dtos.interests_dto import InterestDTO, InterestsListDTO
 from backend.db import Base, get_session
+from databases import Database
 
 session = get_session()
 
@@ -31,13 +40,15 @@ class Interest(Base):
     name = Column(String, unique=True)
 
     @staticmethod
-    def get_by_id(interest_id: int):
+    async def get_by_id(interest_id: int, db: Database):
         """Get interest by id"""
-        interest = session.get(Interest, interest_id)
-        if interest is None:
-            raise NotFound(sub_code="INTEREST_NOT_FOUND", interest_id=interest_id)
+        query = select(Interest).where(Interest.id == interest_id)
+        result = await db.fetch_one(query)
 
-        return interest
+        if result:
+            # If Interest is a Pydantic model or class, you can instantiate it
+            return Interest(**result)
+        return None
 
     @staticmethod
     def get_by_name(name: str):
