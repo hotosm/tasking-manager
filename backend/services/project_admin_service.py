@@ -214,7 +214,9 @@ class ProjectAdminService:
             )
 
             # Reset the task's status to READY
-            await Task.reset_task(task_id=task_id, user_id=user_id, db=db)
+            await Task.reset_task(
+                task_id=task_id, project_id=project_id, user_id=user_id, db=db
+            )
 
         # Reset project counters using raw SQL
         project_update_query = """
