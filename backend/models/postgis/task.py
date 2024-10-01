@@ -1558,6 +1558,32 @@ class Task(Base):
         )
         return task_dto
 
+    async def task_as_dto(
+        self,
+        task_history: List[TaskHistoryDTO] = [],
+        last_updated: datetime.datetime = None,
+        comments: int = None,
+        db: Database = None,
+    ):
+        from backend.services.users.user_service import UserService
+
+        """Just converts to a TaskDTO"""
+        task_dto = TaskDTO()
+        task_dto.task_id = self.id
+        task_dto.project_id = self.project_id
+        task_dto.task_status = TaskStatus(self.task_status).name
+        user = (
+            await UserService.get_user_by_id(self.locked_by, db)
+            if self.locked_by
+            else None
+        )
+        task_dto.lock_holder = user.username if user else None
+        task_dto.task_history = task_history
+        task_dto.last_updated = last_updated if last_updated else None
+        task_dto.auto_unlock_seconds = await Task.auto_unlock_delta()
+        task_dto.comments_number = comments if isinstance(comments, int) else None
+        return task_dto
+
     @staticmethod
     async def get_task_history(
         task_id: int, project_id: int, db: Database

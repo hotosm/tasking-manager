@@ -368,13 +368,13 @@ class UserService:
         if project_status:
             tasks_query = tasks_query.where(
                 and_(
-                    Task.c.project_id == Project.c.id,
-                    Project.c.status == ProjectStatus[project_status.upper()].value,
+                    Task.project_id == Project.id,
+                    Project.status == ProjectStatus[project_status.upper()].value,
                 )
             )
 
         if project_id:
-            tasks_query = tasks_query.where(Task.c.project_id == project_id)
+            tasks_query = tasks_query.where(Task.project_id == project_id)
 
         # Pagination
         offset = (page - 1) * page_size
@@ -385,7 +385,9 @@ class UserService:
 
         # Create list of task DTOs from the results
         task_list = [
-            Task.as_dto(last_updated=row["max"], comments=row["comments"])
+            await Task.task_as_dto(
+                row, last_updated=row["max"], comments=row["comments"], db=db
+            )
             for row in rows
         ]
 
