@@ -170,13 +170,13 @@ def is_known_project_difficulty(value: str) -> str:
 class DraftProjectDTO(BaseModel):
     """Describes JSON model used for creating draft project"""
 
-    cloneFromProjectId: int = Field(alias="cloneFromProjectId")
-    project_name: str = Field(required=True, alias="projectName")
-    organisation: int = Field(required=True)
-    area_of_interest: dict = Field(required=True, alias="areaOfInterest")
-    tasks: Optional[dict]
-    has_arbitrary_tasks: bool = Field(required=True, alias="arbitraryTasks")
-    user_id: int = Field(required=True)
+    cloneFromProjectId: int = Field(None, alias="cloneFromProjectId")
+    project_name: str = Field(..., alias="projectName")
+    organisation: int = Field(None)
+    area_of_interest: dict = Field({}, alias="areaOfInterest")
+    tasks: Optional[dict] = Field({})
+    has_arbitrary_tasks: bool = Field(False, alias="arbitraryTasks")
+    user_id: int = Field(None)
 
 
 class ProjectInfoDTO(BaseModel):
@@ -197,9 +197,9 @@ class ProjectInfoDTO(BaseModel):
 class CustomEditorDTO(BaseModel):
     """DTO to define a custom editor"""
 
-    name: str = Field(required=True)
-    description: Optional[str]
-    url: str = Field(required=True)
+    name: str = Field(None)
+    description: Optional[str] = Field(None)
+    url: str = Field(None)
 
 
 class ProjectDTO(BaseModel):

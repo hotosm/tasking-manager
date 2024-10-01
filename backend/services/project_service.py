@@ -48,8 +48,7 @@ class ProjectServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling projects"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class ProjectService:
@@ -612,16 +611,16 @@ class ProjectService:
         return summary
 
     @staticmethod
-    def set_project_as_featured(project_id: int):
+    async def set_project_as_featured(project_id: int, db: Database):
         """Sets project as featured"""
-        project = ProjectService.get_project_by_id(project_id)
-        project.set_as_featured()
+        project = await ProjectService.get_project_by_id(project_id, db)
+        await Project.set_as_featured(project, db)
 
     @staticmethod
-    def unset_project_as_featured(project_id: int):
+    async def unset_project_as_featured(project_id: int, db: Database):
         """Sets project as featured"""
-        project = ProjectService.get_project_by_id(project_id)
-        project.unset_as_featured()
+        project = await ProjectService.get_project_by_id(project_id, db)
+        await Project.unset_as_featured(project, db)
 
     @staticmethod
     async def get_featured_projects(

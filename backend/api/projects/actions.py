@@ -1,42 +1,43 @@
 import threading
 
-# from flask_restful import , request, current_app
-# from schematics.exceptions import DataError
+from databases import Database
+from fastapi import APIRouter, Body, Depends, Request
+from fastapi.responses import JSONResponse
+from loguru import logger
+from shapely import GEOSException
+from shapely.errors import TopologicalError
 
-from backend.models.dtos.message_dto import MessageDTO
+from backend.db import get_db
 from backend.models.dtos.grid_dto import GridDTO
-from backend.services.project_service import ProjectService
+from backend.models.dtos.message_dto import MessageDTO
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.utils import InvalidGeoJson
+from backend.services.grid.grid_service import GridService
+from backend.services.interests_service import InterestService
+from backend.services.messaging.message_service import MessageService
 from backend.services.project_admin_service import (
     ProjectAdminService,
     ProjectAdminServiceError,
 )
-from backend.services.grid.grid_service import GridService
-from backend.services.messaging.message_service import MessageService
-from backend.services.users.authentication_service import tm
-from backend.services.interests_service import InterestService
-from backend.models.postgis.utils import InvalidGeoJson
-
-from shapely import GEOSException
-from shapely.errors import TopologicalError
-
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from starlette.authentication import requires
-from fastapi.logger import logger
+from backend.services.project_service import ProjectService
+from backend.services.users.authentication_service import login_required, tm
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 
-# class ProjectsActionsTransferAPI():
-# @token_auth.login_required
 @router.post("/{project_id}/actions/transfer-ownership/")
-@requires("authenticated")
-async def post(request: Request, project_id):
+async def post(
+    request: Request,
+    project_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    data: dict = Body(...),
+):
     """
     Transfers a project to a new user
     ---
@@ -76,24 +77,30 @@ async def post(request: Request, project_id):
             description: Internal Server Error
     """
     try:
-        username = request.get_json()["username"]
+        username = data["username"]
     except Exception:
-        return {"Error": "Username not provided", "SubCode": "InvalidData"}, 400
-    try:
-        authenticated_user_id = request.user.display_name if request.user else None
-        ProjectAdminService.transfer_project_to(
-            project_id, authenticated_user_id, username
+        return JSONResponse(
+            content={"Error": "Username not provided", "SubCode": "InvalidData"},
+            status_code=400,
         )
-        return {"Success": "Project Transferred"}, 200
+    try:
+        await ProjectAdminService.transfer_project_to(project_id, user.id, username, db)
+        return JSONResponse(content={"Success": "Project Transferred"}, status_code=200)
     except (ValueError, ProjectAdminServiceError) as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
-# class ProjectsActionsMessageContributorsAPI():
-# @token_auth.login_required
 @router.post("/{project_id}/actions/message-contributors/")
-@requires("authenticated")
-async def post(request: Request, project_id):
+async def post(
+    request: Request,
+    project_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    message_dto: MessageDTO = Body(...),
+):
     """
     Send message to all contributors of a project
     ---
@@ -139,20 +146,15 @@ async def post(request: Request, project_id):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name if request.user else None
-        message_dto = MessageDTO(request.get_json())
-        message_dto.from_user_id = authenticated_user_id
-        message_dto.validate()
-    except DataError as e:
+        message_dto.from_user_id = user.id
+    except ValueError as e:
         logger.error(f"Error validating request: {str(e)}")
         return {
             "Error": "Unable to send message to mappers",
             "SubCode": "InvalidData",
         }, 400
 
-    if not ProjectAdminService.is_user_action_permitted_on_project(
-        authenticated_user_id, project_id
-    ):
+    if not ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id):
         return {
             "Error": "User is not a manager of the project",
             "SubCode": "UserPermissionError",
@@ -164,11 +166,13 @@ async def post(request: Request, project_id):
     return {"Success": "Messages started"}, 200
 
 
-# class ProjectsActionsFeatureAPI():
-# @token_auth.login_required
 @router.post("/{project_id}/actions/feature/")
-@requires("authenticated")
-async def post(request: Request, project_id):
+async def post(
+    request: Request,
+    project_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Set a project as featured
     ---
@@ -202,29 +206,36 @@ async def post(request: Request, project_id):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name if request.user else None
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            user.id, project_id, db
         ):
             raise ValueError()
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     try:
-        ProjectService.set_project_as_featured(project_id)
-        return {"Success": True}, 200
+        await ProjectService.set_project_as_featured(project_id, db)
+        return JSONResponse(content={"Success": True}, status_code=200)
     except ValueError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
-# class ProjectsActionsUnFeatureAPI():
-# @token_auth.login_required
 @router.post("/{project_id}/actions/remove-feature/")
-@requires("authenticated")
-async def post(request: Request, project_id):
+async def post(
+    request: Request,
+    project_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Unset a project as featured
     ---
@@ -258,29 +269,37 @@ async def post(request: Request, project_id):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name if request.user else None
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            user.id, project_id, db
         ):
             raise ValueError()
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     try:
-        ProjectService.unset_project_as_featured(project_id)
-        return {"Success": True}, 200
+        await ProjectService.unset_project_as_featured(project_id, db)
+        return JSONResponse(content={"Success": True}, status_code=200)
     except ValueError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
-# class ProjectsActionsSetInterestsAPI():
-# @token_auth.login_required
 @router.post("/{project_id}/actions/set-interests/")
-@requires("authenticated")
-async def post(request: Request, project_id):
+async def post(
+    request: Request,
+    project_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+    data: dict = Body(...),
+):
     """
     Creates a relationship between project and interests
     ---
@@ -324,28 +343,32 @@ async def post(request: Request, project_id):
             description: Internal Server Error
     """
     try:
-        authenticated_user_id = request.user.display_name if request.user else None
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            authenticated_user_id, project_id
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            user.id, project_id, db
         ):
             raise ValueError()
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
-    data = request.get_json()
-    project_interests = InterestService.create_or_update_project_interests(
-        project_id, data["interests"]
+    project_interests = await InterestService.create_or_update_project_interests(
+        project_id, data["interests"], db
     )
-    return project_interests.model_dump(by_alias=True), 200
+    return project_interests.model_dump(by_alias=True)
 
 
 @router.post("/actions/intersecting-tiles/")
-@requires("authenticated")
-@tm.pm_only()
-async def post(request: Request):
+# @tm.pm_only()
+async def post(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    grid_dto: GridDTO = Body(...),
+):
     """
     Gets the tiles intersecting the aoi
     ---
@@ -400,26 +423,30 @@ async def post(request: Request):
             description: Internal Server Error
     """
     try:
-        grid_dto = GridDTO(request.json())
-        grid_dto.validate()
-    except Exception as e:
-        logger.error(f"error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
-
-    try:
         grid = GridService.trim_grid_to_aoi(grid_dto)
-        return grid, 200
+        return JSONResponse(content=grid, status_code=200)
     except InvalidGeoJson as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=400,
+        )
     except TopologicalError:
-        return {
-            "error": "Invalid geometry. Polygon is self intersecting",
-            "SubCode": "SelfIntersectingAOI",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": "Invalid geometry. Polygon is self intersecting",
+                "SubCode": "SelfIntersectingAOI",
+            },
+            status_code=400,
+        )
     except GEOSException as wrapped:
         if isinstance(wrapped.args[0], str) and "Self-intersection" in wrapped.args[0]:
-            return {
-                "error": "Invalid geometry. Polygon is self intersecting",
-                "SubCode": "SelfIntersectingAOI",
-            }, 400
-        return {"error": str(wrapped), "SubCode": "InternalServerError"}
+            return JSONResponse(
+                content={
+                    "error": "Invalid geometry. Polygon is self intersecting",
+                    "SubCode": "SelfIntersectingAOI",
+                },
+                status_code=400,
+            )
+        return JSONResponse(
+            content={"error": str(wrapped), "SubCode": "InternalServerError"}
+        )

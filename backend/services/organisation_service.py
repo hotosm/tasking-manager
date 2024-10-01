@@ -357,7 +357,7 @@ class OrganisationService:
 
     @staticmethod
     async def get_organisations_managed_by_user_as_dto(
-        user_id: int, db
+        user_id: int, db: Database
     ) -> ListOrganisationsDTO:
         orgs = await OrganisationService.get_organisations_managed_by_user(user_id, db)
         orgs_dto = ListOrganisationsDTO()
