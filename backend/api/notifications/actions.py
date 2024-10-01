@@ -1,10 +1,10 @@
-from backend.services.messaging.message_service import MessageService
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from backend.services.users.authentication_service import login_required
-from backend.models.dtos.user_dto import AuthUserDTO
 from databases import Database
-from backend.db import get_db
+from fastapi import APIRouter, Depends, Request
+
+from backend.db import get_db, get_session
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.services.messaging.message_service import MessageService
+from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
     prefix="/notifications",

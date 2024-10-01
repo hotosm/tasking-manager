@@ -8,7 +8,6 @@ from enum import Enum
 # # from flask import current_app
 from sqlalchemy import desc, func, distinct
 from sqlalchemy.orm.exc import MultipleResultsFound
-from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
 from typing import Any, Dict, List
 
@@ -39,8 +38,6 @@ from backend.models.postgis.user import User
 from backend.models.postgis.utils import (
     InvalidData,
     InvalidGeoJson,
-    ST_GeomFromGeoJSON,
-    ST_SetSRID,
     timestamp,
     parse_duration,
 )
@@ -619,13 +616,12 @@ class TaskHistory(Base):
         project_id: int, task_id: int, allowed_task_actions: list, db: Database
     ):
         """Gets the most recent task history record having provided TaskAction"""
-
         query = """
             SELECT id, action, action_date
             FROM task_history
             WHERE project_id = :project_id
             AND task_id = :task_id
-            AND action IN (:allowed_actions)
+            AND action = ANY(:allowed_actions)
             ORDER BY action_date DESC
             LIMIT 1
         """
@@ -743,18 +739,18 @@ class Task(Base):
     @classmethod
     def from_geojson_feature(cls, task_id, task_feature):
         """
-        Constructs and validates a task from a GeoJson feature object
-        :param task_id: Unique ID for the task
-        :param task_feature: A geojson feature object
+        Constructs and validates a task from a GeoJson feature object.
+        :param task_id: Unique ID for the task.
+        :param task_feature: A geojson feature object.
         :raises InvalidGeoJson, InvalidData
         """
         if type(task_feature) is not geojson.Feature:
-            raise InvalidGeoJson("MustBeFeature- Invalid GeoJson should be a feature")
+            raise InvalidGeoJson("MustBeFeature - Invalid GeoJson should be a feature")
 
         task_geometry = task_feature.geometry
 
         if type(task_geometry) is not geojson.MultiPolygon:
-            raise InvalidGeoJson("MustBeMultiPloygon- Geometry must be a MultiPolygon")
+            raise InvalidGeoJson("MustBeMultiPolygon - Geometry must be a MultiPolygon")
 
         if not task_geometry.is_valid:
             raise InvalidGeoJson(
@@ -776,11 +772,7 @@ class Task(Base):
             task.extra_properties = json.dumps(
                 task_feature.properties["extra_properties"]
             )
-
         task.id = task_id
-        task_geojson = geojson.dumps(task_geometry)
-        task.geometry = ST_SetSRID(ST_GeomFromGeoJSON(task_geojson), 4326)
-
         return task
 
     @staticmethod
@@ -1053,7 +1045,7 @@ class Task(Base):
         await db.execute(query=query, values=values)
 
     @staticmethod
-    async def reset_task(task_id: int, user_id: int, db: Database):
+    async def reset_task(task_id: int, project_id: int, user_id: int, db: Database):
         """Resets the task with the provided task_id and updates its status"""
 
         # Fetch the auto-unlock duration
@@ -1063,15 +1055,17 @@ class Task(Base):
         query = """
             SELECT task_status, mapped_by, validated_by, locked_by
             FROM tasks
-            WHERE id = :task_id
+            WHERE id = :task_id AND project_id = :project_id
         """
-        task = await db.fetch_one(query=query, values={"task_id": task_id})
+        task = await db.fetch_one(
+            query=query, values={"task_id": task_id, "project_id": project_id}
+        )
 
         if TaskStatus(task["task_status"]) in [
             TaskStatus.LOCKED_FOR_MAPPING,
             TaskStatus.LOCKED_FOR_VALIDATION,
         ]:
-            await Task.record_auto_unlock(task_id, lock_duration, db)
+            await Task.record_auto_unlock(task_id, project_id, lock_duration, db)
 
         update_task_query = """
             UPDATE tasks
@@ -1514,17 +1508,21 @@ class Task(Base):
         return mapped_tasks_dto
 
     @staticmethod
-    def get_max_task_id_for_project(project_id: int):
-        """Gets the nights task id currently in use on a project"""
-        result = (
-            session.query(func.max(Task.id))
-            .filter(Task.project_id == project_id)
-            .group_by(Task.project_id)
-        )
-        if result.count() == 0:
+    async def get_max_task_id_for_project(project_id: int, db: Database):
+        """
+        Gets the highest task id currently in use on a project using raw SQL with async db.
+        """
+        query = """
+            SELECT MAX(id)
+            FROM tasks
+            WHERE project_id = :project_id
+            GROUP BY project_id
+        """
+
+        result = await db.fetch_val(query, values={"project_id": project_id})
+        if not result:
             raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
-        for row in result:
-            return row[0]
+        return result
 
     @staticmethod
     async def as_dto(
@@ -1771,17 +1769,34 @@ class Task(Base):
             for row in rows
         ]
 
-    def copy_task_history(self) -> list:
-        copies = []
-        for entry in self.task_history:
-            session.expunge(entry)
-            make_transient(entry)
-            entry.id = None
-            entry.task_id = None
-            session.add(entry)
-            copies.append(entry)
+    @staticmethod
+    async def copy_task_history(
+        original_task_id: int, new_task_id: int, project_id: int, db: Database
+    ) -> None:
+        """
+        Copy all task history records from the original task to a new task.
 
-        return copies
+        :param original_task_id: ID of the task whose history is to be copied.
+        :param new_task_id: ID of the new task to which the history will be copied.
+        :param project_id: ID of the project associated with the task history.
+        :param db: Database connection instance.
+        """
+        # Insert the task history with the new_task_id and provided project_id
+        insert_query = """
+            INSERT INTO task_history (project_id, task_id, action, action_text, action_date, user_id)
+            SELECT :project_id, :new_task_id, action, action_text, action_date, user_id
+            FROM task_history
+            WHERE task_id = :original_task_id AND project_id = :project_id
+        """
+
+        await db.execute(
+            insert_query,
+            values={
+                "project_id": project_id,
+                "new_task_id": new_task_id,
+                "original_task_id": original_task_id,
+            },
+        )
 
     async def get_locked_tasks_for_user(
         user_id: int, db: Database

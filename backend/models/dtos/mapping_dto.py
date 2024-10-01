@@ -120,10 +120,16 @@ class TaskCommentDTO(BaseModel):
     project_id: int = Field(..., alias="projectId")
     preferred_locale: str = Field("en")
 
+    class Config:
+        populate_by_name = True
+
 
 class ExtendLockTimeDTO(BaseModel):
     """DTO used to extend expiry time of tasks"""
 
-    project_id: int = Field(..., alias="projectId")
-    task_ids: List[int] = Field(..., alias="taskIds")
-    user_id: int = Field(...)
+    project_id: int
+    task_ids: List[int] = Field(alias="taskIds")
+    user_id: int
+
+    class Config:
+        populate_by_name = True

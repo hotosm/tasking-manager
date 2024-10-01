@@ -203,6 +203,7 @@ class RevertUserTasksDTO(BaseModel):
     user_id: int
     action_by: int
     action: str
+    # TODO: Incorporate this validator.
     # action: ExtendedStringType = Field(
     #     validators=[is_valid_revert_status], converters=[str.upper]
     # )
