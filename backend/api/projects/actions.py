@@ -20,7 +20,7 @@ from backend.services.project_admin_service import (
     ProjectAdminServiceError,
 )
 from backend.services.project_service import ProjectService
-from backend.services.users.authentication_service import login_required, tm
+from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
     prefix="/projects",
