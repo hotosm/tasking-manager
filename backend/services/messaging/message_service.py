@@ -27,7 +27,6 @@ from backend.services.messaging.template_service import (
 )
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService, User
-from backend.services import project_service
 
 from databases import Database
 from backend.config import settings
@@ -81,7 +80,7 @@ class MessageService:
         """Sends mapper a notification after their task has been marked valid or invalid"""
         if validated_by == mapped_by:
             return  # No need to send a notification if you've verified your own task
-        project = await project_service.ProjectService.get_project_by_id(project_id, db)
+        project = await Project.get(project_id, db)
         project_name_query = """
             SELECT name
             FROM project_info
@@ -397,51 +396,50 @@ class MessageService:
             await MessageService._push_messages(messages, db)
 
     @staticmethod
-    def send_project_transfer_message(
+    async def send_project_transfer_message(
         project_id: int,
         transferred_to: str,
         transferred_by: str,
+        db: Database,
     ):
         """Will send a message to the manager of the organization after a project is transferred"""
-        app = (
-            create_app()
-        )  # Because message-all run on background thread it needs it's own app context
+        project = await Project.get(project_id, db)
+        project_name = project.get_project_title(project.default_locale)
 
-        with app.app_context():
-            project = Project.get(project_id)
-            project_name = project.get_project_title(project.default_locale)
+        message = Message()
+        message.message_type = MessageType.SYSTEM.value
+        message.subject = (
+            f"Project {project_name} #{project_id} was transferred to {transferred_to}"
+        )
+        message.message = (
+            f"Project {project_name} #{project_id} associated with your"
+            + f"organisation {project.organisation.name} was transferred to {transferred_to} by {transferred_by}."
+        )
+        values = {
+            "PROJECT_ORG_NAME": project.organisation.name,
+            "PROJECT_ORG_ID": project.organisation_id,
+            "PROJECT_NAME": project_name,
+            "PROJECT_ID": project_id,
+            "TRANSFERRED_TO": transferred_to,
+            "TRANSFERRED_BY": transferred_by,
+        }
+        html_template = get_template("project_transfer_alert_en.html", values)
 
-            message = Message()
-            message.message_type = MessageType.SYSTEM.value
-            message.subject = f"Project {project_name} #{project_id} was transferred to {transferred_to}"
-            message.message = (
-                f"Project {project_name} #{project_id} associated with your"
-                + f"organisation {project.organisation.name} was transferred to {transferred_to} by {transferred_by}."
-            )
-            values = {
-                "PROJECT_ORG_NAME": project.organisation.name,
-                "PROJECT_ORG_ID": project.organisation_id,
-                "PROJECT_NAME": project_name,
-                "PROJECT_ID": project_id,
-                "TRANSFERRED_TO": transferred_to,
-                "TRANSFERRED_BY": transferred_by,
-            }
-            html_template = get_template("project_transfer_alert_en.html", values)
-
-            managers = OrganisationService.get_organisation_by_id_as_dto(
-                project.organisation_id, User.get_by_username(transferred_by).id, False
-            ).managers
-            for manager in managers:
-                manager = UserService.get_user_by_username(manager.username)
-                message.to_user_id = manager.id
-                message.save()
-                if manager.email_address and manager.is_email_verified:
-                    SMTPService._send_message(
-                        manager.email_address,
-                        message.subject,
-                        html_template,
-                        message.message,
-                    )
+        managers = OrganisationService.get_organisation_by_id_as_dto(
+            project.organisation_id, User.get_by_username(transferred_by).id, False, db
+        )
+        managers = managers.managers
+        for manager in managers:
+            manager = UserService.get_user_by_username(manager.username)
+            message.to_user_id = manager.id
+            message.save(db)
+            if manager.email_address and manager.is_email_verified:
+                SMTPService._send_message(
+                    manager.email_address,
+                    message.subject,
+                    html_template,
+                    message.message,
+                )
 
     @staticmethod
     def get_user_link(username: str):

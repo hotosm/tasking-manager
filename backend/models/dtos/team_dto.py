@@ -81,9 +81,9 @@ class TeamProjectDTO(BaseModel):
 
 
 class ProjectTeamDTO(BaseModel):
-    team_id: int = Field(serialization_alias="teamId", required=True)
-    team_name: str = Field(serialization_alias="name")
-    role: int = Field(required=True)
+    team_id: int = Field(None, serialization_alias="teamId")
+    team_name: str = Field(None, serialization_alias="name")
+    role: int = Field(None)
 
 
 class TeamDetailsDTO(BaseModel):
