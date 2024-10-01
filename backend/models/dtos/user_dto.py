@@ -93,10 +93,10 @@ class UserDTO(BaseModel):
 class UserCountryContributed(BaseModel):
     """DTO for country a user has contributed"""
 
-    name: str
-    mapped: int
-    validated: int
-    total: int
+    name: str = Field(None)
+    mapped: int = Field(None, alias="mapped")
+    validated: int = Field(None, alias="validated")
+    total: int = Field(None)
 
 
 class UserCountriesContributed(BaseModel):
@@ -106,8 +106,8 @@ class UserCountriesContributed(BaseModel):
         super().__init__()
         self.countries_contributed = []
 
-    countries_contributed: List[UserCountryContributed] = Field(alias="countries")
-    total: int
+    countries_contributed: List[UserCountryContributed] = Field([], alias="countries")
+    total: int = Field(None)
 
 
 class UserContributionDTO(BaseModel):
@@ -210,10 +210,10 @@ class ListedUser(BaseModel):
 class UserRegisterEmailDTO(BaseModel):
     """DTO containing data for user registration with email model"""
 
-    id: int = Field(serialize_when_none=False)
+    id: int = Field(None, serialize_when_none=False)
     email: str
     success: bool = False
-    details: str
+    details: str = None
 
 
 class ProjectParticipantUser(BaseModel):
@@ -256,8 +256,8 @@ class UserTaskDTOs(BaseModel):
         super().__init__()
         self.user_tasks = []
 
-    user_tasks: List[TaskDTO] = Field(alias="tasks")
-    pagination: Pagination
+    user_tasks: List[TaskDTO] = Field([], alias="tasks")
+    pagination: Pagination = Field(None, alias="pagination")
 
 
 class AuthUserDTO(BaseModel):
