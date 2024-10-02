@@ -1,24 +1,22 @@
 import io
 from distutils.util import strtobool
 
-from backend.services.mapping_service import MappingService
-from backend.models.dtos.grid_dto import GridDTO
+from databases import Database
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import Response, StreamingResponse
+from loguru import logger
+from starlette.authentication import requires
 
+from backend.db import get_db
+from backend.models.dtos.grid_dto import GridDTO
+from backend.models.postgis.statuses import UserRole
+from backend.models.postgis.utils import InvalidGeoJson
+from backend.services.grid.grid_service import GridService
+from backend.services.mapping_service import MappingService
+from backend.services.project_service import ProjectService, ProjectServiceError
 from backend.services.users.authentication_service import tm
 from backend.services.users.user_service import UserService
 from backend.services.validator_service import ValidatorService
-
-from backend.services.project_service import ProjectService, ProjectServiceError
-from backend.services.grid.grid_service import GridService
-from backend.models.postgis.statuses import UserRole
-from backend.models.postgis.utils import InvalidGeoJson
-from fastapi import APIRouter, Depends, Request
-from starlette.authentication import requires
-from loguru import logger
-
-from backend.db import get_db
-from databases import Database
-
 
 router = APIRouter(
     prefix="/projects",
@@ -207,7 +205,7 @@ async def delete(request: Request, project_id):
 
 
 @router.get("/{project_id}/tasks/queries/xml/")
-async def get(request: Request, project_id: int):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get all tasks for a project as OSM XML
     ---
@@ -242,30 +240,29 @@ async def get(request: Request, project_id: int):
         500:
             description: Internal Server Error
     """
-    tasks = (
-        request.query_params.get("tasks") if request.query_params.get("tasks") else None
-    )
+    tasks = request.query_params.get("tasks")
     as_file = (
         strtobool(request.query_params.get("as_file"))
         if request.query_params.get("as_file")
         else False
     )
 
-    xml = MappingService.generate_osm_xml(project_id, tasks)
+    xml = await MappingService.generate_osm_xml(project_id, tasks, db)
 
     if as_file:
-        return send_file(
+        return StreamingResponse(
             io.BytesIO(xml),
-            mimetype="text.xml",
-            as_attachment=True,
-            download_name=f"HOT-project-{project_id}.osm",
+            media_type="text/xml",
+            headers={
+                "Content-Disposition": f"attachment; filename=HOT-project-{project_id}.osm"
+            },
         )
 
-    return Response(xml, mimetype="text/xml", status=200)
+    return Response(content=xml, media_type="text/xml", status_code=200)
 
 
 @router.get("/{project_id}/tasks/queries/gpx/")
-async def get(request: Request, project_id):
+async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get all tasks for a project as GPX
     ---
@@ -300,7 +297,6 @@ async def get(request: Request, project_id):
         500:
             description: Internal Server Error
     """
-    logger.debug("GPX Called")
     tasks = request.query_params.get("tasks")
     as_file = (
         strtobool(request.query_params.get("as_file"))
@@ -308,17 +304,18 @@ async def get(request: Request, project_id):
         else False
     )
 
-    xml = MappingService.generate_gpx(project_id, tasks)
+    xml = await MappingService.generate_gpx(project_id, tasks, db)
 
     if as_file:
-        return send_file(
+        return StreamingResponse(
             io.BytesIO(xml),
-            mimetype="text.xml",
-            as_attachment=True,
-            download_name=f"HOT-project-{project_id}.gpx",
+            media_type="text/xml",
+            headers={
+                "Content-Disposition": f"attachment; filename=HOT-project-{project_id}.gpx"
+            },
         )
 
-    return Response(xml, mimetype="text/xml", status=200)
+    return Response(content=xml, media_type="text/xml", status_code=200)
 
 
 @router.put("/{project_id}/tasks/queries/aoi/")

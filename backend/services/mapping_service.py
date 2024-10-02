@@ -2,8 +2,8 @@ import datetime
 import xml.etree.ElementTree as ET
 
 # from flask import current_app
-from geoalchemy2 import shape
-
+from geoalchemy2 import WKBElement
+from geoalchemy2.shape import to_shape
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import (
     ExtendLockTimeDTO,
@@ -276,7 +276,9 @@ class MappingService:
         return task.as_dto_with_instructions(task_comment.preferred_locale)
 
     @staticmethod
-    def generate_gpx(project_id: int, task_ids_str: str, timestamp=None):
+    async def generate_gpx(
+        project_id: int, task_ids_str: str, db: Database, timestamp=None
+    ):
         """
         Creates a GPX file for supplied tasks.  Timestamp is for unit testing only.
         You can use the following URL to test locally:
@@ -316,18 +318,22 @@ class MappingService:
         # Construct trkseg elements
         if task_ids_str is not None:
             task_ids = list(map(int, task_ids_str.split(",")))
-            tasks = Task.get_tasks(project_id, task_ids)
+            tasks = await Task.get_tasks(project_id, task_ids, db)
             if not tasks or len(tasks) == 0:
                 raise NotFound(
                     sub_code="TASKS_NOT_FOUND", project_id=project_id, task_ids=task_ids
                 )
         else:
-            tasks = Task.get_all_tasks(project_id)
+            tasks = await Task.get_all_tasks(project_id, db)
             if not tasks or len(tasks) == 0:
                 raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
 
         for task in tasks:
-            task_geom = shape.to_shape(task.geometry)
+            # task_geom = shape.to_shape(task.geometry)
+            if isinstance(task["geometry"], (bytes, str)):
+                task_geom = to_shape(WKBElement(task["geometry"], srid=4326))
+            else:
+                raise ValueError("Invalid geometry format")
             for poly in task_geom.geoms:
                 trkseg = ET.SubElement(trk, "trkseg")
                 for point in poly.exterior.coords:
@@ -336,8 +342,6 @@ class MappingService:
                         "trkpt",
                         attrib=dict(lon=str(point[0]), lat=str(point[1])),
                     )
-
-                    # Append wpt elements to end of doc
                     wpt = ET.Element(
                         "wpt", attrib=dict(lon=str(point[0]), lat=str(point[1]))
                     )
@@ -347,7 +351,7 @@ class MappingService:
         return xml_gpx
 
     @staticmethod
-    def generate_osm_xml(project_id: int, task_ids_str: str) -> str:
+    async def generate_osm_xml(project_id: int, task_ids_str: str, db: Database) -> str:
         """Generate xml response suitable for loading into JOSM.  A sample output file is in
         /backend/helpers/testfiles/osm-sample.xml"""
         # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
@@ -355,22 +359,24 @@ class MappingService:
             "osm",
             attrib=dict(version="0.6", upload="never", creator="HOT Tasking Manager"),
         )
-
         if task_ids_str:
             task_ids = list(map(int, task_ids_str.split(",")))
-            tasks = Task.get_tasks(project_id, task_ids)
+            tasks = await Task.get_tasks(project_id, task_ids, db)
             if not tasks or len(tasks) == 0:
                 raise NotFound(
                     sub_code="TASKS_NOT_FOUND", project_id=project_id, task_ids=task_ids
                 )
         else:
-            tasks = Task.get_all_tasks(project_id)
+            tasks = await Task.get_all_tasks(project_id, db)
             if not tasks or len(tasks) == 0:
                 raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id)
 
         fake_id = -1  # We use fake-ids to ensure XML will not be validated by OSM
         for task in tasks:
-            task_geom = shape.to_shape(task.geometry)
+            if isinstance(task["geometry"], (bytes, str)):
+                task_geom = to_shape(WKBElement(task["geometry"], srid=4326))
+            else:
+                raise ValueError("Invalid geometry format")
             way = ET.SubElement(
                 root,
                 "way",
