@@ -114,12 +114,12 @@ class Settings(BaseSettings):
     TASK_AUTOUNLOCK_AFTER: str = os.getenv("TM_TASK_AUTOUNLOCK_AFTER", "2h")
 
     # Configuration for sending emails
-    MAIL_SERVER: Optional[str] = os.getenv("TM_SMTP_HOST", None)
+    MAIL_SERVER: Optional[str] = os.getenv("TM_SMTP_HOST", "")
     MAIL_PORT: str = os.getenv("TM_SMTP_PORT", "587")
     MAIL_USE_TLS: bool = bool(int(os.getenv("TM_SMTP_USE_TLS", True)))
     MAIL_USE_SSL: bool = bool(int(os.getenv("TM_SMTP_USE_SSL", False)))
-    MAIL_USERNAME: Optional[str] = os.getenv("TM_SMTP_USER", None)
-    MAIL_PASSWORD: Optional[str] = os.getenv("TM_SMTP_PASSWORD", None)
+    MAIL_USERNAME: Optional[str] = os.getenv("TM_SMTP_USER", "")
+    MAIL_PASSWORD: Optional[str] = os.getenv("TM_SMTP_PASSWORD", "")
     MAIL_DEFAULT_SENDER: str = os.getenv(
         "TM_EMAIL_FROM_ADDRESS", "noreply@hotosmmail.org"
     )
@@ -132,12 +132,12 @@ class Settings(BaseSettings):
         """
 
         _params: dict = json.loads(os.getenv("SMTP_CREDENTIALS", None))
-        MAIL_SERVER: str = _params.get("SMTP_HOST", None)
+        MAIL_SERVER: str = _params.get("SMTP_HOST", "")
         MAIL_PORT: str = _params.get("SMTP_PORT", "587")
         MAIL_USE_TLS: bool = bool(int(_params.get("SMTP_USE_TLS", True)))
         MAIL_USE_SSL: bool = bool(int(_params.get("SMTP_USE_SSL", False)))
-        MAIL_USERNAME: str = _params.get("SMTP_USER", None)
-        MAIL_PASSWORD: str = _params.get("SMTP_PASSWORD", None)
+        MAIL_USERNAME: str = _params.get("SMTP_USER", "")
+        MAIL_PASSWORD: str = _params.get("SMTP_PASSWORD", "")
 
     # If disabled project update emails will not be sent.
     SEND_PROJECT_EMAIL_UPDATES: bool = bool(
@@ -257,7 +257,7 @@ class Settings(BaseSettings):
         IMAGE_UPLOAD_API_URL: str = _params.get("IMAGE_UPLOAD_API_URL", None)
 
     # Sentry backend DSN
-    SENTRY_BACKEND_DSN: str = os.getenv("TM_SENTRY_BACKEND_DSN", None)
+    SENTRY_BACKEND_DSN: Optional[str] = os.getenv("TM_SENTRY_BACKEND_DSN", None)
 
     # Ohsome Stats Token
     OHSOME_STATS_TOKEN: str = os.getenv("OHSOME_STATS_TOKEN", "")
