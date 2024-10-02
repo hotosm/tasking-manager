@@ -17,7 +17,6 @@ import { TimeSpentContributingByDay } from '../components/partnerMapswipeStats/t
 import { ProjectTypeAreaStats } from '../components/partnerMapswipeStats/projectTypeAreaStats';
 import { SwipesByProjectType } from '../components/partnerMapswipeStats/swipesByProjectType';
 import { SwipesByOrganization } from '../components/partnerMapswipeStats/swipesByOrganization';
-import { StatsCardWithFooter } from '../components/statsCard';
 import messages from './messages';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import './partnersMapswipeStats.css';
@@ -140,18 +139,19 @@ export const PartnersMapswipeStats = () => {
               />
             </div>
 
-            <div className="mt4 flex items-center justify-between">
-              <StatsCardWithFooter
-                description={<FormattedMessage {...messages.swipes} />}
-                value={getSwipes()}
-                style={{ width: '48.5%' }}
-              />
-              <StatsCardWithFooter
-                description={<FormattedMessage {...messages.timeSpentContributing} />}
-                value={getTimeSpentContributing()}
-                className="w-100"
-                style={{ width: '48.5%' }}
-              />
+            <div className="mt4 flex items-center justify-between f1 barlow-condensed" style={{ gap: '1.6rem' }}>
+              <div className="pa4 shadow-6 bg-white" style={{ flexBasis: '32.5%' }}>
+                <span className="red fw6">{getSwipes()}</span>
+                <span className="silver fw2 ml3">
+                  <FormattedMessage {...messages.swipes} />
+                </span>
+              </div>
+              <div className="pa4 shadow-6 bg-white" style={{ flexBasis: '66.5%' }}>
+                <span className="red fw6">{getTimeSpentContributing()}</span>
+                <span className="silver fw2 ml3">
+                  <FormattedMessage {...messages.timeSpentContributing} />
+                </span>
+              </div>
             </div>
 
             <div className="mt3 flex items-center justify-between">
