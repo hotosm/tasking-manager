@@ -818,19 +818,48 @@ class Task(Base):
         )
         return task is not None
 
-    @staticmethod
-    def get_tasks(project_id: int, task_ids: List[int]):
-        """Get all tasks that match supplied list"""
-        return (
-            session.query(Task)
-            .filter(Task.project_id == project_id, Task.id.in_(task_ids))
-            .all()
-        )
+    # @staticmethod
+    # def get_tasks(project_id: int, task_ids: List[int]):
+    #     """Get all tasks that match supplied list"""
+    #     return (
+    #         session.query(Task)
+    #         .filter(Task.project_id == project_id, Task.id.in_(task_ids))
+    #         .all()
+    #     )
 
     @staticmethod
-    def get_all_tasks(project_id: int):
-        """Get all tasks for a given project"""
-        return session.query(Task).filter(Task.project_id == project_id).all()
+    async def get_tasks(project_id: int, task_ids: List[int], db: Database):
+        """
+        Get all tasks that match the supplied list of task_ids for a project.
+        """
+        query = """
+            SELECT id, geometry
+            FROM tasks
+            WHERE project_id = :project_id
+            AND id = ANY(:task_ids)
+        """
+        values = {"project_id": project_id, "task_ids": task_ids}
+        rows = await db.fetch_all(query=query, values=values)
+        return rows
+
+    # @staticmethod
+    # def get_all_tasks(project_id: int):
+    #     """Get all tasks for a given project"""
+    #     return session.query(Task).filter(Task.project_id == project_id).all()
+
+    @staticmethod
+    async def get_all_tasks(project_id: int, db: Database):
+        """
+        Get all tasks for a given project.
+        """
+        query = """
+            SELECT id, geometry
+            FROM tasks
+            WHERE project_id = :project_id
+        """
+        values = {"project_id": project_id}
+        rows = await db.fetch_all(query=query, values=values)
+        return rows
 
     @staticmethod
     def get_tasks_by_status(project_id: int, status: str):
