@@ -91,3 +91,4 @@ export { EmptySetIcon } from './emptySet';
 export { PeopleIcon } from './people';
 export { ChecksGridIcon } from './checksGrid';
 export { ColumnsGapIcon } from './columnsGap';
+export { FullscreenIcon } from './fullscreen';
