@@ -90,3 +90,4 @@ export { SwipeIcon } from './swipe';
 export { EmptySetIcon } from './emptySet';
 export { PeopleIcon } from './people';
 export { ChecksGridIcon } from './checksGrid';
+export { ColumnsGapIcon } from './columnsGap';
