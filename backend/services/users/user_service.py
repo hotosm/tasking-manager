@@ -1,3 +1,5 @@
+from typing import Optional
+
 from cachetools import TTLCache, cached
 from flask import current_app
 import datetime
@@ -27,14 +29,14 @@ from backend.models.postgis.user import User, UserRole, MappingLevel, UserEmail
 from backend.models.postgis.task import TaskHistory, TaskAction, Task
 from backend.models.dtos.user_dto import UserTaskDTOs
 from backend.models.dtos.stats_dto import Pagination
+from backend.models.postgis.project_chat import ProjectChat
 from backend.models.postgis.statuses import TaskStatus, ProjectStatus
-from backend.services.users.osm_service import OSMService, OSMServiceError
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
     get_txt_template,
     template_var_replacing,
 )
-
+from backend.services.users.osm_service import OSMService, OSMServiceError
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -189,6 +191,56 @@ class UserService:
             request_username = UserService.get_user_by_id(request_user).username
             return user.as_dto(request_username)
         return user.as_dto()
+
+    @staticmethod
+    def delete_user_by_id(user_id: int, request_user_id: int) -> Optional[UserDTO]:
+        if user_id == request_user_id or UserService.is_user_an_admin(request_user_id):
+            user = User.get_by_id(user_id)
+            original_dto = UserService.get_user_dto_by_id(user_id, request_user_id)
+            user.accepted_licenses = []
+            user.city = None
+            user.country = None
+            user.email_address = None
+            user.facebook_id = None
+            user.gender = None
+            user.interests = []
+            user.irc_id = None
+            user.is_email_verified = False
+            user.is_expert = False
+            user.linkedin_id = None
+            user.name = None
+            user.picture_url = None
+            user.self_description_gender = None
+            user.skype_id = None
+            user.slack_id = None
+            user.twitter_id = None
+            # FIXME: Should we keep user_id since that will make conversations easier to follow?
+            # Keep in mind that OSM uses user_<int:user_id> on deleted accounts.
+            user.username = f"user_{user_id}"
+
+            # Remove permissions from admin users, keep role for blocked users.
+            if UserService.is_user_an_admin(user_id):
+                user.set_user_role(UserRole.MAPPER)
+            user.save()
+
+            # Remove messages that might contain user identifying information.
+            for message in ProjectChat.query.filter_by(user_id=user_id):
+                # TODO detect image links and try to delete them
+                message.message = f"[Deleted user_{user_id} message]"
+                db.session.commit()
+
+            # Drop application keys
+            from backend.models.postgis.application import Application
+
+            Application.delete_all_for_user(user_id)
+
+            # Delete all messages (AKA notifications) for the user
+            Message.delete_all_messages(
+                user_id, [message_type.value for message_type in MessageType]
+            )
+            # Leave interests, licenses, organizations, and tasks alone for now.
+            return original_dto
+        return None
 
     @staticmethod
     def get_interests_stats(user_id):

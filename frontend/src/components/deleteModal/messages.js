@@ -20,6 +20,10 @@ export default defineMessages({
     id: 'deleteModal.status.success.teams',
     defaultMessage: 'Team deleted successfully.',
   },
+  success_users: {
+    id: 'deleteModal.status.success.users',
+    defaultMessage: 'User deleted successfully.',
+  },
   success_organisations: {
     id: 'deleteModal.status.success.organisations',
     defaultMessage: 'Organisation deleted successfully.',
@@ -76,6 +80,10 @@ export default defineMessages({
     id: 'deleteModal.status.failure.teams',
     defaultMessage: 'An error occurred when trying to delete this team.',
   },
+  failure_users: {
+    id: 'deleteModal.status.failure.users',
+    defaultMessage: 'An error occurred when trying to delete this user.',
+  },
   failure_comments: {
     id: 'deleteModal.status.failure.comments',
     defaultMessage: 'An error occurred when trying to delete this comment.',
@@ -128,6 +136,10 @@ export default defineMessages({
   confirmDeleteTitle_teams: {
     id: 'deleteModal.title.teams',
     defaultMessage: 'Are you sure you want to delete this team?',
+  },
+  confirmDeleteTitle_users: {
+    id: 'deleteModal.title.users',
+    defaultMessage: "Are you sure you want to redact this user's information?",
   },
   confirmDeleteTitle_comments: {
     id: 'deleteModal.title.comments',
