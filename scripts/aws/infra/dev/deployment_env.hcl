@@ -11,4 +11,12 @@ locals {
   team  = "hotosm"
   creator = "HOTOSM"
   owner = "HOTOSM"
+  
+  default_tags = {
+    project        = "tasking-manager"
+    maintainer     = "dev@hotosm.org"
+    documentation  = "null"
+    cost_center    = null
+    IaC_Management = "Terraform"
+  }
 }

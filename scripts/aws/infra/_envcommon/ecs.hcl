@@ -27,11 +27,13 @@ locals {
   environment = local.environment_vars.locals.environment
   application = local.environment_vars.locals.application
   team = local.environment_vars.locals.team
-  
-  
+  aws_region = local.environment_vars.locals.aws_region
+  default_tags = local.environment_vars.locals.default_tags
+
+
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
-  base_source_url = "file:///app/modules/terraform-aws-alb"
+  base_source_url = "file:///app/modules/terraform-aws-ecs"
   }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -40,11 +42,3 @@ locals {
 # environments.
 # ---------------------------------------------------------------------------------------------------------------------
 # Defaults,  overridden by env.hcl
-
-inputs = {
-  app_port            = "5000" #TODOTM
-  acm_tls_cert_backend_arn = "arn:aws:acm:us-east-2:685797548389:certificate/810d8829-5e61-44f6-a030-f06eb5b66ae6" #TODOTM
-  health_check_path   = "/api/v2/system/heartbeat/" #TODOTM
-  alb_name              = format("%s-%s-%s-%s", local.application, local.team, local.environment, "alb")
-  target_group_name     = format("%s-%s-%s-%s", local.application, local.team, local.environment, "tg")
-}
