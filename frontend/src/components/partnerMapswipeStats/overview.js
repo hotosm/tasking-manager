@@ -23,16 +23,31 @@ const OverviewPlaceholder = () => (
   </div>
 );
 
-export const formatSecondsToTwoUnits = (seconds) => {
+export const formatSecondsToTwoUnits = (seconds, shortFormat = false) => {
   const duration = intervalToDuration({ start: 0, end: seconds * 1000 });
   const units = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
+  const shortUnitsMapping = {
+    years: 'yrs',
+    months: 'mos',
+    weeks: 'wks',
+    days: 'ds',
+    hours: 'hrs',
+    minutes: 'mins',
+    seconds: 'secs',
+  };
 
   // Filter units that have a value greater than 0
   const nonZeroUnits = units.filter((unit) => duration[unit] > 0).slice(0, 2);
 
-  return nonZeroUnits
-    .map((unit) => `${duration[unit]} ${duration[unit] === 1 ? unit.slice(0, -1) : unit}`)
-    .join(' ');
+  const getUnitString = (unit) => {
+    if (duration[unit] === 1) {
+      return shortFormat ? shortUnitsMapping[unit].slice(0, -1) : unit.slice(0, -1);
+    } else {
+      return shortFormat ? shortUnitsMapping[unit] : unit;
+    }
+  };
+
+  return nonZeroUnits.map((unit) => `${duration[unit]} ${getUnitString(unit)}`).join(' ');
 };
 
 export const getShortNumber = (value) => {
@@ -43,7 +58,8 @@ export const getShortNumber = (value) => {
   ) : (
     <span>
       <FormattedNumber value={Number(shortNumberValue.substr(0, shortNumberValue.length - 1))} />
-      {shortNumberValue.substr(-1)}
+      &nbsp;
+      <span className="fw1">{shortNumberValue.substr(-1)}</span>
     </span>
   );
 };
@@ -115,7 +131,7 @@ export const Overview = () => {
 
             {data?.totalRecentcontributionTime ? (
               <span className="blue-grey f6 fw4">
-                <b>{formatSecondsToTwoUnits(data.totalRecentcontributionTime)}</b>{' '}
+                <b>{formatSecondsToTwoUnits(data.totalRecentcontributionTime, true)}</b>{' '}
                 <FormattedMessage {...messages.recentTotalTimeSpentText} />
               </span>
             ) : (
