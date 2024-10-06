@@ -10,7 +10,7 @@ import { PeopleIcon, SwipeIcon, ClockIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 const iconClass = 'w-100 red';
-const iconStyle = { height: '55px' };
+const iconStyle = { height: '70px' };
 
 const OverviewPlaceholder = () => (
   <div
