@@ -12,7 +12,7 @@ resource "aws_secretsmanager_secret" "tm_secrets" {
     each.key
   ])
 
-  description = "Container secret for the ${lookup(var.project_meta, "name")} project (${each.key})"
+  description = "Container secret for the ${lookup(var.project_meta, "name")} ${var.deployment_environment} instance"
 }
 
 # Define secret versions
@@ -22,6 +22,6 @@ resource "aws_secretsmanager_secret_version" "tm_secret_version" {
   }
 
   secret_id     = aws_secretsmanager_secret.tm_secrets[each.key].id
-  secret_string = each.value.valueFrom  # Accessing valueFrom from the object
+  secret_string = each.value.valueFrom 
 }
 
