@@ -21,7 +21,7 @@ include "envcommon" {
 # Configure the version of the module to use in this environment. This allows you to promote new versions one
 # environment at a time (e.g., qa -> stage -> prod).
 terraform {
-  source = "${include.envcommon.locals.base_source_url}"
+  source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
 }
 
 locals {
@@ -38,7 +38,7 @@ locals {
 
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
-  base_source_url = "file:///app/modules/terraform-aws-ecs"
+  base_source_url = "git::https://github.com/hotosm/terraform-aws-ecs/"
   }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -57,28 +57,20 @@ dependency "rds" {
   config_path = "../../non-purgeable/rds"
 }
 
-dependency "iam" {
-  config_path = "../../non-purgeable/iam"
-}
-
-dependency "secrets" {
-  config_path = "../../non-purgeable/secrets"
+dependency "extras" {
+  config_path = "../../non-purgeable/extras"
 }
 
 # Add in any new inputs that you want to overide.
 
 inputs = {
 
-  service_name = format("%s-%s-%s-%s", local.application, local.team, local.environment, "backend")
   aws_vpc_id   = dependency.vpc.outputs.vpc_id
 
   scaling_target_values = {
     container_min_count = 1
-    container_max_count = 1
+    container_max_count = 2
   }
-
-  // ecs_cluster_name = aws_ecs_cluster.main.name
-  // ecs_cluster_arn  = aws_ecs_cluster.main.arn
 
   load_balancer_settings = {
     enabled                 = true
@@ -87,16 +79,27 @@ inputs = {
     arn_suffix              = dependency.alb.outputs.load_balancer_arn_suffix
     scaling_request_count   = 200
   }
-  task_role_arn = dependency.iam.outputs.ecs_task_role_arn
+
+  task_role_arn = dependency.extras.outputs.ecs_task_role_arn
 
   service_security_groups = [
     dependency.alb.outputs.load_balancer_app_security_group
   ]
-  container_secrets = dependency.secrets.outputs.container_secrets_key_arn
 
-  container_envvars = {
-    TM_APP_BASE_URL              = "https://tm-ecs-frontend.naxa.com.np"
-    TM_APP_API_URL               = "https://tm-ecs.naxa.com.np/api"
+  # Merge secrets with: key:ValueFrom together
+  container_secrets = concat(dependency.extras.outputs.container_secrets, 
+                              dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
+
+  # Merge non-sensetive together 
+  container_envvars = merge(
+    dependency.rds.outputs.database_config_as_ecs_inputs,
+    {
+    TM_SMTP_HOST                 = "smtp.gmail.com"
+    TM_SMTP_PORT                 = "587"
+    TM_SMTP_USE_TLS              = "0"
+    TM_SMTP_USE_SSL              = "1"
+    TM_APP_BASE_URL              = "https://tmtf.naxa.com.np"
+    TM_APP_API_URL               = "https://tmtf.naxa.com.np/api"
     TM_APP_API_VERSION           = "v2"
     TM_ORG_NAME                  = "Humanitarian OpenStreetMap Team"
     TM_ORG_CODE                  = "HOT"
@@ -112,27 +115,14 @@ inputs = {
     OSM_SERVER_API_URL           = "https://api.openstreetmap.org"
     OSM_NOMINATIM_SERVER_URL     = "https://nominatim.openstreetmap.org"
     OSM_REGISTER_URL             = "https://www.openstreetmap.org/user/new"
-    POSTGRES_DB                  = "tm_db_new"
-    POSTGRES_USER                = "tm"
-    POSTGRES_ENDPOINT            = "43.204.84.238"
-    POSTGRES_PORT                = "5432"
     POSTGRES_TEST_DB             = "tasking-manager-test"
     UNDERPASS_URL                = "https://underpass.hotosm.org"
-    TM_REDIRECT_URI              = "https://tm-ecs.naxa.com.np/authorized"
-    TM_SENTRY_BACKEND_DSN        = "https://5f5afa9becbcc183ef1e184eae604c38@o1189705.ingest.sentry.io/4505945825148928"
-    TM_SENTRY_FRONTEND_DSN       = "https://cb7fad0aabf90b255fe2ff32622dea49@o1189705.ingest.sentry.io/4505945830916096"
+    TM_REDIRECT_URI              = "https://tmtf.naxa.com.np/authorized"
     TM_SEND_PROJECT_EMAIL_UPDATES = "1"
     TM_DEFAULT_LOCALE            = "en"
-
     # Uncomment the following as needed
     # TM_EMAIL_FROM_ADDRESS      = "noreply@localhost"
     # TM_EMAIL_CONTACT_ADDRESS   = "sysadmin@localhost"
-    # TM_SMTP_HOST               = ""
-    # TM_SMTP_PORT               = "25"
-    # TM_SMTP_USER               = ""
-    # TM_SMTP_PASSWORD           = ""
-    # TM_SMTP_USE_TLS            = "0"
-    # TM_SMTP_USE_SSL            = "1"
     # TM_LOG_LEVEL               = "DEBUG"
     # TM_LOG_DIR                 = "logs"
     # TM_SUPPORTED_LANGUAGES_CODES = "en, es"
@@ -142,11 +132,10 @@ inputs = {
     # TM_MAPPER_LEVEL_ADVANCED   = "500"
     # TM_IMPORT_MAX_FILESIZE     = "1000000"
     # TM_MAX_AOI_AREA            = "5000"
-    # TM_SENTRY_BACKEND_DSN      = "https://foo.ingest.sentry.io/1234567"
-    # TM_SENTRY_FRONTEND_DSN     = "https://bar.ingest.sentry.io/8901234"
     # EXPORT_TOOL_S3_URL         = "https://foorawdataapi.s3.amazonaws.com"
     # ENABLE_EXPORT_TOOL         = "1"
-  }
+
+  })
 
   service_subnets = dependency.vpc.outputs.private_subnets
 
@@ -163,16 +152,4 @@ inputs = {
     service_name     = format("%s-%s-%s-%s", local.application, local.team, local.environment, "fastapi")
   }
 
-  log_configuration = {
-    logdriver = "awslogs"
-    options = {
-      awslogs-group         = format("%s-%s-%s-%s", local.application, local.team, local.environment, "fastapi")
-      awslogs-region        = local.aws_region
-      awslogs-stream-prefix = "api"
-    }
-  }
-
-  default_tags = local.default_tags
-  // efs_settings = False
-  
 }
