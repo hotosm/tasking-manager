@@ -21,7 +21,7 @@ locals {
   environment_vars = read_terragrunt_config(find_in_parent_folders("deployment_env.hcl"))
 
   # Extract out common variables for reuse
-  env = local.environment_vars.locals.environment
+  environment = local.environment_vars.locals.environment
 
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
@@ -44,10 +44,10 @@ inputs = {
     url        = "https://tasks.hotosm.org"
   }
 
-  deployment_environment = "dev"  # or any other value you need
+  deployment_environment = local.environment  # or any other value you need
 
   default_tags = {
     Owner       = "DevOps Team"
-    Environment = "dev"
+    Environment = local.environment
   }
 }

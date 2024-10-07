@@ -42,3 +42,7 @@ locals {
 # environments.
 # ---------------------------------------------------------------------------------------------------------------------
 # Defaults,  overridden by env.hcl
+
+inputs = {
+    deployment_environment = local.environment
+}
