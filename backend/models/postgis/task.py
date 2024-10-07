@@ -10,6 +10,7 @@ from sqlalchemy import desc, func, distinct
 from sqlalchemy.orm.exc import MultipleResultsFound
 from geoalchemy2 import Geometry
 from typing import Any, Dict, List
+from shapely.geometry import shape
 
 from sqlalchemy import (
     Column,
@@ -763,6 +764,7 @@ class Task(Base):
             task.y = task_feature.properties["y"]
             task.zoom = task_feature.properties["zoom"]
             task.is_square = task_feature.properties["isSquare"]
+            task.geometry = shape(task_feature.geometry).wkt
         except KeyError as e:
             raise InvalidData(
                 f"PropertyNotFound: Expected property not found: {str(e)}"

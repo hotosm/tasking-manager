@@ -193,6 +193,9 @@ class ProjectInfoDTO(BaseModel):
         default="", serialization_alias="perTaskInstructions"
     )
 
+    class Config:
+        populate_by_name = True
+
 
 class CustomEditorDTO(BaseModel):
     """DTO to define a custom editor"""
@@ -213,7 +216,7 @@ class ProjectDTO(BaseModel):
     tasks: Optional[dict] = None
     default_locale: str = Field(alias="defaultLocale")
     project_info: Optional[ProjectInfoDTO] = Field(None, alias="projectInfo")
-    project_info_locales: Optional[List["ProjectInfoDTO"]] = Field(
+    project_info_locales: Optional[List[ProjectInfoDTO]] = Field(
         None, alias="projectInfoLocales"
     )
     difficulty: str = Field(alias="difficulty")
