@@ -10,9 +10,7 @@
 # needs to deploy a different module version, it should redefine this block with a different ref to override the
 # deployed version.
 terraform {
-  # Sourcing from https://github.com/hotosm/TM-Extractor/
-  # source = "${local.base_source_url}?ref=v1.0.1"
-    source = "${local.base_source_url}"
+    source = "${local.base_source_url}?ref=tasking-manager-infra"
 
 }
 
@@ -31,7 +29,7 @@ locals {
   
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
-  base_source_url = "file:///app/modules/terraform-aws-alb"
+  base_source_url = "git::https://github.com/hotosm/terraform-aws-alb/"
   }
 
 # ---------------------------------------------------------------------------------------------------------------------
