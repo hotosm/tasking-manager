@@ -69,7 +69,9 @@ class ProjectAdminService:
 
         # If we're cloning we'll copy all the project details from the clone, otherwise create brand new project
         if draft_project_dto.cloneFromProjectId:
-            draft_project = Project.clone(draft_project_dto.cloneFromProjectId, user_id)
+            draft_project = await Project.clone(
+                draft_project_dto.cloneFromProjectId, user_id, db
+            )
         else:
             draft_project = Project()
             org = await OrganisationService.get_organisation_by_id(
@@ -269,7 +271,7 @@ class ProjectAdminService:
         task_count = 1
         for feature in tasks["features"]:
             try:
-                task = await Task.from_geojson_feature(task_count, feature, db)
+                task = Task.from_geojson_feature(task_count, feature)
             except (InvalidData, InvalidGeoJson) as e:
                 raise e
 
@@ -298,8 +300,7 @@ class ProjectAdminService:
             raise ProjectAdminServiceError(
                 "InfoForLocaleRequired- Project Info for Default Locale not provided"
             )
-
-        for attr, value in default_info.items():
+        for attr, value in default_info.dict().items():
             if attr == "per_task_instructions":
                 continue  # Not mandatory field
 
