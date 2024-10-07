@@ -13,7 +13,6 @@ from backend.db import get_db
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
-    ProjectInfoDTO,
     ProjectSearchBBoxDTO,
     ProjectSearchDTO,
 )
