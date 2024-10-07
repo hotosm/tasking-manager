@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from backend.models.dtos.project_dto import CustomEditorDTO
+from databases import Database
+from sqlalchemy import Column, ForeignKey, Integer, String, delete, update
+
 from backend.db import Base, get_session
+from backend.models.dtos.project_dto import CustomEditorDTO
 
 session = get_session()
 
@@ -29,24 +31,31 @@ class CustomEditor(Base):
         return session.get(CustomEditor, project_id)
 
     @classmethod
-    def create_from_dto(cls, project_id: int, dto: CustomEditorDTO):
+    async def create_from_dto(cls, project_id: int, dto: CustomEditorDTO, db: Database):
         """Creates a new CustomEditor from dto, used in project edit"""
         new_editor = cls()
         new_editor.project_id = project_id
-        new_editor.update_editor(dto)
+        new_editor = await new_editor.update_editor(dto, db)
         return new_editor
 
-    def update_editor(self, dto: CustomEditorDTO):
+    async def update_editor(self, dto: CustomEditorDTO, db: Database):
         """Upates existing CustomEditor form DTO"""
         self.name = dto.name
         self.description = dto.description
         self.url = dto.url
-        self.save()
 
-    def delete(self):
+        query = (
+            update(CustomEditor.__table__)
+            .where(CustomEditor.id == self.id)
+            .values(name=self.name, description=self.description, url=self.url)
+        )
+        await db.execute(query)
+
+    async def delete(self, db: Database):
         """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
+        await db.execute(
+            delete(CustomEditor.__table__).where(CustomEditor.id == self.id)
+        )
 
     def as_dto(self) -> CustomEditorDTO:
         """Returns the CustomEditor as a DTO"""

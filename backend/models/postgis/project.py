@@ -7,7 +7,7 @@ from loguru import logger
 import geojson
 from geoalchemy2 import Geometry, WKTElement
 from geoalchemy2.shape import to_shape
-from sqlalchemy import orm, func, select, delete, update
+from sqlalchemy import orm, func, select, delete, update, inspect
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 import requests
@@ -348,17 +348,31 @@ class Project(Base):
             )
         )
 
-        await db.execute(
-            Task.__table__.insert().values(
-                project_id=project,
+        for task in self.tasks:
+            await db.execute(
+                Task.__table__.insert().values(
+                    id=task.id,
+                    project_id=project,
+                    x=task.x,
+                    y=task.y,
+                    zoom=task.zoom,
+                    is_square=task.is_square,
+                    task_status=TaskStatus.READY.value,
+                    extra_properties=task.extra_properties,
+                    geometry=task.geometry,
+                )
             )
-        )
 
         return project
 
-    def save(self):
+    async def save(self, db: Database):
         """Save changes to db"""
-        session.commit()
+        columns = {
+            c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
+        }
+        await db.execute(
+            Project.__table__.update().where(Project.id == self.id).values(**columns)
+        )
 
     @staticmethod
     async def clone(project_id: int, author_id: int, db: Database):
@@ -492,7 +506,11 @@ class Project(Base):
             self.osmcha_filter_id = None
 
         if project_dto.organisation:
-            org = Organisation.get(project_dto.organisation)
+            organization = await db.fetch_one(
+                "SELECT * FROM organisations WHERE id = :id",
+                values={"id": project_dto.organisation},
+            )
+            org = Organisation(**organization)
             if org is None:
                 raise NotFound(
                     sub_code="ORGANISATION_NOT_FOUND",
@@ -535,18 +553,22 @@ class Project(Base):
 
                 role = TeamRoles[team_dto.role].value
                 project_team = ProjectTeams(project=self, team=team, role=role)
-                session.add(project_team)
+                await project_team.create(db)
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
-            project_info = self.project_info.filter_by(locale=dto.locale).one_or_none()
+            project_info = await db.fetch_one(
+                select(ProjectInfo).where(
+                    ProjectInfo.project_id == self.id, ProjectInfo.locale == dto.locale
+                )
+            )
             if project_info is None:
-                new_info = ProjectInfo.create_from_dto(
-                    dto
+                new_info = await ProjectInfo.create_from_dto(
+                    dto, self.id, db
                 )  # Can't find info so must be new locale
                 self.project_info.append(new_info)
             else:
-                project_info.update_from_dto(dto)
+                await ProjectInfo.update_from_dto(ProjectInfo(**project_info), dto, db)
 
         self.priority_areas = []  # Always clear Priority Area prior to updating
         if project_dto.priority_areas:
@@ -556,15 +578,17 @@ class Project(Base):
 
         if project_dto.custom_editor:
             if not self.custom_editor:
-                new_editor = CustomEditor.create_from_dto(
-                    self.id, project_dto.custom_editor
+                new_editor = await CustomEditor.create_from_dto(
+                    self.id, project_dto.custom_editor, db
                 )
                 self.custom_editor = new_editor
             else:
-                self.custom_editor.update_editor(project_dto.custom_editor)
+                await CustomEditor.update_editor(
+                    self.custom_editor, project_dto.custom_editor, db
+                )
         else:
             if self.custom_editor:
-                self.custom_editor.delete()
+                await CustomEditor.delete(self.custom_editor, db)
 
         # handle campaign update
         try:
@@ -575,7 +599,9 @@ class Project(Base):
         current_ids = [c.id for c in self.campaign]
         current_ids.sort()
         if new_ids != current_ids:
-            self.campaign = Campaign.query.filter(Campaign.id.in_(new_ids)).all()
+            self.campaign = await db.fetch_all(
+                select(Campaign).filter(Campaign.id.in_(new_ids))
+            )
 
         if project_dto.mapping_permission:
             self.mapping_permission = MappingPermission[
@@ -596,13 +622,25 @@ class Project(Base):
         current_ids = [c.id for c in self.interests]
         current_ids.sort()
         if new_ids != current_ids:
-            self.interests = Interest.query.filter(Interest.id.in_(new_ids)).all()
+            self.interests = await db.fetch_all(
+                select(Interest).filter(Interest.id.in_(new_ids))
+            )
 
         # try to update country info if that information is not present
         if not self.country:
             self.set_country_info()
 
-        session.commit()
+        columns = {
+            c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
+        }
+        columns.pop("geometry", None)
+        columns.pop("centroid", None)
+        columns.pop("id", None)
+
+        # Update the project in the database
+        await db.execute(
+            self.__table__.update().where(Project.id == self.id).values(**columns)
+        )
 
     async def delete(self, db: Database):
         """Deletes the current model from the DB"""

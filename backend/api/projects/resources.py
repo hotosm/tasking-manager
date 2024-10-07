@@ -115,7 +115,6 @@ async def get_project(
             request.headers.get("accept-language"),
             abbreviated,
         )
-        print(project_dto)
         if project_dto:
             if as_file:
                 project_dto = json.dumps(project_dto, default=str)
@@ -301,7 +300,7 @@ async def patch(
     project_id: int,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
-    project_dto: ProjectDTO = None,
+    project_dto: dict = None,
 ):
     """
     Updates a Tasking-Manager project
@@ -434,14 +433,8 @@ async def patch(
             },
             status_code=403,
         )
-    try:
-        project_dto.project_id = project_id
-    except Exception as e:
-        logger.error(f"Error validating request: {str(e)}")
-        return JSONResponse(
-            content={"Error": "Unable to update project", "SubCode": "InvalidData"},
-            status_code=400,
-        )
+    project_dto = ProjectDTO(**project_dto)
+    project_dto.project_id = project_id
 
     try:
         await ProjectAdminService.update_project(project_dto, user.id, db)
