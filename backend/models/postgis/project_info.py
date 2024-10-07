@@ -1,7 +1,16 @@
 # # from flask import current_app
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from typing import List
-from sqlalchemy import Column, String, Integer, ForeignKey, Index
+from sqlalchemy import (
+    Column,
+    String,
+    Integer,
+    ForeignKey,
+    Index,
+    inspect,
+    insert,
+    update,
+)
 from backend.models.dtos.project_dto import ProjectInfoDTO
 from backend.db import Base, get_session
 
@@ -41,13 +50,27 @@ class ProjectInfo(Base):
         return new_info
 
     @classmethod
-    def create_from_dto(cls, dto: ProjectInfoDTO):
+    async def create_from_dto(cls, dto: ProjectInfoDTO, project_id: int, db: Database):
         """Creates a new ProjectInfo class from dto, used from project edit"""
-        new_info = cls()
-        new_info.update_from_dto(dto)
-        return new_info
+        self = cls()
+        self.locale = dto.locale
+        self.name = dto.name
+        self.project_id = project_id
+        self.project_id_str = str(project_id)  # Allows project_id to be searched
 
-    def update_from_dto(self, dto: ProjectInfoDTO):
+        # Note project info not bleached on basis that admins are trusted users and shouldn't be doing anything bad
+        self.short_description = dto.short_description
+        self.description = dto.description
+        self.instructions = dto.instructions
+        self.per_task_instructions = dto.per_task_instructions
+        columns = {
+            c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
+        }
+        query = insert(ProjectInfo.__table__).values(**columns)
+        result = await db.execute(query)
+        return result
+
+    async def update_from_dto(self, dto: ProjectInfoDTO, db: Database):
         """Updates existing ProjectInfo from supplied DTO"""
         self.locale = dto.locale
         self.name = dto.name
@@ -58,6 +81,16 @@ class ProjectInfo(Base):
         self.description = dto.description
         self.instructions = dto.instructions
         self.per_task_instructions = dto.per_task_instructions
+        columns = {
+            c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
+        }
+        query = (
+            update(ProjectInfo.__table__)
+            .where(ProjectInfo.project_id == self.project_id)
+            .values(**columns)
+        )
+        result = await db.execute(query)
+        return result
 
     @staticmethod
     async def get_dto_for_locale(
