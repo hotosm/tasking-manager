@@ -189,7 +189,7 @@ export const ProjectDetail = (props) => {
       />
       <a
         href={`/projects/${projectId}/instructions`}
-        className="ph4 ttu db f5 blue-dark-abbey fw6 no-underline project-instructions-link"
+        className="ph4 ttu db f5 blue-dark fw6 project-instructions-link"
       >
         <FormattedMessage {...messages.viewProjectSpecificInstructions} />
       </a>
