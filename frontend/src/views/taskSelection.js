@@ -6,6 +6,7 @@ import { TaskSelection } from '../components/taskSelection';
 import { NotFound } from './notFound';
 import { useProjectSummaryQuery, useProjectQuery } from '../api/projects';
 import { Preloader } from '../components/preloader';
+import PrivateProjectError from '../components/projectDetail/privateProjectError';
 
 const publicRoutes = ['/instructions'];
 
@@ -45,12 +46,18 @@ export function SelectTask() {
   }
 
   if (status === 'error') {
-    if (error.response.status === 404) {
-      return <NotFound projectId={id} />;
-    }
+    return (
+      <>
+        {error.response.data.SubCode === 'PrivateProject' ? (
+          <PrivateProjectError />
+        ) : (
+          <NotFound projectId={id} />
+        )}
+      </>
+    );
   }
 
-  const project = token ? projectSummaryData : projectData.data;
+  const project = token ? projectSummaryData : projectData?.data;
 
   return <TaskSelection project={project} />;
 }
