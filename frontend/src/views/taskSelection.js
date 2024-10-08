@@ -7,8 +7,11 @@ import { NotFound } from './notFound';
 import { useProjectSummaryQuery, useProjectQuery } from '../api/projects';
 import { Preloader } from '../components/preloader';
 
+const publicRoutes = ['/instructions'];
+
 export function SelectTask() {
   const { id } = useParams();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
   const {
@@ -28,7 +31,8 @@ export function SelectTask() {
   });
 
   useEffect(() => {
-    if (!token) {
+    const isPublicRoute = publicRoutes.some((url) => pathname.includes(url));
+    if (!isPublicRoute && !token) {
       navigate('/login');
     }
   }, [navigate, token, pathname]);
