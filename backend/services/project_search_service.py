@@ -2,7 +2,6 @@
 import math
 import geojson
 from geoalchemy2 import shape
-from sqlalchemy import or_, and_
 from shapely.geometry import Polygon, box
 from cachetools import TTLCache, cached
 from loguru import logger
@@ -148,8 +147,11 @@ class ProjectSearchService:
                     params["private"] = False
                     params["project_ids"] = list(project_ids)
 
+        # if filters:
+        #     query += " AND " + " AND ".join(filters)
+
         if filters:
-            query += " AND " + " AND ".join(filters)
+            query += " AND (" + " AND ".join(filters) + ")"
 
         return query, params
 
@@ -192,29 +194,6 @@ class ProjectSearchService:
         list_dto.organisation_logo = project.organisation_logo
         list_dto.campaigns = await Project.get_project_campaigns(project.id, db)
         return list_dto
-
-    # @staticmethod
-    # def get_total_contributions(paginated_results):
-    #     paginated_projects_ids = [p.id for p in paginated_results]
-
-    #     # We need to make a join to return projects without contributors.
-    #     project_contributors_count = (
-    #         session.query(Project).with_entities(
-    #             Project.id, func.count(distinct(TaskHistory.user_id)).label("total")
-    #         )
-    #         .filter(Project.id.in_(paginated_projects_ids))
-    #         .outerjoin(
-    #             TaskHistory,
-    #             and_(
-    #                 TaskHistory.project_id == Project.id,
-    #                 TaskHistory.action != "COMMENT",
-    #             ),
-    #         )
-    #         .group_by(Project.id)
-    #         .all()
-    #     )
-
-    #     return [p.total for p in project_contributors_count]
 
     @staticmethod
     async def get_total_contributions(
@@ -356,7 +335,6 @@ class ProjectSearchService:
         base_query, params = await ProjectSearchService.create_search_query(db, user)
         # Initialize filter list and parameters dictionary
         filters = []
-
         # Filters based on search_dto
         if search_dto.preferred_locale:
             filters.append("pi.locale IN (:preferred_locale, 'en')")
@@ -408,13 +386,18 @@ class ProjectSearchService:
 
         if search_dto.action and search_dto.action != "any":
             if search_dto.action == "map":
-                filters.append(
-                    "p.id IN (SELECT project_id FROM project_actions WHERE action = 'map')"
+                mapping_project_ids = await ProjectSearchService.filter_projects_to_map(
+                    user, db
                 )
+                filters.append("p.id = ANY(:mapping_project_ids)")
+                params["mapping_project_ids"] = tuple(mapping_project_ids)
+
             elif search_dto.action == "validate":
-                filters.append(
-                    "p.id IN (SELECT project_id FROM project_actions WHERE action = 'validate')"
+                validation_project_ids = (
+                    await ProjectSearchService.filter_projects_to_validate(user, db)
                 )
+                filters.append("p.id = ANY(:validation_project_ids)")
+                params["validation_project_ids"] = tuple(validation_project_ids)
 
         if search_dto.organisation_name:
             filters.append("o.name = :organisation_name")
@@ -422,13 +405,13 @@ class ProjectSearchService:
 
         if search_dto.organisation_id:
             filters.append("o.id = :organisation_id")
-            params["organisation_id"] = search_dto.organisation_id
+            params["organisation_id"] = int(search_dto.organisation_id)
 
         if search_dto.team_id:
             filters.append(
                 "p.id IN (SELECT project_id FROM project_teams WHERE team_id = :team_id)"
             )
-            params["team_id"] = search_dto.team_id
+            params["team_id"] = int(search_dto.team_id)
 
         if search_dto.campaign:
             filters.append(
@@ -542,8 +525,6 @@ class ProjectSearchService:
 
         # Append the ORDER BY clause
         sql_query += order_by_clause
-
-        # Pagination
         page = search_dto.page
         per_page = 14
         offset = (page - 1) * per_page
@@ -561,84 +542,107 @@ class ProjectSearchService:
         return all_results, paginated_results, pagination_dto
 
     @staticmethod
-    def filter_by_user_permission(query, user, permission: str):
-        """Filter projects a user can map or validate, based on their permissions."""
-        if user and user.role != UserRole.ADMIN.value:
-            if permission == "validation_permission":
-                permission_class = ValidationPermission
-                team_roles = [
-                    TeamRoles.VALIDATOR.value,
-                    TeamRoles.PROJECT_MANAGER.value,
-                ]
-            else:
-                permission_class = MappingPermission
-                team_roles = [
-                    TeamRoles.MAPPER.value,
-                    TeamRoles.VALIDATOR.value,
-                    TeamRoles.PROJECT_MANAGER.value,
-                ]
+    async def filter_by_user_permission(db: Database, user, permission: str):
+        """Add permission filter to the project query based on user permissions."""
 
-            selection = []
-            # get ids of projects assigned to the user's teams
-            [
-                [
-                    selection.append(team_project.project_id)
-                    for team_project in user_team.team.projects
-                    if team_project.project_id not in selection
-                    and team_project.role in team_roles
-                ]
-                for user_team in user.teams
+        # Set the permission class and team roles based on the type of permission
+        if permission == "validation_permission":
+            permission_class = ValidationPermission
+            team_roles = [
+                TeamRoles.VALIDATOR.value,
+                TeamRoles.PROJECT_MANAGER.value,
             ]
-            if user.mapping_level == MappingLevel.BEGINNER.value:
-                # if user is beginner, get only projects with ANY or TEAMS mapping permission
-                # in the later case, only those that are associated with user teams
-                query = query.filter(
-                    or_(
-                        and_(
-                            Project.id.in_(selection),
-                            getattr(Project, permission)
-                            == permission_class.TEAMS.value,
-                        ),
-                        getattr(Project, permission) == permission_class.ANY.value,
-                    )
-                )
-            else:
-                # if user is intermediate or advanced, get projects with ANY or LEVEL permission
-                # and projects associated with user teams
-                query = query.filter(
-                    or_(
-                        Project.id.in_(selection),
-                        getattr(Project, permission).in_(
-                            [
-                                permission_class.ANY.value,
-                                permission_class.LEVEL.value,
-                            ]
-                        ),
-                    )
-                )
+        else:
+            permission_class = MappingPermission
+            team_roles = [
+                TeamRoles.MAPPER.value,
+                TeamRoles.VALIDATOR.value,
+                TeamRoles.PROJECT_MANAGER.value,
+            ]
 
-        return query
+        subquery = """
+            AND EXISTS (
+                SELECT 1
+                FROM project_teams pt
+                JOIN teams t ON t.id = pt.team_id
+                WHERE pt.project_id = p.id
+                AND t.id IN (
+                    SELECT tm.team_id
+                    FROM team_members tm
+                    WHERE tm.user_id = :user_id AND tm.active = true
+                )
+                AND pt.role = ANY(:team_roles)
+            )
+        """
+
+        if user.mapping_level == MappingLevel.BEGINNER.value:
+            subquery += f"""
+                AND (p.{permission} IN (:teams_permission, :any_permission))
+            """
+            params = {
+                "user_id": user.id,
+                "team_roles": tuple(team_roles),
+                "teams_permission": permission_class.TEAMS.value,
+                "any_permission": permission_class.ANY.value,
+            }
+        else:
+            subquery += f"""
+                AND (p.{permission} IN (:any_permission, :level_permission))
+            """
+            params = {
+                "user_id": user.id,
+                "team_roles": tuple(team_roles),
+                "any_permission": permission_class.ANY.value,
+                "level_permission": permission_class.LEVEL.value,
+            }
+        return subquery, params
 
     @staticmethod
-    def filter_projects_to_map(query, user):
-        """Filter projects that needs mapping and can be mapped by the current user."""
-        query = query.filter(
-            Project.tasks_mapped + Project.tasks_validated
-            < Project.total_tasks - Project.tasks_bad_imagery
-        )
-        return ProjectSearchService.filter_by_user_permission(
-            query, user, "mapping_permission"
-        )
+    async def filter_projects_to_map(user, db: Database):
+        """Filter projects that need mapping and can be mapped by the current user."""
+        query = """
+            SELECT DISTINCT p.id
+            FROM projects p
+            WHERE (p.tasks_mapped + p.tasks_validated) < (p.total_tasks - p.tasks_bad_imagery)
+        """
+        params = {}
+        if user and user.role != UserRole.ADMIN.value:
+            (
+                subquery,
+                subquery_params,
+            ) = await ProjectSearchService.filter_by_user_permission(
+                db, user, "mapping_permission"
+            )
+            query += subquery
+            params.update(subquery_params)
+
+        # Execute the query with parameters
+        project_records = await db.fetch_all(query, params)
+        return [record["id"] for record in project_records] if project_records else []
 
     @staticmethod
-    def filter_projects_to_validate(query, user):
-        """Filter projects that needs validation and can be validated by the current user."""
-        query = query.filter(
-            Project.tasks_validated < Project.total_tasks - Project.tasks_bad_imagery
-        )
-        return ProjectSearchService.filter_by_user_permission(
-            query, user, "validation_permission"
-        )
+    async def filter_projects_to_validate(user, db: Database):
+        """Filter projects that need validation and can be validated by the current user."""
+        # Base query to get unique project IDs that need validation
+        query = """
+        SELECT DISTINCT p.id
+        FROM projects p
+        WHERE p.tasks_validated < (p.total_tasks - p.tasks_bad_imagery)
+        """
+
+        params = {}
+        if user and user.role != UserRole.ADMIN.value:
+            (
+                subquery,
+                subquery_params,
+            ) = await ProjectSearchService.filter_by_user_permission(
+                db, user, "validation_permission"
+            )
+            query += subquery
+            params.update(subquery_params)
+
+        project_records = await db.fetch_all(query, params)
+        return [record["id"] for record in project_records] if project_records else []
 
     @staticmethod
     async def get_projects_geojson(
