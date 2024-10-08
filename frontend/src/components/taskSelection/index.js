@@ -19,6 +19,7 @@ import { TasksMapLegend } from './legend';
 import { ProjectInstructions } from './instructions';
 import { ChangesetCommentTags } from './changesetComment';
 import { ProjectHeader } from '../projectDetail/header';
+import { ProjectDetailMap } from '../projectDetail';
 import Contributions from './contributions';
 import { UserPermissionErrorContent } from './permissionErrorModal';
 import { Alert } from '../alert';
@@ -31,6 +32,7 @@ import {
   useTasksQuery,
 } from '../../api/projects';
 import { useTeamsQuery } from '../../api/teams';
+
 const TaskSelectionFooter = lazy(() => import('./footer'));
 
 const getRandomTaskByAction = (activities, taskAction) => {
@@ -58,6 +60,7 @@ export function TaskSelection({ project }: Object) {
   const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const userOrgs = useSelector((state) => state.auth.organisations);
   const lockedTasks = useGetLockedTasks();
   const [zoomedTaskId, setZoomedTaskId] = useState(null);
@@ -75,6 +78,7 @@ export function TaskSelection({ project }: Object) {
     },
     {
       useErrorBoundary: true,
+      enabled: !!token,
     },
   );
   const { data: activities, refetch: getActivities } = useActivitiesQuery(projectId);
@@ -88,6 +92,7 @@ export function TaskSelection({ project }: Object) {
     // Task status on the map were not being updated when coming from the action page,
     // so added this as a workaround.
     cacheTime: 0,
+    enabled: false,
   });
   const {
     data: priorityAreas,
@@ -115,10 +120,10 @@ export function TaskSelection({ project }: Object) {
   // update tasks geometry if there are new tasks (caused by task splits)
   // update tasks state (when activities have changed)
   useEffect(() => {
-    if (tasksData?.features.length !== activities?.activity.length) {
+    if (tasksData?.features.length !== activities?.activity.length && token) {
       refetchTasks();
     }
-  }, [tasksData, activities, refetchTasks]);
+  }, [tasksData, activities, refetchTasks, token]);
 
   // use route instead of local state for active tab states
   const setActiveSection = useCallback(
@@ -272,20 +277,22 @@ export function TaskSelection({ project }: Object) {
             <div className="mt3">
               <TabSelector activeSection={activeSection} setActiveSection={setActiveSection} />
               <div className="pt3">
-                <div className={`${activeSection !== 'tasks' ? 'dn' : ''}`}>
-                  <TaskList
-                    project={project}
-                    tasks={tasks}
-                    userCanValidate={isValidationAllowed}
-                    updateActivities={getActivities}
-                    selectTask={selectTask}
-                    selected={selected}
-                    textSearch={textSearch}
-                    setTextSearch={setTextSearch}
-                    setZoomedTaskId={setZoomedTaskId}
-                    userContributions={contributions}
-                  />
-                </div>
+                {activeSection && (
+                  <div className={`${activeSection !== 'tasks' ? 'dn' : ''}`}>
+                    <TaskList
+                      project={project}
+                      tasks={tasks}
+                      userCanValidate={isValidationAllowed}
+                      updateActivities={getActivities}
+                      selectTask={selectTask}
+                      selected={selected}
+                      textSearch={textSearch}
+                      setTextSearch={setTextSearch}
+                      setZoomedTaskId={setZoomedTaskId}
+                      userContributions={contributions}
+                    />
+                  </div>
+                )}
                 {activeSection === 'instructions' ? (
                   <>
                     {project.enforceRandomTaskSelection && (
@@ -300,6 +307,7 @@ export function TaskSelection({ project }: Object) {
                     <ChangesetCommentTags tags={project.changesetComment} />
                   </>
                 ) : null}
+
                 {activeSection === 'contributions' ? (
                   <Contributions
                     project={project}
@@ -315,28 +323,40 @@ export function TaskSelection({ project }: Object) {
           </div>
         </div>
         <div className="w-100 w-50-ns fl h-100 relative">
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            type={'media'}
-            rows={26}
-            delay={200}
-            ready={typeof tasks === 'object' && mapInit && !isPriorityAreasLoading}
-          >
-            <TasksMap
-              mapResults={tasks}
-              projectId={project.projectId}
-              error={typeof project !== 'object'}
-              loading={typeof project !== 'object'}
-              className="dib w-100 fl h-100-ns vh-75"
-              zoomedTaskId={zoomedTaskId}
-              selectTask={selectTask}
-              selected={selected}
+          {!token ? (
+            <ProjectDetailMap
+              project={project}
+              projectLoading={false}
+              tasksError={false}
+              tasks={project.tasks}
+              navigate={navigate}
+              type="detail"
               taskBordersOnly={false}
-              priorityAreas={priorityAreas}
-              animateZoom={false}
             />
-            <TasksMapLegend />
-          </ReactPlaceholder>
+          ) : (
+            <ReactPlaceholder
+              showLoadingAnimation={true}
+              type={'media'}
+              rows={26}
+              delay={200}
+              ready={typeof tasks === 'object' && mapInit && !isPriorityAreasLoading}
+            >
+              <TasksMap
+                mapResults={tasks}
+                projectId={project.projectId}
+                error={typeof project !== 'object'}
+                loading={typeof project !== 'object'}
+                className="dib w-100 fl h-100-ns vh-75"
+                zoomedTaskId={zoomedTaskId}
+                selectTask={selectTask}
+                selected={selected}
+                taskBordersOnly={false}
+                priorityAreas={priorityAreas}
+                animateZoom={false}
+              />
+              <TasksMapLegend />
+            </ReactPlaceholder>
+          )}
         </div>
       </div>
       <div className="cf w-100 bt b--grey-light fixed bottom-0 left-0 z-4">

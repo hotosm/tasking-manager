@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
@@ -35,8 +35,13 @@ import { ENABLE_EXPORT_TOOL } from '../../config/index.js';
 /* lazy imports must be last import */
 const ProjectTimeline = lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
 
-const ProjectDetailMap = (props) => {
+export const ProjectDetailMap = (props) => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
+
+  useEffect(() => {
+    if (typeof props.taskBordersOnly !== 'boolean') return;
+    setTaskBordersOnly(props.taskBordersOnly);
+  }, [props.taskBordersOnly]);
 
   const taskBordersGeoJSON = props.project.areaOfInterest && {
     type: 'FeatureCollection',
@@ -442,6 +447,7 @@ ProjectDetailMap.propTypes = {
   type: PropTypes.string,
   tasksError: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   projectLoading: PropTypes.bool,
+  taskBordersOnly: PropTypes.bool,
 };
 
 ProjectDetailLeft.propTypes = {
