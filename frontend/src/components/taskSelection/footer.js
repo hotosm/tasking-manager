@@ -221,7 +221,17 @@ const TaskSelectionFooter = ({
       </div>
       <div className="w-30-ns w-60 fl tr">
         <div className="mt3">
-          <Button className="white bg-red fw5" onClick={() => lockTasks()} loading={isPending}>
+          <Button
+            className="white bg-red fw5"
+            onClick={() => {
+              if (!token) {
+                navigate('/login');
+              } else {
+                lockTasks();
+              }
+            }}
+            loading={isPending}
+          >
             {['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(
               taskAction,
             ) || project.status === 'ARCHIVED' ? (
