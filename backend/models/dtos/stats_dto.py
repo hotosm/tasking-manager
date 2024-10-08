@@ -183,6 +183,9 @@ class HomePageStatsDTO(BaseModel):
     organisations: Optional[List[OrganizationListStatsDTO]] = None
     campaigns: Optional[List[CampaignStatsDTO]] = None
 
+    class Config:
+        populate_by_name = True
+
 
 class TaskStats(BaseModel):
     """DTO for tasks stats for a single day"""
@@ -191,6 +194,9 @@ class TaskStats(BaseModel):
     mapped: int = Field(alias="mapped")
     validated: int = Field(alias="validated")
     bad_imagery: int = Field(alias="badImagery")
+
+    class Config:
+        populate_by_name = True
 
 
 class GenderStatsDTO(BaseModel):
@@ -218,3 +224,6 @@ class TaskStatsDTO(BaseModel):
     """Contains all tasks stats broken down by day"""
 
     stats: List[TaskStats] = Field([], alias="taskStats")
+
+    class Config:
+        populate_by_name = True

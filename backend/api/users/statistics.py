@@ -141,8 +141,8 @@ async def get(
             description: Internal Server Error
     """
     try:
-        if start_date:
-            start_date = validate_date_input(start_date)
+        if request.query_params.get("startDate"):
+            start_date = validate_date_input(request.query_params.get("startDate"))
         else:
             return JSONResponse(
                 content={
@@ -151,7 +151,10 @@ async def get(
                 },
                 status_code=400,
             )
-        end_date = validate_date_input(end_date)
+        if request.query_params.get("endDate"):
+            end_date = validate_date_input(request.query_params.get("endDate"))
+        else:
+            end_date: str = date.today()
         if end_date < start_date:
             raise ValueError(
                 "InvalidDateRange- Start date must be earlier than end date"
