@@ -96,6 +96,7 @@ export const PartnersMapswipeStats = () => {
       data.contributionTimeByDate
         .map((item) => item.totalcontributionTime)
         .reduce((total, value) => total + value, 0),
+      true,
     );
   };
 
@@ -139,7 +140,10 @@ export const PartnersMapswipeStats = () => {
               />
             </div>
 
-            <div className="mt4 flex items-center justify-between f1 barlow-condensed" style={{ gap: '1.6rem' }}>
+            <div
+              className="mt4 flex items-center justify-between f1 barlow-condensed"
+              style={{ gap: '1.6rem' }}
+            >
               <div className="pa4 shadow-6 bg-white" style={{ flexBasis: '32.5%' }}>
                 <span className="red fw6">{getSwipes()}</span>
                 <span className="silver fw2 ml3">
