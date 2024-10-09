@@ -1,14 +1,14 @@
-from fastapi import APIRouter, Depends, Request
-from backend.services.stats_service import StatsService
-from backend.services.project_service import ProjectService
-from backend.db import get_db, get_session
 from databases import Database
+from fastapi import APIRouter, Depends, Request
 
+from backend.db import get_db
+from backend.services.project_service import ProjectService
+from backend.services.stats_service import StatsService
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

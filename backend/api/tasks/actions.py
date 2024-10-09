@@ -208,14 +208,20 @@ async def post(
 
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {"Error": "Task unlock failed", "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": "Task unlock failed", "SubCode": "InvalidData"},
+            status_code=400,
+        )
     try:
         await ProjectService.exists(project_id, db)
         async with db.transaction():
             task = await MappingService.stop_mapping_task(stop_task, db)
             return task
     except MappingServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.post("/{project_id}/tasks/actions/unlock-after-mapping/{task_id}/")
@@ -394,7 +400,10 @@ async def post(
                 )
             return task
     except MappingServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.post("/{project_id}/tasks/actions/lock-for-validation/")
@@ -469,7 +478,10 @@ async def post(
             validator_dto.preferred_locale = preferred_locale
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {"Error": "Unable to lock task", "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": "Unable to lock task", "SubCode": "InvalidData"},
+            status_code=400,
+        )
 
     try:
         await ProjectService.exists(project_id, db)
@@ -477,12 +489,18 @@ async def post(
             tasks = await ValidatorService.lock_tasks_for_validation(validator_dto, db)
             return tasks
     except ValidatorServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
     except UserLicenseError:
-        return {
-            "Error": "User not accepted license terms",
-            "SubCode": "UserLicenseError",
-        }, 409
+        return JSONResponse(
+            content={
+                "Error": "User not accepted license terms",
+                "SubCode": "UserLicenseError",
+            },
+            status_code=409,
+        )
 
 
 @router.post("/{project_id}/tasks/actions/stop-validation/")
@@ -554,14 +572,20 @@ async def post(
             validated_dto.preferred_locale = preferred_locale
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {"Error": "Task unlock failed", "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": "Task unlock failed", "SubCode": "InvalidData"},
+            status_code=400,
+        )
     try:
         await ProjectService.exists(project_id, db)
         async with db.transaction():
             tasks = await ValidatorService.stop_validating_tasks(validated_dto, db)
             return tasks
     except ValidatorServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.post("/{project_id}/tasks/actions/unlock-after-validation/")
@@ -633,7 +657,10 @@ async def post(
             validated_dto.preferred_locale = preferred_locale
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {"Error": "Task unlock failed", "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": "Task unlock failed", "SubCode": "InvalidData"},
+            status_code=400,
+        )
     try:
         await ProjectService.exists(project_id, db)
         async with db.transaction():
@@ -642,7 +669,10 @@ async def post(
             )
             return tasks
     except ValidatorServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.post("/{project_id}/tasks/actions/map-all/")
@@ -689,10 +719,13 @@ async def post(
         ):
             raise ValueError()
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     async with db.transaction():
         await MappingService.map_all_tasks(project_id, authenticated_user_id, db)
@@ -743,10 +776,13 @@ async def post(
         ):
             raise ValueError()
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     async with db.transaction():
         await ValidatorService.validate_all_tasks(project_id, authenticated_user_id, db)
@@ -857,10 +893,13 @@ async def post(
         ):
             raise ValueError()
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
     async with db.transaction():
         await MappingService.reset_all_badimagery(project_id, authenticated_user_id, db)
     return JSONResponse(
@@ -913,10 +952,13 @@ async def post(
         ):
             raise ValueError()
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
     async with db.transaction():
         await ProjectAdminService.reset_all_tasks(project_id, authenticated_user_id, db)
         return JSONResponse(content={"Success": "All tasks reset"}, status_code=200)
@@ -985,16 +1027,25 @@ async def post(
             split_task_dto.preferred_locale = preferred_locale
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {"Error": "Unable to split task", "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": "Unable to split task", "SubCode": "InvalidData"},
+            status_code=400,
+        )
     try:
         await ProjectService.exists(project_id, db)
         async with db.transaction():
             tasks = await SplitService.split_task(split_task_dto, db)
             return tasks
     except SplitServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
     except InvalidGeoJson as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.post("/{project_id}/tasks/actions/extend/")
@@ -1064,17 +1115,26 @@ async def post(
         )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {
-            "Error": "Unable to extend lock time",
-            "SubCode": "InvalidData",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": "Unable to extend lock time",
+                "SubCode": "InvalidData",
+            },
+            status_code=400,
+        )
     try:
         await ProjectService.exists(project_id, db)
         async with db.transaction():
             await MappingService.extend_task_lock_time(extend_dto, db)
-            return {"Success": "Successfully extended task expiry"}, 200
+            return JSONResponse(
+                content={"Success": "Successfully extended task expiry"},
+                status_code=200,
+            )
     except MappingServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.post("/{project_id}/tasks/actions/reset-by-user/")
@@ -1146,13 +1206,21 @@ async def post(
         )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {
-            "Error": "Unable to revert tasks",
-            "SubCode": "InvalidData",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": "Unable to revert tasks",
+                "SubCode": "InvalidData",
+            },
+            status_code=400,
+        )
     try:
         async with db.transaction():
             await ValidatorService.revert_user_tasks(revert_dto, db)
-            return {"Success": "Successfully reverted tasks"}, 200
+            return JSONResponse(
+                content={"Success": "Successfully reverted tasks"}, status_code=200
+            )
     except ValidatorServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )

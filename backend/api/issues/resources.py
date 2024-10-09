@@ -5,7 +5,6 @@ from loguru import logger
 
 from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
 from backend.services.mapping_issues_service import MappingIssueCategoryService
-from backend.db import get_session
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.users.authentication_service import login_required
@@ -13,7 +12,7 @@ from backend.services.users.authentication_service import login_required
 router = APIRouter(
     prefix="/tasks",
     tags=["issues"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

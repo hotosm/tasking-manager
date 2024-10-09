@@ -1,15 +1,15 @@
+from databases import Database
+from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
+
+from backend.db import get_db
 from backend.models.dtos.licenses_dto import LicenseDTO
 from backend.services.license_service import LicenseService
-from fastapi import APIRouter, Depends
-from backend.db import get_session
-from databases import Database
-from backend.db import get_db
-
 
 router = APIRouter(
     prefix="/licenses",
     tags=["licenses"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -59,7 +59,7 @@ async def post(license_dto: LicenseDTO, db: Database = Depends(get_db)):
             description: Internal Server Error
     """
     new_license_id = await LicenseService.create_license(license_dto, db)
-    return {"licenseId": new_license_id}, 201
+    return JSONResponse(content={"licenseId": new_license_id}, status_code=201)
 
 
 @router.get("/{license_id}/")
@@ -145,7 +145,7 @@ async def patch(
             description: Internal Server Error
     """
     await LicenseService.update_license(license_dto, license_id, db)
-    return {"status": "Updated"}, 200
+    return JSONResponse(content={"status": "Updated"}, status_code=200)
 
 
 @router.delete("/{license_id}/")
@@ -183,7 +183,7 @@ async def delete(license_id: int, db: Database = Depends(get_db)):
             description: Internal Server Error
     """
     await LicenseService.delete_license(license_id, db)
-    return {"Success": "License deleted"}, 200
+    return JSONResponse(content={"Success": "License deleted"}, status_code=200)
 
 
 @router.get("/")

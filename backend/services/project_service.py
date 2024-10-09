@@ -1,44 +1,46 @@
 import threading
+from datetime import datetime, timedelta, timezone
+
+import geojson
 from cachetools import TTLCache, cached
+from databases import Database
+from fastapi import HTTPException
+from loguru import logger
 
 # # from flask import current_app
 from backend.config import get_settings
-import geojson
-from datetime import datetime, timedelta, timezone
-
+from backend.db import get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.project_dto import (
-    ProjectDTO,
-    ProjectSummary,
-    ProjectStatsDTO,
-    ProjectUserStatsDTO,
-    ProjectContribsDTO,
     ProjectContribDTO,
+    ProjectContribsDTO,
+    ProjectDTO,
     ProjectSearchResultsDTO,
+    ProjectStatsDTO,
+    ProjectSummary,
+    ProjectUserStatsDTO,
 )
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectStatus
 from backend.models.postgis.statuses import (
-    MappingNotAllowed,
-    ValidatingNotAllowed,
-    MappingPermission,
-    ValidationPermission,
-    TeamRoles,
     EncouragingEmailType,
     MappingLevel,
+    MappingNotAllowed,
+    MappingPermission,
+    TeamRoles,
+    ValidatingNotAllowed,
+    ValidationPermission,
 )
 from backend.models.postgis.task import Task
 from backend.services.messaging.smtp_service import SMTPService
-from backend.services.users.user_service import UserService
-from backend.services.project_search_service import ProjectSearchService
 from backend.services.project_admin_service import ProjectAdminService
+from backend.services.project_search_service import ProjectSearchService
 from backend.services.team_service import TeamService
-from backend.db import get_session
+from backend.services.users.user_service import UserService
 
 session = get_session()
-from fastapi import HTTPException
-from databases import Database
+
 import json
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
