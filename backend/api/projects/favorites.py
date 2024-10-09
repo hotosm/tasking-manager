@@ -1,9 +1,11 @@
-from backend.services.project_service import ProjectService
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_db
 from databases import Database
-from backend.services.users.authentication_service import login_required
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
+
+from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
+from backend.services.project_service import ProjectService
+from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
     prefix="/projects",
@@ -52,8 +54,8 @@ async def get(
     user_id = request.user.display_name if request.user else None
     favorited = await ProjectService.is_favorited(project_id, user_id, db)
     if favorited is True:
-        return {"favorited": True}
-    return {"favorited": False}
+        return JSONResponse(content={"favorited": True}, status_code=200)
+    return JSONResponse({"favorited": False}, status_code=200)
 
 
 @router.post("/{project_id}/favorite/")
@@ -94,7 +96,7 @@ async def post(
     """
 
     await ProjectService.favorite(project_id, user.id, db)
-    return {"project_id": project_id}
+    return JSONResponse(content={"project_id": project_id}, status_code=201)
 
 
 @router.delete("/{project_id}/favorite/")
@@ -136,5 +138,8 @@ async def delete(
     try:
         await ProjectService.unfavorite(project_id, user.id, db)
     except ValueError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
-    return {"project_id": project_id}
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=400,
+        )
+    return JSONResponse(content={"project_id": project_id}, status_code=200)

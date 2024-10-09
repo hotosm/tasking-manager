@@ -1,20 +1,19 @@
+from asyncpg.exceptions import UniqueViolationError
+from databases import Database
+from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
+
+from backend.db import get_db
 from backend.models.dtos.interests_dto import InterestDTO
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.interests_service import InterestService
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.authentication_service import login_required
 
-from fastapi import APIRouter, Depends
-from backend.db import get_session
-from backend.models.dtos.user_dto import AuthUserDTO
-from databases import Database
-from backend.db import get_db
-from asyncpg.exceptions import UniqueViolationError
-
-
 router = APIRouter(
     prefix="/interests",
     tags=["interests"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -70,19 +69,21 @@ async def post(
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsAllAPI POST: {str(e)}"
-        return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     try:
         new_interest_dto = await InterestService.create(interest_dto.name, db)
         return new_interest_dto
 
     except UniqueViolationError:
-        return (
-            {
+        return JSONResponse(
+            content={
                 "Error": "Value '{0}' already exists".format(interest_dto.name),
                 "SubCode": "NameExists",
             },
-            400,
+            status_code=400,
         )
 
 
@@ -153,7 +154,9 @@ async def get(
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsRestAPI GET: {str(e)}"
-        return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     interest_dto = await InterestService.get(interest_id, db)
     return interest_dto
@@ -217,7 +220,9 @@ async def patch(
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsRestAPI PATCH: {str(e)}"
-        return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     update_interest = await InterestService.update(interest_id, interest_dto, db)
     return update_interest
@@ -269,7 +274,9 @@ async def delete(
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsRestAPI DELETE: {str(e)}"
-        return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     await InterestService.delete(interest_id, db)
-    return {"Success": "Interest deleted"}, 200
+    return JSONResponse(content={"Success": "Interest deleted"}, status_code=200)

@@ -3,6 +3,7 @@ import datetime
 
 from databases import Database
 from sqlalchemy import text
+from loguru import logger
 
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTOs
@@ -37,8 +38,7 @@ class ValidatorServiceError(Exception):
     """Custom exception to notify callers that error has occurred"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class ValidatorService:

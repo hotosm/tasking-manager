@@ -1,22 +1,23 @@
 # from flask_restful import , request, current_app
 # from schematics.exceptions import Exception
 
+from datetime import datetime
+
+from databases import Database
+from fastapi import APIRouter, Depends, Request
+from loguru import logger
+from starlette.authentication import requires
+from fastapi.responses import JSONResponse
+
+from backend.db import get_db, get_session
+from backend.models.dtos.mapping_dto import TaskCommentDTO
 from backend.models.dtos.message_dto import ChatMessageDTO
 from backend.models.dtos.user_dto import AuthUserDTO
-from backend.models.dtos.mapping_dto import TaskCommentDTO
-from backend.services.messaging.chat_service import ChatService
-from backend.services.users.user_service import UserService
-from backend.services.project_service import ProjectService
 from backend.services.mapping_service import MappingService, MappingServiceError
-from backend.services.users.authentication_service import tm
-from backend.services.users.authentication_service import login_required
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from starlette.authentication import requires
-from loguru import logger
-from databases import Database
-from backend.db import get_db
-from datetime import datetime
+from backend.services.messaging.chat_service import ChatService
+from backend.services.project_service import ProjectService
+from backend.services.users.authentication_service import login_required, tm
+from backend.services.users.user_service import UserService
 
 session = get_session()
 
@@ -24,7 +25,7 @@ session = get_session()
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -75,7 +76,10 @@ async def post(
     """
     user = await UserService.get_user_by_id(user.id, db)
     if await UserService.is_user_blocked(user.id, db):
-        return {"Error": "User is on read only mode", "SubCode": "ReadOnly"}, 403
+        return JSONResponse(
+            content={"Error": "User is on read only mode", "SubCode": "ReadOnly"},
+            status_code=403,
+        )
 
     request_json = await request.json()
     message = request_json.get("message")
@@ -87,12 +91,16 @@ async def post(
         username=user.username,
     )
     try:
-        project_messages = await ChatService.post_message(
-            chat_dto, project_id, user.id, db
-        )
-        return project_messages
+        async with db.transaction():
+            project_messages = await ChatService.post_message(
+                chat_dto, project_id, user.id, db
+            )
+            return project_messages
     except ValueError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.get("/{project_id}/comments/")
@@ -138,8 +146,6 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
     return project_messages
 
 
-# class CommentsProjectsRestAPI():
-# @token_auth.login_required
 @router.delete("/{project_id}/comments/{comment_id}/")
 async def delete(
     project_id: int,
@@ -185,16 +191,18 @@ async def delete(
     """
     authenticated_user_id = user.id
     try:
-        await ChatService.delete_project_chat_by_id(
-            project_id, comment_id, authenticated_user_id, db
-        )
-        return {"Success": "Comment deleted"}, 200
+        async with db.transaction():
+            await ChatService.delete_project_chat_by_id(
+                project_id, comment_id, authenticated_user_id, db
+            )
+            return JSONResponse(content={"Success": "Comment deleted"}, status_code=200)
     except ValueError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
-# class CommentsTasksRestAPI():
-# @token_auth.login_required
 @router.post("/{project_id}/comments/tasks/{task_id}/")
 @requires("authenticated")
 @tm.pm_only(False)

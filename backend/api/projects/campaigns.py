@@ -1,6 +1,11 @@
 # from flask_restful import Resource, current_app
 # from schematics.exceptions import DataError
 
+from databases import Database
+from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
+
+from backend.db import get_db
 from backend.models.dtos.campaign_dto import CampaignProjectDTO
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.campaign_service import CampaignService
@@ -8,15 +13,11 @@ from backend.services.project_admin_service import ProjectAdminService
 
 # from backend.services.users.authentication_service import token_auth
 from backend.services.users.authentication_service import login_required
-from fastapi import APIRouter, Depends
-from backend.db import get_db, get_session
-from databases import Database
-
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -85,10 +86,13 @@ async def post(
     )
 
     if result > 0:
-        return {
-            "Error": "Project is already assigned to this campaign",
-            "SubCode": "CampaignAssignmentError",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": "Project is already assigned to this campaign",
+                "SubCode": "CampaignAssignmentError",
+            },
+            status_code=400,
+        )
 
     campaign_project_dto = CampaignProjectDTO(
         project_id=project_id, campaign_id=campaign_id
@@ -98,7 +102,7 @@ async def post(
     message = "campaign with id {} assigned successfully for project with id {}".format(
         campaign_id, project_id
     )
-    return ({"Success": message}, 200)
+    return JSONResponse(content={"Success": message}, status_code=200)
 
 
 @router.get("/{project_id}/campaigns/")
@@ -179,10 +183,13 @@ async def delete(
     if not await ProjectAdminService.is_user_action_permitted_on_project(
         user.id, project_id, db
     ):
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     await CampaignService.delete_project_campaign(project_id, campaign_id, db)
-    return {"Success": "Campaigns Deleted"}, 200
+    return JSONResponse(content={"Success": "Campaigns Deleted"}, status_code=200)

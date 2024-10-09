@@ -1,20 +1,22 @@
+from databases import Database
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
+
+
+from backend.db import get_db
+from backend.models.dtos.message_dto import MessageDTO
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.messaging.message_service import (
     MessageService,
     MessageServiceError,
 )
 from backend.services.notification_service import NotificationService
 from backend.services.users.authentication_service import login_required
-from backend.models.dtos.user_dto import AuthUserDTO
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from databases import Database
-from backend.models.dtos.message_dto import MessageDTO
-from backend.db import get_db
 
 router = APIRouter(
     prefix="/notifications",
     tags=["notifications"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -59,7 +61,10 @@ async def get(
         user_message = await MessageService.get_message_as_dto(message_id, user.id, db)
         return user_message
     except MessageServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.delete("/{message_id}/")
@@ -99,10 +104,14 @@ async def delete(
             description: Internal Server Error
     """
     try:
-        await MessageService.delete_message(message_id, user.id, db)
-        return {"Success": "Message deleted"}, 200
+        async with db.transaction():
+            await MessageService.delete_message(message_id, user.id, db)
+            return JSONResponse(content={"Success": "Message deleted"}, status_code=200)
     except MessageServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
 
 
 @router.get("/")
