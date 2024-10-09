@@ -1,7 +1,8 @@
 from databases import Database
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 
-from backend.db import get_db, get_session
+from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.authentication_service import login_required
@@ -9,7 +10,7 @@ from backend.services.users.authentication_service import login_required
 router = APIRouter(
     prefix="/notifications",
     tags=["notifications"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -53,9 +54,9 @@ async def delete(
     data = await request.json()
     message_ids = data["messageIds"]
     if message_ids:
-        await MessageService.delete_multiple_messages(message_ids, user.id, db)
-
-    return {"Success": "Messages deleted"}, 200
+        async with db.transaction():
+            await MessageService.delete_multiple_messages(message_ids, user.id, db)
+    return JSONResponse(content={"Success": "Messages deleted"}, status_code=200)
 
 
 @router.delete("/delete-all/")
@@ -89,8 +90,9 @@ async def delete(
             description: Internal Server Error
     """
     message_type = request.query_params.get("messageType")
-    await MessageService.delete_all_messages(user.id, db, message_type)
-    return {"Success": "Messages deleted"}, 200
+    async with db.transaction():
+        await MessageService.delete_all_messages(user.id, db, message_type)
+        return JSONResponse(content={"Success": "Messages deleted"}, status_code=200)
 
 
 @router.post("/mark-as-read-all/")
@@ -125,7 +127,7 @@ async def post(
     """
     message_type = request.query_params.get("messageType")
     await MessageService.mark_all_messages_read(user.id, db, message_type)
-    return {"Success": "Messages marked as read"}, 200
+    return JSONResponse(content={"Success": "Messages marked as read"}, status_code=200)
 
 
 @router.post("/mark-as-read-multiple/")
@@ -169,4 +171,4 @@ async def post(
     if message_ids:
         await MessageService.mark_multiple_messages_read(message_ids, user.id, db)
 
-    return {"Success": "Messages marked as read"}, 200
+    return JSONResponse(content={"Success": "Messages marked as read"}, status_code=200)

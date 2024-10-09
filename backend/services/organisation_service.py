@@ -1,46 +1,47 @@
-from datetime import datetime
 import json
+from datetime import datetime
+
+from databases import Database
+from fastapi import HTTPException
+from loguru import logger
 
 # from flask import current_app
 from sqlalchemy.exc import IntegrityError
 
+from backend.db import get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import (
-    OrganisationDTO,
-    NewOrganisationDTO,
     ListOrganisationsDTO,
+    NewOrganisationDTO,
+    OrganisationDTO,
     OrganisationTeamsDTO,
     UpdateOrganisationDTO,
 )
 from backend.models.dtos.stats_dto import (
-    OrganizationStatsDTO,
     OrganizationProjectsStatsDTO,
+    OrganizationStatsDTO,
     OrganizationTasksStatsDTO,
 )
 from backend.models.postgis.campaign import campaign_organisations
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectInfo
-from backend.models.postgis.team import TeamVisibility
 from backend.models.postgis.statuses import (
     ProjectStatus,
     TaskStatus,
     TeamJoinMethod,
     TeamMemberFunctions,
 )
+from backend.models.postgis.team import TeamVisibility
 from backend.services.users.user_service import UserService
-from backend.db import get_session
 
 session = get_session()
-from databases import Database
-from fastapi import HTTPException
 
 
 class OrganisationServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling organisations"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class OrganisationService:

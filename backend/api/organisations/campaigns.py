@@ -1,12 +1,13 @@
+from databases import Database
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
+
+from backend.db import get_db
 from backend.models.dtos.campaign_dto import CampaignListDTO
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
-from fastapi import APIRouter, Depends, Request
-from databases import Database
-from backend.db import get_db
 from backend.services.users.authentication_service import login_required
-from backend.models.dtos.user_dto import AuthUserDTO
-
 
 router = APIRouter(
     prefix="/organisations",
@@ -71,20 +72,26 @@ async def post(
             message = "Campaign {} is already assigned to organisation {}.".format(
                 campaign_id, organisation_id
             )
-            return {"Error": message, "SubCode": "CampaignAlreadyAssigned"}, 400
-
-        await CampaignService.create_campaign_organisation(
-            organisation_id, campaign_id, db
-        )
-        message = "campaign with id {} assigned for organisation with id {}".format(
-            campaign_id, organisation_id
-        )
-        return {"Success": message}, 200
+            return JSONResponse(
+                content={"Error": message, "SubCode": "CampaignAlreadyAssigned"},
+                status_code=400,
+            )
+        async with db.transaction():
+            await CampaignService.create_campaign_organisation(
+                organisation_id, campaign_id, db
+            )
+            message = "campaign with id {} assigned for organisation with id {}".format(
+                campaign_id, organisation_id
+            )
+            return JSONResponse(content={"Success": message}, status_code=200)
     else:
-        return {
-            "Error": "User is not a manager of the organisation",
-            "SubCode": "UserNotPermitted",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the organisation",
+                "SubCode": "UserNotPermitted",
+            },
+            status_code=403,
+        )
 
 
 @router.get("/{organisation_id}/campaigns/", response_model=CampaignListDTO)
@@ -172,15 +179,21 @@ async def delete(
     if await OrganisationService.can_user_manage_organisation(
         organisation_id, request.user.display_name, db
     ):
-        await CampaignService.delete_organisation_campaign(
-            organisation_id, campaign_id, db
-        )
-        return (
-            {"Success": "Organisation and campaign unassociated successfully"},
-            200,
-        )
+        async with db.transaction():
+            await CampaignService.delete_organisation_campaign(
+                organisation_id, campaign_id, db
+            )
+            return JSONResponse(
+                content={
+                    "Success": "Organisation and campaign unassociated successfully"
+                },
+                status_code=200,
+            )
     else:
-        return {
-            "Error": "User is not a manager of the organisation",
-            "SubCode": "UserNotPermitted",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the organisation",
+                "SubCode": "UserNotPermitted",
+            },
+            status_code=403,
+        )
