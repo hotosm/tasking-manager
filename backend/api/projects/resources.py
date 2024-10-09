@@ -565,7 +565,7 @@ def setup_search_dto(request) -> ProjectSearchDTO:
     )
     project_statuses_str = request.query_params.get("projectStatuses")
     if project_statuses_str:
-        search_dto.project_statuses = map(str, project_statuses_str.split(","))
+        search_dto.project_statuses = list(map(str, project_statuses_str.split(",")))
     interests_str = request.query_params.get("interests")
     if interests_str:
         search_dto.interests = map(int, interests_str.split(","))

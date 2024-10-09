@@ -1,16 +1,16 @@
-from backend.services.application_service import ApplicationService
-from fastapi import APIRouter, Depends, Request, Response
-from backend.db import get_session
-from backend.services.users.authentication_service import login_required
-from backend.models.postgis.application import Application
-from backend.models.dtos.user_dto import AuthUserDTO
-from backend.db import get_db
 from databases import Database
+from fastapi import APIRouter, Depends, Request, Response
+
+from backend.db import get_db
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.application import Application
+from backend.services.application_service import ApplicationService
+from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
     prefix="/system",
     tags=["system"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

@@ -3,7 +3,7 @@ from distutils.util import strtobool
 
 from databases import Database
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import Response, StreamingResponse
+from fastapi.responses import Response, StreamingResponse, JSONResponse
 from loguru import logger
 from starlette.authentication import requires
 
@@ -131,7 +131,7 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             )
         return tasks_json
     except ProjectServiceError as e:
-        return {"Error": str(e)}, 403
+        return JSONResponse(content={"Error": str(e)}, status_code=403)
 
 
 @router.delete("/{project_id}/tasks/")

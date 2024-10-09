@@ -1,26 +1,23 @@
 # from flask import current_app, request
 # from flask_restful import
+from databases import Database
+from fastapi import APIRouter, Depends, Request
+from fastapi.logger import logger
+from fastapi.responses import JSONResponse
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
 from backend import osm
 from backend.config import settings
+from backend.db import get_db
 from backend.services.users.authentication_service import (
     AuthenticationService,
     AuthServiceError,
 )
-from fastapi import APIRouter, Depends, Request
-from fastapi.responses import JSONResponse
-from backend.db import get_session
-from fastapi.logger import logger
-
-from databases import Database
-from backend.db import get_db
-
 
 router = APIRouter(
     prefix="/system",
     tags=["system"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

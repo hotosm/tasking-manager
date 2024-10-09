@@ -1,24 +1,21 @@
-from backend.services.users.user_service import UserService
-from backend.services.users.authentication_service import login_required
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from starlette.authentication import requires
-from backend.models.dtos.user_dto import AuthUserDTO
 from databases import Database
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
+
 from backend.db import get_db
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.services.users.authentication_service import login_required
+from backend.services.users.user_service import UserService
 
 router = APIRouter(
     prefix="/licenses",
     tags=["licenses"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
 
-# class LicensesActionsAcceptAPI(Resource):
-#     @token_auth.login_required
 @router.post("/{license_id}/actions/accept-for-me/")
-@requires("authenticated")
 async def post(
     request: Request,
     license_id: int,
@@ -56,4 +53,4 @@ async def post(
             description: Internal Server Error
     """
     await UserService.accept_license_terms(user.id, license_id, db)
-    return {"Success": "Terms Accepted"}, 200
+    return JSONResponse(content={"Success": "Terms Accepted"}, status_code=200)

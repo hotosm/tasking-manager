@@ -1,19 +1,18 @@
 from distutils.util import strtobool
 
-# from flask_restful import , current_app, request
-# from schematics.exceptions import DataError
+from databases import Database
+from fastapi import APIRouter, Depends, Request
 
-from backend.models.dtos.user_dto import UserSearchQuery
+from backend.db import get_db, get_session
+from backend.models.dtos.user_dto import AuthUserDTO, UserSearchQuery
+from backend.services.project_service import ProjectService
+from backend.services.users.authentication_service import login_required
 
 # from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService
-from backend.services.project_service import ProjectService
-from backend.services.users.authentication_service import login_required
-from backend.models.dtos.user_dto import AuthUserDTO
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from databases import Database
-from backend.db import get_db
+
+# from flask_restful import , current_app, request
+# from schematics.exceptions import DataError
 
 
 router = APIRouter(
@@ -24,8 +23,6 @@ router = APIRouter(
 )
 
 
-# class UsersRestAPI():
-# @token_auth.login_required
 @router.get("/{user_id}/")
 async def get(
     request: Request,

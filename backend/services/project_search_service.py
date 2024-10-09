@@ -341,7 +341,9 @@ class ProjectSearchService:
             statuses = [
                 ProjectStatus[status].value for status in search_dto.project_statuses
             ]
-            filters.append("p.status IN :statuses")
+            print(statuses)
+            print(type(statuses))
+            filters.append("p.status = ANY(:statuses)")
             params["statuses"] = tuple(statuses)
         else:
             if not search_dto.created_by:
@@ -429,7 +431,6 @@ class ProjectSearchService:
                     MappingTypes[mapping_type].value
                     for mapping_type in search_dto.mapping_types
                 )
-
         if search_dto.text_search:
             search_text = "".join(
                 char for char in search_dto.text_search if char not in "@|&!><\\():"

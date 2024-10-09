@@ -1,36 +1,35 @@
 import datetime
 import xml.etree.ElementTree as ET
 
+from databases import Database
+
 # from flask import current_app
 from geoalchemy2 import WKBElement
 from geoalchemy2.shape import to_shape
+from loguru import logger
+
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import (
     ExtendLockTimeDTO,
-    TaskDTO,
-    MappedTaskDTO,
     LockTaskDTO,
+    MappedTaskDTO,
     StopMappingTaskDTO,
     TaskCommentDTO,
+    TaskDTO,
 )
 from backend.models.postgis.statuses import MappingNotAllowed
-from backend.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
+from backend.models.postgis.task import Task, TaskAction, TaskHistory, TaskStatus
 from backend.models.postgis.utils import UserLicenseError
 from backend.services.messaging.message_service import MessageService
 from backend.services.project_service import ProjectService
 from backend.services.stats_service import StatsService
-from databases import Database
 
 
 class MappingServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling mapping"""
 
-    # Log the error here.
-    pass
-
-    # def __init__(self, message):
-    #     if current_app:
-    #         current_app.logger.debug(message)
+    def __init__(self, message):
+        logger.debug(message)
 
 
 class MappingService:
