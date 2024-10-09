@@ -6,11 +6,10 @@ import shortNumber from 'short-number';
 import { intervalToDuration } from 'date-fns';
 
 import messages from './messages';
-import { StatsCardWithFooter } from '../statsCard';
-import { MappingIcon, SwipeIcon, ClockIcon } from '../svgIcons';
+import { PeopleIcon, SwipeIcon, ClockIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
-const iconClass = 'w-100';
+const iconClass = 'w-100 red';
 const iconStyle = { height: '55px' };
 
 const OverviewPlaceholder = () => (
@@ -18,9 +17,9 @@ const OverviewPlaceholder = () => (
     className="flex justify-between items-center flex-wrap flex-nowrap-ns"
     style={{ gap: '1.6rem' }}
   >
-    <ReactPlaceholder type="rect" style={{ width: '100%', height: 155 }} showLoadingAnimation />
-    <ReactPlaceholder type="rect" style={{ width: '100%', height: 155 }} showLoadingAnimation />
-    <ReactPlaceholder type="rect" style={{ width: '100%', height: 155 }} showLoadingAnimation />
+    <ReactPlaceholder type="rect" style={{ width: '100%', height: 180 }} showLoadingAnimation />
+    <ReactPlaceholder type="rect" style={{ width: '100%', height: 180 }} showLoadingAnimation />
+    <ReactPlaceholder type="rect" style={{ width: '100%', height: 180 }} showLoadingAnimation />
   </div>
 );
 
@@ -71,56 +70,85 @@ export const Overview = () => {
         className="flex justify-between items-stretch flex-wrap flex-nowrap-ns"
         style={{ gap: '1.6rem' }}
       >
-        <StatsCardWithFooter
-          icon={<SwipeIcon className={iconClass} style={iconStyle} />}
-          description={<FormattedMessage {...messages.totalSwipes} />}
-          value={data?.totalcontributions ? getShortNumber(data.totalcontributions) : '-'}
-          delta={
-            data?.totalRecentcontributions ? (
-              <span>
+        <div
+          className="pa4 flex items-center bg-white shadow-6 w-100 bb b--red bw2"
+          style={{ gap: '1.75rem' }}
+        >
+          <div>
+            <SwipeIcon className={iconClass} style={iconStyle} />
+          </div>
+          <div className="flex flex-column" style={{ gap: '0.5rem' }}>
+            <h3 className="ma0 f1 fw6 red barlow-condensed">
+              {data?.totalcontributions ? getShortNumber(data.totalcontributions) : '-'}
+            </h3>
+            <span className="ma0 h2 f3 fw7 silver barlow-condensed mb1">
+              <FormattedMessage {...messages.totalSwipes} />
+            </span>
+
+            {data?.totalRecentcontributions ? (
+              <span className="blue-grey f6 fw4">
                 <b>{getShortNumber(data.totalRecentcontributions)}</b>{' '}
                 <FormattedMessage {...messages.recentTotalSwipesText} />
               </span>
             ) : (
-              '--'
-            )
-          }
-          className="w-100 justify-between"
-        />
-        <StatsCardWithFooter
-          icon={<ClockIcon className={iconClass} style={iconStyle} />}
-          description={<FormattedMessage {...messages.totalTimeSpent} />}
-          value={
-            data?.totalcontributionTime ? formatSecondsToTwoUnits(data.totalcontributionTime) : '-'
-          }
-          delta={
-            data?.totalRecentcontributionTime ? (
-              <span>
+              '-'
+            )}
+          </div>
+        </div>
+
+        <div
+          className="pa4 flex items-center bg-white shadow-6 w-100 bb b--red bw2"
+          style={{ gap: '1.75rem' }}
+        >
+          <div>
+            <ClockIcon className={iconClass} style={iconStyle} />
+          </div>
+          <div className="flex flex-column" style={{ gap: '0.5rem' }}>
+            <h3 className="ma0 f1 fw6 red barlow-condensed">
+              {data?.totalcontributionTime
+                ? formatSecondsToTwoUnits(data.totalcontributionTime)
+                : '-'}
+            </h3>
+            <span className="ma0 h2 f3 fw7 silver barlow-condensed mb1">
+              <FormattedMessage {...messages.totalTimeSpent} />
+            </span>
+
+            {data?.totalRecentcontributionTime ? (
+              <span className="blue-grey f6 fw4">
                 <b>{formatSecondsToTwoUnits(data.totalRecentcontributionTime)}</b>{' '}
                 <FormattedMessage {...messages.recentTotalTimeSpentText} />
               </span>
             ) : (
               '--'
-            )
-          }
-          className="w-100 justify-between"
-        />
-        <StatsCardWithFooter
-          icon={<MappingIcon className={iconClass} style={iconStyle} />}
-          description={<FormattedMessage {...messages.totalContributors} />}
-          value={data?.totalContributors ? getShortNumber(data.totalContributors) : '-'}
-          delta={
-            data?.totalRecentContributors ? (
-              <span>
+            )}
+          </div>
+        </div>
+
+        <div
+          className="pa4 flex items-center bg-white shadow-6 w-100 bb b--red bw2"
+          style={{ gap: '1.75rem' }}
+        >
+          <div>
+            <PeopleIcon className={iconClass} style={iconStyle} />
+          </div>
+          <div className="flex flex-column" style={{ gap: '0.5rem' }}>
+            <h3 className="ma0 f1 fw6 red barlow-condensed">
+              {data?.totalContributors ? getShortNumber(data.totalContributors) : '-'}
+            </h3>
+            <span className="ma0 h2 f3 fw7 silver barlow-condensed mb1">
+              <FormattedMessage {...messages.totalContributors} />
+            </span>
+
+            {data?.totalRecentContributors ? (
+              <span className="blue-grey f6 fw4">
                 <b>{getShortNumber(data.totalRecentContributors)}</b>{' '}
                 <FormattedMessage {...messages.recentTotalContributorsText} />
               </span>
             ) : (
-              '--'
-            )
-          }
-          className="w-100 justify-between"
-        />
+              '-'
+            )}
+          </div>
+        </div>
       </div>
     </ReactPlaceholder>
   );
