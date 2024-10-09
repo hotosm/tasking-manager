@@ -112,7 +112,7 @@ export const TimeSpentContributing = ({ contributionTimeByDate = [] }) => {
           beginAtZero: true,
           ticks: {
             callback: function (value) {
-              return formatSecondsToTwoUnits(value);
+              return formatSecondsToTwoUnits(value, true);
             },
             stepSize: 36 * 60,
           },
@@ -123,7 +123,7 @@ export const TimeSpentContributing = ({ contributionTimeByDate = [] }) => {
           callbacks: {
             label: function (context) {
               const value = context.parsed.y;
-              return formatSecondsToTwoUnits(value);
+              return formatSecondsToTwoUnits(value, true);
             },
           },
         },
