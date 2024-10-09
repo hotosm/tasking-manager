@@ -37,7 +37,7 @@ import { MappingTypes } from '../mappingTypes';
 import { usePriorityAreasQuery, useTaskDetail } from '../../api/projects';
 
 const Editor = lazy(() => import('../editor'));
-const RapiDEditor = lazy(() => import('../rapidEditor'));
+const RapidEditor = lazy(() => import('../rapidEditor'));
 
 const MINUTES_BEFORE_DIALOG = 5;
 
@@ -228,7 +228,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                     gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
                   />
                 ) : (
-                  <RapiDEditor
+                  <RapidEditor
                     setDisable={setDisable}
                     comment={project.changesetComment}
                     presets={project.idPresets}

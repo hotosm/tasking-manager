@@ -4,7 +4,7 @@ describe('test getEditors', () => {
   it('without filterList and without customEditor', () => {
     expect(getEditors()).toStrictEqual([
       {
-        label: 'RapiD',
+        label: 'Rapid',
         value: 'RAPID',
         url: 'https://mapwith.ai/rapid',
       },
@@ -48,7 +48,7 @@ describe('test getEditors', () => {
 
   it('with customEditor and filterList including the CUSTOM value', () => {
     const customEditor = {
-      name: 'RapiD',
+      name: 'Rapid',
       description: null,
       url: 'https://mapwith.ai/rapid',
     };
@@ -64,7 +64,7 @@ describe('test getEditors', () => {
         url: 'http://127.0.0.1:8111',
       },
       {
-        label: 'RapiD',
+        label: 'Rapid',
         value: 'CUSTOM',
         url: 'https://mapwith.ai/rapid',
       },
