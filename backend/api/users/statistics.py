@@ -1,17 +1,18 @@
-from databases import Database
 from datetime import date, timedelta
+
+import requests
+from databases import Database
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
-import requests
 
 from backend.api.utils import validate_date_input
 from backend.config import settings
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
-from backend.services.users.user_service import UserService
-from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
+from backend.services.stats_service import StatsService
 from backend.services.users.authentication_service import login_required
+from backend.services.users.user_service import UserService
 
 router = APIRouter(
     prefix="/users",

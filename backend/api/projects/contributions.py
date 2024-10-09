@@ -1,17 +1,17 @@
 # from flask_restful import Resource
 
+from databases import Database
+from fastapi import APIRouter, Depends
+
+from backend.db import get_db
 from backend.models.postgis.project import Project
 from backend.services.project_service import ProjectService
 from backend.services.stats_service import StatsService
-from fastapi import APIRouter, Depends
-from backend.db import get_session
-from backend.db import get_db
-from databases import Database
 
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_session)],
+    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

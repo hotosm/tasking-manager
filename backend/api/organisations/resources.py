@@ -1,3 +1,9 @@
+from databases import Database
+from fastapi import APIRouter, Depends, Query, Request
+from fastapi.responses import JSONResponse, Response
+from loguru import logger
+
+from backend.db import get_db
 from backend.models.dtos.organisation_dto import (
     ListOrganisationsDTO,
     NewOrganisationDTO,
@@ -6,19 +12,13 @@ from backend.models.dtos.organisation_dto import (
 )
 from backend.models.dtos.stats_dto import OrganizationStatsDTO
 from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.statuses import OrganisationType
 from backend.models.postgis.user import User
 from backend.services.organisation_service import (
     OrganisationService,
     OrganisationServiceError,
 )
-from backend.models.postgis.statuses import OrganisationType
 from backend.services.users.authentication_service import login_required
-from fastapi import APIRouter, Depends, Request, Query
-from backend.db import get_db
-from loguru import logger
-from databases import Database
-from fastapi import HTTPException
-
 
 router = APIRouter(
     prefix="/organisations",
@@ -201,23 +201,32 @@ async def create_organisation(
     """
     request_user = await User.get_by_id(user.id, db)
     if request_user.role != 1:
-        return {
-            "Error": "Only admin users can create organisations.",
-            "SubCode": "OnlyAdminAccess",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "Only admin users can create organisations.",
+                "SubCode": "OnlyAdminAccess",
+            },
+            status_code=403,
+        )
     try:
         if request_user.username not in organisation_dto.managers:
             organisation_dto.managers.append(request_user.username)
 
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
+        )
 
     try:
-        org_id = await OrganisationService.create_organisation(organisation_dto, db)
-        return {"organisationId": org_id}, 201
+        async with db.transaction():
+            org_id = await OrganisationService.create_organisation(organisation_dto, db)
+            return JSONResponse(content={"organisationId": org_id}, status_code=201)
     except OrganisationServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=400,
+        )
 
 
 @router.delete("/{organisation_id}/")
@@ -262,19 +271,28 @@ async def delete_organisation(
     if not await OrganisationService.can_user_manage_organisation(
         organisation_id, user.id, db
     ):
-        return {
-            "Error": "User is not an admin for the org",
-            "SubCode": "UserNotOrgAdmin",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not an admin for the org",
+                "SubCode": "UserNotOrgAdmin",
+            },
+            status_code=403,
+        )
     try:
-        await OrganisationService.delete_organisation(organisation_id, db)
-        return {"Success": "Organisation deleted"}, 200
+        async with db.transaction():
+            await OrganisationService.delete_organisation(organisation_id, db)
+            return JSONResponse(
+                content={"Success": "Organisation deleted"}, status_code=200
+            )
 
-    except Exception as e:
-        raise HTTPException(
-            status_code=400,
-            detail="Organisation has projects or teams, cannot be deleted.",
-        ) from e
+    except OrganisationServiceError:
+        return JSONResponse(
+            content={
+                "Error": "Organisation has some projects",
+                "SubCode": "OrgHasProjects",
+            },
+            status_code=403,
+        )
 
 
 @router.patch("/{organisation_id}/")
@@ -346,10 +364,13 @@ async def update_organisation(
     if not await OrganisationService.can_user_manage_organisation(
         organisation_id, user.id, db
     ):
-        return {
-            "Error": "User is not an admin for the org",
-            "SubCode": "UserNotOrgAdmin",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not an admin for the org",
+                "SubCode": "UserNotOrgAdmin",
+            },
+            status_code=403,
+        )
     try:
         organisation_dto.organisation_id = organisation_id
         # Don't update organisation type and subscription_tier if request user is not an admin
@@ -360,12 +381,18 @@ async def update_organisation(
             organisation_dto.subscription_tier = org.subscription_tier
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
+        )
     try:
-        await OrganisationService.update_organisation(organisation_dto, db)
-        return {"Status": "Updated"}, 200
+        async with db.transaction():
+            await OrganisationService.update_organisation(organisation_dto, db)
+            return JSONResponse(content={"Status": "Updated"}, status_code=200)
     except OrganisationServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 402
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=402,
+        )
 
 
 @router.get("/{organisation_id}/statistics/", response_model=OrganizationStatsDTO)
@@ -468,12 +495,12 @@ async def list_organisation(
     """
     authenticated_user_id = request.user.display_name if request.user else None
     if manager_user_id is not None and not authenticated_user_id:
-        return (
-            {
+        return Response(
+            content={
                 "Error": "Unauthorized - Filter by manager_user_id is not allowed to unauthenticated requests",
                 "SubCode": "LoginToFilterManager",
             },
-            403,
+            status_code=403,
         )
     results_dto = await OrganisationService.get_organisations_as_dto(
         manager_user_id, authenticated_user_id, omit_managers, omit_stats, db
