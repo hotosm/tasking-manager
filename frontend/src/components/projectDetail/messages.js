@@ -344,4 +344,8 @@ export default defineMessages({
     id: 'project.noSimilarProjectsFound',
     defaultMessage: 'Could not find any similar projects for this project',
   },
+  viewProjectSpecificInstructions: {
+    id: 'project.viewProjectSpecificInstructions',
+    defaultMessage: 'View project specific instructions',
+  },
 });

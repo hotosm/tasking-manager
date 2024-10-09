@@ -39,7 +39,7 @@ export const useProjectsQuery = (fullProjectsQuery, action, queryOptions) => {
   });
 };
 
-export const useProjectQuery = (projectId) => {
+export const useProjectQuery = (projectId, otherOptions) => {
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
   const fetchProject = ({ signal }) => {
@@ -51,6 +51,7 @@ export const useProjectQuery = (projectId) => {
   return useQuery({
     queryKey: ['project', projectId],
     queryFn: fetchProject,
+    ...otherOptions,
   });
 };
 export const useProjectSummaryQuery = (projectId, otherOptions = {}) => {
