@@ -28,7 +28,7 @@ function getSocialIcons(link) {
 }
 
 const tabData = [
-  { id: 'leaderboard', title: 'Leaderboard' },
+  { id: 'leaderboard', title: 'Tasking Manager' },
   { id: 'mapswipe', title: 'Map Swipe' },
 ];
 
