@@ -1,0 +1,14 @@
+.partner-mapswipe-stats-column-resizer {
+  position: absolute;
+  top: 27%;
+  height: 40%;
+  width: 2px;
+  background: rgba(177, 177, 177, 0.5);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+}
+
+.partner-mapswipe-stats-column-resizer.isResizing {
+  background: rgb(131, 131, 131);
+}

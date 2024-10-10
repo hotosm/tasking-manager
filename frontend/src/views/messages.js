@@ -814,4 +814,20 @@ export default defineMessages({
     id: 'pages.create_campaign.error',
     defaultMessage: 'There was an error saving this campaign.',
   },
+  mapswipeInfo: {
+    id: 'management.partner.stats.mapswipe.info',
+    defaultMessage: 'It may take up to 48 hours for updates',
+  },
+  swipes: {
+    id: 'management.partners.stats.mapswipe.swipes',
+    defaultMessage: 'Swipes',
+  },
+  timeSpentContributing: {
+    id: 'management.partners.stats.mapswipe.timeSpentContributing',
+    defaultMessage: 'Time Spent Contributing',
+  },
+  partnersMapswipeStatsError: {
+    id: 'management.partners.stats.mapswipe.page.error',
+    defaultMessage: 'Something went wrong! Could not load data.',
+  },
 });
