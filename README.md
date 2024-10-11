@@ -45,7 +45,8 @@ Status | Feature
 
 * [Understand the code](./docs/developers/understanding-the-code.md)
 * [Setup the TM for development](./docs/developers/development-setup.md)
-* [Learn about versions and releases](./docs/developers/versions-and-releases.md)
+* [Deploying Tasking Manager using Docker Compose](./docs/sysadmins/deployment-docker-compose.md)
+* [Learn about vesions and releases](./docs/developers/versions-and-releases.md)
 * Help us and submit [pull requests](https://github.com/hotosm/tasking-manager/pulls)
 
 ## Instances
@@ -53,7 +54,9 @@ Status | Feature
 * [HOT Tasking Manager (staging)](https://tasks-stage.hotosm.org)
 * [TeachOSM](https://tasks.teachosm.org/)
 * [OpenStreetMap Indonesia](https://tasks-indonesia.hotosm.org/)
+* [OpenStreetMap Ireland](https://tasks.openstreetmap.ie)
 * [OpenStreetMap US](https://tasks.openstreetmap.us/)
 * [Map My Kerala](https://mapmykerala.in/)
 * [OpenHistoricalMap](https://tasks.openhistoricalmap.org)
 * [Oceania Tasking Manager](https://tasks.smartcitiestransport.com/)
+
