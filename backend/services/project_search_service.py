@@ -344,8 +344,6 @@ class ProjectSearchService:
             statuses = [
                 ProjectStatus[status].value for status in search_dto.project_statuses
             ]
-            print(statuses)
-            print(type(statuses))
             filters.append("p.status = ANY(:statuses)")
             params["statuses"] = tuple(statuses)
         else:
@@ -356,15 +354,25 @@ class ProjectSearchService:
         if not search_dto.based_on_user_interests:
             if search_dto.interests:
                 filters.append(
-                    "p.id IN (SELECT project_id FROM project_interests WHERE interest_id IN :interests)"
+                    "p.id IN (SELECT project_id FROM project_interests WHERE interest_id = ANY(:interests))"
                 )
                 params["interests"] = tuple(search_dto.interests)
         else:
-            user = await UserService.get_user_by_id(search_dto.based_on_user_interests)
-            filters.append(
-                "p.id IN (SELECT project_id FROM project_interests WHERE interest_id IN :user_interests)"
+            user_interest_query = """
+                    SELECT interest_id
+                    FROM user_interests
+                    WHERE user_id = :user_id
+                """
+            results = await db.fetch_all(
+                query=user_interest_query, values={"user_id": user.id}
             )
-            params["user_interests"] = tuple(interest.id for interest in user.interests)
+            user_interests = (
+                [record["interest_id"] for record in results] if results else []
+            )
+            filters.append(
+                "p.id IN (SELECT project_id FROM project_interests WHERE interest_id = ANY(:user_interests))"
+            )
+            params["user_interests"] = tuple(user_interests)
 
         if search_dto.created_by:
             filters.append("p.author_id = :created_by")
@@ -374,12 +382,20 @@ class ProjectSearchService:
             mapped_projects = await UserService.get_projects_mapped(
                 search_dto.mapped_by, db
             )
-            filters.append("p.id IN :mapped_projects")
+            filters.append("p.id = ANY(:mapped_projects)")
             params["mapped_projects"] = tuple(mapped_projects)
 
         if search_dto.favorited_by:
-            favorited_projects = [project.id for project in user.favorites]
-            filters.append("p.id IN :favorited_projects")
+            favorited_projects = []
+            if user:
+                query = """
+                    SELECT project_id
+                    FROM project_favorites
+                    WHERE user_id = :user_id
+                """
+                results = await db.fetch_all(query=query, values={"user_id": user.id})
+                favorited_projects = [record["project_id"] for record in results]
+            filters.append("p.id  = ANY(:favorited_projects)")
             params["favorited_projects"] = tuple(favorited_projects)
 
         if search_dto.difficulty and search_dto.difficulty.upper() != "ALL":
@@ -446,9 +462,9 @@ class ProjectSearchService:
 
         if search_dto.country:
             filters.append(
-                "p.id IN (SELECT id FROM projects, unnest(country) AS country WHERE LOWER(country) = LOWER(:country))"
+                "LOWER(:country) = ANY(ARRAY(SELECT LOWER(c) FROM unnest(p.country) AS c))"
             )
-            params["country"] = search_dto.country
+            params["country"] = search_dto.country.lower()
 
         if search_dto.last_updated_gte:
             filters.append("p.last_updated >= :last_updated_gte")
