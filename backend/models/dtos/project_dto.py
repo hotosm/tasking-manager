@@ -434,10 +434,21 @@ class ListSearchResultDTO(BaseModel):
     country: Optional[str] = Field(default="", serialize=False)
 
 
+# class ProjectSearchResultsDTO(BaseModel):
+#     map_results: Optional[List] = []
+#     results: Optional[List[ListSearchResultDTO]] = []
+#     pagination: Optional[Pagination] = {}
+
+
 class ProjectSearchResultsDTO(BaseModel):
-    map_results: Optional[List] = []
-    results: Optional[List[ListSearchResultDTO]] = []
-    pagination: Optional[Pagination] = {}
+    """Contains all results for the search criteria"""
+
+    map_results: Optional[List] = Field(default_factory=list, alias="mapResults")
+    results: Optional[List["ListSearchResultDTO"]] = Field(default_factory=list)
+    pagination: Optional["Pagination"] = Field(default_factory=dict)
+
+    class Config:
+        populate_by_name = True
 
 
 class LockedTasksForUser(BaseModel):

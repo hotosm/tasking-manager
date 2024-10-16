@@ -48,16 +48,14 @@ class ProjectSearchServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling mapping"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class BBoxTooBigError(Exception):
     """Custom Exception to notify callers an error occurred when handling mapping"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class ProjectSearchService:
@@ -357,7 +355,8 @@ class ProjectSearchService:
 
         if search_dto.campaign:
             filters.append(
-                "p.id IN (SELECT project_id FROM campaigns WHERE name = :campaign_name)"
+                "p.id IN (SELECT cp.project_id FROM campaign_projects cp "
+                "JOIN campaigns c ON c.id = cp.campaign_id WHERE c.name = :campaign_name)"
             )
             params["campaign_name"] = search_dto.campaign
 
@@ -374,6 +373,7 @@ class ProjectSearchService:
                     MappingTypes[mapping_type].value
                     for mapping_type in search_dto.mapping_types
                 )
+
         if search_dto.text_search:
             search_text = "".join(
                 char for char in search_dto.text_search if char not in "@|&!><\\():"
@@ -452,19 +452,41 @@ class ProjectSearchService:
                 params["managed_projects"] = project_ids
 
         order_by_clause = ""
-        if search_dto.order_by:
-            order_by = f"p.{search_dto.order_by}"
-            if search_dto.order_by_type == "DESC":
-                order_by += " DESC"
-            order_by_clause = f" ORDER BY {order_by}"
 
-        # Construct final query
+        if search_dto.order_by:
+            order_by = search_dto.order_by
+
+            if order_by == "percent_mapped":
+                percent_mapped_sql = """
+                    (p.tasks_mapped + p.tasks_validated) * 100
+                    / NULLIF((p.total_tasks - p.tasks_bad_imagery), 0)
+                """
+                if search_dto.order_by_type == "DESC":
+                    order_by_clause = f" ORDER BY {percent_mapped_sql} DESC"
+                else:
+                    order_by_clause = f" ORDER BY {percent_mapped_sql} ASC"
+
+            elif order_by == "percent_validated":
+                percent_validated_sql = """
+                    p.tasks_validated * 100
+                    / NULLIF((p.total_tasks - p.tasks_bad_imagery), 0)
+                """
+                if search_dto.order_by_type == "DESC":
+                    order_by_clause = f" ORDER BY {percent_validated_sql} DESC"
+                else:
+                    order_by_clause = f" ORDER BY {percent_validated_sql} ASC"
+
+            else:
+                order_by = f"p.{order_by}"
+                if search_dto.order_by_type == "DESC":
+                    order_by += " DESC"
+                order_by_clause = f" ORDER BY {order_by}"
+
         if filters:
             sql_query = base_query + " AND " + " AND ".join(filters)
         else:
             sql_query = base_query
 
-        # Append the ORDER BY clause
         sql_query += order_by_clause
         page = search_dto.page
         per_page = 14
@@ -474,12 +496,12 @@ class ProjectSearchService:
         # Get total count
         count_query = f"SELECT COUNT(*) FROM ({sql_query}) AS count_subquery"
         total_count = await db.fetch_val(count_query, values=params)
-
+        print(total_count, "THe total count...")
         paginated_results = await db.fetch_all(sql_query_paginated, values=params)
         all_results = await db.fetch_all(sql_query, values=params)
-
+        print(all_results, "All results...")
         pagination_dto = Pagination.from_total_count(page, per_page, total_count)
-
+        print(pagination_dto, "Pagination dtooo...")
         return all_results, paginated_results, pagination_dto
 
     @staticmethod
@@ -557,7 +579,6 @@ class ProjectSearchService:
             query += subquery
             params.update(subquery_params)
 
-        # Execute the query with parameters
         project_records = await db.fetch_all(query, params)
         return [record["id"] for record in project_records] if project_records else []
 
