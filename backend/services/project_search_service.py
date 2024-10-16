@@ -569,12 +569,9 @@ class ProjectSearchService:
         # Get total count
         count_query = f"SELECT COUNT(*) FROM ({sql_query}) AS count_subquery"
         total_count = await db.fetch_val(count_query, values=params)
-        print(total_count, "THe total count...")
         paginated_results = await db.fetch_all(sql_query_paginated, values=params)
         all_results = await db.fetch_all(sql_query, values=params)
-        print(all_results, "All results...")
         pagination_dto = Pagination.from_total_count(page, per_page, total_count)
-        print(pagination_dto, "Pagination dtooo...")
         return all_results, paginated_results, pagination_dto
 
     @staticmethod

@@ -562,7 +562,7 @@ class Project(Base):
         self.teams = []
         if hasattr(project_dto, "project_teams") and project_dto.project_teams:
             for team_dto in project_dto.project_teams:
-                team = Team.get(team_dto.team_id)
+                team = Team.get(team_dto.team_id, db)
 
                 if team is None:
                     raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_dto.team_id)
