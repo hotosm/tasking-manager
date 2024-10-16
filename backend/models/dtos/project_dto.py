@@ -183,14 +183,12 @@ class ProjectInfoDTO(BaseModel):
     """Contains the localized project info"""
 
     locale: str
-    name: Optional[str] = ""  # Optional, with default as empty string
-    short_description: Optional[str] = Field(
-        default="", serialization_alias="shortDescription"
-    )  # Optional, with default as empty string
-    description: Optional[str] = ""  # Optional, with default as empty string
-    instructions: Optional[str] = ""  # Optional, with default as empty string
+    name: Optional[str] = ""
+    short_description: Optional[str] = Field(default="", alias="shortDescription")
+    description: Optional[str] = ""
+    instructions: Optional[str] = ""
     per_task_instructions: Optional[str] = Field(
-        default="", serialization_alias="perTaskInstructions"
+        default="", alias="perTaskInstructions"
     )
 
     class Config:
