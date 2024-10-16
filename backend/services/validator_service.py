@@ -476,12 +476,14 @@ class ValidatorService:
                 UPDATE tasks
                 SET mapped_by = :mapped_by
                 WHERE id = :task_id
+                AND project_id = :project_id
             """
             await db.execute(
                 query=update_mapped_by_query,
                 values={
                     "mapped_by": mapped_by,
                     "task_id": task_id,
+                    "project_id": project_id,
                 },
             )
 
