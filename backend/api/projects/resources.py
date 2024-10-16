@@ -727,10 +727,10 @@ async def get(
         results_dto = await ProjectSearchService.search_projects(search_dto, user, db)
         return results_dto
     except NotFound:
-        return {"mapResults": {}, "results": []}, 200
+        return JSONResponse(content={"mapResults": {}, "results": []}, status_code=200)
     except (KeyError, ValueError) as e:
         error_msg = f"Projects GET - {str(e)}"
-        return {"Error": error_msg}, 400
+        return JSONResponse(content={"Error": error_msg}, status_code=400)
 
 
 @router.get("/queries/bbox/")
@@ -791,10 +791,13 @@ async def get(
         authenticated_user_id, db
     )
     if len(orgs_dto.organisations) < 1:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     try:
         bbox = map(float, request.query_params.get("bbox").split(","))
@@ -814,17 +817,26 @@ async def get(
         # search_dto.validate()
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {
-            "Error": f"Error validating request: {str(e)}",
-            "SubCode": "InvalidData",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": f"Error validating request: {str(e)}",
+                "SubCode": "InvalidData",
+            },
+            status_code=400,
+        )
     try:
         geojson = await ProjectSearchService.get_projects_geojson(search_dto, db)
         return geojson, 200
     except BBoxTooBigError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=400,
+        )
     except ProjectSearchServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=400,
+        )
 
 
 @router.get("/queries/myself/owner/")
@@ -870,10 +882,13 @@ async def get(
         authenticated_user_id, db
     )
     if len(orgs_dto.organisations) < 1:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     search_dto = setup_search_dto(request)
     preferred_locale = request.headers.get("accept-language", "en")
@@ -1015,7 +1030,10 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
 
         return project_dto
     except ProjectServiceError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=403,
+        )
     finally:
         # this will try to unlock tasks that have been locked too long
         try:
@@ -1066,10 +1084,13 @@ async def get(
     if not await ProjectAdminService.is_user_action_permitted_on_project(
         request.user.display_name, project_id, db
     ):
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     project_dto = await ProjectAdminService.get_project_dto_for_admin(project_id, db)
     return project_dto
@@ -1155,7 +1176,9 @@ async def get(project_id: int, db: Database = Depends(get_db)):
         priority_areas = await ProjectService.get_project_priority_areas(project_id, db)
         return priority_areas
     except ProjectServiceError:
-        return {"Error": "Unable to fetch project"}, 403
+        return JSONResponse(
+            content={"Error": "Unable to fetch project"}, status_code=403
+        )
 
 
 @router.get("/queries/featured/")
@@ -1261,13 +1284,19 @@ async def get(request: Request, db: Database = Depends(get_db)):
     """
     interval = request.query_params.get("interval", "24")
     if not interval.isdigit():
-        return {
-            "Error": "Interval must be a number greater than 0 and less than or equal to 24"
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": "Interval must be a number greater than 0 and less than or equal to 24"
+            },
+            status_code=400,
+        )
     interval = int(interval)
     if interval <= 0 or interval > 24:
-        return {
-            "Error": "Interval must be a number greater than 0 and less than or equal to 24"
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": "Interval must be a number greater than 0 and less than or equal to 24"
+            },
+            status_code=400,
+        )
     projects_dto = await ProjectService.get_active_projects(interval, db)
     return projects_dto
