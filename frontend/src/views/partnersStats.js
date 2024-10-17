@@ -86,6 +86,11 @@ export const PartnersStats = () => {
     .filter((key) => key.startsWith('link'))
     .filter((link) => partner[link]);
 
+  // remove Map Swipe tab if mapswipe_group_id not present
+  const modifiedTabData = !partner?.mapswipe_group_id
+    ? tabData.filter((tab) => tab.id !== 'mapswipe')
+    : tabData;
+
   return (
     <ReactPlaceholder
       showLoadingAnimation={true}
@@ -110,7 +115,7 @@ export const PartnersStats = () => {
             )}
             <div className="flex justify-between">
               <div className="flex gap-0.75">
-                {tabData.map(({ id: tabId, title }) => (
+                {modifiedTabData.map(({ id: tabId, title }) => (
                   <div
                     key={tabId}
                     role="button"
