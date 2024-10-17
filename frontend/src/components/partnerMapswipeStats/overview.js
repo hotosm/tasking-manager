@@ -30,7 +30,7 @@ export const formatSecondsToTwoUnits = (seconds, shortFormat = false) => {
     years: 'yrs',
     months: 'mos',
     weeks: 'wks',
-    days: 'ds',
+    days: 'days',
     hours: 'hrs',
     minutes: 'mins',
     seconds: 'secs',
