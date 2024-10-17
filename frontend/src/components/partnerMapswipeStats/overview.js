@@ -82,6 +82,9 @@ export const Overview = () => {
       customPlaceholder={<OverviewPlaceholder />}
       ready={!isLoading && !isRefetching}
     >
+      <h3 class="f2 blue-dark fw7 ma0 barlow-condensed v-mid dib mb3">
+        {data?.nameInsideProvider}
+      </h3>
       <div
         className="flex justify-between items-stretch flex-wrap flex-nowrap-ns"
         style={{ gap: '1.6rem' }}
