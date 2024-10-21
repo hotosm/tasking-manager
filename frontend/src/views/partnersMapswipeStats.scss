@@ -1,0 +1,42 @@
+.mapswipe-stats-info-banner {
+  background-color: #d9d7d7;
+  width: fit-content;
+  margin-left: 20px;
+  border-radius: 3px;
+  &::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    background-color: #d9d7d7;
+    clip-path: polygon(100% 0, 0 50%, 100% 100%);
+  }
+}
+
+$medium: 960px;
+
+.mapswipe-stats-piechart-container {
+  display: flex;
+  flex-direction: row;
+  @media screen and (max-width: $medium) {
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+.mapswipe-stats-piechart {
+  width: 48.5%;
+  @media screen and (max-width: $medium) {
+    width: 100%;
+  }
+}
+
+.mapswipe-stats-swipes-container {
+  display: flex;
+  flex-direction: row;
+  @media screen and (max-width: $medium) {
+    flex-direction: column;
+  }
+}

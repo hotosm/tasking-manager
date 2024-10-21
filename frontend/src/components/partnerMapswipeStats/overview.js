@@ -86,7 +86,7 @@ export const Overview = () => {
         {data?.nameInsideProvider}
       </h3>
       <div
-        className="flex justify-between items-stretch flex-wrap flex-nowrap-ns"
+        className="flex justify-between items-stretch flex-wrap flex-nowrap-l"
         style={{ gap: '1.6rem' }}
       >
         <div
