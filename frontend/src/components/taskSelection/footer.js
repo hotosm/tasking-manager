@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
@@ -24,6 +24,7 @@ const TaskSelectionFooter = ({
   setSelectedTasks,
 }) => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences.locale);
   const [editor, setEditor] = useState(defaultUserEditor);
@@ -221,7 +222,20 @@ const TaskSelectionFooter = ({
       </div>
       <div className="w-30-ns w-60 fl tr">
         <div className="mt3">
-          <Button className="white bg-red fw5" onClick={() => lockTasks()} loading={isPending}>
+          <Button
+            className="white bg-red fw5"
+            onClick={() => {
+              if (!token) {
+                navigate('/login', {
+                  // for redirecting to the same page after login
+                  state: { from: pathname },
+                });
+              } else {
+                lockTasks();
+              }
+            }}
+            loading={isPending}
+          >
             {['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(
               taskAction,
             ) || project.status === 'ARCHIVED' ? (
