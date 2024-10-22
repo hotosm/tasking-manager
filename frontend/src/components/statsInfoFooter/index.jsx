@@ -2,6 +2,8 @@ import { useIntl } from 'react-intl';
 
 import { useOsmStatsMetadataQuery } from '../../api/stats';
 import { dateOptions } from '../statsTimestamp';
+import { InfoIcon } from '../svgIcons';
+import '../../views/partnersMapswipeStats.scss';
 
 export default function StatsInfoFooter() {
   const intl = useIntl();
@@ -9,20 +11,25 @@ export default function StatsInfoFooter() {
   const { data: osmStatsMetadata } = useOsmStatsMetadataQuery();
 
   return (
-    <div className="cf w-100 relative tr pt3">
-      <span className="ma0 f7 fw4 blue-grey mb1 i">
-        These statistics come from{' '}
-        <a
-          className="blue-grey fw7"
-          href="https://stats.now.ohsome.org/about"
-          target="_blank"
-          rel="noreferrer"
-        >
-          ohsomeNow Stats
-        </a>{' '}
-        and were last updated at{' '}
-        <strong>{intl.formatDate(osmStatsMetadata?.max_timestamp, dateOptions)}</strong> (
-        {intl.timeZone}).
+    <div className="pr3 pv2 pl0 relative inline-flex mv3 mapswipe-stats-info-banner blue-dark">
+      <span className="inline-flex items-center ">
+        <InfoIcon className="mr2" style={{ height: '20px' }} />
+        <span>
+          These statistics come from{' '}
+          <a
+            className="blue-grey"
+            href="https://stats.now.ohsome.org/about"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ohsomeNow Stats
+          </a>{' '}
+          and were last updated at{' '}
+          <span className="fw5 stats-info-datetime">
+            {intl.formatDate(osmStatsMetadata?.max_timestamp, dateOptions)}
+          </span>{' '}
+          ({intl.timeZone})
+        </span>
       </span>
     </div>
   );
