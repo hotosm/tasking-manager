@@ -503,7 +503,9 @@ class Project(Base):
         self.private = project_dto.private
         self.difficulty = ProjectDifficulty[project_dto.difficulty.upper()].value
         self.changeset_comment = project_dto.changeset_comment
-        self.due_date = project_dto.due_date.replace(tzinfo=None)
+        self.due_date = (
+            project_dto.due_date.replace(tzinfo=None) if project_dto.due_date else None
+        )
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
         self.id_presets = project_dto.id_presets
@@ -1375,7 +1377,7 @@ class Project(Base):
             ProjectTeamDTO(
                 team_id=team["team_id"],
                 team_name=team["team_name"],
-                role=TeamRoles(team["role"]).value,
+                role=TeamRoles(team["role"]),
             )
             for team in teams
         ]

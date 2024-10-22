@@ -143,6 +143,7 @@ async def get_project(
     finally:
         # this will try to unlock tasks that have been locked too long
         try:
+            # TODO
             await ProjectService.auto_unlock_tasks(project_id, db)
         except Exception as e:
             logger.critical(str(e))
@@ -827,7 +828,7 @@ async def get(
         )
     try:
         geojson = await ProjectSearchService.get_projects_geojson(search_dto, db)
-        return geojson, 200
+        return JSONResponse(content=geojson, status_code=200)
     except BBoxTooBigError as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
