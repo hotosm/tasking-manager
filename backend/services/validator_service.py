@@ -414,7 +414,6 @@ class ValidatorService:
                 "validated_status": TaskStatus.VALIDATED.value,
             },
         )
-
         for task in validated_tasks:
             await Task.lock_task_for_validating(task["id"], project_id, user_id, db)
             await Task.unlock_task(

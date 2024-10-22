@@ -917,7 +917,7 @@ class Task(Base):
         for old_task_id in old_tasks:
             task = await session.get(Task, (old_task_id, project_id))
             if task:
-                await task.auto_unlock_expired_tasks(
+                await Task.auto_unlock_expired_tasks(
                     expiry_date, lock_duration, session
                 )
 
@@ -1104,13 +1104,14 @@ class Task(Base):
                 mapped_by = NULL,
                 validated_by = NULL,
                 locked_by = NULL
-            WHERE id = :task_id
+            WHERE id = :task_id AND project_id = :project_id
         """
         await db.execute(
             query=update_task_query,
             values={
                 "task_id": task_id,
                 "ready_status": TaskStatus.READY.value,
+                "project_id": project_id,
             },
         )
 
@@ -1228,22 +1229,29 @@ class Task(Base):
                 update_query = """
                     UPDATE tasks
                     SET validated_by = NULL
-                    WHERE id = :task_id
+                    WHERE id = :task_id AND project_id = :project_id
                 """
-                await db.execute(query=update_query, values={"task_id": task_id})
+                await db.execute(
+                    query=update_query,
+                    values={"task_id": task_id, "project_id": project_id},
+                )
             elif new_state == TaskStatus.READY:
                 update_query = """
                     UPDATE tasks
                     SET mapped_by = NULL
-                    WHERE id = :task_id
+                    WHERE id = :task_id AND project_id = :project_id
                 """
-                await db.execute(query=update_query, values={"task_id": task_id})
+                await db.execute(
+                    query=update_query,
+                    values={"task_id": task_id, "project_id": project_id},
+                )
         else:
             current_status_query = """
-                SELECT task_status FROM tasks WHERE id = :task_id
+                SELECT task_status FROM tasks WHERE id = :task_id AND project_id = :project_id
             """
             current_status_result = await db.fetch_one(
-                query=current_status_query, values={"task_id": task_id}
+                query=current_status_query,
+                values={"task_id": task_id, "project_id": project_id},
             )
             current_status = TaskStatus(current_status_result["task_status"])
             # Handle specific state changes
@@ -1254,10 +1262,15 @@ class Task(Base):
                 update_query = """
                     UPDATE tasks
                     SET validated_by = :user_id
-                    WHERE id = :task_id
+                    WHERE id = :task_id AND project_id = :project_id
                 """
                 await db.execute(
-                    query=update_query, values={"user_id": user_id, "task_id": task_id}
+                    query=update_query,
+                    values={
+                        "user_id": user_id,
+                        "task_id": task_id,
+                        "project_id": project_id,
+                    },
                 )
 
             elif new_state == TaskStatus.INVALIDATED:
@@ -1267,9 +1280,12 @@ class Task(Base):
                 update_query = """
                     UPDATE tasks
                     SET mapped_by = NULL, validated_by = NULL
-                    WHERE id = :task_id
+                    WHERE id = :task_id AND project_id = :project_id
                 """
-                await db.execute(query=update_query, values={"task_id": task_id})
+                await db.execute(
+                    query=update_query,
+                    values={"task_id": task_id, "project_id": project_id},
+                )
 
             # Set `mapped_by` for MAPPED or BADIMAGERY states when not locked for validation
             elif new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY]:
@@ -1277,11 +1293,15 @@ class Task(Base):
                     update_query = """
                         UPDATE tasks
                         SET mapped_by = :user_id
-                        WHERE id = :task_id
+                        WHERE id = :task_id AND project_id = :project_id
                     """
                     await db.execute(
                         query=update_query,
-                        values={"user_id": user_id, "task_id": task_id},
+                        values={
+                            "user_id": user_id,
+                            "task_id": task_id,
+                            "project_id": project_id,
+                        },
                     )
 
             # Update task locked duration in the history when `undo` is False
@@ -1293,11 +1313,15 @@ class Task(Base):
         final_update_query = """
             UPDATE tasks
             SET task_status = :new_status, locked_by = NULL
-            WHERE id = :task_id
+            WHERE id = :task_id AND project_id = :project_id
         """
         await db.execute(
             query=final_update_query,
-            values={"new_status": new_state.value, "task_id": task_id},
+            values={
+                "new_status": new_state.value,
+                "task_id": task_id,
+                "project_id": project_id,
+            },
         )
 
     @staticmethod
