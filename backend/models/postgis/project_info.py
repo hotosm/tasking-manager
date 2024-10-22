@@ -72,7 +72,7 @@ class ProjectInfo(Base):
 
     async def update_from_dto(self, dto: ProjectInfoDTO, db: Database):
         """Updates existing ProjectInfo from supplied DTO"""
-        self.locale = dto.locale
+        # self.locale = dto.locale
         self.name = dto.name
         self.project_id_str = str(self.project_id)  # Allows project_id to be searched
 
@@ -84,6 +84,8 @@ class ProjectInfo(Base):
         columns = {
             c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
         }
+        columns.pop("project_id", None)
+        columns.pop("locale", None)
         query = (
             update(ProjectInfo.__table__)
             .where(ProjectInfo.project_id == self.project_id)
