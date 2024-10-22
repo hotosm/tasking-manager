@@ -46,7 +46,7 @@ const PagePlaceholder = () => (
 
 const InfoBanner = () => {
   return (
-    <div className="pr3 pv2 pl0 relative inline-flex mv3 mapswipe-stats-info-banner">
+    <div className="pr3 pv2 pl0 relative inline-flex mv3 blue-dark mapswipe-stats-info-banner">
       <span className="inline-flex items-center ">
         <InfoIcon className="mr2" style={{ height: '20px' }} />
         <FormattedMessage {...messages.mapswipeInfo} />
