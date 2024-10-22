@@ -220,8 +220,11 @@ class ProjectParticipantUser(BaseModel):
     """Describes a user who has participated in a project"""
 
     username: str
-    project_id: float = Field(serialization_alias="projectId")
-    is_participant: bool = Field(serialization_alias="isParticipant")
+    project_id: float = Field(alias="projectId")
+    is_participant: bool = Field(alias="isParticipant")
+
+    class Config:
+        populate_by_name = True
 
 
 class UserSearchDTO(BaseModel):

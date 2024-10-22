@@ -17,14 +17,17 @@ class InterestDTO(BaseModel):
     id: Optional[int] = None
     name: Optional[str] = Field(default=None, min_length=1)
     user_selected: Optional[bool] = Field(
-        serialization_alias="userSelected", default=None, none_if_default=True
+        alias="userSelected", default=None, none_if_default=True
     )
     count_projects: Optional[int] = Field(
-        serialize=False, serialization_alias="countProjects", default=None
+        serialize=False, alias="countProjects", default=None
     )
     count_users: Optional[int] = Field(
-        serialize=False, serialization_alias="countUsers", default=None
+        serialize=False, alias="countUsers", default=None
     )
+
+    class Config:
+        populate_by_name = True
 
 
 class ListInterestDTO(BaseModel):

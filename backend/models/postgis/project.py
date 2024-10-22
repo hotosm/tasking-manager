@@ -487,7 +487,7 @@ class Project(Base):
         self.private = project_dto.private
         self.difficulty = ProjectDifficulty[project_dto.difficulty.upper()].value
         self.changeset_comment = project_dto.changeset_comment
-        self.due_date = project_dto.due_date
+        self.due_date = project_dto.due_date.replace(tzinfo=None)
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
         self.id_presets = project_dto.id_presets
@@ -545,14 +545,17 @@ class Project(Base):
         # Update teams and projects relationship.
         self.teams = []
         if hasattr(project_dto, "project_teams") and project_dto.project_teams:
+            await db.execute(
+                delete(ProjectTeams).where(ProjectTeams.project_id == self.id)
+            )
             for team_dto in project_dto.project_teams:
-                team = Team.get(team_dto.team_id, db)
-
+                team = await Team.get(team_dto.team_id, db)
                 if team is None:
                     raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_dto.team_id)
-
                 role = TeamRoles[team_dto.role].value
-                project_team = ProjectTeams(project=self, team=team, role=role)
+                project_team = ProjectTeams(
+                    project_id=self.id, team_id=team.id, role=role
+                )
                 await project_team.create(db)
 
         # Set Project Info for all returned locales
@@ -570,11 +573,22 @@ class Project(Base):
             else:
                 await ProjectInfo.update_from_dto(ProjectInfo(**project_info), dto, db)
 
-        self.priority_areas = []  # Always clear Priority Area prior to updating
+        # Always clear Priority Area prior to updating
+
         if project_dto.priority_areas:
+            await Project.clear_existing_priority_areas(db, self.id)
             for priority_area in project_dto.priority_areas:
-                pa = PriorityArea.from_dict(priority_area)
-                self.priority_areas.append(pa)
+                pa = await PriorityArea.from_dict(priority_area, db)
+                # Link project and priority area in the database
+                if pa and pa.id:
+                    link_query = """
+                    INSERT INTO project_priority_areas (project_id, priority_area_id)
+                    VALUES (:project_id, :priority_area_id)
+                    """
+                    await db.execute(
+                        query=link_query,
+                        values={"project_id": self.id, "priority_area_id": pa.id},
+                    )
 
         if project_dto.custom_editor:
             if not self.custom_editor:
@@ -593,15 +607,51 @@ class Project(Base):
         # handle campaign update
         try:
             new_ids = [c.id for c in project_dto.campaigns]
-            new_ids.sort()
         except TypeError:
             new_ids = []
-        current_ids = [c.id for c in self.campaign]
-        current_ids.sort()
-        if new_ids != current_ids:
-            self.campaign = await db.fetch_all(
-                select(Campaign).filter(Campaign.id.in_(new_ids))
-            )
+
+        query = """
+            SELECT campaign_id
+            FROM campaign_projects
+            WHERE project_id = :project_id
+        """
+        campaign_results = await db.fetch_all(
+            query, values={"project_id": project_dto.project_id}
+        )
+        current_ids = [c.campaign_id for c in campaign_results]
+
+        new_set = set(new_ids)
+        current_set = set(current_ids)
+
+        if new_set != current_set:
+            to_add = new_set - current_set
+            to_remove = current_set - new_set
+            if to_remove:
+                await db.execute(
+                    """
+                    DELETE FROM campaign_projects
+                    WHERE project_id = :project_id
+                    AND campaign_id = ANY(:to_remove)
+                    """,
+                    values={
+                        "project_id": project_dto.project_id,
+                        "to_remove": list(to_remove),
+                    },
+                )
+
+            if to_add:
+                insert_query = """
+                INSERT INTO campaign_projects (project_id, campaign_id)
+                VALUES (:project_id, :campaign_id)
+                """
+                for campaign_id in to_add:
+                    await db.execute(
+                        insert_query,
+                        values={
+                            "project_id": project_dto.project_id,
+                            "campaign_id": campaign_id,
+                        },
+                    )
 
         if project_dto.mapping_permission:
             self.mapping_permission = MappingPermission[
@@ -615,16 +665,53 @@ class Project(Base):
 
         # handle interests update
         try:
-            new_ids = [c.id for c in project_dto.interests]
-            new_ids.sort()
+            new_interest_ids = [i.id for i in project_dto.interests]
         except TypeError:
-            new_ids = []
-        current_ids = [c.id for c in self.interests]
-        current_ids.sort()
-        if new_ids != current_ids:
-            self.interests = await db.fetch_all(
-                select(Interest).filter(Interest.id.in_(new_ids))
-            )
+            new_interest_ids = []
+
+        interest_query = """
+            SELECT interest_id
+            FROM project_interests
+            WHERE project_id = :project_id
+        """
+        interest_results = await db.fetch_all(
+            interest_query, values={"project_id": project_dto.project_id}
+        )
+        current_interest_ids = [i.interest_id for i in interest_results]
+
+        new_interest_set = set(new_interest_ids)
+        current_interest_set = set(current_interest_ids)
+
+        if new_interest_set != current_interest_set:
+            to_add_interests = new_interest_set - current_interest_set
+            to_remove_interests = current_interest_set - new_interest_set
+
+            if to_remove_interests:
+                await db.execute(
+                    """
+                    DELETE FROM project_interests
+                    WHERE project_id = :project_id
+                    AND interest_id = ANY(:to_remove)
+                    """,
+                    values={
+                        "project_id": project_dto.project_id,
+                        "to_remove": list(to_remove_interests),
+                    },
+                )
+
+            if to_add_interests:
+                insert_interest_query = """
+                INSERT INTO project_interests (project_id, interest_id)
+                VALUES (:project_id, :interest_id)
+                """
+                for interest_id in to_add_interests:
+                    await db.execute(
+                        insert_interest_query,
+                        values={
+                            "project_id": project_dto.project_id,
+                            "interest_id": interest_id,
+                        },
+                    )
 
         # try to update country info if that information is not present
         if not self.country:
@@ -636,7 +723,6 @@ class Project(Base):
         columns.pop("geometry", None)
         columns.pop("centroid", None)
         columns.pop("id", None)
-
         # Update the project in the database
         await db.execute(
             self.__table__.update().where(Project.id == self.id).values(**columns)
@@ -661,13 +747,6 @@ class Project(Base):
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
         return True
-
-    # def is_favorited(self, user_id: int) -> bool:
-    #     user = session.get(User, user_id)
-    #     if user not in self.favorited:
-    #         return False
-
-    #     return True
 
     @staticmethod
     async def is_favorited(project_id: int, user_id: int, db: Database) -> bool:
@@ -1523,7 +1602,12 @@ class Project(Base):
         """
         teams = await db.fetch_all(teams_query, {"project_id": project_id})
         project_dto.project_teams = (
-            [ProjectTeamDTO(**team) for team in teams] if teams else []
+            [
+                ProjectTeamDTO(**{**team, "role": TeamRoles(team["role"]).name})
+                for team in teams
+            ]
+            if teams
+            else []
         )
 
         custom_editor = await db.fetch_one(
@@ -1574,7 +1658,9 @@ class Project(Base):
             priority_areas_query, {"project_id": project_id}
         )
         project_dto.priority_areas = (
-            [area["geojson"] for area in priority_areas] if priority_areas else None
+            [geojson.loads(area["geojson"]) for area in priority_areas]
+            if priority_areas
+            else None
         )
 
         interests_query = """
@@ -1733,6 +1819,38 @@ class Project(Base):
 
         campaign_list = [ListCampaignDTO(**row) for row in rows]
         return campaign_list
+
+    @staticmethod
+    async def clear_existing_priority_areas(db: Database, project_id: int):
+        """Clear existing priority area links and delete the corresponding priority areas for the given project ID."""
+
+        existing_priority_area_ids_query = """
+        SELECT priority_area_id
+        FROM project_priority_areas
+        WHERE project_id = :project_id;
+        """
+        existing_priority_area_ids = await db.fetch_all(
+            query=existing_priority_area_ids_query, values={"project_id": project_id}
+        )
+        existing_ids = [
+            record["priority_area_id"] for record in existing_priority_area_ids
+        ]
+
+        clear_links_query = """
+        DELETE FROM project_priority_areas
+        WHERE project_id = :project_id;
+        """
+        await db.execute(query=clear_links_query, values={"project_id": project_id})
+
+        if existing_ids:
+            delete_priority_areas_query = """
+            DELETE FROM priority_areas
+            WHERE id = ANY(:ids);
+            """
+            # Pass the list as an array using PostgreSQL's array syntax
+            await db.execute(
+                query=delete_priority_areas_query, values={"ids": existing_ids}
+            )
 
 
 # Add index on project geometry

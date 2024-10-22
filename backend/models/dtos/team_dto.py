@@ -1,12 +1,14 @@
+from typing import List, Optional
+
+from fastapi import HTTPException
+from pydantic import BaseModel, Field, field_validator
+
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.statuses import (
+    TeamJoinMethod,
     TeamMemberFunctions,
     TeamVisibility,
-    TeamJoinMethod,
 )
-from pydantic import BaseModel, Field, field_validator
-from typing import List, Optional
-from fastapi import HTTPException
 
 
 def validate_team_visibility(value: str) -> str:
@@ -63,9 +65,9 @@ class TeamMembersDTO(BaseModel):
     function: str
     active: bool
     join_request_notifications: bool = Field(
-        default=False, serialization_alias="joinRequestNotifications"
+        default=False, alias="joinRequestNotifications"
     )
-    picture_url: Optional[str] = Field(None, serialization_alias="pictureUrl")
+    picture_url: Optional[str] = Field(None, alias="pictureUrl")
 
     @field_validator("function")
     def validate_function(cls, value):
@@ -81,24 +83,28 @@ class TeamProjectDTO(BaseModel):
 
 
 class ProjectTeamDTO(BaseModel):
-    team_id: int = Field(None, serialization_alias="teamId")
-    team_name: str = Field(None, serialization_alias="name")
-    role: int = Field(None)
+    """Describes a JSON model to create a project team"""
+
+    team_id: int = Field(alias="teamId")
+    team_name: str = Field(default=None, alias="name")
+    role: str = Field()
+
+    class Config:
+        populate_by_name = True
+        use_enum_values = True
 
 
 class TeamDetailsDTO(BaseModel):
     """Pydantic model equivalent of the original TeamDetailsDTO"""
 
-    team_id: Optional[int] = Field(None, serialization_alias="teamId")
+    team_id: Optional[int] = Field(None, alias="teamId")
     organisation_id: int
     organisation: str
-    organisation_slug: Optional[str] = Field(
-        None, serialization_alias="organisationSlug"
-    )
+    organisation_slug: Optional[str] = Field(None, alias="organisationSlug")
     name: str
     logo: Optional[str] = None
     description: Optional[str] = None
-    join_method: str = Field(serialization_alias="joinMethod")
+    join_method: str = Field(alias="joinMethod")
     visibility: str
     is_org_admin: bool = Field(False)
     is_general_admin: bool = Field(False)
@@ -113,21 +119,24 @@ class TeamDetailsDTO(BaseModel):
     def validate_visibility(cls, value):
         return validate_team_visibility(value)
 
+    class Config:
+        populate_by_name = True
+
 
 class TeamDTO(BaseModel):
     """Describes JSON model for a team"""
 
-    team_id: Optional[int] = Field(None, serialization_alias="teamId")
-    organisation_id: int = Field(None, serialization_alias="organisation_id")
-    organisation: str = Field(None, serialization_alias="organisation")
-    name: str = Field(None, serialization_alias="name")
+    team_id: Optional[int] = Field(None, alias="teamId")
+    organisation_id: int = Field(None, alias="organisationId")
+    organisation: str = Field(None, alias="organisation")
+    name: str = Field(None, alias="name")
     logo: Optional[str] = None
     description: Optional[str] = None
-    join_method: str = Field(None, serialization_alias="joinMethod")
-    visibility: str = Field(None, serialization_alias="visibility")
+    join_method: str = Field(None, alias="joinMethod")
+    visibility: str = Field(None, alias="visibility")
     members: Optional[List[TeamMembersDTO]] = None
-    members_count: Optional[int] = Field(None, serialization_alias="membersCount")
-    managers_count: Optional[int] = Field(None, serialization_alias="managersCount")
+    members_count: Optional[int] = Field(None, alias="membersCount")
+    managers_count: Optional[int] = Field(None, alias="managersCount")
 
     @field_validator("join_method")
     def validate_join_method(cls, value):
@@ -136,6 +145,9 @@ class TeamDTO(BaseModel):
     @field_validator("visibility")
     def validate_visibility(cls, value):
         return validate_team_visibility(value)
+
+    class Config:
+        populate_by_name = True
 
 
 class TeamsListDTO(BaseModel):
@@ -181,6 +193,9 @@ class NewTeamDTO(BaseModel):
     def validate_visibility(cls, value):
         return validate_team_visibility(value)
 
+    class Config:
+        populate_by_name = True
+
 
 class UpdateTeamDTO(BaseModel):
     """Describes a JSON model to update a team"""
@@ -204,23 +219,25 @@ class UpdateTeamDTO(BaseModel):
     def validate_visibility(cls, value):
         return validate_team_visibility(value)
 
+    class Config:
+        populate_by_name = True
+
 
 class TeamSearchDTO(BaseModel):
     """Describes a JSON model to search for a team"""
 
-    user_id: Optional[float] = Field(None, serialization_alias="userId")
-    organisation: Optional[int] = Field(None, serialization_alias="organisation")
-    team_name: Optional[str] = Field(None, serialization_alias="team_name")
-    omit_members: Optional[bool] = Field(False, serialization_alias="omitMemberList")
-    full_members_list: Optional[bool] = Field(
-        True, serialization_alias="fullMemberList"
-    )
-    member: Optional[float] = Field(None, serialization_alias="member")
-    manager: Optional[float] = Field(None, serialization_alias="manager")
-    team_role: Optional[str] = Field(None, serialization_alias="team_role")
-    member_request: Optional[float] = Field(
-        None, aliserialization_aliasas="member_request"
-    )
-    paginate: Optional[bool] = Field(False, serialization_alias="paginate")
-    page: Optional[int] = Field(1, serialization_alias="page")
-    per_page: Optional[int] = Field(10, serialization_alias="perPage")
+    user_id: Optional[float] = Field(None, alias="userId")
+    organisation: Optional[int] = Field(None, alias="organisation")
+    team_name: Optional[str] = Field(None, alias="team_name")
+    omit_members: Optional[bool] = Field(False, alias="omitMemberList")
+    full_members_list: Optional[bool] = Field(True, alias="fullMemberList")
+    member: Optional[float] = Field(None, alias="member")
+    manager: Optional[float] = Field(None, alias="manager")
+    team_role: Optional[str] = Field(None, alias="team_role")
+    member_request: Optional[float] = Field(None, alias="member_request")
+    paginate: Optional[bool] = Field(False, alias="paginate")
+    page: Optional[int] = Field(1, alias="page")
+    per_page: Optional[int] = Field(10, alias="perPage")
+
+    class Config:
+        populate_by_name = True

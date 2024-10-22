@@ -437,8 +437,9 @@ async def patch(
     project_dto.project_id = project_id
 
     try:
-        await ProjectAdminService.update_project(project_dto, user.id, db)
-        return JSONResponse(content={"Status": "Updated"}, status_code=200)
+        async with db.transaction():
+            await ProjectAdminService.update_project(project_dto, user.id, db)
+            return JSONResponse(content={"Status": "Updated"}, status_code=200)
     except InvalidGeoJson as e:
         return JSONResponse(content={"Invalid GeoJson": str(e)}, status_code=400)
     except ProjectAdminServiceError as e:

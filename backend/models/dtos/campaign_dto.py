@@ -34,9 +34,10 @@ class CampaignDTO(BaseModel):
     logo: Optional[str] = None
     url: Optional[str] = None
     description: Optional[str] = None
-    organisations: List[OrganisationDTO] = Field(
-        default=None, serialization_alias="organisations"
-    )
+    organisations: List[OrganisationDTO] = Field(default=None, alias="organisations")
+
+    class Config:
+        populate_by_name = True
 
 
 class CampaignProjectDTO(BaseModel):
