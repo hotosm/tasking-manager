@@ -27,6 +27,7 @@ from backend.models.postgis.statuses import (
 )
 from backend.models.postgis.user import User
 from backend.db import Base, get_session
+from sqlalchemy import select
 
 session = get_session()
 
@@ -154,7 +155,6 @@ class Team(Base):
         new_member.user_id = new_team_dto.creator
         new_member.function = TeamMemberFunctions.MANAGER.value
         new_member.active = True
-
         new_team.members.append(new_member)
 
         team = await Team.create(new_team, db)
@@ -271,7 +271,9 @@ class Team(Base):
         :param team_id: team ID in scope
         :return: Team if found otherwise None
         """
-        return db.fetch_one(Team.__table__, Team.id == team_id)
+        query = select(Team).where(Team.id == team_id)
+        result = await db.fetch_one(query)
+        return result
 
     async def get_team_by_name(team_name: str, db: Database):
         """

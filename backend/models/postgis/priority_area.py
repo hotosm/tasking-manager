@@ -27,12 +27,41 @@ class PriorityArea(Base):
     id = Column(Integer, primary_key=True)
     geometry = Column(Geometry("POLYGON", srid=4326))
 
+    # @classmethod
+    # async def from_dict(cls, area_poly: dict, db: Database):
+    #     """Create a new Priority Area from dictionary"""
+    #     pa_geojson = geojson.loads(json.dumps(area_poly))
+
+    #     if type(pa_geojson) is not geojson.Polygon:
+    #         raise InvalidGeoJson("Priority Areas must be supplied as Polygons")
+
+    #     if not pa_geojson.is_valid:
+    #         raise InvalidGeoJson(
+    #             "Priority Area: Invalid Polygon - " + ", ".join(pa_geojson.errors())
+    #         )
+
+    #     pa = cls()
+    #     valid_geojson = geojson.dumps(pa_geojson)
+    #     query = """
+    #     SELECT ST_AsText(
+    #         ST_SetSRID(
+    #             ST_GeomFromGeoJSON(:geojson), 4326
+    #         )
+    #     ) AS geometry_wkt;
+    #     """
+    #     result = await db.fetch_one(query=query, values={"geojson": valid_geojson})
+    #     pa.geometry = result["geometry_wkt"] if result else None
+    #     return pa
+
     @classmethod
     async def from_dict(cls, area_poly: dict, db: Database):
-        """Create a new Priority Area from dictionary"""
+        """Create a new Priority Area from dictionary and insert into the database."""
+
+        # Load GeoJSON from the dictionary
         pa_geojson = geojson.loads(json.dumps(area_poly))
 
-        if type(pa_geojson) is not geojson.Polygon:
+        # Ensure it's a valid Polygon
+        if not isinstance(pa_geojson, geojson.Polygon):
             raise InvalidGeoJson("Priority Areas must be supplied as Polygons")
 
         if not pa_geojson.is_valid:
@@ -40,18 +69,39 @@ class PriorityArea(Base):
                 "Priority Area: Invalid Polygon - " + ", ".join(pa_geojson.errors())
             )
 
-        pa = cls()
+        # Convert the GeoJSON into WKT format using a raw SQL query
         valid_geojson = geojson.dumps(pa_geojson)
-        query = """
+        geo_query = """
         SELECT ST_AsText(
             ST_SetSRID(
                 ST_GeomFromGeoJSON(:geojson), 4326
             )
         ) AS geometry_wkt;
         """
-        result = await db.fetch_one(query=query, values={"geojson": valid_geojson})
-        pa.geometry = result["geometry_wkt"] if result else None
-        return pa
+        result = await db.fetch_one(query=geo_query, values={"geojson": valid_geojson})
+        geometry_wkt = result["geometry_wkt"] if result else None
+
+        if not geometry_wkt:
+            raise InvalidGeoJson("Failed to create geometry from the given GeoJSON")
+
+        # Insert the new Priority Area into the database and return the inserted ID
+        insert_query = """
+        INSERT INTO priority_areas (geometry)
+        VALUES (ST_GeomFromText(:geometry, 4326))
+        RETURNING id;
+        """
+        insert_result = await db.fetch_one(
+            query=insert_query, values={"geometry": geometry_wkt}
+        )
+
+        if insert_result:
+            # Assign the ID and geometry to the PriorityArea object
+            pa = cls()
+            pa.id = insert_result["id"]
+            pa.geometry = geometry_wkt
+            return pa
+        else:
+            raise Exception("Failed to insert Priority Area")
 
     def get_as_geojson(self):
         """Helper to translate geometry back to a GEOJson Poly"""
