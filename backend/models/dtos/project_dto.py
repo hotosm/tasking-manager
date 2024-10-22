@@ -1,25 +1,26 @@
 # from schematics import Model
 # from schematics.exceptions import ValidationError
-from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
-from backend.models.dtos.stats_dto import Pagination
-from backend.models.dtos.team_dto import ProjectTeamDTO
+from datetime import date, datetime
+from typing import Dict, List, Optional, Union
+
+from fastapi import HTTPException
+from pydantic import BaseModel, Field
+
+from backend.models.dtos.campaign_dto import CampaignDTO
 from backend.models.dtos.interests_dto import InterestDTO
+from backend.models.dtos.stats_dto import Pagination
+from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
+from backend.models.dtos.team_dto import ProjectTeamDTO
 from backend.models.postgis.statuses import (
-    ProjectStatus,
-    ProjectPriority,
-    MappingTypes,
-    TaskCreationMode,
     Editors,
     MappingPermission,
-    ValidationPermission,
+    MappingTypes,
     ProjectDifficulty,
+    ProjectPriority,
+    ProjectStatus,
+    TaskCreationMode,
+    ValidationPermission,
 )
-from backend.models.dtos.campaign_dto import CampaignDTO
-from pydantic import BaseModel, Field
-from typing import Dict, List, Optional, Union
-from datetime import datetime
-from datetime import date
-from fastapi import HTTPException
 
 
 def is_known_project_status(value: str) -> str:
@@ -178,6 +179,9 @@ class DraftProjectDTO(BaseModel):
     has_arbitrary_tasks: bool = Field(False, alias="arbitraryTasks")
     user_id: int = Field(None)
 
+    class Config:
+        populate_by_name = True
+
 
 class ProjectInfoDTO(BaseModel):
     """Contains the localized project info"""
@@ -241,7 +245,7 @@ class ProjectDTO(BaseModel):
     country_tag: Optional[List[str]] = Field(None, alias="countryTag")
     license_id: Optional[int] = Field(None, alias="licenseId")
     allowed_usernames: Optional[List[str]] = Field(default=[], alias="allowedUsernames")
-    priority_areas: Optional[Dict] = Field(None, alias="priorityAreas")
+    priority_areas: Optional[List[Dict]] = Field(None, alias="priorityAreas")
     created: Optional[datetime] = None
     last_updated: Optional[datetime] = Field(None, alias="lastUpdated")
     author: Optional[str] = None
@@ -407,9 +411,10 @@ class ProjectSearchBBoxDTO(BaseModel):
     bbox: List[float] = Field(..., min_items=4, max_items=4)
     input_srid: int = Field(..., choices=[4326])
     preferred_locale: Optional[str] = Field(default="en")
-    project_author: Optional[int] = Field(
-        default=None, serialization_alias="projectAuthor"
-    )
+    project_author: Optional[int] = Field(default=None, alias="projectAuthor")
+
+    class Config:
+        populate_by_name = True
 
 
 class ListSearchResultDTO(BaseModel):
@@ -430,6 +435,9 @@ class ListSearchResultDTO(BaseModel):
     due_date: Optional[str] = Field(alias="dueDate", default=None)
     total_contributors: Optional[int] = Field(alias="totalContributors", default=None)
     country: Optional[str] = Field(default="", serialize=False)
+
+    class Config:
+        populate_by_name = True
 
 
 # class ProjectSearchResultsDTO(BaseModel):
@@ -468,6 +476,9 @@ class ProjectComment(BaseModel):
     user_name: str = Field(alias="userName")
     task_id: int = Field(alias="taskId")
 
+    class Config:
+        populate_by_name = True
+
 
 class ProjectCommentsDTO(BaseModel):
     """Contains all comments on a project"""
@@ -496,85 +507,50 @@ class ProjectContribsDTO(BaseModel):
 
 
 class ProjectSummary(BaseModel):
-    project_id: int = Field(..., serialization_alias="projectId")
-    default_locale: Optional[str] = Field(None, serialization_alias="defaultLocale")
+    project_id: int = Field(..., alias="projectId")
+    default_locale: Optional[str] = Field(None, alias="defaultLocale")
     author: Optional[str] = None
     created: Optional[datetime] = None
-    due_date: Optional[datetime] = Field(None, serialization_alias="dueDate")
-    last_updated: Optional[datetime] = Field(None, serialization_alias="lastUpdated")
-    priority: Optional[str] = Field(None, serialization_alias="projectPriority")
+    due_date: Optional[datetime] = Field(None, alias="dueDate")
+    last_updated: Optional[datetime] = Field(None, alias="lastUpdated")
+    priority: Optional[str] = Field(None, alias="projectPriority")
     campaigns: List[CampaignDTO] = Field(default_factory=list)
     organisation: Optional[int] = None
-    organisation_name: Optional[str] = Field(
-        None, serialization_alias="organisationName"
-    )
-    organisation_slug: Optional[str] = Field(
-        None, serialization_alias="organisationSlug"
-    )
-    organisation_logo: Optional[str] = Field(
-        None, serialization_alias="organisationLogo"
-    )
-    country_tag: List[str] = Field(
-        default_factory=list, serialization_alias="countryTag"
-    )
-    osmcha_filter_id: Optional[str] = Field(None, serialization_alias="osmchaFilterId")
-    mapping_types: List[str] = Field(
-        default_factory=list, serialization_alias="mappingTypes"
-    )
-    changeset_comment: Optional[str] = Field(
-        None, serialization_alias="changesetComment"
-    )
-    percent_mapped: Optional[int] = Field(None, serialization_alias="percentMapped")
-    percent_validated: Optional[int] = Field(
-        None, serialization_alias="percentValidated"
-    )
-    percent_bad_imagery: Optional[int] = Field(
-        None, serialization_alias="percentBadImagery"
-    )
-    aoi_centroid: Optional[Union[dict, None]] = Field(
-        None, serialization_alias="aoiCentroid"
-    )
-    difficulty: Optional[str] = Field(None, serialization_alias="difficulty")
-    mapping_permission: Optional[int] = Field(
-        None, serialization_alias="mappingPermission"
-    )
-    validation_permission: Optional[int] = Field(
-        None, serialization_alias="validationPermission"
-    )
-    allowed_usernames: List[str] = Field(
-        default_factory=list, serialization_alias="allowedUsernames"
-    )
+    organisation_name: Optional[str] = Field(None, alias="organisationName")
+    organisation_slug: Optional[str] = Field(None, alias="organisationSlug")
+    organisation_logo: Optional[str] = Field(None, alias="organisationLogo")
+    country_tag: List[str] = Field(default_factory=list, alias="countryTag")
+    osmcha_filter_id: Optional[str] = Field(None, alias="osmchaFilterId")
+    mapping_types: List[str] = Field(default_factory=list, alias="mappingTypes")
+    changeset_comment: Optional[str] = Field(None, alias="changesetComment")
+    percent_mapped: Optional[int] = Field(None, alias="percentMapped")
+    percent_validated: Optional[int] = Field(None, alias="percentValidated")
+    percent_bad_imagery: Optional[int] = Field(None, alias="percentBadImagery")
+    aoi_centroid: Optional[Union[dict, None]] = Field(None, alias="aoiCentroid")
+    difficulty: Optional[str] = Field(None, alias="difficulty")
+    mapping_permission: Optional[int] = Field(None, alias="mappingPermission")
+    validation_permission: Optional[int] = Field(None, alias="validationPermission")
+    allowed_usernames: List[str] = Field(default_factory=list, alias="allowedUsernames")
     random_task_selection_enforced: bool = Field(
-        default=False, serialization_alias="enforceRandomTaskSelection"
+        default=False, alias="enforceRandomTaskSelection"
     )
-    private: Optional[bool] = Field(None, serialization_alias="private")
-    allowed_users: List[str] = Field(
-        default_factory=list, serialization_alias="allowedUsernames"
-    )
-    project_teams: List[ProjectTeamDTO] = Field(
-        default_factory=list, serialization_alias="teams"
-    )
-    project_info: Optional[ProjectInfoDTO] = Field(
-        None, serialization_alias="projectInfo"
-    )
-    short_description: Optional[str] = Field(
-        None, serialization_alias="shortDescription"
-    )
+    private: Optional[bool] = Field(None, alias="private")
+    allowed_users: List[str] = Field(default_factory=list, alias="allowedUsernames")
+    project_teams: List[ProjectTeamDTO] = Field(default_factory=list, alias="teams")
+    project_info: Optional[ProjectInfoDTO] = Field(None, alias="projectInfo")
+    short_description: Optional[str] = Field(None, alias="shortDescription")
     status: Optional[str] = None
     imagery: Optional[str] = None
-    license_id: Optional[int] = Field(None, serialization_alias="licenseId")
-    id_presets: List[str] = Field(default_factory=list, serialization_alias="idPresets")
-    extra_id_params: Optional[str] = Field(None, serialization_alias="extraIdParams")
-    rapid_power_user: bool = Field(default=False, serialization_alias="rapidPowerUser")
-    mapping_editors: List[str] = Field(
-        ..., min_items=1, serialization_alias="mappingEditors"
-    )
-    validation_editors: List[str] = Field(
-        ..., min_items=1, serialization_alias="validationEditors"
-    )
-    custom_editor: Optional[CustomEditorDTO] = Field(
-        None, serialization_alias="customEditor"
-    )
+    license_id: Optional[int] = Field(None, alias="licenseId")
+    id_presets: List[str] = Field(default_factory=list, alias="idPresets")
+    extra_id_params: Optional[str] = Field(None, alias="extraIdParams")
+    rapid_power_user: bool = Field(default=False, alias="rapidPowerUser")
+    mapping_editors: List[str] = Field(..., min_items=1, alias="mappingEditors")
+    validation_editors: List[str] = Field(..., min_items=1, alias="validationEditors")
+    custom_editor: Optional[CustomEditorDTO] = Field(None, alias="customEditor")
+
+    class Config:
+        populate_by_name = True
 
     # TODO: Make Validators work.
 

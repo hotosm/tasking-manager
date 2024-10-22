@@ -31,6 +31,7 @@ from backend.models.postgis.statuses import (
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
 from backend.db import Base, get_session
+from sqlalchemy import select
 
 session = get_session()
 
@@ -277,7 +278,9 @@ class Team(Base):
         :param team_id: team ID in scope
         :return: Team if found otherwise None
         """
-        return db.fetch_one(Team.__table__, Team.id == team_id)
+        query = select(Team).where(Team.id == team_id)
+        result = await db.fetch_one(query)
+        return result
 
     async def get_team_by_name(team_name: str, db: Database):
         """
