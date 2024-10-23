@@ -1,32 +1,37 @@
 # # from flask import current_app
 import math
-import geojson
-from geoalchemy2 import shape
-from shapely.geometry import Polygon, box
-from cachetools import TTLCache, cached
-from loguru import logger
+from typing import List
 
-from backend.exceptions import NotFound
+import geojson
+from cachetools import TTLCache, cached
+from databases import Database
+from fastapi import HTTPException
+from geoalchemy2 import shape
+from loguru import logger
+from shapely.geometry import Polygon, box
+
 from backend.api.utils import validate_date_input
+from backend.db import get_session
+from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import (
-    ProjectSearchDTO,
-    ProjectSearchResultsDTO,
     ListSearchResultDTO,
     Pagination,
     ProjectSearchBBoxDTO,
+    ProjectSearchDTO,
+    ProjectSearchResultsDTO,
 )
 from backend.models.postgis.project import Project, ProjectInfo, ProjectTeams
 from backend.models.postgis.partner import Partner
 from backend.models.postgis.statuses import (
-    ProjectStatus,
     MappingLevel,
-    MappingTypes,
-    ProjectPriority,
-    UserRole,
-    TeamRoles,
-    ValidationPermission,
     MappingPermission,
+    MappingTypes,
     ProjectDifficulty,
+    ProjectPriority,
+    ProjectStatus,
+    TeamRoles,
+    UserRole,
+    ValidationPermission,
 )
 from backend.models.postgis.project_partner import ProjectPartnership
 from backend.models.postgis.campaign import Campaign
@@ -40,11 +45,6 @@ from backend.models.postgis.utils import (
 )
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
-from backend.db import get_session
-from databases import Database
-from fastapi import HTTPException
-from typing import List
-
 
 session = get_session()
 
@@ -198,8 +198,6 @@ class ProjectSearchService:
         project_ids: List[int], db: Database
     ) -> List[int]:
         """Fetch total contributions for given project IDs."""
-        print(f"Fetching total contributions for projects: {project_ids}")
-
         if not project_ids:
             return []
 

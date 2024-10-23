@@ -87,7 +87,6 @@ class OrganisationService:
         managers_records = await db.fetch_all(
             managers_query, values={"organisation_id": organisation_id}
         )
-
         # Assign manager records initially
         org_record.managers = managers_records
         return org_record
@@ -124,7 +123,6 @@ class OrganisationService:
             WHERE slug = :slug
         """
         org_record = await db.fetch_one(org_query, values={"slug": slug})
-
         if not org_record:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND", slug=slug)
 
@@ -189,18 +187,19 @@ class OrganisationService:
         if org is None:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND")
 
-        if not abbreviated:
-            org.managers = []
+        organisation_dto = Organisation.as_dto(org, abbreviated)
 
         if user_id != 0:
-            org.is_manager = await OrganisationService.can_user_manage_organisation(
-                org.organisation_id, user_id, db
+            organisation_dto.is_manager = (
+                await OrganisationService.can_user_manage_organisation(
+                    organisation_dto.organisation_id, user_id, db
+                )
             )
         else:
-            org.is_manager = False
+            organisation_dto.is_manager = False
 
         if abbreviated:
-            return org
+            return organisation_dto
 
         teams_query = """
             SELECT
@@ -228,11 +227,13 @@ class OrganisationService:
             OrganisationService.team_as_dto_inside_org(record)
             for record in teams_records
         ]
-        if org.is_manager:
-            org.teams = teams
+        if organisation_dto.is_manager:
+            organisation_dto.teams = teams
         else:
-            org.teams = [team for team in teams if team.visibility == "PUBLIC"]
-        return org
+            organisation_dto.teams = [
+                team for team in teams if team.visibility == "PUBLIC"
+            ]
+        return organisation_dto
 
     @staticmethod
     def get_organisation_by_name(organisation_name: str) -> Organisation:
@@ -475,7 +476,6 @@ class OrganisationService:
                     raise NotFound(sub_code="USER_NOT_FOUND", username=user)
 
                 managers.append(admin.username)
-
             organisation_dto.managers = managers
 
     @staticmethod
