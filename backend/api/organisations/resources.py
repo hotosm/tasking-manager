@@ -78,7 +78,6 @@ async def retrieve_organisation(
         user_id = 0
     else:
         user_id = authenticated_user_id
-    # Validate abbreviated.
     organisation_dto = await OrganisationService.get_organisation_by_id_as_dto(
         organisation_id, user_id, omit_managers, db
     )

@@ -92,80 +92,78 @@ class Organisation(Base):
         }
 
         try:
-            async with db.transaction():
-                organisation_id = await db.execute(query, values)
+            organisation_id = await db.execute(query, values)
 
-                for manager in new_organisation_dto.managers:
-                    user_query = "SELECT id FROM users WHERE username = :username"
-                    user = await db.fetch_one(user_query, {"username": manager})
+            for manager in new_organisation_dto.managers:
+                user_query = "SELECT id FROM users WHERE username = :username"
+                user = await db.fetch_one(user_query, {"username": manager})
 
-                    if not user:
-                        raise NotFound(sub_code="USER_NOT_FOUND", username=manager)
+                if not user:
+                    raise NotFound(sub_code="USER_NOT_FOUND", username=manager)
 
-                    manager_query = """
-                    INSERT INTO organisation_managers (organisation_id, user_id)
-                    VALUES (:organisation_id, :user_id)
-                    """
-                    await db.execute(
-                        manager_query,
-                        {"organisation_id": organisation_id, "user_id": user.id},
-                    )
+                manager_query = """
+                INSERT INTO organisation_managers (organisation_id, user_id)
+                VALUES (:organisation_id, :user_id)
+                """
+                await db.execute(
+                    manager_query,
+                    {"organisation_id": organisation_id, "user_id": user.id},
+                )
 
-                return organisation_id
+            return organisation_id
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e)) from e
 
     async def update(organisation_dto: UpdateOrganisationDTO, db: Database):
         """Updates Organisation from DTO"""
-        async with db.transaction():
-            try:
-                org_id = organisation_dto.organisation_id
-                org_dict = organisation_dto.dict(exclude_unset=True)
-                if "type" in org_dict and org_dict["type"] is not None:
-                    org_dict["type"] = OrganisationType[org_dict["type"].upper()].value
+        try:
+            org_id = organisation_dto.organisation_id
+            org_dict = organisation_dto.dict(exclude_unset=True)
+            if "type" in org_dict and org_dict["type"] is not None:
+                org_dict["type"] = OrganisationType[org_dict["type"].upper()].value
 
-                update_keys = {
-                    key: org_dict[key]
-                    for key in org_dict.keys()
-                    if key not in ["organisation_id", "managers"]
-                }
-                set_clause = ", ".join(f"{key} = :{key}" for key in update_keys.keys())
-                update_query = f"""
-                UPDATE organisations
-                SET {set_clause}
-                WHERE id = :id
+            update_keys = {
+                key: org_dict[key]
+                for key in org_dict.keys()
+                if key not in ["organisation_id", "managers"]
+            }
+            set_clause = ", ".join(f"{key} = :{key}" for key in update_keys.keys())
+            update_query = f"""
+            UPDATE organisations
+            SET {set_clause}
+            WHERE id = :id
+            """
+            await db.execute(update_query, values={**update_keys, "id": org_id})
+
+            if organisation_dto.managers:
+                clear_managers_query = """
+                DELETE FROM organisation_managers
+                WHERE organisation_id = :id
                 """
-                await db.execute(update_query, values={**update_keys, "id": org_id})
+                await db.execute(clear_managers_query, values={"id": org_id})
 
-                if organisation_dto.managers:
-                    clear_managers_query = """
-                    DELETE FROM organisation_managers
-                    WHERE organisation_id = :id
+                for manager_username in organisation_dto.managers:
+                    user_query = "SELECT id FROM users WHERE username = :username"
+                    user = await db.fetch_one(
+                        user_query, {"username": manager_username}
+                    )
+
+                    if not user:
+                        raise NotFound(
+                            sub_code="USER_NOT_FOUND", username=manager_username
+                        )
+
+                    insert_manager_query = """
+                    INSERT INTO organisation_managers (organisation_id, user_id)
+                    VALUES (:organisation_id, :user_id)
                     """
-                    await db.execute(clear_managers_query, values={"id": org_id})
-
-                    for manager_username in organisation_dto.managers:
-                        user_query = "SELECT id FROM users WHERE username = :username"
-                        user = await db.fetch_one(
-                            user_query, {"username": manager_username}
-                        )
-
-                        if not user:
-                            raise NotFound(
-                                sub_code="USER_NOT_FOUND", username=manager_username
-                            )
-
-                        insert_manager_query = """
-                        INSERT INTO organisation_managers (organisation_id, user_id)
-                        VALUES (:organisation_id, :user_id)
-                        """
-                        await db.execute(
-                            insert_manager_query,
-                            {"organisation_id": org_id, "user_id": user.id},
-                        )
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=str(e)) from e
+                    await db.execute(
+                        insert_manager_query,
+                        {"organisation_id": org_id, "user_id": user.id},
+                    )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
     def delete(self):
         """Deletes the current model from the DB"""
@@ -305,23 +303,47 @@ class Organisation(Base):
         """Fetch managers asynchronously"""
         await session.refresh(self, ["managers"])
 
-    def as_dto(self, omit_managers=False):
+    # def as_dto(self, omit_managers=False):
+    #     """Returns a dto for an organisation"""
+    #     organisation_dto = OrganisationDTO()
+    #     organisation_dto.organisation_id = self.id
+    #     organisation_dto.name = self.name
+    #     organisation_dto.slug = self.slug
+    #     organisation_dto.logo = self.logo
+    #     organisation_dto.description = self.description
+    #     organisation_dto.url = self.url
+    #     organisation_dto.managers = []
+    #     organisation_dto.type = OrganisationType(self.type).name
+    #     organisation_dto.subscription_tier = self.subscription_tier
+
+    #     if omit_managers:
+    #         return organisation_dto
+
+    #     for manager in self.managers:
+    #         org_manager_dto = OrganisationManagerDTO()
+    #         org_manager_dto.username = manager.username
+    #         org_manager_dto.picture_url = manager.picture_url
+    #         organisation_dto.managers.append(org_manager_dto)
+
+    #     return organisation_dto
+
+    def as_dto(org, omit_managers=False):
         """Returns a dto for an organisation"""
         organisation_dto = OrganisationDTO()
-        organisation_dto.organisation_id = self.id
-        organisation_dto.name = self.name
-        organisation_dto.slug = self.slug
-        organisation_dto.logo = self.logo
-        organisation_dto.description = self.description
-        organisation_dto.url = self.url
+        organisation_dto.organisation_id = org.organisation_id
+        organisation_dto.name = org.name
+        organisation_dto.slug = org.slug
+        organisation_dto.logo = org.logo
+        organisation_dto.description = org.description
+        organisation_dto.url = org.url
         organisation_dto.managers = []
-        organisation_dto.type = OrganisationType(self.type).name
-        organisation_dto.subscription_tier = self.subscription_tier
+        organisation_dto.type = org.type
+        organisation_dto.subscription_tier = org.subscription_tier
 
         if omit_managers:
             return organisation_dto
 
-        for manager in self.managers:
+        for manager in org.managers:
             org_manager_dto = OrganisationManagerDTO()
             org_manager_dto.username = manager.username
             org_manager_dto.picture_url = manager.picture_url

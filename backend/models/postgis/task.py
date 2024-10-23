@@ -1,55 +1,60 @@
-import bleach
 import datetime
-from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
-import geojson
 import json
 from enum import Enum
-
-# # from flask import current_app
-from sqlalchemy import desc, func, distinct
-from sqlalchemy.orm.exc import MultipleResultsFound
-from geoalchemy2 import Geometry
 from typing import Any, Dict, List
+
+import bleach
+import geojson
+from geoalchemy2 import Geometry
 from shapely.geometry import shape
 
+# # from flask import current_app
 from sqlalchemy import (
-    Column,
-    Integer,
     BigInteger,
-    DateTime,
-    String,
-    ForeignKey,
     Boolean,
-    Index,
+    Column,
+    DateTime,
+    ForeignKey,
     ForeignKeyConstraint,
+    Index,
+    Integer,
+    String,
     Unicode,
+    desc,
+    distinct,
+    func,
 )
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.exc import MultipleResultsFound
+
+from backend.db import Base, get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
-from backend.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
+from backend.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
 from backend.models.dtos.project_dto import (
+    LockedTasksForUser,
     ProjectComment,
     ProjectCommentsDTO,
-    LockedTasksForUser,
 )
-from backend.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
-from backend.models.postgis.statuses import TaskStatus, MappingLevel
+from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
+from backend.models.dtos.validator_dto import MappedTasks, MappedTasksByUser
+from backend.models.postgis.statuses import MappingLevel, TaskStatus
+from backend.models.postgis.task_annotation import TaskAnnotation
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import (
     InvalidData,
     InvalidGeoJson,
-    timestamp,
     parse_duration,
+    timestamp,
 )
-from backend.models.postgis.task_annotation import TaskAnnotation
-from backend.db import Base, get_session
 
 session = get_session()
-from backend.config import settings
-from sqlalchemy import select
 from typing import Optional
+
 from databases import Database
+from sqlalchemy import select
+
+from backend.config import settings
 
 
 class TaskAction(Enum):
@@ -1738,9 +1743,27 @@ class Task(Base):
             task_id, project_id, preferred_locale, db
         )
         if not per_task_instructions:
-            default_locale = rows[0]["default_locale"]
-            per_task_instructions = await Task.get_per_task_instructions(
-                task_id, project_id, default_locale, db
+            query_locale = """
+                SELECT
+                    p.default_locale
+                FROM
+                    projects p
+                WHERE
+                    p.id = :project_id
+            """
+            default_locale_row = await db.fetch_one(
+                query=query_locale, values={"project_id": project_id}
+            )
+            default_locale = (
+                default_locale_row["default_locale"] if default_locale_row else None
+            )
+
+            per_task_instructions = (
+                await Task.get_per_task_instructions(
+                    task_id, project_id, default_locale, db
+                )
+                if default_locale
+                else None
             )
 
         task_dto.per_task_instructions = per_task_instructions

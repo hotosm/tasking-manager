@@ -804,6 +804,7 @@ class MessageService:
                 m.id AS message_id,
                 m.subject,
                 m.message,
+                m.from_user_id,
                 m.to_user_id,
                 m.task_id,
                 m.message_type,
@@ -862,7 +863,9 @@ class MessageService:
                 message_dict["message_type"] = MessageType(
                     message_dict["message_type"]
                 ).name
-            msg_dto = MessageDTO(**message_dict)
+            msg_dto = MessageDTO(**message_dict).dict(
+                exclude={"from_user_id"}, by_alias=True
+            )
             messages_dto.user_messages.append(msg_dto)
 
         total_count_query = """
