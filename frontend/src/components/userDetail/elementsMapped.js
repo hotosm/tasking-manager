@@ -125,6 +125,10 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
 
   return (
     <div>
+      <div className="mb3">
+        <StatsInfoFooter />
+      </div>
+
       <div className="w-100 relative stats-cards-container">
         <StatsCard
           invertColors={true}
@@ -173,8 +177,6 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
           unitLess={osmStats?.waterway?.modified?.unit_less}
         />
       </div>
-
-      <StatsInfoFooter />
     </div>
   );
 };

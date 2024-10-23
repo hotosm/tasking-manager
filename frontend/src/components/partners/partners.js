@@ -95,7 +95,7 @@ export function PartnersCard({ details }) {
             <FormattedMessage {...messages.edit} />
           </CustomButton>
         </Link>
-        <Link to={`/partners/${details.permalink}/stats/leaderboard`}>
+        <Link to={`/partners/${details.permalink}/stats`}>
           <CustomButton
             style={{ backgroundColor: '#e2e2e2' }}
             className="blue-dark ba b--grey-light pa2 br1 f5 pointer"

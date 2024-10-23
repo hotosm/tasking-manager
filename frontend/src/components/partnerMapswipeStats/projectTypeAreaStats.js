@@ -46,7 +46,7 @@ export const ProjectTypeAreaStats = ({
 
   return (
     <div
-      className="flex justify-between items-center flex-wrap flex-nowrap-ns"
+      className="flex justify-between items-center flex-wrap flex-nowrap-l"
       style={{ gap: '1.6rem' }}
     >
       <div className="pa4 flex items-center bg-white shadow-6 w-100" style={{ gap: '1.75rem' }}>

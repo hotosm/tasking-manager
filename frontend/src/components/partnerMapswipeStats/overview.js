@@ -30,7 +30,7 @@ export const formatSecondsToTwoUnits = (seconds, shortFormat = false) => {
     years: 'yrs',
     months: 'mos',
     weeks: 'wks',
-    days: 'ds',
+    days: 'days',
     hours: 'hrs',
     minutes: 'mins',
     seconds: 'secs',
@@ -82,8 +82,11 @@ export const Overview = () => {
       customPlaceholder={<OverviewPlaceholder />}
       ready={!isLoading && !isRefetching}
     >
+      <h3 class="f2 blue-dark fw7 ma0 barlow-condensed v-mid dib mb3">
+        {data?.nameInsideProvider}
+      </h3>
       <div
-        className="flex justify-between items-stretch flex-wrap flex-nowrap-ns"
+        className="flex justify-between items-stretch flex-wrap flex-nowrap-l"
         style={{ gap: '1.6rem' }}
       >
         <div
