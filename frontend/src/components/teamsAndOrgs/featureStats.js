@@ -7,7 +7,7 @@ import userDetailMessages from '../userDetail/messages';
 import { OHSOME_STATS_BASE_URL, defaultChangesetComment } from '../../config';
 import { RoadIcon, HomeIcon, WavesIcon, MarkerIcon } from '../svgIcons';
 import { StatsCard } from '../statsCard';
-import StatsTimestamp from '../statsTimestamp';
+import StatsInfoFooter from '../statsInfoFooter';
 
 export const FeatureStats = () => {
   const [stats, setStats] = useState({ edits: 0, buildings: 0, roads: 0, pois: 0, waterways: 0 });
@@ -42,9 +42,10 @@ export const FeatureStats = () => {
         <h4 className="f3 fw6 ttu barlow-condensed blue-dark">
           <FormattedMessage {...messages.totalFeatures} />
         </h4>
-        <StatsTimestamp messageType="generic" />
       </div>
       <div className="w-100 cf">
+        <StatsInfoFooter className="mb4" />
+
         <StatsCard
           icon={<HomeIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...userDetailMessages.buildingsMapped} />}
