@@ -812,12 +812,9 @@ class MessageService:
                 m.read,
                 m.project_id,
                 u.username AS from_username,
-                u.picture_url AS display_picture_url,
-                pi.name AS project_title
+                u.picture_url AS display_picture_url
             FROM
                 messages m
-            LEFT JOIN
-                project_info pi ON m.project_id = pi.project_id
             LEFT JOIN
                 users u ON m.from_user_id = u.id
             WHERE
@@ -859,13 +856,22 @@ class MessageService:
         messages_dto = MessagesDTO()
         for msg in messages:
             message_dict = dict(msg)
+            print(message_dict)
             if message_dict["message_type"]:
                 message_dict["message_type"] = MessageType(
                     message_dict["message_type"]
                 ).name
-            msg_dto = MessageDTO(**message_dict).dict(
-                exclude={"from_user_id"}, by_alias=True
-            )
+                if message_dict["project_id"]:
+                    try:
+                        message_dict["project_title"] = (
+                            await Project.get_project_title(
+                                db, message_dict["project_id"], locale
+                            )
+                            or ""
+                        )
+                    except:
+                        pass
+            msg_dto = MessageDTO(**message_dict).copy(exclude={"from_user_id"})
             messages_dto.user_messages.append(msg_dto)
 
         total_count_query = """
