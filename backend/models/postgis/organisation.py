@@ -129,12 +129,13 @@ class Organisation(Base):
                 if key not in ["organisation_id", "managers"]
             }
             set_clause = ", ".join(f"{key} = :{key}" for key in update_keys.keys())
-            update_query = f"""
-            UPDATE organisations
-            SET {set_clause}
-            WHERE id = :id
-            """
-            await db.execute(update_query, values={**update_keys, "id": org_id})
+            if set_clause:
+                update_query = f"""
+                UPDATE organisations
+                SET {set_clause}
+                WHERE id = :id
+                """
+                await db.execute(update_query, values={**update_keys, "id": org_id})
 
             if organisation_dto.managers:
                 clear_managers_query = """
@@ -142,7 +143,6 @@ class Organisation(Base):
                 WHERE organisation_id = :id
                 """
                 await db.execute(clear_managers_query, values={"id": org_id})
-
                 for manager_username in organisation_dto.managers:
                     user_query = "SELECT id FROM users WHERE username = :username"
                     user = await db.fetch_one(

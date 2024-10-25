@@ -281,8 +281,8 @@ class UserService:
         task_status: str = None,
         project_status: str = None,
         project_id: int = None,
-        page=1,
-        page_size=10,
+        page: int = 1,
+        page_size: int = 10,
         sort_by: str = None,
         db: Database = None,
     ) -> UserTaskDTOs:
@@ -371,26 +371,26 @@ class UserService:
 
         if project_id:
             tasks_query = tasks_query.where(Task.project_id == project_id)
-
         # Pagination
         offset = (page - 1) * page_size
-        tasks_query = tasks_query.limit(page_size).offset(offset)
+        paginated_tasks_query = tasks_query.limit(page_size).offset(offset)
 
         # Execute the query and fetch results
-        rows = await db.fetch_all(tasks_query)
+        all_tasks = await db.fetch_all(tasks_query)
+        paginated_tasks = await db.fetch_all(paginated_tasks_query)
 
         # Create list of task DTOs from the results
         task_list = [
             await Task.task_as_dto(
                 row, last_updated=row["max"], comments=row["comments"], db=db
             )
-            for row in rows
+            for row in paginated_tasks
         ]
 
         user_task_dtos = UserTaskDTOs()
         user_task_dtos.user_tasks = task_list
-        user_task_dtos.pagination = Pagination(
-            total_items=len(task_list), page=page, page_size=page_size
+        user_task_dtos.pagination = Pagination.from_total_count(
+            page=int(page), per_page=int(page_size), total=len(all_tasks)
         )
 
         return user_task_dtos
