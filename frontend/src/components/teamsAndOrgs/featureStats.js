@@ -46,30 +46,32 @@ export const FeatureStats = () => {
       <div className="w-100 cf">
         <StatsInfoFooter className="mb4" />
 
-        <StatsCard
-          icon={<HomeIcon className={iconClass} style={iconStyle} />}
-          description={<FormattedMessage {...userDetailMessages.buildingsMapped} />}
-          value={stats.buildings || 0}
-          className={'w-25-l w-50-m w-100 mv1'}
-        />
-        <StatsCard
-          icon={<RoadIcon className={iconClass} style={iconStyle} />}
-          description={<FormattedMessage {...userDetailMessages.roadMapped} />}
-          value={stats.roads || 0}
-          className={'w-25-l w-50-m w-100 mv1'}
-        />
-        <StatsCard
-          icon={<MarkerIcon className={iconClass} style={iconStyle} />}
-          description={<FormattedMessage {...userDetailMessages.poiMapped} />}
-          value={stats.pois || 0}
-          className={'w-25-l w-50-m w-100 mv1'}
-        />
-        <StatsCard
-          icon={<WavesIcon className={iconClass} style={iconStyle} />}
-          description={<FormattedMessage {...userDetailMessages.waterwaysMapped} />}
-          value={stats.waterways || 0}
-          className={'w-25-l w-50-m w-100 mv1'}
-        />
+        <div className="flex gap-1 flex-nowrap-l flex-wrap">
+          <StatsCard
+            icon={<HomeIcon className={iconClass} style={iconStyle} />}
+            description={<FormattedMessage {...userDetailMessages.buildingsMapped} />}
+            value={stats.buildings || 0}
+            className={'w-25-l w-50-m w-100 mv1'}
+          />
+          <StatsCard
+            icon={<RoadIcon className={iconClass} style={iconStyle} />}
+            description={<FormattedMessage {...userDetailMessages.roadMapped} />}
+            value={stats.roads || 0}
+            className={'w-25-l w-50-m w-100 mv1'}
+          />
+          <StatsCard
+            icon={<MarkerIcon className={iconClass} style={iconStyle} />}
+            description={<FormattedMessage {...userDetailMessages.poiMapped} />}
+            value={stats.pois || 0}
+            className={'w-25-l w-50-m w-100 mv1'}
+          />
+          <StatsCard
+            icon={<WavesIcon className={iconClass} style={iconStyle} />}
+            description={<FormattedMessage {...userDetailMessages.waterwaysMapped} />}
+            value={stats.waterways || 0}
+            className={'w-25-l w-50-m w-100 mv1'}
+          />
+        </div>
       </div>
     </>
   );
