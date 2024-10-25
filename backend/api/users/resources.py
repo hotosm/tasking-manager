@@ -7,12 +7,7 @@ from backend.db import get_db, get_session
 from backend.models.dtos.user_dto import AuthUserDTO, UserSearchQuery
 from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import login_required
-
-# from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService
-
-# from flask_restful import , current_app, request
-# from schematics.exceptions import DataError
 
 
 router = APIRouter(

@@ -8,9 +8,9 @@ class MessageDTO(BaseModel):
     """DTO used to define a message that will be sent to a user"""
 
     message_id: Optional[int] = Field(None, alias="messageId")
-    subject: str = Field(min_length=1, alias="subject")
-    message: str = Field(min_length=1, alias="message")
-    from_user_id: int = Field(alias="fromUserId")
+    subject: Optional[str] = Field(min_length=1, alias="subject")
+    message: Optional[str] = Field(min_length=1, alias="message")
+    from_user_id: Optional[int] = Field(alias="fromUserId")
     from_username: Optional[str] = Field("", alias="fromUsername")
     display_picture_url: Optional[str] = Field("", alias="displayPictureUrl")
     project_id: Optional[int] = Field(None, alias="projectId")

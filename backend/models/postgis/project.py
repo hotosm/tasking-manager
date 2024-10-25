@@ -1457,9 +1457,16 @@ class Project(Base):
 
         return project_teams
 
-    def get_project_title(self, preferred_locale):
-        project_info = ProjectInfo.get_dto_for_locale(
-            self.id, preferred_locale, self.default_locale
+    # def get_project_title(self, preferred_locale):
+    #     project_info = ProjectInfo.get_dto_for_locale(
+    #         self.id, preferred_locale, self.default_locale
+    #     )
+    #     return project_info.name
+
+    @staticmethod
+    async def get_project_title(db: Database, project_id: int, preferred_locale):
+        project_info = await ProjectInfo.get_dto_for_locale(
+            db, project_id, preferred_locale
         )
         return project_info.name
 
