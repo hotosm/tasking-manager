@@ -1,21 +1,23 @@
 # # from flask import current_app
-from sqlalchemy.dialects.postgresql import TSVECTOR
 from typing import List
+
+from databases import Database
 from sqlalchemy import (
     Column,
-    String,
-    Integer,
     ForeignKey,
     Index,
-    inspect,
+    Integer,
+    String,
     insert,
+    inspect,
     update,
 )
-from backend.models.dtos.project_dto import ProjectInfoDTO
+from sqlalchemy.dialects.postgresql import TSVECTOR
+
 from backend.db import Base, get_session
+from backend.models.dtos.project_dto import ProjectInfoDTO
 
 session = get_session()
-from databases import Database
 
 
 class ProjectInfo(Base):
@@ -107,13 +109,10 @@ class ProjectInfo(Base):
         :return: ProjectInfoDTO
         :raises: ValueError if no info found for Default Locale
         """
-
-        # Define the SQL query to get project info by locale
         query = """
             SELECT * FROM project_info
             WHERE project_id = :project_id AND locale = :locale
         """
-
         # Execute the query for the requested locale
         project_info = await db.fetch_one(
             query, values={"project_id": project_id, "locale": locale}
@@ -140,7 +139,6 @@ class ProjectInfo(Base):
         if locale == default_locale:
             # Return the DTO for the default locale
             return ProjectInfoDTO(**project_info)
-
         # Define the SQL query to get project info by default locale for partial translations
         query_default = """
             SELECT * FROM project_info
@@ -157,46 +155,31 @@ class ProjectInfo(Base):
             error_message = f"BAD DATA: no info for project {project_id}, locale: {locale}, default {default_locale}"
             raise ValueError(error_message)
 
-        combined_info = {**default_locale_info, **project_info}
-        return ProjectInfoDTO(**combined_info)
-
-    # def get_dto(self, default_locale=ProjectInfoDTO()) -> ProjectInfoDTO:
-    #     """
-    #     Get DTO for current ProjectInfo
-    #     :param default_locale: The default locale string for any empty fields
-    #     """
-    #     project_info_dto = ProjectInfoDTO()
-    #     project_info_dto.locale = self.locale
-    #     project_info_dto.name = self.name if self.name else default_locale.name
-    #     project_info_dto.description = (
-    #         self.description if self.description else default_locale.description
-    #     )
-    #     project_info_dto.short_description = (
-    #         self.short_description
-    #         if self.short_description
-    #         else default_locale.short_description
-    #     )
-    #     project_info_dto.instructions = (
-    #         self.instructions if self.instructions else default_locale.instructions
-    #     )
-    #     project_info_dto.per_task_instructions = (
-    #         self.per_task_instructions
-    #         if self.per_task_instructions
-    #         else default_locale.per_task_instructions
-    #     )
-
-    #     return project_info_dto
-
-    # @staticmethod
-    # def get_dto_for_all_locales(project_id) -> List[ProjectInfoDTO]:
-    #     locales = ProjectInfo.query.filter_by(project_id=project_id).all()
-
-    #     project_info_dtos = []
-    #     for locale in locales:
-    #         project_info_dto = locale.get_dto()
-    #         project_info_dtos.append(project_info_dto)
-
-    #     return project_info_dtos
+        combined_info = ProjectInfoDTO(locale=project_info.locale)
+        combined_info.name = (
+            project_info.name if project_info.name else default_locale_info.name
+        )
+        combined_info.description = (
+            project_info.description
+            if project_info.description
+            else default_locale_info.description
+        )
+        combined_info.short_description = (
+            project_info.short_description
+            if project_info.short_description
+            else default_locale_info.short_description
+        )
+        combined_info.instructions = (
+            project_info.instructions
+            if project_info.instructions
+            else default_locale_info.instructions
+        )
+        combined_info.per_task_instructions = (
+            project_info.per_task_instructions
+            if project_info.per_task_instructions
+            else default_locale_info.per_task_instructions
+        )
+        return combined_info
 
     # Function to get a single ProjectInfoDTO
     async def get_project_info_dto(locale_record) -> ProjectInfoDTO:

@@ -1,27 +1,27 @@
-from sqlalchemy.sql.expression import false
-
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    DateTime,
-    ForeignKey,
-    BigInteger,
-    Boolean,
-    ForeignKeyConstraint,
-)
-from sqlalchemy.orm import relationship
-from loguru import logger
 from enum import Enum
 
+from databases import Database
+from loguru import logger
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Integer,
+    String,
+)
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql.expression import false
+
+from backend.db import Base, get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
-from backend.models.postgis.user import User
-from backend.models.postgis.task import Task, TaskAction
 from backend.models.postgis.project import Project
+from backend.models.postgis.task import Task, TaskAction
+from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
-from backend.db import Base, get_session
-from databases import Database
 
 session = get_session()
 
@@ -272,10 +272,10 @@ class Message(Base):
                 AND read = FALSE
             """
 
+            params = {"user_id": user_id}
+
             if message_type_filters:
                 query += " AND message_type = ANY(:message_type_filters)"
+                params["message_type_filters"] = message_type_filters
 
-            await db.execute(
-                query,
-                {"user_id": user_id, "message_type_filters": message_type_filters},
-            )
+            await db.execute(query, params)

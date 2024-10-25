@@ -94,7 +94,6 @@ class ProjectSearchService:
             o.logo AS organisation_logo
         FROM projects p
         LEFT JOIN organisations o ON o.id = p.organisation_id
-        LEFT JOIN project_info pi ON pi.project_id = p.id
         WHERE p.geometry IS NOT NULL
         """
 
@@ -160,7 +159,7 @@ class ProjectSearchService:
         project_info_dto = await ProjectInfo.get_dto_for_locale(
             db, project.id, preferred_locale, project.default_locale
         )
-        # project_obj = await Project.get(project.id, db)
+
         list_dto = ListSearchResultDTO()
         list_dto.project_id = project.id
         list_dto.locale = project_info_dto.locale
@@ -328,10 +327,32 @@ class ProjectSearchService:
         base_query, params = await ProjectSearchService.create_search_query(db, user)
         # Initialize filter list and parameters dictionary
         filters = []
-        # Filters based on search_dto
-        if search_dto.preferred_locale:
-            filters.append("pi.locale IN (:preferred_locale, 'en')")
-            params["preferred_locale"] = search_dto.preferred_locale
+
+        if search_dto.preferred_locale or search_dto.text_search:
+            subquery_filters = []
+            if search_dto.preferred_locale:
+                subquery_filters.append("locale IN (:preferred_locale, 'en')")
+                params["preferred_locale"] = search_dto.preferred_locale
+
+            if search_dto.text_search:
+                search_text = "".join(
+                    char for char in search_dto.text_search if char not in "@|&!><\\():"
+                )
+                or_search = " | ".join([x for x in search_text.split(" ") if x])
+                subquery_filters.append(
+                    "text_searchable @@ to_tsquery('english', :text_search) OR name ILIKE :text_search"
+                )
+                params["text_search"] = or_search
+
+            filters.append(
+                """
+                p.id IN (
+                    SELECT project_id
+                    FROM project_info
+                    WHERE {}
+                )
+                """.format(" AND ".join(subquery_filters))
+            )
 
         if search_dto.project_statuses:
             statuses = [
@@ -444,16 +465,6 @@ class ProjectSearchService:
                     MappingTypes[mapping_type].value
                     for mapping_type in search_dto.mapping_types
                 )
-
-        if search_dto.text_search:
-            search_text = "".join(
-                char for char in search_dto.text_search if char not in "@|&!><\\():"
-            )
-            or_search = " | ".join([x for x in search_text.split(" ") if x])
-            filters.append(
-                "pi.text_searchable @@ to_tsquery('english', :text_search) OR pi.name ILIKE :text_search"
-            )
-            params["text_search"] = or_search
 
         if search_dto.country:
             filters.append(
@@ -789,15 +800,11 @@ class ProjectSearchService:
     async def _get_area_sqm(polygon: Polygon, db: Database) -> float:
         """Get the area of the polygon in square meters."""
         try:
-            # Convert the polygon to its WKT format
-
             geometry_wkt = polygon.wkt
 
-            # Prepare the raw SQL query to calculate the area
             query = "SELECT ST_Area(ST_Transform(ST_GeomFromText(:wkt, 4326), 3857)) AS area"
             values = {"wkt": geometry_wkt}
 
-            # Execute the query asynchronously using encode databases
             result = await db.fetch_one(query=query, values=values)
             return result["area"]
 
