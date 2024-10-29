@@ -1,3 +1,4 @@
+from backend.models.postgis.team import Team
 from databases import Database
 from distutils.util import strtobool
 from fastapi import APIRouter, Depends, Request, Body
@@ -94,7 +95,7 @@ async def patch(
     try:
         team = await TeamService.get_team_by_id(team_id, db)
         team_dto.team_id = team_id
-
+        data = await request.json()
         if not await TeamService.is_user_team_manager(
             team_id, user.id, db
         ) and not await OrganisationService.can_user_manage_organisation(
@@ -112,9 +113,12 @@ async def patch(
         return JSONResponse(
             content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
         )
-
     try:
-        await TeamService.update_team(team_dto, db)
+        if ("joinMethod" or "organisations_id") not in data.keys():
+            print("inside......")
+            await Team.update_team_members(team, team_dto, db)
+        else:
+            await TeamService.update_team(team_dto, db)
         return JSONResponse(content={"Status": "Updated"}, status_code=200)
     except TeamServiceError as e:
         return JSONResponse(content={"Error": str(e)}, status_code=402)

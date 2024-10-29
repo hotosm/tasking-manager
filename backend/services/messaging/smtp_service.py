@@ -178,7 +178,7 @@ class SMTPService:
         return True
 
     @staticmethod
-    async def _send_message(
+    def _send_message(
         to_address: str, subject: str, html_message: str, text_message: str = None
     ):
         """Helper sends SMTP message"""
@@ -196,7 +196,7 @@ class SMTPService:
             logger.debug(msg.as_string())
         else:
             try:
-                await mail.send_message(msg)
+                mail.send_message(msg)
                 logger.debug(f"Email sent {to_address}")
             except Exception as e:
                 # ERROR level logs are automatically captured by sentry so that admins are notified
