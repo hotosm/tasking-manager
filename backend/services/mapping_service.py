@@ -165,7 +165,6 @@ class MappingService:
         )
 
         if mapped_task.comment:
-            # TODO Verify this messaging functionality.
             await MessageService.send_message_after_comment(
                 mapped_task.user_id,
                 mapped_task.comment,
@@ -251,12 +250,12 @@ class MappingService:
         return task
 
     @staticmethod
-    async def add_task_comment(task_comment: TaskCommentDTO) -> TaskDTO:
+    async def add_task_comment(task_comment: TaskCommentDTO, db: Database) -> TaskDTO:
         """Adds the comment to the task history"""
         # Check if project exists
-        await ProjectService.exists(task_comment.project_id)
+        await ProjectService.exists(task_comment.project_id, db)
 
-        task = Task.get(task_comment.task_id, task_comment.project_id)
+        task = await Task.get(task_comment.task_id, task_comment.project_id, db)
         if task is None:
             raise NotFound(
                 sub_code="TASK_NOT_FOUND",
@@ -264,15 +263,28 @@ class MappingService:
                 task_id=task_comment.task_id,
             )
 
-        task.set_task_history(
-            TaskAction.COMMENT, task_comment.user_id, task_comment.comment
+        await Task.set_task_history(
+            task_id=task_comment.task_id,
+            project_id=task_comment.project_id,
+            user_id=task_comment.user_id,
+            action=TaskAction.COMMENT,
+            db=db,
+            comment=task_comment.comment,
         )
         # Parse comment to see if any users have been @'d
-        MessageService.send_message_after_comment(
-            task_comment.user_id, task_comment.comment, task.id, task_comment.project_id
+        await MessageService.send_message_after_comment(
+            task_comment.user_id,
+            task_comment.comment,
+            task.id,
+            task_comment.project_id,
+            db,
         )
-        task.update()
-        return task.as_dto_with_instructions(task_comment.preferred_locale)
+        return await Task.as_dto_with_instructions(
+            task_comment.task_id,
+            task_comment.project_id,
+            db,
+            task_comment.preferred_locale,
+        )
 
     @staticmethod
     async def generate_gpx(

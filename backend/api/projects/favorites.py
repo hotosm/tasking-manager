@@ -55,7 +55,7 @@ async def get(
     favorited = await ProjectService.is_favorited(project_id, user_id, db)
     if favorited is True:
         return JSONResponse(content={"favorited": True}, status_code=200)
-    return JSONResponse({"favorited": False}, status_code=200)
+    return JSONResponse(content={"favorited": False}, status_code=200)
 
 
 @router.post("/{project_id}/favorite/")

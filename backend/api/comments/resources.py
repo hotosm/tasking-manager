@@ -1,12 +1,8 @@
-# from flask_restful import , request, current_app
-# from schematics.exceptions import Exception
-
 from datetime import datetime
 
 from databases import Database
 from fastapi import APIRouter, Depends, Request
 from loguru import logger
-from starlette.authentication import requires
 from fastapi.responses import JSONResponse
 
 from backend.db import get_db, get_session
@@ -16,7 +12,7 @@ from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.mapping_service import MappingService, MappingServiceError
 from backend.services.messaging.chat_service import ChatService
 from backend.services.project_service import ProjectService
-from backend.services.users.authentication_service import login_required, tm
+from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
 
 session = get_session()
@@ -204,9 +200,15 @@ async def delete(
 
 
 @router.post("/{project_id}/comments/tasks/{task_id}/")
-@requires("authenticated")
-@tm.pm_only(False)
-def post(request: Request, project_id: int, task_id: int):
+# TODO Decorator
+# @tm.pm_only(False)
+async def post(
+    request: Request,
+    project_id: int,
+    task_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Adds a comment to the task outside of mapping/validation
     ---
@@ -260,24 +262,29 @@ def post(request: Request, project_id: int, task_id: int):
             description: Internal Server Error
     """
     authenticated_user_id = request.user.display_name
-    if UserService.is_user_blocked(authenticated_user_id):
-        return {"Error": "User is on read only mode", "SubCode": "ReadOnly"}, 403
+    if await UserService.is_user_blocked(authenticated_user_id, db):
+        return JSONResponse(
+            content={"Error": "User is on read only mode", "SubCode": "ReadOnly"},
+            status_code=403,
+        )
 
     try:
-        task_comment = TaskCommentDTO(request.json())
-        task_comment.user_id = request.user.display_name
-        task_comment.task_id = task_id
-        task_comment.project_id = project_id
-        task_comment.validate()
+        request_json = await request.json()
+        comment = request_json.get("comment")
+        task_comment = TaskCommentDTO(
+            user_id=user.id, task_id=task_id, project_id=project_id, comment=comment
+        )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {"Error": "Unable to add comment", "SubCode": "InvalidData"}, 400
-
+        return JSONResponse(
+            content={"Error": "Unable to add comment", "SubCode": "InvalidData"},
+            status_code=400,
+        )
     try:
-        task = MappingService.add_task_comment(task_comment)
-        return task.model_dump(by_alias=True), 201
+        task = await MappingService.add_task_comment(task_comment, db)
+        return task
     except MappingServiceError:
-        return {"Error": "Task update failed"}, 403
+        return JSONResponse(content={"Error": "Task update failed"}, status_code=403)
 
 
 @router.get("/{project_id}/comments/tasks/{task_id}/")

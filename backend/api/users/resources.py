@@ -255,7 +255,9 @@ async def get(
     page = (
         int(request.query_params.get("page")) if request.query_params.get("page") else 1
     )
-    project_id = int(request.query_params.get("projectId", None))
+    project_id = request.query_params.get("projectId", None)
+    if project_id:
+        project_id = int(project_id)
     users_dto = await UserService.filter_users(username, project_id, page, db)
     return users_dto
 

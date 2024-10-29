@@ -132,20 +132,27 @@ class Message(Base):
         )
 
     @staticmethod
-    def get_all_contributors(project_id: int):
-        """Get all contributors to a project"""
+    async def get_all_contributors(project_id: int, db: Database):
+        """Get all contributors to a project using async raw SQL"""
 
-        contributors = (
-            session.query(Task.mapped_by)
-            .filter(Task.project_id == project_id)
-            .filter(Task.mapped_by.isnot(None))
-            .union(
-                session.query(Task.validated_by)
-                .filter(Task.project_id == project_id)
-                .filter(Task.validated_by.isnot(None))
-            )
-            .distinct()
-        ).all()
+        query = """
+            SELECT DISTINCT contributor
+            FROM (
+                SELECT mapped_by AS contributor
+                FROM tasks
+                WHERE project_id = :project_id
+                  AND mapped_by IS NOT NULL
+                UNION
+                SELECT validated_by AS contributor
+                FROM tasks
+                WHERE project_id = :project_id
+                  AND validated_by IS NOT NULL
+            ) AS contributors
+        """
+
+        rows = await db.fetch_all(query=query, values={"project_id": project_id})
+
+        contributors = [row["contributor"] for row in rows]
         return contributors
 
     @staticmethod
@@ -222,14 +229,12 @@ class Message(Base):
             DELETE FROM messages
             WHERE to_user_id = :user_id
         """
+        params = {"user_id": user_id}
 
         if message_type_filters:
             delete_query += " AND message_type = ANY(:message_type_filters)"
-
-        await db.execute(
-            delete_query,
-            {"user_id": user_id, "message_type_filters": message_type_filters},
-        )
+            params["message_type_filters"] = message_type_filters
+        await db.execute(delete_query, params)
 
     def delete(self):
         """Deletes the current model from the DB"""
