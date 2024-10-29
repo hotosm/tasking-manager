@@ -422,11 +422,11 @@ class ProjectSearchService:
         if search_dto.managed_by and user.role != UserRole.ADMIN.value:
             # Fetch project IDs for user's organisations
             org_projects_query = """
-            SELECT p.id
+            SELECT p.id AS id
             FROM projects p
             JOIN organisations o ON o.id = p.organisation_id
-            JOIN user_organisations uo ON uo.organisation_id = o.id
-            WHERE uo.user_id = :user_id
+            JOIN organisation_managers om ON om.organisation_id = o.id
+            WHERE om.user_id = :user_id
             """
             orgs_projects_ids = await db.fetch_all(
                 org_projects_query, {"user_id": user.id}
@@ -434,12 +434,12 @@ class ProjectSearchService:
 
             # Fetch project IDs for user's teams
             team_projects_query = """
-            SELECT p.id
-            FROM projects p
-            JOIN teams t ON t.id = p.team_id
-            JOIN user_teams ut ON ut.team_id = t.id
-            WHERE ut.user_id = :user_id
-            AND ut.role = :project_manager_role
+            SELECT pt.project_id AS id
+            FROM project_teams pt
+            JOIN team_members tm ON tm.team_id = pt.team_id
+            WHERE tm.user_id = :user_id
+            AND pt.role = :project_manager_role
+            AND tm.active = TRUE
             """
             team_project_ids = await db.fetch_all(
                 team_projects_query,
@@ -457,7 +457,7 @@ class ProjectSearchService:
                 )
             )
             if project_ids:
-                filters.append("p.id IN :managed_projects")
+                filters.append("p.id = ANY(:managed_projects)")
                 params["managed_projects"] = project_ids
 
         order_by_clause = ""

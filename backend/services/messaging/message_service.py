@@ -4,6 +4,7 @@ import datetime
 import bleach
 
 from cachetools import TTLCache, cached
+from backend.models.postgis.utils import timestamp
 from loguru import logger
 from typing import List
 
@@ -131,20 +132,22 @@ class MessageService:
         await MessageService._push_messages(messages, db)
 
     @staticmethod
-    def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
+    async def send_message_to_all_contributors(
+        project_id: int, message_dto: MessageDTO, db: Database
+    ):
         """Sends supplied message to all contributors on specified project.  Message all contributors can take
         over a minute to run, so this method is expected to be called on its own thread
         """
-
+        # TODO: Background task.
         app = (
             create_app()
         )  # Because message-all run on background thread it needs it's own app context
 
         with app.app_context():
-            contributors = Message.get_all_contributors(project_id)
-            project = Project.get(project_id)
-            project_name = ProjectInfo.get_dto_for_locale(
-                project_id, project.default_locale
+            contributors = await Message.get_all_contributors(project_id, db)
+            project = await Project.get(project_id, db)
+            project_name = await ProjectInfo.get_dto_for_locale(
+                db, project_id, project.default_locale
             ).name
             message_dto.message = "A message from {} managers:<br/><br/>{}".format(
                 MessageService.get_project_link(
@@ -155,15 +158,15 @@ class MessageService:
 
             messages = []
             for contributor in contributors:
-                message = Message.from_dto(contributor[0], message_dto)
+                message = Message.from_dto(contributor.id, message_dto)
                 message.message_type = MessageType.BROADCAST.value
                 message.project_id = project_id
-                user = UserService.get_user_by_id(contributor[0])
+                user = await UserService.get_user_by_id(contributor.id, db)
                 messages.append(
                     dict(message=message, user=user, project_name=project_name)
                 )
 
-            MessageService._push_messages(messages)
+            await MessageService._push_messages(messages, db)
 
     @staticmethod
     async def _push_messages(messages: list, db: Database):
@@ -269,7 +272,6 @@ class MessageService:
         comment_from: int, comment: str, task_id: int, project_id: int, db: Database
     ):
         """Will send a canned message to anyone @'d in a comment"""
-
         # Fetch the user who made the comment
         comment_from_user = await UserService.get_user_by_id(comment_from, db)
 
@@ -334,16 +336,26 @@ class MessageService:
                 except NotFound:
                     continue
 
-                message = {
-                    "message_type": MessageType.MENTION_NOTIFICATION.value,
-                    "project_id": project_id,
-                    "task_id": task_id,
-                    "from_user_id": comment_from,
-                    "to_user_id": user["id"],
-                    "subject": f"You were mentioned in a comment in {task_link} of Project {project_link}",
-                    "message": clean_comment,
-                }
-                messages.append(message)
+                # message = {
+                #     "message_type": MessageType.MENTION_NOTIFICATION.value,
+                #     "project_id": project_id,
+                #     "task_id": task_id,
+                #     "from_user_id": comment_from,
+                #     "to_user_id": user["id"],
+                #     "subject": f"You were mentioned in a comment in {task_link} of Project {project_link}",
+                #     "message": clean_comment,
+                # }
+
+                message = Message()
+                message.message_type = MessageType.MENTION_NOTIFICATION.value
+                message.project_id = project_id
+                message.task_id = task_id
+                message.from_user_id = comment_from
+                message.to_user_id = user["id"]
+                message.subject = f"You were mentioned in a comment in {task_link} of Project {project_link}"
+                message.message = clean_comment
+                message.date = timestamp()
+                messages.append(dict(message=message, user=user))
 
             await MessageService._push_messages(messages, db)
 
@@ -368,8 +380,7 @@ class MessageService:
 
         if contributed_users:
             user_from = await UserService.get_user_by_id(comment_from, db)
-            user_link = MessageService.get_user_link(user_from["username"])
-
+            user_link = MessageService.get_user_link(user_from.username)
             task_link = MessageService.get_task_link(project_id, task_id)
             project_link = MessageService.get_project_link(project_id, project_name)
 
@@ -377,22 +388,33 @@ class MessageService:
             for user_id in contributed_users:
                 try:
                     user = await UserService.get_user_by_id(user_id, db)
-                    if user["username"] in usernames:
+                    if user.username in usernames:
                         break
                 except NotFound:
                     continue
 
-                message = {
-                    "message_type": MessageType.TASK_COMMENT_NOTIFICATION.value,
-                    "project_id": project_id,
-                    "from_user_id": comment_from,
-                    "task_id": task_id,
-                    "to_user_id": user["id"],
-                    "subject": f"{user_link} left a comment in {task_link} of Project {project_link}",
-                    "message": comment,
-                }
-                messages.append(message)
+                # message = {
+                #     "message_type": MessageType.TASK_COMMENT_NOTIFICATION.value,
+                #     "project_id": project_id,
+                #     "from_user_id": comment_from,
+                #     "task_id": task_id,
+                #     "to_user_id": user["id"],
+                #     "subject": f"{user_link} left a comment in {task_link} of Project {project_link}",
+                #     "message": comment,
+                # }
 
+                message = Message()
+                message.message_type = MessageType.TASK_COMMENT_NOTIFICATION.value
+                message.project_id = project_id
+                message.task_id = task_id
+                message.from_user_id = comment_from
+                message.to_user_id = user.id
+                message.subject = f"{user_link} left a comment in {task_link} of Project {project_link}"
+                message.message = comment
+                message.date = timestamp()
+                messages.append(
+                    dict(message=message, user=user, project_name=project_name)
+                )
             await MessageService._push_messages(messages, db)
 
     @staticmethod
@@ -456,7 +478,12 @@ class MessageService:
 
     @staticmethod
     def send_request_to_join_team(
-        from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
+        from_user: int,
+        from_username: str,
+        to_user: int,
+        team_name: str,
+        team_id: int,
+        db: Database,
     ):
         message = Message()
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
@@ -856,7 +883,6 @@ class MessageService:
         messages_dto = MessagesDTO()
         for msg in messages:
             message_dict = dict(msg)
-            print(message_dict)
             if message_dict["message_type"]:
                 message_dict["message_type"] = MessageType(
                     message_dict["message_type"]
