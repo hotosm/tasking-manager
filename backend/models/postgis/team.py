@@ -63,7 +63,7 @@ class TeamMembers(Base):
                 user_id=self.user_id,
                 function=self.function,
                 active=self.active,
-                join_request_notifications=self.join_request_notifications,
+                join_request_notifications=False,
             )
         )
         return team_member
@@ -167,10 +167,10 @@ class Team(Base):
         team = await Team.create(new_team, db)
         return team
 
-    async def update(self, team_dto: TeamDTO, db: Database):
+    async def update(team, team_dto: TeamDTO, db: Database):
         """Updates Team from DTO"""
         if team_dto.organisation:
-            self.organisation = Organisation.get_organisation_by_name(
+            team.organisation = Organisation.get_organisation_by_name(
                 team_dto.organisation, db
             )
 
@@ -195,74 +195,11 @@ class Team(Base):
                 + ", ".join([f"{k} = :{k}" for k in update_fields.keys()])
                 + " WHERE id = :id"
             )
-            await db.execute(update_query, {**update_fields, "id": self.id})
+            await db.execute(update_query, {**update_fields, "id": team.id})
 
         # Update team members if they have changed
-        if (
-            team_dto.members != await Team._get_team_members(self, db)
-            and team_dto.members
-        ):
-            # Get existing members from the team
-            existing_members = await db.fetch_all(
-                "SELECT user_id FROM team_members WHERE team_id = :team_id",
-                {"team_id": self.id},
-            )
-
-            # Remove members who are not in the new member list
-            new_member_usernames = [member["username"] for member in team_dto.members]
-            for member in existing_members:
-                username = await db.fetch_val(
-                    "SELECT username FROM users WHERE id = :id",
-                    {"id": member["user_id"]},
-                )
-                if username not in new_member_usernames:
-                    await db.execute(
-                        "DELETE FROM team_members WHERE team_id = :team_id AND user_id = :user_id",
-                        {"team_id": self.id, "user_id": member["user_id"]},
-                    )
-
-            # Add or update members from the new member list
-            for member in team_dto.members:
-                user = await db.fetch_one(
-                    "SELECT id FROM users WHERE username = :username",
-                    {"username": member["username"]},
-                )
-                if not user:
-                    raise NotFound(
-                        sub_code="USER_NOT_FOUND", username=member["username"]
-                    )
-
-                # Check if the user is already a member of the team
-                team_member = await db.fetch_one(
-                    "SELECT * FROM team_members WHERE team_id = :team_id AND user_id = :user_id",
-                    {"team_id": self.id, "user_id": user["id"]},
-                )
-
-                if team_member:
-                    # Update member's join_request_notifications
-                    await db.execute(
-                        "UPDATE team_members SET join_request_notifications = :join_request_notifications WHERE team_id = :team_id AND user_id = :user_id",
-                        {
-                            "join_request_notifications": member[
-                                "join_request_notifications"
-                            ],
-                            "team_id": self.id,
-                            "user_id": user["id"],
-                        },
-                    )
-                else:
-                    # Add a new member to the team
-                    await db.execute(
-                        "INSERT INTO team_members (team_id, user_id, function, join_request_notifications) VALUES (:team_id, :user_id, :function, :join_request_notifications)",
-                        {
-                            "team_id": self.id,
-                            "user_id": user["id"],
-                            "function": TeamMemberFunctions[member["function"]].value,
-                            "join_request_notifications": member[
-                                "join_request_notifications"
-                            ],
-                        },
-                    )
+        if team_dto.members:
+            await Team.update_team_members(team, team_dto, db)
 
     async def delete(self, db: Database):
         """Deletes the current model from the DB"""
@@ -324,7 +261,9 @@ class Team(Base):
 
         return team_dto
 
-    async def as_dto_team_member(user_id: int, db: Database) -> TeamMembersDTO:
+    async def as_dto_team_member(
+        user_id: int, team_id: int, db: Database
+    ) -> TeamMembersDTO:
         """Returns a DTO for the team member"""
         user_query = """
             SELECT username, picture_url FROM users WHERE id = :user_id
@@ -333,13 +272,13 @@ class Team(Base):
 
         if not user:
             raise NotFound(sub_code="USER_NOT_FOUND", user_id=user_id)
-
         member_query = """
             SELECT function, active, join_request_notifications
-            FROM team_members WHERE user_id = :user_id
+            FROM team_members WHERE user_id = :user_id AND team_id = :team_id
         """
-        member = await db.fetch_one(query=member_query, values={"user_id": user_id})
-
+        member = await db.fetch_one(
+            query=member_query, values={"user_id": user_id, "team_id": team_id}
+        )
         if not member:
             raise NotFound(sub_code="MEMBER_NOT_FOUND", user_id=user_id)
 
@@ -516,3 +455,66 @@ class Team(Base):
         values = {"team_id": team_id, "function": role.value}
 
         return await db.fetch_val(query=query, values=values)
+
+    @staticmethod
+    async def update_team_members(team, team_dto: TeamDTO, db: Database):
+        # Get existing members from the team
+        existing_members = await db.fetch_all(
+            "SELECT user_id FROM team_members WHERE team_id = :team_id",
+            {"team_id": team.id},
+        )
+        existing_members_list = list(
+            set([existing_member.user_id for existing_member in existing_members])
+        )
+
+        new_member_usernames = list(
+            set([member.username for member in team_dto.members])
+        )
+        new_members_records = await db.fetch_all(
+            "SELECT id FROM users WHERE username = ANY(:new_member_usernames)",
+            {"new_member_usernames": new_member_usernames},
+        )
+        new_member_list = list(
+            set([new_member.id for new_member in new_members_records])
+        )
+        if existing_members_list != new_member_list:
+            for member in existing_members_list:
+                if member.user_id not in new_member_list:
+                    await db.execute(
+                        "DELETE FROM team_members WHERE team_id = :team_id AND user_id = :user_id",
+                        {"team_id": team.id, "user_id": member.user_id},
+                    )
+
+        # Add or update members from the new member list
+        for member in team_dto.members:
+            user = await db.fetch_one(
+                "SELECT id FROM users WHERE username = :username",
+                {"username": member.username},
+            )
+            if not user:
+                raise NotFound(sub_code="USER_NOT_FOUND", username=member.username)
+            # Check if the user is already a member of the team
+            team_member = await db.fetch_one(
+                "SELECT * FROM team_members WHERE team_id = :team_id AND user_id = :user_id",
+                {"team_id": team.id, "user_id": user["id"]},
+            )
+
+            if team_member:
+                await db.execute(
+                    "UPDATE team_members SET join_request_notifications = :join_request_notifications WHERE team_id = :team_id AND user_id = :user_id",
+                    {
+                        "join_request_notifications": member.join_request_notifications,
+                        "team_id": team.id,
+                        "user_id": user["id"],
+                    },
+                )
+            else:
+                await db.execute(
+                    "INSERT INTO team_members (team_id, user_id, function, join_request_notifications) VALUES (:team_id, :user_id, :function, :join_request_notifications)",
+                    {
+                        "team_id": team.id,
+                        "user_id": user["id"],
+                        "function": TeamMemberFunctions[member["function"]].value,
+                        "join_request_notifications": member.join_request_notifications,
+                    },
+                )

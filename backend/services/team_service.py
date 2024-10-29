@@ -87,12 +87,12 @@ class TeamService:
 
         # Notify team managers about a join request in BY_REQUEST team.
         if team.join_method == TeamJoinMethod.BY_REQUEST.value:
-            team_managers = Team.get_team_managers(db, team)
+            team_managers = await Team.get_team_managers(db, team.id)
             for manager in team_managers:
                 # Only send notifications to team managers who have join request notification enabled.
                 if manager.join_request_notifications:
                     MessageService.send_request_to_join_team(
-                        user.id, user.username, manager.user_id, team.name, team_id
+                        user.id, user.username, manager.user_id, team.name, team_id, db
                     )
 
     @staticmethod
@@ -119,6 +119,7 @@ class TeamService:
             return JSONResponse(
                 content={"Success": "User role updated"}, status_code=200
             )
+
         else:
             if role:
                 try:
@@ -147,7 +148,7 @@ class TeamService:
         team_member.user_id = user_id
         team_member.function = function
         team_member.active = active
-        TeamMembers.create(team_member, db)
+        await TeamMembers.create(team_member, db)
 
     @staticmethod
     async def send_invite(team_id, from_user_id, username, db: Database):
@@ -188,7 +189,7 @@ class TeamService:
         from_user = await UserService.get_user_by_id(from_user_id, db)
         to_user = await UserService.get_user_by_username(username, db)
         team = await TeamService.get_team_by_id(team_id, db)
-        team_members = await Team.get_team_managers(team)
+        team_members = await Team.get_team_managers(db, team.id)
 
         for member in team_members:
             MessageService.accept_reject_invitation_request_for_team(
@@ -444,9 +445,11 @@ class TeamService:
             SELECT user_id FROM team_members WHERE team_id = :team_id
         """
         members = await db.fetch_all(query=members_query, values={"team_id": team_id})
-
         team_dto.members = (
-            [await Team.as_dto_team_member(member.user_id, db) for member in members]
+            [
+                await Team.as_dto_team_member(member.user_id, team_id, db)
+                for member in members
+            ]
             if members
             else []
         )
@@ -724,9 +727,10 @@ class TeamService:
         if await UserService.is_user_an_admin(user_id, db):
             return True
 
-        managers = team.get_team_managers()
+        managers = await Team.get_team_managers(db, team.id)
         for member in managers:
-            if member.user_id == user_id:
+            team_manager = await UserService.get_user_by_username(member.username, db)
+            if team_manager.id == user_id:
                 return True
 
         # Org admin manages teams attached to their org
@@ -802,4 +806,4 @@ class TeamService:
                 user = await UserService.get_user_by_id(team_member.user_id, db)
                 messages.append(dict(message=message, user=user))
 
-        MessageService._push_messages(messages)
+        await MessageService._push_messages(messages)

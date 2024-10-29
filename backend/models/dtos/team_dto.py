@@ -73,6 +73,9 @@ class TeamMembersDTO(BaseModel):
     def validate_function(cls, value):
         return validate_team_member_function(value)
 
+    class Config:
+        populate_by_name = True
+
 
 class TeamProjectDTO(BaseModel):
     """Describes a JSON model to create a project team"""
@@ -108,7 +111,7 @@ class TeamDetailsDTO(BaseModel):
     visibility: str
     is_org_admin: bool = Field(False)
     is_general_admin: bool = Field(False)
-    members: List[TeamMembersDTO] = Field([], alias="team_members")
+    members: List[TeamMembersDTO] = Field([], alias="members")
     team_projects: List[TeamProjectDTO] = Field([], alias="team_projects")
 
     @field_validator("join_method")
@@ -200,16 +203,16 @@ class NewTeamDTO(BaseModel):
 class UpdateTeamDTO(BaseModel):
     """Describes a JSON model to update a team"""
 
-    creator: float = Field(None, alias="creator")
-    team_id: int = Field(None, alias="team_id")
-    organisation: str = Field(None, alias="organisation")
-    organisation_id: int = Field(None, alias="organisation_id")
-    name: str = Field(None, alias="name")
-    logo: str = Field(None, alias="logo")
-    description: str = Field(None, alias="description")
-    join_method: str = Field(None, alias="joinMethod")
-    visibility: str = Field(None, serialize_when_none=False)
-    members: List[TeamMembersDTO] = Field([], serialize_when_none=False)
+    creator: Optional[int] = Field(None, alias="creator")
+    team_id: Optional[int] = Field(None, alias="team_id")
+    organisation: Optional[str] = Field(None, alias="organisation")
+    organisation_id: Optional[int] = Field(None, alias="organisation_id")
+    name: Optional[str] = Field(None, alias="name")
+    logo: Optional[str] = Field(None, alias="logo")
+    description: Optional[str] = Field(None, alias="description")
+    join_method: Optional[str] = Field(None, alias="joinMethod")
+    visibility: Optional[str] = Field(None, serialize_when_none=False)
+    members: Optional[List[TeamMembersDTO]] = Field([], serialize_when_none=False)
 
     @field_validator("join_method")
     def validate_join_method(cls, value):
