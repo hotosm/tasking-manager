@@ -735,7 +735,8 @@ class TeamService:
 
         # Org admin manages teams attached to their org
         user_managed_orgs = [
-            org.id for org in await OrganisationService.get_organisations(user_id, db)
+            org.organisation_id
+            for org in await OrganisationService.get_organisations(user_id, db)
         ]
         if team.organisation_id in user_managed_orgs:
             return True

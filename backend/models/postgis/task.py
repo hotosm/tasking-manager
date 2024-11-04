@@ -26,6 +26,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import MultipleResultsFound
+from datetime import timezone
 
 from backend.db import Base, get_session
 from backend.exceptions import NotFound
@@ -1357,7 +1358,6 @@ class Task(Base):
                 comment=comment,
                 db=db,
             )
-
         # Update task lock history with duration
         await TaskHistory.update_task_locked_with_duration(
             task_id=task_id,
@@ -1737,7 +1737,11 @@ class Task(Base):
 
             task_history.append(history)
 
-        last_updated = task_history[0].action_date if task_history else None
+        last_updated = (
+            task_history[0].action_date.replace(tzinfo=timezone.utc).isoformat()
+            if task_history
+            else None
+        )
         task_dto = await Task.as_dto(task_id, project_id, db, last_updated)
         per_task_instructions = await Task.get_per_task_instructions(
             task_id, project_id, preferred_locale, db
