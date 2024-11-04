@@ -115,7 +115,6 @@ async def patch(
         )
     try:
         if ("joinMethod" or "organisations_id") not in data.keys():
-            print("inside......")
             await Team.update_team_members(team, team_dto, db)
         else:
             await TeamService.update_team(team_dto, db)

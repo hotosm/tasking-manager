@@ -524,17 +524,29 @@ class Project(Base):
             self.osmcha_filter_id = None
 
         if project_dto.organisation:
+            organisation_query = "SELECT * FROM organisations WHERE id = :id"
             organization = await db.fetch_one(
-                "SELECT * FROM organisations WHERE id = :id",
-                values={"id": project_dto.organisation},
+                organisation_query, values={"id": project_dto.organisation}
             )
-            org = Organisation(**organization)
-            if org is None:
+
+            if organization is None:
                 raise NotFound(
                     sub_code="ORGANISATION_NOT_FOUND",
                     organisation_id=project_dto.organisation,
                 )
-            self.organisation = org
+
+            update_organisation_query = """
+            UPDATE projects
+            SET organisation_id = :organisation_id
+            WHERE id = :project_id
+            """
+            await db.execute(
+                update_organisation_query,
+                values={
+                    "organisation_id": project_dto.organisation,
+                    "project_id": project_dto.project_id,
+                },
+            )
 
         # Cast MappingType strings to int array
         type_array = []
@@ -741,6 +753,7 @@ class Project(Base):
         columns.pop("geometry", None)
         columns.pop("centroid", None)
         columns.pop("id", None)
+        columns.pop("organisation_id", None)
         # Update the project in the database
         await db.execute(
             self.__table__.update().where(Project.id == self.id).values(**columns)
