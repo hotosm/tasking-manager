@@ -282,19 +282,19 @@ class TeamService:
             query_parts.append("t.organisation_id = :organisation_id")
             params["organisation_id"] = search_dto.organisation
 
-        if search_dto.manager and search_dto.manager == search_dto.user_id:
+        if search_dto.manager and int(search_dto.manager) == int(search_dto.user_id):
             manager_teams_query = """
                 SELECT t.id FROM teams t
                 JOIN team_members tm ON t.id = tm.team_id
                 WHERE tm.user_id = :manager_id AND tm.active = true AND tm.function = :manager_function
             """
-            params["manager_id"] = search_dto.manager
+            params["manager_id"] = int(search_dto.manager)
             params["manager_function"] = TeamMemberFunctions.MANAGER.value
 
             orgs_teams_query = """
                 SELECT t.id FROM teams t
-                WHERE t.organisation_id IN (
-                    SELECT id FROM organisations WHERE user_id = :manager_id
+                WHERE t.organisation_id = ANY(
+                    SELECT organisation_id FROM organisation_managers WHERE user_id = :manager_id
                 )
             """
 

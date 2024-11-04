@@ -2,6 +2,9 @@ from distutils.util import strtobool
 
 from databases import Database
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
+from loguru import logger
+
 
 from backend.db import get_db, get_session
 from backend.models.dtos.user_dto import AuthUserDTO, UserSearchQuery
@@ -59,9 +62,12 @@ async def get(
     return user_dto
 
 
-# class UsersAllAPI():
 @router.get("/")
-async def get(request: Request, db: Database = Depends(get_db)):
+async def get(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Get paged list of all usernames
     ---
@@ -124,9 +130,11 @@ async def get(request: Request, db: Database = Depends(get_db)):
         query.mapping_level = request.query_params.get("level")
         query.role = request.query_params.get("role")
     except Exception:
-        # logger.error(f"Error validating request: {str(e)}")
-        return {"Error": "Unable to fetch user list", "SubCode": "InvalidData"}, 400
-
+        logger.error(f"Error validating request: {str(e)}")
+        return JSONResponse(
+            content={"Error": "Unable to fetch user list", "SubCode": "InvalidData"},
+            status_code=400,
+        )
     users_dto = await UserService.get_all_users(query, db)
     return users_dto
 
