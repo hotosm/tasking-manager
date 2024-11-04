@@ -215,13 +215,17 @@ class User(Base):
             base_query += " WHERE " + " AND ".join(filters)
 
         base_query += " ORDER BY username"
+
         if query.pagination:
             base_query += " LIMIT :limit OFFSET :offset"
             base_params = params.copy()
             base_params["limit"] = query.per_page
             base_params["offset"] = (query.page - 1) * query.per_page
 
-        results = await db.fetch_all(base_query, base_params)
+            results = await db.fetch_all(base_query, base_params)
+
+        else:
+            results = await db.fetch_all(base_query, params)
 
         dto = UserSearchDTO()
         for result in results:
@@ -231,7 +235,6 @@ class User(Base):
             listed_user.username = result["username"]
             listed_user.picture_url = result["picture_url"]
             listed_user.role = UserRole(result["role"]).name
-
             dto.users.append(listed_user)
 
         if query.pagination:
