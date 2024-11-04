@@ -127,10 +127,29 @@ class Team(Base):
     # organisation = relationship(Organisation, backref="teams", lazy="joined")
     organisation = relationship(Organisation, backref="teams")
 
+    # async def create(self, db: Database):
+    #     """Creates and saves the current model to the DB"""
+    #     print(self.members)
+
+    #     team = await db.execute(
+    #         insert(Team.__table__).values(
+    #             organisation_id=self.organisation_id,
+    #             name=self.name,
+    #             logo=self.logo,
+    #             description=self.description,
+    #             join_method=self.join_method,
+    #             visibility=self.visibility,
+    #         )
+    #     )
+    #     return team if team else None
+
     async def create(self, db: Database):
-        """Creates and saves the current model to the DB"""
-        team = await db.execute(
-            insert(Team.__table__).values(
+        """Creates and saves the current model to the DB, including members if they exist."""
+
+        # Create the Team and get the generated team_id
+        team_id = await db.execute(
+            insert(Team.__table__)
+            .values(
                 organisation_id=self.organisation_id,
                 name=self.name,
                 logo=self.logo,
@@ -138,8 +157,24 @@ class Team(Base):
                 join_method=self.join_method,
                 visibility=self.visibility,
             )
+            .returning(Team.__table__.c.id)
         )
-        return team if team else None
+
+        if team_id and self.members:
+            members_to_insert = [
+                {
+                    "team_id": team_id,
+                    "user_id": member.user_id,
+                    "function": member.function,
+                    "active": member.active,
+                    "join_request_notifications": member.join_request_notifications,
+                }
+                for member in self.members
+            ]
+
+            await db.execute_many(insert(TeamMembers.__table__), members_to_insert)
+
+        return team_id
 
     @classmethod
     async def create_from_dto(cls, new_team_dto: NewTeamDTO, db: Database):
@@ -161,7 +196,7 @@ class Team(Base):
         new_member.function = TeamMemberFunctions.MANAGER.value
         new_member.active = True
         new_member.joined_date = timestamp()
-
+        new_member.join_request_notifications = False
         new_team.members.append(new_member)
 
         team = await Team.create(new_team, db)
