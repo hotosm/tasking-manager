@@ -3,7 +3,7 @@ import { ID_EDITOR_URL, POTLATCH2_EDITOR_URL, RAPID_EDITOR_URL } from '../config
 export function getEditors(filterList, customEditor) {
   let editors = [
     {
-      label: 'RapiD',
+      label: 'Rapid',
       value: 'RAPID',
       url: RAPID_EDITOR_URL,
     },

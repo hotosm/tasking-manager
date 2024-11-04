@@ -2644,7 +2644,7 @@
     "@pixi/core" "7.4.0"
     "@pixi/math" "7.4.0"
 
-"@rapideditor/rapid@^2.3.1":
+"@rapideditor/rapid@^2.4.2":
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/@rapideditor/rapid/-/rapid-2.4.2.tgz#fe8584525b28fb64cd6b411d588a9dbf22439e04"
   integrity sha512-GfjawLgO6CdzQFfeBhkuNPW5VcDKZ9FjGuLEo/6WwPU/qR3DMKAriE1LQW7jqzMv6UJeBh9QgsAQrUUe5uNWXQ==
@@ -7676,6 +7676,11 @@ gzip-size@^6.0.0:
   integrity sha512-ax7ZYomf6jqPTQ4+XCpUGyXKHk5WweS+e05MBO4/y3WJ5RkmPXNKvX+bx1behVILVwr6JSQvZAku021CHPXG3Q==
   dependencies:
     duplexer "^0.1.2"
+
+h3-js@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/h3-js/-/h3-js-4.1.0.tgz#f8c4a8ad36612489a954f1a0bb3f4b7657d364e5"
+  integrity sha512-LQhmMl1dRQQjMXPzJc7MpZ/CqPOWWuAvVEoVJM9n/s7vHypj+c3Pd5rLQCkAsOgAoAYKbNCsYFE++LF7MvSfCQ==
 
 handle-thing@^2.0.0:
   version "2.0.1"

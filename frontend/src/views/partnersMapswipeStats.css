@@ -1,0 +1,17 @@
+.mapswipe-stats-info-banner {
+  background-color: #d9d7d7;
+  width: fit-content;
+  margin-left: 20px;
+  border-radius: 3px;
+}
+
+.mapswipe-stats-info-banner::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  background-color: #d9d7d7;
+  clip-path: polygon(100% 0, 0 50%, 100% 100%);
+}
