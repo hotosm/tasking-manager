@@ -84,8 +84,13 @@ async def post(
             status_code=400,
         )
     try:
-        await ProjectAdminService.transfer_project_to(project_id, user.id, username, db)
-        return JSONResponse(content={"Success": "Project Transferred"}, status_code=200)
+        async with db.transaction():
+            await ProjectAdminService.transfer_project_to(
+                project_id, user.id, username, db
+            )
+            return JSONResponse(
+                content={"Success": "Project Transferred"}, status_code=200
+            )
     except (ValueError, ProjectAdminServiceError) as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},

@@ -376,20 +376,20 @@ class Project(Base):
 
     @staticmethod
     async def clone(project_id: int, author_id: int, db: Database):
-        """Clone project"""
+        """Clone a project using encode databases and raw SQL."""
+        # Fetch the original project data
+        orig_query = "SELECT * FROM projects WHERE id = :project_id"
+        orig = await db.fetch_one(orig_query, {"project_id": project_id})
 
-        orig = await db.fetch_one(Project, id=project_id)
-        if orig is None:
+        if not orig:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
-        # Transform into dictionary.
-        orig_metadata = orig.__dict__.copy()
+        orig_metadata = dict(orig)
+        items_to_remove = ["id", "allowed_users"]
+        for item in items_to_remove:
+            orig_metadata.pop(item, None)
 
-        # Remove unneeded data.
-        items_to_remove = ["_sa_instance_state", "id", "allowed_users"]
-        [orig_metadata.pop(i, None) for i in items_to_remove]
-
-        # Remove clone from session so we can reinsert it as a new object
+        # Update metadata for the new project
         orig_metadata.update(
             {
                 "total_tasks": 0,
@@ -403,45 +403,113 @@ class Project(Base):
             }
         )
 
-        new_proj = Project(**orig_metadata)
-        session.add(new_proj)
+        # Construct the INSERT query for the new project
+        columns = ", ".join(orig_metadata.keys())
+        values = ", ".join([f":{key}" for key in orig_metadata.keys()])
+        insert_project_query = (
+            f"INSERT INTO projects ({columns}) VALUES ({values}) RETURNING id"
+        )
+        new_project_id = await db.execute(insert_project_query, orig_metadata)
 
-        proj_info = []
-        for info in orig.project_info.all():
-            info_data = info.__dict__.copy()
-            info_data.pop("_sa_instance_state")
-            info_data.update(
-                {"project_id": new_proj.id, "project_id_str": str(new_proj.id)}
+        # Clone project_info data
+        project_info_query = "SELECT * FROM project_info WHERE project_id = :project_id"
+        project_info_records = await db.fetch_all(
+            project_info_query, {"project_id": project_id}
+        )
+
+        for info in project_info_records:
+            info_data = dict(info)
+            info_data.pop("id", None)
+            info_data.update({"project_id": new_project_id})
+            columns_info = ", ".join(info_data.keys())
+            values_info = ", ".join([f":{key}" for key in info_data.keys()])
+            insert_info_query = (
+                f"INSERT INTO project_info ({columns_info}) VALUES ({values_info})"
             )
-            proj_info.append(ProjectInfo(**info_data))
+            await db.execute(insert_info_query, info_data)
 
-        new_proj.project_info = proj_info
+        # Clone teams data
+        teams_query = "SELECT * FROM project_teams WHERE project_id = :project_id"
+        team_records = await db.fetch_all(teams_query, {"project_id": project_id})
 
-        # Replace changeset comment.
-        default_comment = settings.DEFAULT_CHANGESET_COMMENT
+        for team in team_records:
+            team_data = dict(team)
+            team_data.pop("id", None)
+            team_data.update({"project_id": new_project_id})
+            columns_team = ", ".join(team_data.keys())
+            values_team = ", ".join([f":{key}" for key in team_data.keys()])
+            insert_team_query = (
+                f"INSERT INTO project_teams ({columns_team}) VALUES ({values_team})"
+            )
+            await db.execute(insert_team_query, team_data)
 
-        if default_comment is not None:
-            orig_changeset = f"{default_comment}-{orig.id}"  # Preserve space
-            new_proj.changeset_comment = orig.changeset_comment.replace(
-                orig_changeset, ""
-            ).strip()
+        # Clone campaigns associated with the original project
+        campaign_query = (
+            "SELECT campaign_id FROM campaign_projects WHERE project_id = :project_id"
+        )
+        campaign_ids = await db.fetch_all(campaign_query, {"project_id": project_id})
 
-        # Populate teams, interests and campaigns
-        teams = []
-        for team in orig.teams:
-            team_data = team.__dict__.copy()
-            team_data.pop("_sa_instance_state")
-            team_data.update({"project_id": new_proj.id})
-            teams.append(ProjectTeams(**team_data))
-        new_proj.teams = teams
+        for campaign in campaign_ids:
+            clone_campaign_query = """
+                INSERT INTO campaign_projects (campaign_id, project_id)
+                VALUES (:campaign_id, :new_project_id)
+            """
+            await db.execute(
+                clone_campaign_query,
+                {
+                    "campaign_id": campaign["campaign_id"],
+                    "new_project_id": new_project_id,
+                },
+            )
 
-        for field in ["interests", "campaign"]:
-            value = getattr(orig, field)
-            setattr(new_proj, field, value)
-        if orig.custom_editor:
-            new_proj.custom_editor = orig.custom_editor.clone_to_project(new_proj.id)
+        # Clone interests associated with the original project
+        interest_query = (
+            "SELECT interest_id FROM project_interests WHERE project_id = :project_id"
+        )
+        interest_ids = await db.fetch_all(interest_query, {"project_id": project_id})
 
-        return new_proj
+        for interest in interest_ids:
+            clone_interest_query = """
+                INSERT INTO project_interests (interest_id, project_id)
+                VALUES (:interest_id, :new_project_id)
+            """
+            await db.execute(
+                clone_interest_query,
+                {
+                    "interest_id": interest["interest_id"],
+                    "new_project_id": new_project_id,
+                },
+            )
+
+        # Clone CustomEditor associated with the original project
+        custom_editor_query = """
+            SELECT name, description, url FROM project_custom_editors WHERE project_id = :project_id
+        """
+        custom_editor = await db.fetch_one(
+            custom_editor_query, {"project_id": project_id}
+        )
+
+        if custom_editor:
+            clone_custom_editor_query = """
+                INSERT INTO project_custom_editors (project_id, name, description, url)
+                VALUES (:new_project_id, :name, :description, :url)
+            """
+            await db.execute(
+                clone_custom_editor_query,
+                {
+                    "new_project_id": new_project_id,
+                    "name": custom_editor["name"],
+                    "description": custom_editor["description"],
+                    "url": custom_editor["url"],
+                },
+            )
+
+        # Return the new project data
+        new_project_query = "SELECT * FROM projects WHERE id = :new_project_id"
+        new_project = await db.fetch_one(
+            new_project_query, {"new_project_id": new_project_id}
+        )
+        return Project(**new_project)
 
     @staticmethod
     async def get(project_id: int, db: Database) -> Optional["Project"]:
@@ -1873,6 +1941,17 @@ class Project(Base):
             await db.execute(
                 query=delete_priority_areas_query, values={"ids": existing_ids}
             )
+
+    async def update_project_author(project_id: int, new_author_id: int, db: Database):
+        query = """
+        UPDATE projects
+        SET author_id = :new_author_id
+        WHERE id = :project_id
+        """
+        values = {"new_author_id": new_author_id, "project_id": project_id}
+
+        # Execute the query
+        await db.execute(query=query, values=values)
 
 
 # Add index on project geometry
