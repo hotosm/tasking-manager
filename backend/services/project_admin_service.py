@@ -2,7 +2,6 @@ import json
 
 import geojson
 from databases import Database
-from fastapi import BackgroundTasks
 from loguru import logger
 
 from backend.config import settings
@@ -20,7 +19,6 @@ from backend.models.postgis.user import User
 from backend.models.postgis.utils import InvalidData, InvalidGeoJson
 from backend.services.grid.grid_service import GridService
 from backend.services.license_service import LicenseService
-from backend.services.messaging.message_service import MessageService
 from backend.services.organisation_service import OrganisationService
 from backend.services.team_service import TeamService
 from backend.services.users.user_service import UserService
@@ -91,18 +89,20 @@ class ProjectAdminService:
             draft_project.task_creation_mode = TaskCreationMode.ARBITRARY.value
         else:
             tasks = draft_project_dto.tasks
-        await ProjectAdminService._attach_tasks_to_project(draft_project, tasks, db)
 
+        await ProjectAdminService._attach_tasks_to_project(draft_project, tasks, db)
         draft_project.set_default_changeset_comment()
         draft_project.set_country_info()
         if draft_project_dto.cloneFromProjectId:
-            draft_project.save()  # Update the clone
+            draft_project.save(db)  # Update the clone
+            return draft_project.id
+
         else:
             project_id = await Project.create(
                 draft_project, draft_project_dto.project_name, db
             )  # Create the new project
 
-        return project_id
+            return project_id
 
     @staticmethod
     def _set_default_changeset_comment(draft_project: Project):
@@ -328,19 +328,24 @@ class ProjectAdminService:
         transfering_user_id: int,
         username: str,
         db: Database,
-        background_tasks: BackgroundTasks,
+        # background_tasks: BackgroundTasks,
     ):
         """Transfers project from old owner (transfering_user_id) to new owner (username)"""
-        project = await ProjectAdminService._get_project_by_id(project_id, db)
+        project = await Project.get(project_id, db)
         new_owner = await UserService.get_user_by_username(username, db)
-        # No operation is required if the new owner is same as old owner
-        if username == project.author.username:
+        author_id = project.author_id
+        if not author_id:
+            raise ProjectAdminServiceError(
+                "TransferPermissionError- User does not have permissions to transfer project"
+            )
+        author = await User.get_by_id(author_id, db)
+        if username == author.username:
             return
 
-        # Check permissions for the user (transferring_user_id) who initiatied the action
         is_admin = await UserService.is_user_an_admin(transfering_user_id, db)
+
         is_author = UserService.is_user_the_project_author(
-            transfering_user_id, project.author_id, db
+            transfering_user_id, project.author_id
         )
         is_org_manager = await OrganisationService.is_user_an_org_manager(
             project.organisation_id, transfering_user_id, db
@@ -350,7 +355,6 @@ class ProjectAdminService:
                 "TransferPermissionError- User does not have permissions to transfer project"
             )
 
-        # Check permissions for the new owner - must be project's org manager
         is_new_owner_org_manager = await OrganisationService.is_user_an_org_manager(
             project.organisation_id, new_owner.id, db
         )
@@ -362,17 +366,23 @@ class ProjectAdminService:
             logger.debug(error_message)
             raise ValueError(error_message)
         else:
-            transferred_by = User.get_by_id(transfering_user_id, db)
+            transferred_by = await User.get_by_id(transfering_user_id, db)
             transferred_by = transferred_by.username
             project.author_id = new_owner.id
-            Project.save(project, db)
+            await Project.update_project_author(project_id, new_owner.id, db)
+            # TODO
             # Adding the background task
-            background_tasks.add_task(
-                MessageService.send_project_transfer_message,
-                project_id,
-                username,
-                transferred_by,
-            )
+            # background_tasks.add_task(
+            #     await MessageService.send_project_transfer_message,
+            #     project_id,
+            #     username,
+            #     transferred_by,
+            #     db
+            # )
+            # threading.Thread(
+            #     target=MessageService.send_project_transfer_message,
+            #     args=(project_id, username, transferred_by, db),
+            # ).start()
 
     @staticmethod
     async def is_user_action_permitted_on_project(
