@@ -230,16 +230,26 @@ async def post(
         )
 
     try:
-        draft_project_id = await ProjectAdminService.create_draft_project(
-            draft_project_dto, db
-        )
-        return JSONResponse(content={"projectId": draft_project_id}, status_code=201)
+        async with db.transaction():
+            draft_project_id = await ProjectAdminService.create_draft_project(
+                draft_project_dto, db
+            )
+            return JSONResponse(
+                content={"projectId": draft_project_id}, status_code=201
+            )
     except ProjectAdminServiceError as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
             status_code=403,
         )
+
     except (InvalidGeoJson, InvalidData) as e:
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=400,
+        )
+
+    except Exception as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
             status_code=400,
