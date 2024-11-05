@@ -1,77 +1,79 @@
 import json
+import os
 import re
 from typing import Optional
-from cachetools import TTLCache
-from loguru import logger
 
 import geojson
+import requests
+from cachetools import TTLCache
+from databases import Database
+from fastapi import HTTPException
 from geoalchemy2 import Geometry, WKTElement
 from geoalchemy2.shape import to_shape
-from sqlalchemy import orm, func, select, delete, update, inspect
+from loguru import logger
 from shapely.geometry import shape
-from sqlalchemy.dialects.postgresql import ARRAY
-import requests
-
 from sqlalchemy import (
+    BigInteger,
+    Boolean,
     Column,
-    Integer,
-    String,
     DateTime,
     ForeignKey,
-    Boolean,
-    Table,
-    BigInteger,
     Index,
+    Integer,
+    String,
+    Table,
+    delete,
+    func,
+    inspect,
+    orm,
+    select,
+    update,
 )
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm import backref, relationship
+
+from backend.config import settings
+from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.campaign_dto import CampaignDTO, ListCampaignDTO
+from backend.models.dtos.interests_dto import ListInterestDTO
 from backend.models.dtos.project_dto import (
     CustomEditorDTO,
-    ProjectDTO,
     DraftProjectDTO,
-    ProjectSummary,
     PMDashboardDTO,
-    ProjectStatsDTO,
-    ProjectUserStatsDTO,
-    ProjectSearchDTO,
-    ProjectTeamDTO,
+    ProjectDTO,
     ProjectInfoDTO,
+    ProjectSearchDTO,
+    ProjectStatsDTO,
+    ProjectSummary,
+    ProjectTeamDTO,
+    ProjectUserStatsDTO,
 )
-from backend.models.dtos.interests_dto import ListInterestDTO
 from backend.models.dtos.tags_dto import TagsDTO
-from backend.models.postgis.organisation import Organisation
+from backend.models.postgis.campaign import Campaign, campaign_projects
 from backend.models.postgis.custom_editors import CustomEditor
+from backend.models.postgis.interests import Interest, project_interests
+from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.priority_area import PriorityArea, project_priority_areas
-from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.project_chat import ProjectChat
+from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.statuses import (
-    ProjectStatus,
-    ProjectPriority,
-    TaskStatus,
-    MappingTypes,
-    TaskCreationMode,
     Editors,
-    TeamRoles,
     MappingPermission,
-    ValidationPermission,
+    MappingTypes,
     ProjectDifficulty,
+    ProjectPriority,
+    ProjectStatus,
+    TaskCreationMode,
+    TaskStatus,
+    TeamRoles,
+    ValidationPermission,
 )
 from backend.models.postgis.task import Task
 from backend.models.postgis.team import Team
 from backend.models.postgis.user import User
-from backend.models.postgis.campaign import Campaign, campaign_projects
-
-from backend.models.postgis.utils import (
-    timestamp,
-)
+from backend.models.postgis.utils import timestamp
 from backend.services.grid.grid_service import GridService
-from backend.models.postgis.interests import Interest, project_interests
-import os
-from backend.db import Base
-from databases import Database
-from fastapi import HTTPException
-from backend.config import settings
 
 # Secondary table defining many-to-many join for projects that were favorited by users.
 project_favorites = Table(

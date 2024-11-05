@@ -213,7 +213,9 @@ async def patch(
         role = data["role"]
     except ValueError as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {"Error": str(e), "SubCode": "InvalidData"}, 400
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
+        )
 
     try:
         if not await ProjectAdminService.is_user_action_permitted_on_project(

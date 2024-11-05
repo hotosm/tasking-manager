@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import Dict, List, Optional, Union
 
 from fastapi import HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, root_validator
 
 from backend.models.dtos.campaign_dto import CampaignDTO
 from backend.models.dtos.interests_dto import InterestDTO
@@ -197,6 +197,13 @@ class ProjectInfoDTO(BaseModel):
 
     class Config:
         populate_by_name = True
+
+    @root_validator(pre=True)
+    def replace_none_with_empty_string(cls, values):
+        return {
+            key: (value if value is not None or key == "locale" else "")
+            for key, value in values.items()
+        }
 
 
 class CustomEditorDTO(BaseModel):
