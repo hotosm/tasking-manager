@@ -10,7 +10,6 @@ from sqlalchemy import (
     ForeignKey,
     String,
     insert,
-    delete,
 )
 from sqlalchemy.orm import relationship, backref
 from backend.exceptions import NotFound
@@ -237,12 +236,26 @@ class Team(Base):
             await Team.update_team_members(team, team_dto, db)
 
     async def delete(self, db: Database):
-        """Deletes the current model from the DB"""
-        await db.execute(delete(Team.__table__).where(Team.id == self.id))
+        """Deletes the current team and its members from the DB"""
 
-    def can_be_deleted(self) -> bool:
-        """A Team can be deleted if it doesn't have any projects"""
-        return len(self.projects) == 0
+        # Delete team members associated with this team
+        delete_team_members_query = """
+            DELETE FROM team_members WHERE team_id = :team_id
+        """
+        await db.execute(delete_team_members_query, values={"team_id": self.id})
+
+        # Delete the team
+        delete_team_query = """
+            DELETE FROM teams WHERE id = :team_id
+        """
+        await db.execute(delete_team_query, values={"team_id": self.id})
+
+    @staticmethod
+    async def can_be_deleted(team_id: int, db: Database) -> bool:
+        """Check if a Team can be deleted by querying for associated projects"""
+        query = "SELECT COUNT(*) FROM project_teams WHERE team_id = :team_id"
+        result = await db.fetch_one(query, {"team_id": team_id})
+        return result[0] == 0
 
     async def get(team_id: int, db: Database):
         """

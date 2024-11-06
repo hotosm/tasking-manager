@@ -309,9 +309,8 @@ class OrganisationService:
             except Exception as e:
                 raise HTTPException(status_code=500, detail="Deletion failed") from e
         else:
-            raise HTTPException(
-                status_code=400,
-                detail="Organisation has projects or teams, cannot be deleted",
+            raise OrganisationServiceError(
+                "Organisation has projects, cannot be deleted"
             )
 
     @staticmethod
