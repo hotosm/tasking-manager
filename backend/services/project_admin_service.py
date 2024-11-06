@@ -138,7 +138,9 @@ class ProjectAdminService:
             )
 
         if project_dto.license_id:
-            ProjectAdminService._validate_imagery_licence(project_dto.license_id)
+            await ProjectAdminService._validate_imagery_licence(
+                project_dto.license_id, db
+            )
 
         # To be handled before reaching this function
         if await ProjectAdminService.is_user_action_permitted_on_project(
@@ -155,10 +157,10 @@ class ProjectAdminService:
         return project
 
     @staticmethod
-    def _validate_imagery_licence(license_id: int):
+    async def _validate_imagery_licence(license_id: int, db: Database):
         """Ensures that the suppliced license Id actually exists"""
         try:
-            LicenseService.get_license_as_dto(license_id)
+            await LicenseService.get_license_as_dto(license_id, db)
         except NotFound:
             raise ProjectAdminServiceError(
                 f"RequireLicenseId- LicenseId {license_id} not found"

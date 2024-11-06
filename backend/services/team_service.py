@@ -747,8 +747,7 @@ class TeamService:
     async def delete_team(team_id: int, db: Database):
         """Deletes a team"""
         team = await TeamService.get_team_by_id(team_id, db)
-
-        if Team.can_be_deleted(team):
+        if await Team.can_be_deleted(team_id, db):
             await Team.delete(team, db)
             return JSONResponse(content={"Success": "Team deleted"}, status_code=200)
         else:
