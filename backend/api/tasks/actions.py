@@ -964,7 +964,7 @@ async def post(
         return JSONResponse(content={"Success": "All tasks reset"}, status_code=200)
 
 
-@router.post("/{project_id}/tasks/{task_id}/actions/split/")
+@router.post("/{project_id}/tasks/actions/split/{task_id}/")
 async def post(
     request: Request,
     project_id: int,
