@@ -512,10 +512,10 @@ async def delete(
             },
             status_code=403,
         )
-
     try:
-        await ProjectAdminService.delete_project(project_id, user.id, db)
-        return JSONResponse(content={"Success": "Project deleted"}, status_code=200)
+        async with db.transaction():
+            await ProjectAdminService.delete_project(project_id, user.id, db)
+            return JSONResponse(content={"Success": "Project deleted"}, status_code=200)
     except ProjectAdminServiceError as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
