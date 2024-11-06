@@ -627,11 +627,8 @@ class Project(Base):
                 self.allowed_users.append(user)
 
         # Update teams and projects relationship.
-        self.teams = []
+        await db.execute(delete(ProjectTeams).where(ProjectTeams.project_id == self.id))
         if hasattr(project_dto, "project_teams") and project_dto.project_teams:
-            await db.execute(
-                delete(ProjectTeams).where(ProjectTeams.project_id == self.id)
-            )
             for team_dto in project_dto.project_teams:
                 team = await Team.get(team_dto.team_id, db)
                 if team is None:
@@ -814,8 +811,35 @@ class Project(Base):
         )
 
     async def delete(self, db: Database):
-        """Deletes the current model from the DB"""
-        await db.execute(delete(Project.__table__).where(Project.id == self.id))
+        """Deletes the current project and related records from the database using raw SQL."""
+        # List of tables to delete from, in the order required to satisfy foreign key constraints
+        related_tables = [
+            "project_favorites",
+            "project_custom_editors",
+            "project_interests",
+            "project_priority_areas",
+            "project_allowed_users",
+            "project_teams",
+            "task_invalidation_history",
+            "task_history",
+            "tasks",
+            "project_info",
+            "project_chat",
+        ]
+
+        # Start a transaction to ensure atomic deletion
+        async with db.transaction():
+            # Loop through each table and execute the delete query
+            for table in related_tables:
+                await db.execute(
+                    f"DELETE FROM {table} WHERE project_id = :project_id",
+                    {"project_id": self.id},
+                )
+
+            # Finally, delete the project itself
+            await db.execute(
+                "DELETE FROM projects WHERE id = :project_id", {"project_id": self.id}
+            )
 
     @staticmethod
     async def exists(project_id: int, db: Database) -> bool:
