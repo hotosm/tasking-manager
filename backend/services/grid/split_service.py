@@ -127,13 +127,13 @@ class SplitService:
         # convert split geometries into GeoJSON features expected by Task
         split_features = []
         for split_geometry in split_geometries:
-            multipolygon_geometry = shape.from_shape(split_geometry, 4326)
+            multipolygon_geometry_wkt = split_geometry.wkt
             multipolygon_as_geojson_query = """
-                SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Multi(:multipolygon_geometry), 4326), 4326)) AS geojson
+                SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Multi(ST_GeomFromText(:multipolygon_geometry)), 4326), 4326)) AS geojson
             """
             feature_geojson = await db.fetch_val(
                 multipolygon_as_geojson_query,
-                values={"multipolygon_geometry": multipolygon_geometry},
+                values={"multipolygon_geometry": multipolygon_geometry_wkt},
             )
             feature = geojson.Feature(geometry=geojson.loads(feature_geojson))
             feature.properties["x"] = None
