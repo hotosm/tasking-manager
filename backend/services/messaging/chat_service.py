@@ -1,18 +1,17 @@
 import threading
 
-# from flask import current_app
+from databases import Database
 
 from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO
+from backend.models.postgis.project import ProjectStatus
 from backend.models.postgis.project_chat import ProjectChat
 from backend.models.postgis.project_info import ProjectInfo
-from backend.services.messaging.message_service import MessageService
-from backend.services.project_service import ProjectService
-from backend.services.project_admin_service import ProjectAdminService
-from backend.services.team_service import TeamService
 from backend.models.postgis.statuses import TeamRoles
-from backend.models.postgis.project import ProjectStatus
-from databases import Database
+from backend.services.messaging.message_service import MessageService
+from backend.services.project_admin_service import ProjectAdminService
+from backend.services.project_service import ProjectService
+from backend.services.team_service import TeamService
 
 
 class ChatService:

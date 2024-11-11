@@ -83,7 +83,8 @@ async def post(
         message=message,
         user_id=user.id,
         project_id=project_id,
-        timestamp=datetime.now(),
+        # timestamp=datetime.now(),
+        timestamp=datetime.utcnow(),
         username=user.username,
     )
     try:

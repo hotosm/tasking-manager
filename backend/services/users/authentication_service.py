@@ -1,26 +1,28 @@
 import base64
 import binascii
 import urllib.parse
-from backend.models.postgis.user import User
-from backend.models.dtos.user_dto import AuthUserDTO
+from random import SystemRandom
+from typing import Optional
+
+from databases import Database
+from fastapi import HTTPException, Security, status
+from fastapi.responses import JSONResponse
+from fastapi.security.api_key import APIKeyHeader
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
+from loguru import logger
 from starlette.authentication import (
     AuthCredentials,
     AuthenticationBackend,
     AuthenticationError,
     SimpleUser,
 )
-from loguru import logger
-from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 from backend.api.utils import TMAPIDecorators
-from backend.services.messaging.message_service import MessageService
-from backend.services.users.user_service import UserService, NotFound
-from random import SystemRandom
 from backend.config import settings
-from fastapi import HTTPException, Security
-from fastapi.security.api_key import APIKeyHeader
-from databases import Database
-from typing import Optional
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.user import User
+from backend.services.messaging.message_service import MessageService
+from backend.services.users.user_service import NotFound, UserService
 
 # token_auth = HTTPTokenAuth(scheme="Token")
 tm = TMAPIDecorators()
@@ -33,7 +35,10 @@ UNICODE_ASCII_CHARACTER_SET = (
 # @token_auth.error_handler
 def handle_unauthorized_token():
     logger.debug("Token not valid")
-    return {"Error": "Token is expired or invalid", "SubCode": "InvalidToken"}, 401
+    return JSONResponse(
+        content={"Error": "Token is expired or invalid", "SubCode": "InvalidToken"},
+        status_code=401,
+    )
 
 
 # @token_auth.verify_token
@@ -49,7 +54,7 @@ def verify_token(token):
         logger.debug("Unable to decode token")
         return False  # Can't decode token, so fail login
 
-    valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
+    valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 120)
     if not valid_token:
         logger.debug("Token not valid")
         return False
@@ -82,9 +87,14 @@ class TokenAuthBackend(AuthenticationBackend):
             decoded_token, 604800
         )
         if not valid_token:
-            logger.debug("Token not valid")
-            return AuthCredentials([]), None
-
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail={
+                    "Error": "Token is expired or invalid",
+                    "SubCode": "InvalidToken",
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         tm.authenticated_user_id = (
             user_id  # Set the user ID on the decorator as a convenience
         )
@@ -245,8 +255,11 @@ async def login_required(
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:
         logger.debug("Token not valid")
-        raise HTTPException(status_code=401, detail="Token not valid")
-
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"Error": "Token is expired or invalid", "SubCode": "InvalidToken"},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return AuthUserDTO(id=user_id)
 
 
@@ -271,6 +284,5 @@ async def login_required_optional(
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:
         logger.debug("Token not valid")
-        raise HTTPException(status_code=401, detail="Token not valid")
-
+        return None
     return AuthUserDTO(id=user_id)
