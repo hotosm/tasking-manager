@@ -1,4 +1,4 @@
-import { lazy, useState, useEffect, useCallback, Suspense } from 'react';
+import { lazy, useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useQueryParam, StringParam } from 'use-query-params';
@@ -70,6 +70,7 @@ export function TaskSelection({ project }: Object) {
   const [activeStatus, setActiveStatus] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
+  const isFirstRender = useRef(true); // to check if component is rendered first time
 
   const { data: userTeams, isLoading: isUserTeamsLoading } = useTeamsQuery(
     {
@@ -137,15 +138,16 @@ export function TaskSelection({ project }: Object) {
   // show the tasks tab when the page loads if the user has already contributed
   // to the project. If no, show the instructions tab.
   useEffect(() => {
-    if (contributions && activeSection === null) {
+    if (contributions && isFirstRender.current) {
       const currentUserContributions = contributions.filter((u) => u.username === user.username);
       if (textSearch || (user.isExpert && currentUserContributions.length > 0)) {
         setActiveSection('tasks');
       } else {
         setActiveSection('instructions');
       }
+      isFirstRender.current = false;
     }
-  }, [contributions, user.username, user, activeSection, textSearch, setActiveSection]);
+  }, [contributions, user.username, user, textSearch, setActiveSection]);
 
   useEffect(() => {
     // run it only when the component is initialized
@@ -278,22 +280,20 @@ export function TaskSelection({ project }: Object) {
             <div className="mt3">
               <TabSelector activeSection={activeSection} setActiveSection={setActiveSection} />
               <div className="pt3">
-                {activeSection && (
-                  <div className={`${activeSection !== 'tasks' ? 'dn' : ''}`}>
-                    <TaskList
-                      project={project}
-                      tasks={tasks}
-                      userCanValidate={isValidationAllowed}
-                      updateActivities={getActivities}
-                      selectTask={selectTask}
-                      selected={selected}
-                      textSearch={textSearch}
-                      setTextSearch={setTextSearch}
-                      setZoomedTaskId={setZoomedTaskId}
-                      userContributions={contributions}
-                    />
-                  </div>
-                )}
+                <div className={`${activeSection !== 'tasks' ? 'dn' : ''}`}>
+                  <TaskList
+                    project={project}
+                    tasks={tasks}
+                    userCanValidate={isValidationAllowed}
+                    updateActivities={getActivities}
+                    selectTask={selectTask}
+                    selected={selected}
+                    textSearch={textSearch}
+                    setTextSearch={setTextSearch}
+                    setZoomedTaskId={setZoomedTaskId}
+                    userContributions={contributions}
+                  />
+                </div>
                 {activeSection === 'instructions' ? (
                   <>
                     {project.enforceRandomTaskSelection && (

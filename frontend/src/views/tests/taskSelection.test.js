@@ -20,7 +20,7 @@ describe('Task Selection Page', () => {
         <MemoryRouter initialEntries={['/projects/123/tasks']}>
           <Routes>
             <Route
-              path="projects/:id/tasks"
+              path="projects/:id/:tabname"
               element={
                 <QueryClientProviders>
                   <QueryParamProvider adapter={ReactRouter6Adapter}>
@@ -54,6 +54,7 @@ describe('Task Selection Page', () => {
         userDetails: { id: 69, username: 'user_3', isExpert: false, role: 'READ_ONLY' },
       });
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
     });
     setup();
 
@@ -72,6 +73,7 @@ describe('Task Selection Page', () => {
         userDetails: { id: 69, username: 'user_3', isExpert: false },
       });
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
     });
 
     setup();
@@ -84,6 +86,7 @@ describe('Task Selection Page', () => {
         type: 'SET_USER_DETAILS',
         userDetails: { id: 69, username: 'user_3', isExpert: true },
       });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
     setup();
     await waitFor(() => expect(screen.getByRole('link')).toBeInTheDocument());
@@ -93,6 +96,10 @@ describe('Task Selection Page', () => {
   });
 
   it('should change the button text to map selected task when user selects a task', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
+    });
     const { user } = setup();
     await screen.findAllByText(/last updated by/i);
     expect(
@@ -130,6 +137,10 @@ describe('Task Selection Page', () => {
   });
 
   it('should change the button text to map another task when user selects a task for validation but the user level is not met', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
+    });
     const { user } = setup();
     await screen.findAllByText(/last updated by/i);
     // Selecting a task that is available for validation
@@ -151,6 +162,8 @@ describe('Task Selection Page', () => {
         type: 'SET_USER_DETAILS',
         userDetails: { id: 69, username: 'user_3', isExpert: true, role: 'ADMIN' },
       });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
     });
     const { user } = setup();
     await screen.findAllByText(/last updated by/i);
@@ -200,6 +213,10 @@ describe('Task Selection Page', () => {
   });
 
   it('should filter the task list by search query', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
+    });
     const { user } = setup();
     await screen.findAllByText(/last updated by/i);
     expect(
@@ -219,6 +236,10 @@ describe('Task Selection Page', () => {
   });
 
   it('should navigate to the contributions tab', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
+    });
     const { user } = setup();
     await screen.findAllByText(/last updated by/i);
     await user.click(
@@ -242,7 +263,7 @@ describe('Random Task Selection', () => {
         <MemoryRouter initialEntries={['/projects/963/tasks']}>
           <Routes>
             <Route
-              path="projects/:id/tasks"
+              path="projects/:id/:tabname"
               element={
                 <QueryClientProviders>
                   <QueryParamProvider adapter={ReactRouter6Adapter}>
@@ -265,6 +286,8 @@ describe('Random Task Selection', () => {
         type: 'SET_USER_DETAILS',
         userDetails: { id: 69, username: 'user_3', isExpert: true },
       });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
     });
     const { user } = setup();
     await screen.findAllByText(/last updated by/i);
@@ -293,8 +316,8 @@ describe('Random Task Selection', () => {
         userDetails: { id: 69, username: 'user_3', isExpert: false },
       });
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
     });
-
     setup();
     expect(await screen.findByText(/Project Specific Mapping Notes/i)).toBeInTheDocument();
     expect(
@@ -309,7 +332,7 @@ describe('Complete Project', () => {
       <MemoryRouter initialEntries={['/projects/6/tasks']}>
         <Routes>
           <Route
-            path="projects/:id/tasks"
+            path="projects/:id/:tabname"
             element={
               <QueryClientProviders>
                 <QueryParamProvider adapter={ReactRouter6Adapter}>
@@ -325,6 +348,10 @@ describe('Complete Project', () => {
     );
 
   it('should display button to select another project', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
+    });
     setup();
     await screen.findAllByText(/last updated by/i);
     expect(
@@ -341,7 +368,7 @@ describe('Mapped Project', () => {
       <MemoryRouter initialEntries={['/projects/3/tasks']}>
         <Routes>
           <Route
-            path="projects/:id/tasks"
+            path="projects/:id/:tabname"
             element={
               <QueryClientProviders>
                 <QueryParamProvider adapter={ReactRouter6Adapter}>
@@ -363,6 +390,8 @@ describe('Mapped Project', () => {
         userDetails: { id: 69, username: 'user_3', isExpert: false, role: 'ADMIN' },
       });
     });
+    store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+    store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
     setup();
     await screen.findAllByText(/last updated by/i);
     expect(
@@ -379,7 +408,7 @@ describe('Resume Mapping', () => {
       <MemoryRouter initialEntries={['/projects/222/tasks']}>
         <Routes>
           <Route
-            path="projects/:id/tasks"
+            path="projects/:id/:tabname"
             element={
               <QueryClientProviders>
                 <QueryParamProvider adapter={ReactRouter6Adapter}>
@@ -400,6 +429,8 @@ describe('Resume Mapping', () => {
         type: 'SET_USER_DETAILS',
         userDetails: { id: 69, username: 'Patrik_B', isExpert: false, role: 'ADMIN' },
       });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+      store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
     });
     setup();
     await screen.findAllByText(/last updated by/i);
@@ -425,7 +456,7 @@ test('it should pre select task from the list from URL params', async () => {
     <MemoryRouter initialEntries={['/projects/123/tasks?search=1']}>
       <Routes>
         <Route
-          path="projects/:id/tasks"
+          path="projects/:id/:tabname"
           element={
             <QueryClientProviders>
               <QueryParamProvider adapter={ReactRouter6Adapter}>
