@@ -128,9 +128,10 @@ export function TaskSelection({ project }: Object) {
   // use route instead of local state for active tab states
   const setActiveSection = useCallback(
     (section) => {
+      if (!!textSearch) return; // if search param not present, do not set active section
       navigate(`/projects/${projectId}/${section}`);
     },
-    [navigate, projectId],
+    [navigate, projectId, textSearch],
   );
 
   // show the tasks tab when the page loads if the user has already contributed
