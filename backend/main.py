@@ -1,16 +1,18 @@
 import logging
 import sys
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from loguru import logger as log
-from starlette.middleware.authentication import AuthenticationMiddleware
 from pyinstrument import Profiler
-from backend.routes import add_api_end_points
-from backend.services.users.authentication_service import TokenAuthBackend
+from starlette.middleware.authentication import AuthenticationMiddleware
+
 from backend.config import settings
 from backend.db import db_connection
-from contextlib import asynccontextmanager
+from backend.routes import add_api_end_points
+from backend.services.users.authentication_service import TokenAuthBackend
 
 
 def get_application() -> FastAPI:
@@ -69,8 +71,24 @@ def get_application() -> FastAPI:
         AuthenticationMiddleware, backend=TokenAuthBackend(), on_error=None
     )
 
-    add_api_end_points(_app)
+    # Custom exception handler for 401 errors
+    @_app.exception_handler(HTTPException)
+    async def custom_http_exception_handler(request: Request, exc: HTTPException):
+        if exc.status_code == 401 and "InvalidToken" in exc.detail.get("SubCode", ""):
+            return JSONResponse(
+                content={
+                    "Error": exc.detail["Error"],
+                    "SubCode": exc.detail["SubCode"],
+                },
+                status_code=exc.status_code,
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail},
+        )
 
+    add_api_end_points(_app)
     return _app
 
 
