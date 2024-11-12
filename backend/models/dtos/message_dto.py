@@ -42,10 +42,10 @@ class MessagesDTO(BaseModel):
 class ChatMessageDTO(BaseModel):
     """DTO describing an individual project chat message"""
 
-    id: Optional[int] = Field(None, alias="id", serialize_when_none=False)
+    id: Optional[int] = Field(None, alias="id")
     message: str = Field(required=True)
-    user_id: int = Field(required=True, serialize_when_none=False)
-    project_id: int = Field(required=True, serialize_when_none=False)
+    user_id: int = Field(required=True)
+    project_id: int = Field(required=True)
     picture_url: str = Field(default=None, alias="pictureUrl")
     timestamp: datetime
     username: str
