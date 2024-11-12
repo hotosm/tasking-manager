@@ -3,16 +3,7 @@ from cachetools import TTLCache, cached
 import datetime
 from loguru import logger
 from sqlalchemy.sql import outerjoin
-from sqlalchemy import (
-    func,
-    or_,
-    desc,
-    and_,
-    distinct,
-    cast,
-    Time,
-    select,
-)
+from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, select, insert
 from databases import Database
 
 from backend.exceptions import NotFound
@@ -32,7 +23,6 @@ from backend.models.dtos.user_dto import (
 from backend.models.dtos.interests_dto import (
     InterestsListDTO,
     InterestDTO,
-    ListInterestDTO,
 )
 from backend.models.postgis.interests import Interest, project_interests
 from backend.models.postgis.message import MessageType
@@ -175,33 +165,58 @@ class UserService:
         return projects_mapped
 
     @staticmethod
-    def register_user(osm_id, username, changeset_count, picture_url, email):
+    async def register_user(osm_id, username, changeset_count, picture_url, email, db):
         """
         Creates user in DB
         :param osm_id: Unique OSM user id
         :param username: OSM Username
         :param changeset_count: OSM changeset count
         """
-        new_user = User()
-        new_user.id = osm_id
-        new_user.username = username
-        if picture_url is not None:
-            new_user.picture_url = picture_url
-
+        """
+        Creates user in DB
+        :param osm_id: Unique OSM user id
+        :param username: OSM Username
+        :param changeset_count: OSM changeset count
+        """
+        # Determine mapping level based on changeset count
         intermediate_level = settings.MAPPER_LEVEL_INTERMEDIATE
         advanced_level = settings.MAPPER_LEVEL_ADVANCED
 
         if changeset_count > advanced_level:
-            new_user.mapping_level = MappingLevel.ADVANCED.value
-        elif intermediate_level < changeset_count < advanced_level:
-            new_user.mapping_level = MappingLevel.INTERMEDIATE.value
+            mapping_level = MappingLevel.ADVANCED.value
+        elif intermediate_level < changeset_count <= advanced_level:
+            mapping_level = MappingLevel.INTERMEDIATE.value
         else:
-            new_user.mapping_level = MappingLevel.BEGINNER.value
+            mapping_level = MappingLevel.BEGINNER.value
 
-        if email is not None:
-            new_user.email_address = email
+        values = {
+            "id": osm_id,
+            "username": username,
+            "role": 0,
+            "mapping_level": mapping_level,
+            "tasks_mapped": 0,
+            "tasks_validated": 0,
+            "tasks_invalidated": 0,
+            "projects_mapped": [],
+            "email_address": email,
+            "is_email_verified": False,
+            "is_expert": False,
+            "picture_url": picture_url,
+            "default_editor": "ID",
+            "mentions_notifications": True,
+            "projects_comments_notifications": False,
+            "projects_notifications": True,
+            "tasks_notifications": True,
+            "tasks_comments_notifications": False,
+            "teams_announcement_notifications": True,
+            "date_registered": datetime.datetime.utcnow(),
+        }
 
-        new_user.create()
+        query = insert(User).values(values)
+        await db.execute(query)
+
+        user_query = select(User).where(User.id == osm_id)
+        new_user = await db.fetch_one(user_query)
         return new_user
 
     @staticmethod
@@ -542,7 +557,6 @@ class UserService:
         """Update user with info supplied by user, if they add or change their email address a verification mail
         will be sent"""
         user = await UserService.get_user_by_id(user_id, db)
-
         verification_email_sent = False
         if (
             user_dto.email_address
@@ -1000,12 +1014,9 @@ class UserService:
         """
         interests = await db.fetch_all(query)
         interest_list_dto = InterestsListDTO()
-
         for interest in interests:
-            int_dto = ListInterestDTO(**interest)
-
-            if interest in user.interests:
+            int_dto = InterestDTO(**interest)
+            if interest.name in user.interests:
                 int_dto.user_selected = True
             interest_list_dto.interests.append(int_dto)
-
         return interest_list_dto

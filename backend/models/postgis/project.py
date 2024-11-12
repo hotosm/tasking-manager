@@ -41,7 +41,7 @@ from backend.config import settings
 from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.campaign_dto import CampaignDTO, ListCampaignDTO
-from backend.models.dtos.interests_dto import ListInterestDTO
+from backend.models.dtos.interests_dto import InterestDTO
 from backend.models.dtos.project_dto import (
     CustomEditorDTO,
     DraftProjectDTO,
@@ -1805,7 +1805,7 @@ class Project(Base):
             WHERE pi.project_id = :project_id
         """
         interests = await db.fetch_all(interests_query, {"project_id": project_id})
-        project_dto.interests = [ListInterestDTO(**i) for i in interests]
+        project_dto.interests = [InterestDTO(**i) for i in interests]
         return project_dto
 
     @staticmethod
