@@ -140,10 +140,11 @@ class AuthenticationService:
             # User not found, so must be new user
             changesets = osm_user.get("changesets")
             changeset_count = int(changesets.get("count"))
-            new_user = UserService.register_user(
-                osm_id, username, changeset_count, user_picture, email
-            )
-            MessageService.send_welcome_message(new_user)
+            async with db.transaction():
+                new_user = await UserService.register_user(
+                    osm_id, username, changeset_count, user_picture, email, db
+                )
+            await MessageService.send_welcome_message(new_user, db)
 
         session_token = AuthenticationService.generate_session_token_for_user(osm_id)
         return {

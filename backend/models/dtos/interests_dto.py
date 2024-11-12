@@ -30,11 +30,6 @@ class InterestDTO(BaseModel):
         populate_by_name = True
 
 
-class ListInterestDTO(BaseModel):
-    id: Optional[int] = None
-    name: Optional[str] = Field(default=None, min_length=1)
-
-
 class InterestsListDTO(BaseModel):
     """DTO for a list of interests."""
 

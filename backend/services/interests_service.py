@@ -4,7 +4,6 @@ from backend.models.dtos.interests_dto import (
     InterestRateListDTO,
     InterestsListDTO,
     InterestDTO,
-    ListInterestDTO,
 )
 from backend.models.postgis.interests import (
     Interest,
@@ -142,11 +141,8 @@ class InterestService:
             WHERE ui.user_id = :user_id
         """
         rows = await db.fetch_all(query, {"user_id": user_id})
-
         dto = InterestsListDTO()
-        dto.interests = [
-            ListInterestDTO(id=row["id"], name=row["name"]) for row in rows
-        ]
+        dto.interests = [InterestDTO(id=row["id"], name=row["name"]) for row in rows]
         return dto
 
     @staticmethod

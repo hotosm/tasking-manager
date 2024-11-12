@@ -27,7 +27,6 @@ class SMTPService:
             "VERIFICATION_LINK": verification_url,
         }
         html_template = get_template("email_verification_en.html", values)
-
         subject = "Confirm your email address"
         await SMTPService._send_message(to_address, subject, html_template)
         return True
@@ -178,7 +177,7 @@ class SMTPService:
         return True
 
     @staticmethod
-    def _send_message(
+    async def _send_message(
         to_address: str, subject: str, html_message: str, text_message: str = None
     ):
         """Helper sends SMTP message"""
@@ -194,9 +193,10 @@ class SMTPService:
         logger.debug(f"Sending email via SMTP {to_address}")
         if settings.LOG_LEVEL == "DEBUG":
             logger.debug(msg.as_string())
+
         else:
             try:
-                mail.send_message(msg)
+                await mail.send_message(msg)
                 logger.debug(f"Email sent {to_address}")
             except Exception as e:
                 # ERROR level logs are automatically captured by sentry so that admins are notified
