@@ -135,6 +135,7 @@ class ST_Y(GenericFunction):
 def timestamp():
     """Used in SQL Alchemy models to ensure we refresh timestamp when new models initialised"""
     return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+    # return datetime.datetime.now(datetime.timezone.utc)
 
 
 # Based on https://stackoverflow.com/a/51916936
