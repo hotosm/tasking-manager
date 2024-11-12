@@ -71,10 +71,31 @@ You can install Terragrunt via the following commands:
 ```
 brew install terragrunt   # On macOS
 ```
-To deploy resources, navigate to the desired environment directory (dev or stag) and run:
+To deploy resources individually, navigate to the resource and run:
 ```
-cd <to-your-environment-dir>
+# Example for creating VPC resource for developement environment.
+cd scripts/aws/infra/dev/non-purgeable/vpc
+terragrunt plan
+terragrunt apply
+
+# Example for creating RDS instance for development environment.
+cd scripts/aws/infra/dev/non-purgeable/rds
+terragrunt plan
+terragrunt apply
+```
+
+To deploy all resources in dependency order, navigate to the desired environment directory (dev or stag) and run:
+```
+cd scripts/aws/infra/<to-your-environment-dir>
 terragrunt init
 terragrunt plan
 terragrunt run-all apply
+```
+
+### Destroying Resources with Terragrunt
+
+To destroy the RDS instance that you created for development environment, navigate to the same directory and run:
+```
+cd scripts/aws/infra/dev/non-purgeable/rds
+terragrunt destroy
 ```
