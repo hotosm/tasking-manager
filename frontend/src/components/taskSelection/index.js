@@ -135,9 +135,22 @@ export function TaskSelection({ project }: Object) {
     [navigate, projectId, textSearch],
   );
 
+  // remove history location state since react-router-dom persists state on reload
+  useEffect(() => {
+    function onBeforeUnload() {
+      window.history.replaceState({}, '');
+    }
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, []);
+
   // show the tasks tab when the page loads if the user has already contributed
   // to the project. If no, show the instructions tab.
   useEffect(() => {
+    // do not redirect if user is not from project detail page
+    if (location?.state?.from !== `/projects/${projectId}`) return;
     if (contributions && isFirstRender.current) {
       const currentUserContributions = contributions.filter((u) => u.username === user.username);
       if (textSearch || (user.isExpert && currentUserContributions.length > 0)) {
@@ -147,7 +160,7 @@ export function TaskSelection({ project }: Object) {
       }
       isFirstRender.current = false;
     }
-  }, [contributions, user.username, user, textSearch, setActiveSection]);
+  }, [contributions, user.username, user, textSearch, setActiveSection, location, projectId]);
 
   useEffect(() => {
     // run it only when the component is initialized
