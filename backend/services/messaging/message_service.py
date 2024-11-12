@@ -46,7 +46,7 @@ class MessageServiceError(Exception):
 
 class MessageService:
     @staticmethod
-    def send_welcome_message(user: User):
+    async def send_welcome_message(user: User, db: Database):
         """Sends welcome message to new user at Sign up"""
         org_code = settings.ORG_CODE
         text_template = get_txt_template("welcome_message_en.txt")
@@ -65,9 +65,7 @@ class MessageService:
         welcome_message.to_user_id = user.id
         welcome_message.subject = "Welcome to the {} Tasking Manager".format(org_code)
         welcome_message.message = text_template
-        welcome_message.save()
-
-        return welcome_message.id
+        await Message.save(welcome_message, db)
 
     @staticmethod
     async def send_message_after_validation(
