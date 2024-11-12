@@ -17,7 +17,9 @@ describe('Task Selection Page', () => {
     return {
       user: userEvent.setup(),
       ...render(
-        <MemoryRouter initialEntries={['/projects/123/tasks']}>
+        <MemoryRouter
+          initialEntries={[{ pathname: '/projects/123/tasks', state: { from: '/projects/123' } }]}
+        >
           <Routes>
             <Route
               path="projects/:id/:tabname"
@@ -260,7 +262,7 @@ describe('Random Task Selection', () => {
     return {
       user: userEvent.setup(),
       ...render(
-        <MemoryRouter initialEntries={['/projects/963/tasks']}>
+        <MemoryRouter initialEntries={['/projects/963/instructions']}>
           <Routes>
             <Route
               path="projects/:id/:tabname"

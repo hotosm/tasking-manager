@@ -15,7 +15,9 @@ describe('Contributions', () => {
     return {
       user: userEvent.setup(),
       ...render(
-        <MemoryRouter initialEntries={['/projects/122/tasks']}>
+        <MemoryRouter
+          initialEntries={[{ pathname: '/projects/123/tasks', state: { from: '/projects/123' } }]}
+        >
           <Routes>
             <Route
               path="projects/:id/:tabname"
