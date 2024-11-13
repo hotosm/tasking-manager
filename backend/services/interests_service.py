@@ -1,16 +1,15 @@
-from backend.models.postgis.project import Project
+from databases import Database
+from fastapi import HTTPException
+
 from backend.models.dtos.interests_dto import (
+    InterestDTO,
     InterestRateDTO,
     InterestRateListDTO,
     InterestsListDTO,
-    InterestDTO,
 )
-from backend.models.postgis.interests import (
-    Interest,
-)
+from backend.models.postgis.interests import Interest
+from backend.models.postgis.project import Project
 from backend.services.project_service import ProjectService
-from databases import Database
-from fastapi import HTTPException
 
 
 class InterestService:

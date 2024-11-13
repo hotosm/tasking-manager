@@ -1,18 +1,20 @@
+from datetime import datetime, timedelta
+
+from databases import Database
 from sqlalchemy import (
-    Column,
-    Integer,
     BigInteger,
+    Column,
     DateTime,
     ForeignKey,
     ForeignKeyConstraint,
+    Integer,
 )
 from sqlalchemy.orm import relationship
+
+from backend.db import Base, get_session
+from backend.models.dtos.notification_dto import NotificationDTO
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
-from backend.models.dtos.notification_dto import NotificationDTO
-from datetime import datetime, timedelta
-from backend.db import Base, get_session
-from databases import Database
 
 session = get_session()
 
@@ -62,7 +64,7 @@ class Notification(Base):
         notification = await db.fetch_one(query, {"user_id": user_id})
 
         if notification is None:
-            date_value = datetime.today() - timedelta(days=30)
+            date_value = datetime.utcnow() - timedelta(days=30)
             insert_query = """
                 INSERT INTO notifications (user_id, unread_count, date)
                 VALUES (:user_id, :unread_count, :date)
