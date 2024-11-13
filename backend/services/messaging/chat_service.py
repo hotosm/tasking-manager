@@ -1,5 +1,4 @@
 import threading
-
 from databases import Database
 
 from backend.exceptions import NotFound
@@ -74,6 +73,7 @@ class ChatService:
                     chat_message.message,
                     chat_dto.project_id,
                     project_name,
+                    db,
                 ),
             ).start()
             # Ensure we return latest messages after post

@@ -1,15 +1,16 @@
+from databases import Database
+from fastapi import APIRouter, Depends, Request
+
+from backend.db import get_db
 from backend.models.dtos.campaign_dto import (
     CampaignDTO,
     CampaignListDTO,
     NewCampaignDTO,
 )
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_db
-from databases import Database
 from backend.services.users.authentication_service import login_required
-from backend.models.dtos.user_dto import AuthUserDTO
 
 router = APIRouter(
     prefix="/campaigns",
