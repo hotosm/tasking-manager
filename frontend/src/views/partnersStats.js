@@ -38,13 +38,6 @@ export const PartnersStats = () => {
   const [partnerStats, setPartnerStats] = useState(null);
   const [error, loading, partner] = useFetch(`partners/${id}/`);
 
-  // navigate to /leaderboard path when no tab param present
-  useEffect(() => {
-    if (!tabname) {
-      navigate('leaderboard');
-    }
-  }, [navigate, tabname]);
-
   const fetchData = async (name) => {
     try {
       let hashtag = name.trim();
@@ -73,18 +66,23 @@ export const PartnersStats = () => {
 
   function getTabContent() {
     switch (tabname) {
-      case 'leaderboard':
-        return <Leaderboard partner={partner} partnerStats={partnerStats} />;
       case 'mapswipe':
         return <PartnersMapswipeStats />;
       default:
-        return <></>;
+        return <Leaderboard partner={partner} partnerStats={partnerStats} />;
     }
   }
 
   const socialLinks = Object.keys(partner)
     .filter((key) => key.startsWith('link'))
     .filter((link) => partner[link]);
+
+  // remove Map Swipe tab if mapswipe_group_id not present
+  const modifiedTabData = !partner?.mapswipe_group_id
+    ? tabData.filter((tab) => tab.id !== 'mapswipe')
+    : tabData;
+
+  const activeTab = tabname === 'mapswipe' ? 'mapswipe' : 'leaderboard';
 
   return (
     <ReactPlaceholder
@@ -110,15 +108,19 @@ export const PartnersStats = () => {
             )}
             <div className="flex justify-between">
               <div className="flex gap-0.75">
-                {tabData.map(({ id: tabId, title }) => (
+                {modifiedTabData.map(({ id: tabId, title }) => (
                   <div
                     key={tabId}
                     role="button"
                     tabIndex={0}
                     className={`flex items-center pointer partners-tab-item ${
-                      tabname === tabId ? 'bg-tan blue-dark' : 'bg-grey-dark white'
+                      activeTab === tabId ? 'bg-tan blue-dark' : 'bg-grey-dark white'
                     }`}
-                    onClick={() => navigate(`/partners/${id}/stats/${tabId}`)}
+                    onClick={() =>
+                      tabId === 'leaderboard'
+                        ? navigate(`/partners/${id}/stats`)
+                        : navigate(`/partners/${id}/stats/${tabId}`)
+                    }
                     onKeyDown={() => {}}
                   >
                     <p className="ma0">{title}</p>

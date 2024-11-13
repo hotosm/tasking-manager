@@ -19,7 +19,7 @@ import { SwipesByProjectType } from '../components/partnerMapswipeStats/swipesBy
 import { SwipesByOrganization } from '../components/partnerMapswipeStats/swipesByOrganization';
 import messages from './messages';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
-import './partnersMapswipeStats.css';
+import './partnersMapswipeStats.scss';
 
 const PagePlaceholder = () => (
   <div className="bg-tan flex flex-column" style={{ gap: '1.25rem' }}>
@@ -46,7 +46,7 @@ const PagePlaceholder = () => (
 
 const InfoBanner = () => {
   return (
-    <div className="pr3 pv2 pl0 relative inline-flex mv3 mapswipe-stats-info-banner">
+    <div className="pr3 pv2 pl0 relative inline-flex mv3 blue-dark mapswipe-stats-info-banner">
       <span className="inline-flex items-center ">
         <InfoIcon className="mr2" style={{ height: '20px' }} />
         <FormattedMessage {...messages.mapswipeInfo} />
@@ -141,16 +141,16 @@ export const PartnersMapswipeStats = () => {
             </div>
 
             <div
-              className="mt4 flex items-center justify-between f1 barlow-condensed"
+              className="mt4 mapswipe-stats-swipes-container f1 barlow-condensed"
               style={{ gap: '1.6rem' }}
             >
-              <div className="pa4 shadow-6 bg-white" style={{ flexBasis: '32.5%' }}>
+              <div className="pa4 shadow-6 bg-white" style={{ flex: '0 0 32.5%' }}>
                 <span className="red fw6">{getSwipes()}</span>
                 <span className="silver fw2 ml3">
                   <FormattedMessage {...messages.swipes} />
                 </span>
               </div>
-              <div className="pa4 shadow-6 bg-white" style={{ flexBasis: '66.5%' }}>
+              <div className="pa4 shadow-6 bg-white" style={{ flexBasis: '100%' }}>
                 <span className="red fw6">{getTimeSpentContributing()}</span>
                 <span className="silver fw2 ml3">
                   <FormattedMessage {...messages.timeSpentContributing} />
@@ -158,7 +158,7 @@ export const PartnersMapswipeStats = () => {
               </div>
             </div>
 
-            <div className="mt3 flex items-center justify-between">
+            <div className="mt3 items-center justify-between mapswipe-stats-piechart-container">
               <SwipesByProjectType contributionsByProjectType={data?.contributionsByProjectType} />
               <SwipesByOrganization
                 contributionsByOrganization={data?.contributionsByorganizationName}

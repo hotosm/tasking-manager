@@ -80,11 +80,10 @@ export const SwipesByOrganization = ({ contributionsByOrganization = [] }) => {
   }, []);
 
   return (
-    <div style={{ width: '48.5%' }}>
+    <div className="mapswipe-stats-piechart">
       <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb4">
         <FormattedMessage {...messages.swipesByOrganization} />
       </h3>
-
       <div className="bg-white pa4 shadow-6 relative" style={{ height: '450px' }}>
         <canvas ref={chartRef}></canvas>
         {contributionsByOrganization.length === 0 && (
