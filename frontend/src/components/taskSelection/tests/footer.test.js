@@ -144,6 +144,7 @@ describe('Footer Lock Tasks', () => {
       store.dispatch({ type: 'SET_PROJECT', project: null });
       store.dispatch({ type: 'SET_LOCKED_TASKS', tasks: [] });
       store.dispatch({ type: 'SET_TASKS_STATUS', status: null });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
 
   it('should display task cannot be locked for mapping message', async () => {

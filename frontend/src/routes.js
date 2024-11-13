@@ -54,7 +54,7 @@ export const router = createBrowserRouter(
         }}
       />
       <Route
-        path="projects/:id/tasks"
+        path="projects/:id/:tabname"
         lazy={async () => {
           const { SelectTask } = await import(
             './views/taskSelection' /* webpackChunkName: "taskSelection" */
