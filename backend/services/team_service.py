@@ -335,7 +335,6 @@ class TeamService:
 
         user = await UserService.get_user_by_id(search_dto.user_id, db)
         is_admin = UserRole(user.role) == UserRole.ADMIN
-
         if not is_admin:
             public_or_member_query = """
                 t.visibility = :public_visibility OR t.id IN (
@@ -352,11 +351,14 @@ class TeamService:
             final_query = base_query
 
         if search_dto.paginate:
-            final_query += " LIMIT :limit OFFSET :offset"
-            params["limit"] = search_dto.per_page
-            params["offset"] = (search_dto.page - 1) * search_dto.per_page
+            final_query_paginated = final_query
+            limit = search_dto.per_page
+            offset = (search_dto.page - 1) * search_dto.per_page
+            final_query_paginated += f" LIMIT {limit} OFFSET {offset}"
+            rows = await db.fetch_all(query=final_query_paginated, values=params)
 
-        rows = await db.fetch_all(query=final_query, values=params)
+        else:
+            rows = await db.fetch_all(query=final_query, values=params)
 
         teams_list_dto = TeamsListDTO()
         for row in rows:
@@ -393,7 +395,7 @@ class TeamService:
         if search_dto.paginate:
             total_query = "SELECT COUNT(*) FROM (" + final_query + ") as total"
             total = await db.fetch_val(query=total_query, values=params)
-            teams_list_dto.pagination = Pagination(
+            teams_list_dto.pagination = Pagination.from_total_count(
                 total=total, page=search_dto.page, per_page=search_dto.per_page
             )
         return teams_list_dto

@@ -998,7 +998,7 @@ class Task(Base):
             "project_id": project_id,
             "action": action_name,
             "action_text": action_text,
-            "action_date": datetime.datetime.utcnow(),
+            "action_date": timestamp(),
         }
         task_history = await db.fetch_one(query=query, values=values)
 
