@@ -1,38 +1,34 @@
+import datetime
 import re
 import time
-import datetime
-import bleach
-
-from cachetools import TTLCache, cached
-from backend.models.postgis.utils import timestamp
-from loguru import logger
 from typing import List
 
-from sqlalchemy import text, func
+import bleach
+from cachetools import TTLCache, cached
+from databases import Database
+from loguru import logger
 from markdown import markdown
+from sqlalchemy import func, insert, text
 
-from backend import db, create_app
+from backend import create_app, db
+from backend.config import settings
 from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.notification import Notification
 from backend.models.postgis.project import Project, ProjectInfo
-from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
+from backend.models.postgis.task import TaskAction, TaskHistory, TaskStatus
+from backend.models.postgis.utils import timestamp
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
+    clean_html,
     get_template,
     get_txt_template,
     template_var_replacing,
-    clean_html,
 )
 from backend.services.organisation_service import OrganisationService
-from backend.services.users.user_service import UserService, User
-
-from databases import Database
-from backend.config import settings
-from sqlalchemy import insert
-
+from backend.services.users.user_service import User, UserService
 
 message_cache = TTLCache(maxsize=512, ttl=30)
 
@@ -65,6 +61,8 @@ class MessageService:
         welcome_message.to_user_id = user.id
         welcome_message.subject = "Welcome to the {} Tasking Manager".format(org_code)
         welcome_message.message = text_template
+        welcome_message.date = timestamp()
+        welcome_message.read = False
         await Message.save(welcome_message, db)
 
     @staticmethod
@@ -255,8 +253,8 @@ class MessageService:
                     "project_id": msg.project_id,
                     "task_id": msg.task_id,
                     "message_type": msg.message_type,
-                    "date": msg.date,
-                    "read": msg.read,
+                    "date": timestamp(),
+                    "read": False,
                 }
                 for msg in messages_objs
             ]
@@ -272,11 +270,12 @@ class MessageService:
         """Will send a canned message to anyone @'d in a comment"""
         # Fetch the user who made the comment
         comment_from_user = await UserService.get_user_by_id(comment_from, db)
-
+        print(comment, "The comment....")
         # Parse the comment for mentions
         usernames = await MessageService._parse_message_for_username(
             comment, project_id, task_id, db
         )
+        print(usernames, "The list of usernamess....")
 
         if comment_from_user.username in usernames:
             usernames.remove(comment_from_user.username)
@@ -331,18 +330,9 @@ class MessageService:
             for username in usernames:
                 try:
                     user = await UserService.get_user_by_username(username, db)
+                    print(user, "The userrrr...")
                 except NotFound:
                     continue
-
-                # message = {
-                #     "message_type": MessageType.MENTION_NOTIFICATION.value,
-                #     "project_id": project_id,
-                #     "task_id": task_id,
-                #     "from_user_id": comment_from,
-                #     "to_user_id": user["id"],
-                #     "subject": f"You were mentioned in a comment in {task_link} of Project {project_link}",
-                #     "message": clean_comment,
-                # }
 
                 message = Message()
                 message.message_type = MessageType.MENTION_NOTIFICATION.value
@@ -353,7 +343,10 @@ class MessageService:
                 message.subject = f"You were mentioned in a comment in {task_link} of Project {project_link}"
                 message.message = clean_comment
                 message.date = timestamp()
-                messages.append(dict(message=message, user=user))
+                message.read = False
+                messages.append(
+                    dict(message=message, user=user, project_name=project_name)
+                )
 
             await MessageService._push_messages(messages, db)
 
@@ -391,16 +384,6 @@ class MessageService:
                 except NotFound:
                     continue
 
-                # message = {
-                #     "message_type": MessageType.TASK_COMMENT_NOTIFICATION.value,
-                #     "project_id": project_id,
-                #     "from_user_id": comment_from,
-                #     "task_id": task_id,
-                #     "to_user_id": user["id"],
-                #     "subject": f"{user_link} left a comment in {task_link} of Project {project_link}",
-                #     "message": comment,
-                # }
-
                 message = Message()
                 message.message_type = MessageType.TASK_COMMENT_NOTIFICATION.value
                 message.project_id = project_id
@@ -410,6 +393,7 @@ class MessageService:
                 message.subject = f"{user_link} left a comment in {task_link} of Project {project_link}"
                 message.message = comment
                 message.date = timestamp()
+                message.read = False
                 messages.append(
                     dict(message=message, user=user, project_name=project_name)
                 )
@@ -425,9 +409,10 @@ class MessageService:
         """Will send a message to the manager of the organization after a project is transferred"""
         project = await Project.get(project_id, db)
         project_name = project.get_project_title(project.default_locale)
-
         message = Message()
         message.message_type = MessageType.SYSTEM.value
+        message.date = timestamp()
+        message.read = False
         message.subject = (
             f"Project {project_name} #{project_id} was transferred to {transferred_to}"
         )
@@ -475,7 +460,7 @@ class MessageService:
             return f'<a href="{base_url}/teams/{team_id}/membership/">{team_name}</a>'
 
     @staticmethod
-    def send_request_to_join_team(
+    async def send_request_to_join_team(
         from_user: int,
         from_username: str,
         to_user: int,
@@ -487,14 +472,14 @@ class MessageService:
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
+        message.date = timestamp()
+        message.read = False
         user_link = MessageService.get_user_link(from_username)
         team_link = MessageService.get_team_link(team_name, team_id, True)
         message.subject = f"{user_link} requested to join {team_link}"
         message.message = f"{user_link} has requested to join the {team_link} team.\
             Access the team management page to accept or reject that request."
-        MessageService._push_messages(
-            [dict(message=message, user=session.get(User, to_user))]
-        )
+        await Message.save(message, db)
 
     @staticmethod
     async def accept_reject_request_to_join_team(
@@ -510,6 +495,8 @@ class MessageService:
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
+        message.date = timestamp()
+        message.read = False
         team_link = MessageService.get_team_link(team_name, team_id, False)
         user_link = MessageService.get_user_link(from_username)
         message.subject = f"Your request to join team {team_link} has been {response}ed"
@@ -533,6 +520,8 @@ class MessageService:
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
+        message.date = timestamp()
+        message.read = False
         message.subject = "{} {}ed to join {}".format(
             MessageService.get_user_link(from_username),
             response,
@@ -565,12 +554,14 @@ class MessageService:
         message.subject = f"You have been added to team {team_link}"
         message.message = f"You have been added  to the team {team_link} as {role} by {user_link}.\
             Access the {team_link}'s page to view more info about this team."
+        message.date = timestamp()
+        message.read = False
 
         await Message.save(message, db)
 
     @staticmethod
     def send_message_after_chat(
-        chat_from: int, chat: str, project_id: int, project_name: str
+        chat_from: int, chat: str, project_id: int, project_name: str, db: Database
     ):
         """Send alert to user if they were @'d in a chat message"""
         app = (
@@ -600,13 +591,15 @@ class MessageService:
                     message.project_id = project_id
                     message.from_user_id = chat_from
                     message.to_user_id = user.id
+                    message.date = timestamp()
+                    message.read = False
                     message.subject = f"You were mentioned in Project {link} chat"
                     message.message = chat
                     messages.append(
                         dict(message=message, user=user, project_name=project_name)
                     )
 
-                MessageService._push_messages(messages)
+                MessageService._push_messages(messages, db)
 
             query = f""" select user_id from project_favorites where project_id ={project_id}"""
             with db.engine.connect() as conn:
@@ -642,6 +635,8 @@ class MessageService:
                     message.project_id = project_id
                     message.from_user_id = chat_from
                     message.to_user_id = user.id
+                    message.date = timestamp()
+                    message.read = False
                     message.subject = (
                         f"{from_user_link} left a comment in project {project_link}"
                     )
@@ -651,7 +646,7 @@ class MessageService:
                     )
 
                 # it's important to keep that line inside the if to avoid duplicated emails
-                MessageService._push_messages(messages)
+                MessageService._push_messages(messages, db)
 
     @staticmethod
     async def send_favorite_project_activities(user_id: int):
@@ -702,6 +697,8 @@ class MessageService:
             message.message_type = MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
             message.project_id = project.id
             message.to_user_id = user.id
+            message.date = timestamp()
+            message.read = False
             message.subject = (
                 "Recent activities from your contributed/favorited Projects"
             )
@@ -1019,6 +1016,7 @@ class MessageService:
 
         message_dict = dict(message)
         message_dict["message_type"] = MessageType(message_dict["message_type"]).name
+        print(message_dict, "blaaaaaa...")
         return message_dict
 
     @staticmethod
