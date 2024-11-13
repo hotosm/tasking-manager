@@ -1,7 +1,9 @@
-from backend.models.dtos.stats_dto import Pagination
-from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List, Optional
+
+from pydantic import BaseModel, Field, root_validator
+
+from backend.models.dtos.stats_dto import Pagination
 
 
 class MessageDTO(BaseModel):
@@ -22,6 +24,12 @@ class MessageDTO(BaseModel):
 
     class Config:
         populate_by_name = True
+
+    @root_validator(pre=True)
+    def format_sent_date(cls, values):
+        if "sent_date" in values and values["sent_date"]:
+            values["sent_date"] = values["sent_date"].isoformat() + "Z"
+        return values
 
 
 class MessagesDTO(BaseModel):
@@ -52,6 +60,12 @@ class ChatMessageDTO(BaseModel):
 
     class Config:
         populate_by_name = True
+
+    def dict(self, **kwargs):
+        data = super().dict(**kwargs)
+        if self.timestamp:
+            data["timestamp"] = self.timestamp.isoformat() + "Z"
+        return data
 
 
 class ProjectChatDTO(BaseModel):

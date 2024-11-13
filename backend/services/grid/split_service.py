@@ -4,6 +4,7 @@ from databases import Database
 # from flask import current_app
 from geoalchemy2 import shape
 from geoalchemy2.elements import WKBElement
+from loguru import logger
 from shapely.geometry import LineString, MultiPolygon, Polygon
 from shapely.geometry import shape as shapely_shape
 from shapely.ops import split
@@ -18,8 +19,7 @@ class SplitServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling splitting tasks"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class SplitService:

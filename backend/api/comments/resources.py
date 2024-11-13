@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from backend.models.postgis.utils import timestamp
 from databases import Database
 from fastapi import APIRouter, Depends, Request
 from loguru import logger
@@ -76,14 +75,13 @@ async def post(
             content={"Error": "User is on read only mode", "SubCode": "ReadOnly"},
             status_code=403,
         )
-
     request_json = await request.json()
     message = request_json.get("message")
     chat_dto = ChatMessageDTO(
         message=message,
         user_id=user.id,
         project_id=project_id,
-        timestamp=datetime.utcnow(),
+        timestamp=timestamp(),
         username=user.username,
     )
     try:
@@ -345,10 +343,13 @@ async def get(request: Request, project_id, task_id):
         task_comment.validate()
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {
-            "Error": "Unable to fetch task comments",
-            "SubCode": "InvalidData",
-        }, 400
+        return JSONResponse(
+            content={
+                "Error": "Unable to fetch task comments",
+                "SubCode": "InvalidData",
+            },
+            status_code=400,
+        )
 
     try:
         # NEW FUNCTION HAS TO BE ADDED
@@ -356,4 +357,4 @@ async def get(request: Request, project_id, task_id):
         # return task.model_dump(by_alias=True), 200
         return
     except MappingServiceError as e:
-        return {"Error": str(e)}, 403
+        return JSONResponse(content={"Error": str(e)}, status_code=403)

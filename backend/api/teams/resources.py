@@ -1,22 +1,18 @@
-from backend.models.postgis.team import Team
-from databases import Database
 from distutils.util import strtobool
-from fastapi import APIRouter, Depends, Request, Body
+
+from databases import Database
+from fastapi import APIRouter, Body, Depends, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 
 from backend.db import get_db
-from backend.models.dtos.team_dto import (
-    NewTeamDTO,
-    UpdateTeamDTO,
-    TeamSearchDTO,
-)
-from backend.services.team_service import TeamService, TeamServiceError
+from backend.models.dtos.team_dto import NewTeamDTO, TeamSearchDTO, UpdateTeamDTO
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.team import Team
 from backend.services.organisation_service import OrganisationService
+from backend.services.team_service import TeamService, TeamServiceError
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
-from backend.models.dtos.user_dto import AuthUserDTO
-
 
 router = APIRouter(
     prefix="/teams",
@@ -329,7 +325,6 @@ async def list_teams(
     search_dto.page = int(request.query_params.get("page", 1))
     search_dto.per_page = int(request.query_params.get("perPage", 10))
     search_dto.user_id = user.id
-
     teams = await TeamService.get_all_teams(search_dto, db)
     return teams
 

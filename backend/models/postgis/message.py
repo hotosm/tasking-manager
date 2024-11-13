@@ -128,6 +128,8 @@ class Message(Base):
                 project_id=self.project_id,
                 task_id=self.task_id,
                 message_type=self.message_type,
+                read=self.read,
+                date=self.date,
             )
         )
 

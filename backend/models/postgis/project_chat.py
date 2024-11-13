@@ -1,13 +1,14 @@
 import bleach
-from markdown import markdown
+from databases import Database
 from loguru import logger
-from sqlalchemy import Column, Integer, BigInteger, String, DateTime, ForeignKey
+from markdown import markdown
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
+from backend.db import Base, get_session
+from backend.models.dtos.message_dto import ChatMessageDTO, Pagination, ProjectChatDTO
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
-from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO, Pagination
-from backend.db import Base, get_session
-from databases import Database
 
 session = get_session()
 
