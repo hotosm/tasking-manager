@@ -270,13 +270,10 @@ class MessageService:
         """Will send a canned message to anyone @'d in a comment"""
         # Fetch the user who made the comment
         comment_from_user = await UserService.get_user_by_id(comment_from, db)
-        print(comment, "The comment....")
         # Parse the comment for mentions
         usernames = await MessageService._parse_message_for_username(
             comment, project_id, task_id, db
         )
-        print(usernames, "The list of usernamess....")
-
         if comment_from_user.username in usernames:
             usernames.remove(comment_from_user.username)
 
@@ -330,7 +327,6 @@ class MessageService:
             for username in usernames:
                 try:
                     user = await UserService.get_user_by_username(username, db)
-                    print(user, "The userrrr...")
                 except NotFound:
                     continue
 
@@ -1016,7 +1012,6 @@ class MessageService:
 
         message_dict = dict(message)
         message_dict["message_type"] = MessageType(message_dict["message_type"]).name
-        print(message_dict, "blaaaaaa...")
         return message_dict
 
     @staticmethod
