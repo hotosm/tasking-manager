@@ -84,15 +84,16 @@ class TeamService:
         if team.join_method == TeamJoinMethod.ANY.value:
             active = True
         await TeamService.add_team_member(team_id, user_id, role, active, db)
-
         # Notify team managers about a join request in BY_REQUEST team.
         if team.join_method == TeamJoinMethod.BY_REQUEST.value:
             team_managers = await Team.get_team_managers(db, team.id)
             for manager in team_managers:
-                # Only send notifications to team managers who have join request notification enabled.
                 if manager.join_request_notifications:
-                    MessageService.send_request_to_join_team(
-                        user.id, user.username, manager.user_id, team.name, team_id, db
+                    manager_obj = await UserService.get_user_by_username(
+                        manager.username, db
+                    )
+                    await MessageService.send_request_to_join_team(
+                        user.id, user.username, manager_obj.id, team.name, team_id, db
                     )
 
     @staticmethod
@@ -547,7 +548,7 @@ class TeamService:
         """
         # Raw SQL query to select the team by ID
         query = """
-            SELECT id, name, organisation_id
+            SELECT id, name, organisation_id, join_method, description, visibility
             FROM teams
             WHERE id = :team_id
         """
