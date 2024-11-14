@@ -62,10 +62,11 @@ async def post(
             description: Internal Server Error
     """
     try:
-        await TeamService.request_to_join_team(team_id, user.id, db)
-        return JSONResponse(
-            content={"Success": "Join request successful"}, status_code=200
-        )
+        async with db.transaction():
+            await TeamService.request_to_join_team(team_id, user.id, db)
+            return JSONResponse(
+                content={"Success": "Join request successful"}, status_code=200
+            )
     except TeamServiceError as e:
         return JSONResponse(
             content={"Error": str(e), "SubCode": "InvalidRequest"}, status_code=400
