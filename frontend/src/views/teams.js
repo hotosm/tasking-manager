@@ -426,7 +426,7 @@ export function TeamDetail() {
   const [error, loading, team] = useFetch(`teams/${id}/`);
   // eslint-disable-next-line
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?teamId=${id}&omitMapResults=true&projectStatuses=PUBLISHED,DRAFT,ARCHIVED`,
+    `projects/?teamId=${id}&omitMapResults=true&projectStatuses=PUBLISHED`,
     id,
   );
   const [isMember, setIsMember] = useState(false);
