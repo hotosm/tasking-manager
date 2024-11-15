@@ -160,15 +160,18 @@ async def post(
         }, 400
 
     if not ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id):
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
     threading.Thread(
         target=MessageService.send_message_to_all_contributors,
         args=(project_id, message_dto),
     ).start()
-    return {"Success": "Messages started"}, 200
+    return JSONResponse(content={"Success": "Messages started"}, status_code=200)
 
 
 @router.post("/{project_id}/actions/feature/")

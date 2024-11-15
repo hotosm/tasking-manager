@@ -121,22 +121,6 @@ class Team(Base):
     # organisation = relationship(Organisation, backref="teams", lazy="joined")
     organisation = relationship(Organisation, backref="teams")
 
-    # async def create(self, db: Database):
-    #     """Creates and saves the current model to the DB"""
-    #     print(self.members)
-
-    #     team = await db.execute(
-    #         insert(Team.__table__).values(
-    #             organisation_id=self.organisation_id,
-    #             name=self.name,
-    #             logo=self.logo,
-    #             description=self.description,
-    #             join_method=self.join_method,
-    #             visibility=self.visibility,
-    #         )
-    #     )
-    #     return team if team else None
-
     async def create(self, db: Database):
         """Creates and saves the current model to the DB, including members if they exist."""
 

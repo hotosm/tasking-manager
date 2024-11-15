@@ -314,6 +314,19 @@ async def post(
         )
 
 
+import asyncio
+
+
+# Function to run async code in a thread
+def run_asyncio_in_thread(func, *args, **kwargs):
+    # Create a new event loop for the thread
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    # Create a new database connection (to be used in this thread)
+    db = get_db()
+    loop.run_until_complete(func(*args, db=db, **kwargs))
+
+
 @router.post("/{team_id}/actions/message-members/")
 async def post(
     request: Request,
@@ -321,7 +334,6 @@ async def post(
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
     team_id: int = None,
-    message_dto: MessageDTO = Body(...),
 ):
     """
     Message all team members
@@ -368,9 +380,11 @@ async def post(
             description: Internal Server Error
     """
     try:
+        request_json = await request.json()
+        request_json["from_user_id"] = user.id
+        message_dto = MessageDTO(**request_json)
         # Validate if team is present
         team = await TeamService.get_team_by_id(team_id, db)
-
         is_manager = await TeamService.is_user_team_manager(team_id, user.id, db)
         if not is_manager:
             raise ValueError
@@ -397,10 +411,13 @@ async def post(
         )
 
     try:
+        # Start a new thread for sending messages
+        # Use threading to run the async function in a separate thread
         # threading.Thread(
-        #     target=TeamService.send_message_to_all_team_members,
-        #     args=(team_id, team.name, message_dto, db),
+        #     target=run_asyncio_in_thread,
+        #     args=(TeamService.send_message_to_all_team_members, team_id, team.name, message_dto, user.id)
         # ).start()
+
         background_tasks.add_task(
             TeamService.send_message_to_all_team_members,
             team_id,

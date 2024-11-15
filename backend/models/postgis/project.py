@@ -825,6 +825,8 @@ class Project(Base):
             "tasks",
             "project_info",
             "project_chat",
+            "project_partnerships_history",
+            "project_partnerships",
         ]
 
         # Start a transaction to ensure atomic deletion
