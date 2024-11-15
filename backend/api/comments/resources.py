@@ -3,7 +3,6 @@ from databases import Database
 from fastapi import APIRouter, Depends, Request
 from loguru import logger
 from fastapi.responses import JSONResponse
-
 from backend.db import get_db, get_session
 from backend.models.dtos.mapping_dto import TaskCommentDTO
 from backend.models.dtos.message_dto import ChatMessageDTO

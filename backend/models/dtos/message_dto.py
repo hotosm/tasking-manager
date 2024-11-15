@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, root_validator
+from pydantic import BaseModel, Field
 
 from backend.models.dtos.stats_dto import Pagination
 
@@ -25,11 +25,7 @@ class MessageDTO(BaseModel):
     class Config:
         populate_by_name = True
 
-    @root_validator(pre=True)
-    def format_sent_date(cls, values):
-        if "sent_date" in values and values["sent_date"]:
-            values["sent_date"] = values["sent_date"].isoformat() + "Z"
-        return values
+        json_encoders = {datetime: lambda v: v.isoformat() + "Z" if v else None}
 
 
 class MessagesDTO(BaseModel):
@@ -58,14 +54,42 @@ class ChatMessageDTO(BaseModel):
     timestamp: datetime
     username: str
 
+    # class Config:
+    #     populate_by_name = True
+
+    #     json_encoders = {
+    #         datetime: lambda v: v.isoformat() + "Z" if v else None
+    #     }
+
+
+class ListChatMessageDTO(BaseModel):
+    """DTO describing an individual project chat message"""
+
+    id: Optional[int] = Field(None, alias="id")
+    message: str = Field(required=True)
+    picture_url: str = Field(default=None, alias="pictureUrl")
+    timestamp: datetime
+    username: str
+
     class Config:
         populate_by_name = True
 
-    def dict(self, **kwargs):
-        data = super().dict(**kwargs)
-        if self.timestamp:
-            data["timestamp"] = self.timestamp.isoformat() + "Z"
-        return data
+        json_encoders = {datetime: lambda v: v.isoformat() + "Z" if v else None}
+
+    # def dict(self, *args, **kwargs):
+    #     """
+    #     Override the dict method to exclude `user_id` and `project_id`
+    #     from the dictionary representation.
+    #     """
+    #     exclude_fields = {"user_id", "project_id"}
+    #     # Generate the dict as usual, excluding the fields
+    #     return super().dict(*args, **kwargs, exclude=exclude_fields)
+
+    # def dict(self, **kwargs):
+    #     data = super().dict(**kwargs)
+    #     if self.timestamp:
+    #         data["timestamp"] = self.timestamp.isoformat() + "Z"
+    #     return data
 
 
 class ProjectChatDTO(BaseModel):
@@ -76,5 +100,5 @@ class ProjectChatDTO(BaseModel):
         super().__init__()
         self.chat = []
 
-    chat: Optional[List[ChatMessageDTO]] = None
+    chat: Optional[List[ListChatMessageDTO]] = None
     pagination: Optional[Pagination] = None

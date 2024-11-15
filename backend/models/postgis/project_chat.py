@@ -6,7 +6,12 @@ from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from backend.db import Base, get_session
-from backend.models.dtos.message_dto import ChatMessageDTO, Pagination, ProjectChatDTO
+from backend.models.dtos.message_dto import (
+    ChatMessageDTO,
+    ListChatMessageDTO,
+    Pagination,
+    ProjectChatDTO,
+)
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
 
@@ -82,14 +87,12 @@ class ProjectChat(Base):
             """,
             {"message_id": new_message_id},
         )
-        return ChatMessageDTO(
+        return ListChatMessageDTO(
             id=new_message["id"],
             message=new_message["message"],
             picture_url=new_message["picture_url"],
             timestamp=new_message["time_stamp"],
             username=new_message["username"],
-            project_id=new_message["project_id"],
-            user_id=new_message["user_id"],
         )
 
     @staticmethod
@@ -126,22 +129,14 @@ class ProjectChat(Base):
         dto = ProjectChatDTO()
 
         for message in messages:
-            chat_dto = ChatMessageDTO(
+            chat_dto = ListChatMessageDTO(
                 id=message["id"],
                 message=message["message"],
                 picture_url=message["picture_url"],
                 timestamp=message["time_stamp"],
                 username=message["username"],
-                project_id=message["project_id"],
-                user_id=message["user_id"],
             )
-            chat_dto_dict = chat_dto.dict()
-            filtered_chat_dto_dict = {
-                k: v
-                for k, v in chat_dto_dict.items()
-                if k not in ["project_id", "user_id"]
-            }
-            dto.chat.append(filtered_chat_dto_dict)
+            dto.chat.append(chat_dto)
 
         dto.pagination = Pagination.from_total_count(
             page=page, per_page=per_page, total=total_count

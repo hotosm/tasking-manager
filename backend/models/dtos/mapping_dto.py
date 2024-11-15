@@ -2,7 +2,7 @@ from datetime import datetime
 from backend.models.postgis.statuses import TaskStatus
 from backend.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
-from pydantic import BaseModel, Field, ValidationError, validator, root_validator
+from pydantic import BaseModel, Field, ValidationError, validator
 from typing import List, Optional
 
 
@@ -66,11 +66,7 @@ class TaskHistoryDTO(BaseModel):
     class Config:
         populate_by_name = True
 
-    @root_validator(pre=True)
-    def format_sent_date(cls, values):
-        if "action_date" in values and values["action_date"]:
-            values["action_date"] = values["action_date"].isoformat() + "Z"
-        return values
+        json_encoders = {datetime: lambda v: v.isoformat() + "Z" if v else None}
 
 
 class TaskStatusDTO(BaseModel):
@@ -83,6 +79,8 @@ class TaskStatusDTO(BaseModel):
 
     class Config:
         populate_by_name = True
+
+        json_encoders = {datetime: lambda v: v.isoformat() + "Z" if v else None}
 
 
 class TaskDTO(BaseModel):
