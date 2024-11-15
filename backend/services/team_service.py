@@ -631,11 +631,15 @@ class TeamService:
 
     @staticmethod
     async def _get_active_team_members(team_id: int, db: Database):
-        query = """
-            SELECT * FROM team_members
-            WHERE team_id = :team_id AND active = TRUE
-        """
-        return await db.fetch_all(query, values={"team_id": team_id})
+        try:
+            query = """
+                SELECT * FROM team_members
+                WHERE team_id = :team_id AND active = TRUE
+            """
+            return await db.fetch_all(query, values={"team_id": team_id})
+        except Exception as e:
+            print(f"Error executing query: {str(e)}")
+            raise
 
     @staticmethod
     async def activate_team_member(team_id: int, user_id: int, db: Database):
@@ -791,7 +795,6 @@ class TeamService:
         team_members = await TeamService._get_active_team_members(team_id, db)
         user = await UserService.get_user_by_id(user_id, db)
         sender = user.username
-
         message_dto.message = (
             "A message from {}, manager of {} team:<br/><br/>{}".format(
                 MessageService.get_user_profile_link(sender),
@@ -799,7 +802,6 @@ class TeamService:
                 markdown(message_dto.message, output_format="html"),
             )
         )
-
         messages = []
         for team_member in team_members:
             if team_member.user_id != user_id:
