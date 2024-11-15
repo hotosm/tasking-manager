@@ -438,19 +438,15 @@ class ListSearchResultDTO(BaseModel):
     percent_validated: Optional[int] = Field(alias="percentValidated", default=None)
     status: Optional[str] = None
     active_mappers: Optional[int] = Field(alias="activeMappers", default=None)
-    last_updated: Optional[str] = Field(alias="lastUpdated", default=None)
-    due_date: Optional[str] = Field(alias="dueDate", default=None)
+    last_updated: Optional[datetime] = Field(alias="lastUpdated", default=None)
+    due_date: Optional[datetime] = Field(alias="dueDate", default=None)
     total_contributors: Optional[int] = Field(alias="totalContributors", default=None)
     country: Optional[str] = Field(default="", serialize=False)
 
     class Config:
         populate_by_name = True
 
-
-# class ProjectSearchResultsDTO(BaseModel):
-#     map_results: Optional[List] = []
-#     results: Optional[List[ListSearchResultDTO]] = []
-#     pagination: Optional[Pagination] = {}
+        json_encoders = {datetime: lambda v: v.isoformat() + "Z" if v else None}
 
 
 class ProjectSearchResultsDTO(BaseModel):
