@@ -265,15 +265,21 @@ class ProjectSearchService:
                 search_text = "".join(
                     char for char in search_dto.text_search if char not in "@|&!><\\():"
                 )
-                or_search = " | ".join([x for x in search_text.split(" ") if x])
+                tsquery_search = " & ".join([x for x in search_text.split(" ") if x])
+                ilike_search = f"%{search_text}%"
+
                 subquery_filters.append(
-                    "text_searchable @@ to_tsquery('english', :text_search) OR name ILIKE :text_search"
+                    """
+                    text_searchable @@ to_tsquery('english', :tsquery_search)
+                    OR name ILIKE :text_search
+                    """
                 )
-                params["text_search"] = or_search
+                params["tsquery_search"] = tsquery_search
+                params["text_search"] = ilike_search
 
             filters.append(
                 """
-                p.id IN (
+                p.id = ANY(
                     SELECT project_id
                     FROM project_info
                     WHERE {}
