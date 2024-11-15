@@ -54,8 +54,8 @@ class ChatMessageDTO(BaseModel):
     timestamp: datetime
     username: str
 
-    # class Config:
-    #     populate_by_name = True
+    class Config:
+        populate_by_name = True
 
     #     json_encoders = {
     #         datetime: lambda v: v.isoformat() + "Z" if v else None
@@ -75,21 +75,6 @@ class ListChatMessageDTO(BaseModel):
         populate_by_name = True
 
         json_encoders = {datetime: lambda v: v.isoformat() + "Z" if v else None}
-
-    # def dict(self, *args, **kwargs):
-    #     """
-    #     Override the dict method to exclude `user_id` and `project_id`
-    #     from the dictionary representation.
-    #     """
-    #     exclude_fields = {"user_id", "project_id"}
-    #     # Generate the dict as usual, excluding the fields
-    #     return super().dict(*args, **kwargs, exclude=exclude_fields)
-
-    # def dict(self, **kwargs):
-    #     data = super().dict(**kwargs)
-    #     if self.timestamp:
-    #         data["timestamp"] = self.timestamp.isoformat() + "Z"
-    #     return data
 
 
 class ProjectChatDTO(BaseModel):
