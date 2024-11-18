@@ -13,5 +13,5 @@ terraform {
 }
 
 inputs = {
-  deployment_environment = "dev"  # or any other value you need
+  deployment_environment = "dev" # or any other value you need
 }
