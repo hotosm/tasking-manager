@@ -85,7 +85,7 @@ class MessageService:
         """
         project_name = await db.fetch_val(
             project_name_query,
-            values={"project_id": project_id, "locale": project["default_locale"]},
+            values={"project_id": project_id, "locale": project.default_locale},
         )
         user = await UserService.get_user_by_id(mapped_by, db)
         text_template = get_txt_template(

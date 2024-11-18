@@ -67,7 +67,7 @@ class ListChatMessageDTO(BaseModel):
 
     id: Optional[int] = Field(None, alias="id")
     message: str = Field(required=True)
-    picture_url: str = Field(default=None, alias="pictureUrl")
+    picture_url: Optional[str] = Field(None, alias="pictureUrl")
     timestamp: datetime
     username: str
 
