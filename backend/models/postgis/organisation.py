@@ -1,28 +1,28 @@
-from fastapi import HTTPException
 from databases import Database
+from fastapi import HTTPException
 from slugify import slugify
-
 from sqlalchemy import (
+    BigInteger,
     Column,
+    ForeignKey,
     Integer,
     String,
-    BigInteger,
-    ForeignKey,
     Table,
     UniqueConstraint,
 )
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import backref, relationship
+
+from backend.db import Base, get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import (
-    OrganisationDTO,
     NewOrganisationDTO,
+    OrganisationDTO,
     OrganisationManagerDTO,
     UpdateOrganisationDTO,
 )
-from backend.models.postgis.user import User
 from backend.models.postgis.campaign import Campaign, campaign_organisations
 from backend.models.postgis.statuses import OrganisationType
-from backend.db import Base, get_session
+from backend.models.postgis.user import User
 
 session = get_session()
 

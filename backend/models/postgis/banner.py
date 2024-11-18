@@ -1,10 +1,10 @@
 import bleach
-from markdown import markdown
-
-from sqlalchemy import Column, Integer, String, Boolean, insert, update
-from backend.models.dtos.banner_dto import BannerDTO
-from backend.db import Base, get_session
 from databases import Database
+from markdown import markdown
+from sqlalchemy import Boolean, Column, Integer, String, insert, update
+
+from backend.db import Base, get_session
+from backend.models.dtos.banner_dto import BannerDTO
 
 session = get_session()
 
