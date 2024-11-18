@@ -790,10 +790,17 @@ class TeamService:
         team_name: str,
         message_dto: MessageDTO,
         user_id: int,
-        db: Database,
+        db: Database = None,
     ):
+        if db is None:
+            print("inside....")
+            db = await acquire_connection()
+        print("Sending message to the team...")
+        print(db)
         team_members = await TeamService._get_active_team_members(team_id, db)
         user = await UserService.get_user_by_id(user_id, db)
+        print("Fetched User....")
+
         sender = user.username
         message_dto.message = (
             "A message from {}, manager of {} team:<br/><br/>{}".format(
@@ -804,6 +811,8 @@ class TeamService:
         )
         messages = []
         for team_member in team_members:
+            print("Looping teams.......")
+
             if team_member.user_id != user_id:
                 message = Message.from_dto(team_member.user_id, message_dto)
                 message.message_type = MessageType.TEAM_BROADCAST.value
