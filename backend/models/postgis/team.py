@@ -1,32 +1,33 @@
 from databases import Database
 from sqlalchemy import (
-    Column,
-    Integer,
     BigInteger,
     Boolean,
+    Column,
     ForeignKey,
+    Integer,
     String,
     insert,
+    select,
 )
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import backref, relationship
+
+from backend.db import Base, get_session
 from backend.exceptions import NotFound
+from backend.models.dtos.organisation_dto import OrganisationTeamsDTO
 from backend.models.dtos.team_dto import (
-    TeamDTO,
     NewTeamDTO,
+    TeamDTO,
     TeamMembersDTO,
     TeamProjectDTO,
 )
-from backend.models.dtos.organisation_dto import OrganisationTeamsDTO
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.statuses import (
     TeamJoinMethod,
-    TeamVisibility,
     TeamMemberFunctions,
     TeamRoles,
+    TeamVisibility,
 )
 from backend.models.postgis.user import User
-from backend.db import Base, get_session
-from sqlalchemy import select
 
 session = get_session()
 
@@ -504,10 +505,10 @@ class Team(Base):
         )
         if existing_members_list != new_member_list:
             for member in existing_members_list:
-                if member.user_id not in new_member_list:
+                if member not in new_member_list:
                     await db.execute(
                         "DELETE FROM team_members WHERE team_id = :team_id AND user_id = :user_id",
-                        {"team_id": team.id, "user_id": member.user_id},
+                        {"team_id": team.id, "user_id": member},
                     )
 
         # Add or update members from the new member list
