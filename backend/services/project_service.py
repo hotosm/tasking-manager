@@ -227,7 +227,7 @@ class ProjectService:
         if project.status == ProjectStatus.DRAFT.value:
             if not is_manager_permission:
                 is_allowed_user = False
-                raise HTTPException(status_code=400, detail="Unable to fetch project.")
+                raise ProjectServiceError("ProjectNotFetched- Unable to fetch project")
 
         # Private Projects - allowed_users, admins, org admins &
         # assigned teams (mappers, validators, project managers), authors permitted

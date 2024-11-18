@@ -655,9 +655,8 @@ class Project(Base):
                 await ProjectInfo.update_from_dto(ProjectInfo(**project_info), dto, db)
 
         # Always clear Priority Area prior to updating
-
+        await Project.clear_existing_priority_areas(db, self.id)
         if project_dto.priority_areas:
-            await Project.clear_existing_priority_areas(db, self.id)
             for priority_area in project_dto.priority_areas:
                 pa = await PriorityArea.from_dict(priority_area, db)
                 # Link project and priority area in the database
