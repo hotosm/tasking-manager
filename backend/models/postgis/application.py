@@ -1,18 +1,19 @@
 from databases import Database
 from sqlalchemy import (
-    Column,
     BigInteger,
-    String,
+    Column,
     DateTime,
     ForeignKey,
-    select,
-    insert,
+    String,
     delete,
+    insert,
+    select,
 )
+
+from backend.db import Base, get_session
 from backend.models.dtos.application_dto import ApplicationDTO, ApplicationsDTO
 from backend.models.postgis.utils import timestamp
 from backend.services.users.authentication_service import AuthenticationService
-from backend.db import Base, get_session
 
 session = get_session()
 

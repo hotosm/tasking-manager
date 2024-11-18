@@ -1,17 +1,18 @@
-from backend.models.postgis.utils import timestamp
 from sqlalchemy import (
+    JSON,
     Column,
-    Integer,
-    String,
     DateTime,
     ForeignKey,
-    JSON,
-    Index,
     ForeignKeyConstraint,
+    Index,
+    Integer,
+    String,
 )
-from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
-from backend.models.dtos.project_dto import ProjectTaskAnnotationsDTO
+
 from backend.db import Base, get_session
+from backend.models.dtos.project_dto import ProjectTaskAnnotationsDTO
+from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
+from backend.models.postgis.utils import timestamp
 
 session = get_session()
 
