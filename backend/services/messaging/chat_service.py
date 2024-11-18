@@ -1,4 +1,5 @@
 import threading
+
 from databases import Database
 
 from backend.exceptions import NotFound

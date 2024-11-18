@@ -1,10 +1,10 @@
 from databases import Database
-from sqlalchemy import Column, Integer, String, Boolean, select, insert, delete, update
+from sqlalchemy import Boolean, Column, Integer, String, delete, insert, select, update
 
 from backend.db import Base
 from backend.models.dtos.mapping_issues_dto import (
-    MappingIssueCategoryDTO,
     MappingIssueCategoriesDTO,
+    MappingIssueCategoryDTO,
 )
 
 

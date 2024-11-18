@@ -1,5 +1,6 @@
-from backend import db
 import json
+
+from backend import db
 from backend.exceptions import NotFound
 from backend.models.dtos.partner_dto import PartnerDTO
 

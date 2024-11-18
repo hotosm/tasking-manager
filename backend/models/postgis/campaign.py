@@ -1,6 +1,7 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Table, UniqueConstraint
-from backend.models.dtos.campaign_dto import CampaignDTO, CampaignListDTO
+from sqlalchemy import Column, ForeignKey, Integer, String, Table, UniqueConstraint
+
 from backend.db import Base, get_session
+from backend.models.dtos.campaign_dto import CampaignDTO, CampaignListDTO
 
 session = get_session()
 

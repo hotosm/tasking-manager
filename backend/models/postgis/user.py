@@ -1,42 +1,41 @@
 import geojson
 from sqlalchemy import (
-    Column,
-    Integer,
-    BigInteger,
-    String,
-    DateTime,
-    Boolean,
     ARRAY,
+    BigInteger,
+    Boolean,
+    Column,
+    DateTime,
+    Integer,
+    String,
     delete,
-    update,
     insert,
+    update,
 )
 from sqlalchemy.orm import relationship
 
+from backend.db import Base, get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.user_dto import (
-    UserDTO,
-    UserMappedProjectsDTO,
-    MappedProject,
-    UserFilterDTO,
-    Pagination,
-    UserSearchQuery,
-    UserSearchDTO,
-    ProjectParticipantUser,
     ListedUser,
+    MappedProject,
+    Pagination,
+    ProjectParticipantUser,
+    UserDTO,
+    UserFilterDTO,
+    UserMappedProjectsDTO,
+    UserSearchDTO,
+    UserSearchQuery,
 )
+from backend.models.postgis.interests import Interest, user_interests
 from backend.models.postgis.licenses import License, user_licenses_table
 from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.statuses import (
     MappingLevel,
     ProjectStatus,
-    UserRole,
     UserGender,
+    UserRole,
 )
-
 from backend.models.postgis.utils import timestamp
-from backend.models.postgis.interests import Interest, user_interests
-from backend.db import Base, get_session
 
 session = get_session()
 from databases import Database
@@ -94,12 +93,6 @@ class User(Base):
 
     def save(self):
         session.commit()
-
-    # @staticmethod
-    # async def get_by_id(user_id: int, session):
-    #     """Return the user for the specified id, or None if not found"""
-    #     result = await session.execute(sa.select(User).filter_by(id=user_id))
-    #     return result.scalars().first()
 
     @staticmethod
     async def get_by_id(user_id: int, db: Database):
