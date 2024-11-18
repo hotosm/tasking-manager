@@ -45,6 +45,6 @@ inputs = {
     {
       name      = "TM_SENTRY_BACKEND_DSN"
       valueFrom = get_env("TM_SMTP_PASSWORD", "https://bar.ingest.sentry.io/8901234")
-    }    
+    }
   ]
 }

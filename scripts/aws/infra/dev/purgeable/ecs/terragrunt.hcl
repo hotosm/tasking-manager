@@ -29,17 +29,17 @@ locals {
   environment_vars = read_terragrunt_config(find_in_parent_folders("deployment_env.hcl"))
 
   # Extract out common variables for reuse
-  environment = local.environment_vars.locals.environment
-  application = local.environment_vars.locals.application
-  team = local.environment_vars.locals.team
-  aws_region = local.environment_vars.locals.aws_region
+  environment  = local.environment_vars.locals.environment
+  application  = local.environment_vars.locals.application
+  team         = local.environment_vars.locals.team
+  aws_region   = local.environment_vars.locals.aws_region
   default_tags = local.environment_vars.locals.default_tags
 
 
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
   base_source_url = "git::https://github.com/hotosm/terraform-aws-ecs/"
-  }
+}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # We don't need to override any of the common parameters for this environment, so we don't specify any other parameters.
@@ -65,7 +65,7 @@ dependency "extras" {
 
 inputs = {
 
-  aws_vpc_id   = dependency.vpc.outputs.vpc_id
+  aws_vpc_id = dependency.vpc.outputs.vpc_id
 
   scaling_target_values = {
     container_min_count = 1
@@ -75,7 +75,7 @@ inputs = {
   load_balancer_settings = {
     enabled                 = true
     target_group_arn        = dependency.alb.outputs.target_group_arn
-    target_group_arn_suffix =dependency.alb.outputs.target_group_arn_suffix
+    target_group_arn_suffix = dependency.alb.outputs.target_group_arn_suffix
     arn_suffix              = dependency.alb.outputs.load_balancer_arn_suffix
     scaling_request_count   = 200
   }
@@ -87,53 +87,53 @@ inputs = {
   ]
 
   # Merge secrets with: key:ValueFrom together
-  container_secrets = concat(dependency.extras.outputs.container_secrets, 
-                              dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
+  container_secrets = concat(dependency.extras.outputs.container_secrets,
+  dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
 
   # Merge non-sensetive together 
   container_envvars = merge(
     dependency.rds.outputs.database_config_as_ecs_inputs,
     {
-    TM_SMTP_HOST                 = "smtp.gmail.com"
-    TM_SMTP_PORT                 = "587"
-    TM_SMTP_USE_TLS              = "0"
-    TM_SMTP_USE_SSL              = "1"
-    TM_APP_BASE_URL              = "https://tmtf.naxa.com.np"
-    TM_APP_API_URL               = "https://tmtf.naxa.com.np/api"
-    TM_APP_API_VERSION           = "v2"
-    TM_ORG_NAME                  = "Humanitarian OpenStreetMap Team"
-    TM_ORG_CODE                  = "HOT"
-    TM_ORG_LOGO                  = "https://cdn.img.url/logo.png"
-    TM_ORG_URL                   = "example.com"
-    TM_ORG_PRIVACY_POLICY_URL    = "https://www.hotosm.org/privacy"
-    TM_ORG_TWITTER               = "http://twitter.com/hotosm"
-    TM_ORG_FB                    = "https://www.facebook.com/hotosm"
-    TM_ORG_INSTAGRAM             = "https://www.instagram.com/open.mapping.hubs/"
-    TM_ORG_YOUTUBE               = "https://www.youtube.com/user/hotosm"
-    TM_ORG_GITHUB                = "https://github.com/hotosm"
-    OSM_SERVER_URL               = "https://www.openstreetmap.org"
-    OSM_SERVER_API_URL           = "https://api.openstreetmap.org"
-    OSM_NOMINATIM_SERVER_URL     = "https://nominatim.openstreetmap.org"
-    OSM_REGISTER_URL             = "https://www.openstreetmap.org/user/new"
-    POSTGRES_TEST_DB             = "tasking-manager-test"
-    UNDERPASS_URL                = "https://underpass.hotosm.org"
-    TM_REDIRECT_URI              = "https://tmtf.naxa.com.np/authorized"
-    TM_SEND_PROJECT_EMAIL_UPDATES = "1"
-    TM_DEFAULT_LOCALE            = "en"
-    # Uncomment the following as needed
-    # TM_EMAIL_FROM_ADDRESS      = "noreply@localhost"
-    # TM_EMAIL_CONTACT_ADDRESS   = "sysadmin@localhost"
-    # TM_LOG_LEVEL               = "DEBUG"
-    # TM_LOG_DIR                 = "logs"
-    # TM_SUPPORTED_LANGUAGES_CODES = "en, es"
-    # TM_SUPPORTED_LANGUAGES     = "English, Español"
-    # TM_TASK_AUTOUNLOCK_AFTER   = "2h"
-    # TM_MAPPER_LEVEL_INTERMEDIATE = "250"
-    # TM_MAPPER_LEVEL_ADVANCED   = "500"
-    # TM_IMPORT_MAX_FILESIZE     = "1000000"
-    # TM_MAX_AOI_AREA            = "5000"
-    # EXPORT_TOOL_S3_URL         = "https://foorawdataapi.s3.amazonaws.com"
-    # ENABLE_EXPORT_TOOL         = "1"
+      TM_SMTP_HOST                  = "smtp.gmail.com"
+      TM_SMTP_PORT                  = "587"
+      TM_SMTP_USE_TLS               = "0"
+      TM_SMTP_USE_SSL               = "1"
+      TM_APP_BASE_URL               = "https://tmtf.naxa.com.np"
+      TM_APP_API_URL                = "https://tmtf.naxa.com.np/api"
+      TM_APP_API_VERSION            = "v2"
+      TM_ORG_NAME                   = "Humanitarian OpenStreetMap Team"
+      TM_ORG_CODE                   = "HOT"
+      TM_ORG_LOGO                   = "https://cdn.img.url/logo.png"
+      TM_ORG_URL                    = "example.com"
+      TM_ORG_PRIVACY_POLICY_URL     = "https://www.hotosm.org/privacy"
+      TM_ORG_TWITTER                = "http://twitter.com/hotosm"
+      TM_ORG_FB                     = "https://www.facebook.com/hotosm"
+      TM_ORG_INSTAGRAM              = "https://www.instagram.com/open.mapping.hubs/"
+      TM_ORG_YOUTUBE                = "https://www.youtube.com/user/hotosm"
+      TM_ORG_GITHUB                 = "https://github.com/hotosm"
+      OSM_SERVER_URL                = "https://www.openstreetmap.org"
+      OSM_SERVER_API_URL            = "https://api.openstreetmap.org"
+      OSM_NOMINATIM_SERVER_URL      = "https://nominatim.openstreetmap.org"
+      OSM_REGISTER_URL              = "https://www.openstreetmap.org/user/new"
+      POSTGRES_TEST_DB              = "tasking-manager-test"
+      UNDERPASS_URL                 = "https://underpass.hotosm.org"
+      TM_REDIRECT_URI               = "https://tmtf.naxa.com.np/authorized"
+      TM_SEND_PROJECT_EMAIL_UPDATES = "1"
+      TM_DEFAULT_LOCALE             = "en"
+      # Uncomment the following as needed
+      # TM_EMAIL_FROM_ADDRESS      = "noreply@localhost"
+      # TM_EMAIL_CONTACT_ADDRESS   = "sysadmin@localhost"
+      # TM_LOG_LEVEL               = "DEBUG"
+      # TM_LOG_DIR                 = "logs"
+      # TM_SUPPORTED_LANGUAGES_CODES = "en, es"
+      # TM_SUPPORTED_LANGUAGES     = "English, Español"
+      # TM_TASK_AUTOUNLOCK_AFTER   = "2h"
+      # TM_MAPPER_LEVEL_INTERMEDIATE = "250"
+      # TM_MAPPER_LEVEL_ADVANCED   = "500"
+      # TM_IMPORT_MAX_FILESIZE     = "1000000"
+      # TM_MAX_AOI_AREA            = "5000"
+      # EXPORT_TOOL_S3_URL         = "https://foorawdataapi.s3.amazonaws.com"
+      # ENABLE_EXPORT_TOOL         = "1"
 
   })
 
