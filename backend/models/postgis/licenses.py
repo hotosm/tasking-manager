@@ -1,9 +1,10 @@
-from sqlalchemy import Column, String, Integer, BigInteger, Table, ForeignKey
+from databases import Database
+from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
+
+from backend.db import Base, get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
-from backend.db import Base, get_session
-from databases import Database
 
 session = get_session()
 

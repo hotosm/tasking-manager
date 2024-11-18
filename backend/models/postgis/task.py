@@ -1,5 +1,6 @@
 import datetime
 import json
+from datetime import timezone
 from enum import Enum
 from typing import Any, Dict, List
 
@@ -26,7 +27,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import MultipleResultsFound
-from datetime import timezone
 
 from backend.db import Base, get_session
 from backend.exceptions import NotFound
@@ -826,15 +826,6 @@ class Task(Base):
         )
         return task is not None
 
-    # @staticmethod
-    # def get_tasks(project_id: int, task_ids: List[int]):
-    #     """Get all tasks that match supplied list"""
-    #     return (
-    #         session.query(Task)
-    #         .filter(Task.project_id == project_id, Task.id.in_(task_ids))
-    #         .all()
-    #     )
-
     @staticmethod
     async def get_tasks(project_id: int, task_ids: List[int], db: Database):
         """
@@ -849,11 +840,6 @@ class Task(Base):
         values = {"project_id": project_id, "task_ids": task_ids}
         rows = await db.fetch_all(query=query, values=values)
         return rows
-
-    # @staticmethod
-    # def get_all_tasks(project_id: int):
-    #     """Get all tasks for a given project"""
-    #     return session.query(Task).filter(Task.project_id == project_id).all()
 
     @staticmethod
     async def get_all_tasks(project_id: int, db: Database):

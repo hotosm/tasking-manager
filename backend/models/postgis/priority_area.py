@@ -27,32 +27,6 @@ class PriorityArea(Base):
     id = Column(Integer, primary_key=True)
     geometry = Column(Geometry("POLYGON", srid=4326))
 
-    # @classmethod
-    # async def from_dict(cls, area_poly: dict, db: Database):
-    #     """Create a new Priority Area from dictionary"""
-    #     pa_geojson = geojson.loads(json.dumps(area_poly))
-
-    #     if type(pa_geojson) is not geojson.Polygon:
-    #         raise InvalidGeoJson("Priority Areas must be supplied as Polygons")
-
-    #     if not pa_geojson.is_valid:
-    #         raise InvalidGeoJson(
-    #             "Priority Area: Invalid Polygon - " + ", ".join(pa_geojson.errors())
-    #         )
-
-    #     pa = cls()
-    #     valid_geojson = geojson.dumps(pa_geojson)
-    #     query = """
-    #     SELECT ST_AsText(
-    #         ST_SetSRID(
-    #             ST_GeomFromGeoJSON(:geojson), 4326
-    #         )
-    #     ) AS geometry_wkt;
-    #     """
-    #     result = await db.fetch_one(query=query, values={"geojson": valid_geojson})
-    #     pa.geometry = result["geometry_wkt"] if result else None
-    #     return pa
-
     @classmethod
     async def from_dict(cls, area_poly: dict, db: Database):
         """Create a new Priority Area from dictionary and insert into the database."""
