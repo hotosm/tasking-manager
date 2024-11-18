@@ -18,6 +18,6 @@ dependency "vpc" {
 
 # Add in any new inputs that you want to overide.
 inputs = {
-  vpc_id              = dependency.vpc.outputs.vpc_id
-  alb_subnets  = dependency.vpc.outputs.public_subnets
+  vpc_id      = dependency.vpc.outputs.vpc_id
+  alb_subnets = dependency.vpc.outputs.public_subnets
 }

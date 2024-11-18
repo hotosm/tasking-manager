@@ -10,7 +10,7 @@
 # needs to deploy a different module version, it should redefine this block with a different ref to override the
 # deployed version.
 terraform {
-    source = "${local.base_source_url}"
+  source = "${local.base_source_url}"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ locals {
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
   base_source_url = "git::https://github.com/hotosm/terraform-aws-vpc/"
-  }
+}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # MODULE PARAMETERS
@@ -44,7 +44,7 @@ inputs = {
     url        = "https://tasks.hotosm.org"
   }
 
-  deployment_environment = local.environment  # or any other value you need
+  deployment_environment = local.environment # or any other value you need
 
   default_tags = {
     Owner       = "DevOps Team"

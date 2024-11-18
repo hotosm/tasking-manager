@@ -10,13 +10,13 @@ locals {
 
   # Extract the variables we need for easy access
   account_name = local.deployment_vars.locals.account_name
-  aws_profile = local.deployment_vars.locals.aws_profile
+  aws_profile  = local.deployment_vars.locals.aws_profile
   aws_region   = local.deployment_vars.locals.aws_region
-  environment = local.deployment_vars.locals.environment
-  application = local.deployment_vars.locals.application
-  team = local.deployment_vars.locals.team
-  creator = local.deployment_vars.locals.creator
-  owner = local.deployment_vars.locals.owner
+  environment  = local.deployment_vars.locals.environment
+  application  = local.deployment_vars.locals.application
+  team         = local.deployment_vars.locals.team
+  creator      = local.deployment_vars.locals.creator
+  owner        = local.deployment_vars.locals.owner
 }
 
 # Generate an AWS provider block
@@ -67,7 +67,7 @@ remote_state {
     key            = "${path_relative_to_include()}/terraform.tfstate"
     region         = local.aws_region
     dynamodb_table = "tm-locks"
-    profile = "${local.aws_profile}"
+    profile        = "${local.aws_profile}"
   }
   generate = {
     path      = "backend.tf"

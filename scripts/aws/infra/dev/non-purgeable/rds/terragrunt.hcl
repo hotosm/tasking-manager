@@ -3,7 +3,7 @@ include "root" {
 }
 
 include "envcommon" {
-  path = "${dirname(find_in_parent_folders())}/_envcommon/rds.hcl"
+  path   = "${dirname(find_in_parent_folders())}/_envcommon/rds.hcl"
   expose = true
 }
 
@@ -18,10 +18,10 @@ dependency "vpc" {
 
 # Add in any new inputs that you want to overide.
 inputs = {
-      vpc_id              = dependency.vpc.outputs.vpc_id
-      subnet_ids  = dependency.vpc.outputs.private_subnets
-      serverless_capacity = {
-      minimum = 1
-      maximum = 1  
-    }
+  vpc_id     = dependency.vpc.outputs.vpc_id
+  subnet_ids = dependency.vpc.outputs.private_subnets
+  serverless_capacity = {
+    minimum = 1
+    maximum = 1
+  }
 }

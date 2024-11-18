@@ -10,7 +10,7 @@
 # needs to deploy a different module version, it should redefine this block with a different ref to override the
 # deployed version.
 terraform {
-    source = "${local.base_source_url}?ref=tasking-manager-infra"
+  source = "${local.base_source_url}?ref=tasking-manager-infra"
 
 }
 
@@ -24,13 +24,13 @@ locals {
   # Extract out common variables for reuse
   environment = local.environment_vars.locals.environment
   application = local.environment_vars.locals.application
-  team = local.environment_vars.locals.team
-  
-  
+  team        = local.environment_vars.locals.team
+
+
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
   base_source_url = "git::https://github.com/hotosm/terraform-aws-alb/"
-  }
+}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # MODULE PARAMETERS
@@ -40,9 +40,9 @@ locals {
 # Defaults,  overridden by env.hcl
 
 inputs = {
-  app_port            = "5000" #TODOTM
+  app_port                 = "5000"                                                                                #TODOTM
   acm_tls_cert_backend_arn = "arn:aws:acm:us-east-2:685797548389:certificate/810d8829-5e61-44f6-a030-f06eb5b66ae6" #TODOTM
-  health_check_path   = "/api/v2/system/heartbeat/" #TODOTM
-  alb_name              = format("%s-%s-%s-%s", local.application, local.team, local.environment, "alb")
-  target_group_name     = format("%s-%s-%s-%s", local.application, local.team, local.environment, "tg")
+  health_check_path        = "/api/v2/system/heartbeat/"                                                           #TODOTM
+  alb_name                 = format("%s-%s-%s-%s", local.application, local.team, local.environment, "alb")
+  target_group_name        = format("%s-%s-%s-%s", local.application, local.team, local.environment, "tg")
 }

@@ -3,15 +3,15 @@
 # Check ../README.md  ## Inputs and Local Variables for details.
 
 locals {
-  environment = "dev"
-  account_name   = "naxadevelopers"
-  aws_profile = "default"
-  aws_region = "us-east-2"
-  application = "tasking-manager"
-  team  = "hotosm"
-  creator = "HOTOSM"
-  owner = "HOTOSM"
-  
+  environment  = "dev"
+  account_name = "naxadevelopers"
+  aws_profile  = "default"
+  aws_region   = "us-east-2"
+  application  = "tasking-manager"
+  team         = "hotosm"
+  creator      = "HOTOSM"
+  owner        = "HOTOSM"
+
   default_tags = {
     project        = "tasking-manager"
     maintainer     = "dev@hotosm.org"
