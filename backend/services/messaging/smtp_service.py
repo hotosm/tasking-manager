@@ -1,17 +1,18 @@
 import urllib.parse
-from loguru import logger
-from itsdangerous import URLSafeTimedSerializer
+
 from fastapi_mail import MessageSchema, MessageType
+from itsdangerous import URLSafeTimedSerializer
+from loguru import logger
 
 # from backend import mail, create_app
 from backend import create_app, mail
+from backend.config import settings
 from backend.models.postgis.message import Message as PostgisMessage
 from backend.models.postgis.statuses import EncouragingEmailType
 from backend.services.messaging.template_service import (
-    get_template,
     format_username_link,
+    get_template,
 )
-from backend.config import settings
 
 
 class SMTPService:
@@ -32,7 +33,7 @@ class SMTPService:
         return True
 
     @staticmethod
-    def send_welcome_email(to_address: str, username: str):
+    async def send_welcome_email(to_address: str, username: str):
         """Sends email welcoming new user to tasking manager"""
         values = {
             "USERNAME": username,
@@ -40,7 +41,7 @@ class SMTPService:
         html_template = get_template("welcome.html", values)
 
         subject = "Welcome to Tasking Manager"
-        SMTPService._send_message(to_address, subject, html_template)
+        await SMTPService._send_message(to_address, subject, html_template)
         return True
 
     @staticmethod
@@ -63,7 +64,7 @@ class SMTPService:
         await SMTPService._send_message(email_to, subject, message, message)
 
     @staticmethod
-    def send_email_to_contributors_on_project_progress(
+    async def send_email_to_contributors_on_project_progress(
         email_type: str,
         project_id: int = None,
         project_name: str = None,
@@ -120,12 +121,12 @@ class SMTPService:
                     logger.debug(
                         f"Sending {email_type} email to {contributor.email_address} for project {project_id}"
                     )
-                    SMTPService._send_message(
+                    await SMTPService._send_message(
                         contributor.email_address, subject, html_template
                     )
 
     @staticmethod
-    def send_email_alert(
+    async def send_email_alert(
         to_address: str,
         username: str,
         user_email_verified: bool,
@@ -172,7 +173,7 @@ class SMTPService:
             "MESSAGE_TYPE": message_type,
         }
         html_template = get_template("message_alert_en.html", values)
-        SMTPService._send_message(to_address, subject, html_template)
+        await SMTPService._send_message(to_address, subject, html_template)
 
         return True
 
