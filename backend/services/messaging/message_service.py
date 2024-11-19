@@ -221,7 +221,7 @@ class MessageService:
                 continue
             # If the notification is enabled, send an email
             messages_objs.append(obj)
-            SMTPService.send_email_alert(
+            await SMTPService.send_email_alert(
                 user.email_address,
                 user.username,
                 user.is_email_verified,

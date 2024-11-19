@@ -1,9 +1,8 @@
-from backend.config import settings
-from sqlalchemy.orm import declarative_base
-
 from databases import Database
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+from backend.config import settings
 
 Base = declarative_base()
 

@@ -4,31 +4,30 @@ from loguru import logger
 from markdown import markdown
 
 from backend.exceptions import NotFound
-from backend.models.dtos.team_dto import (
-    ListTeamsDTO,
-    TeamDTO,
-    NewTeamDTO,
-    TeamsListDTO,
-    ProjectTeamDTO,
-    TeamDetailsDTO,
-    TeamSearchDTO,
-)
-
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.stats_dto import Pagination
+from backend.models.dtos.team_dto import (
+    ListTeamsDTO,
+    NewTeamDTO,
+    ProjectTeamDTO,
+    TeamDetailsDTO,
+    TeamDTO,
+    TeamSearchDTO,
+    TeamsListDTO,
+)
 from backend.models.postgis.message import Message, MessageType
-from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.project import ProjectTeams
 from backend.models.postgis.statuses import (
     TeamJoinMethod,
     TeamMemberFunctions,
-    TeamVisibility,
     TeamRoles,
+    TeamVisibility,
     UserRole,
 )
+from backend.models.postgis.team import Team, TeamMembers
+from backend.services.messaging.message_service import MessageService
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
-from backend.services.messaging.message_service import MessageService
 
 
 class TeamServiceError(Exception):
@@ -790,34 +789,31 @@ class TeamService:
         team_name: str,
         message_dto: MessageDTO,
         user_id: int,
-        db: Database = None,
+        database: Database,
     ):
-        if db is None:
-            print("inside....")
-            db = await acquire_connection()
-        print("Sending message to the team...")
-        print(db)
-        team_members = await TeamService._get_active_team_members(team_id, db)
-        user = await UserService.get_user_by_id(user_id, db)
-        print("Fetched User....")
-
-        sender = user.username
-        message_dto.message = (
-            "A message from {}, manager of {} team:<br/><br/>{}".format(
-                MessageService.get_user_profile_link(sender),
-                MessageService.get_team_link(team_name, team_id, False),
-                markdown(message_dto.message, output_format="html"),
-            )
-        )
-        messages = []
-        for team_member in team_members:
-            print("Looping teams.......")
-
-            if team_member.user_id != user_id:
-                message = Message.from_dto(team_member.user_id, message_dto)
-                message.message_type = MessageType.TEAM_BROADCAST.value
-                await Message.save(message, db)
-                user = await UserService.get_user_by_id(team_member.user_id, db)
-                messages.append(dict(message=message, user=user))
-
-        await MessageService._push_messages(messages)
+        try:
+            async with database.connection() as conn:
+                team_members = await TeamService._get_active_team_members(team_id, conn)
+                user = await UserService.get_user_by_id(user_id, conn)
+                sender = user.username
+                message_dto.message = (
+                    "A message from {}, manager of {} team:<br/><br/>{}".format(
+                        MessageService.get_user_profile_link(sender),
+                        MessageService.get_team_link(team_name, team_id, False),
+                        markdown(message_dto.message, output_format="html"),
+                    )
+                )
+                messages = []
+                for team_member in team_members:
+                    if team_member.user_id != user_id:
+                        message = Message.from_dto(team_member.user_id, message_dto)
+                        message.message_type = MessageType.TEAM_BROADCAST.value
+                        user = await UserService.get_user_by_id(
+                            team_member.user_id, conn
+                        )
+                        messages.append(dict(message=message, user=user))
+                # Push messages
+                await MessageService._push_messages(messages, conn)
+            logger.info("Messages sent successfully.")
+        except Exception as e:
+            logger.error(f"Error sending messages in background task: {str(e)}")

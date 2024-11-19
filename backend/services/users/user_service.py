@@ -1,46 +1,43 @@
-from cachetools import TTLCache, cached
-
 import datetime
-from loguru import logger
-from sqlalchemy.sql import outerjoin
-from sqlalchemy import func, or_, desc, and_, distinct, cast, Time, select, insert
-from databases import Database
 
+from cachetools import TTLCache, cached
+from databases import Database
+from loguru import logger
+from sqlalchemy import Time, and_, cast, desc, distinct, func, insert, or_, select
+from sqlalchemy.sql import outerjoin
+
+from backend.config import Settings
+from backend.db import get_session
 from backend.exceptions import NotFound
+from backend.models.dtos.interests_dto import InterestDTO, InterestsListDTO
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
+from backend.models.dtos.stats_dto import Pagination
 from backend.models.dtos.user_dto import (
-    UserDTO,
-    UserOSMDTO,
-    UserFilterDTO,
-    UserSearchQuery,
-    UserSearchDTO,
-    UserStatsDTO,
     UserContributionDTO,
-    UserRegisterEmailDTO,
-    UserCountryContributed,
     UserCountriesContributed,
-)
-from backend.models.dtos.interests_dto import (
-    InterestsListDTO,
-    InterestDTO,
+    UserCountryContributed,
+    UserDTO,
+    UserFilterDTO,
+    UserOSMDTO,
+    UserRegisterEmailDTO,
+    UserSearchDTO,
+    UserSearchQuery,
+    UserStatsDTO,
+    UserTaskDTOs,
 )
 from backend.models.postgis.interests import Interest, project_interests
 from backend.models.postgis.message import MessageType
 from backend.models.postgis.project import Project
-from backend.models.postgis.user import User, UserRole, MappingLevel, UserEmail
-from backend.models.postgis.task import TaskHistory, TaskAction, Task
+from backend.models.postgis.statuses import ProjectStatus, TaskStatus
+from backend.models.postgis.task import Task, TaskAction, TaskHistory
+from backend.models.postgis.user import MappingLevel, User, UserEmail, UserRole
 from backend.models.postgis.utils import timestamp
-from backend.models.postgis.statuses import TaskStatus, ProjectStatus
-from backend.models.dtos.user_dto import UserTaskDTOs
-from backend.models.dtos.stats_dto import Pagination
-from backend.services.users.osm_service import OSMService, OSMServiceError
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
     get_txt_template,
     template_var_replacing,
 )
-from backend.db import get_session
-from backend.config import Settings
+from backend.services.users.osm_service import OSMService, OSMServiceError
 
 settings = Settings()
 session = get_session()
@@ -281,10 +278,7 @@ class UserService:
         interests = await db.fetch_all(interests_query)
 
         # Map results to DTOs
-        interests_dto = [
-            InterestDTO(dict(id=i[0], name=i[1], count_projects=i[2]))
-            for i in interests
-        ]
+        interests_dto = [InterestDTO(**i) for i in interests]
 
         return interests_dto
 
@@ -498,31 +492,30 @@ class UserService:
         stats_dto.time_spent_mapping = 0
         stats_dto.time_spent_validating = 0
 
-        # Total validation time
-        # Subquery to get max(action_date) grouped by minute
-        subquery = (
-            select(
-                func.date_trunc("minute", TaskHistory.action_date).label("minute"),
-                func.max(TaskHistory.action_date).label("max_action_date"),
+        total_validation_time_query = """
+            WITH max_action_text_per_minute AS (
+                SELECT
+                    date_trunc('minute', action_date) AS trn,
+                    MAX(action_text) AS tm
+                FROM task_history
+                WHERE user_id = :user_id
+                AND action = 'LOCKED_FOR_VALIDATION'
+                GROUP BY date_trunc('minute', action_date)
             )
-            .where(
-                TaskHistory.user_id == user["id"],
-                TaskHistory.action == "LOCKED_FOR_VALIDATION",
-            )
-            .group_by("minute")
-            .subquery()
+            SELECT
+                SUM(EXTRACT(EPOCH FROM (tm || ' seconds')::interval)) AS total_time
+            FROM max_action_text_per_minute
+        """
+
+        # Execute the query
+        result = await db.fetch_one(
+            total_validation_time_query, values={"user_id": user.id}
         )
 
-        # Outer query to sum up the epoch values of the max action dates
-        total_validation_time_query = select(
-            func.sum(func.extract("epoch", subquery.c.max_action_date))
-        )
-
-        # Execute the query and fetch the result
-        total_validation_time = await db.fetch_one(total_validation_time_query)
-
-        if total_validation_time and total_validation_time[0]:
-            stats_dto.time_spent_validating = total_validation_time[0]
+        if result and result["total_time"]:
+            total_validation_time = result["total_time"]
+            # TODO Handle typecasting.
+            stats_dto.time_spent_validating = round(float(total_validation_time), 1)
             stats_dto.total_time_spent += stats_dto.time_spent_validating
 
         # Total mapping time
@@ -539,9 +532,10 @@ class UserService:
         )
 
         total_mapping_time = await db.fetch_one(total_mapping_time_query)
-
         if total_mapping_time and total_mapping_time[0]:
-            stats_dto.time_spent_mapping = total_mapping_time[0].total_seconds()
+            stats_dto.time_spent_mapping = round(
+                total_mapping_time[0].total_seconds(), 1
+            )
             stats_dto.total_time_spent += stats_dto.time_spent_mapping
 
         stats_dto.contributions_interest = await UserService.get_interests_stats(

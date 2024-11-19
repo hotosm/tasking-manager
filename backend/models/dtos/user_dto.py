@@ -1,11 +1,13 @@
-from backend.models.dtos.stats_dto import Pagination
-from backend.models.dtos.mapping_dto import TaskDTO
-from backend.models.dtos.interests_dto import InterestDTO
-from backend.models.postgis.statuses import MappingLevel, UserRole
-from pydantic import BaseModel, Field
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
 from pydantic.functional_validators import field_validator
+
+from backend.models.dtos.interests_dto import InterestDTO
+from backend.models.dtos.mapping_dto import TaskDTO
+from backend.models.dtos.stats_dto import Pagination
+from backend.models.postgis.statuses import MappingLevel, UserRole
 
 
 def is_known_role(value):

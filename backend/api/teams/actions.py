@@ -1,18 +1,18 @@
 from databases import Database
-from fastapi import APIRouter, Depends, Request, Body, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 
-from backend.db import get_db
+from backend.db import db_connection, get_db
 from backend.models.dtos.message_dto import MessageDTO
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.user import User
 from backend.services.team_service import (
-    TeamService,
     TeamJoinNotAllowed,
+    TeamService,
     TeamServiceError,
 )
-from backend.models.postgis.user import User
 from backend.services.users.authentication_service import login_required
-from backend.models.dtos.user_dto import AuthUserDTO
 
 router = APIRouter(
     prefix="/teams",
@@ -314,19 +314,6 @@ async def post(
         )
 
 
-import asyncio
-
-
-# Function to run async code in a thread
-def run_asyncio_in_thread(func, *args, **kwargs):
-    # Create a new event loop for the thread
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    # Create a new database connection (to be used in this thread)
-    db = get_db()
-    loop.run_until_complete(func(*args, db=db, **kwargs))
-
-
 @router.post("/{team_id}/actions/message-members/")
 async def post(
     request: Request,
@@ -411,22 +398,14 @@ async def post(
         )
 
     try:
-        # Start a new thread for sending messages
-        # Use threading to run the async function in a separate thread
-        # threading.Thread(
-        #     target=run_asyncio_in_thread,
-        #     args=(TeamService.send_message_to_all_team_members, team_id, team.name, message_dto, user.id)
-        # ).start()
-
         background_tasks.add_task(
             TeamService.send_message_to_all_team_members,
             team_id,
             team.name,
             message_dto,
             user.id,
-            db,
+            db_connection.database,
         )
-
         return JSONResponse(
             content={"Success": "Message sent successfully"}, status_code=200
         )
