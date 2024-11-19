@@ -86,6 +86,8 @@ class Message(Base):
         message.to_user_id = to_user_id
         message.project_id = dto.project_id
         message.task_id = dto.task_id
+        message.date = timestamp()
+        message.read = False
         if dto.message_type is not None:
             message.message_type = MessageType(dto.message_type)
 
