@@ -283,6 +283,7 @@ class Project(Base):
         self.organisation_id = self.organisation.id
         self.status = ProjectStatus.DRAFT.value
         self.author_id = draft_project_dto.user_id
+        self.created = timestamp()
         self.last_updated = timestamp()
 
     async def set_project_aoi(self, draft_project_dto: DraftProjectDTO, db: Database):
