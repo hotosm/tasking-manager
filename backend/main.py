@@ -42,6 +42,23 @@ def get_application() -> FastAPI:
     # Set custom logger
     # _app.logger = get_logger()
 
+    # Custom exception handler for 401 errors
+    @_app.exception_handler(HTTPException)
+    async def custom_http_exception_handler(request: Request, exc: HTTPException):
+        if exc.status_code == 401 and "InvalidToken" in exc.detail.get("SubCode", ""):
+            return JSONResponse(
+                content={
+                    "Error": exc.detail["Error"],
+                    "SubCode": exc.detail["SubCode"],
+                },
+                status_code=exc.status_code,
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail},
+        )
+
     PROFILING = True  # Set this from a settings model
 
     if PROFILING:
@@ -70,23 +87,6 @@ def get_application() -> FastAPI:
     _app.add_middleware(
         AuthenticationMiddleware, backend=TokenAuthBackend(), on_error=None
     )
-
-    # Custom exception handler for 401 errors
-    @_app.exception_handler(HTTPException)
-    async def custom_http_exception_handler(request: Request, exc: HTTPException):
-        if exc.status_code == 401 and "InvalidToken" in exc.detail.get("SubCode", ""):
-            return JSONResponse(
-                content={
-                    "Error": exc.detail["Error"],
-                    "SubCode": exc.detail["SubCode"],
-                },
-                status_code=exc.status_code,
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        return JSONResponse(
-            status_code=exc.status_code,
-            content={"detail": exc.detail},
-        )
 
     add_api_end_points(_app)
     return _app

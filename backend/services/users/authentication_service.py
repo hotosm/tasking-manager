@@ -87,17 +87,17 @@ class TokenAuthBackend(AuthenticationBackend):
             decoded_token, 604800
         )
         if not valid_token:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail={
-                    "Error": "Token is expired or invalid",
-                    "SubCode": "InvalidToken",
-                },
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        tm.authenticated_user_id = (
-            user_id  # Set the user ID on the decorator as a convenience
-        )
+            logger.debug("Token not valid...")
+            return
+            # raise HTTPException(
+            #     status_code=401,
+            #     detail={
+            #         "Error": "Token is expired or invalid",
+            #         "SubCode": "InvalidToken",
+            #     },
+            #     headers={"WWW-Authenticate": "Bearer"},
+            # )
+        tm.authenticated_user_id = user_id
         return AuthCredentials(["authenticated"]), SimpleUser(user_id)
 
 
