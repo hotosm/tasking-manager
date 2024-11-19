@@ -1,14 +1,15 @@
+from databases import Database
+from fastapi import APIRouter, Depends, Request
+from loguru import logger
+from starlette.authentication import requires
+
+from backend.db import get_db
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.postgis.task import Task
 from backend.models.postgis.task_annotation import TaskAnnotation
 from backend.services.project_service import ProjectService
 from backend.services.task_annotations_service import TaskAnnotationsService
-from fastapi import APIRouter, Depends, Request
-from starlette.authentication import requires
-from loguru import logger
-from backend.db import get_db
-from databases import Database
 from backend.services.users.authentication_service import login_required
-from backend.models.dtos.user_dto import AuthUserDTO
 
 router = APIRouter(
     prefix="/projects",
