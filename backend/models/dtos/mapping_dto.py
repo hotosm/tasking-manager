@@ -1,9 +1,11 @@
 from datetime import datetime
-from backend.models.postgis.statuses import TaskStatus
+from typing import List, Optional
+
+from pydantic import BaseModel, Field, ValidationError, validator
+
 from backend.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
-from pydantic import BaseModel, Field, ValidationError, validator
-from typing import List, Optional
+from backend.models.postgis.statuses import TaskStatus
 
 
 def is_valid_mapped_status(value):
@@ -107,6 +109,7 @@ class TaskDTO(BaseModel):
 
     class Config:
         populate_by_name = True
+        json_encoders = {datetime: lambda v: v.isoformat() + "Z" if v else None}
 
 
 class TaskDTOs(BaseModel):

@@ -1,13 +1,11 @@
-import threading
-
 from databases import Database
-from fastapi import APIRouter, Body, Depends, Request
+from fastapi import APIRouter, Body, Depends, Request, BackgroundTasks
 from fastapi.responses import JSONResponse
 from loguru import logger
 from shapely import GEOSException
 from shapely.errors import TopologicalError
 
-from backend.db import get_db
+from backend.db import get_db, db_connection
 from backend.models.dtos.grid_dto import GridDTO
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.user_dto import AuthUserDTO
@@ -101,10 +99,10 @@ async def post(
 @router.post("/{project_id}/actions/message-contributors/")
 async def post(
     request: Request,
+    background_tasks: BackgroundTasks,
     project_id: int,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
-    message_dto: MessageDTO = Body(...),
 ):
     """
     Send message to all contributors of a project
@@ -151,15 +149,21 @@ async def post(
             description: Internal Server Error
     """
     try:
-        message_dto.from_user_id = user.id
-    except ValueError as e:
+        request_json = await request.json()
+        request_json["from_user_id"] = user.id
+        message_dto = MessageDTO(**request_json)
+    except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
-        return {
-            "Error": "Unable to send message to mappers",
-            "SubCode": "InvalidData",
-        }, 400
-
-    if not ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id):
+        return JSONResponse(
+            content={
+                "Error": "Unable to send message to contributors",
+                "SubCode": "InvalidData",
+            },
+            status_code=400,
+        )
+    if not await ProjectAdminService.is_user_action_permitted_on_project(
+        user.id, project_id, db
+    ):
         return JSONResponse(
             content={
                 "Error": "User is not a manager of the project",
@@ -167,11 +171,19 @@ async def post(
             },
             status_code=403,
         )
-    threading.Thread(
-        target=MessageService.send_message_to_all_contributors,
-        args=(project_id, message_dto),
-    ).start()
-    return JSONResponse(content={"Success": "Messages started"}, status_code=200)
+    try:
+        background_tasks.add_task(
+            MessageService.send_message_to_all_contributors,
+            project_id,
+            message_dto,
+            db_connection.database,
+        )
+        return JSONResponse(content={"Success": "Messages started"}, status_code=200)
+    except Exception as e:
+        logger.error(f"Error starting background task: {str(e)}")
+        return JSONResponse(
+            content={"Error": "Failed to send messages"}, status_code=500
+        )
 
 
 @router.post("/{project_id}/actions/feature/")

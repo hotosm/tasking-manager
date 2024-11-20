@@ -1626,7 +1626,10 @@ class Task(Base):
         task_dto.lock_holder = user.username if user else None
         task_dto.task_history = task_history
         task_dto.last_updated = last_updated if last_updated else None
-        task_dto.auto_unlock_seconds = await Task.auto_unlock_delta()
+        unlock_delta = await Task.auto_unlock_delta()
+        task_dto.auto_unlock_seconds = (
+            unlock_delta.total_seconds() if unlock_delta else None
+        )
         task_dto.comments_number = comments if isinstance(comments, int) else None
         return task_dto
 
