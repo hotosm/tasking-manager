@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, Request, Body
-from fastapi.responses import JSONResponse
 import json
-import requests
 
+import requests
+from fastapi import APIRouter, Body, Depends, Request
+from fastapi.responses import JSONResponse
+
+from backend.config import settings
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
-from backend.config import settings
 from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
@@ -16,9 +17,7 @@ router = APIRouter(
 )
 
 
-# class SystemImageUploadRestAPI(Resource):
-# @token_auth.login_required
-@router.post("/image-upload")
+@router.post("/image-upload/")
 async def post(
     request: Request,
     user: AuthUserDTO = Depends(login_required),

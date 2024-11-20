@@ -562,7 +562,6 @@ class ValidatorService:
                 "project_id": revert_dto.project_id,
                 "task_status": TaskStatus[revert_dto.action].value,
             }
-
             if TaskStatus[revert_dto.action].value == TaskStatus.BADIMAGERY.value:
                 query += " AND mapped_by = :user_id"
                 values["user_id"] = revert_dto.user_id
@@ -571,7 +570,6 @@ class ValidatorService:
                 values["user_id"] = revert_dto.user_id
 
             tasks_to_revert = await db.fetch_all(query=query, values=values)
-
             for task in tasks_to_revert:
                 await MappingService.undo_mapping(
                     revert_dto.project_id,
