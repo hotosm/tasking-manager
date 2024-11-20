@@ -2,8 +2,8 @@
 import datetime
 
 from databases import Database
-from sqlalchemy import text
 from loguru import logger
+from sqlalchemy import text
 
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTOs
@@ -512,37 +512,6 @@ class ValidatorService:
             )
         )
 
-    # @staticmethod
-    # async def revert_user_tasks(revert_dto: RevertUserTasksDTO, db: Database):
-    #     """
-    #     Reverts tasks with supplied action to previous state by specific user
-    #     :raises ValidatorServiceError
-    #     """
-    #     if await ProjectAdminService.is_user_action_permitted_on_project(
-    #         revert_dto.action_by, revert_dto.project_id, db
-    #     ):
-    #         query = Task.query.filter(
-    #             Task.project_id == revert_dto.project_id,
-    #             Task.task_status == TaskStatus[revert_dto.action].value,
-    #         )
-    #         if TaskStatus[revert_dto.action].value == TaskStatus.BADIMAGERY.value:
-    #             query = query.filter(Task.mapped_by == revert_dto.user_id)
-    #         else:
-    #             query = query.filter(Task.validated_by == revert_dto.user_id)
-
-    #         tasks_to_revert = query.all()
-    #         for task in tasks_to_revert:
-    #             task = MappingService.undo_mapping(
-    #                 revert_dto.project_id,
-    #                 task.id,
-    #                 revert_dto.user_id,
-    #                 revert_dto.preferred_locale,
-    #             )
-    #     else:
-    #         raise ValidatorServiceError(
-    #             "UserActionNotPermitted- User not permitted to revert tasks"
-    #         )
-
     @staticmethod
     async def revert_user_tasks(revert_dto: RevertUserTasksDTO, db: Database):
         """
@@ -568,7 +537,6 @@ class ValidatorService:
             else:
                 query += " AND validated_by = :user_id"
                 values["user_id"] = revert_dto.user_id
-
             tasks_to_revert = await db.fetch_all(query=query, values=values)
             for task in tasks_to_revert:
                 await MappingService.undo_mapping(
