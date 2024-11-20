@@ -129,40 +129,33 @@ class MessageService:
 
     @staticmethod
     async def send_message_to_all_contributors(
-        project_id: int, message_dto: MessageDTO, db: Database
+        project_id: int, message_dto: MessageDTO, database: Database
     ):
         """Sends supplied message to all contributors on specified project.  Message all contributors can take
         over a minute to run, so this method is expected to be called on its own thread
         """
-        # TODO: Background task.
-        app = (
-            create_app()
-        )  # Because message-all run on background thread it needs it's own app context
-
-        with app.app_context():
-            contributors = await Message.get_all_contributors(project_id, db)
-            project = await Project.get(project_id, db)
-            project_name = await ProjectInfo.get_dto_for_locale(
-                db, project_id, project.default_locale
-            ).name
+        async with database.connection() as conn:
+            contributors = await Message.get_all_contributors(project_id, conn)
+            project = await Project.get(project_id, conn)
+            project_info = await ProjectInfo.get_dto_for_locale(
+                conn, project_id, project.default_locale
+            )
             message_dto.message = "A message from {} managers:<br/><br/>{}".format(
                 MessageService.get_project_link(
-                    project_id, project_name, highlight=True
+                    project_id, project_info.name, highlight=True
                 ),
                 markdown(message_dto.message, output_format="html"),
             )
-
             messages = []
             for contributor in contributors:
-                message = Message.from_dto(contributor.id, message_dto)
+                message = Message.from_dto(contributor, message_dto)
                 message.message_type = MessageType.BROADCAST.value
                 message.project_id = project_id
-                user = await UserService.get_user_by_id(contributor.id, db)
+                user = await UserService.get_user_by_id(contributor, conn)
                 messages.append(
-                    dict(message=message, user=user, project_name=project_name)
+                    dict(message=message, user=user, project_name=project_info.name)
                 )
-
-            await MessageService._push_messages(messages, db)
+            await MessageService._push_messages(messages, conn)
 
     @staticmethod
     async def _push_messages(messages: list, db: Database):
