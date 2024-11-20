@@ -1,12 +1,13 @@
-from databases import Database
 from datetime import datetime
+
+from databases import Database
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
-from backend.services.users.user_service import UserService
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.users.authentication_service import login_required
+from backend.services.users.user_service import UserService
 
 router = APIRouter(
     prefix="/users",
@@ -115,7 +116,7 @@ async def get(
             sort_by=sort_by,
             db=db,
         )
-        return tasks.model_dump(by_alias=True)
+        return tasks
     except ValueError:
         print("InvalidDateRange- Date range can not be bigger than 1 year")
         return JSONResponse(
