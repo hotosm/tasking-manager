@@ -294,7 +294,7 @@ class StatsService:
     ) -> ProjectLastActivityDTO:
         """Gets the last activity for a project's tasks"""
 
-        # First subquery: Fetch the latest action date per task, excluding comments
+        # Subquery: Fetch latest actions for each task, excluding comments
         subquery_latest_action = """
         SELECT DISTINCT ON (th.task_id)
             th.task_id,
@@ -306,49 +306,33 @@ class StatsService:
         ORDER BY th.task_id, th.action_date DESC
         """
 
-        latest_actions = await db.fetch_all(
-            subquery_latest_action,
-            {"project_id": project_id, "comment_action": "COMMENT"},
-        )
-
-        # Mapping the latest actions by task_id
-        latest_actions_map = {item["task_id"]: item for item in latest_actions}
-
-        # Second subquery: Fetch the task statuses
-        query_task_statuses = """
+        # Main query: Join task statuses with latest actions and user details
+        query_task_statuses = f"""
         SELECT
-            t.id as task_id,
+            t.id AS task_id,
             t.task_status,
-            u.username,
-            la.action_date
+            la.action_date,
+            u.username AS action_by
         FROM tasks t
-        LEFT JOIN (
-            SELECT
-                th.task_id,
-                th.action_date,
-                th.user_id
-            FROM task_history th
-            WHERE th.project_id = :project_id
-            AND th.action != :comment_action
-            ORDER BY th.task_id, th.action_date DESC
-        ) la ON la.task_id = t.id
+        LEFT JOIN ({subquery_latest_action}) la ON la.task_id = t.id
         LEFT JOIN users u ON u.id = la.user_id
         WHERE t.project_id = :project_id
         ORDER BY t.id
         """
 
+        # Execute the query
         results = await db.fetch_all(
             query_task_statuses, {"project_id": project_id, "comment_action": "COMMENT"}
         )
 
-        # Creating DTO
+        # Create DTO
         dto = ProjectLastActivityDTO(activity=[])
         for row in results:
             task_status_dto = TaskStatusDTO(
                 task_id=row["task_id"],
                 task_status=TaskStatus(row["task_status"]).name,
                 action_date=row["action_date"],
-                action_by=row["username"],
+                action_by=row["action_by"],
             )
             dto.activity.append(task_status_dto)
 
