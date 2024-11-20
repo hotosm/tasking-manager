@@ -1,5 +1,5 @@
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 
@@ -1141,6 +1141,14 @@ async def post(
 async def post(
     request: Request,
     project_id: int,
+    username: str | None = Query(
+        None, description="Username to revert tasks for", example="test"
+    ),
+    action: str | None = Query(
+        None,
+        description="Action to revert tasks for. Can be BADIMAGERY or VALIDATED",
+        example="BADIMAGERY",
+    ),
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
 ):
@@ -1196,9 +1204,15 @@ async def post(
             description: Internal Server Error
     """
     try:
-        request_data = await request.json()
-        action = request_data.get("action", None)
-        username = request_data.get("username", None)
+        if not (username or action):
+            return JSONResponse(
+                content={
+                    "Error": "Unable to revert tasks",
+                    "SubCode": "InvalidData",
+                },
+                status_code=400,
+            )
+
         if username:
             user = await UserService.get_user_by_username(username, db)
         revert_dto = RevertUserTasksDTO(
