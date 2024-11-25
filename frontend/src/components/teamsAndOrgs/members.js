@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import AsyncSelect from 'react-select/async';
 
 import messages from './messages';
@@ -168,6 +168,7 @@ export function JoinRequests({
   joinMethod,
   members,
 }: Object) {
+  const intl = useIntl();
   const token = useSelector((state) => state.auth.token);
   const { username: loggedInUsername } = useSelector((state) => state.auth.userDetails);
   const showJoinRequestSwitch =
@@ -237,14 +238,28 @@ export function JoinRequests({
       <div className="cf db mt3">
         {requests.map((user) => (
           <div className="cf db pt2" key={user.username}>
-            <div className="fl pt1">
+            <div className="fl pt1 flex">
               <UserAvatar
                 username={user.username}
                 picture={user.pictureUrl}
                 colorClasses="white bg-blue-grey"
               />
-              <Link to={`/users/${user.username}`} className="v-mid link blue-dark">
+              <Link
+                to={`/users/${user.username}`}
+                className="v-mid link blue-dark flex flex-column ml1"
+              >
                 <span>{user.username}</span>
+                <span>
+                  {!user.joinedDate ? (
+                    <span className="ml2">-</span>
+                  ) : (
+                    intl.formatDate(user.joinedDate, {
+                      year: 'numeric',
+                      month: 'short',
+                      day: '2-digit',
+                    })
+                  )}
+                </span>
               </Link>
             </div>
             <div className="fr">
