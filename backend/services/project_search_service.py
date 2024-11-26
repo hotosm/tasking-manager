@@ -90,6 +90,7 @@ class ProjectSearchService:
             p.last_updated,
             p.due_date,
             p.country,
+            p.mapping_types,
             o.name AS organisation_name,
             o.logo AS organisation_logo
         FROM projects p
@@ -460,11 +461,14 @@ class ProjectSearchService:
 
         if search_dto.mapping_types:
             if search_dto.mapping_types_exact:
-                filters.append("p.mapping_types @> :mapping_types")
+                filters.append(
+                    "p.mapping_types @> :mapping_types AND array_length(p.mapping_types, 1) = :mapping_length"
+                )
                 params["mapping_types"] = tuple(
                     MappingTypes[mapping_type].value
                     for mapping_type in search_dto.mapping_types
                 )
+                params["mapping_length"] = len(search_dto.mapping_types)
             else:
                 filters.append("p.mapping_types && :mapping_types")
                 params["mapping_types"] = tuple(
