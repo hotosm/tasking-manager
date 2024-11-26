@@ -10,7 +10,7 @@ from loguru import logger
 from markdown import markdown
 from sqlalchemy import func, insert, text
 
-from backend import create_app, db
+from backend import db
 from backend.config import settings
 from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
@@ -18,7 +18,7 @@ from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.notification import Notification
 from backend.models.postgis.project import Project, ProjectInfo
-from backend.models.postgis.task import TaskAction, TaskHistory, TaskStatus
+from backend.models.postgis.task import TaskAction, TaskStatus
 from backend.models.postgis.utils import timestamp
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
@@ -549,19 +549,17 @@ class MessageService:
         await Message.save(message, db)
 
     @staticmethod
-    def send_message_after_chat(
-        chat_from: int, chat: str, project_id: int, project_name: str, db: Database
+    async def send_message_after_chat(
+        chat_from: int,
+        chat: str,
+        project_id: int,
+        project_name: str,
+        database: Database,
     ):
-        """Send alert to user if they were @'d in a chat message"""
-        app = (
-            create_app()
-        )  # Because message-all run on background thread it needs it's own app context
-        if (
-            app.config["ENVIRONMENT"] == "test"
-        ):  # Don't send in test mode as this will cause tests to fail.
-            return
-        with app.app_context():
-            usernames = MessageService._parse_message_for_username(chat, project_id)
+        async with database.connection() as db:
+            usernames = await MessageService._parse_message_for_username(
+                message=chat, project_id=project_id, db=db
+            )
             if len(usernames) != 0:
                 link = MessageService.get_project_link(
                     project_id, project_name, include_chat_section=True
@@ -570,7 +568,7 @@ class MessageService:
                 for username in usernames:
                     logger.debug(f"Searching for {username}")
                     try:
-                        user = UserService.get_user_by_username(username)
+                        user = await UserService.get_user_by_username(username, db)
                     except NotFound:
                         logger.error(f"Username {username} not found")
                         continue  # If we can't find the user, keep going no need to fail
@@ -588,27 +586,37 @@ class MessageService:
                         dict(message=message, user=user, project_name=project_name)
                     )
 
-                MessageService._push_messages(messages, db)
-
-            query = f""" select user_id from project_favorites where project_id ={project_id}"""
-            with db.engine.connect() as conn:
-                favorited_users_results = conn.execute(text(query))
-            favorited_users = [r[0] for r in favorited_users_results]
-
-            # Notify all contributors except the user that created the comment.
-            contributed_users_results = (
-                TaskHistory.query.with_entities(TaskHistory.user_id.distinct())
-                .filter(TaskHistory.project_id == project_id)
-                .filter(TaskHistory.user_id != chat_from)
-                .filter(TaskHistory.action == TaskAction.STATE_CHANGE.name)
-                .all()
+                await MessageService._push_messages(messages, db)
+            favorited_users_query = """ select user_id from project_favorites where project_id = :project_id"""
+            favorited_users_values = {
+                "project_id": project_id,
+            }
+            favorited_users_results = await db.fetch_all(
+                query=favorited_users_query, values=favorited_users_values
             )
-            contributed_users = [r[0] for r in contributed_users_results]
+            favorited_users = [r.user_id for r in favorited_users_results]
+            # Notify all contributors except the user that created the comment.
+            contributed_users_query = """
+            SELECT DISTINCT user_id
+            FROM task_history
+            WHERE project_id = :project_id
+            AND user_id != :chat_from
+            AND action = :state_change_action
+            """
 
+            values = {
+                "project_id": project_id,
+                "chat_from": chat_from,
+                "state_change_action": TaskAction.STATE_CHANGE.name,
+            }
+            contributed_users_results = await db.fetch_all(
+                query=contributed_users_query, values=values
+            )
+            contributed_users = [r.user_id for r in contributed_users_results]
             users_to_notify = list(set(contributed_users + favorited_users))
 
             if len(users_to_notify) != 0:
-                from_user = User.query.get(chat_from)
+                from_user = await UserService.get_user_by_id(chat_from, db)
                 from_user_link = MessageService.get_user_link(from_user.username)
                 project_link = MessageService.get_project_link(
                     project_id, project_name, include_chat_section=True
@@ -616,9 +624,9 @@ class MessageService:
                 messages = []
                 for user_id in users_to_notify:
                     try:
-                        user = UserService.get_user_by_id(user_id)
+                        user = await UserService.get_user_by_id(user_id, db)
                     except NotFound:
-                        continue  # If we can't find the user, keep going no need to fail
+                        continue
                     message = Message()
                     message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
                     message.project_id = project_id
@@ -634,8 +642,7 @@ class MessageService:
                         dict(message=message, user=user, project_name=project_name)
                     )
 
-                # it's important to keep that line inside the if to avoid duplicated emails
-                MessageService._push_messages(messages, db)
+                await MessageService._push_messages(messages, db)
 
     @staticmethod
     async def send_favorite_project_activities(user_id: int):
