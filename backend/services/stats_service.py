@@ -1,42 +1,42 @@
 import datetime
-from cachetools import TTLCache, cached
 from datetime import date, timedelta
+
+from cachetools import TTLCache, cached
+from databases import Database
 from sqlalchemy import func, or_, select
 
+from backend.db import get_session
 from backend.exceptions import NotFound
+from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.models.dtos.stats_dto import (
-    ProjectContributionsDTO,
-    UserContribution,
-    Pagination,
-    TaskHistoryDTO,
-    TaskStatusDTO,
-    ProjectActivityDTO,
-    ProjectLastActivityDTO,
+    CampaignStatsDTO,
+    GenderStatsDTO,
     HomePageStatsDTO,
     OrganizationListStatsDTO,
-    CampaignStatsDTO,
+    Pagination,
+    ProjectActivityDTO,
+    ProjectContributionsDTO,
+    ProjectLastActivityDTO,
+    TaskHistoryDTO,
     TaskStats,
     TaskStatsDTO,
-    GenderStatsDTO,
+    TaskStatusDTO,
+    UserContribution,
     UserStatsDTO,
 )
-
-from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.models.postgis.campaign import Campaign, campaign_projects
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project
-from backend.models.postgis.statuses import TaskStatus, MappingLevel, UserGender
-from backend.models.postgis.task import TaskHistory, User, Task, TaskAction
+from backend.models.postgis.statuses import MappingLevel, TaskStatus, UserGender
+from backend.models.postgis.task import Task, TaskAction, TaskHistory, User
 from backend.models.postgis.utils import timestamp  # noqa: F401
-from backend.services.project_service import ProjectService
-from backend.services.project_search_service import ProjectSearchService
-from backend.services.users.user_service import UserService
-from backend.services.organisation_service import OrganisationService
 from backend.services.campaign_service import CampaignService
-from backend.db import get_session
+from backend.services.organisation_service import OrganisationService
+from backend.services.project_search_service import ProjectSearchService
+from backend.services.project_service import ProjectService
+from backend.services.users.user_service import UserService
 
 session = get_session()
-from databases import Database
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
@@ -90,15 +90,25 @@ class StatsService:
         action="change",
     ):
         project_stats = dict(project)  # Mutable copy of the project dictionary
-
         if new_state == last_state:
             return project_stats, user
 
         # Increment counters for the new state
         if new_state == TaskStatus.MAPPED:
+            print(type(project_stats["tasks_mapped"]))
+            print(project_stats["tasks_mapped"], "Task mapped before...")
+
             project_stats["tasks_mapped"] += 1
+
+            print(project_stats["tasks_mapped"], "Task mapped after...")
+
         elif new_state == TaskStatus.VALIDATED:
+            print(project_stats["tasks_validated"], "Task validated before...")
+
             project_stats["tasks_validated"] += 1
+
+            print(project_stats["tasks_validated"], "Task validated after...")
+
         elif new_state == TaskStatus.BADIMAGERY:
             project_stats["tasks_bad_imagery"] += 1
 
@@ -113,11 +123,37 @@ class StatsService:
 
         # Decrement counters for the old state
         if last_state == TaskStatus.MAPPED:
+            print(
+                project_stats["tasks_mapped"], "Last state mapped decrement before..."
+            )
+
             project_stats["tasks_mapped"] -= 1
+
+            print(project_stats["tasks_mapped"], "Last state mapped decrement after...")
+
         elif last_state == TaskStatus.VALIDATED:
+            print(
+                project_stats["tasks_mapped"],
+                "Last state validation decrement before...",
+            )
+
             project_stats["tasks_validated"] -= 1
+
+            print(
+                project_stats["tasks_mapped"],
+                "Last state validation decrement after...",
+            )
+
         elif last_state == TaskStatus.BADIMAGERY:
+            print(
+                project_stats["tasks_mapped"], "Last state bad_img decrement before..."
+            )
+
             project_stats["tasks_bad_imagery"] -= 1
+
+            print(
+                project_stats["tasks_mapped"], "Last state bad_img decrement after..."
+            )
 
         # Undo user stats if action is "undo"
         if action == "undo":

@@ -569,8 +569,8 @@ def setup_search_dto(request) -> ProjectSearchDTO:
 
     mapping_types_str = request.query_params.get("mappingTypes")
     if mapping_types_str:
-        search_dto.mapping_types = map(
-            str, mapping_types_str.split(",")
+        search_dto.mapping_types = list(
+            map(str, mapping_types_str.split(","))
         )  # Extract list from string
     search_dto.mapping_types_exact = strtobool(
         request.query_params.get("mappingTypesExact", "false")
