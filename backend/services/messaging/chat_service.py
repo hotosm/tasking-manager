@@ -1,6 +1,5 @@
-import threading
-
 from databases import Database
+from fastapi import BackgroundTasks
 
 from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO
@@ -12,6 +11,7 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
 from backend.services.team_service import TeamService
+from backend.db import db_connection
 
 
 class ChatService:
@@ -21,6 +21,7 @@ class ChatService:
         project_id: int,
         authenticated_user_id: int,
         db: Database,
+        background_tasks: BackgroundTasks,
     ) -> ProjectChatDTO:
         project = await ProjectService.get_project_by_id(project_id, db)
         project_info_dto = await ProjectInfo.get_dto_for_locale(
@@ -66,18 +67,14 @@ class ChatService:
                     )
         if is_manager_permission or is_team_member or is_allowed_user:
             chat_message = await ProjectChat.create_from_dto(chat_dto, db)
-            # TODO: Refactor send_message_after_chat
-            threading.Thread(
-                target=MessageService.send_message_after_chat,
-                args=(
-                    chat_dto.user_id,
-                    chat_message.message,
-                    chat_dto.project_id,
-                    project_name,
-                    db,
-                ),
-            ).start()
-            # Ensure we return latest messages after post
+            background_tasks.add_task(
+                MessageService.send_message_after_chat,
+                chat_dto.user_id,
+                chat_message.message,
+                chat_dto.project_id,
+                project_name,
+                db_connection.database,
+            )
             return await ProjectChat.get_messages(chat_dto.project_id, db, 1, 5)
         else:
             raise ValueError("UserNotPermitted- User not permitted to post Comment")

@@ -1,6 +1,6 @@
 from backend.models.postgis.utils import timestamp
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, BackgroundTasks
 from loguru import logger
 from fastapi.responses import JSONResponse
 from backend.db import get_db, get_session
@@ -28,6 +28,7 @@ router = APIRouter(
 async def post(
     project_id: int,
     request: Request,
+    background_tasks: BackgroundTasks,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
 ):
@@ -86,7 +87,7 @@ async def post(
     try:
         async with db.transaction():
             project_messages = await ChatService.post_message(
-                chat_dto, project_id, user.id, db
+                chat_dto, project_id, user.id, db, background_tasks
             )
             return project_messages
     except ValueError as e:
