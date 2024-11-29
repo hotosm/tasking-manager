@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { useIntl, FormattedMessage } from 'react-intl';
 import AsyncSelect from 'react-select/async';
+import toast from 'react-hot-toast';
 
 import messages from './messages';
+import projectsMessages from '../projects/messages';
 import { UserAvatar } from '../user/avatar';
 import { EditModeControl } from './editMode';
 import { Button } from '../button';
@@ -12,6 +15,8 @@ import { SwitchToggle } from '../formInputs';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Alert } from '../alert';
 import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
+import { API_URL } from '../../config';
+import { DownloadIcon, LoadingIcon } from '../svgIcons';
 
 export function Members({
   addMembers,
@@ -169,6 +174,7 @@ export function JoinRequests({
   members,
 }: Object) {
   const intl = useIntl();
+  const { id } = useParams();
   const token = useSelector((state) => state.auth.token);
   const { username: loggedInUsername } = useSelector((state) => state.auth.userDetails);
   const showJoinRequestSwitch =
@@ -216,12 +222,56 @@ export function JoinRequests({
     });
   };
 
+  const [isCSVDownloading, setIsCSVDownloading] = useState(false);
+
+  const handleTeamRequestsDownload = async () => {
+    setIsCSVDownloading(true);
+    try {
+      const url = `${API_URL}teams/join_requests/?team_id=${id}`;
+      const response = await axios.get(url, {
+        headers: { Authorization: `Token ${token}` },
+        responseType: 'blob',
+      });
+      const href = URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = href;
+      link.setAttribute('download', 'join_requests.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error(<FormattedMessage {...projectsMessages.downloadAsCSVError} />);
+    } finally {
+      setIsCSVDownloading(false);
+    }
+  };
+
   return (
     <div className="bg-white b--grey-light pa4 ba blue-dark">
-      <div className="cf db">
-        <h3 className="f3 blue-dark mt0 fw6 fl">
+      <div className="db flex justify-between items-start">
+        <h3 className="f3 blue-dark mv0 fw6 fl">
           <FormattedMessage {...messages.joinRequests} />
         </h3>
+        {!!requests.length && (
+          <button
+            className={`ml3 lh-title f6 ${
+              isCSVDownloading ? 'gray' : 'blue-dark'
+            } inline-flex items-baseline b--none bg-white underline pointer`}
+            onClick={handleTeamRequestsDownload}
+            disabled={isCSVDownloading}
+          >
+            {isCSVDownloading ? (
+              <LoadingIcon
+                className="mr2 self-center h1 w1 gray"
+                style={{ animation: 'spin 1s linear infinite' }}
+              />
+            ) : (
+              <DownloadIcon className="mr2 self-center" />
+            )}
+            <FormattedMessage {...projectsMessages.downloadAsCSV} />
+          </button>
+        )}
       </div>
       {showJoinRequestSwitch && (
         <div className="flex justify-between blue-grey">
