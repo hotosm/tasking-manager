@@ -1,11 +1,13 @@
 from databases import Database
-from fastapi import APIRouter, Depends, Request, Body
+from fastapi import APIRouter, Body, Depends, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 
-from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
-from backend.services.mapping_issues_service import MappingIssueCategoryService
 from backend.db import get_db
+from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.services.mapping_issues_service import MappingIssueCategoryService
+from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
     prefix="/tasks",

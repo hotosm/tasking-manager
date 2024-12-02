@@ -1,5 +1,5 @@
 import humanizeDuration from 'humanize-duration';
-import { useIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import {
@@ -113,7 +113,6 @@ export const shortEnglishHumanizer = humanizeDuration.humanizer({
 });
 
 export const ElementsMapped = ({ userStats, osmStats }) => {
-  const intl = useIntl();
   const duration = shortEnglishHumanizer(userStats.timeSpentMapping * 1000, {
     round: true,
     delimiter: ' ',
@@ -123,8 +122,6 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
 
   const iconClass = 'h-50 w-50';
   const iconStyle = { height: '45px' };
-
-  const { data: osmStatsMetadata } = useOsmStatsMetadataQuery();
 
   return (
     <div>
