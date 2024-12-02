@@ -8,6 +8,7 @@ from backend.api.projects import (
     campaigns as project_campaigns,
     actions as project_actions,
     favorites as project_favorites,
+    partnerships as project_partnerships,
 )
 
 from backend.api.comments import resources as comment_resources
@@ -48,9 +49,15 @@ from backend.api.system import (
     authentication as system_authentication,
     image_upload as system_image_upload,
 )
+
 from backend.api.notifications import (
     resources as notification_resources,
     actions as notification_actions,
+)
+
+from backend.api.partners import (
+    resources as partners_resources,
+    statistics as partners_statistics,
 )
 
 v2 = APIRouter(prefix="/api/v2")
@@ -65,6 +72,7 @@ def add_api_end_points(api):
     v2.include_router(project_campaigns.router)
     v2.include_router(project_actions.router)
     v2.include_router(project_favorites.router)
+    v2.include_router(project_partnerships.router)
 
     # Comments REST endpoint
     v2.include_router(comment_resources.router)
@@ -120,5 +128,7 @@ def add_api_end_points(api):
 
     # Issues REST endpoint
     v2.include_router(issue_resources.router)
+    v2.include_router(partners_resources.router)
+    v2.include_router(partners_statistics.router)
 
     api.include_router(v2)

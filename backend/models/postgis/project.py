@@ -15,7 +15,6 @@ from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.hybrid import hybrid_property
 
-import requests
 
 from sqlalchemy import (
     BigInteger,
@@ -34,7 +33,6 @@ from sqlalchemy import (
     select,
     update,
 )
-from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import backref, relationship
 
 from backend.config import settings
@@ -269,7 +267,7 @@ class Project(Base):
     interests = orm.relationship(
         Interest, secondary=project_interests, backref="projects"
     )
-    partnerships = db.relationship("ProjectPartnership", backref="project")
+    partnerships = orm.relationship("ProjectPartnership", backref="project")
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """

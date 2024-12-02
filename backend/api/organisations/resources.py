@@ -1,5 +1,5 @@
 from databases import Database
-from fastapi import APIRouter, Depends, Query, Request, Path
+from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import JSONResponse, Response
 from loguru import logger
 
@@ -28,52 +28,94 @@ router = APIRouter(
 )
 
 
-async def get_organisation_by_identifier(
-    identifier: str = Path(..., description="Either organisation ID or slug"),
+@router.get("/{organisation_id:int}/", response_model=OrganisationDTO)
+async def retrieve_organisation(
+    request: Request,
+    organisation_id: int,
     db: Database = Depends(get_db),
     omit_managers: bool = Query(
         False,
         alias="omitManagerList",
         description="Omit organization managers list from the response.",
     ),
-    request: Request = None,
-) -> OrganisationDTO:
-    authenticated_user_id = request.user.display_name if request.user else None
-    user_id = authenticated_user_id or 0
-
-    try:
-        organisation_id = int(identifier)
-        organisation_dto = await OrganisationService.get_organisation_by_id_as_dto(
-            organisation_id, user_id, omit_managers, db
-        )
-    except ValueError:
-        organisation_dto = await OrganisationService.get_organisation_by_slug_as_dto(
-            identifier, user_id, omit_managers, db
-        )
-
-    if not organisation_dto:
-        return JSONResponse(
-            content={"Error": "Organisation not found."}, status_code=404
-        )
-
-    return organisation_dto
-
-
-@router.get("/{identifier}/", response_model=OrganisationDTO)
-async def retrieve_organisation(
-    organisation: OrganisationDTO = Depends(get_organisation_by_identifier),
 ):
     """
-    Retrieve an organisation by either ID or slug.
+    Retrieves an organisation
     ---
     tags:
         - organisations
     produces:
         - application/json
     parameters:
-        - in: path
-            name: identifier
-            description: The organisation ID or slug
+        - in: header
+            name: Authorization
+            description: Base64 encoded session token
+            type: string
+            default: Token sessionTokenHere==
+        - name: organisation_id
+            in: path
+            description: The unique organisation ID
+            required: true
+            type: integer
+            default: 1
+        - in: query
+            name: omitManagerList
+            type: boolean
+            description: Set it to true if you don't want the managers list on the response.
+            default: False
+    responses:
+        200:
+            description: Organisation found
+        401:
+            description: Unauthorized - Invalid credentials
+        404:
+            description: Organisation not found
+        500:
+            description: Internal Server Error
+    """
+    authenticated_user_id = (
+        request.user.display_name
+        if request.user and request.user.display_name
+        else None
+    )
+    if authenticated_user_id is None:
+        user_id = 0
+    else:
+        user_id = authenticated_user_id
+    # Validate abbreviated.
+    organisation_dto = await OrganisationService.get_organisation_by_id_as_dto(
+        organisation_id, user_id, omit_managers, db
+    )
+    return organisation_dto
+
+
+@router.get("/{slug:str}/", response_model=OrganisationDTO)
+async def retrieve_organisation_by_slug(
+    request: Request,
+    slug: str,
+    db: Database = Depends(get_db),
+    omit_managers: bool = Query(
+        True,
+        alias="omitManagerList",
+        description="Omit organization managers list from the response.",
+    ),
+):
+    """
+    Retrieves an organisation
+    ---
+    tags:
+        - organisations
+    produces:
+        - application/json
+    parameters:
+        - in: header
+            name: Authorization
+            description: Base64 encoded session token
+            type: string
+            default: Token sessionTokenHere==
+        - name: slug
+            in: path
+            description: The unique organisation slug
             required: true
             type: string
             default: hot
@@ -90,7 +132,19 @@ async def retrieve_organisation(
         500:
             description: Internal Server Error
     """
-    return organisation
+    authenticated_user_id = (
+        request.user.display_name
+        if request.user and request.user.display_name
+        else None
+    )
+    if authenticated_user_id is None:
+        user_id = 0
+    else:
+        user_id = authenticated_user_id
+    organisation_dto = await OrganisationService.get_organisation_by_slug_as_dto(
+        slug, user_id, omit_managers, db
+    )
+    return organisation_dto
 
 
 @router.post("/")
@@ -447,7 +501,12 @@ async def list_organisation(
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name if request.user else None
+    authenticated_user_id = (
+        request.user.display_name
+        if request.user and request.user.display_name
+        else None
+    )
+
     if manager_user_id is not None and not authenticated_user_id:
         return Response(
             content={

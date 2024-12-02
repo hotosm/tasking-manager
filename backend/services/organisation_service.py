@@ -188,7 +188,6 @@ class OrganisationService:
             raise NotFound(sub_code="ORGANISATION_NOT_FOUND")
 
         organisation_dto = Organisation.as_dto(org, abbreviated)
-
         if user_id != 0:
             organisation_dto.is_manager = (
                 await OrganisationService.can_user_manage_organisation(
