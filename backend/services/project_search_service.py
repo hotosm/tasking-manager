@@ -3,6 +3,7 @@ import math
 from typing import List
 
 import geojson
+import pandas as pd
 from cachetools import TTLCache, cached
 from databases import Database
 from fastapi import HTTPException
@@ -20,8 +21,9 @@ from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectSearchResultsDTO,
 )
-from backend.models.postgis.project import Project, ProjectInfo, ProjectTeams
 from backend.models.postgis.partner import Partner
+from backend.models.postgis.project import Project, ProjectInfo
+from backend.models.postgis.project_partner import ProjectPartnership
 from backend.models.postgis.statuses import (
     MappingLevel,
     MappingPermission,
@@ -33,17 +35,6 @@ from backend.models.postgis.statuses import (
     UserRole,
     ValidationPermission,
 )
-from backend.models.postgis.project_partner import ProjectPartnership
-from backend.models.postgis.campaign import Campaign
-from backend.models.postgis.organisation import Organisation
-from backend.models.postgis.task import TaskHistory
-from backend.models.postgis.utils import (
-    ST_Intersects,
-    ST_MakeEnvelope,
-    ST_Transform,
-    ST_Area,
-)
-from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
 
 session = get_session()

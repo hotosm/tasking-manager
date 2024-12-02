@@ -549,7 +549,12 @@ def setup_search_dto(request) -> ProjectSearchDTO:
 
     # See https://github.com/hotosm/tasking-manager/pull/922 for more info
     try:
-        authenticated_user_id = request.user.display_name if request.user else None
+        authenticated_user_id = (
+            request.user.display_name
+            if request.user and request.user.display_name
+            else None
+        )
+
         if request.query_params.get("createdByMe") == "true":
             search_dto.created_by = authenticated_user_id
 
@@ -798,7 +803,11 @@ async def get(
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name if request.user else None
+    authenticated_user_id = (
+        request.user.display_name
+        if request.user and request.user.display_name
+        else None
+    )
     orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
         authenticated_user_id, db
     )
@@ -889,7 +898,11 @@ async def get(
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name if request.user else None
+    authenticated_user_id = (
+        request.user.display_name
+        if request.user and request.user.display_name
+        else None
+    )
     orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
         authenticated_user_id, db
     )
@@ -1255,7 +1268,11 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name if request.user else None
+    authenticated_user_id = (
+        request.user.display_name
+        if request.user and request.user.display_name
+        else None
+    )
     limit = int(request.query_params.get("limit", 4))
     preferred_locale = request.headers.get("accept-language", "en")
     projects_dto = await ProjectRecommendationService.get_similar_projects(

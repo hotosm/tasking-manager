@@ -1,98 +1,122 @@
+from typing import List, Optional
+
 import pandas as pd
-from schematics import Model
-from schematics.types import (
-    StringType,
-    LongType,
-    IntType,
-    ListType,
-    ModelType,
-    FloatType,
-    BooleanType,
-)
+from pydantic import BaseModel, Field
 
 
-class UserGroupMemberDTO(Model):
-    id = StringType()
-    user_id = StringType(serialized_name="userId")
-    username = StringType()
-    is_active = BooleanType(serialized_name="isActive")
-    total_mapping_projects = IntType(serialized_name="totalMappingProjects")
-    total_contribution_time = IntType(serialized_name="totalcontributionTime")
-    total_contributions = IntType(serialized_name="totalcontributions")
+class UserGroupMemberDTO(BaseModel):
+    """Describes a JSON model for a user group member."""
+
+    id: Optional[str] = None
+    user_id: Optional[str] = Field(None, alias="userId")
+    username: Optional[str] = None
+    is_active: Optional[bool] = Field(None, alias="isActive")
+    total_mapping_projects: Optional[int] = Field(None, alias="totalMappingProjects")
+    total_contribution_time: Optional[int] = Field(None, alias="totalcontributionTime")
+    total_contributions: Optional[int] = Field(None, alias="totalcontributions")
+
+    class Config:
+        populate_by_name = True
 
 
-class OrganizationContributionsDTO(Model):
-    organization_name = StringType(serialized_name="organizationName")
-    total_contributions = IntType(serialized_name="totalcontributions")
+class OrganizationContributionsDTO(BaseModel):
+    """Describes a JSON model for organization contributions."""
+
+    organization_name: Optional[str] = Field(None, alias="organizationName")
+    total_contributions: Optional[int] = Field(None, alias="totalcontributions")
+
+    class Config:
+        populate_by_name = True
 
 
-class UserContributionsDTO(Model):
-    total_mapping_projects = IntType(serialized_name="totalMappingProjects")
-    total_contribution_time = IntType(serialized_name="totalcontributionTime")
-    total_contributions = IntType(serialized_name="totalcontributions")
-    username = StringType()
-    user_id = StringType(serialized_name="userId")
+class UserContributionsDTO(BaseModel):
+    """Describes a JSON model for user contributions."""
+
+    total_mapping_projects: Optional[int] = Field(None, alias="totalMappingProjects")
+    total_contribution_time: Optional[int] = Field(None, alias="totalcontributionTime")
+    total_contributions: Optional[int] = Field(None, alias="totalcontributions")
+    username: Optional[str] = None
+    user_id: Optional[str] = Field(None, alias="userId")
+
+    class Config:
+        populate_by_name = True
 
 
-class GeojsonDTO(Model):
-    type = StringType()
-    coordinates = ListType(FloatType)
+class GeojsonDTO(BaseModel):
+    type: Optional[str] = None
+    coordinates: Optional[List[float]] = None
 
 
-class GeoContributionsDTO(Model):
-    geojson = ModelType(GeojsonDTO)
-    total_contributions = IntType(serialized_name="totalcontributions")
+class GeoContributionsDTO(BaseModel):
+    geojson: Optional[GeojsonDTO] = None
+    total_contributions: Optional[int] = Field(None, alias="totalcontributions")
+
+    class Config:
+        populate_by_name = True
 
 
-class ContributionsByDateDTO(Model):
-    task_date = StringType(serialized_name="taskDate")
-    total_contributions = IntType(serialized_name="totalcontributions")
+class ContributionsByDateDTO(BaseModel):
+    task_date: str = Field(None, alias="taskDate")
+    total_contributions: int = Field(None, alias="totalcontributions")
 
 
-class ContributionTimeByDateDTO(Model):
-    date = StringType(serialized_name="date")
-    total_contribution_time = IntType(serialized_name="totalcontributionTime")
+class ContributionTimeByDateDTO(BaseModel):
+    date: str = Field(None, alias="date")
+    total_contribution_time: int = Field(None, alias="totalcontributionTime")
+
+    class Config:
+        populate_by_name = True
 
 
-class ContributionsByProjectTypeDTO(Model):
-    project_type = StringType(serialized_name="projectType")
-    project_type_display = StringType(serialized_name="projectTypeDisplay")
-    total_contributions = IntType(serialized_name="totalcontributions")
+class ContributionsByProjectTypeDTO(BaseModel):
+    project_type: str = Field(None, alias="projectType")
+    project_type_display: str = Field(None, alias="projectTypeDisplay")
+    total_contributions: int = Field(None, alias="totalcontributions")
+
+    class Config:
+        populate_by_name = True
 
 
-class AreaSwipedByProjectTypeDTO(Model):
-    total_area = FloatType(serialized_name="totalArea")
-    project_type = StringType(serialized_name="projectType")
-    project_type_display = StringType(serialized_name="projectTypeDisplay")
+class AreaSwipedByProjectTypeDTO(BaseModel):
+    total_area: Optional[float] = Field(None, alias="totalArea")
+    project_type: str = Field(None, alias="projectType")
+    project_type_display: str = Field(None, alias="projectTypeDisplay")
+
+    class Config:
+        populate_by_name = True
 
 
-class GroupedPartnerStatsDTO(Model):
+class GroupedPartnerStatsDTO(BaseModel):
     """General statistics of a partner and its members."""
 
-    id = LongType()
-    provider = StringType()
-    id_inside_provider = StringType(serialized_name="idInsideProvider")
-    name_inside_provider = StringType(serialized_name="nameInsideProvider")
-    description_inside_provider = StringType(
-        serialized_name="descriptionInsideProvider"
+    id: Optional[int] = None
+    provider: str
+    id_inside_provider: Optional[str] = Field(None, alias="idInsideProvider")
+    name_inside_provider: Optional[str] = Field(None, alias="nameInsideProvider")
+    description_inside_provider: Optional[str] = Field(
+        None, alias="descriptionInsideProvider"
     )
-    members_count = IntType(serialized_name="membersCount")
-    members = ListType(ModelType(UserGroupMemberDTO))
+    members_count: Optional[int] = Field(None, alias="membersCount")
+    members: List[UserGroupMemberDTO] = None
 
     # General stats of partner
-    total_contributors = IntType(serialized_name="totalContributors")
-    total_contributions = IntType(serialized_name="totalcontributions")
-    total_contribution_time = IntType(serialized_name="totalcontributionTime")
+    total_contributors: Optional[int] = Field(None, alias="totalContributors")
+    total_contributions: Optional[int] = Field(None, alias="totalcontributions")
+    total_contribution_time: Optional[int] = Field(None, alias="totalcontributionTime")
 
     # Recent contributions during the last 1 month
-    total_recent_contributors = IntType(serialized_name="totalRecentContributors")
-    total_recent_contributions = IntType(serialized_name="totalRecentcontributions")
-    total_recent_contribution_time = IntType(
-        serialized_name="totalRecentcontributionTime"
+    total_recent_contributors: Optional[int] = Field(
+        None, alias="totalRecentContributors"
+    )
+    total_recent_contributions: Optional[int] = Field(
+        None, alias="totalRecentcontributions"
+    )
+    total_recent_contribution_time: Optional[int] = Field(
+        None, alias="totalRecentcontributionTime"
     )
 
     def to_csv(self):
-        df = pd.json_normalize(self.to_primitive()["members"])
+        df = pd.json_normalize(self.dict(by_alias=True)["members"])
 
         df.drop(
             columns=["id"],
@@ -109,37 +133,40 @@ class GroupedPartnerStatsDTO(Model):
 
         return df.to_csv(index=False)
 
+    class Config:
+        populate_by_name = True
 
-class FilteredPartnerStatsDTO(Model):
+
+class FilteredPartnerStatsDTO(BaseModel):
     """Statistics of a partner contributions filtered by time range."""
 
-    id = LongType()
-    provider = StringType()
-    id_inside_provider = StringType(serialized_name="idInsideProvider")
+    id: Optional[int] = None
+    provider: str
+    id_inside_provider: Optional[str] = Field(None, alias="idInsideProvider")
 
-    from_date = StringType(serialized_name="fromDate")
-    to_date = StringType(serialized_name="toDate")
-    contributions_by_user = ListType(
-        ModelType(UserContributionsDTO), serialized_name="contributionsByUser"
+    from_date: Optional[str] = Field(None, alias="fromDate")
+    to_date: Optional[str] = Field(None, alias="toDate")
+    contributions_by_user: List[UserContributionsDTO] = Field(
+        [], alias="contributionsByUser"
     )
-    contributions_by_geo = ListType(
-        ModelType(GeoContributionsDTO), serialized_name="contributionsByGeo"
+    contributions_by_geo: List[GeoContributionsDTO] = Field(
+        [], alias="contributionsByGeo"
     )
-    area_swiped_by_project_type = ListType(
-        ModelType(AreaSwipedByProjectTypeDTO), serialized_name="areaSwipedByProjectType"
+    area_swiped_by_project_type: List[AreaSwipedByProjectTypeDTO] = Field(
+        [], alias="areaSwipedByProjectType"
+    )
+    contributions_by_project_type: List[ContributionsByProjectTypeDTO] = Field(
+        [], alias="contributionsByProjectType"
+    )
+    contributions_by_date: List[ContributionsByDateDTO] = Field(
+        [], alias="contributionsByDate"
+    )
+    contributions_by_organization_name: List[OrganizationContributionsDTO] = Field(
+        [], alias="contributionsByorganizationName"
+    )
+    contribution_time_by_date: List[ContributionTimeByDateDTO] = Field(
+        [], alias="contributionTimeByDate"
     )
 
-    contributions_by_project_type = ListType(
-        ModelType(ContributionsByProjectTypeDTO),
-        serialized_name="contributionsByProjectType",
-    )
-    contributions_by_date = ListType(
-        ModelType(ContributionsByDateDTO), serialized_name="contributionsByDate"
-    )
-    contributions_by_organization_name = ListType(
-        ModelType(OrganizationContributionsDTO),
-        serialized_name="contributionsByorganizationName",
-    )
-    contribution_time_by_date = ListType(
-        ModelType(ContributionTimeByDateDTO), serialized_name="contributionTimeByDate"
-    )
+    class Config:
+        populate_by_name = True
