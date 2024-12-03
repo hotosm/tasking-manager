@@ -1,11 +1,11 @@
 from databases import Database
-from fastapi import APIRouter, Body, Depends, Request, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 from shapely import GEOSException
 from shapely.errors import TopologicalError
 
-from backend.db import get_db, db_connection
+from backend.db import db_connection, get_db
 from backend.models.dtos.grid_dto import GridDTO
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.user_dto import AuthUserDTO
@@ -23,7 +23,6 @@ from backend.services.users.authentication_service import login_required
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

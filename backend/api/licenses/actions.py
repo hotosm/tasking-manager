@@ -10,7 +10,6 @@ from backend.services.users.user_service import UserService
 router = APIRouter(
     prefix="/licenses",
     tags=["licenses"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

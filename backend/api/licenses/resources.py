@@ -9,7 +9,6 @@ from backend.services.license_service import LicenseService
 router = APIRouter(
     prefix="/licenses",
     tags=["licenses"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

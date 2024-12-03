@@ -5,14 +5,12 @@ from fastapi import APIRouter, Body, Depends, Request
 from fastapi.responses import JSONResponse
 
 from backend.config import settings
-from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
     prefix="/system",
     tags=["system"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
