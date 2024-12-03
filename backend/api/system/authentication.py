@@ -17,7 +17,6 @@ from backend.services.users.authentication_service import (
 router = APIRouter(
     prefix="/system",
     tags=["system"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

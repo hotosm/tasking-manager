@@ -10,7 +10,6 @@ from backend.services.users.authentication_service import login_required
 router = APIRouter(
     prefix="/notifications",
     tags=["notifications"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

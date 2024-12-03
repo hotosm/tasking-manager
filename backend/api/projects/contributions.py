@@ -11,7 +11,6 @@ from backend.services.stats_service import StatsService
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
