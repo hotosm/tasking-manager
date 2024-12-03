@@ -21,7 +21,6 @@ from backend.services.validator_service import ValidatorService
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

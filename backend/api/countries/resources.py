@@ -8,7 +8,6 @@ from databases import Database
 router = APIRouter(
     prefix="/countries",
     tags=["countries"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 
