@@ -1,12 +1,13 @@
-from backend.models.postgis.utils import timestamp
 from databases import Database
-from fastapi import APIRouter, Depends, Request, BackgroundTasks
-from loguru import logger
+from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from fastapi.responses import JSONResponse
+from loguru import logger
+
 from backend.db import get_db, get_session
 from backend.models.dtos.mapping_dto import TaskCommentDTO
 from backend.models.dtos.message_dto import ChatMessageDTO
 from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.utils import timestamp
 from backend.services.mapping_service import MappingService, MappingServiceError
 from backend.services.messaging.chat_service import ChatService
 from backend.services.project_service import ProjectService
@@ -19,7 +20,6 @@ session = get_session()
 router = APIRouter(
     prefix="/projects",
     tags=["projects"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

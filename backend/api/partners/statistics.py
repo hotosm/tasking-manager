@@ -21,7 +21,6 @@ def is_valid_group_id(group_id: Optional[str]) -> bool:
 router = APIRouter(
     prefix="/partners",
     tags=["partners"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

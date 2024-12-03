@@ -17,7 +17,6 @@ from backend.services.users.user_service import UserService
 router = APIRouter(
     prefix="/teams",
     tags=["teams"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

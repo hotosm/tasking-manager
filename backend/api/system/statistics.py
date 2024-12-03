@@ -8,7 +8,6 @@ from backend.services.stats_service import StatsService
 router = APIRouter(
     prefix="/system",
     tags=["system"],
-    dependencies=[Depends(get_db)],
     responses={404: {"description": "Not found"}},
 )
 

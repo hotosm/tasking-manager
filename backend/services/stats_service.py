@@ -95,20 +95,10 @@ class StatsService:
 
         # Increment counters for the new state
         if new_state == TaskStatus.MAPPED:
-            print(type(project_stats["tasks_mapped"]))
-            print(project_stats["tasks_mapped"], "Task mapped before...")
-
             project_stats["tasks_mapped"] += 1
 
-            print(project_stats["tasks_mapped"], "Task mapped after...")
-
         elif new_state == TaskStatus.VALIDATED:
-            print(project_stats["tasks_validated"], "Task validated before...")
-
             project_stats["tasks_validated"] += 1
-
-            print(project_stats["tasks_validated"], "Task validated after...")
-
         elif new_state == TaskStatus.BADIMAGERY:
             project_stats["tasks_bad_imagery"] += 1
 
@@ -123,37 +113,12 @@ class StatsService:
 
         # Decrement counters for the old state
         if last_state == TaskStatus.MAPPED:
-            print(
-                project_stats["tasks_mapped"], "Last state mapped decrement before..."
-            )
-
             project_stats["tasks_mapped"] -= 1
-
-            print(project_stats["tasks_mapped"], "Last state mapped decrement after...")
-
         elif last_state == TaskStatus.VALIDATED:
-            print(
-                project_stats["tasks_mapped"],
-                "Last state validation decrement before...",
-            )
-
             project_stats["tasks_validated"] -= 1
 
-            print(
-                project_stats["tasks_mapped"],
-                "Last state validation decrement after...",
-            )
-
         elif last_state == TaskStatus.BADIMAGERY:
-            print(
-                project_stats["tasks_mapped"], "Last state bad_img decrement before..."
-            )
-
             project_stats["tasks_bad_imagery"] -= 1
-
-            print(
-                project_stats["tasks_mapped"], "Last state bad_img decrement after..."
-            )
 
         # Undo user stats if action is "undo"
         if action == "undo":
