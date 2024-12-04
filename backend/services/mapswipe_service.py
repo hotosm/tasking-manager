@@ -140,7 +140,6 @@ class MapswipeService:
         self, partner_id: str, group_id: str, resp_body: str
     ) -> GroupedPartnerStatsDTO:
         group_stats = json.loads(resp_body)["data"]
-        print(group_stats)
         group_dto = GroupedPartnerStatsDTO(provider="mapswipe")
         group_dto.id = partner_id
         group_dto.id_inside_provider = group_id
@@ -156,7 +155,6 @@ class MapswipeService:
 
         group_dto.members_count = group_stats["userGroup"]["userMemberships"]["count"]
         group_dto.members = []
-        print(group_stats["userGroup"]["userMemberships"]["items"])
         for user_resp in group_stats["userGroup"]["userMemberships"]["items"]:
             user = UserGroupMemberDTO()
             user.id = user_resp["id"]

@@ -2,6 +2,7 @@ import datetime
 import xml.etree.ElementTree as ET
 
 from databases import Database
+from fastapi import BackgroundTasks
 
 # from flask import current_app
 from geoalchemy2 import WKBElement
@@ -140,7 +141,9 @@ class MappingService:
 
     @staticmethod
     async def unlock_task_after_mapping(
-        mapped_task: MappedTaskDTO, db: Database
+        mapped_task: MappedTaskDTO,
+        db: Database,
+        background_tasks: BackgroundTasks,
     ) -> TaskDTO:
         """Unlocks the task and sets the task history appropriately"""
         # Fetch the task locked by the user
@@ -172,6 +175,7 @@ class MappingService:
                 mapped_task.project_id,
                 db,
             )
+
         # Unlock the task and change its state
         await Task.unlock_task(
             task_id=mapped_task.task_id,
@@ -182,8 +186,9 @@ class MappingService:
             comment=mapped_task.comment,
         )
         # Send email on project progress
-        # TODO: Verify this email mechanism.
-        await ProjectService.send_email_on_project_progress(mapped_task.project_id, db)
+        background_tasks.add_task(
+            ProjectService.send_email_on_project_progress, mapped_task.project_id
+        )
 
         return await Task.as_dto_with_instructions(
             task_id=mapped_task.task_id,

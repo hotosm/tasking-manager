@@ -3,7 +3,7 @@ from fastapi import APIRouter, BackgroundTasks, Body, Depends, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 
-from backend.db import db_connection, get_db
+from backend.db import get_db
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.postgis.user import User
@@ -403,7 +403,6 @@ async def post(
             team.name,
             message_dto,
             user.id,
-            db_connection.database,
         )
         return JSONResponse(
             content={"Success": "Message sent successfully"}, status_code=200
