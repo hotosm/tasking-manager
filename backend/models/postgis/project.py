@@ -114,15 +114,6 @@ class ProjectTeams(Base):
             )
         )
 
-    def save(self):
-        """Save changes to db"""
-        session.commit()
-
-    def delete(self):
-        """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
-
 
 # cache mapper counts for 30 seconds
 active_mappers_cache = TTLCache(maxsize=1024, ttl=30)

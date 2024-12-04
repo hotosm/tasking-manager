@@ -9,12 +9,10 @@ from sqlalchemy import (
     String,
 )
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.models.dtos.project_dto import ProjectTaskAnnotationsDTO
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from backend.models.postgis.utils import timestamp
-
-session = get_session()
 
 
 class TaskAnnotation(Base):
@@ -56,20 +54,6 @@ class TaskAnnotation(Base):
         self.annotation_source = annotation_source
         self.annotation_markdown = annotation_markdown
         self.properties = properties
-
-    def create(self):
-        """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
-
-    def update(self):
-        """Updates the DB with the current state of the Task Annotations"""
-        session.commit()
-
-    def delete(self):
-        """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
 
     @staticmethod
     def get_task_annotation(task_id, project_id, annotation_type):

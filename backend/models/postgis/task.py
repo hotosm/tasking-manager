@@ -2,10 +2,11 @@ import datetime
 import json
 from datetime import timezone
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import bleach
 import geojson
+from databases import Database
 from geoalchemy2 import Geometry
 from shapely.geometry import shape
 
@@ -24,11 +25,13 @@ from sqlalchemy import (
     desc,
     distinct,
     func,
+    select,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import MultipleResultsFound
 
-from backend.db import Base, get_session
+from backend.config import settings
+from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from backend.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
@@ -48,14 +51,6 @@ from backend.models.postgis.utils import (
     parse_duration,
     timestamp,
 )
-
-session = get_session()
-from typing import Optional
-
-from databases import Database
-from sqlalchemy import select
-
-from backend.config import settings
 
 
 class TaskAction(Enum):
@@ -108,11 +103,6 @@ class TaskInvalidationHistory(Base):
         self.project_id = project_id
         self.task_id = task_id
         self.is_closed = False
-
-    def delete(self):
-        """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
 
     @staticmethod
     async def get_open_for_task(project_id: int, task_id: int, db: Database):
@@ -298,11 +288,6 @@ class TaskMappingIssue(Base):
         self.count = count
         self.mapping_issue_category_id = mapping_issue_category_id
 
-    def delete(self):
-        """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
-
     def as_dto(self):
         issue_dto = TaskMappingIssueDTO()
         issue_dto.category_id = self.mapping_issue_category_id
@@ -377,11 +362,6 @@ class TaskHistory(Base):
 
     def set_auto_unlock_action(task_action: TaskAction) -> str:
         return task_action.name, None
-
-    def delete(self):
-        """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
 
     async def update_task_locked_with_duration(
         task_id: int,
@@ -728,20 +708,6 @@ class Task(Base):
     task_annotations = relationship(TaskAnnotation, cascade="all")
     lock_holder = relationship(User, foreign_keys=[locked_by])
     mapper = relationship(User, foreign_keys=[mapped_by])
-
-    def create(self):
-        """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
-
-    def update(self):
-        """Updates the DB with the current state of the Task"""
-        session.commit()
-
-    def delete(self):
-        """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
 
     @classmethod
     def from_geojson_feature(cls, task_id, task_feature):

@@ -1,4 +1,3 @@
-# # from flask import current_app
 from typing import List
 
 from databases import Database
@@ -14,10 +13,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import TSVECTOR
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.models.dtos.project_dto import ProjectInfoDTO
-
-session = get_session()
 
 
 class ProjectInfo(Base):

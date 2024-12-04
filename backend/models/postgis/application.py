@@ -10,12 +10,10 @@ from sqlalchemy import (
     select,
 )
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.models.dtos.application_dto import ApplicationDTO, ApplicationsDTO
 from backend.models.postgis.utils import timestamp
 from backend.services.users.authentication_service import AuthenticationService
-
-session = get_session()
 
 
 class Application(Base):
@@ -44,9 +42,6 @@ class Application(Base):
         )
         await db.execute(query)
         return application
-
-    def save(self):
-        session.commit()
 
     async def delete(self, db: Database):
         query = delete(Application).where(Application.id == self.id)

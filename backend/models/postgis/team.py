@@ -14,7 +14,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import backref, relationship
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import OrganisationTeamsDTO
 from backend.models.dtos.team_dto import (
@@ -34,8 +34,6 @@ from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
 from backend.db import Base, get_session
 from sqlalchemy import select
-
-session = get_session()
 
 
 class TeamMembers(Base):
@@ -69,11 +67,6 @@ class TeamMembers(Base):
             )
         )
         return team_member
-
-    def delete(self):
-        """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
 
     async def update(self, db: Database):
         """Updates the current model in the DB"""
