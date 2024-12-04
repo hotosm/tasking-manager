@@ -10,8 +10,8 @@ from loguru import logger
 from markdown import markdown
 from sqlalchemy import func, insert, text
 
-from backend import db
 from backend.config import settings
+from backend.db import db_connection
 from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.dtos.stats_dto import Pagination
@@ -129,12 +129,12 @@ class MessageService:
 
     @staticmethod
     async def send_message_to_all_contributors(
-        project_id: int, message_dto: MessageDTO, database: Database
+        project_id: int, message_dto: MessageDTO
     ):
         """Sends supplied message to all contributors on specified project.  Message all contributors can take
         over a minute to run, so this method is expected to be called on its own thread
         """
-        async with database.connection() as conn:
+        async with db_connection.database.connection() as conn:
             contributors = await Message.get_all_contributors(project_id, conn)
             project = await Project.get(project_id, conn)
             project_info = await ProjectInfo.get_dto_for_locale(
@@ -393,47 +393,47 @@ class MessageService:
         project_id: int,
         transferred_to: str,
         transferred_by: str,
-        db: Database,
     ):
         """Will send a message to the manager of the organization after a project is transferred"""
-        project = await Project.get(project_id, db)
-        project_name = project.get_project_title(project.default_locale)
-        message = Message()
-        message.message_type = MessageType.SYSTEM.value
-        message.date = timestamp()
-        message.read = False
-        message.subject = (
-            f"Project {project_name} #{project_id} was transferred to {transferred_to}"
-        )
-        message.message = (
-            f"Project {project_name} #{project_id} associated with your"
-            + f"organisation {project.organisation.name} was transferred to {transferred_to} by {transferred_by}."
-        )
-        values = {
-            "PROJECT_ORG_NAME": project.organisation.name,
-            "PROJECT_ORG_ID": project.organisation_id,
-            "PROJECT_NAME": project_name,
-            "PROJECT_ID": project_id,
-            "TRANSFERRED_TO": transferred_to,
-            "TRANSFERRED_BY": transferred_by,
-        }
-        html_template = get_template("project_transfer_alert_en.html", values)
-
-        managers = OrganisationService.get_organisation_by_id_as_dto(
-            project.organisation_id, User.get_by_username(transferred_by).id, False, db
-        )
-        managers = managers.managers
-        for manager in managers:
-            manager = UserService.get_user_by_username(manager.username)
-            message.to_user_id = manager.id
-            message.save(db)
-            if manager.email_address and manager.is_email_verified:
-                SMTPService._send_message(
-                    manager.email_address,
-                    message.subject,
-                    html_template,
-                    message.message,
-                )
+        async with db_connection.database.connection() as db:
+            project = await Project.get(project_id, db)
+            project_name = await project.get_project_title(
+                db, project.id, project.default_locale
+            )
+            from_user = await User.get_by_username(transferred_by, db)
+            organisation = await OrganisationService.get_organisation_by_id_as_dto(
+                project.organisation_id, from_user.id, False, db
+            )
+            message = Message()
+            message.message_type = MessageType.SYSTEM.value
+            message.date = timestamp()
+            message.read = False
+            message.subject = f"Project {project_name} #{project_id} was transferred to {transferred_to}"
+            message.message = (
+                f"Project {project_name} #{project_id} associated with your"
+                + f"organisation {organisation.name} was transferred to {transferred_to} by {transferred_by}."
+            )
+            values = {
+                "PROJECT_ORG_NAME": organisation.name,
+                "PROJECT_ORG_ID": project.organisation_id,
+                "PROJECT_NAME": project_name,
+                "PROJECT_ID": project_id,
+                "TRANSFERRED_TO": transferred_to,
+                "TRANSFERRED_BY": transferred_by,
+            }
+            html_template = get_template("project_transfer_alert_en.html", values)
+            managers = organisation.managers
+            for manager in managers:
+                manager = await UserService.get_user_by_username(manager.username, db)
+                message.to_user_id = manager.id
+                await message.save(db)
+                if manager.email_address and manager.is_email_verified:
+                    await SMTPService._send_message(
+                        manager.email_address,
+                        message.subject,
+                        html_template,
+                        message.message,
+                    )
 
     @staticmethod
     def get_user_link(username: str):
@@ -554,9 +554,8 @@ class MessageService:
         chat: str,
         project_id: int,
         project_name: str,
-        database: Database,
     ):
-        async with database.connection() as db:
+        async with db_connection.database.connection() as db:
             usernames = await MessageService._parse_message_for_username(
                 message=chat, project_id=project_id, db=db
             )

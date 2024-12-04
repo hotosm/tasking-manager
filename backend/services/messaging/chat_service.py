@@ -11,7 +11,6 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
 from backend.services.team_service import TeamService
-from backend.db import db_connection
 
 
 class ChatService:
@@ -73,7 +72,6 @@ class ChatService:
                 chat_message.message,
                 chat_dto.project_id,
                 project_name,
-                db_connection.database,
             )
             return await ProjectChat.get_messages(chat_dto.project_id, db, 1, 5)
         else:

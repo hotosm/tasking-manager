@@ -87,16 +87,8 @@ class TokenAuthBackend(AuthenticationBackend):
             decoded_token, 604800
         )
         if not valid_token:
-            logger.debug("Token not valid...")
+            logger.debug("Token not valid.")
             return
-            # raise HTTPException(
-            #     status_code=401,
-            #     detail={
-            #         "Error": "Token is expired or invalid",
-            #         "SubCode": "InvalidToken",
-            #     },
-            #     headers={"WWW-Authenticate": "Bearer"},
-            # )
         tm.authenticated_user_id = user_id
         return AuthCredentials(["authenticated"]), SimpleUser(user_id)
 
@@ -287,3 +279,29 @@ async def login_required_optional(
         logger.debug("Token not valid")
         return None
     return AuthUserDTO(id=user_id)
+
+
+async def pm_only(
+    Authorization: str = Security(APIKeyHeader(name="Authorization")),
+):
+    if not Authorization:
+        raise HTTPException(status_code=401, detail="Authorization header missing")
+    try:
+        scheme, credentials = Authorization.split()
+        if scheme.lower() != "token":
+            raise HTTPException(status_code=401, detail="Invalid authentication scheme")
+        try:
+            decoded_token = base64.b64decode(credentials).decode("ascii")
+        except UnicodeDecodeError:
+            logger.debug("Unable to decode token")
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except (ValueError, UnicodeDecodeError, binascii.Error):
+        raise AuthenticationError("Invalid auth credentials")
+    valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
+    if not valid_token:
+        logger.debug("Token not valid")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"Error": "Token is expired or invalid", "SubCode": "InvalidToken"},
+            headers={"WWW-Authenticate": "Bearer"},
+        )

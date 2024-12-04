@@ -32,8 +32,7 @@ class UserDTO(BaseModel):
     mapping_level: Optional[str] = Field(None, alias="mappingLevel")
     projects_mapped: Optional[int] = Field(None, alias="projectsMapped")
     email_address: Optional[str] = Field(None, alias="emailAddress")
-
-    is_email_verified: Optional[str] = Field(
+    is_email_verified: Optional[bool] = Field(
         None, alias="isEmailVerified", serialize_when_none=False
     )
     is_expert: bool = Field(None, alias="isExpert", serialize_when_none=False)

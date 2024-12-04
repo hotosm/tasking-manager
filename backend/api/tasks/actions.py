@@ -1,5 +1,5 @@
 from databases import Database
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query, Request, BackgroundTasks
 from fastapi.responses import JSONResponse
 from loguru import logger
 
@@ -228,6 +228,7 @@ async def post(
     request: Request,
     project_id: int,
     task_id: int,
+    background_tasks: BackgroundTasks,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
 ):
@@ -312,7 +313,9 @@ async def post(
     try:
         await ProjectService.exists(project_id, db)
         async with db.transaction():
-            task = await MappingService.unlock_task_after_mapping(mapped_task, db)
+            task = await MappingService.unlock_task_after_mapping(
+                mapped_task, db, background_tasks
+            )
             return task
 
     except MappingServiceError as e:
@@ -591,6 +594,7 @@ async def post(
 async def post(
     request: Request,
     project_id: int,
+    background_tasks: BackgroundTasks,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
 ):
@@ -662,11 +666,10 @@ async def post(
         )
     try:
         await ProjectService.exists(project_id, db)
-        async with db.transaction():
-            tasks = await ValidatorService.unlock_tasks_after_validation(
-                validated_dto, db
-            )
-            return tasks
+        tasks = await ValidatorService.unlock_tasks_after_validation(
+            validated_dto, db, background_tasks
+        )
+        return tasks
     except ValidatorServiceError as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},

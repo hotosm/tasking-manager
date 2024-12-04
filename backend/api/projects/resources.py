@@ -255,8 +255,6 @@ async def post(
         )
 
 
-# @router.head("/{project_id}", response_model=ProjectDTO)
-# @requires('authenticated')
 def head(request: Request, project_id):
     """
     Retrieves a Tasking-Manager project

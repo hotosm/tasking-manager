@@ -2,6 +2,7 @@ import json
 
 import geojson
 from databases import Database
+from fastapi import BackgroundTasks
 from loguru import logger
 
 from backend.config import settings
@@ -19,6 +20,7 @@ from backend.models.postgis.user import User
 from backend.models.postgis.utils import InvalidData, InvalidGeoJson
 from backend.services.grid.grid_service import GridService
 from backend.services.license_service import LicenseService
+from backend.services.messaging.message_service import MessageService
 from backend.services.organisation_service import OrganisationService
 from backend.services.team_service import TeamService
 from backend.services.users.user_service import UserService
@@ -330,61 +332,54 @@ class ProjectAdminService:
         transfering_user_id: int,
         username: str,
         db: Database,
-        # background_tasks: BackgroundTasks,
+        background_tasks: BackgroundTasks,
     ):
         """Transfers project from old owner (transfering_user_id) to new owner (username)"""
-        project = await Project.get(project_id, db)
-        new_owner = await UserService.get_user_by_username(username, db)
-        author_id = project.author_id
-        if not author_id:
-            raise ProjectAdminServiceError(
-                "TransferPermissionError- User does not have permissions to transfer project"
-            )
-        author = await User.get_by_id(author_id, db)
-        if username == author.username:
-            return
+        async with db.transaction():
+            project = await Project.get(project_id, db)
+            new_owner = await UserService.get_user_by_username(username, db)
+            author_id = project.author_id
+            if not author_id:
+                raise ProjectAdminServiceError(
+                    "TransferPermissionError- User does not have permissions to transfer project"
+                )
+            author = await User.get_by_id(author_id, db)
+            if username == author.username:
+                return
 
-        is_admin = await UserService.is_user_an_admin(transfering_user_id, db)
+            is_admin = await UserService.is_user_an_admin(transfering_user_id, db)
 
-        is_author = UserService.is_user_the_project_author(
-            transfering_user_id, project.author_id
-        )
-        is_org_manager = await OrganisationService.is_user_an_org_manager(
-            project.organisation_id, transfering_user_id, db
-        )
-        if not (is_admin or is_author or is_org_manager):
-            raise ProjectAdminServiceError(
-                "TransferPermissionError- User does not have permissions to transfer project"
+            is_author = UserService.is_user_the_project_author(
+                transfering_user_id, project.author_id
             )
+            is_org_manager = await OrganisationService.is_user_an_org_manager(
+                project.organisation_id, transfering_user_id, db
+            )
+            if not (is_admin or is_author or is_org_manager):
+                raise ProjectAdminServiceError(
+                    "TransferPermissionError- User does not have permissions to transfer project"
+                )
 
-        is_new_owner_org_manager = await OrganisationService.is_user_an_org_manager(
-            project.organisation_id, new_owner.id, db
-        )
-        is_new_owner_admin = await UserService.is_user_an_admin(new_owner.id, db)
-        if not (is_new_owner_org_manager or is_new_owner_admin):
-            error_message = (
-                "InvalidNewOwner- New owner must be project's org manager or TM admin"
+            is_new_owner_org_manager = await OrganisationService.is_user_an_org_manager(
+                project.organisation_id, new_owner.id, db
             )
-            logger.debug(error_message)
-            raise ValueError(error_message)
-        else:
-            transferred_by = await User.get_by_id(transfering_user_id, db)
-            transferred_by = transferred_by.username
-            project.author_id = new_owner.id
-            await Project.update_project_author(project_id, new_owner.id, db)
-            # TODO
-            # Adding the background task
-            # background_tasks.add_task(
-            #     await MessageService.send_project_transfer_message,
-            #     project_id,
-            #     username,
-            #     transferred_by,
-            #     db
-            # )
-            # threading.Thread(
-            #     target=MessageService.send_project_transfer_message,
-            #     args=(project_id, username, transferred_by, db),
-            # ).start()
+            is_new_owner_admin = await UserService.is_user_an_admin(new_owner.id, db)
+            if not (is_new_owner_org_manager or is_new_owner_admin):
+                error_message = "InvalidNewOwner- New owner must be project's org manager or TM admin"
+                logger.debug(error_message)
+                raise ValueError(error_message)
+            else:
+                transferred_by = await User.get_by_id(transfering_user_id, db)
+                transferred_by = transferred_by.username
+                project.author_id = new_owner.id
+                await Project.update_project_author(project_id, new_owner.id, db)
+
+            background_tasks.add_task(
+                MessageService.send_project_transfer_message,
+                project_id,
+                username,
+                transferred_by,
+            )
 
     @staticmethod
     async def is_user_action_permitted_on_project(

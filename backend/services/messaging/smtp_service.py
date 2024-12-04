@@ -3,9 +3,10 @@ import urllib.parse
 from fastapi_mail import MessageSchema, MessageType
 from itsdangerous import URLSafeTimedSerializer
 from loguru import logger
+from databases import Database
 
 # from backend import mail, create_app
-from backend import create_app, mail
+from backend import mail
 from backend.config import settings
 from backend.models.postgis.message import Message as PostgisMessage
 from backend.models.postgis.statuses import EncouragingEmailType
@@ -69,61 +70,58 @@ class SMTPService:
         project_id: int = None,
         project_name: str = None,
         project_completion: int = None,
+        db: Database = None,
     ):
         """Sends an encouraging email to a users when a project they have contributed to make progress"""
         from backend.services.users.user_service import UserService
 
-        app = (
-            create_app()
-        )  # Because message-all run on background thread it needs it's own app context
-        with app.app_context():
-            if email_type == EncouragingEmailType.PROJECT_PROGRESS.value:
-                subject = "The project you have contributed to has made progress."
-            elif email_type == EncouragingEmailType.PROJECT_COMPLETE.value:
-                subject = "The project you have contributed to has been completed."
-            values = {
-                "EMAIL_TYPE": email_type,
-                "PROJECT_ID": project_id,
-                "PROJECT_NAME": project_name,
-                "PROJECT_COMPLETION": project_completion,
-            }
-            contributor_ids = PostgisMessage.get_all_contributors(project_id)
-            for contributor_id in contributor_ids:
-                contributor = UserService.get_user_by_id(contributor_id[0])
-                values["USERNAME"] = contributor.username
-                if email_type == EncouragingEmailType.BEEN_SOME_TIME.value:
-                    recommended_projects = UserService.get_recommended_projects(
-                        contributor.username, "en"
-                    ).results
-                    projects = []
-                    for recommended_project in recommended_projects[:4]:
-                        projects.append(
-                            {
-                                "org_logo": recommended_project.organisation_logo,
-                                "priority": recommended_project.priority,
-                                "name": recommended_project.name,
-                                "id": recommended_project.project_id,
-                                "description": recommended_project.short_description,
-                                "total_contributors": recommended_project.total_contributors,
-                                "difficulty": recommended_project.difficulty,
-                                "progress": recommended_project.percent_mapped,
-                                "due_date": recommended_project.due_date,
-                            }
-                        )
+        if email_type == EncouragingEmailType.PROJECT_PROGRESS.value:
+            subject = "The project you have contributed to has made progress."
+        elif email_type == EncouragingEmailType.PROJECT_COMPLETE.value:
+            subject = "The project you have contributed to has been completed."
+        values = {
+            "EMAIL_TYPE": email_type,
+            "PROJECT_ID": project_id,
+            "PROJECT_NAME": project_name,
+            "PROJECT_COMPLETION": project_completion,
+        }
+        contributor_ids = await PostgisMessage.get_all_contributors(project_id, db)
+        for contributor_id in contributor_ids:
+            contributor = await UserService.get_user_by_id(contributor_id, db)
+            values["USERNAME"] = contributor.username
+            if email_type == EncouragingEmailType.BEEN_SOME_TIME.value:
+                recommended_projects = await UserService.get_recommended_projects(
+                    contributor.username, "en", db
+                ).results
+                projects = []
+                for recommended_project in recommended_projects[:4]:
+                    projects.append(
+                        {
+                            "org_logo": recommended_project.organisation_logo,
+                            "priority": recommended_project.priority,
+                            "name": recommended_project.name,
+                            "id": recommended_project.project_id,
+                            "description": recommended_project.short_description,
+                            "total_contributors": recommended_project.total_contributors,
+                            "difficulty": recommended_project.difficulty,
+                            "progress": recommended_project.percent_mapped,
+                            "due_date": recommended_project.due_date,
+                        }
+                    )
 
-                    values["PROJECTS"] = projects
-                html_template = get_template("encourage_mapper_en.html", values)
-                if (
-                    contributor.email_address
-                    and contributor.is_email_verified
-                    and contributor.projects_notifications
-                ):
-                    logger.debug(
-                        f"Sending {email_type} email to {contributor.email_address} for project {project_id}"
-                    )
-                    await SMTPService._send_message(
-                        contributor.email_address, subject, html_template
-                    )
+                values["PROJECTS"] = projects
+            html_template = get_template("encourage_mapper_en.html", values)
+            if (
+                contributor.email_address
+                and contributor.is_email_verified
+                and contributor.projects_notifications
+            ):
+                logger.debug(
+                    f"Sending {email_type} email to {contributor.email_address} for project {project_id}"
+                )
+                await SMTPService._send_message(
+                    contributor.email_address, subject, html_template
+                )
 
     @staticmethod
     async def send_email_alert(
