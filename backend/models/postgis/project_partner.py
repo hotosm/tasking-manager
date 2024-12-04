@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 from databases import Database
 from sqlalchemy import Column, DateTime, ForeignKey, Integer
 
-from backend import db
 from backend.db import Base
 from backend.models.dtos.project_partner_dto import (
     ProjectPartnerAction,
@@ -104,15 +103,6 @@ class ProjectPartnershipHistory(Base):
         }
         result = await db.fetch_one(query, values=values)
         return result["id"]
-
-    def save(self):
-        """Save changes to db"""
-        db.session.commit()
-
-    def delete(self):
-        """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
 
 
 class ProjectPartnership(Base):

@@ -1,8 +1,6 @@
 from sqlalchemy import Column, String, Integer
 from backend.models.dtos.tags_dto import TagsDTO
-from backend.db import Base, get_session
-
-session = get_session()
+from backend.db import Base
 
 
 class Tags(Base):

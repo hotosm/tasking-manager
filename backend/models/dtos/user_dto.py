@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import field_validator
@@ -154,7 +154,7 @@ class MappedProject(BaseModel):
     tasks_mapped: Optional[int] = Field(None, alias="tasksMapped")
     tasks_validated: Optional[int] = Field(None, alias="tasksValidated")
     status: Optional[str] = None
-    centroid: Optional[str] = None
+    centroid: Optional[Dict] = None
 
     class Config:
         populate_by_name = True

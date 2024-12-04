@@ -1,21 +1,28 @@
 from datetime import date, timedelta
-from backend.services.stats_service import StatsService
-from backend.api.utils import validate_date_input
+
+from databases import Database
 from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from starlette.authentication import requires
+
+from backend.api.utils import validate_date_input
+from backend.db import get_db
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.services.stats_service import StatsService
+from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
     prefix="/tasks",
     tags=["tasks"],
-    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 
 
 @router.get("/statistics/")
-@requires("authenticated")
-async def get(request: Request):
+async def get(
+    request: Request,
+    organisation_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
     """
     Get Task Stats
     ---

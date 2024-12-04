@@ -1,18 +1,15 @@
 import pandas as pd
+from cachetools import TTLCache
+from databases import Database
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MultiLabelBinarizer
-from cachetools import TTLCache
 
 from backend.exceptions import NotFound
+from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import ProjectStatus
-from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
-from backend.db import get_session
-from databases import Database
-
-session = get_session()
 
 similar_projects_cache = TTLCache(maxsize=1000, ttl=60 * 60 * 24)  # 24 hours
 

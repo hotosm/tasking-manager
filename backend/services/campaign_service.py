@@ -1,10 +1,7 @@
-# from flask import current_app
-# from psycopg2.errors import UniqueViolation, NotNullViolation
 from databases import Database
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 
-from backend.db import get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.campaign_dto import (
     CampaignDTO,
@@ -15,8 +12,6 @@ from backend.models.dtos.campaign_dto import (
 from backend.models.postgis.campaign import Campaign
 from backend.services.organisation_service import OrganisationService
 from backend.services.project_service import ProjectService
-
-session = get_session()
 
 
 class CampaignService:

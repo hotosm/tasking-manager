@@ -1,11 +1,9 @@
 from databases import Database
 from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String, Table, select
 
-from backend.db import Base, get_session
-from backend.exceptions import NotFound
-from backend.models.dtos.interests_dto import InterestDTO, InterestsListDTO
+from backend.db import Base
+from backend.models.dtos.interests_dto import InterestDTO
 
-session = get_session()
 
 # Secondary table defining many-to-many join for interests of a user.
 user_interests = Table(
@@ -43,34 +41,6 @@ class Interest(Base):
             return Interest(**result)
         return None
 
-    @staticmethod
-    def get_by_name(name: str):
-        """Get interest by name"""
-        interest = session.query(Interest).filter(Interest.name == name).first()
-        if interest is None:
-            raise NotFound(sub_code="INTEREST_NOT_FOUND", interest_name=name)
-
-        return interest
-
-    def update(self, dto):
-        """Update existing interest"""
-        self.name = dto.name
-        session.commit()
-
-    def create(self):
-        """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
-
-    def save(self):
-        """Save changes to db"""
-        session.commit()
-
-    def delete(self):
-        """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
-
     def as_dto(self) -> InterestDTO:
         """Get the interest from the DB"""
         dto = InterestDTO()
@@ -78,12 +48,3 @@ class Interest(Base):
         dto.name = self.name
 
         return dto
-
-    @staticmethod
-    def get_all_interests():
-        """Get all interests"""
-        query = session.query(Interest).all()
-        interest_list_dto = InterestsListDTO()
-        interest_list_dto.interests = [interest.as_dto() for interest in query]
-
-        return interest_list_dto

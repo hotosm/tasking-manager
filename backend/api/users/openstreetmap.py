@@ -1,23 +1,26 @@
-from backend.services.users.user_service import UserService, OSMServiceError
-from fastapi import APIRouter, Depends, Request
-from backend.db import get_session
-from starlette.authentication import requires
-from backend.db import get_db
 from databases import Database
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
+
+from backend.db import get_db
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.services.users.authentication_service import login_required
+from backend.services.users.user_service import OSMServiceError, UserService
 
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 
 
-# class UsersOpenStreetMapAPI(Resource):
-# @token_auth.login_required
 @router.get("/{username}/openstreetmap/")
-@requires("authenticated")
-async def get(request: Request, db: Database = Depends(get_db), username: str = None):
+async def get(
+    request: Request,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+    username: str = None,
+):
     """
     Get details from OpenStreetMap for a specified username
     ---
@@ -54,4 +57,4 @@ async def get(request: Request, db: Database = Depends(get_db), username: str = 
         osm_dto = await UserService.get_osm_details_for_user(username, db)
         return osm_dto.model_dump(by_alias=True)
     except OSMServiceError as e:
-        return {"Error": str(e)}, 502
+        return JSONResponse(content={"Error": str(e)}, status_code=502)
