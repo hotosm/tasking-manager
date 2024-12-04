@@ -118,7 +118,7 @@ async def get(
         )
         sort_by = request.query_params.get("sort_by", "-action_date")
 
-        tasks = UserService.get_tasks_dto(
+        tasks = await UserService.get_tasks_dto(
             user.id,
             project_id=project_id,
             project_status=project_status,

@@ -11,12 +11,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.models.dtos.notification_dto import NotificationDTO
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
-
-session = get_session()
 
 
 class Notification(Base):
@@ -42,14 +40,6 @@ class Notification(Base):
         dto.date = self.date
 
         return dto
-
-    def save(self):
-        session.add(self)
-        session.commit()
-
-    def update(self):
-        self.date = timestamp()
-        session.commit()
 
     @staticmethod
     async def get_unread_message_count(user_id: int, db: Database) -> int:

@@ -12,7 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import backref, relationship
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import (
     NewOrganisationDTO,
@@ -23,9 +23,6 @@ from backend.models.dtos.organisation_dto import (
 from backend.models.postgis.campaign import Campaign, campaign_organisations
 from backend.models.postgis.statuses import OrganisationType
 from backend.models.postgis.user import User
-
-session = get_session()
-
 
 # Secondary table defining many-to-many relationship between organisations and managers
 organisation_managers = Table(
@@ -64,14 +61,6 @@ class Organisation(Base):
     campaign = relationship(
         Campaign, secondary=campaign_organisations, backref="organisation"
     )
-
-    def create(self, session):
-        """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
-
-    def save(self):
-        session.commit()
 
     async def create_from_dto(new_organisation_dto: NewOrganisationDTO, db: Database):
         """Creates a new organisation from a DTO and associates managers"""
@@ -164,11 +153,6 @@ class Organisation(Base):
                     )
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e)) from e
-
-    def delete(self):
-        """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
 
     async def can_be_deleted(organisation_id: int, db) -> bool:
         # Check if the organization has any projects

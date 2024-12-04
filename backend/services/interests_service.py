@@ -29,11 +29,6 @@ class InterestService:
         return interest
 
     @staticmethod
-    def get_by_name(name):
-        interest = Interest.get_by_name(name)
-        return interest
-
-    @staticmethod
     async def create(interest_name: str, db: Database) -> InterestDTO:
         query = """
             INSERT INTO interests (name)
@@ -80,8 +75,7 @@ class InterestService:
         interest_list_dto = InterestsListDTO()
         for record in results:
             interest_dto = InterestDTO(**record)
-            interest_dict = interest_dto.dict(exclude_unset=True)
-            interest_list_dto.interests.append(interest_dict)
+            interest_list_dto.interests.append(interest_dto)
         return interest_list_dto
 
     @staticmethod

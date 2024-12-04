@@ -5,10 +5,8 @@ from databases import Database
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, ForeignKey, Integer, Table
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.models.postgis.utils import InvalidGeoJson
-
-session = get_session()
 
 # Priority areas aren't shared, however, this arch was taken from TM2 to ease data migration
 project_priority_areas = Table(
@@ -76,9 +74,3 @@ class PriorityArea(Base):
             return pa
         else:
             raise Exception("Failed to insert Priority Area")
-
-    def get_as_geojson(self):
-        """Helper to translate geometry back to a GEOJson Poly"""
-        with db.engine.connect() as conn:
-            pa_geojson = conn.execute(self.geometry.ST_AsGeoJSON()).scalar()
-        return geojson.loads(pa_geojson)

@@ -1,9 +1,7 @@
 from databases import Database
 from sqlalchemy import Column, String, DateTime, insert
 
-from backend.db import Base, get_session
-
-session = get_session()
+from backend.db import Base
 
 
 class ReleaseVersion(Base):
@@ -12,9 +10,6 @@ class ReleaseVersion(Base):
     __tablename__ = "release_version"
     tag_name = Column(String(64), nullable=False, primary_key=True)
     published_at = Column(DateTime, nullable=False)
-
-    def update(self):
-        session.commit()
 
     async def save(self, db: Database):
         query = insert(ReleaseVersion.__table__).values(

@@ -1,4 +1,5 @@
 import geojson
+from databases import Database
 from sqlalchemy import (
     ARRAY,
     BigInteger,
@@ -13,7 +14,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.user_dto import (
     ListedUser,
@@ -36,9 +37,6 @@ from backend.models.postgis.statuses import (
     UserRole,
 )
 from backend.models.postgis.utils import timestamp
-
-session = get_session()
-from databases import Database
 
 
 class User(Base):
@@ -85,14 +83,6 @@ class User(Base):
         "License", secondary=user_licenses_table, overlaps="users"
     )
     interests = relationship(Interest, secondary=user_interests, backref="users")
-
-    def create(self):
-        """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
-
-    def save(self):
-        session.commit()
 
     @staticmethod
     async def get_by_id(user_id: int, db: Database):
@@ -434,11 +424,6 @@ class User(Base):
 
         return False
 
-    def delete(self):
-        """Delete the user in scope from DB"""
-        session.delete(self)
-        session.commit()
-
     def as_dto(self, logged_in_username: str) -> UserDTO:
         """Create DTO object from user in scope"""
         user_dto = UserDTO()
@@ -482,12 +467,6 @@ class User(Base):
                 user_dto.self_description_gender = self.self_description_gender
         return user_dto
 
-    def create_or_update_interests(self, interests_ids):
-        self.interests = []
-        objs = [Interest.get_by_id(i) for i in interests_ids]
-        self.interests.extend(objs)
-        session.commit()
-
 
 class UserEmail(Base):
     __tablename__ = "users_with_email"
@@ -499,9 +478,6 @@ class UserEmail(Base):
         """Creates and saves the current model to the DB"""
         user = await db.execute(insert(UserEmail.__table__).values(email=self.email))
         return user
-
-    def save(self):
-        session.commit()
 
     async def delete(self, db: Database):
         """Deletes the current model from the DB"""

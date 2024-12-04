@@ -15,15 +15,13 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import false
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.postgis.project import Project
 from backend.models.postgis.task import Task, TaskAction
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
-
-session = get_session()
 
 
 class MessageType(Enum):
@@ -181,11 +179,6 @@ class Message(Base):
 
         return [contributor["username"] for contributor in contributors]
 
-    def mark_as_read(self):
-        """Mark the message in scope as Read"""
-        self.read = True
-        session.commit()
-
     @staticmethod
     def get_unread_message_count(user_id: int):
         """Get count of unread messages for user"""
@@ -239,11 +232,6 @@ class Message(Base):
             delete_query += " AND message_type = ANY(:message_type_filters)"
             params["message_type_filters"] = message_type_filters
         await db.execute(delete_query, params)
-
-    def delete(self):
-        """Deletes the current model from the DB"""
-        session.delete(self)
-        session.commit()
 
     @staticmethod
     async def mark_multiple_messages_read(

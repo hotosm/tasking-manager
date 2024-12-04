@@ -1,21 +1,18 @@
-from fastapi import APIRouter, Depends, Request, Body
+from databases import Database
+from fastapi import APIRouter, Body, Depends, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 
-from backend.models.dtos.user_dto import UserDTO, UserRegisterEmailDTO
-from databases import Database
 from backend.db import get_db
-from backend.services.users.authentication_service import login_required
-from backend.models.dtos.user_dto import AuthUserDTO
-from backend.services.messaging.message_service import MessageService
-from backend.services.users.user_service import UserService, UserServiceError
+from backend.models.dtos.user_dto import AuthUserDTO, UserDTO, UserRegisterEmailDTO
 from backend.services.interests_service import InterestService
-from backend.db import get_session
+from backend.services.messaging.message_service import MessageService
+from backend.services.users.authentication_service import login_required
+from backend.services.users.user_service import UserService, UserServiceError
 
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    dependencies=[Depends(get_session)],
     responses={404: {"description": "Not found"}},
 )
 

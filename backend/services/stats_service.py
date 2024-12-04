@@ -5,7 +5,6 @@ from cachetools import TTLCache, cached
 from databases import Database
 from sqlalchemy import func, or_, select
 
-from backend.db import get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.models.dtos.stats_dto import (
@@ -35,8 +34,6 @@ from backend.services.organisation_service import OrganisationService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.project_service import ProjectService
 from backend.services.users.user_service import UserService
-
-session = get_session()
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 

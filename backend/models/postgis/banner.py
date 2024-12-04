@@ -3,10 +3,8 @@ from databases import Database
 from markdown import markdown
 from sqlalchemy import Boolean, Column, Integer, String, insert, update
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.models.dtos.banner_dto import BannerDTO
-
-session = get_session()
 
 
 class Banner(Base):
@@ -25,10 +23,6 @@ class Banner(Base):
             message=self.message, visible=self.visible
         )
         await db.execute(query)
-
-    def update(self):
-        """Updates the current model in the DB"""
-        session.commit()
 
     async def update_from_dto(self, db: Database, dto: BannerDTO):
         """Updates the current model in the DB"""

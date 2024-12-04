@@ -5,7 +5,7 @@ from markdown import markdown
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.models.dtos.message_dto import (
     ChatMessageDTO,
     ListChatMessageDTO,
@@ -14,8 +14,6 @@ from backend.models.dtos.message_dto import (
 )
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
-
-session = get_session()
 
 
 class ProjectChat(Base):

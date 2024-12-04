@@ -1,10 +1,8 @@
 from databases import Database
 from sqlalchemy import Column, ForeignKey, Integer, String, delete, update
 
-from backend.db import Base, get_session
+from backend.db import Base
 from backend.models.dtos.project_dto import CustomEditorDTO
-
-session = get_session()
 
 
 class CustomEditor(Base):
@@ -15,20 +13,6 @@ class CustomEditor(Base):
     name = Column(String(50), nullable=False)
     description = Column(String)
     url = Column(String, nullable=False)
-
-    def create(self):
-        """Creates and saves the current model to the DB"""
-        session.add(self)
-        session.commit()
-
-    def save(self):
-        """Save changes to db"""
-        session.commit()
-
-    @staticmethod
-    def get_by_project_id(project_id: int):
-        """Get custom editor by it's project id"""
-        return session.get(CustomEditor, project_id)
 
     @classmethod
     async def create_from_dto(cls, project_id: int, dto: CustomEditorDTO, db: Database):

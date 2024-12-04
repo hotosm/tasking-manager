@@ -4,11 +4,8 @@ from datetime import datetime
 from databases import Database
 from fastapi import HTTPException
 from loguru import logger
-
-# from flask import current_app
 from sqlalchemy.exc import IntegrityError
 
-from backend.db import get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import (
     ListOrganisationsDTO,
@@ -33,8 +30,6 @@ from backend.models.postgis.statuses import (
 )
 from backend.models.postgis.team import TeamVisibility
 from backend.services.users.user_service import UserService
-
-session = get_session()
 
 
 class OrganisationServiceError(Exception):
