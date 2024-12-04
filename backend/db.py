@@ -43,12 +43,6 @@ class DatabaseConnection:
 db_connection = DatabaseConnection()  # Create a single instance
 
 
-# remove
-def get_session():
-    """Yield a new database session."""
-    return db_connection.create_db_session()
-
-
 async def get_db():
     """Get the database connection from the pool."""
     async with db_connection.database.connection() as connection:

@@ -1,17 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
 
-# class InterestDTO(Model):
-#     """DTO for a interest."""
-
-#     id = IntType()
-#     name = StringType(required=True, min_length=1)
-#     user_selected = BooleanType(
-#         serialized_name="userSelected", serialize_when_none=False
-#     )
-#     count_projects = IntType(serialize_when_none=False, serialized_name="countProjects")
-#     count_users = IntType(serialize_when_none=False, serialized_name="countUsers")
-
 
 class InterestDTO(BaseModel):
     id: Optional[int] = None

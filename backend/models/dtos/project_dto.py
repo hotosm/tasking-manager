@@ -1,7 +1,5 @@
-# from schematics import Model
-# from schematics.exceptions import ValidationError
 from datetime import date, datetime
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Any
 
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, root_validator
@@ -452,7 +450,7 @@ class ListSearchResultDTO(BaseModel):
 class ProjectSearchResultsDTO(BaseModel):
     """Contains all results for the search criteria"""
 
-    map_results: Optional[List] = Field(default_factory=list, alias="mapResults")
+    map_results: Optional[Any] = Field(default_factory=list, alias="mapResults")
     results: Optional[List["ListSearchResultDTO"]] = Field(default_factory=list)
     pagination: Optional["Pagination"] = Field(default_factory=dict)
 

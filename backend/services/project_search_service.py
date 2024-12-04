@@ -12,7 +12,6 @@ from loguru import logger
 from shapely.geometry import Polygon, box
 
 from backend.api.utils import validate_date_input
-from backend.db import get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import (
     ListSearchResultDTO,
@@ -36,8 +35,6 @@ from backend.models.postgis.statuses import (
     ValidationPermission,
 )
 from backend.services.users.user_service import UserService
-
-session = get_session()
 
 search_cache = TTLCache(maxsize=128, ttl=300)
 csv_download_cache = TTLCache(maxsize=16, ttl=600)

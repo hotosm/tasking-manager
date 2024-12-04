@@ -7,7 +7,6 @@ from sqlalchemy import Time, and_, cast, desc, distinct, func, insert, or_, sele
 from sqlalchemy.sql import outerjoin
 
 from backend.config import Settings
-from backend.db import get_session
 from backend.exceptions import NotFound
 from backend.models.dtos.interests_dto import InterestDTO, InterestsListDTO
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
@@ -40,7 +39,6 @@ from backend.services.messaging.template_service import (
 from backend.services.users.osm_service import OSMService, OSMServiceError
 
 settings = Settings()
-session = get_session()
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -514,8 +512,7 @@ class UserService:
 
         if result and result["total_time"]:
             total_validation_time = result["total_time"]
-            # TODO Handle typecasting.
-            stats_dto.time_spent_validating = round(float(total_validation_time), 1)
+            stats_dto.time_spent_validating = int(total_validation_time)
             stats_dto.total_time_spent += stats_dto.time_spent_validating
 
         # Total mapping time
@@ -533,9 +530,7 @@ class UserService:
 
         total_mapping_time = await db.fetch_one(total_mapping_time_query)
         if total_mapping_time and total_mapping_time[0]:
-            stats_dto.time_spent_mapping = round(
-                total_mapping_time[0].total_seconds(), 1
-            )
+            stats_dto.time_spent_mapping = int(total_mapping_time[0].total_seconds())
             stats_dto.total_time_spent += stats_dto.time_spent_mapping
 
         stats_dto.contributions_interest = await UserService.get_interests_stats(
@@ -703,90 +698,106 @@ class UserService:
     @staticmethod
     async def get_recommended_projects(
         user_name: str, preferred_locale: str, db: Database
-    ):
-        """Gets all projects a user has mapped or validated on"""
+    ) -> ProjectSearchResultsDTO:
         from backend.services.project_search_service import ProjectSearchService
 
+        """Gets all projects a user has mapped or validated on"""
         limit = 20
-        # 1. Retrieve the user information
-        query = select(User.id, User.mapping_level).where(User.username == user_name)
-        user = await db.fetch_one(query)
-        if user is None:
+
+        # Get user details
+        user_query = """
+            SELECT id, mapping_level
+            FROM users
+            WHERE username = :user_name
+        """
+        user = await db.fetch_one(user_query, {"user_name": user_name})
+        if not user:
             raise NotFound(sub_code="USER_NOT_FOUND", username=user_name)
 
-        user_id = user["id"]
-        user_mapping_level = user["mapping_level"]
+        # Get all projects the user has contributed to
+        contributed_projects_query = """
+            SELECT DISTINCT project_id
+            FROM task_history
+            WHERE user_id = :user_id
+        """
+        contributed_projects = await db.fetch_all(
+            contributed_projects_query, {"user_id": user["id"]}
+        )
+        contributed_project_ids = [row["project_id"] for row in contributed_projects]
 
-        # 2. Get all project IDs the user has contributed to
-        sq = (
-            select(distinct(TaskHistory.project_id))
-            .where(TaskHistory.user_id == user_id)
-            .alias("contributed_projects")
+        # Fetch campaign tags for contributed or authored projects
+        campaign_tags_query = """
+            SELECT DISTINCT c.name AS tag
+            FROM campaigns c
+            JOIN campaign_projects cp ON c.id = cp.campaign_id
+            WHERE cp.project_id = ANY(:project_ids) OR :user_id IN (
+                SELECT p.author_id
+                FROM projects p
+                WHERE p.id = cp.project_id
+            )
+        """
+        campaign_tags = await db.fetch_all(
+            query=campaign_tags_query,
+            values={"user_id": user["id"], "project_ids": contributed_project_ids},
         )
 
-        # 3. Get all campaigns for the contributed projects or authored by the user
-        campaign_tags_query = select(distinct(Project.campaign).label("tag")).where(
-            or_(Project.author_id == user_id, Project.id.in_(sq))
+        campaign_tags_set = {row["tag"] for row in campaign_tags}
+        # Get projects with matching campaign tags but exclude user contributions
+        recommended_projects_query = """
+            SELECT DISTINCT
+                p.*,
+                o.name AS organisation_name,
+                o.logo AS organisation_logo
+            FROM projects p
+            LEFT JOIN organisations o ON p.organisation_id = o.id
+            JOIN campaign_projects cp ON p.id = cp.project_id
+            JOIN campaigns c ON cp.campaign_id = c.id
+            WHERE c.name = ANY(:campaign_tags)
+            AND p.author_id != :user_id
+            LIMIT :limit
+        """
+        recommended_projects = await db.fetch_all(
+            query=recommended_projects_query,
+            values={
+                "campaign_tags": list(campaign_tags_set),
+                "user_id": user["id"],
+                "limit": limit,
+            },
         )
-        campaign_tags = await db.fetch_all(campaign_tags_query)
-        campaign_tags_list = [tag["tag"] for tag in campaign_tags]
 
-        # 4. Get projects that match these campaign tags but exclude those already contributed
-        query, params = await ProjectSearchService.create_search_query(db)
-
-        # Prepare the campaign tags condition
-        if campaign_tags_list:
-            campaign_tags_placeholder = ", ".join(
-                [f":tag{i}" for i in range(len(campaign_tags_list))]
-            )
-            campaign_tags_condition = (
-                f" AND p.campaign IN ({campaign_tags_placeholder})"
-            )
-        else:
-            campaign_tags_condition = ""  # No condition if list is empty
-
-        # Modify the query to include the campaign tags condition and limit
-        final_query = f"{query} {campaign_tags_condition} LIMIT :limit"
-
-        campagin_params = params.copy()
-        # Update params to include campaign tags
-        for i, tag in enumerate(campaign_tags_list):
-            campagin_params[f"tag{i}"] = tag
-        campagin_params["limit"] = limit
-
-        # Execute the final query with parameters
-        projs = await db.fetch_all(final_query, campagin_params)
-        project_ids = [proj["id"] for proj in projs]
-
-        # 5. Get projects filtered by user's mapping level if fewer than the limit
-        if len(projs) < limit:
-            remaining_projs_query = f"""
-                {query}
-                AND p.difficulty = :difficulty
+        # Get only projects matching the user's mapping level if needed
+        len_projs = len(recommended_projects)
+        if len_projs < limit:
+            remaining_projects_query = """
+                SELECT DISTINCT p.*, o.name AS organisation_name, o.logo AS organisation_logo
+                FROM projects p
+                LEFT JOIN organisations o ON p.organisation_id = o.id
+                WHERE difficulty = :mapping_level
                 LIMIT :remaining_limit
             """
+            remaining_projects = await db.fetch_all(
+                remaining_projects_query,
+                {
+                    "mapping_level": user["mapping_level"],
+                    "remaining_limit": limit - len_projs,
+                },
+            )
+            recommended_projects.extend(remaining_projects)
 
-            params["difficulty"] = user_mapping_level
-            params["remaining_limit"] = limit - len(projs)
-            remaining_projs = await db.fetch_all(remaining_projs_query, params)
-            remaining_projs_ids = [proj["id"] for proj in remaining_projs]
-            project_ids.extend(remaining_projs_ids)
-            projs.extend(remaining_projs)
-
-        # 6. Create DTO for the results
         dto = ProjectSearchResultsDTO()
 
-        # Get all total contributions for each project
+        project_ids = [project["id"] for project in recommended_projects]
         contrib_counts = await ProjectSearchService.get_total_contributions(
             project_ids, db
         )
 
-        # Combine projects and their contribution counts
-        zip_items = zip(projs, contrib_counts)
         dto.results = [
-            await ProjectSearchService.create_result_dto(p, preferred_locale, t, db)
-            for p, t in zip_items
+            await ProjectSearchService.create_result_dto(
+                project, preferred_locale, contrib_count, db
+            )
+            for project, contrib_count in zip(recommended_projects, contrib_counts)
         ]
+        dto.pagination = None
 
         return dto
 

@@ -3,7 +3,6 @@ import json
 from databases import Database
 from sqlalchemy import Column, Integer, String
 
-from backend import db
 from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.partner_dto import PartnerDTO
@@ -27,20 +26,6 @@ class Partner(Base):
     permalink = Column(String(500), unique=True, nullable=True)
     website_links = Column(String, nullable=True)
     mapswipe_group_id = Column(String, nullable=True)
-
-    def create(self):
-        """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
-
-    def save(self):
-        """Save changes to DB"""
-        db.session.commit()
-
-    def delete(self):
-        """Deletes from the DB"""
-        db.session.delete(self)
-        db.session.commit()
 
     @staticmethod
     async def get_all_partners(db: Database):
