@@ -5,7 +5,7 @@ from loguru import logger
 from shapely import GEOSException
 from shapely.errors import TopologicalError
 
-from backend.db import db_connection, get_db
+from backend.db import get_db
 from backend.models.dtos.grid_dto import GridDTO
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.user_dto import AuthUserDTO
@@ -30,6 +30,7 @@ router = APIRouter(
 @router.post("/{project_id}/actions/transfer-ownership/")
 async def post(
     request: Request,
+    background_tasks: BackgroundTasks,
     project_id: int,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -81,13 +82,10 @@ async def post(
             status_code=400,
         )
     try:
-        async with db.transaction():
-            await ProjectAdminService.transfer_project_to(
-                project_id, user.id, username, db
-            )
-            return JSONResponse(
-                content={"Success": "Project Transferred"}, status_code=200
-            )
+        await ProjectAdminService.transfer_project_to(
+            project_id, user.id, username, db, background_tasks
+        )
+        return JSONResponse(content={"Success": "Project Transferred"}, status_code=200)
     except (ValueError, ProjectAdminServiceError) as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
@@ -175,7 +173,6 @@ async def post(
             MessageService.send_message_to_all_contributors,
             project_id,
             message_dto,
-            db_connection.database,
         )
         return JSONResponse(content={"Success": "Messages started"}, status_code=200)
     except Exception as e:

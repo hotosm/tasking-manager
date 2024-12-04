@@ -1,4 +1,4 @@
-import threading
+import json
 from datetime import datetime, timedelta, timezone
 
 import geojson
@@ -9,7 +9,7 @@ from loguru import logger
 
 # # from flask import current_app
 from backend.config import get_settings
-from backend.db import get_session
+from backend.db import db_connection
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.project_dto import (
@@ -38,10 +38,6 @@ from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.team_service import TeamService
 from backend.services.users.user_service import UserService
-
-session = get_session()
-
-import json
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -524,7 +520,6 @@ class ProjectService:
 
         return True, "User allowed to validate"
 
-    # TODO: Implement Caching.
     @staticmethod
     @cached(summary_cache)
     def get_cached_project_summary(
@@ -711,58 +706,54 @@ class ProjectService:
         return project.organisation
 
     @staticmethod
-    async def send_email_on_project_progress(project_id: int, db: Database):
+    async def send_email_on_project_progress(project_id: int):
         """Send email to all contributors on project progress"""
-        current_settings = get_settings()
-        if not current_settings.SEND_PROJECT_EMAIL_UPDATES:
-            return
-        project = await ProjectService.get_project_by_id(project_id, db)
+        async with db_connection.database.connection() as db:
+            current_settings = get_settings()
+            if not current_settings.SEND_PROJECT_EMAIL_UPDATES:
+                return
+            project = await ProjectService.get_project_by_id(project_id, db)
 
-        project_completion = Project.calculate_tasks_percent(
-            "project_completion",
-            project.tasks_mapped,
-            project.tasks_validated,
-            project.total_tasks,
-            project.tasks_bad_imagery,
-        )
-
-        if project_completion == 50 and project.progress_email_sent:
-            return  # Don't send progress email if it's already sent
-        if project_completion in [50, 100]:
-            email_type = (
-                EncouragingEmailType.PROJECT_COMPLETE.value
-                if project_completion == 100
-                else EncouragingEmailType.PROJECT_PROGRESS.value
+            project_completion = Project.calculate_tasks_percent(
+                "project_completion",
+                project.tasks_mapped,
+                project.tasks_validated,
+                project.total_tasks,
+                project.tasks_bad_imagery,
             )
-            project_title_query = """
-                SELECT name
-                FROM project_info
-                WHERE project_id = :project_id AND locale = :locale
-            """
-            project_title = await db.fetch_val(
-                project_title_query,
-                values={"project_id": project_id, "locale": project["default_locale"]},
-            )
-
-            # Update progress_email_sent status
-            await db.execute(
+            if project_completion == 50 and project.progress_email_sent:
+                return  # Don't send progress email if it's already sent
+            if project_completion in [50, 100]:
+                email_type = (
+                    EncouragingEmailType.PROJECT_COMPLETE.value
+                    if project_completion == 100
+                    else EncouragingEmailType.PROJECT_PROGRESS.value
+                )
+                project_title_query = """
+                    SELECT name
+                    FROM project_info
+                    WHERE project_id = :project_id AND locale = :locale
                 """
-                UPDATE projects
-                SET progress_email_sent = TRUE
-                WHERE id = :project_id
-            """,
-                values={"project_id": project_id},
-            )
+                project_title = await db.fetch_val(
+                    project_title_query,
+                    values={
+                        "project_id": project_id,
+                        "locale": project["default_locale"],
+                    },
+                )
 
-            threading.Thread(
-                target=SMTPService.send_email_to_contributors_on_project_progress,
-                args=(
-                    email_type,
-                    project_id,
-                    project_title,
-                    project_completion,
-                ),
-            ).start()
+                # Update progress_email_sent status
+                await db.execute(
+                    """
+                    UPDATE projects
+                    SET progress_email_sent = TRUE
+                    WHERE id = :project_id
+                """,
+                    values={"project_id": project_id},
+                )
+                await SMTPService.send_email_to_contributors_on_project_progress(
+                    email_type, project_id, project_title, project_completion, db
+                )
 
     @staticmethod
     async def get_active_projects(interval: int, db: Database):

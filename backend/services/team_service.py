@@ -28,6 +28,7 @@ from backend.models.postgis.team import Team, TeamMembers
 from backend.services.messaging.message_service import MessageService
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
+from backend.db import db_connection
 
 
 class TeamServiceError(Exception):
@@ -789,10 +790,9 @@ class TeamService:
         team_name: str,
         message_dto: MessageDTO,
         user_id: int,
-        database: Database,
     ):
         try:
-            async with database.connection() as conn:
+            async with db_connection.database.connection() as conn:
                 team_members = await TeamService._get_active_team_members(team_id, conn)
                 user = await UserService.get_user_by_id(user_id, conn)
                 sender = user.username
