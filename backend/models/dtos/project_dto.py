@@ -441,7 +441,7 @@ class ListSearchResultDTO(BaseModel):
     last_updated: Optional[datetime] = Field(alias="lastUpdated", default=None)
     due_date: Optional[datetime] = Field(alias="dueDate", default=None)
     total_contributors: Optional[int] = Field(alias="totalContributors", default=None)
-    country: Optional[str] = Field(default="", serialize=False)
+    country: Optional[List[str]] = Field(default=None)
 
     class Config:
         populate_by_name = True
