@@ -1,5 +1,5 @@
 from databases import Database
-from fastapi import APIRouter, Depends, Query, Request, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Depends, Query, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 

@@ -88,8 +88,8 @@ class ProjectService:
         return project
 
     @staticmethod
-    async def auto_unlock_tasks(project_id: int, session):
-        await Task.auto_unlock_tasks(project_id, session)
+    async def auto_unlock_tasks(project_id: int, db: Database):
+        await Task.auto_unlock_tasks(project_id, db)
 
     @staticmethod
     def delete_tasks(project_id: int, tasks_ids):
