@@ -476,48 +476,6 @@ class TaskHistory(Base):
 
         await db.execute(query=duplicate_query, values=values)
 
-    # @staticmethod
-    # async def update_expired_and_locked_actions(
-    #     project_id: int, task_id: int, expiry_date: datetime, action_text: str, session
-    # ):
-    #     """
-    #     Sets auto unlock state to all not finished actions, that are older then the expiry date.
-    #     Action is considered as a not finished, when it is in locked state and doesn't have action text
-    #     :param project_id: Project ID in scope
-    #     :param task_id: Task in scope
-    #     :param expiry_date: Action created before this date is treated as expired
-    #     :param action_text: Text which will be set for all changed actions
-    #     :return:
-    #     """
-    #     result = await session.execute(
-    #         select(TaskHistory).filter(
-    #             TaskHistory.task_id == task_id,
-    #             TaskHistory.project_id == project_id,
-    #             TaskHistory.action_text.is_(None),
-    #             TaskHistory.action.in_(
-    #                 [
-    #                     TaskAction.LOCKED_FOR_VALIDATION.name,
-    #                     TaskAction.LOCKED_FOR_MAPPING.name,
-    #                     TaskAction.EXTENDED_FOR_MAPPING.name,
-    #                     TaskAction.EXTENDED_FOR_VALIDATION.name,
-    #                 ]
-    #             ),
-    #             TaskHistory.action_date <= expiry_date,
-    #         )
-    #     )
-    #     all_expired = result.scalars().all()
-    #     for task_history in all_expired:
-    #         unlock_action = (
-    #             TaskAction.AUTO_UNLOCKED_FOR_MAPPING
-    #             if task_history.action in ["LOCKED_FOR_MAPPING", "EXTENDED_FOR_MAPPING"]
-    #             else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
-    #         )
-
-    #         task_history.set_auto_unlock_action(unlock_action)
-    #         task_history.action_text = action_text
-
-    #     await session.commit()
-
     @staticmethod
     async def update_expired_and_locked_actions(
         task_id: int,
@@ -662,25 +620,6 @@ class TaskHistory(Base):
             ],
             db,
         )
-
-    # @staticmethod
-    # async def get_last_locked_or_auto_unlocked_action(
-    #     project_id: int, task_id: int, session
-    # ):
-    #     """Gets the most recent task history record with locked or auto unlocked action for the task"""
-
-    #     result = await TaskHistory.get_last_action_of_type(
-    #         project_id,
-    #         task_id,
-    #         [
-    #             TaskAction.LOCKED_FOR_MAPPING.name,
-    #             TaskAction.LOCKED_FOR_VALIDATION.name,
-    #             TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name,
-    #             TaskAction.AUTO_UNLOCKED_FOR_VALIDATION.name,
-    #         ],
-    #         session,
-    #     )
-    #     return result
 
     @staticmethod
     async def get_last_locked_or_auto_unlocked_action(
@@ -913,48 +852,6 @@ class Task(Base):
     async def auto_unlock_delta():
         return parse_duration(settings.TASK_AUTOUNLOCK_AFTER)
 
-    # @staticmethod
-    # async def auto_unlock_tasks(project_id: int, db: Database):
-    #     """Unlock all tasks locked for longer than the auto-unlock delta"""
-    #     expiry_delta = await Task.auto_unlock_delta()
-    #     lock_duration = (datetime.datetime.min + expiry_delta).time().isoformat()
-
-    #     expiry_date = datetime.datetime.utcnow() - expiry_delta
-
-    #     old_tasks = await db.execute(
-    #         select(Task.id)
-    #         .join(
-    #             TaskHistory,
-    #             (Task.id == TaskHistory.task_id)
-    #             & (Task.project_id == TaskHistory.project_id),
-    #         )
-    #         .filter(Task.task_status.in_([1, 3]))
-    #         .filter(
-    #             TaskHistory.action.in_(
-    #                 [
-    #                     "EXTENDED_FOR_MAPPING",
-    #                     "EXTENDED_FOR_VALIDATION",
-    #                     "LOCKED_FOR_VALIDATION",
-    #                     "LOCKED_FOR_MAPPING",
-    #                 ]
-    #             )
-    #         )
-    #         .filter(TaskHistory.action_text.is_(None))
-    #         .filter(Task.project_id == project_id)
-    #         .filter(TaskHistory.action_date <= expiry_date)
-    #     )
-    #     old_tasks = old_tasks.scalars().all()
-    #     if not old_tasks:
-    #         # no tasks older than the delta found, return without further processing
-    #         return
-
-    #     for old_task_id in old_tasks:
-    #         task = await db.get(Task, (old_task_id, project_id))
-    #         if task:
-    #             await Task.auto_unlock_expired_tasks(
-    #                 expiry_date, lock_duration, db
-    #             )
-
     @staticmethod
     async def auto_unlock_tasks(project_id: int, db: Database):
         """Unlock all tasks locked for longer than the auto-unlock delta."""
@@ -991,20 +888,6 @@ class Task(Base):
 
         for task_id in old_task_ids:
             await Task.auto_unlock_expired_tasks(task_id, project_id, expiry_date, db)
-
-    # async def auto_unlock_expired_tasks(self, expiry_date, lock_duration, session):
-    #     """Unlock all tasks locked before expiry date. Clears task lock if needed"""
-    #     await TaskHistory.update_expired_and_locked_actions(
-    #         self.project_id, self.id, expiry_date, lock_duration, session
-    #     )
-    #     last_action = await TaskHistory.get_last_locked_or_auto_unlocked_action(
-    #         self.project_id, self.id, session
-    #     )
-    #     if last_action.action in [
-    #         "AUTO_UNLOCKED_FOR_MAPPING",
-    #         "AUTO_UNLOCKED_FOR_VALIDATION",
-    #     ]:
-    #         self.clear_lock()
 
     @staticmethod
     async def auto_unlock_expired_tasks(
