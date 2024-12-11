@@ -6,7 +6,7 @@ from typing import Optional
 import geojson
 from databases import Database
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from loguru import logger
 
 from backend.db import get_db
@@ -1043,13 +1043,20 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
         project_dto = await ProjectService.get_project_dto_for_mapper(
             project_id, None, db, locale, True
         )
-        # TODO Send file.
+        # Handle file download if requested
         if as_file:
-            return send_file(
-                io.BytesIO(geojson.dumps(project_dto).encode("utf-8")),
-                mimetype="application/json",
-                as_attachment=True,
-                download_name=f"project_{str(project_id)}.json",
+            project_dto_str = geojson.dumps(
+                project_dto, indent=4
+            )  # Convert to GeoJSON string
+            file_bytes = io.BytesIO(project_dto_str.encode("utf-8"))
+            file_bytes.seek(0)  # Reset stream position
+
+            return StreamingResponse(
+                file_bytes,
+                media_type="application/geo+json",
+                headers={
+                    "Content-Disposition": f'attachment; filename="project_{project_id}.geojson"'
+                },
             )
 
         return project_dto
@@ -1158,15 +1165,19 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
     )
 
     project_aoi = await ProjectService.get_project_aoi(project_id, db)
-    # TODO as file.
-    if as_file:
-        return send_file(
-            io.BytesIO(geojson.dumps(project_aoi).encode("utf-8")),
-            mimetype="application/json",
-            as_attachment=True,
-            download_name=f"{str(project_id)}.geojson",
-        )
 
+    if as_file:
+        aoi_str = geojson.dumps(project_aoi, indent=4)  # Convert AOI to GeoJSON string
+        file_bytes = io.BytesIO(aoi_str.encode("utf-8"))
+        file_bytes.seek(0)  # Reset stream position
+
+        return StreamingResponse(
+            file_bytes,
+            media_type="application/geo+json",
+            headers={
+                "Content-Disposition": f'attachment; filename="{project_id}.geojson"'
+            },
+        )
     return project_aoi
 
 
