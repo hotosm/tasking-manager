@@ -18,7 +18,10 @@ clean:
 
 # Run frontend tests
 frontend-code-test:
-  docker compose run --rm tm-frontend bash -c "CI=true yarn test -w 3 --silent"
+  docker compose run --rm tm-frontend bash -c "export CI=true; yarn test -w 3 --silent"
+
+frontend-build-test:
+  docker compose run --rm tm-frontend bash -c "export CI=true; export GENERATE_SOURCEMAP=false; yarn build"
 
 # Run backend tests
 backend-code-check:
@@ -26,16 +29,51 @@ backend-code-check:
 
 # Run backend coverage tests
 backend-functional-tests:
-  docker run -d  \
-    -e SQLALCHEMY_DATABASE_URI="postgresql://taskingmanager@localhost/test_tm" \
-    -e POSTGRES_TEST_DB="test_tm" \
+  #!/bin/bash
+  set -euo pipefail
+
+  # Generate unique names for the network, containers, and images
+  POSTGRES_PASSWORD="tm"
+  NETWORK_NAME="network_$(uuidgen | cut -d'-' -f1)"
+  POSTGRES_CONTAINER_NAME="postgres_$(uuidgen | cut -d'-' -f1)"
+  BACKEND_CONTAINER_NAME="backend_$(uuidgen | cut -d'-' -f1)"
+  POSTGRES_IMAGE="postgis/postgis:${POSTGIS_TAG:-14-3.3}"
+  BACKEND_IMAGE="tm-backend-image:$(uuidgen | cut -d'-' -f1)"
+
+  # Create the network dynamically
+  echo "Creating network: $NETWORK_NAME"
+  docker network inspect "$NETWORK_NAME" &> /dev/null || docker network create "$NETWORK_NAME"
+
+  # Run the Postgres container with a unique name
+  echo "Running Postgres container: $POSTGRES_CONTAINER_NAME"
+  docker run -d --name "$POSTGRES_CONTAINER_NAME" \
     -e POSTGRES_DB="test_tm" \
     -e POSTGRES_USER="taskingmanager" \
-    -e POSTGRES_ENDPOINT="localhost" \
     -e POSTGRES_PASSWORD="tm" \
+    --network "$NETWORK_NAME" \
+    "$POSTGRES_IMAGE"
+
+  # Build the backend image with a unique name
+  echo "Building backend image: $BACKEND_IMAGE"
+  docker build -t "$BACKEND_IMAGE" .
+
+  # Run the backend container with a unique name
+  echo "Running backend container: $BACKEND_CONTAINER_NAME"
+  docker run --rm --name "$BACKEND_CONTAINER_NAME" \
+    -e SQLALCHEMY_DATABASE_URI="postgresql://taskingmanager:$POSTGRES_PASSWORD@$POSTGRES_CONTAINER_NAME/test_tm" \
+    -e POSTGRES_TEST_DB="test_tm" \
+    -e POSTGRES_USER="taskingmanager" \
+    -e POSTGRES_ENDPOINT="$POSTGRES_CONTAINER_NAME" \
     -e TM_ORG_CODE="CICode" \
     -e TM_ORG_NAME="CircleCI Test Organisation" \
-    postgis/postgis:${POSTGIS_TAG:-14-3.3}
+    -v $(pwd):/usr/src/app \
+    --network "$NETWORK_NAME" \
+    "$BACKEND_IMAGE" /bin/bash -c "\
+      pip3 install coverage pytest && \
+      coverage run --source ./backend -m pytest"
 
-  # Sleep to initialize db container.
-  sleep 10
+  # Cleanup section
+  docker rm -f "$POSTGRES_CONTAINER_NAME" &> /dev/null || true
+  docker rmi -f "$BACKEND_IMAGE" &> /dev/null || true
+  docker network rm "$NETWORK_NAME" &> /dev/null || true
+  echo "Cleanup complete."
