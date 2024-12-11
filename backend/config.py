@@ -1,11 +1,12 @@
+import json
 import logging
 import os
 from functools import lru_cache
-from dotenv import load_dotenv
-from pydantic_settings import BaseSettings
 from typing import Optional
-import json
-from pydantic import PostgresDsn, field_validator, ValidationInfo
+
+from dotenv import load_dotenv
+from pydantic import PostgresDsn, ValidationInfo, field_validator
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):

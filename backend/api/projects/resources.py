@@ -142,7 +142,6 @@ async def get_project(
     finally:
         # this will try to unlock tasks that have been locked too long
         try:
-            # TODO
             await ProjectService.auto_unlock_tasks(project_id, db)
         except Exception as e:
             logger.critical(str(e))
@@ -293,10 +292,13 @@ def head(request: Request, project_id):
             request.user.display_name, project_id
         )
     except ValueError:
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
     return project_dto.model_dump(by_alias=True), 200
