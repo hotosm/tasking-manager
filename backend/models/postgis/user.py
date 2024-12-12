@@ -182,9 +182,12 @@ class User(db.Model):
         return dto
 
     @staticmethod
-    def get_all_users_not_paginated():
+    def get_all_users_not_paginated(*order):
         """Get all users in DB"""
-        return db.session.query(User.id).all()
+        query = db.session.query(User.id)
+        if not order:
+            return query.all()
+        return query.order_by(*order).all()
 
     @staticmethod
     def filter_users(user_filter: str, project_id: int, page: int) -> UserFilterDTO:
