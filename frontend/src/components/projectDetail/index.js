@@ -1,5 +1,5 @@
-import { lazy, Suspense, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { lazy, Suspense, useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
@@ -35,8 +35,13 @@ import { ENABLE_EXPORT_TOOL } from '../../config/index.js';
 /* lazy imports must be last import */
 const ProjectTimeline = lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
 
-const ProjectDetailMap = (props) => {
+export const ProjectDetailMap = (props) => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
+
+  useEffect(() => {
+    if (typeof props.taskBordersOnly !== 'boolean') return;
+    setTaskBordersOnly(props.taskBordersOnly);
+  }, [props.taskBordersOnly]);
 
   const taskBordersGeoJSON = props.project.areaOfInterest && {
     type: 'FeatureCollection',
@@ -139,6 +144,7 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }) =>
 export const ProjectDetail = (props) => {
   useSetProjectPageTitleTag(props.project);
   const size = useWindowSize();
+  const { id: projectId } = useParams();
   const { data: contributors, status: contributorsStatus } = useProjectContributionsQuery(
     props.project.projectId,
   );
@@ -181,6 +187,12 @@ export const ProjectDetail = (props) => {
         className="ph4 w-60-l w-80-m w-100 lh-title markdown-content blue-dark-abbey"
         dangerouslySetInnerHTML={htmlDescription}
       />
+      <a
+        href={`/projects/${projectId}/instructions`}
+        className="ph4 ttu db f5 blue-dark fw6 project-instructions-link"
+      >
+        <FormattedMessage {...messages.viewProjectSpecificInstructions} />
+      </a>
       <a href="#coordination" style={{ visibility: 'hidden' }} name="coordination">
         <FormattedMessage {...messages.coordination} />
       </a>
@@ -435,6 +447,7 @@ ProjectDetailMap.propTypes = {
   type: PropTypes.string,
   tasksError: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   projectLoading: PropTypes.bool,
+  taskBordersOnly: PropTypes.bool,
 };
 
 ProjectDetailLeft.propTypes = {

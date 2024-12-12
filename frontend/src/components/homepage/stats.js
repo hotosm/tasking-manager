@@ -3,6 +3,7 @@ import shortNumber from 'short-number';
 
 import messages from './messages';
 import { useOsmStatsQuery, useSystemStatisticsQuery } from '../../api/stats';
+import StatsInfoFooter from '../statsInfoFooter';
 
 export const StatsNumber = (props) => {
   const value = shortNumber(props.value);
@@ -38,8 +39,10 @@ export const StatsSection = () => {
   const hasStatsLoaded = hasTmStatsLoaded && hasOsmStatsLoaded;
 
   return (
-    <>
-      <div className="pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container">
+    <div className="pt5 pb2 ph6-l ph4 ">
+      <StatsInfoFooter className="mb4" />
+
+      <div className="flex justify-around flex-wrap flex-nowrap-ns stats-container">
         <StatsColumn
           label={messages.buildingsStats}
           value={hasStatsLoaded ? osmStatsData?.buildings : undefined}
@@ -61,6 +64,6 @@ export const StatsSection = () => {
           value={hasStatsLoaded ? tmStatsData.data.mappersOnline : undefined}
         />
       </div>
-    </>
+    </div>
   );
 };

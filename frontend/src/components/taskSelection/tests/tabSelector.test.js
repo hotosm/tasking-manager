@@ -1,14 +1,20 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { TabSelector } from '../tabSelector';
-import userEvent from '@testing-library/user-event';
+import { store } from '../../../store';
 
 describe('TabSelector component', () => {
   const setActiveSection = jest.fn();
+  const user = userEvent.setup();
+
+  act(() => {
+    store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
+  });
+
   it('with the tasks tab active', async () => {
-    const user = userEvent.setup();
     const { container } = render(
       <ReduxIntlProviders>
         <TabSelector activeSection={'tasks'} setActiveSection={setActiveSection} />
@@ -23,8 +29,8 @@ describe('TabSelector component', () => {
     await user.click(screen.getByText('Instructions'));
     expect(setActiveSection).toHaveBeenCalledWith('instructions');
   });
+
   it('with the instructions tab active', async () => {
-    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <TabSelector activeSection={'instructions'} setActiveSection={setActiveSection} />
@@ -36,8 +42,8 @@ describe('TabSelector component', () => {
     await user.click(screen.getByText('contributions'));
     expect(setActiveSection).toHaveBeenLastCalledWith('contributions');
   });
+
   it('with the contributions tab active', async () => {
-    const user = userEvent.setup();
     render(
       <ReduxIntlProviders>
         <TabSelector activeSection={'contributions'} setActiveSection={setActiveSection} />

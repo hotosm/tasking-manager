@@ -4,7 +4,7 @@ import projectMessages from './messages';
 import userDetailMessages from '../userDetail/messages';
 import { MappingIcon, HomeIcon, RoadIcon, EditIcon } from '../svgIcons';
 import { StatsCard } from '../statsCard';
-import StatsTimestamp from '../statsTimestamp';
+import StatsInfoFooter from '../statsInfoFooter';
 
 export const EditsStats = ({ data }) => {
   const { changesets, buildings, roads, edits } = data;
@@ -18,30 +18,32 @@ export const EditsStats = ({ data }) => {
         <h3 className="barlow-condensed ttu f3">
           <FormattedMessage {...projectMessages.edits} />
         </h3>
-        <StatsTimestamp messageType="project" />
       </div>
-      <div className="db pb2 project-edit-stats">
-        <StatsCard
-          field={'changesets'}
-          icon={<MappingIcon className={iconClass} style={iconStyle} />}
-          description={<FormattedMessage {...projectMessages.changesets} />}
-          value={changesets || 0}
-        />
-        <StatsCard
-          icon={<EditIcon className={iconClass} style={iconStyle} />}
-          description={<FormattedMessage {...projectMessages.totalEdits} />}
-          value={edits || 0}
-        />
-        <StatsCard
-          icon={<HomeIcon className={iconClass} style={iconStyle} />}
-          description={<FormattedMessage {...userDetailMessages.buildingsMapped} />}
-          value={buildings || 0}
-        />
-        <StatsCard
-          icon={<RoadIcon className={iconClass} style={iconStyle} />}
-          description={<FormattedMessage {...userDetailMessages.roadMapped} />}
-          value={roads || 0}
-        />
+      <div>
+        <StatsInfoFooter className="mb4" />
+        <div className="db pb2 project-edit-stats">
+          <StatsCard
+            field={'changesets'}
+            icon={<MappingIcon className={iconClass} style={iconStyle} />}
+            description={<FormattedMessage {...projectMessages.changesets} />}
+            value={changesets || 0}
+          />
+          <StatsCard
+            icon={<EditIcon className={iconClass} style={iconStyle} />}
+            description={<FormattedMessage {...projectMessages.totalEdits} />}
+            value={edits || 0}
+          />
+          <StatsCard
+            icon={<HomeIcon className={iconClass} style={iconStyle} />}
+            description={<FormattedMessage {...userDetailMessages.buildingsMapped} />}
+            value={buildings || 0}
+          />
+          <StatsCard
+            icon={<RoadIcon className={iconClass} style={iconStyle} />}
+            description={<FormattedMessage {...userDetailMessages.roadMapped} />}
+            value={roads || 0}
+          />
+        </div>
       </div>
     </div>
   );
