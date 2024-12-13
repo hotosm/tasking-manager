@@ -96,7 +96,7 @@ class ProjectAdminService:
         draft_project.set_default_changeset_comment()
         draft_project.set_country_info()
         if draft_project_dto.cloneFromProjectId:
-            draft_project.save(db)  # Update the clone
+            await draft_project.save(db)  # Update the clone
             return draft_project.id
 
         else:
