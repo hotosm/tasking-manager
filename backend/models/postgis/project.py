@@ -385,6 +385,21 @@ class Project(Base):
             Project.__table__.update().where(Project.id == self.id).values(**columns)
         )
 
+        for task in self.tasks:
+            await db.execute(
+                Task.__table__.insert().values(
+                    id=task.id,
+                    project_id=self.id,
+                    x=task.x,
+                    y=task.y,
+                    zoom=task.zoom,
+                    is_square=task.is_square,
+                    task_status=TaskStatus.READY.value,
+                    extra_properties=task.extra_properties,
+                    geometry=task.geometry,
+                )
+            )
+
     @staticmethod
     async def clone(project_id: int, author_id: int, db: Database):
         """Clone a project using encode databases and raw SQL."""
@@ -823,6 +838,7 @@ class Project(Base):
         # List of tables to delete from, in the order required to satisfy foreign key constraints
         related_tables = [
             "project_favorites",
+            "campaign_projects",
             "project_custom_editors",
             "project_interests",
             "project_priority_areas",
