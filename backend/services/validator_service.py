@@ -156,70 +156,69 @@ class ValidatorService:
 
     async def process_task(project_id, task_to_unlock, validated_dto):
         async with db_connection.database.connection() as db:
-            async with db.transaction():
-                task = task_to_unlock["task"]
-                if task_to_unlock["comment"]:
-                    await MessageService.send_message_after_comment(
-                        validated_dto.user_id,
-                        task_to_unlock["comment"],
-                        task.id,
-                        validated_dto.project_id,
-                        db,
-                    )
-                if (
-                    task_to_unlock["new_state"] == TaskStatus.VALIDATED
-                    or task_to_unlock["new_state"] == TaskStatus.INVALIDATED
-                ):
-                    await MessageService.send_message_after_validation(
-                        task_to_unlock["new_state"],
-                        validated_dto.user_id,
-                        task.mapped_by,
-                        task.id,
-                        validated_dto.project_id,
-                        db,
-                    )
-
-                    # Set last_validation_date for the mapper to current date
-                    if task_to_unlock["new_state"] == TaskStatus.VALIDATED:
-                        query = """
-                        UPDATE users
-                        SET last_validation_date = :timestamp
-                        WHERE id = (
-                            SELECT mapped_by
-                            FROM tasks
-                            WHERE id = :task_id
-                            AND project_id = :project_id
-                        );
-                        """
-                        values = {
-                            "timestamp": datetime.datetime.utcnow(),
-                            "task_id": task.id,
-                            "project_id": validated_dto.project_id,
-                        }
-                        await db.execute(query=query, values=values)
-
-                # Update stats if user setting task to a different state from previous state
-                prev_status = await TaskHistory.get_last_status(project_id, task.id, db)
-                if prev_status != task_to_unlock["new_state"]:
-                    await StatsService.update_stats_after_task_state_change(
-                        validated_dto.project_id,
-                        validated_dto.user_id,
-                        prev_status,
-                        task_to_unlock["new_state"],
-                        db,
-                    )
-                task_mapping_issues = await ValidatorService.get_task_mapping_issues(
-                    task_to_unlock
+            task = task_to_unlock["task"]
+            if task_to_unlock["comment"]:
+                await MessageService.send_message_after_comment(
+                    validated_dto.user_id,
+                    task_to_unlock["comment"],
+                    task.id,
+                    validated_dto.project_id,
+                    db,
                 )
-                await Task.unlock_task(
-                    task_id=task.id,
-                    project_id=project_id,
-                    user_id=validated_dto.user_id,
-                    new_state=task_to_unlock["new_state"],
-                    db=db,
-                    comment=task_to_unlock["comment"],
-                    issues=task_mapping_issues,
+            if (
+                task_to_unlock["new_state"] == TaskStatus.VALIDATED
+                or task_to_unlock["new_state"] == TaskStatus.INVALIDATED
+            ):
+                await MessageService.send_message_after_validation(
+                    task_to_unlock["new_state"],
+                    validated_dto.user_id,
+                    task.mapped_by,
+                    task.id,
+                    validated_dto.project_id,
+                    db,
                 )
+
+                # Set last_validation_date for the mapper to current date
+                if task_to_unlock["new_state"] == TaskStatus.VALIDATED:
+                    query = """
+                    UPDATE users
+                    SET last_validation_date = :timestamp
+                    WHERE id = (
+                        SELECT mapped_by
+                        FROM tasks
+                        WHERE id = :task_id
+                        AND project_id = :project_id
+                    );
+                    """
+                    values = {
+                        "timestamp": datetime.datetime.utcnow(),
+                        "task_id": task.id,
+                        "project_id": validated_dto.project_id,
+                    }
+                    await db.execute(query=query, values=values)
+
+            # Update stats if user setting task to a different state from previous state
+            prev_status = await TaskHistory.get_last_status(project_id, task.id, db)
+            if prev_status != task_to_unlock["new_state"]:
+                await StatsService.update_stats_after_task_state_change(
+                    validated_dto.project_id,
+                    validated_dto.user_id,
+                    prev_status,
+                    task_to_unlock["new_state"],
+                    db,
+                )
+            task_mapping_issues = await ValidatorService.get_task_mapping_issues(
+                task_to_unlock
+            )
+            await Task.unlock_task(
+                task_id=task.id,
+                project_id=project_id,
+                user_id=validated_dto.user_id,
+                new_state=task_to_unlock["new_state"],
+                db=db,
+                comment=task_to_unlock["comment"],
+                issues=task_mapping_issues,
+            )
 
             return await Task.as_dto_with_instructions(
                 task.id, project_id, db, validated_dto.preferred_locale
