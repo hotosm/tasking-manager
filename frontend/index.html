@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/static/favicon.ico" />
+    <link rel="shortcut icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- for Google -->
@@ -27,7 +27,7 @@
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -36,12 +36,15 @@
       Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
+
+      %PUBLIC_URL% is now no longer used, it is automatically refactored to the correct path during the build process.
     -->
     <title>%REACT_APP_ORG_CODE% Tasking Manager</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <script type="module" src="/src/index.jsx"></script>
     <div
       id="action-root"
       class="w-100 h-100 vh-minus-122-ns"
@@ -59,7 +62,8 @@
       var site_id = '%REACT_APP_MATOMO_ID%';
       if (site_id && '%REACT_APP_MATOMO_ENDPOINT%') {
         (function () {
-          var u = '%REACT_APP_MATOMO_ENDPOINT%';
+          // var u = '%REACT_APP_MATOMO_ENDPOINT%';
+          var u = 'https://matomo.hotosm.org/'
           _paq.push(['setTrackerUrl', u + 'piwik.php']);
           _paq.push(['setSiteId', site_id]);
 

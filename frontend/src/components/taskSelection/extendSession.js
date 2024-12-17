@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Popup from 'reactjs-popup';
 
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { Alert } from '../alert';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import messages from './messages';

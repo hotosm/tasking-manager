@@ -7,7 +7,7 @@ import AsyncSelect from 'react-select/async';
 import messages from './messages';
 import { UserAvatar } from '../user/avatar';
 import { EditModeControl } from './editMode';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { SwitchToggle } from '../formInputs';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Alert } from '../alert';

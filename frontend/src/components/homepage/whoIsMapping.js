@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 
 const organizations = [
   { url: 'https://www.redcross.org/', code: 'redcross', name: 'American Red Cross' },

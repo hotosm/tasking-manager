@@ -5,9 +5,9 @@ import { load } from 'webfontloader';
 import { init, BrowserTracing, Replay } from '@sentry/react';
 import 'react-tooltip/dist/react-tooltip.css'; // Needed by for { Tooltip } from 'react-tooltip' to work properly
 
-import App from './App';
+import App from './App.jsx';
 import { store, persistor } from './store';
-import { ConnectedIntl } from './utils/internationalization';
+import { ConnectedIntl } from './utils/internationalization.jsx';
 import { register, unregister, onServiceWorkerUpdate } from './serviceWorkerRegistration';
 import { ENABLE_SERVICEWORKER, SENTRY_FRONTEND_DSN, ENVIRONMENT } from './config';
 

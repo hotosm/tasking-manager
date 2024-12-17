@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import messages from './messages';
 import { ShareButton } from './shareButton';
 import { AddToFavorites } from './favorites';
@@ -62,9 +62,8 @@ export const ProjectDetailFooter = ({ className, projectId }) => {
 
   return (
     <div
-      className={`${
-        className || ''
-      } pl4 w-100 z-4 bg-white fixed bottom-0 left-0 flex items-center justify-between`}
+      className={`${className || ''
+        } pl4 w-100 z-4 bg-white fixed bottom-0 left-0 flex items-center justify-between`}
       style={{ boxShadow: '0px -1px 0px #F0EFEF, 0px 1px 0px #F0EFEF' }}
     >
       {/* TODO ADD ANCHORS */}

@@ -6,7 +6,7 @@ import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { TasksMap } from '../taskSelection/map';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { API_URL } from '../../config';
 import messages from './messages';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
@@ -113,7 +113,7 @@ export function CurrentProjects({ currentProjects }) {
                 <div>
                   <h3
                     className="f2 fw5 mt3 mt2-ns mb3 ttu barlow-condensed blue-dark dib mr3"
-                    // lang={project.info.locale}
+                  // lang={project.info.locale}
                   >
                     {project.info && project.info.name}
                   </h3>

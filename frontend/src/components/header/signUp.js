@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { CloseIcon } from '../svgIcons';
 import { registerUser } from '../../store/actions/user';
 import { store } from '../../store';

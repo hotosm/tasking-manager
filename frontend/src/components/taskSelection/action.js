@@ -10,7 +10,7 @@ import messages from './messages';
 import { ProjectInstructions } from './instructions';
 import { TasksMap } from './map';
 import { HeaderLine } from '../projectDetail/header';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import Portal from '../portal';
 import { SidebarIcon } from '../svgIcons';
 import { openEditor, getTaskGpxUrl, formatImageryUrl, formatJosmUrl } from '../../utils/openEditor';
@@ -58,11 +58,11 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
     () =>
       activeTasks
         ? activeTasks
-            .map((task) => task.taskId)
-            .sort((n1, n2) => {
-              // in ascending order
-              return n1 - n2;
-            })
+          .map((task) => task.taskId)
+          .sort((n1, n2) => {
+            // in ascending order
+            return n1 - n2;
+          })
         : [],
     [activeTasks],
   );

@@ -4,7 +4,7 @@ import { useQueryParam, BooleanParam } from 'use-query-params';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { Button } from '../button';
+import { Button } from '../button.jsx';
 import { SwitchToggle } from '../formInputs';
 import { useTagAPI } from '../../hooks/UseTagAPI';
 import { useExploreProjectsQueryParams } from '../../hooks/UseProjectsQueryAPI';
