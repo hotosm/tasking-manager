@@ -1,12 +1,36 @@
 import { types } from '../actions/tasks';
 
+type TaskData = {
+  tasks: {
+    taskId: string;
+    title: string;
+    projectId: string;
+    status: string;
+  }[],
+  status: string | null,
+  project: any
+}
+
 const initialState = {
   project: null,
   tasks: [],
   status: null,
-};
+} satisfies TaskData;
 
-export function tasksReducer(state = initialState, action) {
+type Actions = {
+  type: typeof types.SET_PROJECT,
+  project: any
+} | {
+  type: typeof types.SET_LOCKED_TASKS,
+  tasks: any
+} | {
+  type: typeof types.SET_TASKS_STATUS,
+  status: string
+} | {
+  type: typeof types.CLEAR_LOCKED_TASKS
+}
+
+export function tasksReducer(state = initialState, action: Actions) {
   switch (action.type) {
     case types.SET_PROJECT: {
       return { ...state, project: action.project };
