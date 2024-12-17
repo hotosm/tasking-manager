@@ -1,23 +1,22 @@
-import os
-import warnings
+import atexit
 import base64
 import csv
 import datetime
-import click
-from flask_migrate import Migrate
-from dotenv import load_dotenv
+import os
+import warnings
 
-from backend import create_app, initialise_counters, db
+import click
+from apscheduler.schedulers.background import BackgroundScheduler
+from dotenv import load_dotenv
+from flask_migrate import Migrate
+from sqlalchemy import func
+
+from backend import create_app, db, initialise_counters
+from backend.models.postgis.task import Task, TaskHistory
+from backend.services.interests_service import InterestService
+from backend.services.stats_service import StatsService
 from backend.services.users.authentication_service import AuthenticationService
 from backend.services.users.user_service import UserService
-from backend.services.stats_service import StatsService
-from backend.services.interests_service import InterestService
-from backend.models.postgis.task import Task, TaskHistory
-
-from sqlalchemy import func
-import atexit
-from apscheduler.schedulers.background import BackgroundScheduler
-
 
 # Load configuration from file into environment
 load_dotenv(os.path.join(os.path.dirname(__file__), "tasking-manager.env"))
@@ -137,8 +136,9 @@ if __name__ == "__main__":
     # This is compatibility code with previous releases
     # People should generally prefer `flask <command>`.
     from sys import argv
-    from flask.cli import FlaskGroup
+
     from click import Command
+    from flask.cli import FlaskGroup
 
     cli = FlaskGroup(create_app=lambda: application)
     cli.add_command(
