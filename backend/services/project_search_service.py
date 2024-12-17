@@ -20,9 +20,7 @@ from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectSearchResultsDTO,
 )
-from backend.models.postgis.partner import Partner
 from backend.models.postgis.project import Project, ProjectInfo
-from backend.models.postgis.project_partner import ProjectPartnership
 from backend.models.postgis.statuses import (
     MappingLevel,
     MappingPermission,
@@ -60,39 +58,69 @@ class BBoxTooBigError(Exception):
 
 class ProjectSearchService:
     @staticmethod
-    async def create_search_query(db, user=None):
+    async def create_search_query(db, user=None, as_csv: bool = False):
         # Base query for fetching project details
-        query = """
-        SELECT
-            p.id AS id,
-            p.difficulty,
-            p.priority,
-            p.default_locale,
-            ST_AsGeoJSON(p.centroid) AS centroid,
-            p.organisation_id,
-            p.tasks_bad_imagery,
-            p.tasks_mapped,
-            p.tasks_validated,
-            p.status,
-            p.total_tasks,
-            p.last_updated,
-            p.due_date,
-            p.country,
-            p.mapping_types,
-            o.name AS organisation_name,
-            o.logo AS organisation_logo
-        FROM projects p
-        LEFT JOIN organisations o ON o.id = p.organisation_id
-        WHERE p.geometry IS NOT NULL
-        """
+        if as_csv:
+            query = """
+                SELECT
+                    p.id AS id,
+                    p.priority,
+                    p.difficulty,
+                    p.default_locale,
+                    p.status,
+                    p.last_updated,
+                    p.due_date,
+                    p.total_tasks,
+                    p.tasks_mapped,
+                    p.tasks_validated,
+                    p.tasks_bad_imagery,
+                    o.name AS organisation_name,
+                    ROUND(COALESCE(
+                        (p.tasks_mapped + p.tasks_validated) * 100.0 / NULLIF(p.total_tasks - p.tasks_bad_imagery, 0), 0
+                    ), 2) AS percent_mapped,
+                    ROUND(COALESCE(
+                        p.tasks_validated * 100.0 / NULLIF(p.total_tasks - p.tasks_bad_imagery, 0), 0
+                    ), 2) AS percent_validated,
+                    ROUND(CAST(COALESCE(
+                        ST_Area(p.geometry::geography) / 1000000, 0
+                    ) AS numeric), 3) AS total_area,
+                    p.country,
+                    p.created AS creation_date
+                FROM projects p
+                LEFT JOIN organisations o ON o.id = p.organisation_id
+                WHERE p.geometry IS NOT NULL
+            """
+
+        else:
+            query = """
+            SELECT
+                p.id AS id,
+                p.difficulty,
+                p.priority,
+                p.default_locale,
+                ST_AsGeoJSON(p.centroid) AS centroid,
+                p.organisation_id,
+                p.tasks_bad_imagery,
+                p.tasks_mapped,
+                p.tasks_validated,
+                p.status,
+                p.total_tasks,
+                p.last_updated,
+                p.due_date,
+                p.country,
+                p.mapping_types,
+                o.name AS organisation_name,
+                o.logo AS organisation_logo
+            FROM projects p
+            LEFT JOIN organisations o ON o.id = p.organisation_id
+            WHERE p.geometry IS NOT NULL
+            """
 
         filters = []
         params = {}
-
         if user is None:
             filters.append("p.private = :private")
             params["private"] = False
-
         if user is not None:
             if user.role != UserRole.ADMIN.value:
                 # Fetch project_ids for user's teams
@@ -132,9 +160,6 @@ class ProjectSearchService:
                     filters.append("p.private = :private OR p.id = ANY(:project_ids)")
                     params["private"] = False
                     params["project_ids"] = list(project_ids)
-
-        # if filters:
-        #     query += " AND " + " AND ".join(filters)
 
         if filters:
             query += " AND (" + " AND ".join(filters) + ")"
@@ -207,43 +232,60 @@ class ProjectSearchService:
         return [row["total"] for row in result]
 
     @staticmethod
-    @cached(csv_download_cache)
-    def search_projects_as_csv(search_dto: ProjectSearchDTO, user) -> str:
-        all_results, _ = ProjectSearchService._filter_projects(search_dto, user, True)
-        rows = [row._asdict() for row in all_results]
+    # @cached(csv_download_cache)
+    async def search_projects_as_csv(
+        search_dto: ProjectSearchDTO, user, db: Database, as_csv: bool = False
+    ) -> str:
+        all_results = await ProjectSearchService._filter_projects(
+            search_dto, user, db, as_csv
+        )
+        rows = [dict(row) for row in all_results]
         is_user_admin = user is not None and user.role == UserRole.ADMIN.value
-
         for row in rows:
             row["priority"] = ProjectPriority(row["priority"]).name
             row["difficulty"] = ProjectDifficulty(row["difficulty"]).name
             row["status"] = ProjectStatus(row["status"]).name
             row["total_area"] = round(row["total_area"], 3)
-            row["total_contributors"] = Project.get_project_total_contributions(
-                row["id"]
+            row["total_contributors"] = await Project.get_project_total_contributions(
+                row["id"], db
+            )
+            project_name_query = """
+                SELECT COALESCE(
+                    (SELECT pi.name FROM project_info pi WHERE pi.project_id = :project_id AND pi.locale = :locale LIMIT 1),
+                    (SELECT pi.name FROM project_info pi WHERE pi.project_id = :project_id AND pi.locale = 'en' LIMIT 1)
+                ) AS name
+            """
+
+            result = await db.fetch_one(
+                project_name_query,
+                {
+                    "project_id": row["id"],
+                    "locale": search_dto.preferred_locale or "en",
+                },
             )
 
+            row["project_name"] = result["name"] if result else None
+
             if is_user_admin:
-                partners_names = (
-                    ProjectPartnership.query.with_entities(
-                        ProjectPartnership.project_id, Partner.name
-                    )
-                    .join(Partner, ProjectPartnership.partner_id == Partner.id)
-                    .filter(ProjectPartnership.project_id == row["id"])
-                    .group_by(ProjectPartnership.project_id, Partner.name)
-                    .all()
+                query = """
+                SELECT p.name
+                FROM project_partnerships pp
+                JOIN partners p ON pp.partner_id = p.id
+                WHERE pp.project_id = :project_id
+                GROUP BY pp.project_id, p.name
+                """
+                partners_names = await db.fetch_all(
+                    query=query, values={"project_id": row["id"]}
                 )
-                row["partner_names"] = [pn for (_, pn) in partners_names]
+                row["partner_names"] = [record["name"] for record in partners_names]
 
         df = pd.json_normalize(rows)
         columns_to_drop = [
             "default_locale",
-            "organisation_id",
-            "organisation_logo",
             "tasks_bad_imagery",
             "tasks_mapped",
             "tasks_validated",
             "total_tasks",
-            "centroid",
         ]
 
         colummns_to_rename = {
@@ -265,6 +307,10 @@ class ProjectSearchService:
             axis=1,
         )
         df.rename(columns=colummns_to_rename, inplace=True)
+        cols_order = ["projectId", "name"] + [
+            col for col in df.columns if col not in ["projectId", "name"]
+        ]
+        df = df[cols_order]
         return df.to_csv(index=False)
 
     @staticmethod
@@ -312,8 +358,12 @@ class ProjectSearchService:
         dto.map_results = feature_collection
         return dto
 
-    async def _filter_projects(search_dto: ProjectSearchDTO, user, db: Database):
-        base_query, params = await ProjectSearchService.create_search_query(db, user)
+    async def _filter_projects(
+        search_dto: ProjectSearchDTO, user, db: Database, as_csv: bool = False
+    ):
+        base_query, params = await ProjectSearchService.create_search_query(
+            db, user, as_csv
+        )
         # Initialize filter list and parameters dictionary
         filters = []
 
@@ -490,6 +540,32 @@ class ProjectSearchService:
             filters.append("p.created <= :created_lte")
             params["created_lte"] = validate_date_input(search_dto.created_lte)
 
+        if search_dto.partner_id:
+            partner_conditions = ["pp.partner_id = :partner_id"]
+            params["partner_id"] = int(search_dto.partner_id)
+
+            if search_dto.partnership_from:
+                partnership_from = validate_date_input(search_dto.partnership_from)
+                partner_conditions.append("pp.started_on <= :partnership_from")
+                params["partnership_from"] = partnership_from
+
+            if search_dto.partnership_to:
+                partnership_to = validate_date_input(search_dto.partnership_to)
+                partner_conditions.append(
+                    "(pp.ended_on IS NULL OR pp.ended_on >= :partnership_to)"
+                )
+                params["partnership_to"] = partnership_to
+
+            filters.append(
+                """
+                p.id = ANY(
+                    SELECT pp.project_id
+                    FROM project_partnerships pp
+                    WHERE {}
+                )
+                """.format(" AND ".join(partner_conditions))
+            )
+
         if search_dto.managed_by and user.role != UserRole.ADMIN.value:
             # Fetch project IDs for user's organisations
             org_projects_query = """
@@ -568,16 +644,19 @@ class ProjectSearchService:
             sql_query = base_query
 
         sql_query += order_by_clause
+
+        all_results = await db.fetch_all(sql_query, values=params)
+        if as_csv:
+            return all_results
+
         page = search_dto.page
         per_page = 14
         offset = (page - 1) * per_page
         sql_query_paginated = sql_query + f" LIMIT {per_page} OFFSET {offset}"
-
         # Get total count
         count_query = f"SELECT COUNT(*) FROM ({sql_query}) AS count_subquery"
         total_count = await db.fetch_val(count_query, values=params)
         paginated_results = await db.fetch_all(sql_query_paginated, values=params)
-        all_results = await db.fetch_all(sql_query, values=params)
         pagination_dto = Pagination.from_total_count(page, per_page, total_count)
         return all_results, paginated_results, pagination_dto
 

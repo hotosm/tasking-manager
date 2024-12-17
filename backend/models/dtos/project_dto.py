@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Dict, List, Optional, Union, Any
+from typing import Any, Dict, List, Optional, Union
 
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, root_validator
@@ -368,6 +368,10 @@ class ProjectSearchDTO(BaseModel):
     last_updated_gte: Optional[str] = None
     created_lte: Optional[str] = None
     created_gte: Optional[str] = None
+    partner_id: Optional[int] = None
+    partnership_from: Optional[str] = None
+    partnership_to: Optional[str] = None
+    download_as_csv: Optional[bool] = None
 
     def __hash__(self):
         """Make object hashable so we can cache user searches"""
@@ -440,6 +444,12 @@ class ListSearchResultDTO(BaseModel):
     due_date: Optional[datetime] = Field(alias="dueDate", default=None)
     total_contributors: Optional[int] = Field(alias="totalContributors", default=None)
     country: Optional[List[str]] = Field(default=None)
+
+    # csv fields
+    creation_date: Optional[datetime] = Field(alias="creationDate", default=None)
+    author: Optional[str] = None
+    partner_names: Optional[List[str]] = Field(default=None, alias="partnerNames")
+    total_area: Optional[float] = Field(None, alias="totalAreaSquareKilometers")
 
     class Config:
         populate_by_name = True

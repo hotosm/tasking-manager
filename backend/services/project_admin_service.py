@@ -93,17 +93,16 @@ class ProjectAdminService:
             tasks = draft_project_dto.tasks
 
         await ProjectAdminService._attach_tasks_to_project(draft_project, tasks, db)
-        draft_project.set_default_changeset_comment()
         draft_project.set_country_info()
+
         if draft_project_dto.cloneFromProjectId:
+            draft_project.set_default_changeset_comment()
             await draft_project.save(db)  # Update the clone
             return draft_project.id
-
         else:
             project_id = await Project.create(
                 draft_project, draft_project_dto.project_name, db
             )  # Create the new project
-
             return project_id
 
     @staticmethod
