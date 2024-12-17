@@ -12,10 +12,6 @@ from geoalchemy2 import Geometry, WKTElement
 from geoalchemy2.shape import to_shape
 from loguru import logger
 from shapely.geometry import shape
-from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.ext.hybrid import hybrid_property
-
-
 from sqlalchemy import (
     BigInteger,
     Boolean,
@@ -33,6 +29,8 @@ from sqlalchemy import (
     select,
     update,
 )
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, relationship
 
 from backend.config import settings
@@ -357,6 +355,19 @@ class Project(Base):
             ProjectInfo.__table__.insert().values(
                 project_id=project, locale="en", name=project_name
             )
+        )
+        # Set the default changeset comment
+        default_comment = settings.DEFAULT_CHANGESET_COMMENT
+        self.changeset_comment = (
+            f"{default_comment}-{project} {self.changeset_comment}"
+            if self.changeset_comment is not None
+            else f"{default_comment}-{project}"
+        )
+        # Update the changeset comment in the database
+        await db.execute(
+            Project.__table__.update()
+            .where(Project.__table__.c.id == project)
+            .values(changeset_comment=self.changeset_comment)
         )
 
         for task in self.tasks:
