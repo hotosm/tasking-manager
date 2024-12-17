@@ -17,6 +17,7 @@ from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
 )
 from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.statuses import UserRole
 from backend.services.organisation_service import OrganisationService
 from backend.services.project_admin_service import (
     InvalidData,
@@ -545,6 +546,10 @@ def setup_search_dto(request) -> ProjectSearchDTO:
     search_dto.last_updated_lte = request.query_params.get("lastUpdatedTo")
     search_dto.created_gte = request.query_params.get("createdFrom")
     search_dto.created_lte = request.query_params.get("createdTo")
+    search_dto.partner_id = request.query_params.get("partnerId")
+    search_dto.partnership_from = request.query_params.get("partnershipFrom")
+    search_dto.partnership_to = request.query_params.get("partnershipTo")
+    search_dto.download_as_csv = request.query_params.get("downloadAsCSV")
 
     # See https://github.com/hotosm/tasking-manager/pull/922 for more info
     try:
@@ -565,6 +570,7 @@ def setup_search_dto(request) -> ProjectSearchDTO:
 
         if request.query_params.get("managedByMe") == "true":
             search_dto.managed_by = authenticated_user_id
+
         if request.query_params.get("basedOnMyInterests") == "true":
             search_dto.based_on_user_interests = authenticated_user_id
 
@@ -740,6 +746,61 @@ async def get(
         if user_id:
             user = await UserService.get_user_by_id(user_id, db)
         search_dto = setup_search_dto(request)
+
+        if search_dto.omit_map_results and search_dto.download_as_csv:
+            return JSONResponse(
+                content={
+                    "Error": "omitMapResults and downloadAsCSV cannot be both set to true"
+                },
+                status_code=400,
+            )
+
+        if (
+            search_dto.partnership_from is not None
+            or search_dto.partnership_to is not None
+        ) and search_dto.partner_id is None:
+            return JSONResponse(
+                content={
+                    "Error": "partnershipFrom or partnershipTo cannot be provided without partnerId"
+                },
+                status_code=400,
+            )
+
+        if (
+            search_dto.partner_id is not None
+            and search_dto.partnership_from is not None
+            and search_dto.partnership_to is not None
+            and search_dto.partnership_from > search_dto.partnership_to
+        ):
+            return JSONResponse(
+                content={
+                    "Error": "partnershipFrom cannot be greater than partnershipTo"
+                },
+                status_code=400,
+            )
+
+        if any(
+            map(
+                lambda x: x is not None,
+                [
+                    search_dto.partner_id,
+                    search_dto.partnership_from,
+                    search_dto.partnership_to,
+                ],
+            )
+        ) and (user is None or not user.role == UserRole.ADMIN.value):
+            error_msg = "Only admins can search projects by partnerId, partnershipFrom, partnershipTo"
+            return JSONResponse(content={"Error": error_msg}, status_code=401)
+
+        if search_dto.download_as_csv:
+            all_results_csv = await ProjectSearchService.search_projects_as_csv(
+                search_dto, user, db, True
+            )
+            return StreamingResponse(
+                iter([all_results_csv]),
+                media_type="text/csv",
+                headers={"Content-Disposition": "attachment; filename=data.csv"},
+            )
         results_dto = await ProjectSearchService.search_projects(search_dto, user, db)
         return results_dto
     except NotFound:
