@@ -7,7 +7,7 @@ import { MapIcon, MappedIcon, ValidatedIcon, GearIcon, UserIcon } from '../svgIc
 import { ProjectStatusBox } from '../projectDetail/statusBox';
 import { PriorityBox } from '../projectCard/priorityBox';
 
-export function ProjectListItem({ project }: Object) {
+export function ProjectListItem({ project }) {
   return (
     <div className="bg-white bluedark base-font w-100 mb1 db h3">
       <div className="pv3 ph3-l ph2 br1 cf">

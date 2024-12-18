@@ -223,13 +223,7 @@ export const MyProjectNav = (props) => {
   );
 };
 
-export function FilterButton({
-  currentQuery,
-  newQueryParams,
-  setQuery,
-  isActive,
-  children,
-}: Object) {
+export function FilterButton({ currentQuery, newQueryParams, setQuery, isActive, children }) {
   const linkCombo = 'di mh1 link ph3 f6 pv2 mv1 ba b--grey-light';
   return (
     <CustomButton
@@ -241,7 +235,7 @@ export function FilterButton({
   );
 }
 
-function ManagerFilters({ query, setQuery }: Object) {
+function ManagerFilters({ query, setQuery }) {
   const userDetails = useSelector((state) => state.auth.userDetails);
   const [campaignsError, campaignsLoading, campaigns] = useFetch('campaigns/');
   const [orgsError, orgsLoading, organisations] = useFetch(

@@ -1,4 +1,4 @@
-import { Fragment, useRef, forwardRef } from 'react';
+import { Fragment, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
@@ -38,9 +38,7 @@ export const Header = () => {
 
   const linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu lh-solid nowrap pv2';
 
-  const isActive = ({ isPartiallyCurrent }: {
-    isPartiallyCurrent: boolean;
-  }) => {
+  const isActive = ({ isPartiallyCurrent }: { isPartiallyCurrent: boolean }) => {
     return isPartiallyCurrent
       ? { className: `${linkCombo} bb b--blue-dark bw1` }
       : { className: linkCombo };
@@ -202,9 +200,7 @@ export function getMenuItemsForUser(userDetails: any, organisations?: any) {
   return filteredMenuItems;
 }
 
-const UserDisplay = ({ username }: {
-  username: string
-}) => {
+const UserDisplay = ({ username }: { username: string }) => {
   return (
     <span>
       <CurrentUserAvatar className="br-100 v-mid red h2 w2 dib" />
@@ -213,10 +209,12 @@ const UserDisplay = ({ username }: {
   );
 };
 
-const SignupTrigger = (props: ButtonProps & {
-  signUpStyle: string;
-  alternativeSignUpText?: boolean;
-}) => {
+const SignupTrigger = (
+  props: ButtonProps & {
+    signUpStyle: string;
+    alternativeSignUpText?: boolean;
+  },
+) => {
   const { signUpStyle, alternativeSignUpText, ...remainingProps } = props;
   return (
     <Button className={signUpStyle} {...remainingProps}>
@@ -264,7 +262,12 @@ export const AuthButtons = ({
   );
 };
 
-export const ActionItems = ({ userDetails, onUserMenuSelect, location, getUserLinks }: {
+export const ActionItems = ({
+  userDetails,
+  onUserMenuSelect,
+  location,
+  getUserLinks,
+}: {
   userDetails: any;
   onUserMenuSelect: (e: any) => void;
   location: any;
@@ -291,7 +294,6 @@ export const ActionItems = ({ userDetails, onUserMenuSelect, location, getUserLi
       />
     </>
   );
-
 
 export const PopupItems = (props) => {
   const dispatch = useDispatch();
