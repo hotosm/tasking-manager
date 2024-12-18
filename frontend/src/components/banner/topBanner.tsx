@@ -10,11 +10,12 @@ export function TopBanner() {
   const [dangerousInner, setDangerousInner] = useState<null | string | TrustedHTML>(null);
 
   useEffect(() => {
-    (async () => {
+    // TODO: Spotted this - is this meant to be ran? The IIFE is never called at the end.
+    async () => {
       // @ts-expect-error
-      setDangerousInner((await htmlFromMarkdown(data?.message)).__html)
-    })
-  }, [data])
+      setDangerousInner((await htmlFromMarkdown(data?.message)).__html);
+    };
+  }, [data]);
 
   return (
     <>
@@ -24,7 +25,7 @@ export function TopBanner() {
           <div
             className="fw6 flex justify-center"
             dangerouslySetInnerHTML={{
-              __html: dangerousInner ?? ""
+              __html: dangerousInner ?? '',
             }}
           />
         </div>
