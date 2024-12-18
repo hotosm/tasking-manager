@@ -1,4 +1,4 @@
-export function TopBar({ pageName }: Object) {
+export function TopBar({ pageName }) {
   return (
     <div className="cf w-100 bg-mask">
       <div className="ph6-l">

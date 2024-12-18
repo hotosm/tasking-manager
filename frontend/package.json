@@ -123,6 +123,8 @@
     "@testing-library/user-event": "^14.4.3",
     "@types/chart.js": "^2.9.41",
     "@types/dompurify": "^3.0.5",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
     "@types/react-test-renderer": "^18.3.0",
     "@types/slug": "^5.0.9",
     "@vitejs/plugin-react-swc": "^3.7.0",

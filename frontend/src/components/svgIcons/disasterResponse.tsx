@@ -1,4 +1,4 @@
-import { HTMLProps } from "react";
+import { HTMLProps } from 'react';
 
 export const DisasterResponseIcon = (props: HTMLProps<SVGSVGElement>) => (
   <svg width="77" height="60" viewBox="0 0 77 60" {...props}>

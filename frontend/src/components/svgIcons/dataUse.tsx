@@ -1,4 +1,4 @@
-import { HTMLProps } from "react";
+import { HTMLProps } from 'react';
 
 export const DataUseIcon = (props: HTMLProps<SVGSVGElement>) => (
   <svg width="105" height="91" viewBox="0 0 105 91" {...props}>
