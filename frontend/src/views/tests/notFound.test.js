@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { IntlProviders } from '../../utils/testWithIntl';
 import messages from '../messages';
-import { NotFound } from '../notFound.jsx';
+import { NotFound } from '../notFound';
 
 describe('Not Found', () => {
   it('should display project not found error', () => {

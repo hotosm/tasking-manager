@@ -10,7 +10,7 @@ import logo from '../../assets/img/main-logo.svg';
 import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { LocaleSelector } from '../localeSelect';
-import { Button, ButtonProps } from '../button.jsx';
+import { Button, ButtonProps } from '../button';
 import { UpdateDialog } from './updateDialog';
 import { BurgerMenu } from './burgerMenu';
 import { TopNavLink } from './NavLink';
@@ -82,8 +82,10 @@ export const Header = () => {
     }
   };
 
+  console.log("USERDETAILS", userDetails);
+
   const checkUserEmail = () =>
-    userDetails.hasOwnProperty('emailAddress') && !userDetails.emailAddress ? (
+    userDetails?.hasOwnProperty('emailAddress') && !userDetails.emailAddress ? (
       <Popup modal open closeOnEscape={false} closeOnDocumentClick={false}>
         {(close) => <UpdateEmail closeModal={close} />}
       </Popup>
@@ -186,7 +188,7 @@ export function getMenuItemsForUser(userDetails: any, organisations?: any) {
   }
 
   let filteredMenuItems;
-  if (userDetails.username) {
+  if (userDetails?.username) {
     filteredMenuItems = menuItems.filter((item) => item.authenticated === true || item.showAlways);
     if (
       userDetails.role !== 'ADMIN' &&
@@ -273,7 +275,7 @@ export const ActionItems = ({
   location: any;
   getUserLinks: (role: string) => any;
 }) =>
-  userDetails.username ? (
+  userDetails?.username ? (
     <>
       <NotificationBell />
       <Dropdown

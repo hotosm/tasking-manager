@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { FormattedMessage } from 'react-intl';
-import messages from './messages.js';
+import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 
 export const PermissionsBlock = ({ permissions, type }) => {

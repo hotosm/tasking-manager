@@ -2,7 +2,7 @@ import { FormattedMessage } from 'react-intl';
 
 import commonMessages from '../../views/messages';
 import messages from './messages';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import { styleClasses } from '../../views/projectEdit';
 
 export const LeaveTeamConfirmationAlert = ({ teamName, close, leaveTeam }) => {

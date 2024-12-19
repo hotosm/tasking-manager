@@ -7,7 +7,7 @@ import Popup from 'reactjs-popup';
 import messages from './messages';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { DeleteButton } from '../teamsAndOrgs/management';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import { AlertIcon } from '../svgIcons';
 
 const DeleteTrigger = forwardRef((props, ref) => <DeleteButton {...props} />);

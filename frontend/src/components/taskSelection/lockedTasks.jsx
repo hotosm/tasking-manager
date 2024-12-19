@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import { useGetLockedTasks } from '../../hooks/UseLockedTasks';
 
 export function AnotherProjectLock({ projectId, lockedTasksLength, action }) {

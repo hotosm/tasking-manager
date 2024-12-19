@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import { Alert } from '../alert';
 import { DeleteModal } from '../deleteModal';
 import { styleClasses, StateContext } from '../../views/projectEdit';

@@ -20,7 +20,7 @@ export function TopBanner() {
   return (
     <>
       {/* @ts-expect-error TS Migrations */}
-      {location.pathname === '/' && data.visible && !error && (
+      {location.pathname === '/' && data?.visible && !error && (
         <div className="ph3 b--grey-light bb bg-tan top-banner-container">
           <div
             className="fw6 flex justify-center"

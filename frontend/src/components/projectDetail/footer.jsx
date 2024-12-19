@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import messages from './messages';
 import { ShareButton } from './shareButton';
 import { AddToFavorites } from './favorites';

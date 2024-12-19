@@ -8,7 +8,7 @@ import 'react-tooltip/dist/react-tooltip.css'; // Needed by for { Tooltip } from
 
 import App from './App.jsx';
 import { store, persistor } from './store';
-import { ConnectedIntl } from './utils/internationalization.jsx';
+import { ConnectedIntl } from './utils/internationalization';
 import { register, unregister, onServiceWorkerUpdate } from './serviceWorkerRegistration';
 import { ENABLE_SERVICEWORKER, SENTRY_FRONTEND_DSN, ENVIRONMENT } from './config';
 

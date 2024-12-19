@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "license": "BSD-2-Clause",
   "private": false,
+  "type": "module",
   "dependencies": {
     "@hotosm/id": "^2.30.2",
     "@hotosm/iso-countries-languages": "^1.1.2",

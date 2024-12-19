@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import messages from './messages';
 import viewsMessages from '../../views/messages';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
-import { TasksMap } from '../taskSelection/map.js';
+import { TasksMap } from '../taskSelection/map';
 import { ProjectHeader } from './header';
 import { DownloadAOIButton, DownloadTaskGridButton } from './downloadButtons';
 import { TeamsBoxList } from '../teamsAndOrgs/teams';
@@ -29,8 +29,8 @@ import { Alert } from '../alert';
 
 import './styles.scss';
 import { useWindowSize } from '../../hooks/UseWindowSize';
-import { DownloadOsmData } from './downloadOsmData.js';
-import { ENABLE_EXPORT_TOOL } from '../../config/index.js';
+import { DownloadOsmData } from './downloadOsmData';
+import { ENABLE_EXPORT_TOOL } from '../../config/index';
 
 /* lazy imports must be last import */
 const ProjectTimeline = lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));

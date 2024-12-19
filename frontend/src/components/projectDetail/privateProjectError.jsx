@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { LockIcon } from '../svgIcons';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 
 const PrivateProjectError = () => {
   const navigate = useNavigate();

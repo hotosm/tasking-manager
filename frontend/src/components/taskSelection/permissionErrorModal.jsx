@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { getPermissionErrorMessage } from '../../utils/projectPermissions';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import { CloseIcon } from '../svgIcons';
 import { TeamBox } from '../teamsAndOrgs/teams';
 

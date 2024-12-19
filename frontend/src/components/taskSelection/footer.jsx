@@ -10,7 +10,7 @@ import { openEditor, formatJosmUrl } from '../../utils/openEditor';
 import { useFetchLockedTasks } from '../../hooks/UseLockedTasks';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Dropdown } from '../dropdown';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import { Imagery } from './imagery';
 import { MappingTypes } from '../mappingTypes';
 import { LockedTaskModalContent } from './lockedTasks';

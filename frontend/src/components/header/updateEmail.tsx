@@ -7,7 +7,7 @@ import messages from './messages';
 import { updateUserEmail } from '../../store/actions/auth';
 import { PROFILE_RELEVANT_FIELDS } from '../user/forms/personalInformation';
 import { ORG_PRIVACY_POLICY_URL } from '../../config';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import { RootStore } from '../../store/index.js';
 
 export const UpdateEmail = ({ closeModal }: {

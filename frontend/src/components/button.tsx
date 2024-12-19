@@ -17,7 +17,7 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
 };
 
-export function Button(props: ButtonProps) {
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { children, icon, className, loading = false, disabled, ...rest } = props;
 
   return (
@@ -27,13 +27,14 @@ export function Button(props: ButtonProps) {
       className={`${className || ''} br1 f5 bn ${disabled || loading ? 'o-50' : 'pointer'}`}
       style={{ padding: '.75rem 1.5rem' }}
       disabled={disabled || loading}
+      ref={ref}
       {...rest}
     >
       {loading ? <AnimatedLoadingIcon /> : icon && <IconSpace>{icon}</IconSpace>}
       {children}
     </button>
   );
-}
+})
 
 export function FormSubmitButton(
   props: React.ButtonHTMLAttributes<HTMLButtonElement> & {

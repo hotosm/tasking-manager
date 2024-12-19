@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { DateCustomInput } from '../projectEdit/partnersForm';
 import { useAllPartnersQuery } from '../../api/projects';
 import messagesFromProjectEdit from '../projectEdit/messages';
-import messages from './messages.js';
+import messages from './messages';
 
 export const PartnersFilterSelect = ({
   fieldsetName,

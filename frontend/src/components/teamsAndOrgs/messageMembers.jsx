@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import toast from 'react-hot-toast';
 
 import messages from './messages';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import { MessageStatus } from '../comments/status';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import ReactPlaceholder from 'react-placeholder';

@@ -5,7 +5,7 @@ import { kml } from '@tmcw/togeojson';
 import { MAX_FILESIZE } from '../config';
 import shpjs from 'shpjs';
 
-var osmToGeojson = require('osmtogeojson');
+import osmToGeojson from "osmtogeojson";
 
 export const verifyFileSize = (file) => {
   if (file.size >= MAX_FILESIZE) {

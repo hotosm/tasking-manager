@@ -10,7 +10,7 @@ import messages from './messages';
 import { ProjectInstructions } from './instructions';
 import { TasksMap } from './map';
 import { HeaderLine } from '../projectDetail/header';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import Portal from '../portal';
 import { SidebarIcon } from '../svgIcons';
 import { openEditor, getTaskGpxUrl, formatImageryUrl, formatJosmUrl } from '../../utils/openEditor';

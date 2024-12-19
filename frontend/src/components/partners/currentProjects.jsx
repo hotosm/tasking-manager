@@ -6,7 +6,7 @@ import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { TasksMap } from '../taskSelection/map';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import { API_URL } from '../../config';
 import messages from './messages';
 import ProjectProgressBar from '../projectCard/projectProgressBar';

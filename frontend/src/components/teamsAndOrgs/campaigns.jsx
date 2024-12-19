@@ -7,7 +7,7 @@ import ReactPlaceholder from 'react-placeholder';
 import { nCardPlaceholders } from './campaignsPlaceholder';
 import messages from './messages';
 import { Management } from './management';
-import { Button } from '../button.jsx';
+import { Button } from '../button';
 import { HashtagIcon } from '../svgIcons';
 import { TextField } from '../formInputs';
 

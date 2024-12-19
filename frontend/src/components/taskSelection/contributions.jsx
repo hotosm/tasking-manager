@@ -4,7 +4,7 @@ import Select from 'react-select';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import messages from './messages.js';
+import messages from './messages';
 import { UserAvatar } from '../user/avatar';
 import { CheckCircle } from '../checkCircle';
 import { CustomButton } from '../button';
