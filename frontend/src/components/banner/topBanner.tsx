@@ -2,20 +2,12 @@ import { useLocation } from 'react-router-dom';
 import { useFetchWithAbort } from '../../hooks/UseFetch';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import './styles.scss';
-import { useEffect, useState } from 'react';
 
 export function TopBanner() {
   const location = useLocation();
-  const [, error, data] = useFetchWithAbort(`system/banner/`);
-  const [dangerousInner, setDangerousInner] = useState<null | string | TrustedHTML>(null);
-
-  useEffect(() => {
-    // TODO: Spotted this - is this meant to be ran? The IIFE is never called at the end.
-    async () => {
-      // @ts-expect-error
-      setDangerousInner((await htmlFromMarkdown(data?.message)).__html);
-    };
-  }, [data]);
+  const [, error, data] = useFetchWithAbort<{
+    message: string;
+  }>(`system/banner/`);
 
   return (
     <>
@@ -25,7 +17,7 @@ export function TopBanner() {
           <div
             className="fw6 flex justify-center"
             dangerouslySetInnerHTML={{
-              __html: dangerousInner ?? '',
+              __html: htmlFromMarkdown(data.message),
             }}
           />
         </div>

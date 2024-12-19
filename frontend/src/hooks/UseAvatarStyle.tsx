@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, CSSProperties } from 'react';
 
 export const useAvatarStyle = (size?: "small" | "medium" | "large", editMode?: boolean, picture?: string) => {
   const [sizeClasses, setSizeClasses] = useState('h2 w2 f5');
   const [textPadding, setTextPadding] = useState({});
   const [sizeStyle, setSizeStyle] = useState({});
-  const [closeIconStyle, setCloseIconStyle] = useState<Partial<CSSStyleDeclaration>>({ left: '0.4rem' });
+  const [closeIconStyle, setCloseIconStyle] = useState<Partial<CSSProperties>>({ left: '0.4rem' });
 
   useEffect(() => {
     if (size === 'large') setSizeClasses('h3 w3 f2');

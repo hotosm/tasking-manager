@@ -68,7 +68,7 @@ describe('test if QuestionsAndComments component', () => {
   });
 
   it('should delete the comment', async () => {
-    const retryFnMock = jest.fn();
+    const retryFnMock = vi.fn();
     store.dispatch({
       type: 'SET_USER_DETAILS',
       userDetails: { role: 'ADMIN' },

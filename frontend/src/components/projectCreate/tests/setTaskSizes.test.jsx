@@ -7,17 +7,17 @@ import { projectMetadata } from '../../../utils/tests/snippets/projectMetadata';
 import { IntlProviders } from '../../../utils/testWithIntl';
 
 jest.mock('mapbox-gl/dist/mapbox-gl', () => ({
-  GeolocateControl: jest.fn(),
+  GeolocateControl: vi.fn(),
   Map: jest.fn(() => ({
-    addControl: jest.fn(),
-    on: jest.fn(),
-    remove: jest.fn(),
-    getSource: jest.fn(),
-    fitBounds: jest.fn(),
-    off: jest.fn(),
-    addSource: jest.fn(),
+    addControl: vi.fn(),
+    on: vi.fn(),
+    remove: vi.fn(),
+    getSource: vi.fn(),
+    fitBounds: vi.fn(),
+    off: vi.fn(),
+    addSource: vi.fn(),
   })),
-  NavigationControl: jest.fn(),
+  NavigationControl: vi.fn(),
 }));
 
 const map = new mapboxgl.Map({
@@ -35,7 +35,7 @@ let mapObj = {
 };
 
 describe('setTaskSizes Component', () => {
-  const updateMetadata = jest.fn();
+  const updateMetadata = vi.fn();
   it('renders a panel to split an AOI into a task grid', () => {
     render(
       <IntlProviders>

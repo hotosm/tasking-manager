@@ -5,7 +5,7 @@ import MyTasksOrderDropdown from '../myTasksOrderDropdown';
 import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 
 describe('MyTasksOrderDropdown', () => {
-  const setQueryMock = jest.fn();
+  const setQueryMock = vi.fn();
   const setup = async () => {
     const { user } = renderWithRouter(
       <IntlProviders>

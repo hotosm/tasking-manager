@@ -38,12 +38,12 @@ export const useFetch = (url: string, trigger: boolean = true) => {
   return [error, loading, data];
 };
 
-export const useFetchWithAbort = (url: string, trigger: boolean = true) => {
+export const useFetchWithAbort = <T extends object>(url: string, trigger: boolean = true) => {
   const token = useSelector((state: RootStore) => state.auth.token);
   const locale = useSelector((state: RootStore) => state.preferences['locale']);
   const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<unknown>(null);
+  const [data, setData] = useState<T | null>(null);
   const [refetchIndex, setRefetchIndex] = useState(0);
 
   // Component using refetch would infinitely make requests
@@ -81,7 +81,7 @@ export const useFetchWithAbort = (url: string, trigger: boolean = true) => {
     return () => controller.abort();
   }, [url, token, trigger, locale, refetchIndex]);
 
-  return [error, loading, data, refetch];
+  return [error, loading, data, refetch] as const;
 };
 
 export function useFetchIntervaled(url: string, delay: number, trigger = true) {

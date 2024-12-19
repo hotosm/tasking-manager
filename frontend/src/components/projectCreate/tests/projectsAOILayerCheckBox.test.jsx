@@ -6,7 +6,7 @@ import { ProjectsAOILayerCheckBox } from '../projectsAOILayerCheckBox';
 import { IntlProviders } from '../../../utils/testWithIntl';
 
 describe('ProjectsAOILayerCheckBox', () => {
-  const testFn = jest.fn();
+  const testFn = vi.fn();
   it('with disabled property', async () => {
     const user = userEvent.setup();
     render(

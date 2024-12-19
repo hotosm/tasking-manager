@@ -1,4 +1,4 @@
-import { HTMLProps, PureComponent } from 'react';
+import { HTMLProps } from 'react';
 
 // Icon produced by FontAwesome project: https://github.com/FortAwesome/Font-Awesome/
 // License: CC-By 4.0

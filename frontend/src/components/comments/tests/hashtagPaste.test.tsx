@@ -6,7 +6,7 @@ import HashtagPaste from '../hashtagPaste';
 import userEvent from '@testing-library/user-event';
 
 test('HashtagPaste with an empty text string', async () => {
-  const setFn = jest.fn();
+  const setFn = vi.fn();
   const user = userEvent.setup();
   render(
     <ReduxIntlProviders>
@@ -21,7 +21,7 @@ test('HashtagPaste with an empty text string', async () => {
 });
 
 test('HashtagPaste with a text string', async () => {
-  const setFn = jest.fn();
+  const setFn = vi.fn();
   const user = userEvent.setup();
   render(
     <ReduxIntlProviders>

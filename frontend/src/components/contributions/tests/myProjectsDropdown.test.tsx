@@ -6,7 +6,7 @@ import MyProjectsDropdown from '../myProjectsDropdown';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 
 it('displays placeholder and typed text on type', async () => {
-  const setQueryMock = jest.fn();
+  const setQueryMock = vi.fn();
   render(
     <ReduxIntlProviders>
       <MyProjectsDropdown

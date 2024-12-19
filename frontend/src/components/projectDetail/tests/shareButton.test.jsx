@@ -32,7 +32,7 @@ describe('test if shareButton', () => {
   });
 
   it('render open corresponding window popup', async () => {
-    global.open = jest.fn();
+    global.open = vi.fn();
     const user = userEvent.setup();
     render(
       <IntlProviders>

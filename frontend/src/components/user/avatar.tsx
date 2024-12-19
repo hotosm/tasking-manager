@@ -23,6 +23,7 @@ export const CurrentUserAvatar = (props: HtmlHTMLAttributes<any>) => {
 };
 
 export const UserAvatar = ({
+  name,
   username,
   number,
   picture,
@@ -32,10 +33,11 @@ export const UserAvatar = ({
   editMode,
   disableLink = false,
 }: {
+  name?: string;
   username: string;
   number?: string;
   picture?: string;
-  size?: string;
+  size?: "small" | "medium" | "large";
   colorClasses?: string;
   removeFn?: Function;
   editMode?: boolean;
@@ -126,7 +128,7 @@ export const UserAvatarList = ({
   maxLength?: number;
   textColor?: string;
   bgColor?: string;
-  size?: string;
+  size?: "small" | "medium" | "large";
   totalCount?: number;
 }) => {
   const getColor = () =>

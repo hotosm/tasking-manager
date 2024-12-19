@@ -1,6 +1,8 @@
 import { useSelector } from 'react-redux';
+import { FormattedMessage } from 'react-intl';
 
 import { RootStore } from '../../store';
+import messages from './messages';
 
 export const TabSelector = ({
   activeSection,
@@ -10,7 +12,7 @@ export const TabSelector = ({
   setActiveSection: (section: string) => void;
 }) => {
   const token = useSelector((state: RootStore) => state.auth.token);
-  const tabs = token ? ['tasks', 'instructions', 'contributions'] : ['instructions'];
+  const tabs = token ? ['tasks', 'instructions', 'contributions'] as const : ['instructions'] as const;
 
   return (
     <div className="ttu barlow-condensed f4 blue-dark bb b--grey-light">
