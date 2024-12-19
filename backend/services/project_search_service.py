@@ -1,4 +1,5 @@
 import pandas as pd
+from backend.models.postgis.user import User
 from flask import current_app
 import math
 import geojson
@@ -92,6 +93,8 @@ class ProjectSearchService:
                     Project.country,
                     Organisation.name.label("organisation_name"),
                     Organisation.logo.label("organisation_logo"),
+                    User.name.label("author_name"),
+                    User.username.label("author_username"),
                     Project.created.label("creation_date"),
                     func.coalesce(
                         func.sum(func.ST_Area(Project.geometry, True) / 1000000)
@@ -99,7 +102,14 @@ class ProjectSearchService:
                 )
                 .filter(Project.geometry is not None)
                 .outerjoin(Organisation, Organisation.id == Project.organisation_id)
-                .group_by(Organisation.id, Project.id, ProjectInfo.name)
+                .outerjoin(User, User.id == Project.author_id)
+                .group_by(
+                    Organisation.id,
+                    Project.id,
+                    ProjectInfo.name,
+                    User.username,
+                    User.name,
+                )
             )
         else:
             query = (
@@ -246,6 +256,7 @@ class ProjectSearchService:
             row["total_contributors"] = Project.get_project_total_contributions(
                 row["id"]
             )
+            row["author"] = row["author_name"] or row["author_username"]
 
             if is_user_admin:
                 partners_names = (
@@ -269,6 +280,8 @@ class ProjectSearchService:
             "tasks_validated",
             "total_tasks",
             "centroid",
+            "author_name",
+            "author_username",
         ]
 
         colummns_to_rename = {
