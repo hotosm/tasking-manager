@@ -1,4 +1,3 @@
-from backend.models.postgis.utils import timestamp
 from flask import current_app
 from sqlalchemy import and_, or_
 from markdown import markdown
@@ -122,15 +121,12 @@ class TeamService:
             )
 
     @staticmethod
-    def add_team_member(
-        team_id, user_id, function, active=False, joined_date=timestamp()
-    ):
+    def add_team_member(team_id, user_id, function, active=False):
         team_member = TeamMembers()
         team_member.team_id = team_id
         team_member.user_id = user_id
         team_member.function = function
         team_member.active = active
-        team_member.joined_date = joined_date
         team_member.create()
 
     @staticmethod

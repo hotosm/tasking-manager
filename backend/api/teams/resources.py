@@ -427,7 +427,9 @@ class TeamsJoinRequestAPI(Resource):
             # Generate CSV in memory
             csv_output = io.StringIO()
             writer = csv.writer(csv_output)
-            writer.writerow(["Username", "Joined Date", "Team Name"])  # CSV header
+            writer.writerow(
+                ["Username", "Date Joined (UTC)", "Team Name"]
+            )  # CSV header
 
             for member in team_members:
                 writer.writerow(
