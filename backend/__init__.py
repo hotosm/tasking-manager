@@ -328,7 +328,11 @@ def add_api_endpoints(app):
     from backend.api.countries.resources import CountriesRestAPI
 
     # Teams API endpoint
-    from backend.api.teams.resources import TeamsRestAPI, TeamsAllAPI
+    from backend.api.teams.resources import (
+        TeamsRestAPI,
+        TeamsAllAPI,
+        TeamsJoinRequestAPI,
+    )
     from backend.api.teams.actions import (
         TeamsActionsJoinAPI,
         TeamsActionsAddAPI,
@@ -831,6 +835,9 @@ def add_api_endpoints(app):
         TeamsRestAPI,
         format_url("teams/<int:team_id>/"),
         methods=["GET", "DELETE", "PATCH"],
+    )
+    api.add_resource(
+        TeamsJoinRequestAPI, format_url("teams/join_requests/"), methods=["GET"]
     )
 
     # Teams actions endpoints

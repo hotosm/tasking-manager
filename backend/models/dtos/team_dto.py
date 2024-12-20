@@ -7,6 +7,7 @@ from schematics.types import (
     LongType,
     ListType,
     ModelType,
+    UTCDateTimeType,
 )
 
 from backend.models.dtos.stats_dto import Pagination
@@ -64,6 +65,7 @@ class TeamMembersDTO(Model):
         default=False, serialized_name="joinRequestNotifications"
     )
     picture_url = StringType(serialized_name="pictureUrl")
+    joined_date = UTCDateTimeType(serialized_name="joinedDate")
 
 
 class TeamProjectDTO(Model):
