@@ -2,6 +2,7 @@ from datetime import date, timedelta
 
 from databases import Database
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 
 from backend.api.utils import validate_date_input
 from backend.db import get_db
@@ -19,7 +20,6 @@ router = APIRouter(
 @router.get("/statistics/")
 async def get(
     request: Request,
-    organisation_id: int,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
 ):
@@ -81,10 +81,13 @@ async def get(
         if request.query_params.get("startDate"):
             start_date = validate_date_input(request.query_params.get("startDate"))
         else:
-            return {
-                "Error": "Start date is required",
-                "SubCode": "MissingDate",
-            }, 400
+            return JSONResponse(
+                content={
+                    "Error": "Start date is required",
+                    "SubCode": "MissingDate",
+                },
+                status_code=400,
+            )
         end_date = validate_date_input(
             request.query_params.get("endDate", date.today())
         )
@@ -103,7 +106,8 @@ async def get(
         if project_id:
             project_id = map(str, project_id.split(","))
         country = request.query_params.get("country", None)
-        task_stats = StatsService.get_task_stats(
+        task_stats = await StatsService.get_task_stats(
+            db,
             start_date,
             end_date,
             organisation_id,
@@ -112,6 +116,9 @@ async def get(
             project_id,
             country,
         )
-        return task_stats.model_dump(by_alias=True), 200
+        return task_stats
     except (KeyError, ValueError) as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=400,
+        )

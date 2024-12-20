@@ -190,7 +190,7 @@ class HomePageStatsDTO(BaseModel):
 class TaskStats(BaseModel):
     """DTO for tasks stats for a single day"""
 
-    date: datetime
+    date: str
     mapped: int = Field(alias="mapped")
     validated: int = Field(alias="validated")
     bad_imagery: int = Field(alias="badImagery")
