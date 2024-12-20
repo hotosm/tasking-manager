@@ -1,15 +1,17 @@
 import requests
-from flask import current_app
+from loguru import logger
+
+# # from flask import current_app
 
 from backend.models.dtos.user_dto import UserOSMDTO
+from backend.config import settings
 
 
 class OSMServiceError(Exception):
     """Custom Exception to notify callers an error occurred when in the User Service"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class OSMService:
@@ -20,9 +22,7 @@ class OSMService:
         :param user_id: user_id in scope
         :raises OSMServiceError
         """
-        osm_user_details_url = (
-            f"{current_app.config['OSM_SERVER_URL']}/api/0.6/user/{user_id}.json"
-        )
+        osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
         response = requests.get(osm_user_details_url)
 
         if response.status_code != 200:
