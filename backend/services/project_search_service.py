@@ -207,7 +207,7 @@ class ProjectSearchService:
         list_dto.active_mappers = await Project.get_active_mappers(project.id, db)
         list_dto.total_contributors = total_contributors
         list_dto.country = project.country
-        list_dto.author = project.author_name
+        list_dto.author = project.author_name or project.author_username
         list_dto.organisation_name = project.organisation_name
         list_dto.organisation_logo = project.organisation_logo
         list_dto.campaigns = await Project.get_project_campaigns(project.id, db)
