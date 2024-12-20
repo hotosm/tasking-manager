@@ -230,8 +230,12 @@ class OrganisationService:
         return organisation_dto
 
     @staticmethod
-    def get_organisation_by_name(organisation_name: str) -> Organisation:
-        organisation = Organisation.get_organisation_by_name(organisation_name)
+    async def get_organisation_by_name(
+        organisation_name: str, db: Database
+    ) -> Organisation:
+        organisation = await Organisation.get_organisation_by_name(
+            organisation_name, db
+        )
 
         if organisation is None:
             raise NotFound(
