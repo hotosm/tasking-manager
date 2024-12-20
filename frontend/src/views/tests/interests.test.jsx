@@ -10,7 +10,7 @@ import {
 import { ListInterests, CreateInterest, EditInterest } from '../interests';
 import { setupFaultyHandlers } from '../../network/tests/server';
 
-jest.mock('react-hot-toast', () => ({
+vi.mock('react-hot-toast', () => ({
   success: vi.fn(),
 }));
 

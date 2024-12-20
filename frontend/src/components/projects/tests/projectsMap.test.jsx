@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { ProjectsMap } from '../projectsMap';
 
-jest.mock('mapbox-gl/dist/mapbox-gl', () => ({
+vi.mock('mapbox-gl/dist/mapbox-gl', () => ({
   supported: vi.fn(),
   Map: jest.fn(() => ({
     addControl: vi.fn(),

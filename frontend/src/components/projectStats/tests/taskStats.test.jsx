@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import TasksByStatus from '../taskStatus';
 
-jest.mock('react-chartjs-2', () => ({
+vi.mock('react-chartjs-2', () => ({
   Doughnut: () => null,
 }));
 

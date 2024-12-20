@@ -11,7 +11,7 @@ import '../../components/projectStats/contributorsStats';
 import '../../components/projectStats/taskStatus';
 import '../../components/projectDetail/timeline';
 
-jest.mock('react-chartjs-2', () => ({
+vi.mock('react-chartjs-2', () => ({
   Doughnut: () => null,
   Bar: () => null,
   Line: () => null,

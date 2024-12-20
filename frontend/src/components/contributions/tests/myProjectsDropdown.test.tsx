@@ -24,6 +24,8 @@ it('displays placeholder and typed text on type', async () => {
     </ReduxIntlProviders>,
   );
 
+  screen.debug()
+
   await selectEvent.select(screen.getByRole('combobox'), '#8629');
   expect(setQueryMock).toHaveBeenCalled();
 });

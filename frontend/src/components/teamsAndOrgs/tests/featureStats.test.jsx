@@ -6,7 +6,7 @@ import { ReduxIntlProviders, QueryClientProviders } from '../../../utils/testWit
 import { FeatureStats } from '../featureStats';
 import { homepageStats } from '../../../network/tests/mockData/homepageStats';
 
-jest.mock('axios');
+vi.mock('axios');
 
 test('FeatureStats renders the correct values and labels', async () => {
   axios.get.mockResolvedValue({ data: homepageStats });

@@ -12,7 +12,7 @@ import {
 } from '../../utils/testWithIntl';
 
 describe('User Detail Component', () => {
-  jest.mock('react-chartjs-2', () => ({
+  vi.mock('react-chartjs-2', () => ({
     Doughnut: () => null,
   }));
 

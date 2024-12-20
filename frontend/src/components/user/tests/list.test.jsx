@@ -8,7 +8,7 @@ import { IntlProviders, ReduxIntlProviders, renderWithRouter } from '../../../ut
 import { store } from '../../../store';
 import { setupFaultyHandlers } from '../../../network/tests/server';
 
-jest.mock('react-hot-toast', () => ({
+vi.mock('react-hot-toast', () => ({
   success: vi.fn(),
   error: vi.fn(),
 }));

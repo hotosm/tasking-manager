@@ -11,7 +11,7 @@ import {
 import { ListCampaigns, CampaignError, CreateCampaign, EditCampaign } from '../campaigns';
 import { setupFaultyHandlers } from '../../network/tests/server';
 
-jest.mock('react-hot-toast', () => ({
+vi.mock('react-hot-toast', () => ({
   success: vi.fn(),
 }));
 

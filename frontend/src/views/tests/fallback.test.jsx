@@ -13,7 +13,7 @@ import messages from '../messages';
  * in the test where we actually need to mock it.
  */
 const mockedUsedNavigate = vi.fn();
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockedUsedNavigate,
 }));

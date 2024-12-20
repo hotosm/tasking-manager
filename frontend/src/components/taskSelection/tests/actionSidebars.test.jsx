@@ -26,7 +26,7 @@ import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/
 // This is a late import in a React.lazy call; it takes awhile for commentInput to load
 import '../../comments/commentInput';
 
-jest.mock('react-hot-toast', () => ({
+vi.mock('react-hot-toast', () => ({
   error: vi.fn(),
 }));
 

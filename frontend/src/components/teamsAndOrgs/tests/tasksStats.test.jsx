@@ -10,7 +10,7 @@ import userEvent from '@testing-library/user-event';
 // In the event you remove it, please measure test times before ''and'' after removal.
 import '../../../utils/chart';
 
-jest.mock('react-chartjs-2', () => ({
+vi.mock('react-chartjs-2', () => ({
   Bar: () => null,
 }));
 

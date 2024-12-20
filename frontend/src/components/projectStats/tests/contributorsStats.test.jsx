@@ -7,7 +7,7 @@ import { ConnectedIntl } from '../../../utils/internationalization';
 import { projectContributions } from '../../../network/tests/mockData/contributions';
 import ContributorsStats from '../contributorsStats';
 
-jest.mock('react-chartjs-2', () => ({
+vi.mock('react-chartjs-2', () => ({
   Doughnut: () => null,
   Bar: () => null,
 }));
