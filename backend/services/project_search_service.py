@@ -74,6 +74,8 @@ class ProjectSearchService:
                     p.tasks_mapped,
                     p.tasks_validated,
                     p.tasks_bad_imagery,
+                    u.name AS author_name,
+                    u.username AS author_username,
                     o.name AS organisation_name,
                     ROUND(COALESCE(
                         (p.tasks_mapped + p.tasks_validated) * 100.0 / NULLIF(p.total_tasks - p.tasks_bad_imagery, 0), 0
@@ -88,6 +90,7 @@ class ProjectSearchService:
                     p.created AS creation_date
                 FROM projects p
                 LEFT JOIN organisations o ON o.id = p.organisation_id
+                LEFT JOIN users u ON u.id = p.author_id
                 WHERE p.geometry IS NOT NULL
             """
 
@@ -109,10 +112,13 @@ class ProjectSearchService:
                 p.due_date,
                 p.country,
                 p.mapping_types,
+                u.name AS author_name,
+                u.username AS author_username,
                 o.name AS organisation_name,
                 o.logo AS organisation_logo
             FROM projects p
             LEFT JOIN organisations o ON o.id = p.organisation_id
+            LEFT JOIN users u ON u.id = p.author_id
             WHERE p.geometry IS NOT NULL
             """
 
@@ -135,7 +141,6 @@ class ProjectSearchService:
                 team_projects = await db.fetch_all(
                     team_projects_query, {"user_id": user.id}
                 )
-
                 # Fetch project_ids for user's organisations
                 org_projects_query = """
                 SELECT p.id
@@ -155,12 +160,13 @@ class ProjectSearchService:
                         + [row["id"] for row in org_projects]
                     )
                 )
-
                 if project_ids:
                     filters.append("p.private = :private OR p.id = ANY(:project_ids)")
                     params["private"] = False
                     params["project_ids"] = list(project_ids)
-
+                else:
+                    filters.append("p.private = :private")
+                    params["private"] = False
         if filters:
             query += " AND (" + " AND ".join(filters) + ")"
 
@@ -201,6 +207,7 @@ class ProjectSearchService:
         list_dto.active_mappers = await Project.get_active_mappers(project.id, db)
         list_dto.total_contributors = total_contributors
         list_dto.country = project.country
+        list_dto.author = project.author_name
         list_dto.organisation_name = project.organisation_name
         list_dto.organisation_logo = project.organisation_logo
         list_dto.campaigns = await Project.get_project_campaigns(project.id, db)
@@ -249,6 +256,8 @@ class ProjectSearchService:
             row["total_contributors"] = await Project.get_project_total_contributions(
                 row["id"], db
             )
+            row["author"] = row["author_name"] or row["author_username"]
+
             project_name_query = """
                 SELECT COALESCE(
                     (SELECT pi.name FROM project_info pi WHERE pi.project_id = :project_id AND pi.locale = :locale LIMIT 1),
@@ -302,6 +311,7 @@ class ProjectSearchService:
             "total_area": "totalArea",
             "total_contributors": "totalContributors",
             "partner_names": "partnerNames",
+            "author_name": "author",
             "project_name": "name",
         }
 
