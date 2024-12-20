@@ -3,9 +3,8 @@ from datetime import date, timedelta
 
 from cachetools import TTLCache, cached
 from databases import Database
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, select
 
-from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.models.dtos.stats_dto import (
     CampaignStatsDTO,
@@ -17,7 +16,6 @@ from backend.models.dtos.stats_dto import (
     ProjectContributionsDTO,
     ProjectLastActivityDTO,
     TaskHistoryDTO,
-    TaskStats,
     TaskStatsDTO,
     TaskStatusDTO,
     UserContribution,
@@ -27,10 +25,8 @@ from backend.models.postgis.campaign import Campaign, campaign_projects
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import MappingLevel, TaskStatus, UserGender
-from backend.models.postgis.task import Task, TaskAction, TaskHistory, User
+from backend.models.postgis.task import Task, TaskAction, User
 from backend.models.postgis.utils import timestamp  # noqa: F401
-from backend.services.campaign_service import CampaignService
-from backend.services.organisation_service import OrganisationService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.project_service import ProjectService
 from backend.services.users.user_service import UserService
@@ -686,150 +682,111 @@ class StatsService:
         return stats_dto
 
     @staticmethod
-    def set_task_stats(result_row):
-        date_dto = TaskStats(
-            {
-                "date": result_row[0],
-                "mapped": result_row[1],
-                "validated": result_row[2],
-                "bad_imagery": result_row[3],
-            }
-        )
-        return date_dto
+    def set_task_stats(row):
+        return {
+            "date": row["date"],
+            "mapped": row["mapped"],
+            "validated": row["validated"],
+            "bad_imagery": row["bad_imagery"],
+        }
 
     @staticmethod
-    def get_task_stats(
-        start_date, end_date, org_id, org_name, campaign, project_id, country
+    async def get_task_stats(
+        db: Database,
+        start_date,
+        end_date,
+        org_id=None,
+        org_name=None,
+        campaign=None,
+        project_id=None,
+        country=None,
     ):
-        """Creates tasks stats for a period using the TaskStatsDTO"""
+        """Creates task stats for a period using the TaskStatsDTO"""
 
-        query = (
-            session.query(
-                TaskHistory.task_id,
-                TaskHistory.project_id,
-                TaskHistory.action_text,
-                func.DATE(TaskHistory.action_date).label("day"),
+        # Base query components
+        base_query = """
+            WITH filtered_projects AS (
+                SELECT id FROM projects
+                WHERE 1 = 1
+                {filters}
+            ),
+            aggregated_stats AS (
+                SELECT
+                    DATE(action_date) AS day,
+                    action_text,
+                    COUNT(*) AS count
+                FROM task_history
+                WHERE action = 'STATE_CHANGE'
+                AND action_text IN ('MAPPED', 'VALIDATED', 'BADIMAGERY')
+                AND project_id IN (SELECT id FROM filtered_projects)
+                GROUP BY DATE(action_date), action_text
+            ),
+            date_series AS (
+                SELECT generate_series(
+                    CAST(:start_date AS DATE),
+                    CAST(:end_date AS DATE),
+                    INTERVAL '1 day'
+                )::DATE AS date
             )
-            .distinct(
-                TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text
-            )
-            .filter(
-                TaskHistory.action == "STATE_CHANGE",
-                or_(
-                    TaskHistory.action_text == "MAPPED",
-                    TaskHistory.action_text == "VALIDATED",
-                    TaskHistory.action_text == "BADIMAGERY",
-                ),
-            )
-            .order_by(
-                TaskHistory.project_id,
-                TaskHistory.task_id,
-                TaskHistory.action_text,
-                TaskHistory.action_date,
-            )
-        )
+            SELECT
+                TO_CHAR(ds.date, 'YYYY-MM-DD') AS date,  -- Cast date to string
+                COALESCE(SUM(CASE WHEN ag.action_text = 'MAPPED' THEN ag.count END), 0) AS mapped,
+                COALESCE(SUM(CASE WHEN ag.action_text = 'VALIDATED' THEN ag.count END), 0) AS validated,
+                COALESCE(SUM(CASE WHEN ag.action_text = 'BADIMAGERY' THEN ag.count END), 0) AS bad_imagery
+            FROM date_series ds
+            LEFT JOIN aggregated_stats ag ON ds.date = ag.day
+            GROUP BY ds.date
+            HAVING
+                COALESCE(SUM(CASE WHEN ag.action_text = 'MAPPED' THEN ag.count END), 0) > 0 OR
+                COALESCE(SUM(CASE WHEN ag.action_text = 'VALIDATED' THEN ag.count END), 0) > 0 OR
+                COALESCE(SUM(CASE WHEN ag.action_text = 'BADIMAGERY' THEN ag.count END), 0) > 0
+            ORDER BY ds.date;
+        """
+
+        filters = []
+        values = {"start_date": start_date, "end_date": end_date}
 
         if org_id:
-            query = query.join(Project, Project.id == TaskHistory.project_id).filter(
-                Project.organisation_id == org_id
-            )
+            filters.append("AND organisation_id = :org_id")
+            values["org_id"] = org_id
+
         if org_name:
-            try:
-                organisation_id = OrganisationService.get_organisation_by_name(
-                    org_name
-                ).id
-            except NotFound:
-                organisation_id = None
-            query = query.join(Project, Project.id == TaskHistory.project_id).filter(
-                Project.organisation_id == organisation_id
-            )
-        if campaign:
-            try:
-                campaign_id = CampaignService.get_campaign_by_name(campaign).id
-            except NotFound:
-                campaign_id = None
-            query = query.join(
-                campaign_projects,
-                campaign_projects.c.project_id == TaskHistory.project_id,
-            ).filter(campaign_projects.c.campaign_id == campaign_id)
-        if project_id:
-            query = query.filter(TaskHistory.project_id.in_(project_id))
-        if country:
-            # Unnest country column array.
-            sq = (
-                session.query(Project)
-                .with_entities(
-                    Project.id, func.unnest(Project.country).label("country")
+            filters.append("""
+                AND organisation_id = (
+                    SELECT id FROM organisations WHERE name = :org_name
                 )
-                .subquery()
-            )
+            """)
+            values["org_name"] = org_name
 
-            query = query.filter(sq.c.country.ilike("%{}%".format(country))).filter(
-                TaskHistory.project_id == sq.c.id
-            )
+        if campaign:
+            filters.append("""
+                AND id IN (
+                    SELECT project_id FROM campaign_projects
+                    WHERE campaign_id = (
+                        SELECT id FROM campaigns WHERE name = :campaign
+                    )
+                )
+            """)
+            values["campaign"] = campaign
 
-        query = query.subquery()
+        if project_id:
+            filters.append("AND id = ANY(:project_id)")
+            values["project_id"] = project_id
 
-        date_query = session.query(
-            func.DATE(
-                func.generate_series(start_date, end_date, timedelta(days=1))
-            ).label("d_day")
-        ).subquery()
+        if country:
+            filters.append("""
+                AND EXISTS (
+                    SELECT 1
+                    FROM unnest(country) AS c
+                    WHERE c ILIKE :country
+                )
+            """)
+            values["country"] = f"%{country}%"
 
-        grouped_dates = (
-            session.query(
-                date_query.c.d_day,
-                query.c.action_text,
-                func.count(query.c.action_text).label("cnt"),
-            )
-            .join(date_query, date_query.c.d_day == query.c.day)
-            .group_by(date_query.c.d_day, query.c.action_text)
-            .order_by(date_query.c.d_day)
-        ).subquery()
+        final_query = base_query.format(filters=" ".join(filters))
 
-        mapped = (
-            session.query(
-                grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
-            )
-            .select_from(grouped_dates)
-            .filter(grouped_dates.c.action_text == "MAPPED")
-            .subquery()
-        )
-        validated = (
-            session.query(
-                grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
-            )
-            .select_from(grouped_dates)
-            .filter(grouped_dates.c.action_text == "VALIDATED")
-            .subquery()
-        )
-        badimagery = (
-            session.query(
-                grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
-            )
-            .select_from(grouped_dates)
-            .filter(grouped_dates.c.action_text == "BADIMAGERY")
-            .subquery()
-        )
+        results = await db.fetch_all(query=final_query, values=values)
 
-        result = (
-            session.query(
-                func.to_char(grouped_dates.c.d_day, "YYYY-MM-DD"),
-                func.coalesce(mapped.c.cnt, 0).label("mapped"),
-                func.coalesce(validated.c.cnt, 0).label("validated"),
-                func.coalesce(badimagery.c.cnt, 0).label("badimagery"),
-            )
-            .select_from(grouped_dates)
-            .distinct(grouped_dates.c.d_day)
-            .filter(grouped_dates.c.d_day is not None)
-            .outerjoin(mapped, mapped.c.d_day == grouped_dates.c.d_day)
-            .outerjoin(validated, validated.c.d_day == grouped_dates.c.d_day)
-            .outerjoin(badimagery, badimagery.c.d_day == grouped_dates.c.d_day)
-        )
+        stats_dicts = [dict(row) for row in results]
 
-        day_stats_dto = list(map(StatsService.set_task_stats, result))
-
-        results_dto = TaskStatsDTO()
-        results_dto.stats = day_stats_dto
-
-        return results_dto
+        return TaskStatsDTO(stats=stats_dicts)
