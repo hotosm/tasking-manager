@@ -75,7 +75,7 @@ describe('Notification Body Card Deletion', () => {
   });
 
   it('should log the error message when notification deletion error occurs', async () => {
-    const logSpy = jest.spyOn(console, 'log');
+    const logSpy = vi.spyOn(console, 'log');
     const sampleNotification = generateSampleNotifications(1)[0];
     setupFaultyHandlers();
     renderWithRouter(

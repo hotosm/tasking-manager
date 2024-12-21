@@ -5,7 +5,7 @@ import { TasksMap } from '../map';
 
 vi.mock('mapbox-gl/dist/mapbox-gl', () => ({
   supported: vi.fn(),
-  Map: jest.fn(() => ({
+  Map: vi.fn(() => ({
     addControl: vi.fn(),
     on: vi.fn(),
     remove: vi.fn(),

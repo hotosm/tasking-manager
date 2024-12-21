@@ -6,9 +6,9 @@ import SetTaskSizes from '../setTaskSizes';
 import { projectMetadata } from '../../../utils/tests/snippets/projectMetadata';
 import { IntlProviders } from '../../../utils/testWithIntl';
 
-jest.mock('mapbox-gl/dist/mapbox-gl', () => ({
+vi.mock('mapbox-gl/dist/mapbox-gl', () => ({
   GeolocateControl: vi.fn(),
-  Map: jest.fn(() => ({
+  Map: vi.fn(() => ({
     addControl: vi.fn(),
     on: vi.fn(),
     remove: vi.fn(),

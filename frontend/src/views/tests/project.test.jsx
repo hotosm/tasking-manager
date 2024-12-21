@@ -122,7 +122,7 @@ describe('UserProjectsPage Component', () => {
 });
 
 test('More Filters should close the more filters container when clicked outside the container', async () => {
-  jest.spyOn(document, 'getElementById').mockReturnValue({
+  vi.spyOn(document, 'getElementById').mockReturnValue({
     offsetHeight: 100,
     getBoundingClientRect: () => ({
       top: 0,
@@ -241,7 +241,7 @@ describe('Projects Page', () => {
 });
 
 describe('Project Detail Page', () => {
-  jest.mock('react-chartjs-2', () => ({
+  vi.mock('react-chartjs-2', () => ({
     Doughnut: () => null,
     Bar: () => null,
     Line: () => null,

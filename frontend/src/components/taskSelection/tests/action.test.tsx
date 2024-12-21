@@ -78,17 +78,17 @@ describe('Task Map Action', () => {
 
 describe('Session Expire Dialogs', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(async () => {
-    await act(() => jest.runOnlyPendingTimers());
-    jest.useRealTimers();
+    await act(() => vi.runOnlyPendingTimers());
+    vi.useRealTimers();
   });
 
   it('should display modal to notify user session about to expire', async () => {
     setup();
-    await act(() => jest.advanceTimersByTime(6900000));
+    await act(() => vi.advanceTimersByTime(6900000));
     const extendSessionDialog = screen.getByRole('dialog');
     expect(within(extendSessionDialog).getByRole('heading')).toHaveTextContent(
       messages.sessionAboutToExpireTitle.defaultMessage,
@@ -97,7 +97,7 @@ describe('Session Expire Dialogs', () => {
 
   it('should display modal to notify user session has ended', async () => {
     setup();
-    await act(() => jest.advanceTimersByTime(7200000));
+    await act(() => vi.advanceTimersByTime(7200000));
     const extendSessionDialog = screen.getByRole('dialog');
     expect(within(extendSessionDialog).getByRole('heading')).toHaveTextContent(
       messages.sessionExpiredTitle.defaultMessage,

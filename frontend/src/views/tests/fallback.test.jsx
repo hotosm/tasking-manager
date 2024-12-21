@@ -14,7 +14,7 @@ import messages from '../messages';
  */
 const mockedUsedNavigate = vi.fn();
 vi.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.requireActual('react-router-dom'),
   useNavigate: () => mockedUsedNavigate,
 }));
 

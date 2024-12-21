@@ -23,7 +23,7 @@ import { store } from '../../../store';
 import messages from '../messages';
 
 vi.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.requireActual('react-router-dom'),
   useLocation: () => ({
     pathname: 'localhost:3000/example/path',
   }),
