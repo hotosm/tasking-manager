@@ -1,10 +1,11 @@
 import { renderHook, act } from '@testing-library/react';
 
 import { useAsync } from '../UseAsync';
+import { vi } from 'vitest';
 
 describe('useAsync', () => {
   it('with successful result', async () => {
-    const mockFn = jest.fn();
+    const mockFn = vi.fn();
     const testFn = () =>
       new Promise((resolve, reject) => {
         mockFn();
@@ -18,7 +19,7 @@ describe('useAsync', () => {
     expect(result.current.error).toBeNull();
   });
   it('with unsuccessful result', async () => {
-    const mockFn = jest.fn();
+    const mockFn = vi.fn();
     const testFn = () =>
       new Promise((resolve, reject) => {
         mockFn();
