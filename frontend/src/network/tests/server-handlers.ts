@@ -1,4 +1,4 @@
-import { DefaultBodyType, PathParams, ResponseComposition, rest, RestContext, RestRequest } from 'msw';
+import { DefaultBodyType, PathParams, ResponseComposition, http, RestContext, RestRequest, HttpResponse } from 'msw';
 
 import {
   getProjectSummary,
@@ -83,355 +83,357 @@ import {
 } from './mockData/taskHistory';
 
 const handlers = [
-  rest.get(API_URL + 'projects/:id/queries/summary/', async (req, res, ctx) => {
-    return res(ctx.json(getProjectSummary(Number(req.params.id))));
+  http.get(API_URL + 'projects/:id/queries/summary/', async (info) => {
+    return HttpResponse.json(getProjectSummary(Number(info.params.id)));
   }),
-  rest.get(API_URL + 'projects/:id/activities/latest/', async (req, res, ctx) => {
-    return res(ctx.json(activities(Number(req.params.id))));
+  http.get(API_URL + 'projects/:id/activities/latest/', async (info) => {
+    return HttpResponse.json(activities(Number(info.params.id)));
   }),
-  rest.get(API_URL + 'projects/:id/queries/priority-areas/', async (req, res, ctx) => {
-    return res(ctx.json([]));
+  http.get(API_URL + 'projects/:id/queries/priority-areas/', async () => {
+    return HttpResponse.json([]);
   }),
-  rest.get(API_URL + 'projects/', async (req, res, ctx) => {
-    return res(ctx.json(projects));
+  http.get(API_URL + 'projects/', async () => {
+    return HttpResponse.json(projects);
   }),
-  rest.get(API_URL + 'projects/', async (req, res, ctx) => {
-    return res(ctx.json(projects));
+  http.get(API_URL + 'projects/', async () => {
+    return HttpResponse.json(projects);
   }),
-  rest.get(API_URL + 'projects/:id/contributions/', async (req, res, ctx) => {
-    return res(ctx.json(projectContributions));
+  http.get(API_URL + 'projects/:id/contributions/', async () => {
+    return HttpResponse.json(projectContributions);
   }),
-  rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
-    return res(ctx.json(projectDetail));
+  http.get(API_URL + 'projects/:id/', async () => {
+    return HttpResponse.json(projectDetail);
   }),
-  rest.get(API_URL + 'projects/:id/comments/', async (req, res, ctx) => {
-    return res(ctx.json(projectComments));
+  http.get(API_URL + 'projects/:id/comments/', async () => {
+    return HttpResponse.json(projectComments);
   }),
-  rest.post(API_URL + 'projects/:id/comments/', async (req, res, ctx) => {
-    return res(ctx.json({ message: 'Comment posted' }));
+  http.post(API_URL + 'projects/:id/comments/', async () => {
+    return HttpResponse.json({ message: 'Comment posted' });
   }),
-  rest.delete(API_URL + 'projects/:projectId/comments/:commentId/', async (req, res, ctx) => {
-    return res(ctx.json({ message: 'Message deleted' }));
+  http.delete(API_URL + 'projects/:projectId/comments/:commentId/', async () => {
+    return HttpResponse.json({ message: 'Message deleted' });
   }),
-  rest.get(API_URL + 'projects/:id/favorite/', async (req, res, ctx) => {
-    return res(ctx.json(userFavorite));
+  http.get(API_URL + 'projects/:id/favorite/', async () => {
+    return HttpResponse.json(userFavorite);
   }),
-  rest.post(API_URL + 'projects/:id/favorite/', async (req, res, ctx) => {
-    // return res(ctx.json(favoritePost(req.params.id)));
-    return res(ctx.json(favoritePost()));
+  http.post(API_URL + 'projects/:id/favorite/', async () => {
+    // return HttpResponse.json(favoritePost(req.params.id)));
+    return HttpResponse.json(favoritePost());
   }),
-  rest.get(API_URL + 'projects/:id/statistics/', async (req, res, ctx) => {
-    const { id } = req.params;
+  http.get(API_URL + 'projects/:id/statistics/', async (info) => {
+    const { id } = info.params;
     // @ts-expect-error TS Migrations
-    return res(ctx.json(getProjectStats(id)));
+    return HttpResponse.json(getProjectStats(id));
   }),
-  rest.get(API_URL + 'projects/:id/contributions/queries/day/', async (req, res, ctx) => {
-    return res(ctx.json(projectContributionsByDay));
+  http.get(API_URL + 'projects/:id/contributions/queries/day/', async () => {
+    return HttpResponse.json(projectContributionsByDay);
   }),
-  rest.get(API_URL + 'projects/:id/tasks', async (req, res, ctx) => {
-    return res(ctx.json(tasksGeojson));
+  http.get(API_URL + 'projects/:id/tasks', async () => {
+    return HttpResponse.json(tasksGeojson);
   }),
-  rest.get(API_URL + 'projects/queries/featured/', async (req, res, ctx) => {
-    return res(ctx.json(featuredProjects));
+  http.get(API_URL + 'projects/queries/featured/', async () => {
+    return HttpResponse.json(featuredProjects);
   }),
-  rest.get(API_URL + 'projects/queries/:username/touched', async (req, res, ctx) => {
-    return res(ctx.json(userTouchedProjects));
+  http.get(API_URL + 'projects/queries/:username/touched', async () => {
+    return HttpResponse.json(userTouchedProjects);
   }),
-  rest.get(API_URL + 'projects/:projectId/tasks/:taskId/', async (req, res, ctx) => {
-    return res(ctx.json(taskDetail(Number(req.params.taskId))));
+  http.get(API_URL + 'projects/:projectId/tasks/:taskId/', async (info) => {
+    return HttpResponse.json(taskDetail(Number(info.params.taskId)));
   }),
-  rest.post(
+  http.post(
     API_URL + 'projects/:projectId/tasks/actions/stop-mapping/:taskId/',
-    async (req, res, ctx) => {
-      return res(ctx.json(stopMapping));
+    async () => {
+      return HttpResponse.json(stopMapping);
     },
   ),
-  rest.post(
+  http.post(
     API_URL + 'projects/:projectId/tasks/actions/stop-validation/',
-    async (req, res, ctx) => {
-      return res(ctx.json(stopValidation));
+    async () => {
+      return HttpResponse.json(stopValidation);
     },
   ),
-  rest.get(API_URL + 'projects/queries/:projectId/similar-projects/', async (req, res, ctx) => {
-    return res(ctx.json(similarProjects));
+  http.get(API_URL + 'projects/queries/:projectId/similar-projects/', async () => {
+    return HttpResponse.json(similarProjects);
   }),
   // AUTHENTICATION
-  rest.get(API_URL + 'system/authentication/login/', async (req, res, ctx) => {
-    return res(ctx.json(authLogin));
+  http.get(API_URL + 'system/authentication/login/', async () => {
+    return HttpResponse.json(authLogin);
   }),
-  rest.post(API_URL + 'users/actions/register/', async (req, res, ctx) => {
-    return res(ctx.json(userRegister));
+  http.post(API_URL + 'users/actions/register/', async () => {
+    return HttpResponse.json(userRegister);
   }),
-  rest.patch(API_URL + 'users/me/actions/set-user/', async (req, res, ctx) => {
-    return res(ctx.json(setUser));
+  http.patch(API_URL + 'users/me/actions/set-user/', async () => {
+    return HttpResponse.json(setUser);
   }),
   // NOTIFICATIONS
-  rest.get(API_URL + 'notifications', async (req, res, ctx) => {
-    return res(ctx.json(notifications));
+  http.get(API_URL + 'notifications', async () => {
+    return HttpResponse.json(notifications);
   }),
-  rest.get(API_URL + 'notifications/:id', async (req, res, ctx) => {
-    return res(ctx.json(notifications.userMessages[0]));
+  http.get(API_URL + 'notifications/:id', async () => {
+    return HttpResponse.json(notifications.userMessages[0]);
   }),
-  rest.get(API_URL + 'notifications/queries/own/count-unread/', async (req, res, ctx) => {
-    return res(ctx.json(ownCountUnread));
+  http.get(API_URL + 'notifications/queries/own/count-unread/', async () => {
+    return HttpResponse.json(ownCountUnread);
   }),
-  rest.delete(API_URL + 'notifications/:id/', async (req, res, ctx) => {
-    return res(ctx.json({ Success: 'Message deleted' }));
+  http.delete(API_URL + 'notifications/:id/', async () => {
+    return HttpResponse.json({ Success: 'Message deleted' });
   }),
-  rest.delete(API_URL + 'notifications/delete-all/', async (req, res, ctx) => {
-    return res(ctx.json({ Success: 'Message deleted' }));
+  http.delete(API_URL + 'notifications/delete-all/', async () => {
+    return HttpResponse.json({ Success: 'Message deleted' });
   }),
-  rest.delete(API_URL + 'notifications/delete-all/:types', async (req, res, ctx) => {
-    return res(ctx.json({ Success: 'Message deleted' }));
+  http.delete(API_URL + 'notifications/delete-all/:types', async () => {
+    return HttpResponse.json({ Success: 'Message deleted' });
   }),
-  rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
-    return res(ctx.json({ Success: 'Message deleted' }));
+  http.delete(API_URL + 'notifications/delete-multiple/', async () => {
+    return HttpResponse.json({ Success: 'Message deleted' });
   }),
-  rest.post(API_URL + 'notifications/queries/own/post-unread/', async (req, res, ctx) => {
-    return res(ctx.json(null));
+  http.post(API_URL + 'notifications/queries/own/post-unread/', async () => {
+    return HttpResponse.json(null);
   }),
-  rest.post(API_URL + 'notifications/mark-as-read-all/', async (req, res, ctx) => {
-    return res(ctx.json(null));
+  http.post(API_URL + 'notifications/mark-as-read-all/', async () => {
+    return HttpResponse.json(null);
   }),
-  rest.post(API_URL + 'notifications/mark-as-read-all/:types', async (req, res, ctx) => {
-    return res(ctx.json(null));
+  http.post(API_URL + 'notifications/mark-as-read-all/:types', async () => {
+    return HttpResponse.json(null);
   }),
-  rest.post(API_URL + 'notifications/mark-as-read-multiple/', async (req, res, ctx) => {
-    return res(ctx.json(null));
+  http.post(API_URL + 'notifications/mark-as-read-multiple/', async () => {
+    return HttpResponse.json(null);
   }),
   // USER
-  rest.get(API_URL + 'users/statistics/', async (req, res, ctx) => {
-    return res(ctx.json(newUsersStats));
+  http.get(API_URL + 'users/statistics/', async () => {
+    return HttpResponse.json(newUsersStats);
   }),
-  rest.get(API_URL + 'tasks/statistics/', async (req, res, ctx) => {
-    return res(ctx.json(newUsersStats));
+  http.get(API_URL + 'tasks/statistics/', async () => {
+    return HttpResponse.json(newUsersStats);
   }),
-  rest.get(API_URL + 'users/queries/:username', async (req, res, ctx) => {
-    return res(ctx.json(userQueryDetails));
+  http.get(API_URL + 'users/queries/:username', async () => {
+    return HttpResponse.json(userQueryDetails);
   }),
-  rest.get(API_URL + 'users', async (req, res, ctx) => {
-    return res(ctx.json(usersList));
+  http.get(API_URL + 'users', async () => {
+    return HttpResponse.json(usersList);
   }),
-  rest.patch(API_URL + 'users/:username/actions/set-level/:level', (req, res, ctx) => {
-    return res(ctx.json(levelUpdationSuccess));
+  http.patch(API_URL + 'users/:username/actions/set-level/:level', () => {
+    return HttpResponse.json(levelUpdationSuccess);
   }),
-  rest.patch(API_URL + 'users/:username/actions/set-role/:role', (req, res, ctx) => {
-    return res(ctx.json(roleUpdationSuccess));
+  http.patch(API_URL + 'users/:username/actions/set-role/:role', () => {
+    return HttpResponse.json(roleUpdationSuccess);
   }),
-  rest.get(API_URL + 'users/:userId/tasks/', async (req, res, ctx) => {
-    return res(ctx.json(userTasks));
+  http.get(API_URL + 'users/:userId/tasks/', async () => {
+    return HttpResponse.json(userTasks);
   }),
-  rest.get(API_URL + 'users/:username/statistics/', async (req, res, ctx) => {
-    return res(ctx.json(userStats));
+  http.get(API_URL + 'users/:username/statistics/', async () => {
+    return HttpResponse.json(userStats);
   }),
-  rest.get(API_URL + 'users/queries/tasks/locked/details/', async (req, res, ctx) => {
-    return res(ctx.json(userLockedTasksDetails));
+  http.get(API_URL + 'users/queries/tasks/locked/details/', async () => {
+    return HttpResponse.json(userLockedTasksDetails);
   }),
   // ORGANIZATIONS
-  rest.get(API_URL + 'organisations', (req, res, ctx) => {
-    return res(ctx.json(organisations));
+  http.get(API_URL + 'organisations', () => {
+    return HttpResponse.json(organisations);
   }),
-  rest.get(API_URL + 'organisations/:id/', (req, res, ctx) => {
-    return res(ctx.json(organisation));
+  http.get(API_URL + 'organisations/:id/', () => {
+    return HttpResponse.json(organisation);
   }),
-  rest.post(API_URL + 'organisations', (req, res, ctx) => {
-    return res(ctx.json(organisationCreationSuccess));
+  http.post(API_URL + 'organisations', () => {
+    return HttpResponse.json(organisationCreationSuccess);
   }),
-  rest.patch(API_URL + 'organisations/:id/', (req, res, ctx) => {
-    return res(ctx.json(organisationUpdationSuccess));
+  http.patch(API_URL + 'organisations/:id/', () => {
+    return HttpResponse.json(organisationUpdationSuccess);
   }),
-  rest.delete(API_URL + 'organisations/:id', (req, res, ctx) => {
-    return res(ctx.json(organisationDeletionSuccess));
+  http.delete(API_URL + 'organisations/:id', () => {
+    return HttpResponse.json(organisationDeletionSuccess);
   }),
   // TEAMS
-  rest.get(API_URL + 'teams', (req, res, ctx) => {
-    return res(ctx.json(teams));
+  http.get(API_URL + 'teams', () => {
+    return HttpResponse.json(teams);
   }),
-  rest.get(API_URL + 'teams/:id/', (req, res, ctx) => {
-    return res(ctx.json(team));
+  http.get(API_URL + 'teams/:id/', () => {
+    return HttpResponse.json(team);
   }),
-  rest.post(API_URL + 'teams', (req, res, ctx) => {
-    return res(ctx.json(teamCreationSuccess));
+  http.post(API_URL + 'teams', () => {
+    return HttpResponse.json(teamCreationSuccess);
   }),
-  rest.patch(API_URL + 'teams/:id/', (req, res, ctx) => {
-    return res(ctx.json(teamUpdationSuccess));
+  http.patch(API_URL + 'teams/:id/', () => {
+    return HttpResponse.json(teamUpdationSuccess);
   }),
-  rest.delete(API_URL + 'teams/:id', (req, res, ctx) => {
-    return res(ctx.json(teamDeletionSuccess));
+  http.delete(API_URL + 'teams/:id', () => {
+    return HttpResponse.json(teamDeletionSuccess);
   }),
   // LICENSES
-  rest.get(API_URL + 'licenses', (req, res, ctx) => {
-    return res(ctx.json(licenses));
+  http.get(API_URL + 'licenses', () => {
+    return HttpResponse.json(licenses);
   }),
-  rest.get(API_URL + 'licenses/:id/', (req, res, ctx) => {
-    return res(ctx.json(license));
+  http.get(API_URL + 'licenses/:id/', () => {
+    return HttpResponse.json(license);
   }),
-  rest.patch(API_URL + 'licenses/:id', (req, res, ctx) => {
-    return res(ctx.json(req.body));
+  http.patch(API_URL + 'licenses/:id', (info) => {
+    return HttpResponse.json(info.request.text());
   }),
-  rest.delete(API_URL + 'licenses/:id', (req, res, ctx) => {
-    return res(ctx.json(licenseDeletionSuccess));
+  http.delete(API_URL + 'licenses/:id', () => {
+    return HttpResponse.json(licenseDeletionSuccess);
   }),
-  rest.post(API_URL + 'licenses', (req, res, ctx) => {
-    return res(ctx.json(licenseCreationSuccess));
+  http.post(API_URL + 'licenses', () => {
+    return HttpResponse.json(licenseCreationSuccess);
   }),
-  rest.post(API_URL + 'licenses/:id/actions/accept-for-me/', (req, res, ctx) => {
-    return res(ctx.json(licenseAccepted));
+  http.post(API_URL + 'licenses/:id/actions/accept-for-me/', () => {
+    return HttpResponse.json(licenseAccepted);
   }),
   // CAMPAIGNS
-  rest.get(API_URL + 'campaigns', (req, res, ctx) => {
-    return res(ctx.json(campaigns));
+  http.get(API_URL + 'campaigns', () => {
+    return HttpResponse.json(campaigns);
   }),
-  rest.post(API_URL + 'campaigns', (req, res, ctx) => {
-    return res(ctx.json(campaignCreationSuccess));
+  http.post(API_URL + 'campaigns', () => {
+    return HttpResponse.json(campaignCreationSuccess);
   }),
-  rest.get(API_URL + 'campaigns/:id', (req, res, ctx) => {
-    return res(ctx.json(campaign));
+  http.get(API_URL + 'campaigns/:id', () => {
+    return HttpResponse.json(campaign);
   }),
-  rest.patch(API_URL + 'campaigns/:id', (req, res, ctx) => {
-    return res(ctx.json(campaignUpdationSuccess));
+  http.patch(API_URL + 'campaigns/:id', () => {
+    return HttpResponse.json(campaignUpdationSuccess);
   }),
-  rest.delete(API_URL + 'campaigns/:id', (req, res, ctx) => {
-    return res(ctx.json(campaignDeletionSuccess));
+  http.delete(API_URL + 'campaigns/:id', () => {
+    return HttpResponse.json(campaignDeletionSuccess);
   }),
   // INTERESTS
-  rest.get(API_URL + 'interests', (req, res, ctx) => {
-    return res(ctx.json(interests));
+  http.get(API_URL + 'interests', () => {
+    return HttpResponse.json(interests);
   }),
-  rest.get(API_URL + 'interests/:id/', (req, res, ctx) => {
-    return res(ctx.json(interest));
+  http.get(API_URL + 'interests/:id/', () => {
+    return HttpResponse.json(interest);
   }),
-  rest.patch(API_URL + 'interests/:id', async (req, res, ctx) => {
-    const body = await req.json();
-    return res(ctx.json(interestUpdationSuccess(body.name)));
+  http.patch<PathParams, {
+      name: string;
+    }>(API_URL + 'interests/:id', async (info) => {
+    const body = await info.request.json();
+    return HttpResponse.json(interestUpdationSuccess(body.name));
   }),
-  rest.delete(API_URL + 'interests/:id', (req, res, ctx) => {
-    return res(ctx.json(interestDeletionSuccess));
+  http.delete(API_URL + 'interests/:id', () => {
+    return HttpResponse.json(interestDeletionSuccess);
   }),
-  rest.post(API_URL + 'interests', async (req, res, ctx) => {
-    const body = await req.json();
-    return res(ctx.json(interestCreationSuccess(body.name)));
+  http.post<PathParams, {
+      name: string;
+    }>(API_URL + 'interests', async (info) => {
+    const body = await info.request.json();
+    return HttpResponse.json(interestCreationSuccess(body.name));
   }),
-  rest.get(API_URL + 'countries', (req, res, ctx) => {
-    return res(ctx.json(countries));
+  http.get(API_URL + 'countries', () => {
+    return HttpResponse.json(countries);
   }),
-  rest.get(API_URL + 'system/banner/', (req, res, ctx) => {
-    return res(ctx.json(banner));
+  http.get(API_URL + 'system/banner/', () => {
+    return HttpResponse.json(banner);
   }),
   //TASKS
-  rest.post(
+  http.post(
     API_URL + 'projects/:projectId/tasks/actions/lock-for-mapping/:taskId',
-    (req, res, ctx) => {
-      return res(ctx.json(lockForMapping));
+    () => {
+      return HttpResponse.json(lockForMapping);
     },
   ),
-  rest.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation/', (req, res, ctx) => {
-    return res(ctx.json(lockForValidation));
+  http.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation/', () => {
+    return HttpResponse.json(lockForValidation);
   }),
-  rest.post(
+  http.post(
     API_URL + 'projects/:projectId/tasks/actions/unlock-after-mapping/:taskId',
-    (req, res, ctx) => {
-      return res(ctx.json(submitMappingTask));
+    () => {
+      return HttpResponse.json(submitMappingTask);
     },
   ),
-  rest.post(
+  http.post(
     API_URL + 'projects/:projectId/tasks/actions/unlock-after-validation/',
-    (req, res, ctx) => {
-      return res(ctx.json(submitValidationTask));
+    () => {
+      return HttpResponse.json(submitValidationTask);
     },
   ),
-  rest.get(API_URL + 'users/queries/tasks/locked/', (req, res, ctx) => {
-    return res(ctx.json(userLockedTasks));
+  http.get(API_URL + 'users/queries/tasks/locked/', () => {
+    return HttpResponse.json(userLockedTasks);
   }),
-  rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', (req, res, ctx) => {
-    return res(ctx.json(splitTask));
+  http.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', () => {
+    return HttpResponse.json(splitTask);
   }),
-  rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', (req, res, ctx) => {
-    return res(ctx.json(extendTask));
+  http.post(API_URL + 'projects/:projectId/tasks/actions/extend/', () => {
+    return HttpResponse.json(extendTask);
   }),
-  rest.get(API_URL + 'system/statistics/', (req, res, ctx) => {
-    return res(ctx.json(systemStats));
+  http.get(API_URL + 'system/statistics/', () => {
+    return HttpResponse.json(systemStats);
   }),
   // EXTERNAL API
-  rest.get(`${OHSOME_STATS_BASE_URL}/stats/${defaultChangesetComment}-%2A`, (req, res, ctx) => {
-    return res(ctx.json(homepageStats));
+  http.get(`${OHSOME_STATS_BASE_URL}/stats/${defaultChangesetComment}-%2A`, () => {
+    return HttpResponse.json(homepageStats);
   }),
-  rest.get(`${OHSOME_STATS_BASE_URL}/hot-tm-user`, (req, res, ctx) => {
-    return res(ctx.json(ohsomeNowUserStats));
+  http.get(`${OHSOME_STATS_BASE_URL}/hot-tm-user`, () => {
+    return HttpResponse.json(ohsomeNowUserStats);
   }),
-  rest.get(`${OHSOME_STATS_BASE_URL}/stats/:projectId`, (req, res, ctx) => {
-    return res(ctx.json(osmStatsProject));
+  http.get(`${OHSOME_STATS_BASE_URL}/stats/:projectId`, () => {
+    return HttpResponse.json(osmStatsProject);
   }),
-  rest.get(`${OHSOME_STATS_BASE_URL}/metadata`, (req, res, ctx) => {
-    return res(ctx.json(ohsomeNowMetadata));
+  http.get(`${OHSOME_STATS_BASE_URL}/metadata`, () => {
+    return HttpResponse.json(ohsomeNowMetadata);
   }),
-  rest.get('http://127.0.0.1:8111/version', (req, res, ctx) => {
-    return res(ctx.json(josmRemote));
+  http.get('http://127.0.0.1:8111/version', () => {
+    return HttpResponse.json(josmRemote);
   }),
-  rest.get('http://127.0.0.1:8111/load_data', (req, res, ctx) => {
-    return res(ctx.text('OK'));
+  http.get('http://127.0.0.1:8111/load_data', () => {
+    return new HttpResponse('OK');
   }),
-  rest.get('http://127.0.0.1:8111/load_and_zoom', (req, res, ctx) => {
-    return res(ctx.text('OK'));
+  http.get('http://127.0.0.1:8111/load_and_zoom', () => {
+    return new HttpResponse('OK');
   }),
-  rest.get('http://127.0.0.1:8111/import', (req, res, ctx) => {
-    return res(ctx.text('OK'));
+  http.get('http://127.0.0.1:8111/import', () => {
+    return new HttpResponse('OK');
   }),
 ];
 
-const failedToConnectError = (_req: RestRequest<never, PathParams<string>>, res: ResponseComposition<DefaultBodyType>, _ctx: RestContext) => {
-  return res.networkError('Failed to connect');
+const failedToConnectError = () => {
+  return HttpResponse.error();
 };
 
 const faultyHandlers = [
-  rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
-    return res.once(
-      ctx.status(403),
-      ctx.json({
-        SubCode: `PrivateProject`,
-      }),
-    );
+  http.get(API_URL + 'projects/:id/', async () => {
+    return Response.json({
+      SubCode: `PrivateProject`,
+    }, {
+      status: 403,
+    });
   }),
-  rest.get(API_URL + 'projects/:id/', async (req, res, ctx) => {
-    return res.once(
-      ctx.status(403),
-      ctx.json({
-        SubCode: `Project Not Found`,
-      }),
-    );
+  http.get(API_URL + 'projects/:id/', async () => {
+    return Response.json({
+      SubCode: `Project Not Found`,
+    }, {
+      status: 403,
+    });
   }),
-  rest.get('http://127.0.0.1:8111/version', failedToConnectError),
-  rest.post(
+  http.get('http://127.0.0.1:8111/version', failedToConnectError),
+  http.post(
     API_URL + 'projects/:projectId/tasks/actions/lock-for-mapping/:taskId',
     failedToConnectError,
   ),
-  rest.post(
+  http.post(
     API_URL + 'projects/:projectId/tasks/actions/lock-for-validation',
     failedToConnectError,
   ),
-  rest.post(API_URL + 'projects/:projectId/tasks/actions/extend/', failedToConnectError),
-  rest.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', failedToConnectError),
-  rest.get(API_URL + 'projects/queries/:projectId/similar-projects/', failedToConnectError),
-  rest.post(API_URL + 'licenses', failedToConnectError),
-  rest.patch(API_URL + 'licenses/:id', failedToConnectError),
-  rest.post(API_URL + 'interests', failedToConnectError),
-  rest.post(API_URL + 'campaigns', failedToConnectError),
-  rest.patch(API_URL + 'campaigns/:id', failedToConnectError),
-  rest.delete(API_URL + 'campaigns/:id', failedToConnectError),
-  rest.post(API_URL + 'teams', failedToConnectError),
-  rest.patch(API_URL + 'teams/:id/', failedToConnectError),
-  rest.delete(API_URL + 'teams/:id', failedToConnectError),
-  rest.post(API_URL + 'organisations', failedToConnectError),
-  rest.delete(API_URL + 'notifications/delete-multiple/', failedToConnectError),
-  rest.delete(API_URL + 'notifications/delete-all/', failedToConnectError),
-  rest.delete(API_URL + 'notifications/delete-all/:types', failedToConnectError),
-  rest.post(API_URL + 'notifications/mark-as-read-all/', failedToConnectError),
-  rest.post(API_URL + 'notifications/mark-as-read-all/:types', failedToConnectError),
-  rest.post(API_URL + 'notifications/mark-as-read-multiple/', failedToConnectError),
-  rest.get(API_URL + 'notifications/:id/', failedToConnectError),
-  rest.delete(API_URL + 'notifications/:id/', failedToConnectError),
-  rest.patch(API_URL + 'users/:username/actions/set-level/:level', failedToConnectError),
-  rest.patch(API_URL + 'users/:username/actions/set-role/:role', failedToConnectError),
+  http.post(API_URL + 'projects/:projectId/tasks/actions/extend/', failedToConnectError),
+  http.post(API_URL + 'projects/:projectId/tasks/actions/split/:taskId/', failedToConnectError),
+  http.get(API_URL + 'projects/queries/:projectId/similar-projects/', failedToConnectError),
+  http.post(API_URL + 'licenses', failedToConnectError),
+  http.patch(API_URL + 'licenses/:id', failedToConnectError),
+  http.post(API_URL + 'interests', failedToConnectError),
+  http.post(API_URL + 'campaigns', failedToConnectError),
+  http.patch(API_URL + 'campaigns/:id', failedToConnectError),
+  http.delete(API_URL + 'campaigns/:id', failedToConnectError),
+  http.post(API_URL + 'teams', failedToConnectError),
+  http.patch(API_URL + 'teams/:id/', failedToConnectError),
+  http.delete(API_URL + 'teams/:id', failedToConnectError),
+  http.post(API_URL + 'organisations', failedToConnectError),
+  http.delete(API_URL + 'notifications/delete-multiple/', failedToConnectError),
+  http.delete(API_URL + 'notifications/delete-all/', failedToConnectError),
+  http.delete(API_URL + 'notifications/delete-all/:types', failedToConnectError),
+  http.post(API_URL + 'notifications/mark-as-read-all/', failedToConnectError),
+  http.post(API_URL + 'notifications/mark-as-read-all/:types', failedToConnectError),
+  http.post(API_URL + 'notifications/mark-as-read-multiple/', failedToConnectError),
+  http.get(API_URL + 'notifications/:id/', failedToConnectError),
+  http.delete(API_URL + 'notifications/:id/', failedToConnectError),
+  http.patch(API_URL + 'users/:username/actions/set-level/:level', failedToConnectError),
+  http.patch(API_URL + 'users/:username/actions/set-role/:role', failedToConnectError),
 ];
 
 export { handlers, faultyHandlers };

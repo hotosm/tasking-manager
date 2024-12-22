@@ -4,6 +4,7 @@ import selectEvent from 'react-select-event';
 
 import MyProjectsDropdown from '../myProjectsDropdown';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { API_URL } from '../../../config';
 
 it('displays placeholder and typed text on type', async () => {
   const setQueryMock = vi.fn();
@@ -24,7 +25,7 @@ it('displays placeholder and typed text on type', async () => {
     </ReduxIntlProviders>,
   );
 
-  screen.debug()
+  // screen.debug()
 
   await selectEvent.select(screen.getByRole('combobox'), '#8629');
   expect(setQueryMock).toHaveBeenCalled();

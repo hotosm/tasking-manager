@@ -34,6 +34,7 @@ export function fetchLocalJSONAPI(endpoint: string, token: string, method = 'GET
   if (token) {
     headers['Authorization'] = `Token ${token}`;
   }
+
   return fetch(url, {
     method: method,
     headers: headers,
@@ -59,6 +60,9 @@ export function fetchLocalJSONAPIWithAbort(
   if (token) {
     headers['Authorization'] = `Token ${token}`;
   }
+
+  // return fetch(url);
+
   return fetch(url, {
     method: method,
     headers: headers,

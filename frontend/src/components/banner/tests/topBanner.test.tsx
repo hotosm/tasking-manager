@@ -4,12 +4,11 @@ import { banner } from '../../../network/tests/mockData/miscellaneous';
 import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { TopBanner } from '../topBanner';
 
-it('should render the banner text ', async () => {
+it('should render the banner text', async () => {
   renderWithRouter(
     <ReduxIntlProviders>
       <TopBanner />
     </ReduxIntlProviders>,
   );
-  screen.debug();
   expect(await screen.findByText(banner.message)).toBeInTheDocument();
 });

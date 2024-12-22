@@ -24,6 +24,7 @@ export function clearUserDetails() {
 }
 
 export const updateUserEmail = (userDetails, token, relevant_fields) => (dispatch) => {
+  if (!userDetails) return;
   const filtered = Object.keys(userDetails)
     .filter((key) => relevant_fields.includes(key))
     .reduce((obj, key) => {

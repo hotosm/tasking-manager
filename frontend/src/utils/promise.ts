@@ -14,7 +14,7 @@ export function cancelablePromise(promise: Promise<any>) {
   };
 }
 
-export async function handleErrors(response) {
+export async function handleErrors(response: Response) {
   if (response.ok) {
     return response;
   }

@@ -26,7 +26,9 @@ export const UpdateEmail = ({ closeModal }: {
   const onSubmit = (e) => {
     e.preventDefault();
     let userData = userDetails;
-    userData.emailAddress = userState.email;
+    if (userData) {
+      userData.emailAddress = userState.email;
+    }
     dispatch(updateUserEmail(userData, token, PROFILE_RELEVANT_FIELDS.concat(['id'])));
     setUserState({
       ...userState,
