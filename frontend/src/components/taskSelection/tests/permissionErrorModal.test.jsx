@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { FormattedMessage } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { screen } from '@testing-library/react';

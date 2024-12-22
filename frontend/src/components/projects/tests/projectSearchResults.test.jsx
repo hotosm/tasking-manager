@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { screen, act } from '@testing-library/react';
 
 import { ReduxIntlProviders, IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';

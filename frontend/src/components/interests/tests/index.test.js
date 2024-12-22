@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { screen, waitFor } from '@testing-library/react';
 import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { InterestsManagement } from '../index';

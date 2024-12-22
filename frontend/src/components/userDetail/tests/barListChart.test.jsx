@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { BarListChart, BarChartItem } from '../barListChart';

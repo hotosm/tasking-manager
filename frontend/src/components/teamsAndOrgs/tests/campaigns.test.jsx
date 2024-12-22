@@ -1,5 +1,5 @@
 import { screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { CampaignsManagement } from '../campaigns';
 

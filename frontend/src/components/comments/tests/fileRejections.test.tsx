@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
 
 import FileRejections from '../fileRejections';
 
@@ -23,10 +22,9 @@ describe('FileRejections', () => {
         errors: [{ code: 1, message: 'Format not supported' }],
       },
     ];
-    // @ts-expect-error TS Migrations
-    const { container } = render(<FileRejections files={files} />);
-    expect(container.querySelectorAll('li').length).toBe(2);
-    expect(container.querySelectorAll('li')[0].className).toBe('red');
+    render(<FileRejections files={files} />);
+    expect(screen.getAllByRole("listitem").length).toBe(2);
+    expect(screen.getAllByRole("listitem")[0].className).toBe("red");
     expect(screen.queryByText(/file.csv/)?.className).toBe('red');
     expect(screen.queryByText(/file.txt/)?.className).toBe('red');
     expect(screen.queryAllByText(/Format not supported/).length).toBe(2);

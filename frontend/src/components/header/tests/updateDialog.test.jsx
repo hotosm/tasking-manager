@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { screen, fireEvent } from '@testing-library/react';
 
 import messages from '../messages';

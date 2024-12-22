@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
-import '@testing-library/jest-dom';
+
 
 import { ReduxIntlProviders, QueryClientProviders } from '../../../utils/testWithIntl';
 import { FeatureStats } from '../featureStats';

@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 
 vi.mock('mapbox-gl/dist/mapbox-gl', () => ({
+  default: vi.fn(),
   GeolocateControl: vi.fn(),
   Map: vi.fn(() => ({
     addControl: vi.fn(),

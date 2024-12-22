@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 import mapboxgl from 'mapbox-gl';
 
 import SetTaskSizes from '../setTaskSizes';

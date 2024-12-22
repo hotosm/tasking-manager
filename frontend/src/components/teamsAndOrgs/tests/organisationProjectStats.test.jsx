@@ -1,6 +1,6 @@
 import { setDayOfYear, format } from 'date-fns';
 import { screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { OrganisationProjectStats } from '../organisationProjectStats';

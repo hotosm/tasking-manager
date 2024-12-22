@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { tasksStats } from '../../../network/tests/mockData/tasksStats';

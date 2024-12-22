@@ -74,7 +74,7 @@ export function ListTeams({ managementView = false }) {
     fullMemberList: false,
     paginate: true,
     team_name: searchQuery, // Pass the searchQuery as team_name
-    ...(managementView ? userTeamsOnly && { manager: userDetails.id } : { member: userDetails.id }),
+    ...(managementView ? userTeamsOnly && { manager: userDetails?.id } : { member: userDetails?.id }),
     ...restQuery,
   });
 

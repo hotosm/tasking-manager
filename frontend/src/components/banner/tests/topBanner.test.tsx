@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { screen } from '@testing-library/react';
 import { banner } from '../../../network/tests/mockData/miscellaneous';
 import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
@@ -10,5 +10,6 @@ it('should render the banner text ', async () => {
       <TopBanner />
     </ReduxIntlProviders>,
   );
+  screen.debug();
   expect(await screen.findByText(banner.message)).toBeInTheDocument();
 });

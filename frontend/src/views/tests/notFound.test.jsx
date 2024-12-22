@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { render, screen } from '@testing-library/react';
 import { IntlProviders } from '../../utils/testWithIntl';
 import messages from '../messages';

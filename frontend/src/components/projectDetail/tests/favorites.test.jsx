@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { act, screen, waitFor } from '@testing-library/react';
 
 import { store } from '../../../store';

@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import queryString from 'query-string';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';

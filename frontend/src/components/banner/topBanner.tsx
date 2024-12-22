@@ -16,9 +16,7 @@ export function TopBanner() {
         <div className="ph3 b--grey-light bb bg-tan top-banner-container">
           <div
             className="fw6 flex justify-center"
-            dangerouslySetInnerHTML={{
-              __html: htmlFromMarkdown(data.message),
-            }}
+            dangerouslySetInnerHTML={htmlFromMarkdown(data.message)}
           />
         </div>
       )}

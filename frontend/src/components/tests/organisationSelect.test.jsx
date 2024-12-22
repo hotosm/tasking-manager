@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { OrganisationSelect } from '../formInputs';
 import { ReduxIntlProviders } from '../../utils/testWithIntl';

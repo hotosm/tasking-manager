@@ -1,5 +1,5 @@
 import { screen, act } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { store } from '../../../store';
 import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';

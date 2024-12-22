@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { ReduxIntlProviders, QueryClientProviders } from '../../../utils/testWithIntl';
 import { TaskStats, ElementsMapped } from '../elementsMapped';

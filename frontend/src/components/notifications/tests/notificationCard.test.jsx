@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { screen, waitFor, render } from '@testing-library/react';
 
 import { MessageAvatar, NotificationCard, NotificationCardMini } from '../notificationCard';

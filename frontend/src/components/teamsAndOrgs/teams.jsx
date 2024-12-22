@@ -47,8 +47,8 @@ export function TeamsManagement({
           <FormattedMessage {...messages.myTeams} />
         )
       }
-      isAdmin={userDetails.role === 'ADMIN' && managementView}
-      showAddButton={(userDetails.role === 'ADMIN' || isOrgManager) && managementView}
+      isAdmin={userDetails?.role === 'ADMIN' && managementView}
+      showAddButton={(userDetails?.role === 'ADMIN' || isOrgManager) && managementView}
       managementView={managementView}
       userOnly={userTeamsOnly}
       setUserOnly={setUserTeamsOnly}

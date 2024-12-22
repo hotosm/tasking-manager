@@ -1,6 +1,6 @@
 import { Provider } from 'react-redux';
 import { render, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { EditsStats } from '../edits';
 import { ConnectedIntl } from '../../../utils/internationalization';

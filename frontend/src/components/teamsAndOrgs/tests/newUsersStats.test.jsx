@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { NewUsersStats } from '../newUsersStats';

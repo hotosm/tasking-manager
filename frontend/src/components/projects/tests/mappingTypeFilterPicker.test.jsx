@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { MemoryRouter } from 'react-router-dom';
 import { screen } from '@testing-library/react';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';

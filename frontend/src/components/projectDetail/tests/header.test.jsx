@@ -1,5 +1,5 @@
 import { screen, act, render } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { HeaderLine, ProjectHeader, TagLine } from '../header';
 import { ReduxIntlProviders, IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';

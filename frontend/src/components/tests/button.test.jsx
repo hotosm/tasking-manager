@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { Button, CustomButton, EditButton } from '../button';
 import { BanIcon } from '../svgIcons';

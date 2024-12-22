@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
 import { startOfWeek, startOfYear, format } from 'date-fns';

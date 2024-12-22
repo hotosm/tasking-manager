@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { screen, fireEvent, act, within, waitFor, render } from '@testing-library/react';
 
 import '../../../utils/mockMatchMedia';

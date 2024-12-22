@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { screen } from '@testing-library/react';
 import { FormattedMessage } from 'react-intl';
 import { Provider } from 'react-redux';

@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import { getYear } from 'date-fns';
-import '@testing-library/jest-dom';
+
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { OrganisationUsageLevel, OrganisationTier } from '../orgUsageLevel';

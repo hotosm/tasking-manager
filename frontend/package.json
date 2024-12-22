@@ -94,7 +94,7 @@
     "build": "npm run preparation && npm run update-static && npm run patch-id && npm run patch-rapid && craco build && npm run sentry:sourcemaps",
     "prettier": "prettier --write 'src/**/*.js'",
     "lint": "eslint src",
-    "test": "pnpm run lint && vitest --ui --environment=jsdom",
+    "test": "npm run lint && vitest --ui",
     "coverage": "npm run test -- --coverage --watchAll=false",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "sentry:sourcemaps": "if sentry-cli info; then sentry-cli sourcemaps inject --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build && sentry-cli sourcemaps upload --org humanitarian-openstreetmap-tea --project taskingmanager-frontend ./build; fi"
@@ -119,13 +119,14 @@
     "@craco/craco": "^7.1.0",
     "@sentry/cli": "^2.28.6",
     "@tanstack/eslint-plugin-query": "^4.29.8",
+    "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^14.2.1",
-    "@testing-library/user-event": "^14.4.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/chart.js": "^2.9.41",
     "@types/dompurify": "^3.0.5",
-    "@types/react": "^18.2.22",
-    "@types/react-dom": "^18.2.27",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
     "@types/react-redux": "^7.1.34",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-test-renderer": "^18.3.0",
@@ -140,6 +141,7 @@
     "react-select-event": "^5.5.1",
     "react-test-renderer": "^18.2.0",
     "source-map-explorer": "^2.5.3",
+    "typescript": "^5.7.2",
     "vite": "^5.4.2",
     "vitest": "^2.1.8"
   },
@@ -158,6 +160,7 @@
     ]
   },
   "volta": {
-    "node": "18.19.1"
+    "node": "18.19.1",
+    "yarn": "1.22.19"
   }
 }

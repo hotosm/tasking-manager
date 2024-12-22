@@ -1,5 +1,5 @@
 import { screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { FeaturedProjects } from '../featuredProjects';
 import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';

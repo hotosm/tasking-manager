@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+
 import { screen } from '@testing-library/react';
 
 import { ReduxIntlProviders, createComponentWithMemoryRouter } from '../../../utils/testWithIntl';

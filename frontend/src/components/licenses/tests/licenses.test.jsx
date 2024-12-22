@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 
 import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { LicenseCard, LicensesManagement, LicenseForm } from '../index';
