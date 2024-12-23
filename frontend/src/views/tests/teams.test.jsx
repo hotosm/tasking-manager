@@ -13,11 +13,6 @@ import { ManageTeams, EditTeam, CreateTeam, MyTeams } from '../teams';
 import { store } from '../../store';
 import { setupFaultyHandlers } from '../../network/tests/server';
 
-vi.mock('react-hot-toast', () => ({
-  success: vi.fn(),
-  error: vi.fn(),
-}));
-
 describe('List Teams', () => {
   it('should show loading placeholder when teams are being fetched', async () => {
     const { container } = renderWithRouter(

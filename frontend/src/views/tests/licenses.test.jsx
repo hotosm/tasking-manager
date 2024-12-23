@@ -9,10 +9,6 @@ import {
 import { ListLicenses, CreateLicense, EditLicense } from '../licenses';
 import { setupFaultyHandlers } from '../../network/tests/server';
 
-vi.mock('react-hot-toast', () => ({
-  success: vi.fn(),
-}));
-
 describe('List Licenses', () => {
   const setup = () => {
     const { container, history } = renderWithRouter(

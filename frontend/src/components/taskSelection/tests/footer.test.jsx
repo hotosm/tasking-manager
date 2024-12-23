@@ -1,12 +1,7 @@
-
-import { FormattedMessage } from 'react-intl';
-import { act, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { act, screen, waitFor } from '@testing-library/react';
 import TaskSelectionFooter from '../footer';
-import { Button } from '../../button';
 import {
   createComponentWithMemoryRouter,
-  createComponentWithReduxAndIntl,
   ReduxIntlProviders,
   renderWithRouter,
 } from '../../../utils/testWithIntl';

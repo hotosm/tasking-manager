@@ -10,10 +10,6 @@ import {
 import { ListCampaigns, CampaignError, CreateCampaign, EditCampaign } from '../campaigns';
 import { setupFaultyHandlers } from '../../network/tests/server';
 
-vi.mock('react-hot-toast', {
-  spy: true
-});
-
 describe('ListCampaigns', () => {
   it('should show loading placeholder when licenses are being fetched', () => {
     const { container } = renderWithRouter(

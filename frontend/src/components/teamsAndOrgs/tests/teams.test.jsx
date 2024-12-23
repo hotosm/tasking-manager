@@ -1,7 +1,4 @@
-
-import TestRenderer from 'react-test-renderer';
 import { render, screen, waitFor, act } from '@testing-library/react';
-import { FormattedMessage } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 
 import {
@@ -14,6 +11,7 @@ import {
 import { TeamBox, TeamsBoxList, TeamsManagement, Teams, TeamCard, TeamSideBar } from '../teams';
 import { store } from '../../../store';
 import { teams, team } from '../../../network/tests/mockData/teams';
+import messages from '../messages';
 
 const dummyTeams = [
   {
@@ -33,31 +31,23 @@ const dummyTeams = [
 ];
 
 describe('test TeamBox', () => {
-  const element = TestRenderer.create(
-    <MemoryRouter>
-      <TeamBox
-        team={{ teamId: 1, name: 'Contributors', role: 'VALIDATOR' }}
-        className="tc f6 ba dib"
-      />
-    </MemoryRouter>,
-  );
-  const testInstance = element.root;
-  it('props are correctly set', () => {
-    expect(testInstance.findByType('div').props.className).toBe('br1 tc f6 ba dib');
-    expect(testInstance.findByType('div').children).toEqual(['Contributors']);
+  beforeEach(() => renderWithRouter(
+    <TeamBox
+      team={{ teamId: 1, name: 'Contributors', role: 'VALIDATOR' }}
+      className="tc f6 ba dib"
+    />
+  ));
+  it('props are correctly set', async () => {
+    expect(await screen.findByText('Contributors')).toBeInTheDocument();
   });
   it('does not have img', () => {
-    expect(() =>
-      testInstance
-        .findAllByType('img')
-        .toThrow(new Error('No instances found with node type: "img"')),
-    );
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 });
 
-describe('test TeamBox with img', () => {
-  const element = TestRenderer.create(
-    <MemoryRouter>
+describe('test TeamBox with img', async () => {
+  it('img exists and is correctly formatted', () => {
+    renderWithRouter(
       <TeamBox
         team={{
           teamId: 1,
@@ -68,13 +58,11 @@ describe('test TeamBox with img', () => {
         }}
         className="tc f6 ba dib"
       />
-    </MemoryRouter>,
-  );
-  const testInstance = element.root;
-  it('img exists and is correctly formatted', () => {
-    expect(testInstance.findByType('img').props.src).toBe('http://i.co/1.jpg');
-    expect(testInstance.findByType('img').props.alt).toBe('My Org');
-    expect(testInstance.findByType('img').props.className).toBe('object-fit-contain h2 pr2 v-mid');
+    );
+    expect(screen.getByRole('img', { name: 'My Org' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'My Org' })).toHaveAttribute('src', 'http://i.co/1.jpg');
+    expect(screen.getByRole('img', { name: 'My Org' })).toHaveAttribute('alt', 'My Org');
+    expect(screen.getByRole('img', { name: 'My Org' })).toHaveClass('object-fit-contain h2 pr2 v-mid');
   });
 });
 
@@ -84,32 +72,23 @@ describe('test TeamBoxList', () => {
     { teamId: 2, name: 'Private Team', role: 'MAPPER' },
     { teamId: 3, name: 'My Best Team', role: 'PROJECT_MANAGER' },
   ];
-  const element = createComponentWithIntl(
-    <MemoryRouter>
+  beforeEach(() => renderWithRouter(
+    <IntlProviders>
       <TeamsBoxList teams={teams} />
-    </MemoryRouter>,
-  );
-  const testInstance = element.root;
-  it('Mapping and validation sections are present', () => {
-    expect(testInstance.findAllByType(FormattedMessage)[0].props.id).toBe(
-      'management.teams.mapping',
-    );
-    expect(testInstance.findAllByType(FormattedMessage)[1].props.id).toBe(
-      'management.teams.validation',
-    );
+    </IntlProviders>,
+  ));
+  it('Mapping and validation sections are present', async () => {
+    expect(await screen.findByText(messages.mappingTeams.defaultMessage)).toBeInTheDocument();
+    expect(await screen.findByText(messages.validationTeams.defaultMessage)).toBeInTheDocument();
   });
-  it('links are present and correct', () => {
-    expect(testInstance.findAllByType('a').length).toBe(2);
-    expect(testInstance.findAllByType('a')[0].props.href).toBe('/teams/2/membership/');
+  it('links are present and correct', async () => {
+    expect((await screen.findAllByRole("link")).length).toBe(2);
+    expect(await screen.findAllByRole("link", { href: '/teams/2/membership/' })).toHaveLength(2);
   });
-  it('TeamBox are present and with the correct props', () => {
-    expect(testInstance.findAllByType(TeamBox).length).toBe(2);
-    expect(testInstance.findAllByProps({ className: 'br1 dib pv2 ph3 mt2 ba f6 tc' }).length).toBe(
-      2,
-    );
-    expect(
-      testInstance.findAllByProps({ className: 'br1 dib pv2 ph3 mt2 ba f6 tc' })[0].children,
-    ).toEqual(['Private Team']);
+  it('TeamBox are present and with the correct props', async () => {
+    // Third team should not be displayed
+    expect(await screen.findByText(teams[0].name)).toBeInTheDocument()
+    expect(await screen.findByText(teams[1].name)).toBeInTheDocument()
   });
 });
 

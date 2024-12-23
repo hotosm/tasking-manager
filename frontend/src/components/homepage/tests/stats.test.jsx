@@ -1,26 +1,27 @@
-
 import { render, screen, waitFor } from '@testing-library/react';
-import { FormattedNumber } from 'react-intl';
-
 import { StatsNumber, StatsSection } from '../stats';
 import {
   IntlProviders,
   QueryClientProviders,
-  createComponentWithIntl,
 } from '../../../utils/testWithIntl';
 
-it('test number formatting in English', () => {
-  const testNumber = createComponentWithIntl(<StatsNumber value={744531} />);
-  const testInstance = testNumber.root;
-  expect(testInstance.findByType(FormattedNumber).props.value).toBe(744.5);
-  expect(testInstance.findByType('span').children).toContain('K');
+it('test number formatting in English', async () => {
+  render(
+    <IntlProviders>
+      <StatsNumber value={744531} />
+    </IntlProviders>,
+  );
+  expect(await screen.findByText('744.5K')).toBeInTheDocument();
 });
 
-it('test number formatting smaller than 1000', () => {
-  const testNumber = createComponentWithIntl(<StatsNumber value={744} />);
-  const testInstance = testNumber.root;
-  expect(testInstance.findByType(FormattedNumber).props.value).toBe(744);
-  expect(testInstance.children).not.toContain('K');
+it('test number formatting smaller than 1000', async () => {
+  render(
+    <IntlProviders>
+      <StatsNumber value={744} />
+    </IntlProviders>,
+  )
+  expect(await screen.findByText('744')).toBeInTheDocument();
+  expect(screen.queryByText('K')).not.toBeInTheDocument();
 });
 
 describe('Stats Section', () => {

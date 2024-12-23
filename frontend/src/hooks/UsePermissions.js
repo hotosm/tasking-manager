@@ -34,7 +34,7 @@ export function useEditTeamAllowed(team) {
 
   useEffect(() => {
     // admin users can edit any team
-    if (userDetails.role === 'ADMIN') setIsAllowed(true);
+    if (userDetails?.role === 'ADMIN') setIsAllowed(true);
     // managers of the organisation related to the team can edit it
     if (organisations && organisations.includes(team.organisation_id)) setIsAllowed(true);
     // team managers can edit it
@@ -45,11 +45,11 @@ export function useEditTeamAllowed(team) {
       const managers = team.members
         .filter((member) => member.active && member.function === 'MANAGER')
         .map((member) => member.username);
-      if (userDetails.username && managers.includes(userDetails.username)) {
+      if (userDetails?.username && managers.includes(userDetails?.username)) {
         setIsAllowed(true);
       }
     }
-  }, [pmTeams, userDetails.role, userDetails.username, organisations, team]);
+  }, [pmTeams, userDetails?.role, userDetails?.username, organisations, team]);
   return [isAllowed];
 }
 

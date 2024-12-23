@@ -9,10 +9,6 @@ import {
 import { ListInterests, CreateInterest, EditInterest } from '../interests';
 import { setupFaultyHandlers } from '../../network/tests/server';
 
-vi.mock('react-hot-toast', () => ({
-  success: vi.fn(),
-}));
-
 describe('List Interests', () => {
   const setup = () => {
     const { container, history } = renderWithRouter(

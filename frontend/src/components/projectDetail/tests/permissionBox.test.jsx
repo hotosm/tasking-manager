@@ -1,55 +1,60 @@
 import { FormattedMessage } from 'react-intl';
-
-import { createComponentWithIntl } from '../../../utils/testWithIntl';
+import { createComponentWithIntl, IntlProviders } from '../../../utils/testWithIntl';
 import { PermissionBox } from '../permissionBox';
+import { render, screen } from '@testing-library/react';
+import messages from '../messages';
 
 describe('test if PermissionBox', () => {
-  it('without validation returns correct style and strings', () => {
-    const element = createComponentWithIntl(<PermissionBox permission="ANY" className="red" />);
-    const testInstance = element.root;
+  it('without validation returns correct style and strings', async () => {
+    render(
+      <IntlProviders>
+        <PermissionBox permission="ANY" className="red" />
+      </IntlProviders>,
+    );
 
-    expect(testInstance.findByType('div').props.className).toBe('tc br1 f6 ba red');
-    expect(testInstance.findByType(FormattedMessage).props.id).toBe('project.permissions.any');
+    expect(await screen.findByText(messages.permissions_ANY.defaultMessage)).toBeInTheDocument();
+    expect((await screen.findByText(messages.permissions_ANY.defaultMessage)).className).toEqual("tc br1 f6 ba red");
   });
 
-  it('without permission TEAMS returns correct style and strings', () => {
-    const element = createComponentWithIntl(
-      <PermissionBox permission="TEAMS" className="orange" />,
+  it('without permission TEAMS returns correct style and strings', async () => {
+    render(
+      <IntlProviders>
+        <PermissionBox permission="TEAMS" className="orange" />
+      </IntlProviders>,
     );
-    const testInstance = element.root;
 
-    expect(testInstance.findByType('div').props.className).toBe('tc br1 f6 ba orange');
-    expect(testInstance.findByType(FormattedMessage).props.id).toBe('project.permissions.teams');
+    // Can't use the message constant - it has to be parsed for this example
+    // Text is split into two parts
+    expect(await screen.findByText("Team")).toBeInTheDocument();
+    expect(await screen.findByText("members")).toBeInTheDocument();
+    expect((await screen.findByText("members")).className).toEqual("tc br1 f6 ba orange");
   });
 
-  it('with validation and TEAMS permission returns correct style and strings', () => {
-    const element = createComponentWithIntl(
-      <PermissionBox permission="TEAMS" validation className="red" />,
-    );
-    const testInstance = element.root;
+  it('with validation and TEAMS permission returns correct style and strings', async () => {
+    render(
+      <IntlProviders>
+        <PermissionBox permission="TEAMS" validation className="red" />
+      </IntlProviders>
+    )
 
-    expect(testInstance.findByType('div').props.className).toBe('tc br1 f6 ba red');
-    expect(testInstance.findAllByType(FormattedMessage)[0].props.id).toBe(
-      'project.permissions.teams',
-    );
-    expect(testInstance.findAllByType(FormattedMessage)[1].props.id).toBe(
-      'project.detail.validation_team',
-    );
+    // Can't use the message constant - it has to be parsed for this example
+    // Text is split into two parts
+    expect(await screen.findByText("Validation team")).toBeInTheDocument();
+    expect(await screen.findByText("members")).toBeInTheDocument();
+    expect((await screen.findByText("members")).className).toEqual("tc br1 f6 ba red");
   });
 
-  it('with validation and TEAMS_LEVEL permission returns correct style and strings', () => {
-    const element = createComponentWithIntl(
-      <PermissionBox permission="TEAMS_LEVEL" validation className="red" />,
-    );
-    const testInstance = element.root;
+  it('with validation and TEAMS_LEVEL permission returns correct style and strings', async () => {
+    render(
+      <IntlProviders>
+        <PermissionBox permission="TEAMS_LEVEL" validation className="red" />
+      </IntlProviders>
+    )
 
-    expect(testInstance.findByType('div').props.className).toBe('tc br1 f6 ba red');
-    expect(testInstance.findAllByType(FormattedMessage)[0].props.id).toBe(
-      'project.permissions.teamsAndLevel',
-    );
-    expect(testInstance.findAllByType(FormattedMessage)[0].props.values.team).toBeTruthy();
-    expect(testInstance.findAllByType(FormattedMessage)[1].props.id).toBe(
-      'project.detail.validation_team',
-    );
+    // Can't use the message constant - it has to be parsed for this example
+    // Text is split into two parts
+    expect(await screen.findByText("Intermediate and advanced members")).toBeInTheDocument();
+    expect(await screen.findByText("Validation team")).toBeInTheDocument();
+    expect((await screen.findByText("Intermediate and advanced members")).className).toEqual("tc br1 f6 ba red");
   });
 });

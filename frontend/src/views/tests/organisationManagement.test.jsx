@@ -13,11 +13,6 @@ import { ListOrganisations, CreateOrganisation, EditOrganisation } from '../orga
 import { store } from '../../store/';
 import { setupFaultyHandlers } from '../../network/tests/server';
 
-vi.mock('react-hot-toast', () => ({
-  success: vi.fn(),
-  error: vi.fn(),
-}));
-
 describe('List Interests', () => {
   const setup = () => {
     const userDetails = { id: 1, role: 'ADMIN', username: 'somebodysomewhere' };

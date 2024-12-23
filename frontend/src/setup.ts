@@ -1,8 +1,17 @@
 import '@testing-library/jest-dom/vitest';
 
-vi.mock('mapbox-gl/dist/mapbox-gl', {
+vi.mock('mapbox-gl/dist/mapbox-gl', (importOriginal) => ({
+  default: {
+    ...importOriginal,
+  },
+  ...importOriginal
+}));
+
+vi.mock("react-hot-toast", {
   spy: true
-});
+})
+
+window.URL.createObjectURL = vi.fn();
 
 beforeEach(() => {
   window.ResizeObserver = vi.fn().mockImplementation(() => ({
