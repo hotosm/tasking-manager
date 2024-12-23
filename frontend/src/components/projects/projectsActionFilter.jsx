@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
-
 import messages from './messages';
 import { Dropdown } from '../dropdown';
 
@@ -16,10 +15,10 @@ export const ProjectsActionFilter = ({ setQuery, fullProjectsQuery }) => {
     if (!action || action === 'null') {
       dispatch({
         type: 'SET_ACTION',
-        action: userDetails.mappingLevel === 'ADVANCED' ? 'any' : 'map',
+        action: userDetails?.mappingLevel === 'ADVANCED' ? 'any' : 'map',
       });
     }
-  }, [dispatch, action, userDetails.mappingLevel]);
+  }, [dispatch, action, userDetails?.mappingLevel]);
 
   return (
     <Dropdown

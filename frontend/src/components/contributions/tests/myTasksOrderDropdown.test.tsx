@@ -1,6 +1,4 @@
-
 import { screen } from '@testing-library/react';
-
 import MyTasksOrderDropdown from '../myTasksOrderDropdown';
 import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 

@@ -1,16 +1,8 @@
 import '@testing-library/jest-dom/vitest';
 
-vi.mock('mapbox-gl/dist/mapbox-gl', () => ({
-  default: vi.fn(),
-  GeolocateControl: vi.fn(),
-  Map: vi.fn(() => ({
-    addControl: vi.fn(),
-    on: vi.fn(),
-    remove: vi.fn(),
-  })),
-  NavigationControl: vi.fn(),
-  supported: vi.fn(),
-}));
+vi.mock('mapbox-gl/dist/mapbox-gl', {
+  spy: true
+});
 
 beforeEach(() => {
   window.ResizeObserver = vi.fn().mockImplementation(() => ({

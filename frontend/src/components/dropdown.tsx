@@ -143,7 +143,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>((props,
 interface DropdownProps {
   options: DropdownOption[];
   value: DropdownOption | DropdownOption[]; // Changed here
-  display: string;
+  display: React.ReactNode;
   className?: string;
   toTop?: boolean;
   multi?: boolean;

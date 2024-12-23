@@ -1,6 +1,4 @@
 import { screen, act } from '@testing-library/react';
-
-
 import { store } from '../../../store';
 import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { ProjectsActionFilter } from '../projectsActionFilter';
@@ -13,6 +11,7 @@ describe('ProjectsActionFilter', () => {
         <ProjectsActionFilter fullProjectsQuery={{ action: undefined }} setQuery={myMock} />
       </ReduxIntlProviders>,
     );
+    screen.debug();
     expect(screen.queryByText('Any project')).toBeInTheDocument();
     expect(screen.queryByText('Projects to map')).not.toBeInTheDocument();
     expect(screen.queryByText('Projects to validate')).not.toBeInTheDocument();

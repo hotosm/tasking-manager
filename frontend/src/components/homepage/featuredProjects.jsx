@@ -128,7 +128,7 @@ export function FeaturedProjects() {
   }
 }
 
-function FeaturedProjectCards({ pageOfCards, pageNum }: Object) {
+function FeaturedProjectCards({ pageOfCards, pageNum }) {
   if (pageOfCards && pageOfCards.length === 0) {
     return null;
   }

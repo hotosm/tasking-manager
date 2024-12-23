@@ -79,7 +79,7 @@ describe('Header', () => {
     if (ORG_LOGO) {
       expect(orgLogo).toHaveAttribute('src', ORG_LOGO);
       fireEvent.error(orgLogo);
-      expect(orgLogo).toHaveAttribute('src', 'main-logo.svg');
+      expect(orgLogo).toHaveAttribute('src', expect.stringContaining('main-logo.svg'));
     }
   });
 

@@ -208,7 +208,7 @@ export const UsersTable = ({ filters, setFilters }) => {
                 user={user}
                 key={user.id}
                 token={token}
-                username={userDetails.username}
+                username={userDetails?.username}
                 setStatus={setStatus}
               />
             ))}

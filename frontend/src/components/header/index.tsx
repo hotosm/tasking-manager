@@ -327,7 +327,7 @@ export const PopupItems = (props) => {
       <p className="bb b--grey-light"></p>
 
       {/* authentication section */}
-      {props.userDetails.username ? (
+      {props.userDetails?.username ? (
         <>
           {props.menuItems
             .filter((item) => item.authenticated === true)
