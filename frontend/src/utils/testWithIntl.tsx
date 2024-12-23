@@ -2,7 +2,6 @@ import { Provider } from 'react-redux';
 import { act, render } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, createMemoryRouter, RouterProvider } from 'react-router-dom';
-import TestRenderer from 'react-test-renderer';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 import { store } from '../store';
@@ -13,14 +12,14 @@ export const createComponentWithIntl = (props: {
   locale?: string,
   children: React.ReactNode,
 }) => {
-  return TestRenderer.create(<IntlProvider locale={props.locale ?? "en"}>{props.children}</IntlProvider>);
+  return render(<IntlProvider locale={props.locale ?? "en"}>{props.children}</IntlProvider>);
 };
 
 export const createComponentWithReduxAndIntl = (props: {
   locale?: string,
   children: React.ReactNode,
 }) => {
-  return TestRenderer.create(<ReduxIntlProviders locale={props.locale ?? "en"}>{props.children}</ReduxIntlProviders>);
+  return render(<ReduxIntlProviders locale={props.locale ?? "en"}>{props.children}</ReduxIntlProviders>);
 };
 
 export const renderWithRouter = (ui: React.ReactNode, { route = '/' } = {}) => {
