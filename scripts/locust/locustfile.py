@@ -10,6 +10,11 @@ class ProjectAndComments(TaskSet):
     def get_comments(self):
         self.client.get("/api/v2/projects/114/comments/")
 
+class ProjectList(TaskSet):
+    @task
+    def get_project(self):
+        self.client.get("/api/v2/projects/")
+
 class GetSimilarProjects(TaskSet):
     @task
     def get_similar_projects(self):
@@ -52,8 +57,9 @@ class ApiBenchmarkUser(HttpUser):
     # Dynamically select tasks based on environment variable or CLI parameter
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        task_name = os.getenv("TASK_SET", "project_and_comments").lower()
-        self.tasks = [task_mapping.get(task_name, ProjectAndComments)]
+        task_name = os.getenv("TASK_SET", "get_contributions").lower()
+        print(task_name, "The task name....")
+        self.tasks = [task_mapping.get(task_name, GetContributions)]
 
 
 '''

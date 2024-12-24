@@ -12,4 +12,4 @@ services:
     working_dir: /app/locust
     entrypoint: locust -f /app/locust/locustfile.py
     environment:
-      LOCUST_HOST: "https://tm.naxa.com.np"
+      LOCUST_HOST: "https://tm-fastapi.naxa.com.np"
