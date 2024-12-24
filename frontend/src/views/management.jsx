@@ -17,8 +17,8 @@ export function ManagementPageIndex() {
     `projects/?managedByMe=true&omitMapResults=true`,
   );
   const [teamsError, teamsLoading, teams] = useFetch(
-    `teams/?manager=${userDetails.id}&fullMemberList=false&paginate=true&perPage=6`,
-    userDetails.id !== undefined,
+    `teams/?manager=${userDetails?.id}&fullMemberList=false&paginate=true&perPage=6`,
+    userDetails?.id !== undefined,
   );
 
   return (
@@ -32,7 +32,7 @@ export function ManagementPageIndex() {
       <Teams
         isReady={!teamsLoading && !teamsError}
         teams={teams.teams}
-        viewAllQuery={`?manager=${userDetails.id}`}
+        viewAllQuery={`?manager=${userDetails?.id}`}
         showAddButton={true}
       />
     </>
@@ -61,12 +61,12 @@ export const ManagementSection = (props) => {
   return (
     <>
       {isOrgManager ||
-      userDetails.role === 'ADMIN' ||
+      userDetails?.role === 'ADMIN' ||
       location.pathname.startsWith('/manage/teams/') ||
       location.pathname.startsWith('/manage/projects/') ? (
         <div className="w-100 ph5-l pb5-l pb2-m ph2-m cf bg-tan blue-dark">
-          {(isOrgManager || userDetails.role === 'ADMIN') && (
-            <ManagementMenu isAdmin={userDetails && userDetails.role === 'ADMIN'} />
+          {(isOrgManager || userDetails?.role === 'ADMIN') && (
+            <ManagementMenu isAdmin={userDetails && userDetails?.role === 'ADMIN'} />
           )}
           <div className="ph0-ns ph2">
             <Outlet />

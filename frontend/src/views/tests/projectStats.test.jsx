@@ -37,6 +37,7 @@ describe('ProjectStats dashboard', () => {
       </MemoryRouter>,
     );
 
+    screen.debug();
     await waitFor(() => screen.getByText('#1'));
     expect(screen.getByText('#1')).toBeInTheDocument();
     expect(screen.getByText('Urgent')).toBeInTheDocument();

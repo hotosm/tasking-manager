@@ -73,5 +73,5 @@ export const UserStats = () => {
   useSetTitleTag('My stats');
   const userDetails = useSelector((state) => state.auth.userDetails);
 
-  return <UserDetail username={userDetails.username} withHeader={false} />;
+  return <UserDetail username={userDetails?.username} withHeader={false} />;
 };

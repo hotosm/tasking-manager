@@ -273,7 +273,7 @@ export function OrgInformation({ hasSlug, formState }) {
         <Field name="description" component="textarea" className={fieldClasses} />
       </div>
       {userDetails &&
-        userDetails.role === 'ADMIN' && ( // only admin users can edit the org type and subscribed tier
+        userDetails?.role === 'ADMIN' && ( // only admin users can edit the org type and subscribed tier
           <>
             <div className="cf">
               <label className={labelClasses}>

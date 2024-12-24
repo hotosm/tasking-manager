@@ -277,7 +277,7 @@ export const TaskActivity = ({
 
   const uniqueContributors =
     commentPayload?.taskHistory &&
-    getTaskContributors(commentPayload.taskHistory, userDetails.username);
+    getTaskContributors(commentPayload.taskHistory, userDetails?.username);
 
   const setCommentPayload = (payload) => {
     queryClient.setQueryData(['task-detail', project.projectId, taskId], { data: payload });

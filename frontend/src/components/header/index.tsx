@@ -85,7 +85,7 @@ export const Header = () => {
   console.log("USERDETAILS", userDetails);
 
   const checkUserEmail = () =>
-    userDetails?.hasOwnProperty('emailAddress') && !userDetails.emailAddress ? (
+    userDetails?.hasOwnProperty('emailAddress') && !userDetails?.emailAddress ? (
       <Popup modal open closeOnEscape={false} closeOnDocumentClick={false}>
         {(close) => <UpdateEmail closeModal={close} />}
       </Popup>
@@ -191,7 +191,7 @@ export function getMenuItemsForUser(userDetails: any, organisations?: any) {
   if (userDetails?.username) {
     filteredMenuItems = menuItems.filter((item) => item.authenticated === true || item.showAlways);
     if (
-      userDetails.role !== 'ADMIN' &&
+      userDetails?.role !== 'ADMIN' &&
       (organisations === undefined || organisations.length === 0)
     ) {
       filteredMenuItems = filteredMenuItems.filter((item) => !item.manager);
@@ -281,8 +281,8 @@ export const ActionItems = ({
       <Dropdown
         onChange={onUserMenuSelect}
         value={[]}
-        display={<UserDisplay username={userDetails.username} />}
-        options={getUserLinks(userDetails.role)}
+        display={<UserDisplay username={userDetails?.username} />}
+        options={getUserLinks(userDetails?.role)}
         className="blue-dark bg-white v-mid bn dn-sm"
       />
     </>

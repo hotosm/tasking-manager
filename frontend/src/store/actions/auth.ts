@@ -124,7 +124,7 @@ export const setUserDetails =
           dispatch(updateUserDetails(userDetails));
           // GET USER ORGS INFO
           fetchLocalJSONAPI(
-            `organisations/?omitManagerList=true&manager_user_id=${userDetails.id}`,
+            `organisations/?omitManagerList=true&manager_user_id=${userDetails?.id}`,
             encodedToken,
           )
             .then((orgs) =>
@@ -132,7 +132,7 @@ export const setUserDetails =
             )
             .catch((error) => dispatch(updateOrgsInfo([])));
           fetchLocalJSONAPI(
-            `teams/?omitMemberList=true&team_role=PROJECT_MANAGER&member=${userDetails.id}`,
+            `teams/?omitMemberList=true&team_role=PROJECT_MANAGER&member=${userDetails?.id}`,
             encodedToken,
           )
             .then((teams) => dispatch(updatePMsTeams(teams.teams.map((team) => team.teamId))))
@@ -147,7 +147,7 @@ export const setUserDetails =
 
 export const getUserDetails = (state: RootStore) => (dispatch: Dispatch) => {
   if (state.auth.userDetails?.username) {
-    dispatch(setUserDetails(state.auth.userDetails.username, state.auth.token));
+    dispatch(setUserDetails(state.auth.userDetails?.username, state.auth.token));
   }
 };
 

@@ -28,7 +28,7 @@ export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched
           values={{ entity: <FormattedMessage {...messages.campaigns} /> }}
         />
       }
-      showAddButton={userDetails.role === 'ADMIN'}
+      showAddButton={userDetails?.role === 'ADMIN'}
       managementView
     >
       <ReactPlaceholder

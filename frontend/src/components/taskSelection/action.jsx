@@ -86,7 +86,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
   );
 
   const contributors = taskDetail?.taskHistory
-    ? getTaskContributors(taskDetail.taskHistory, userDetails.username)
+    ? getTaskContributors(taskDetail.taskHistory, userDetails?.username)
     : [];
 
   const readTaskComments = useReadTaskComments(taskDetail);
@@ -124,15 +124,15 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
   }, [activeTask.autoUnlockSeconds, activeTask.lastUpdated]);
 
   useEffect(() => {
-    if (!editor && userDetails.defaultEditor && tasks && tasksIds) {
+    if (!editor && userDetails?.defaultEditor && tasks && tasksIds) {
       let editorToUse;
       if (action === 'MAPPING') {
-        editorToUse = project.mappingEditors.includes(userDetails.defaultEditor)
-          ? [userDetails.defaultEditor]
+        editorToUse = project.mappingEditors.includes(userDetails?.defaultEditor)
+          ? [userDetails?.defaultEditor]
           : project.mappingEditors;
       } else {
-        editorToUse = project.validationEditors.includes(userDetails.defaultEditor)
-          ? [userDetails.defaultEditor]
+        editorToUse = project.validationEditors.includes(userDetails?.defaultEditor)
+          ? [userDetails?.defaultEditor]
           : project.validationEditors;
       }
       const url = openEditor(
@@ -150,7 +150,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
         navigate(`./?editor=${editorToUse[0]}`);
       }
     }
-  }, [editor, project, userDetails.defaultEditor, action, tasks, tasksIds, navigate]);
+  }, [editor, project, userDetails?.defaultEditor, action, tasks, tasksIds, navigate]);
 
   useEffect(() => {
     if (location.state?.directedFrom) {
@@ -316,7 +316,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                           tasksIds={tasksIds}
                           showReadCommentsAlert={readTaskComments && !historyTabChecked}
                           disableBadImagery={
-                            userDetails.mappingLevel !== 'ADVANCED' || disableBadImagery
+                            userDetails?.mappingLevel !== 'ADVANCED' || disableBadImagery
                           }
                           contributors={contributors}
                           historyTabSwitch={historyTabSwitch}

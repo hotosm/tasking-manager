@@ -593,10 +593,10 @@ const TaskValidationSelector = ({
   useEffect(() => {
     if (showCommentInput && isValidatingMultipleTasks) {
       fetchLocalJSONAPI(`projects/${projectId}/tasks/${id}/`).then((response) =>
-        setContributorsList(getTaskContributors(response.taskHistory, userDetails.username)),
+        setContributorsList(getTaskContributors(response.taskHistory, userDetails?.username)),
       );
     }
-  }, [isValidatingMultipleTasks, showCommentInput, id, projectId, userDetails.username]);
+  }, [isValidatingMultipleTasks, showCommentInput, id, projectId, userDetails?.username]);
 
   return (
     <div className="cf w-100 db pt1 pv2 blue-dark">
@@ -831,6 +831,16 @@ function TaskSplitErrorModalContent({ close }) {
 
 function TaskSpecificInstructions({ instructions, open = true }) {
   const [isOpen, setIsOpen] = useState(open);
+  const [htmlInstructionsHTML, setHtmlInstructionsHTML] = useState('');
+
+  useEffect(() => {
+    console.log("instructions", instructions);
+    if (!instructions) return;
+    (async () => {
+      console.log("INSTRUCTIONS", instructions);
+      setHtmlInstructionsHTML(await htmlFromMarkdown(instructions));
+    })();
+  }, [instructions]);
   return (
     <>
       <h4
@@ -849,7 +859,9 @@ function TaskSpecificInstructions({ instructions, open = true }) {
       {isOpen && (
         <div
           className="markdown-content"
-          dangerouslySetInnerHTML={htmlFromMarkdown(instructions)}
+          dangerouslySetInnerHTML={{
+            __html: htmlInstructionsHTML
+          }}
         />
       )}
     </>

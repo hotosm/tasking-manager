@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { useMutation } from '@tanstack/react-query';
@@ -143,11 +143,22 @@ export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
 };
 
 export function CommentList({ userCanEditProject, projectId, comments, retryFn }) {
-  const username = useSelector((state) => state.auth.userDetails.username);
+  const username = useSelector((state) => state.auth.userDetails?.username);
+  const [commentsMessageHTML, setCommentsMessageHTML] = useState([]);
+
+  useEffect(() => {
+    if (!comments) return;
+    (async () => {
+      for (const comment of comments) {
+        const html = await htmlFromMarkdown(formatUserNamesToLink(comment.message));
+        setCommentsMessageHTML((prev) => [...prev, html]);
+      }
+    })();
+  }, [comments]);
 
   return (
     <div className="pt3">
-      {comments.map((comment) => (
+      {comments.map((comment, index) => (
         <div
           className="w-100 center cf mb2 ba0 br1 b--grey-light bg-white shadow-7 comment-item"
           key={comment.id}
@@ -189,7 +200,9 @@ export function CommentList({ userCanEditProject, projectId, comments, retryFn }
           <div
             style={{ wordWrap: 'break-word' }}
             className="blue-dark f5 lh-title markdown-content text-dim"
-            dangerouslySetInnerHTML={htmlFromMarkdown(formatUserNamesToLink(comment.message))}
+            dangerouslySetInnerHTML={{
+              __html: commentsMessageHTML[index]
+            }}
           />
         </div>
       ))}

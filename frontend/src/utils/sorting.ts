@@ -1,4 +1,4 @@
-import { differenceInDays } from "date-fns";
+import { differenceInDays, differenceInHours, differenceInMilliseconds } from "date-fns";
 
 export function compareTaskId(a: {
   properties: {
@@ -23,7 +23,7 @@ export function compareLastUpdate(a: {
     actionDate: string | number | Date;
   }
 }) {
-  return differenceInDays(new Date(a.properties.actionDate), new Date(b.properties.actionDate))
+  return differenceInMilliseconds(new Date(b.properties.actionDate), new Date(a.properties.actionDate))
 }
 
 export function compareHistoryLastUpdate(a: {
@@ -31,7 +31,7 @@ export function compareHistoryLastUpdate(a: {
 }, b: {
   actionDate: string | number | Date;
 }) {
-  return differenceInDays(new Date(b.actionDate), new Date(a.actionDate));
+  return differenceInMilliseconds(new Date(b.actionDate), new Date(a.actionDate));
 }
 
 export function compareByPropertyDescending(a: any[], b: any[], property: any) {

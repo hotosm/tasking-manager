@@ -24,7 +24,7 @@ export const PartnersFilterSelect = ({
   });
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const { isPending, isError, data: partners } = useAllPartnersQuery(token, userDetails.id);
+  const { isPending, isError, data: partners } = useAllPartnersQuery(token, userDetails?.id);
 
   useEffect(() => {
     if (queryParams.partnerId && partners) {

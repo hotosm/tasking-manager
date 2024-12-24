@@ -105,8 +105,14 @@ export const ProjectDetailMap = (props) => {
 };
 
 export const ProjectDetailLeft = ({ project, contributors, className, type }) => {
-  const htmlShortDescription =
-    project.projectInfo && htmlFromMarkdown(project.projectInfo.shortDescription);
+  const [htmlShortDescriptionHTML, setHtmlShortDescriptionHTML] = useState('');
+
+  useEffect(() => {
+    if (!project.projectInfo) return;
+    (async () => {
+      setHtmlShortDescriptionHTML(await htmlFromMarkdown(project.projectInfo.shortDescription));
+    })();
+  }, [project.projectInfo, project.projectInfo?.shortDescription]);
 
   return (
     <div className={`${className} flex flex-column`}>
@@ -120,7 +126,9 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }) =>
         <section className="lh-title h5 overflow-y-auto mt3 mb3" style={{ flexGrow: 1 }}>
           <div
             className="pr2 blue-dark-abbey markdown-content"
-            dangerouslySetInnerHTML={htmlShortDescription}
+            dangerouslySetInnerHTML={{
+              __html: htmlShortDescriptionHTML
+            }}
           />
           <div>
             <a href="#description" className="link base-font bg-white f6 bn pn red pointer">
@@ -151,11 +159,17 @@ export const ProjectDetail = (props) => {
   const { data: timelineData, status: timelineDataStatus } = useProjectTimelineQuery(
     props.project.projectId,
   );
+  const [htmlDescriptionHTML, setHtmlDescriptionHTML] = useState('');
 
   const hasLiveMonitoringFeature = useHasLiveMonitoringFeature();
 
-  const htmlDescription =
-    props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
+  useEffect(() => {
+    if (!props.project.projectInfo) return;
+    (async () => {
+      setHtmlDescriptionHTML(await htmlFromMarkdown(props.project.projectInfo.description));
+    })();
+  }, [props.project.projectInfo, props.project.projectInfo?.description]);
+
   const h2Classes = 'pl4 f3 f2-ns fw5 mt2 mb3 mb4-ns ttu barlow-condensed blue-dark';
   const userLink = (
     <Link to={`/users/${props.project.author}`} className="link blue-dark underline">
@@ -185,7 +199,9 @@ export const ProjectDetail = (props) => {
       </h3>
       <div
         className="ph4 w-60-l w-80-m w-100 lh-title markdown-content blue-dark-abbey"
-        dangerouslySetInnerHTML={htmlDescription}
+        dangerouslySetInnerHTML={{
+          __html: htmlDescriptionHTML
+        }}
       />
       <a
         href={`/projects/${projectId}/instructions`}

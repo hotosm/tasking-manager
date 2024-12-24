@@ -20,8 +20,8 @@ const mapStateToProps = (state) => ({
 function _EditorDropdown(props) {
   const [value, setValue] = useState(null);
   useEffect(() => {
-    if (value === null && props.userDetails.hasOwnProperty('defaultEditor')) {
-      setValue(props.userDetails.defaultEditor);
+    if (value === null && props.userDetails?.hasOwnProperty('defaultEditor')) {
+      setValue(props.userDetails?.defaultEditor);
     }
   }, [value, props.userDetails]);
 
@@ -29,7 +29,7 @@ function _EditorDropdown(props) {
     if (arr.length === 1) {
       setValue(arr[0].value);
       props.pushUserDetails(
-        JSON.stringify({ defaultEditor: arr[0].value, id: props.userDetails.id }),
+        JSON.stringify({ defaultEditor: arr[0].value, id: props.userDetails?.id }),
         props.token,
         true,
       );
@@ -69,7 +69,7 @@ function _UserSettingsForm(props) {
         <CustomField labelId="language" descriptionId="languageDescription" isDropdown>
           <LocaleSelector fullWidth removeBorder={false} />
         </CustomField>
-        {props.userDetails.role === 'MAPPER' && (
+        {props.userDetails?.role === 'MAPPER' && (
           <CustomField
             labelId="becomeValidator"
             descriptionId="becomeValidatorDescription"

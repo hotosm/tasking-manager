@@ -54,6 +54,7 @@ function CommentInputField({
     ...DROPZONE_SETTINGS,
   });
   const [fileuploadError, fileuploading, uploadImg] = useUploadImage();
+  const [commentHTML, setCommentHTML] = useState<string>();
 
   const tribute = new Tribute({
     trigger: '@',
@@ -95,6 +96,12 @@ function CommentInputField({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textareaRef.current, contributors]);
+
+  useEffect(() => {
+    (async () => {
+      setCommentHTML(await htmlFromMarkdown(formatUserNamesToLink(comment)));
+    })();
+  }, [commentHTML, comment]);
 
   const handleImagePick = async (event) =>
     await uploadImg(event.target.files[0], appendImgToComment, token);
@@ -165,7 +172,9 @@ function CommentInputField({
             <div
               style={{ wordWrap: 'break-word' }}
               className="blue-grey f5 lh-title markdown-content"
-              dangerouslySetInnerHTML={htmlFromMarkdown(formatUserNamesToLink(comment))}
+              dangerouslySetInnerHTML={{
+                __html: commentHTML,
+              }}
             />
           )}
           {!comment && (

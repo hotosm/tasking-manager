@@ -20,8 +20,8 @@ export function UserInterestsForm() {
       setInterests(data.interests);
     };
 
-    if (userDetails.username) {
-      getInterests(userDetails.username);
+    if (userDetails?.username) {
+      getInterests(userDetails?.username);
     }
   }, [token, userDetails]);
 
@@ -43,7 +43,7 @@ export function UserInterestsForm() {
     const postUpdate = (ids) => {
       pushToLocalJSONAPI(
         'users/me/actions/set-interests/',
-        JSON.stringify({ interests: ids, id: userDetails.id }),
+        JSON.stringify({ interests: ids, id: userDetails?.id }),
         token,
       )
         .then((res) => {

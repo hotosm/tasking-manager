@@ -42,6 +42,7 @@ describe('Submitting Mapping Status for a Task', () => {
     });
 
     const { user, router } = setup();
+    screen.debug();
     expect(
       await screen.findByRole('button', {
         name: /submit task/i,

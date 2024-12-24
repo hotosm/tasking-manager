@@ -50,7 +50,7 @@ export function ListOrganisations() {
   useEffect(() => {
     if (token && userDetails?.id) {
       setLoading(true);
-      const queryParam = `${userOrgsOnly ? `?manager_user_id=${userDetails.id}` : ''}`;
+      const queryParam = `${userOrgsOnly ? `?manager_user_id=${userDetails?.id}` : ''}`;
       fetchLocalJSONAPI(`organisations/${queryParam}`, token)
         .then((orgs) => {
           setOrganisations(orgs.organisations);
@@ -65,8 +65,8 @@ export function ListOrganisations() {
       organisations={organisations}
       userOrgsOnly={userOrgsOnly}
       setUserOrgsOnly={setUserOrgsOnly}
-      isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
-      isAdmin={userDetails.role === 'ADMIN'}
+      isOrgManager={userDetails?.role === 'ADMIN' || isOrgManager}
+      isAdmin={userDetails?.role === 'ADMIN'}
       isOrganisationsFetched={!loading && !error}
     />
   );
@@ -82,7 +82,7 @@ export function CreateOrganisation() {
     setMembers: setManagers,
     addMember: addManagers,
     removeMember: removeManagers,
-  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
+  } = useModifyMembers([{ username: userDetails?.username, pictureUrl: userDetails?.pictureUrl }]);
   const [error, setError] = useState(null);
 
   const createOrg = (payload) => {
@@ -176,7 +176,7 @@ export function EditOrganisation() {
     setMembers: setManagers,
     addMember: addManager,
     removeMember: removeManager,
-  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
+  } = useModifyMembers([{ username: userDetails?.username, pictureUrl: userDetails?.pictureUrl }]);
   const [error, loading, organisation] = useFetch(`organisations/${id}/`, id);
   const [isUserAllowed] = useEditOrgAllowed(organisation);
   const [projectsError, projectsLoading, projects] = useFetch(

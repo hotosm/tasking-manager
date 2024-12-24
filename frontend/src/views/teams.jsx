@@ -137,7 +137,7 @@ export function CreateTeam() {
     setMembers: setManagers,
     addMember: addManager,
     removeMember: removeManager,
-  } = useModifyMembers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
+  } = useModifyMembers([{ username: userDetails?.username, pictureUrl: userDetails?.pictureUrl }]);
   const { members, setMembers, addMember, removeMember } = useModifyMembers([]);
   const [isError, setIsError] = useState(false);
 
@@ -147,7 +147,7 @@ export function CreateTeam() {
     pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
         managers
-          .filter((user) => user.username !== userDetails.username)
+          .filter((user) => user.username !== userDetails?.username)
           .map((user) => joinTeamRequest(result.teamId, user.username, 'MANAGER', token));
         members.map((user) => joinTeamRequest(result.teamId, user.username, 'MEMBER', token));
         toast.success(
@@ -438,18 +438,18 @@ export function TeamDetail() {
       setManagers(filterActiveManagers(team.members));
       setMembers(filterActiveMembers(team.members));
       const membersFiltered = team.members.filter(
-        (member) => member.username === userDetails.username,
+        (member) => member.username === userDetails?.username,
       );
       if (membersFiltered.length) {
         setIsMember(membersFiltered.filter((i) => i.active === true).length ? true : 'requested');
       }
     }
-  }, [team, userDetails.username]);
+  }, [team, userDetails?.username]);
 
   const joinTeam = () => {
     pushToLocalJSONAPI(
       `teams/${id}/actions/join/`,
-      JSON.stringify({ role: 'MEMBER', username: userDetails.username }),
+      JSON.stringify({ role: 'MEMBER', username: userDetails?.username }),
       token,
       'POST',
     ).then((res) => {
@@ -461,12 +461,12 @@ export function TeamDetail() {
   const leaveTeam = () => {
     pushToLocalJSONAPI(
       `teams/${id}/actions/leave/`,
-      JSON.stringify({ username: userDetails.username }),
+      JSON.stringify({ username: userDetails?.username }),
       token,
       'POST',
     ).then((res) => {
       setIsMember(false);
-      setMembers((members) => members.filter((member) => member.username !== userDetails.username));
+      setMembers((members) => members.filter((member) => member.username !== userDetails?.username));
     });
   };
 

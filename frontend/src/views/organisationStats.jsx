@@ -21,7 +21,7 @@ export const OrganisationStats = () => {
   const token = useSelector((state) => state.auth.token);
   const isOrgManager = useSelector(
     (state) =>
-      state.auth.userDetails.role === 'ADMIN' || state.auth.organisations?.includes(Number(id)),
+      state.auth.userDetails?.role === 'ADMIN' || state.auth.organisations?.includes(Number(id)),
   );
   const [query, setQuery] = useTasksStatsQueryParams();
 

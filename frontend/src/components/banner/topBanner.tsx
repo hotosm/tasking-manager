@@ -15,7 +15,7 @@ export function TopBanner() {
     (async () => {
       if (data?.message) {
         const html = await htmlFromMarkdown(data.message);
-        setSafeHTML(html.__html);
+        setSafeHTML(html);
       }
     })();
   }, [data?.message])

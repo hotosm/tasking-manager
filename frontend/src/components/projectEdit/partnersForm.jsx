@@ -131,7 +131,7 @@ export const PartnersForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateRange]);
 
-  const { isPending, isError, data: partners } = useAllPartnersQuery(token, userDetails.id);
+  const { isPending, isError, data: partners } = useAllPartnersQuery(token, userDetails?.id);
 
   const savePartnerMutation = useMutation({
     mutationFn: () => {

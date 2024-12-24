@@ -135,7 +135,7 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
   }, [selfProfile, authDetails, authDetails.username]);
 
   useEffect(() => {
-    if (userDetails && userDetails.id) {
+    if (userDetails && userDetails?.id) {
       setUser(userDetails);
     }
   }, [userDetails]);

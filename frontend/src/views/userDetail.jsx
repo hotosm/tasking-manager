@@ -24,7 +24,7 @@ const TopCauses = lazy(() =>
 
 export const UserDetail = ({ withHeader = true }) => {
   const navigate = useNavigate();
-  const loggedInUsername = useSelector((state) => state.auth.userDetails.username);
+  const loggedInUsername = useSelector((state) => state.auth.userDetails?.username);
   const { username: usernameParam } = useParams();
   const username = usernameParam || loggedInUsername;
   useSetTitleTag(username);
@@ -43,7 +43,7 @@ export const UserDetail = ({ withHeader = true }) => {
     `projects/queries/${username}/touched/`,
     username !== undefined,
   );
-  const { data: osmStats } = useUserOsmStatsQuery(userDetails.id);
+  const { data: osmStats } = useUserOsmStatsQuery(userDetails?.id);
 
   useEffect(() => {
     if (!token) {
@@ -52,12 +52,12 @@ export const UserDetail = ({ withHeader = true }) => {
   }, [navigate, token]);
 
   useEffect(() => {
-    if (userDetails.id) {
-      fetchExternalJSONAPI(`${OSM_SERVER_URL}/api/0.6/user/${userDetails.id}.json`)
+    if (userDetails?.id) {
+      fetchExternalJSONAPI(`${OSM_SERVER_URL}/api/0.6/user/${userDetails?.id}.json`)
         .then((res) => setUserOsmDetails(res?.user))
         .catch((e) => console.log(e));
     }
-  }, [userDetails.id]);
+  }, [userDetails?.id]);
 
   const titleClass = 'contributions-titles fw5 ttu barlow-condensed blue-dark mt0';
 
@@ -132,7 +132,7 @@ export const UserDetail = ({ withHeader = true }) => {
           </h3>
           <TaskStats
             userStats={userStats}
-            username={currentUser.username !== username ? username : null}
+            username={currentUser?.username !== username ? username : null}
           />
         </div>
         <div className="mv4">
@@ -148,7 +148,7 @@ export const UserDetail = ({ withHeader = true }) => {
             <CountriesMapped projects={userProjects} userStats={userStats} />
           </ReactPlaceholder>
         </div>
-        {currentUser.username !== username && (
+        {currentUser?.username !== username && (
           <div className="mv4">
             <h3 className={titleClass}>
               <FormattedMessage {...messages.teams} />
@@ -159,7 +159,7 @@ export const UserDetail = ({ withHeader = true }) => {
               style={{ height: '10em' }}
               ready={!errorStats && !loadingStats}
             >
-              <UserTeams userId={userDetails.id} />
+              <UserTeams userId={userDetails?.id} />
             </ReactPlaceholder>
           </div>
         )}

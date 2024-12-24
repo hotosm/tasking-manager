@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import { Tooltip } from 'react-tooltip';
@@ -14,6 +14,7 @@ import { DeleteButton } from '../teamsAndOrgs/management';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { NotificationBodyModal } from './notificationBodyCard';
+import { useState } from 'react';
 
 import 'reactjs-popup/dist/index.css';
 
@@ -72,7 +73,12 @@ export function NotificationCard({
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const ref = useRef();
-  const replacedSubject = subject.replace('task=', 'search=');
+  const [replacedSubjectHTML, setReplacedSubjectHTML] = useState('');
+
+  useEffect(() => {
+    const replacedSubject = subject.replace('task=', 'search=');
+    setReplacedSubjectHTML(rawHtmlNotification(replacedSubject).__html);
+  }, [subject]);
 
   const setMessageAsRead = () => {
     !read &&
@@ -133,7 +139,9 @@ export function NotificationCard({
                       }
                     }}
                     className={`messageSubjectLinks ma0 f6`}
-                    dangerouslySetInnerHTML={rawHtmlNotification(replacedSubject)}
+                    dangerouslySetInnerHTML={{
+                      __html: replacedSubjectHTML
+                    }}
                   />
                   <div className={`pt2 blue-grey f6`}>
                     <RelativeTimeWithUnit date={sentDate} />
@@ -203,6 +211,11 @@ export function NotificationCardMini({
   read,
 }) {
   const dispatch = useDispatch();
+  const [subjectHTML, setSubjectHTML] = useState('');
+
+  useEffect(() => {
+    setSubjectHTML(rawHtmlNotification(subject).__html);
+  }, [subject]);
 
   const setMessageAsRead = () => {
     if (!read) {
@@ -236,7 +249,9 @@ export function NotificationCardMini({
               <div
                 className="f7 messageSubjectLinks ws-normal"
                 style={{ lineHeight: 1.21 }}
-                dangerouslySetInnerHTML={rawHtmlNotification(subject)}
+                dangerouslySetInnerHTML={{
+                  __html: subjectHTML
+                }}
               />
               <div className="blue-grey f7 mt2">
                 <RelativeTimeWithUnit date={sentDate} />

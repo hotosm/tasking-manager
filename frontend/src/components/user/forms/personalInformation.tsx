@@ -83,7 +83,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
   const [resendStatus, setResendStatus] = useState(null);
 
   const prepareUserDetailsToPush = (values, fields) => {
-    let data = { id: userDetails.id };
+    let data = { id: userDetails?.id };
     fields.filter((key) => values.hasOwnProperty(key)).forEach((key) => (data[key] = values[key]));
     return JSON.stringify(data);
   };
@@ -122,7 +122,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
         initialValues={userDetails}
         render={({ handleSubmit, pristine, submitting, hasValidationErrors }) => (
           <form onSubmit={handleSubmit} className="blue-grey">
-            <fieldset className="bn ph0 pt0 mh0" disabled={submitting || !userDetails.username}>
+            <fieldset className="bn ph0 pt0 mh0" disabled={submitting || !userDetails?.username}>
               <div className="cf">
                 <label className={labelClasses}>
                   <FormattedMessage {...messages.name} />
@@ -159,7 +159,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                         required
                       />
                       {meta.error && meta.touched && <div className="mt1 red">{meta.error}</div>}
-                      {userDetails.emailAddress && !userDetails.isEmailVerified && !meta.dirty && (
+                      {userDetails?.emailAddress && !userDetails?.isEmailVerified && !meta.dirty && (
                         <div className="mt2 red lh-base">
                           <FormattedMessage {...messages.emailConfirmationMsg} />
                           <span

@@ -48,7 +48,7 @@ export function ListPartners() {
   return (
     <PartnersManagement
       partners={partners}
-      isAdmin={userDetails.role === 'ADMIN'}
+      isAdmin={userDetails?.role === 'ADMIN'}
       isPartnersFetched={!loading && !error}
     />
   );
@@ -87,7 +87,7 @@ export function CreatePartner() {
 
   return (
     <div>
-      {userDetails.role === 'ADMIN' ? (
+      {userDetails?.role === 'ADMIN' ? (
         <Form
           onSubmit={(values) => createPartner(values)}
           render={({ handleSubmit, pristine, form, submitting, values }) => {
@@ -211,7 +211,7 @@ export function EditPartners() {
         delay={100}
         ready={!error && loading === false && typeof partner === 'object'}
       >
-        {userDetails.role === 'ADMIN' ? (
+        {userDetails?.role === 'ADMIN' ? (
           <div className="cf w-50-l w-50-m ">
             <div className="cf pv4">
               <h3 className="f2 ttu blue-dark fw7 ma0 barlow-condensed v-mid dib">

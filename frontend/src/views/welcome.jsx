@@ -78,17 +78,17 @@ export function Welcome() {
   }, [navigate, userIsloggedIn]);
 
   useEffect(() => {
-    if (completeness >= 0.5 && userDetails.projectsMapped) {
+    if (completeness >= 0.5 && userDetails?.projectsMapped) {
       navigate('/contributions/projects/?mappedByMe=1&action=any');
     }
-  }, [completeness, navigate, userDetails.projectsMapped]);
+  }, [completeness, navigate, userDetails?.projectsMapped]);
 
   return (
     <div className="pull-center">
       {completeness <= 0.5 ? (
         <IncompleteProfile />
       ) : (
-        <NewContributor username={userDetails.username} userIsloggedIn={userIsloggedIn} />
+        <NewContributor username={userDetails?.username} userIsloggedIn={userIsloggedIn} />
       )}
     </div>
   );

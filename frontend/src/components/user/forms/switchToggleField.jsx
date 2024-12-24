@@ -12,13 +12,13 @@ const mapStateToProps = (state) => ({
 function _SwitchToggleField(props) {
   const [value, setValue] = useState(null);
   useEffect(() => {
-    if (value === null && props.userDetails.hasOwnProperty(props.fieldName)) {
+    if (value === null && props.userDetails?.hasOwnProperty(props.fieldName)) {
       setValue(props.userDetails[props.fieldName]);
     }
   }, [value, props.userDetails, props.fieldName]);
 
   const onSwitchChange = () => {
-    let payload = { id: props.userDetails.id };
+    let payload = { id: props.userDetails?.id };
     payload[props.fieldName] = !value;
     props.pushUserDetails(JSON.stringify(payload), props.token, true);
     setValue(!value);

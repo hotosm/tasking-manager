@@ -13,6 +13,7 @@ import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { DeleteButton } from '../teamsAndOrgs/management';
 import { ORG_NAME } from '../../config';
 import './styles.scss';
+import { useState } from 'react';
 
 export const NotificationBodyModal = (props) => {
   const [thisNotificationError, thisNotificationLoading, thisNotification] = useFetch(
@@ -92,16 +93,18 @@ export function NotificationBodyCard({
   const { value, unit } = selectUnit(new Date((sentDate && new Date(sentDate)) || new Date()));
   const showASendingUser =
     fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && ORG_NAME);
+  const [replacedSubjectHTML, setReplacedSubjectHTML] = useState('');
+  const [replacedMessageHTML, setReplacedMessageHTML] = useState("");
 
-  let replacedSubject;
-  let replacedMessage;
+  const [replacedSubject, setReplacedSubject] = useState('');
+  const [replacedMessage, setReplacedMessage] = useState('');
 
   if (subject !== undefined) {
-    replacedSubject = subject.replace('task=', 'search=');
+    setReplacedSubject(subject.replace('task=', 'search='));
   }
 
   if (message !== undefined) {
-    replacedMessage = message.replace('task=', 'search=');
+    setReplacedMessage(message.replace('task=', 'search='));;
   }
   const deleteNotification = (id) => {
     fetchLocalJSONAPI(`notifications/${id}/`, token, 'DELETE')
@@ -113,6 +116,11 @@ export function NotificationBodyCard({
         console.log(e.message);
       });
   };
+
+  useEffect(() => {
+    setReplacedSubjectHTML(rawHtmlNotification(replacedSubject).__html);
+    setReplacedMessageHTML(rawHtmlNotification(replacedMessage).__html);
+  }, [messageId, token, replacedSubject, replacedMessage]);
 
   return (
     <ReactPlaceholder ready={!loading} type="media" rows={6}>
@@ -135,11 +143,15 @@ export function NotificationBodyCard({
         <div className="pv3 pr3 pl5">
           <strong
             className={`pv3 messageSubjectLinks bodyCard`}
-            dangerouslySetInnerHTML={rawHtmlNotification(replacedSubject)}
+            dangerouslySetInnerHTML={{
+              __html: replacedSubjectHTML
+            }}
           ></strong>
           <div
             className={`pv3 f6 lh-title messageBodyLinks bodyCard`}
-            dangerouslySetInnerHTML={rawHtmlNotification(replacedMessage)}
+            dangerouslySetInnerHTML={{
+              __html: replacedMessageHTML
+            }}
           />
         </div>
         <DeleteButton

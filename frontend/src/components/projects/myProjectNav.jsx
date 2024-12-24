@@ -72,7 +72,7 @@ export const MyProjectNav = (props) => {
             <FormattedMessage {...messages.myProjects} />
           )}
         </h3>
-        {(userDetails.role === 'ADMIN' || isOrgManager) && (
+        {(userDetails?.role === 'ADMIN' || isOrgManager) && (
           <Link to={'/manage/projects/new/'} className="dib ml3">
             <AddButton />
           </Link>
@@ -176,7 +176,7 @@ export const MyProjectNav = (props) => {
                 </FilterButton>
               </>
             )}
-            {props.management && (userDetails.role === 'ADMIN' || isOrgManager) && (
+            {props.management && (userDetails?.role === 'ADMIN' || isOrgManager) && (
               <>
                 <div className="dib pr4">
                   {projectStatusMenus.map((menu) => (
@@ -240,9 +240,9 @@ function ManagerFilters({ query, setQuery }) {
   const [campaignsError, campaignsLoading, campaigns] = useFetch('campaigns/');
   const [orgsError, orgsLoading, organisations] = useFetch(
     `organisations/?omitManagerList=true${
-      userDetails.role === 'ADMIN' ? '' : `&manager_user_id=${userDetails.id}`
+      userDetails?.role === 'ADMIN' ? '' : `&manager_user_id=${userDetails?.id}`
     }`,
-    userDetails && userDetails.id,
+    userDetails && userDetails?.id,
   );
   const { campaign: campaignInQuery, organisation: orgInQuery } = query;
   return (

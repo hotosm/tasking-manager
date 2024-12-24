@@ -84,8 +84,8 @@ export const OrganisationSelect = ({
   const [organisations, setOrganisations] = useState([]);
 
   useEffect(() => {
-    if (token && userDetails && userDetails.id) {
-      const query = userDetails.role === 'ADMIN' ? '' : `&manager_user_id=${userDetails.id}`;
+    if (token && userDetails && userDetails?.id) {
+      const query = userDetails?.role === 'ADMIN' ? '' : `&manager_user_id=${userDetails?.id}`;
       fetchLocalJSONAPI(`organisations/?omitManagerList=true${query}`, token)
         .then((result) => setOrganisations(result.organisations))
         .catch((e) => console.log(e));
