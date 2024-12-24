@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  locust:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8089:8089" # Expose Locust web UI
+    volumes:
+      - ./:/app/locust
+    working_dir: /app/locust
+    entrypoint: locust -f /app/locust/locustfile.py
+    environment:
+      LOCUST_HOST: "https://tm-fastapi.naxa.com.np"
