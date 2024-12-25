@@ -145,7 +145,7 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
-    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
+    await waitFor(() => expect(console.log).toBeCalledWith('Failed to fetch'));
   });
 
   it('should catch error when marking all notifications in a category as read', async () => {
@@ -169,7 +169,7 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
-    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
+    await waitFor(() => expect(console.log).toBeCalledWith('Failed to fetch'));
   });
 
   it('should catch error when deleting multiple selected notifications', async () => {
@@ -194,7 +194,7 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
-    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
+    await waitFor(() => expect(console.log).toBeCalledWith('Failed to fetch'));
   });
 
   it('should catch error when deleting all notifications in a category', async () => {
@@ -218,7 +218,7 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
-    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
+    await waitFor(() => expect(console.log).toBeCalledWith('Failed to fetch'));
   });
 
   it('should decrement the page query by 1 if the user deletes all notifications on the last page', async () => {

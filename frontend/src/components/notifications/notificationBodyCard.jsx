@@ -95,17 +95,6 @@ export function NotificationBodyCard({
     fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && ORG_NAME);
   const [replacedSubjectHTML, setReplacedSubjectHTML] = useState('');
   const [replacedMessageHTML, setReplacedMessageHTML] = useState("");
-
-  const [replacedSubject, setReplacedSubject] = useState('');
-  const [replacedMessage, setReplacedMessage] = useState('');
-
-  if (subject !== undefined) {
-    setReplacedSubject(subject.replace('task=', 'search='));
-  }
-
-  if (message !== undefined) {
-    setReplacedMessage(message.replace('task=', 'search='));;
-  }
   const deleteNotification = (id) => {
     fetchLocalJSONAPI(`notifications/${id}/`, token, 'DELETE')
       .then(() => {
@@ -118,9 +107,11 @@ export function NotificationBodyCard({
   };
 
   useEffect(() => {
+    const replacedSubject = subject ? subject.replace('task=', 'search=') : '';
+    const replacedMessage = message ? message.replace('task=', 'search=') : '';
     setReplacedSubjectHTML(rawHtmlNotification(replacedSubject).__html);
     setReplacedMessageHTML(rawHtmlNotification(replacedMessage).__html);
-  }, [messageId, token, replacedSubject, replacedMessage]);
+  }, [messageId, token, subject, message]);
 
   return (
     <ReactPlaceholder ready={!loading} type="media" rows={6}>
