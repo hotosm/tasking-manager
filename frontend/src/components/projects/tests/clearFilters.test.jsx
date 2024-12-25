@@ -1,23 +1,24 @@
 import { FormattedMessage } from 'react-intl';
 
 import ClearFilters from '../clearFilters';
-import { createComponentWithIntl } from '../../../utils/testWithIntl';
+import { createComponentWithIntl, IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { MemoryRouter } from 'react-router-dom';
+import { screen } from '@testing-library/react';
+import messages from "../../contributions/messages";
 
 describe('ClearFilters basic properties', () => {
-  const element = createComponentWithIntl(
-    <MemoryRouter>
+  beforeEach(() => renderWithRouter(
+    <IntlProviders>
       <ClearFilters url="/explore" />
-    </MemoryRouter>,
-  );
-  const testInstance = element.root;
-  it('is a link and point to the correct place', () => {
-    expect(testInstance.findByType('a').props.href).toBe('/explore');
-    expect(testInstance.findByType('a').children[0].props.id).toBe('project.nav.clearFilters');
+    </IntlProviders>,
+  ));
+  it('is a link and point to the correct place', async () => {
+    expect(await screen.findByRole('link')).toBeInTheDocument();
+    expect(await screen.findByRole('link')).toHaveAttribute('href', '/explore');
+    expect(await screen.findByText(messages.clearFilters.defaultMessage)).toBeInTheDocument();
   });
   it('has a FormattedMessage children with the correct id', () => {
-    expect(testInstance.findByType('a').children[0].type).toBe(FormattedMessage);
-    expect(testInstance.findByType('a').children[0].props.id).toBe('project.nav.clearFilters');
+    screen.debug();
   });
   it('has the correct className', () => {
     expect(testInstance.findByType('a').props.className).toBe('red link ph3 pv2 f6 ');

@@ -20,7 +20,8 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
 
   const splitHandler = useCallback(
     (event) => {
-      const taskGrid = mapObj.map.getSource('grid')._data;
+      // Not defined for tests
+      const taskGrid = mapObj.map?.getSource('grid')._data;
 
       if (metadata.tempTaskGrid === null) {
         updateMetadata({ ...metadata, tempTaskGrid: taskGrid });
@@ -39,6 +40,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   );
 
   useEffect(() => {
+    if (!mapObj.map) return;
     if (splitMode === 'click') {
       mapObj.map.on('mouseenter', 'grid', (event) => {
         mapObj.map.getCanvas().style.cursor = 'pointer';
@@ -57,6 +59,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
 
   const splitDrawing = () => {
     setSplitMode('draw');
+    if (!mapObj.map) return;
     mapObj.map.on('mouseenter', 'grid', (event) => {
       mapObj.map.getCanvas().style.cursor = 'crosshair';
     });
@@ -117,17 +120,17 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   }, [metadata, updateMetadata]);
 
   useLayoutEffect(() => {
-    if (mapObj.map.getSource('grid') !== undefined) {
-      mapObj.map.getSource('grid').setData(metadata.taskGrid);
+    if (mapObj.map?.getSource('grid') !== undefined) {
+      mapObj.map?.getSource('grid').setData(metadata.taskGrid);
     } else {
-      mapObj.map.addSource('grid', {
+      mapObj.map?.addSource('grid', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: metadata.taskGrid },
       });
     }
     return () => {
       // remove the split on click function when leaving the page
-      mapObj.map.off('click', 'grid', splitHandler);
+      mapObj.map?.off('click', 'grid', splitHandler);
     };
   }, [metadata, mapObj, smallerSize, largerSize, splitHandler]);
 

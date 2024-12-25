@@ -30,8 +30,8 @@ describe('MyTasksOrderDropdown', () => {
 
   it('displays dropdown options after button is clicked', async () => {
     await setup();
-    expect(screen.getByText(/recently edited/i)).toBeInTheDocument();
-    expect(screen.getByText(/project id/i)).toBeInTheDocument();
+    expect(await screen.findByText(/recently edited/i)).toBeInTheDocument();
+    expect(await screen.findByText(/project id/i)).toBeInTheDocument();
   });
 
   it('should set query when an option is selected', async () => {
@@ -51,6 +51,6 @@ describe('MyTasksOrderDropdown', () => {
         />
       </IntlProviders>,
     );
-    expect(screen.getByText(/project id/i)).toBeInTheDocument();
+    expect(await screen.findByText(/project id/i)).toBeInTheDocument();
   });
 });

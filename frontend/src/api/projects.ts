@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { subMonths, format } from 'date-fns';
-import { QueryKey, QueryOptions, useQuery } from '@tanstack/react-query';
+import { QueryKey, QueryOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import api from './apiClient';
-import { UNDERPASS_URL } from '../config';
+import { API_URL, UNDERPASS_URL } from '../config';
 import { RootStore } from '../store';
 
 export const useProjectsQuery = (
@@ -59,7 +59,10 @@ export const useProjectQuery = (projectId: string, otherOptions: any) => {
     ...otherOptions,
   });
 };
-export const useProjectSummaryQuery = (projectId: string, otherOptions = {}) => {
+
+type ProjectSummaryQueryOptions = Omit<UseQueryOptions<any>, ('queryKey' | 'queryFn' | 'select')>;
+
+export const useProjectSummaryQuery = (projectId: string, otherOptions?: ProjectSummaryQueryOptions) => {
   const token = useSelector((state: RootStore) => state.auth.token);
   const locale = useSelector((state: RootStore) => state.preferences['locale']);
 

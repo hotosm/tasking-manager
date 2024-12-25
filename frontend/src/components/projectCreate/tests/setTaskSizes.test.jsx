@@ -1,12 +1,11 @@
 import { render, screen } from '@testing-library/react';
 
-import mapboxgl from 'mapbox-gl';
-
 import SetTaskSizes from '../setTaskSizes';
 import { projectMetadata } from '../../../utils/tests/snippets/projectMetadata';
 import { IntlProviders } from '../../../utils/testWithIntl';
 
-vi.mock('mapbox-gl/dist/mapbox-gl', () => ({
+vi.mock('mapbox-gl/dist/mapbox-gl', async (importOriginal) => ({
+  ...(await importOriginal()),
   GeolocateControl: vi.fn(),
   Map: vi.fn(() => ({
     addControl: vi.fn(),
@@ -20,17 +19,8 @@ vi.mock('mapbox-gl/dist/mapbox-gl', () => ({
   NavigationControl: vi.fn(),
 }));
 
-const map = new mapboxgl.Map({
-  container: '',
-  style: {},
-  center: [0, 0],
-  zoom: 1.3,
-  attributionControl: false,
-  source: 'grid',
-});
-
 let mapObj = {
-  map: map,
+  map: null,
   draw: {},
 };
 

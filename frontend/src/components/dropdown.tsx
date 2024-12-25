@@ -46,30 +46,30 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>((props,
       if (!ourObj) return;
 
       let isRemove = false;
-      if (Array.isArray(value)) {
-        for (let x = 0; x < value.length; x++) {
-          if (value[x].label === label) {
-            isRemove = true;
-            props.onRemove && props.onRemove(ourObj);
-            props.onChange(value.slice(0, x).concat(value.slice(x + 1)));
-          }
+      for (let x = 0; x < value.length; x++) {
+        if (value[x].label === label) {
+          isRemove = true;
+          props.onRemove && props.onRemove(ourObj);
+          props.onChange(value.slice(0, x).concat(value.slice(x + 1)));
         }
+      }
 
-        if (!isRemove) {
-          let newArray = value.slice(0, value.length);
-          if (!props.multi) {
-            newArray = [];
-          }
-          newArray.push(ourObj);
-          props.onAdd && props.onAdd(ourObj);
-          props.onChange(newArray);
+      if (!isRemove) {
+        let newArray = value.slice(0, value.length);
+        if (!props.multi) {
+          newArray = [];
         }
+        newArray.push(ourObj);
+        props.onAdd && props.onAdd(ourObj);
+        props.onChange(newArray);
       }
     }
     if (!props.multi) {
       props.toggleDropdown();
     }
   };
+
+  console.log("OPTIONS!!!", props.options);
 
   return (
     <div
@@ -81,6 +81,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>((props,
       {props.options.map((i, k) => (
         <span
           key={k}
+          data-testid={i.label}
           onClick={handleClick.bind(null, i)}
           className="pa3 nowrap bg-animate bg-white hover-bg-tan"
         >
@@ -183,16 +184,13 @@ export function Dropdown(props: DropdownProps) {
     setDisplay(!display);
   };
 
-  const getActiveOrDisplay = (): string => {
-    const activeItems = props.options.filter((item) => {
-      if (Array.isArray(props.value)) {
-        return props.value.some(v => v.label === item.label || v.value === item.value);
-      }
-      return item.label === props.value.label || item.value === props.value.value;
-    });
+  const getActiveOrDisplay = () => {
+    const activeItems = props.options.filter(
+      (item) => item.label === props.value || item.value === props.value,
+    );
     return activeItems.length === 0 || activeItems.length > 1
       ? props.display
-      : activeItems[0].label
+      : activeItems[0].label;
   };
 
   return (
@@ -210,6 +208,7 @@ export function Dropdown(props: DropdownProps) {
         <DropdownContent
           ref={contentRef}
           {...props}
+          eventTypes={['click', 'touchend']}
           toggleDropdown={toggleDropdown}
           toTop={props.toTop}
         />

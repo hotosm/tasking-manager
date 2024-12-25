@@ -79,6 +79,7 @@ export const ActionButtons = ({
   };
 
   function handleSuccess(shouldRetry = true) {
+    console.log("CALLED??")
     setSelected([]);
     shouldRetry && retryFn();
     isAllSelected

@@ -1,4 +1,4 @@
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Dropdown } from '../dropdown';
 import messages from './messages';
 
@@ -7,18 +7,19 @@ export default function MyTasksOrderDropdown({ className, setQuery, allQueryPara
   setQuery: Function;
   allQueryParams: unknown;
 }) {
+  const intl = useIntl();
   const options = [
     {
-      label: <FormattedMessage {...messages.recentlyEdited} />,
+      label: intl.formatMessage(messages.recentlyEdited),
       value: '-action_date',
     },
     {
-      label: <FormattedMessage {...messages.projectId} />,
+      label: intl.formatMessage(messages.projectId),
       value: '-project_id',
     },
   ];
 
-  const onSortSelect = (arr: unknown[]) =>
+  const onSortSelect = (arr: unknown[]) => {
     setQuery(
       {
         // @ts-expect-error TS Migrations
@@ -29,6 +30,7 @@ export default function MyTasksOrderDropdown({ className, setQuery, allQueryPara
       },
       'pushIn',
     );
+  }
 
   return (
     <Dropdown

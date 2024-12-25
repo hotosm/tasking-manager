@@ -12,8 +12,8 @@ import messages from '../messages';
  * in the test where we actually need to mock it.
  */
 const mockedUsedNavigate = vi.fn();
-vi.mock('react-router-dom', () => ({
-  ...vi.requireActual('react-router-dom'),
+vi.mock('react-router-dom', async (importOriginal) => ({
+  ...(await importOriginal()),
   useNavigate: () => mockedUsedNavigate,
 }));
 
