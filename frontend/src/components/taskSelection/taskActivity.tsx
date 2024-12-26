@@ -118,7 +118,7 @@ export const TaskHistory = ({ projectId, taskId }) => {
     return res;
   };
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return (
       <div className="ma4">
         <ReactPlaceholder type="media" showLoadingAnimation delay={300} />

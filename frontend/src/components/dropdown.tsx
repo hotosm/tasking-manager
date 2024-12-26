@@ -69,8 +69,6 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>((props,
     }
   };
 
-  console.log("OPTIONS!!!", props.options);
-
   return (
     <div
       ref={ref}

@@ -1,7 +1,6 @@
 
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import toast from 'react-hot-toast';
 
 import {
   CompletionTabForMapping,
@@ -26,7 +25,8 @@ import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/
 // This is a late import in a React.lazy call; it takes awhile for commentInput to load
 import '../../comments/commentInput';
 
-vi.mock('react-hot-toast', () => ({
+vi.mock('react-hot-toast', async (importOriginal) => ({
+  ...(await importOriginal()),
   error: vi.fn(),
 }));
 
@@ -109,6 +109,7 @@ describe('Miscellaneous modals and prompts', () => {
         name: /split task/i,
       }),
     );
+    const toast = await import("react-hot-toast");
     await waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1));
   });
 

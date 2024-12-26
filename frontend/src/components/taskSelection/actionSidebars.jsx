@@ -81,6 +81,7 @@ export function CompletionTabForMapping({
       if (err.response?.data?.SubCode === 'SmallToSplit') {
         setSplitTaskError(true);
       } else {
+        console.log("TOAST ERROR", err);
         toast.error(<FormattedMessage {...messages.splitTaskGenericError} />);
       }
     },
@@ -94,6 +95,7 @@ export function CompletionTabForMapping({
       navigateToTasksPage(tasksIds);
     },
     onError: () => {
+      console.log("TOAST ERROR 2");
       toast.error(<FormattedMessage {...messages.stopMappingError} />);
     },
   });
@@ -109,6 +111,7 @@ export function CompletionTabForMapping({
       navigateToTasksPage(tasksIds);
     },
     onError: () => {
+      console.log("TOAST ERROR 3");
       toast.error(
         <FormattedMessage {...messages.submitTaskError} values={{ numTasks: tasksIds.length }} />,
       );
@@ -365,6 +368,7 @@ export function CompletionTabForValidation({
       navigateToTasksPage();
     },
     onError: () => {
+      console.log("TOAST ERROR 4");
       toast.error(<FormattedMessage {...messages.stopValidationError} />);
     },
   });
@@ -377,6 +381,7 @@ export function CompletionTabForValidation({
       navigateToTasksPage(true);
     },
     onError: () => {
+      console.log("TOAST ERROR 5");
       toast.error(
         <FormattedMessage {...messages.submitTaskError} values={{ numTasks: tasksIds.length }} />,
       );
@@ -834,10 +839,8 @@ function TaskSpecificInstructions({ instructions, open = true }) {
   const [htmlInstructionsHTML, setHtmlInstructionsHTML] = useState('');
 
   useEffect(() => {
-    console.log("instructions", instructions);
     if (!instructions) return;
     (async () => {
-      console.log("INSTRUCTIONS", instructions);
       setHtmlInstructionsHTML(await htmlFromMarkdown(instructions));
     })();
   }, [instructions]);

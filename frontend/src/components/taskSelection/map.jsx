@@ -490,10 +490,10 @@ export const TasksMap = ({
     disableScrollZoom,
     navigate,
     animateZoom,
-    authDetails.id,
+    authDetails?.id,
     showTaskIds,
     zoomedTaskId,
-    authDetails.username,
+    authDetails?.username,
     intl,
   ]);
 

@@ -2,10 +2,6 @@ import '@testing-library/jest-dom/vitest';
 
 // vi.mock('mapbox-gl/dist/mapbox-gl');
 
-vi.mock("react-hot-toast", {
-  spy: true
-})
-
 window.URL.createObjectURL = vi.fn();
 
 beforeEach(() => {
