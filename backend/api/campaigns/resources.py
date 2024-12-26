@@ -1,5 +1,6 @@
 from databases import Database
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 
 from backend.db import get_db
 from backend.models.dtos.campaign_dto import (
@@ -138,13 +139,20 @@ async def update_campaign(
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"CampaignsRestAPI PATCH: {str(e)}"
-        return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
     try:
         campaign = await CampaignService.update_campaign(campaign_dto, campaign_id, db)
-        return {"Success": "Campaign {} updated".format(campaign.id)}, 200
+        return JSONResponse(
+            content={"Success": "Campaign {} updated".format(campaign.id)},
+            status_code=200,
+        )
     except ValueError:
         error_msg = "Campaign PATCH - name already exists"
-        return {"Error": error_msg, "SubCode": "NameExists"}
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "NameExists"}, status_code=400
+        )
 
 
 @router.delete("/{campaign_id}/")
@@ -200,11 +208,13 @@ async def delete_campaign(
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"CampaignsRestAPI DELETE: {str(e)}"
-        return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     campaign = await CampaignService.get_campaign(campaign_id, db)
     await CampaignService.delete_campaign(campaign.id, db)
-    return {"Success": "Campaign deleted"}, 200
+    return JSONResponse(content={"Success": "Campaign deleted"}, status_code=200)
 
 
 @router.get("/", response_model=CampaignListDTO)
@@ -298,10 +308,15 @@ async def create_campaign(
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"CampaignsAllAPI POST: {str(e)}"
-        return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     try:
         campaign_id = await CampaignService.create_campaign(campaign_dto, db)
-        return {"campaignId": campaign_id}, 201
+        return JSONResponse(content={"campaignId": campaign_id}, status_code=201)
     except ValueError as e:
-        return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=409,
+        )
