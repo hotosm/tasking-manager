@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 from markdown import markdown
 
+from backend.db import db_connection
 from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.stats_dto import Pagination
@@ -28,7 +29,6 @@ from backend.models.postgis.team import Team, TeamMembers
 from backend.services.messaging.message_service import MessageService
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
-from backend.db import db_connection
 
 
 class TeamServiceError(Exception):
@@ -812,7 +812,6 @@ class TeamService:
                             team_member.user_id, conn
                         )
                         messages.append(dict(message=message, user=user))
-                # Push messages
                 await MessageService._push_messages(messages, conn)
             logger.info("Messages sent successfully.")
         except Exception as e:

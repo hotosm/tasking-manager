@@ -748,7 +748,7 @@ class StatsService:
 
         if org_id:
             filters.append("AND organisation_id = :org_id")
-            values["org_id"] = org_id
+            values["org_id"] = int(org_id)
 
         if org_name:
             filters.append("""
