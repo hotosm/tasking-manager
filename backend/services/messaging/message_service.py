@@ -235,7 +235,6 @@ class MessageService:
             if (i + 1) % 10 == 0:
                 time.sleep(0.5)
 
-        # TODO Explore better approach.
         if messages_objs:
             insert_values = [
                 {
@@ -461,14 +460,13 @@ class MessageService:
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
-        message.date = timestamp()
-        message.read = False
         user_link = MessageService.get_user_link(from_username)
         team_link = MessageService.get_team_link(team_name, team_id, True)
         message.subject = f"{user_link} requested to join {team_link}"
         message.message = f"{user_link} has requested to join the {team_link} team.\
             Access the team management page to accept or reject that request."
-        await Message.save(message, db)
+        user = await UserService.get_user_by_id(to_user, db)
+        await MessageService._push_messages([dict(message=message, user=user)], db)
 
     @staticmethod
     async def accept_reject_request_to_join_team(
@@ -492,7 +490,8 @@ class MessageService:
         message.message = (
             f"{user_link} has {response}ed your request to join the {team_link} team."
         )
-        await Message.save(message, db)
+        user = await UserService.get_user_by_id(to_user, db)
+        await MessageService._push_messages([dict(message=message, user=user)], db)
 
     @staticmethod
     async def accept_reject_invitation_request_for_team(
@@ -522,7 +521,8 @@ class MessageService:
             sending_member,
             MessageService.get_team_link(team_name, team_id, True),
         )
-        await Message.save(message, db)
+        user = await UserService.get_user_by_id(to_user, db)
+        await MessageService._push_messages([dict(message=message, user=user)], db)
 
     @staticmethod
     async def send_team_join_notification(
@@ -545,8 +545,8 @@ class MessageService:
             Access the {team_link}'s page to view more info about this team."
         message.date = timestamp()
         message.read = False
-
-        await Message.save(message, db)
+        user = await UserService.get_user_by_id(to_user, db)
+        await MessageService._push_messages([dict(message=message, user=user)], db)
 
     @staticmethod
     async def send_message_after_chat(

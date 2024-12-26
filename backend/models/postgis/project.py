@@ -685,7 +685,6 @@ class Project(Base):
                 new_info = await ProjectInfo.create_from_dto(
                     dto, self.id, db
                 )  # Can't find info so must be new locale
-                self.project_info.append(new_info)
             else:
                 await ProjectInfo.update_from_dto(ProjectInfo(**project_info), dto, db)
 

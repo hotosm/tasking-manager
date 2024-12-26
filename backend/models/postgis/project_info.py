@@ -87,7 +87,10 @@ class ProjectInfo(Base):
         columns.pop("locale", None)
         query = (
             update(ProjectInfo.__table__)
-            .where(ProjectInfo.project_id == self.project_id)
+            .where(
+                ProjectInfo.project_id == self.project_id,
+                ProjectInfo.locale == self.locale,
+            )
             .values(**columns)
         )
         result = await db.execute(query)
