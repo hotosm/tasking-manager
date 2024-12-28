@@ -1,7 +1,5 @@
-
 import { Provider } from 'react-redux';
-import { screen } from '@testing-library/react';
-
+import { act, render, screen } from '@testing-library/react';
 import messages from '../messages';
 import { usersList } from '../../../network/tests/mockData/userList';
 import { store } from '../../../store';
@@ -25,88 +23,74 @@ describe('test JoinRequest list', () => {
     },
     { username: 'test_2', function: 'MEMBER', active: false, pictureUrl: null },
   ];
-  const element = createComponentWithIntl(
-    <MemoryRouter>
-      <Provider store={store}>
-        <JoinRequests requests={requests} managers={[]} />
-      </Provider>
-    </MemoryRouter>,
+  act(() => {
+    store.dispatch({
+      type: 'SET_USER_DETAILS',
+      userDetails: { username: 'somebody' },
+    });
+  });
+  const setup = () => renderWithRouter(
+    <ReduxIntlProviders>
+      <JoinRequests requests={requests} managers={[]} />
+    </ReduxIntlProviders>,
   );
-  const testInstance = element.root;
   it('initial div has the correct classes', () => {
-    expect(testInstance.findAllByType('div')[0].props.className).toBe(
-      'bg-white b--grey-light pa4 ba blue-dark',
-    );
+    const { container } = setup();
+    expect(container.querySelector('div')).toHaveClass('bg-white b--grey-light pa4 ba blue-dark');
   });
   it('h3 element has the correct title', () => {
-    expect(testInstance.findByType('h3').children[0].props.id).toBe(
-      'management.teams.join_requests',
-    );
+    setup();
+    expect(screen.getByText(messages.joinRequests.defaultMessage)).toBeInTheDocument();
   });
   it('number of UserAvatar components is correct', () => {
-    expect(testInstance.findAllByType(UserAvatar).length).toBe(2);
+    setup();
+    expect(screen.getAllByRole("link")).toHaveLength(4);
   });
   it('Accept and Deny buttons are present', () => {
-    expect(testInstance.findAllByType(Button).length).toBe(4);
-    expect(testInstance.findAllByProps({ className: 'pr2 blue-dark bg-white' }).length).toBe(2);
-    expect(testInstance.findAllByProps({ className: 'pr2 bg-red white' }).length).toBe(2);
+    const { container } = setup();
+    expect(screen.getAllByRole("button")).toHaveLength(4);
+    expect(container.querySelectorAll('.pr2.blue-dark.bg-white')).toHaveLength(2);
+    expect(container.querySelectorAll('.pr2.bg-red.white')).toHaveLength(2);
   });
   it('no requests message is NOT present', () => {
-    expect(() =>
-      testInstance
-        .findByProps({ className: 'tc' })
-        .toThrow(new Error('No instances found with props: {className: "tc"}')),
-    );
+    setup();
+    expect(screen.queryByText(messages.noRequests.defaultMessage)).not.toBeInTheDocument();
   });
 });
 
 describe('test JoinRequest list without requests', () => {
-  const element = createComponentWithIntl(
-    <MemoryRouter>
-      <Provider store={store}>
-        <JoinRequests requests={[]} managers={[]} />
-      </Provider>
-    </MemoryRouter>,
+  act(() => {
+    store.dispatch({
+      type: 'SET_USER_DETAILS',
+      userDetails: { username: 'somebody' },
+    });
+  });
+  const setup = () => renderWithRouter(
+    <ReduxIntlProviders>
+      <JoinRequests requests={[]} managers={[]} />
+    </ReduxIntlProviders>,
   );
-  const testInstance = element.root;
   it('initial div has the correct classes', () => {
-    expect(testInstance.findAllByType('div')[0].props.className).toBe(
-      'bg-white b--grey-light pa4 ba blue-dark',
-    );
+    const { container } = setup();
+    expect(container.querySelector('div')).toHaveClass('bg-white b--grey-light pa4 ba blue-dark');
   });
   it('h3 element has the correct title', () => {
-    expect(testInstance.findByType('h3').children[0].props.id).toBe(
-      'management.teams.join_requests',
-    );
+    setup();
+    expect(screen.getByText(messages.joinRequests.defaultMessage)).toBeInTheDocument();
   });
   it('number of UserAvatar components is correct', () => {
-    expect(() =>
-      testInstance
-        .findAllByType(UserAvatar)
-        .toThrow(new Error('No instances found with node type: "UserAvatar"')),
-    );
+    setup();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
   it('Accept and Deny buttons are present', () => {
-    expect(() =>
-      testInstance
-        .findAllByType(Button)
-        .toThrow(new Error('No instances found with node type: "Button"')),
-    );
-    expect(() =>
-      testInstance
-        .findAllByProps({ className: 'pr2 blue-dark bg-white' })
-        .toThrow(new Error('No instances found with props: {className: "pr2 blue-dark bg-white"}')),
-    );
-    expect(() =>
-      testInstance
-        .findAllByProps({ className: 'pr2 bg-red white' })
-        .toThrow(new Error('No instances found with props: {className: "pr2 bg-red white"}')),
-    );
+    const { container } = setup();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(container.querySelectorAll('.pr2.blue-dark.bg-white')).toHaveLength(0);
+    expect(container.querySelectorAll('.pr2.bg-red.white')).toHaveLength(0);
   });
   it('no requests message is present', () => {
-    expect(testInstance.findByProps({ className: 'tc mt3' }).children[0].props.id).toBe(
-      'management.teams.join_requests.empty',
-    );
+    setup();
+    expect(screen.getByText(messages.noRequests.defaultMessage)).toBeInTheDocument();
   });
 });
 

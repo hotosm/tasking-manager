@@ -1,32 +1,38 @@
 import { FormattedNumber } from 'react-intl';
-
 import { NextMappingLevel } from '../topBar';
 import { MappingLevelMessage } from '../../mappingLevel';
-import { createComponentWithIntl } from '../../../utils/testWithIntl';
+import { createComponentWithIntl, IntlProviders } from '../../../utils/testWithIntl';
+import { render, screen } from '@testing-library/react';
+import messages from '../../messages';
 
 it('changesets missing to intermediate level', () => {
-  const element = createComponentWithIntl(<NextMappingLevel changesetsCount={100} />);
-  const elementInstance = element.root;
-  expect(elementInstance.findAllByType(FormattedNumber)[0].props.value).toBe(100);
-  expect(elementInstance.findAllByType(FormattedNumber)[1].props.value).toBe(250);
-  expect(elementInstance.findByType(MappingLevelMessage).props.level).toBe('INTERMEDIATE');
+  render(
+    <IntlProviders>
+      <NextMappingLevel changesetsCount={100} />
+    </IntlProviders>
+  );
+  expect(screen.getByText("100")).toBeInTheDocument();
+  expect(screen.getByText("250")).toBeInTheDocument();
+  expect(screen.getByText(messages.mappingLevelINTERMEDIATE.defaultMessage)).toBeInTheDocument();
 });
 
 it('changesets missing to advanced level', () => {
-  const element = createComponentWithIntl(<NextMappingLevel changesetsCount={300} />);
-  const elementInstance = element.root;
-  expect(elementInstance.findAllByType(FormattedNumber)[0].props.value).toBe(300);
-  expect(elementInstance.findAllByType(FormattedNumber)[1].props.value).toBe(500);
-  expect(elementInstance.findByType(MappingLevelMessage).props.level).toBe('ADVANCED');
+  render(
+    <IntlProviders>
+      <NextMappingLevel changesetsCount={300} />
+    </IntlProviders>
+  );
+  expect(screen.getByText("300")).toBeInTheDocument();
+  expect(screen.getByText("500")).toBeInTheDocument();
+  expect(screen.getByText(messages.mappingLevelADVANCED.defaultMessage)).toBeInTheDocument();
 });
 
 it('user is advanced already', () => {
-  const element = createComponentWithIntl(<NextMappingLevel changesetsCount={600} />);
-  const elementInstance = element.root;
-  expect(() => elementInstance.findByType(FormattedNumber)).toThrow(
-    new Error('No instances found with node type: "FormattedNumber"'),
+  const { container } = render(
+    <IntlProviders>
+      <NextMappingLevel changesetsCount={600} />
+    </IntlProviders>
   );
-  expect(() => elementInstance.findByType(MappingLevelMessage)).toThrow(
-    new Error('No instances found with node type: "MappingLevelMessage"'),
-  );
+  // It should output nothing
+  expect(container.querySelector("span")).not.toBeInTheDocument();
 });

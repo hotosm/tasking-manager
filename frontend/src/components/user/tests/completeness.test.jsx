@@ -1,7 +1,7 @@
-import { FormattedMessage, FormattedNumber } from 'react-intl';
-
 import { ProfileCompleteness } from '../completeness';
-import { createComponentWithIntl } from '../../../utils/testWithIntl';
+import { IntlProviders } from '../../../utils/testWithIntl';
+import { render, screen } from '@testing-library/react';
+import messages from '../messages';
 
 const user0Percent = {
   id: 1,
@@ -96,40 +96,43 @@ const user100Percent = {
 };
 
 it('test with a user who filled all profile fields', () => {
-  const element = createComponentWithIntl(<ProfileCompleteness userDetails={user100Percent} />);
-  const elementInstance = element.root;
-  expect(elementInstance.findAllByType(FormattedMessage).map((i) => i.props.id)).toContain(
-    'user.completeness.lead.complete',
+  const { container } = render(
+    <IntlProviders>
+      <ProfileCompleteness userDetails={user100Percent} />
+    </IntlProviders>
   );
-  expect(elementInstance.findByType(FormattedNumber).props.value).toBe(1);
-  expect(
-    elementInstance.findByProps({ className: 'absolute bg-red br-pill hhalf hide-child' }).props
-      .style.width,
-  ).toBe('100%');
+  expect(screen.getByText(messages.completenessLead2.defaultMessage)).toBeInTheDocument();
+  expect(container.querySelector('.absolute.bg-red.br-pill.hhalf.hide-child')).toBeInTheDocument();
+  expect(container.querySelector('.absolute.bg-red.br-pill.hhalf.hide-child')).toHaveStyle({
+    width: '100%',
+  })
+  expect(screen.getByText("100%")).toBeInTheDocument();
 });
 
 it('test with a user whose profile is 66.7% filled', () => {
-  const element = createComponentWithIntl(<ProfileCompleteness userDetails={incompleteProfile} />);
-  const elementInstance = element.root;
-  expect(elementInstance.findAllByType(FormattedMessage).map((i) => i.props.id)).toContain(
-    'user.completeness.lead.high',
+  const { container } = render(
+    <IntlProviders>
+      <ProfileCompleteness userDetails={incompleteProfile} />
+    </IntlProviders>
   );
-  expect(elementInstance.findByType(FormattedNumber).props.value).toBe(2 / 3);
-  expect(
-    elementInstance.findByProps({ className: 'absolute bg-red br-pill hhalf hide-child' }).props
-      .style.width,
-  ).toBe('66.7%');
+  expect(screen.getByText(messages.completenessLead1.defaultMessage)).toBeInTheDocument();
+  expect(screen.getByText(`67%`)).toBeInTheDocument();
+  expect(container.querySelector('.absolute.bg-red.br-pill.hhalf.hide-child')).toBeInTheDocument();
+  expect(container.querySelector('.absolute.bg-red.br-pill.hhalf.hide-child')).toHaveStyle({
+    width: '66.7%',
+  });
 });
 
 it('test with a user whose profile is 0% filled', () => {
-  const element = createComponentWithIntl(<ProfileCompleteness userDetails={user0Percent} />);
-  const elementInstance = element.root;
-  expect(elementInstance.findAllByType(FormattedMessage).map((i) => i.props.id)).toContain(
-    'user.completeness.lead.start',
+  const { container } = render(
+    <IntlProviders>
+      <ProfileCompleteness userDetails={user0Percent} />
+    </IntlProviders>
   );
-  expect(elementInstance.findByType(FormattedNumber).props.value).toBe(0);
-  expect(
-    elementInstance.findByProps({ className: 'absolute bg-red br-pill hhalf hide-child' }).props
-      .style.width,
-  ).toBe('0%');
+  expect(screen.getByText(messages.completenessLead0.defaultMessage)).toBeInTheDocument();
+  expect(screen.getByText(`0%`)).toBeInTheDocument();
+  expect(container.querySelector('.absolute.bg-red.br-pill.hhalf.hide-child')).toBeInTheDocument();
+  expect(container.querySelector('.absolute.bg-red.br-pill.hhalf.hide-child')).toHaveStyle({
+    width: '0%',
+  });
 });
