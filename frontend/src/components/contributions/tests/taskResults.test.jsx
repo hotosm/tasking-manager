@@ -1,6 +1,4 @@
-
 import { screen } from '@testing-library/react';
-
 import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { userTasks } from '../../../network/tests/mockData/tasksStats';
 import { TaskResults, TaskCards } from '../taskResults';

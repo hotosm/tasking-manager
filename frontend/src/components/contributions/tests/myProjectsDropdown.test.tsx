@@ -1,10 +1,7 @@
 import { render, screen } from '@testing-library/react';
-
 import selectEvent from 'react-select-event';
-
 import MyProjectsDropdown from '../myProjectsDropdown';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
-import { API_URL } from '../../../config';
 
 it('displays placeholder and typed text on type', async () => {
   const setQueryMock = vi.fn();

@@ -20,6 +20,7 @@ export const useLockedTasksQuery = () => {
     queryKey: ['locked-tasks'],
     queryFn: fetchLockedTasks,
     select: (data) => data.data?.tasks,
+    gcTime: 0,
     throwOnError: true,
   });
 };

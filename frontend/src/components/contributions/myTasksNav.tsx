@@ -6,7 +6,9 @@ import { useTaskContributionQueryParams, stringify } from '../../hooks/UseTaskCo
 import MyTasksOrderDropdown from './myTasksOrderDropdown';
 import MyProjectsDropdown from './myProjectsDropdown';
 
-export const isActiveButton = (buttonName, contributionQuery) => {
+export const isActiveButton = (buttonName: string, contributionQuery: {
+  [key: string]: any
+}) => {
   let isActive = false;
   try {
     if (contributionQuery.status.includes(buttonName)) {
@@ -28,7 +30,7 @@ export const isActiveButton = (buttonName, contributionQuery) => {
   }
 };
 
-export const MyTasksNav = (props) => {
+export const MyTasksNav = () => {
   const [contributionsQuery, setContributionsQuery] = useTaskContributionQueryParams();
 
   const linkCombo = 'dib mh1 mb2 link ph3 f6 pv2 ba b--grey-light';
