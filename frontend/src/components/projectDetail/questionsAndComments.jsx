@@ -92,7 +92,7 @@ export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
         <FormattedMessage {...messages.questionsAndComments} />
       </h3>
       <div className="ph6-l ph4 pb5 w-100 w-70-l">
-        {commentsStatus === 'loading' && <ReactPlaceholder type="media" rows={3} ready={false} />}{' '}
+        {commentsStatus === 'pending' && <ReactPlaceholder type="media" rows={3} ready={false} />}{' '}
         {commentsStatus === 'error' && (
           <div className="mb4">
             <Alert type="error">

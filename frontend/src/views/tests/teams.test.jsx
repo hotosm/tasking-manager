@@ -122,7 +122,7 @@ describe('Create Team', () => {
 
 describe('Edit Team', () => {
   it('should display default details of the team before editing', async () => {
-    await act(() => {
+    act(() => {
       store.dispatch({
         type: 'SET_USER_DETAILS',
         userDetails: { id: 122, username: 'test_user', role: 'ADMIN' },

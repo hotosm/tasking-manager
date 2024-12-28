@@ -303,9 +303,9 @@ export function CompletionTabForMapping({
           disabled={
             disabled ||
             !selectedStatus ||
-            [stopMappingMutation.status, splitTaskMutation.status].includes('loading')
+            [stopMappingMutation.status, splitTaskMutation.status].includes('pending')
           }
-          loading={submitTaskMutation.status === 'loading'}
+          loading={submitTaskMutation.status === 'pending'}
         >
           <FormattedMessage {...messages.submitTask} />
         </Button>
@@ -319,16 +319,16 @@ export function CompletionTabForMapping({
         <Button
           className="bg-blue-dark white w-50 fl"
           onClick={onSplitTask}
-          loading={splitTaskMutation.status === 'loading'}
-          disabled={[submitTaskMutation.status, splitTaskMutation.status].includes('loading')}
+          loading={splitTaskMutation.status === 'pending'}
+          disabled={[submitTaskMutation.status, splitTaskMutation.status].includes('pending')}
         >
           <FormattedMessage {...messages.splitTask} />
         </Button>
         <Button
           className="blue-dark bg-white w-50 fl"
           onClick={onStopMapping}
-          loading={stopMappingMutation.status === 'loading'}
-          disabled={[submitTaskMutation.status, splitTaskMutation.status].includes('loading')}
+          loading={stopMappingMutation.status === 'pending'}
+          disabled={[submitTaskMutation.status, splitTaskMutation.status].includes('pending')}
         >
           <FormattedMessage {...messages.selectAnotherTask} />
         </Button>
@@ -550,8 +550,8 @@ export function CompletionTabForValidation({
         <Button
           className="bg-red white w-100 fl"
           onClick={onSubmitTask}
-          disabled={disabled || !areAllTasksVerified || stopValidationMutation.status === 'loading'}
-          loading={submitTaskMutation.status === 'loading'}
+          disabled={disabled || !areAllTasksVerified || stopValidationMutation.status === 'pending'}
+          loading={submitTaskMutation.status === 'pending'}
         >
           <FormattedMessage {...messages[tasksIds.length > 1 ? 'submitTasks' : 'submitTask']} />
         </Button>
@@ -565,8 +565,8 @@ export function CompletionTabForValidation({
         <Button
           className="blue-dark bg-white w-100 fl"
           onClick={onStopValidation}
-          loading={stopValidationMutation.status === 'loading'}
-          disabled={submitTaskMutation.status === 'loading'}
+          loading={stopValidationMutation.status === 'pending'}
+          disabled={submitTaskMutation.status === 'pending'}
         >
           <FormattedMessage {...messages.stopValidation} />
         </Button>

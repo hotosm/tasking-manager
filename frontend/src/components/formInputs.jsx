@@ -8,19 +8,8 @@ import messages from './messages';
 import { formatCountryList } from '../utils/countries';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { CheckIcon, SearchIcon, CloseIcon } from './svgIcons';
-import { RootStore } from '../store';
 
-export const RadioField = ({
-  name,
-  value,
-  className,
-  required = false,
-}: {
-  name: string;
-  value: string;
-  className?: string;
-  required?: boolean;
-}) => (
+export const RadioField = ({ name, value, className, required = false }) => (
   <Field
     name={name}
     component="input"
@@ -40,13 +29,6 @@ export const SwitchToggle = ({
   labelPosition,
   small = false,
   isDisabled = false,
-}: {
-  label: string;
-  isChecked: boolean;
-  onChange: () => void;
-  labelPosition: string;
-  small?: boolean;
-  isDisabled?: boolean;
 }) => (
   <div className="v-mid justify-center">
     {label && labelPosition !== 'right' && <span className="di mr2 nowrap f6 dn-m">{label}</span>}
@@ -70,29 +52,21 @@ export const SwitchToggle = ({
   </div>
 );
 
-export const OrganisationSelect = ({
-  className,
-  orgId,
-  onChange,
-}: {
-  className?: string;
-  orgId: number | string;
-  onChange: (value: number | string) => void;
-}) => {
-  const userDetails = useSelector((state: RootStore) => state.auth.userDetails);
-  const token = useSelector((state: RootStore) => state.auth.token);
+export const OrganisationSelect = ({ className, orgId, onChange }) => {
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [organisations, setOrganisations] = useState([]);
 
   useEffect(() => {
-    if (token && userDetails && userDetails?.id) {
-      const query = userDetails?.role === 'ADMIN' ? '' : `&manager_user_id=${userDetails?.id}`;
+    if (token && userDetails && userDetails.id) {
+      const query = userDetails.role === 'ADMIN' ? '' : `&manager_user_id=${userDetails.id}`;
       fetchLocalJSONAPI(`organisations/?omitManagerList=true${query}`, token)
         .then((result) => setOrganisations(result.organisations))
         .catch((e) => console.log(e));
     }
   }, [userDetails, token]);
 
-  const getOrgPlaceholder = (id: string | number) => {
+  const getOrgPlaceholder = (id) => {
     const orgs = organisations.filter((org) => org.organisationId === id);
     return orgs.length ? orgs[0].name : <FormattedMessage {...messages.selectOrganisation} />;
   };
@@ -111,29 +85,22 @@ export const OrganisationSelect = ({
   );
 };
 
-export function OrganisationSelectInput(props: {
-  className?: string;
-  input: { value: string; onChange: (value: string) => void };
-}) {
+export function OrganisationSelectInput({ className }) {
   return (
-    <Field name="organisation_id" className={props.className} required>
-      <OrganisationSelect
-        orgId={props.input.value}
-        onChange={(value) => props.input.onChange(value.toString())}
-        className="z-5"
-      />
+    <Field name="organisation_id" className={className} required>
+      {(props) => (
+        <OrganisationSelect
+          orgId={props.input.value}
+          onChange={(value) => props.input.onChange(value.organisationId || '')}
+          className="z-5"
+        />
+      )}
     </Field>
   );
 }
 
-export function UserCountrySelect({
-  className,
-  isDisabled = false,
-}: {
-  className?: string;
-  isDisabled?: boolean;
-}) {
-  const locale = useSelector((state: RootStore) => state.preferences.locale);
+export function UserCountrySelect({ className, isDisabled = false }) {
+  const locale = useSelector((state) => state.preferences.locale);
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
@@ -142,7 +109,7 @@ export function UserCountrySelect({
     }
   }, [locale]);
 
-  const getPlaceholder = (value: string) => {
+  const getPlaceholder = (value) => {
     const placeholder = options.filter((option) => option.value === value);
     if (placeholder.length) {
       return placeholder[0].label;
@@ -169,24 +136,14 @@ export function UserCountrySelect({
   );
 }
 
-export const CheckBoxInput = ({
-  isActive,
-  changeState,
-  className = '',
-  disabled,
-}: {
-  isActive: boolean;
-  changeState: () => void;
-  className?: string;
-  disabled?: boolean;
-}) => (
+export const CheckBoxInput = ({ isActive, changeState, className = '', disabled }) => (
   <div
     role="checkbox"
     disabled={disabled}
     aria-checked={isActive}
     onClick={disabled ? () => {} : changeState}
     onKeyPress={disabled ? () => {} : changeState}
-    tabIndex={0}
+    tabIndex="0"
     className={`bg-white w1 h1 ma1 ba bw1 ${
       disabled ? 'b--grey-light' : 'b--red'
     } br1 relative pointer ${className}`}
@@ -201,15 +158,7 @@ export const CheckBoxInput = ({
   </div>
 );
 
-export const CheckBox = ({
-  activeItems,
-  toggleFn,
-  itemId,
-}: {
-  activeItems: any[];
-  toggleFn: (value: any[]) => void;
-  itemId: any;
-}) => {
+export const CheckBox = ({ activeItems, toggleFn, itemId }) => {
   const isActive = activeItems.includes(itemId);
   const changeState = (e) => {
     e.persist();
@@ -242,15 +191,7 @@ export const SelectAll = ({ selected, setSelected, allItems, className }) => {
   return <CheckBoxInput changeState={changeState} isActive={isActive} className={className} />;
 };
 
-export const InterestsList = ({
-  interests,
-  field,
-  changeSelect,
-}: {
-  interests: any[];
-  field: string;
-  changeSelect: (value: any) => void;
-}) => (
+export const InterestsList = ({ interests, field, changeSelect }) => (
   <div className="w-100 pa0 interest-cards-ctr">
     {interests.map((interest) => (
       <article
@@ -270,17 +211,7 @@ export const InterestsList = ({
 );
 
 // Used as a generic search box for input fields in the management section
-export const TextField = ({
-  value,
-  placeholderMsg,
-  onChange,
-  onCloseIconClick,
-}: {
-  value: string;
-  placeholderMsg: any;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onCloseIconClick: () => void;
-}) => {
+export const TextField = ({ value, placeholderMsg, onChange, onCloseIconClick }) => {
   const inputRef = useRef(null);
 
   return (

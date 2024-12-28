@@ -74,7 +74,7 @@ export function fetchLocalJSONAPIWithAbort(
     });
 }
 
-export function pushToLocalJSONAPI(
+export async function pushToLocalJSONAPI(
   endpoint: string,
   payload: string,
   token: string,

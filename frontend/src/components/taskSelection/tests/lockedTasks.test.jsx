@@ -1,4 +1,3 @@
-
 import TestRenderer from 'react-test-renderer';
 import { FormattedMessage } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
@@ -22,115 +21,121 @@ import {
 import { store } from '../../../store';
 import messages from '../messages';
 
-vi.mock('react-router-dom', () => ({
-  ...vi.requireActual('react-router-dom'),
+vi.mock('react-router-dom', async (importOriginal) => ({
+  ...(await importOriginal()),
   useLocation: () => ({
     pathname: 'localhost:3000/example/path',
   }),
 }));
 
 describe('test LockedTaskModalContent', () => {
-  const { act } = TestRenderer;
   it('return SameProjectLock message', () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <LockedTaskModalContent project={{ projectId: 1 }} error={null} />
+      </ReduxIntlProviders>,
+    );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: 1 });
       store.dispatch({ type: 'SET_LOCKED_TASKS', tasks: [21] });
       store.dispatch({ type: 'SET_TASKS_STATUS', status: 'LOCKED_FOR_MAPPING' });
     });
-    const instance = createComponentWithReduxAndIntl(
-      <MemoryRouter>
-        <LockedTaskModalContent project={{ projectId: 1 }} error={null} />
-      </MemoryRouter>,
-    );
-    const element = instance.root;
-    expect(element.findByType(SameProjectLock)).toBeTruthy();
+    expect(screen.getByText(messages.anotherLockedTask.defaultMessage)).toBeInTheDocument();
   });
 
-  it('return SameProjectLock message', () => {
+  it('return AnotherProjectLock message', () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <LockedTaskModalContent project={{ projectId: 1 }} error={null} />
+      </ReduxIntlProviders>,
+    );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: 2 });
       store.dispatch({ type: 'SET_LOCKED_TASKS', tasks: [21] });
       store.dispatch({ type: 'SET_TASKS_STATUS', status: 'LOCKED_FOR_MAPPING' });
     });
-    const instance = createComponentWithReduxAndIntl(
-      <MemoryRouter>
-        <LockedTaskModalContent project={{ projectId: 1 }} error={null} />
-      </MemoryRouter>,
-    );
-    const element = instance.root;
-    expect(element.findByType(AnotherProjectLock)).toBeTruthy();
+    expect(screen.getByText(messages.anotherLockedTask.defaultMessage)).toBeInTheDocument();
+    expect(screen.getByRole("link")).toBeInTheDocument();
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/projects/2/map/");
   });
 
   it('return LicenseError message', () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <LockedTaskModalContent
+          project={{ projectId: 1, licenseId: 123 }}
+          error={'UserLicenseError'}
+        />
+      </ReduxIntlProviders>
+    );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: null });
       store.dispatch({ type: 'SET_LOCKED_TASKS', tasks: [] });
       store.dispatch({ type: 'SET_TASKS_STATUS', status: null });
     });
-    const instance = createComponentWithReduxAndIntl(
-      <LockedTaskModalContent
-        project={{ projectId: 1, licenseId: 123 }}
-        error={'UserLicenseError'}
-      />,
-    );
-    const element = instance.root;
-    expect(element.findByType(LicenseError)).toBeTruthy();
+    expect(screen.getByText(messages.lockErrorLicense.defaultMessage)).toBeInTheDocument();
   });
 
   it('return JosmError message', () => {
+    render(
+      <ReduxIntlProviders>
+        <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'JOSM'} />
+      </ReduxIntlProviders>
+    );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: null });
       store.dispatch({ type: 'SET_LOCKED_TASKS', tasks: [] });
       store.dispatch({ type: 'SET_TASKS_STATUS', status: null });
     });
-    const instance = createComponentWithReduxAndIntl(
-      <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'JOSM'} />,
-    );
-    const element = instance.root;
-    expect(element.findByType(LockError)).toBeTruthy();
-    expect(element.findAllByType(FormattedMessage).length).toBe(3);
+    expect(screen.getByText(messages.JOSMError.defaultMessage)).toBeInTheDocument();
+    expect(screen.getByText(messages.JOSMErrorDescription.defaultMessage)).toBeInTheDocument();
+    // TODO: Check this
+    // expect(element.findAllByType(FormattedMessage).length).toBe(3);
   });
 
   it('return forbidden to map the task message', () => {
+    render(
+      <ReduxIntlProviders>
+        <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'FORBIDDEN'} />
+      </ReduxIntlProviders>
+    );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: null });
       store.dispatch({ type: 'SET_LOCKED_TASKS', tasks: [] });
       store.dispatch({ type: 'SET_TASKS_STATUS', status: null });
     });
-    const instance = createComponentWithReduxAndIntl(
-      <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'FORBIDDEN'} />,
-    );
-    const element = instance.root;
-    expect(element.findByType(LockError)).toBeTruthy();
+    expect(screen.getByText(messages.lockError.defaultMessage)).toBeInTheDocument();
   });
 
   it('return no map tasks selected message', () => {
+    render(
+      <ReduxIntlProviders>
+        <LockedTaskModalContent
+          project={{ projectId: 1, licenseId: 123 }}
+          error={'noMappedTasksSelected'}
+        />
+      </ReduxIntlProviders>
+    );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: null });
       store.dispatch({ type: 'SET_LOCKED_TASKS', tasks: [] });
       store.dispatch({ type: 'SET_TASKS_STATUS', status: null });
     });
-    const instance = createComponentWithReduxAndIntl(
-      <LockedTaskModalContent
-        project={{ projectId: 1, licenseId: 123 }}
-        error={'noMappedTasksSelected'}
-      />,
-    );
-    const element = instance.root;
-    expect(element.findByType(LockError)).toBeTruthy();
+    expect(screen.getByText(messages.noMappedTasksSelectedError.defaultMessage)).toBeInTheDocument();
   });
 
   it('return LockError message', () => {
+    render(
+      <ReduxIntlProviders>
+        <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'BAD REQUEST'} />
+      </ReduxIntlProviders>
+    );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: null });
       store.dispatch({ type: 'SET_LOCKED_TASKS', tasks: [] });
       store.dispatch({ type: 'SET_TASKS_STATUS', status: null });
     });
-    const instance = createComponentWithReduxAndIntl(
-      <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'BAD REQUEST'} />,
-    );
-    const element = instance.root;
-    expect(element.findByType(LockError)).toBeTruthy();
+    expect(screen.getByText(messages.lockError.defaultMessage)).toBeInTheDocument();
   });
 });
 

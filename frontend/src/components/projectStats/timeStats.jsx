@@ -62,7 +62,7 @@ const StatsCards = ({ stats }) => {
 export const TimeStats = ({ id }) => {
   const { data: stats, status } = useProjectStatisticsQuery(id);
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return <ReactPlaceholder showLoadingAnimation={true} rows={26} ready={false} className="pr3" />;
   }
   if (status === 'error') {

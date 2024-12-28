@@ -132,7 +132,7 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
     if (selfProfile && authDetails) {
       setUser(authDetails);
     }
-  }, [selfProfile, authDetails, authDetails.username]);
+  }, [selfProfile, authDetails, authDetails?.username]);
 
   useEffect(() => {
     if (userDetails && userDetails?.id) {
@@ -170,7 +170,7 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
           </div>
         </div>
       </div>
-      {user.username === authDetails.username && <MyContributionsNav username={user.username} />}
+      {user.username === authDetails?.username && <MyContributionsNav username={user.username} />}
     </>
   );
 };

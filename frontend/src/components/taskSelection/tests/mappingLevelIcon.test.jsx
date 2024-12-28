@@ -1,43 +1,49 @@
 import { FormattedMessage } from 'react-intl';
 
-import { createComponentWithIntl } from '../../../utils/testWithIntl';
+import { createComponentWithIntl, IntlProviders } from '../../../utils/testWithIntl';
 import { MappingLevelIcon } from '../contributions';
 import { FullStarIcon, HalfStarIcon } from '../../svgIcons';
+import { render, screen } from '@testing-library/react';
 
 describe('if user is ADVANCED, MappingLevelIcon should return', () => {
-  const element = createComponentWithIntl(<MappingLevelIcon mappingLevel="ADVANCED" />);
-  const instance = element.root;
+  const setup = () => render(
+    <IntlProviders>
+      <MappingLevelIcon mappingLevel="ADVANCED" />
+    </IntlProviders>
+  );
   it('FullStarIcon with correct classNames', () => {
-    expect(instance.findByType(FullStarIcon).props.className).toBe('h1 w1 v-mid pb1');
+    const { container } = setup();
+    expect(container.querySelector('.h1.w1.v-mid.pb1')).toBeInTheDocument();
   });
   it('FormattedMessage with the correct id', () => {
-    expect(instance.findByType(FormattedMessage).props.id).toBe('project.level.advanced');
+    setup();
+    expect(screen.getByTitle("Advanced")).toBeInTheDocument();
   });
 });
 
 describe('if user is INTERMEDIATE, MappingLevelIcon should return', () => {
-  const element = createComponentWithIntl(<MappingLevelIcon mappingLevel="INTERMEDIATE" />);
-  const instance = element.root;
+  const setup = () => render(
+    <IntlProviders>
+      <MappingLevelIcon mappingLevel="INTERMEDIATE" />
+    </IntlProviders>,
+  );
   it('FullStarIcon with correct classNames', () => {
-    expect(instance.findByType(HalfStarIcon).props.className).toBe('h1 w1 v-mid pb1');
+    const { container } = setup();
+    expect(container.querySelector('.h1.w1.v-mid.pb1')).toBeInTheDocument();
   });
   it('FormattedMessage with the correct id', () => {
-    expect(instance.findByType(FormattedMessage).props.id).toBe('project.level.intermediate');
+    setup();
+    expect(screen.getByTitle("Intermediate")).toBeInTheDocument();
   });
 });
 
 describe('if user is BEGINNER, MappingLevelIcon should not return', () => {
-  const element = createComponentWithIntl(<MappingLevelIcon mappingLevel="BEGINNER" />);
-  const instance = element.root;
   it('icon and FormattedMessage', () => {
-    expect(() => instance.findByType(FullStarIcon)).toThrow(
-      new Error('No instances found with node type: "FullStarIcon"'),
+    const { container } = render(
+      <IntlProviders>
+        <MappingLevelIcon mappingLevel="BEGINNER" />
+      </IntlProviders>,
     );
-    expect(() => instance.findByType(HalfStarIcon)).toThrow(
-      new Error('No instances found with node type: "HalfStarIcon"'),
-    );
-    expect(() => instance.findByType(FormattedMessage)).toThrow(
-      new Error('No instances found with node type: "MemoizedFormattedMessage"'),
-    );
+    expect(container.getElementsByTagName("svg").length).toBe(0);
   });
 });

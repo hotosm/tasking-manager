@@ -11,7 +11,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import './assets/styles/index.scss';
 
 import { getUserDetails } from './store/actions/auth';
-import { store } from './store';
+import { RootStore, store } from './store';
 import { ORG_NAME, MATOMO_ID } from './config';
 import { Preloader } from './components/preloader';
 import { FallbackComponent } from './views/fallback';
@@ -40,8 +40,8 @@ const queryClient = new QueryClient({
 const App = () => {
   useMeta({ property: 'og:url', content: import.meta.env.VITE_BASE_URL });
   useMeta({ name: 'author', content: ORG_NAME });
-  const isLoading = useSelector((state) => state.loader.isLoading);
-  const locale = useSelector((state) => state.preferences.locale);
+  const isLoading = useSelector((state: RootStore) => state.loader.isLoading);
+  const locale = useSelector((state: RootStore) => state.preferences.locale);
 
   useEffect(() => {
     // fetch user details endpoint when the user is returning to a logged in session

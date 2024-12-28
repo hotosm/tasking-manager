@@ -11,7 +11,6 @@ describe('ProjectsActionFilter', () => {
         <ProjectsActionFilter fullProjectsQuery={{ action: undefined }} setQuery={myMock} />
       </ReduxIntlProviders>,
     );
-    screen.debug();
     expect(screen.queryByText('Any project')).toBeInTheDocument();
     expect(screen.queryByText('Projects to map')).not.toBeInTheDocument();
     expect(screen.queryByText('Projects to validate')).not.toBeInTheDocument();

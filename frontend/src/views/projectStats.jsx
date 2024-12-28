@@ -49,7 +49,7 @@ export function ProjectStats() {
           <ProjectHeader project={project} showEditLink={true} />
         </div>
         <div className="w-100 fl">
-          {tasksStatus === 'loading' && (
+          {tasksStatus === 'pending' && (
             <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={false} />
           )}
           {tasksStatus === 'error' && (
@@ -65,7 +65,7 @@ export function ProjectStats() {
         </div>
         {defaultComment?.[0] && (
           <div className="w-100 fl">
-            {editsStatus === 'loading' && (
+            {editsStatus === 'pending' && (
               <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={false} />
             )}
             {editsStatus === 'error' && (
@@ -86,7 +86,7 @@ export function ProjectStats() {
               <FormattedMessage {...messages.contributionsStatsError} />
             </Alert>
           )}
-          {contributionsStatus === 'loading' && (
+          {contributionsStatus === 'pending' && (
             <ReactPlaceholder showLoadingAnimation={true} rows={7} delay={500} ready={false} />
           )}
           {contributionsStatus === 'success' && (
@@ -101,7 +101,7 @@ export function ProjectStats() {
           </h3>
           <div className="bg-white pv3 ph2 fl w-100 shadow-4">
             <div className="w-100 w-50-l fl">
-              {timelineDataStatus === 'loading' && (
+              {timelineDataStatus === 'pending' && (
                 <ReactPlaceholder
                   showLoadingAnimation={true}
                   rows={3}
@@ -126,7 +126,7 @@ export function ProjectStats() {
                   <FormattedMessage {...messages.tasksStatsError} />
                 </Alert>
               )}
-              {tasksStatus === 'loading' && (
+              {tasksStatus === 'pending' && (
                 <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={false} />
               )}
               {tasksStatus === 'success' && <CompletionStats tasksByStatus={tasksByStatus} />}

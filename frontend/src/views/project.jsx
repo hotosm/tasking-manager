@@ -285,7 +285,7 @@ export const ProjectDetailPage = () => {
     window.scrollTo(0, 0);
   }, [id]);
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return (
       <ReactPlaceholder
         showLoadingAnimation={true}

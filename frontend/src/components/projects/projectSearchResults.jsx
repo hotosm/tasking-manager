@@ -31,7 +31,7 @@ export const ProjectSearchResults = ({
   return (
     <div className={`${className}`}>
       <p className="blue-light f6 ttl mv3">
-        {status === 'loading' && <span>&nbsp;</span>}
+        {status === 'pending' && <span>&nbsp;</span>}
         {status === 'success' && (
           <FormattedMessage
             {...messages.paginationCount}

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-
 import messages from './messages';
 import { SearchNav, UsersTable } from '../components/user/list';
 import { useSetTitleTag } from '../hooks/UseMetaTags';

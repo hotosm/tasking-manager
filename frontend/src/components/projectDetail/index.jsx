@@ -301,7 +301,7 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.contributors} />
       </h3>
       <div className="cf db mb3 ph4">
-        {contributorsStatus === 'loading' && (
+        {contributorsStatus === 'pending' && (
           <ReactPlaceholder
             showLoadingAnimation={true}
             type={'media'}
@@ -354,7 +354,7 @@ export const ProjectDetail = (props) => {
       </h3>
       <div className="mb5 ph4 w-100 w-60-l">
         <div className="pt2 pb4">
-          {timelineDataStatus === 'loading' && (
+          {timelineDataStatus === 'pending' && (
             <ReactPlaceholder showLoadingAnimation rows={3} ready={false} />
           )}
           {timelineDataStatus === 'error' && (

@@ -48,7 +48,7 @@ export function TaskAction({ projectId, action }) {
     }
   }, [action, navigate, projectId, token]);
 
-  if (lockedTasksStatus === 'loading') {
+  if (lockedTasksStatus === 'pending') {
     return (
       <ReactPlaceholder showLoadingAnimation={true} type="text" rows={4} delay={10}>
         Loading...

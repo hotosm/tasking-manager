@@ -1,18 +1,15 @@
-
 import { FormattedMessage } from 'react-intl';
-import { MemoryRouter } from 'react-router-dom';
 import { screen } from '@testing-library/react';
-
 import {
-  createComponentWithIntl,
   createComponentWithMemoryRouter,
   IntlProviders,
+  ReduxIntlProviders,
   renderWithRouter,
 } from '../../../utils/testWithIntl';
 import { UserPermissionErrorContent } from '../permissionErrorModal';
-import { CloseIcon } from '../../svgIcons';
 import { Button } from '../../button';
 import messages from '../messages';
+import userEvent from '@testing-library/user-event';
 
 describe('test if UserPermissionErrorContent', () => {
   const project = {
@@ -23,46 +20,41 @@ describe('test if UserPermissionErrorContent', () => {
   };
   let value = false;
   const closeTestFn = (v) => (value = v);
-  const element = createComponentWithIntl(
-    <MemoryRouter>
+  const setup = () => renderWithRouter(
+    <ReduxIntlProviders>
       <UserPermissionErrorContent
         project={project}
         userLevel="BEGINNER"
         close={() => closeTestFn(true)}
       />
-    </MemoryRouter>,
+    </ReduxIntlProviders>,
   );
-  const testInstance = element.root;
+  const user = userEvent.setup();
   it('has a span with a CloseIcon as children', () => {
-    expect(
-      testInstance.findByProps({ className: 'fr relative blue-light pt1 link pointer' }).type,
-    ).toBe('span');
-    expect(
-      testInstance.findByProps({ className: 'fr relative blue-light pt1 link pointer' }).props
-        .children.type,
-    ).toStrictEqual(CloseIcon);
+    const { container } = setup();
+    expect(container.querySelector('span.fr.relative.blue-light.pt1.link.pointer')).toBeInTheDocument();
+    expect(container.querySelector('span.fr.relative.blue-light.pt1.link.pointer').children[0].tagName).toBe("svg");
   });
-  it('when clicking on the CloseIcon parent element, executes the closeTestFn', () => {
+  it('when clicking on the CloseIcon parent element, executes the closeTestFn', async () => {
+    const { container } = setup();
     expect(value).toBeFalsy();
-    testInstance
-      .findByProps({ className: 'fr relative blue-light pt1 link pointer' })
-      .props.onClick();
+    screen.debug();
+    await user.click(
+      container.querySelector('span.fr.relative.blue-light.pt1.link.pointer'),
+    );
     expect(value).toBeTruthy();
   });
   it('has a red Button', () => {
-    expect(testInstance.findByType(Button).props.className).toBe('white bg-red');
+    const { container } = setup();
+    expect(container.querySelector('button.white.bg-red')).toBeInTheDocument();
   });
   it('has a Button with a correct FormattedMessage', () => {
-    expect(testInstance.findByType(Button).props.children.type).toBe(FormattedMessage);
-    expect(testInstance.findByType(Button).props.children.props.id).toBe(
-      'project.selectTask.footer.button.selectAnotherProject',
-    );
+    setup();
+    expect(screen.getByText(messages.selectAnotherProject.defaultMessage)).toBeInTheDocument();
   });
   it('has a h3 with a correct FormattedMessage', () => {
-    expect(testInstance.findByType('h3').props.children.type).toBe(FormattedMessage);
-    expect(testInstance.findByType('h3').props.children.props.id).toBe(
-      'project.permissions.error.title',
-    );
+    setup();
+    expect(screen.getByText(messages.permissionErrorTitle.defaultMessage)).toBeInTheDocument();
   });
 });
 

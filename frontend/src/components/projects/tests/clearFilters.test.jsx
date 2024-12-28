@@ -29,7 +29,6 @@ describe('ClearFilters basic properties', () => {
         <ClearFilters url="/explore" className="dib mt2" />
       </IntlProviders>,
     );
-    screen.debug();
     expect((await screen.findByRole('link')).className).toBe('red link ph3 pv2 f6 dib mt2');
   });
 });
