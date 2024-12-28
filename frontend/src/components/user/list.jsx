@@ -147,7 +147,6 @@ export const UsersTable = ({ filters, setFilters }) => {
   const token = useSelector((state) => state.auth.token);
   const [response, setResponse] = useState(null);
   const userDetails = useSelector((state) => state.auth.userDetails);
-  const [status, setStatus] = useState({ status: null, message: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -183,7 +182,7 @@ export const UsersTable = ({ filters, setFilters }) => {
       .join('&');
 
     fetchUsers(urlFilters);
-  }, [filters, token, status]);
+  }, [filters, token]);
 
   return (
     <div className="w-100">
@@ -209,7 +208,7 @@ export const UsersTable = ({ filters, setFilters }) => {
                 key={user.id}
                 token={token}
                 username={userDetails?.username}
-                setStatus={setStatus}
+                setLoading={setLoading}
               />
             ))}
           </ul>
@@ -231,7 +230,7 @@ export const UsersTable = ({ filters, setFilters }) => {
   );
 };
 
-export const UserEditMenu = ({ user, token, close, setStatus }) => {
+export const UserEditMenu = ({ user, token, close, setLoading }) => {
   const roles = ['MAPPER', 'ADMIN', 'READ_ONLY'];
   const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
   const iconClass = 'h1 w1 red';
@@ -242,10 +241,11 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
       mapperLevel: `users/${user.username}/actions/set-level/${attributeValue}/`,
     };
 
+    setLoading(true);
+
     fetchLocalJSONAPI(endpoint[attribute], token, 'PATCH')
       .then(() => {
         close();
-        setStatus({ success: true });
         toast.success(
           <FormattedMessage
             {...messages.userAttributeUpdationSuccess}
@@ -313,7 +313,7 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
   );
 };
 
-export function UserListCard({ user, token, username, setStatus }) {
+export function UserListCard({ user, token, username, setLoading }) {
   const [isHovered, setHovered] = useState(false);
 
   return (
@@ -360,7 +360,7 @@ export function UserListCard({ user, token, username, setStatus }) {
             className="user-popup"
           >
             {(close) => (
-              <UserEditMenu user={user} token={token} close={close} setStatus={setStatus} />
+              <UserEditMenu user={user} token={token} close={close} setLoading={setLoading} />
             )}
           </Popup>
         </div>

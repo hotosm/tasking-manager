@@ -159,7 +159,7 @@ describe('Miscellaneous modals and prompts', () => {
       </QueryClientProviders>,
     );
 
-    expect(screen.getByText(instruction)).toBeInTheDocument();
+    expect(await screen.findByText(instruction)).toBeInTheDocument();
     await user.click(
       screen.getByRole('button', {
         name: messages.taskExtraInfo.defaultMessage,

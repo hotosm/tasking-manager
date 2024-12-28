@@ -52,7 +52,7 @@ describe('User Edit Menu', () => {
     return {
       ...render(
         <IntlProviders>
-          <UserEditMenu user={userDetails} close={vi.fn()} setStatus={vi.fn()} />
+          <UserEditMenu user={userDetails} close={vi.fn()} setLoading={vi.fn()} />
         </IntlProviders>,
       ),
       user,
