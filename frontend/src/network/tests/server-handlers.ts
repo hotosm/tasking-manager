@@ -394,6 +394,8 @@ const faultyHandlers = [
     }, {
       status: 403,
     });
+  }, {
+    once: true,
   }),
   http.get(API_URL + 'projects/:id/', async () => {
     return Response.json({
@@ -401,6 +403,8 @@ const faultyHandlers = [
     }, {
       status: 403,
     });
+  }, {
+    once: true,
   }),
   http.get('http://127.0.0.1:8111/version', failedToConnectError),
   http.post(

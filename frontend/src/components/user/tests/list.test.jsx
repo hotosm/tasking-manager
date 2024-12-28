@@ -8,11 +8,6 @@ import { IntlProviders, ReduxIntlProviders, renderWithRouter } from '../../../ut
 import { store } from '../../../store';
 import { setupFaultyHandlers } from '../../../network/tests/server';
 
-vi.mock('react-hot-toast', () => ({
-  success: vi.fn(),
-  error: vi.fn(),
-}));
-
 describe('User list card', () => {
   it('renders user card', async () => {
     const { container, getByText, getAllByRole } = renderWithRouter(

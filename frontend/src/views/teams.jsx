@@ -78,6 +78,8 @@ export function ListTeams({ managementView = false }) {
     ...restQuery,
   });
 
+  console.log("teamsStatus", teamsStatus);
+
   useEffect(() => {
     setQuery({ ...query, page: 1, showAll: userTeamsOnly === false ? true : undefined });
     //eslint-disable-next-line

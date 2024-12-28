@@ -11,3 +11,7 @@ beforeEach(() => {
     disconnect: vi.fn(),
   }));
 });
+
+vi.mock("react-hot-toast", {
+  spy: true
+})

@@ -63,7 +63,7 @@ export function TeamsManagement({
         />
       </div>
       <div className={`${teamsStatus !== 'error' ? 'cards-container' : ''} mt2`}>
-        {teamsStatus === 'pending' && (
+        {(teamsStatus === 'loading' || teamsStatus === 'pending') && (
           <ReactPlaceholder
             showLoadingAnimation={true}
             customPlaceholder={nCardPlaceholders(4)}

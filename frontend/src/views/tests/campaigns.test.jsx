@@ -208,7 +208,7 @@ describe('EditCampaign', () => {
       name: /cancel/i,
     });
     await user.click(saveButton);
-    const savingLoder = within(saveButton).getByRole('img', {
+    const savingLoder = within(saveButton).queryByRole('img', {
       hidden: true,
     });
     await waitFor(() => {

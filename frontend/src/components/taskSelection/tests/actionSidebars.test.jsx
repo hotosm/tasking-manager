@@ -24,11 +24,11 @@ import tasksGeojson from '../../../utils/tests/snippets/tasksGeometry';
 import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/userStats';
 // This is a late import in a React.lazy call; it takes awhile for commentInput to load
 import '../../comments/commentInput';
+import toast from 'react-hot-toast';
 
-vi.mock('react-hot-toast', async (importOriginal) => ({
-  ...(await importOriginal()),
-  error: vi.fn(),
-}));
+vi.mock("react-hot-toast", {
+  spy: true
+});
 
 describe('Appearance of unsaved map changes to be dealt with while mapping', () => {
   test('when splitting a task', async () => {
@@ -109,7 +109,6 @@ describe('Miscellaneous modals and prompts', () => {
         name: /split task/i,
       }),
     );
-    const toast = await import("react-hot-toast");
     await waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1));
   });
 
