@@ -1,6 +1,4 @@
-
 import { screen } from '@testing-library/react';
-
 import { Footer } from '..';
 import { ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import {

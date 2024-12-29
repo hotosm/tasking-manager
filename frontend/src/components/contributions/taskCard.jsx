@@ -22,7 +22,7 @@ export function TaskCard({
   lastUpdated,
   lastUpdatedBy,
   numberOfComments,
-}: Object) {
+}) {
   const [isHovered, setHovered] = useState(false);
   const taskLink = `/projects/${projectId}/tasks?search=${taskId}`;
   const intl = useIntl();

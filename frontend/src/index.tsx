@@ -6,11 +6,12 @@ import { load } from 'webfontloader';
 import { init, BrowserTracing, Replay } from '@sentry/react';
 import 'react-tooltip/dist/react-tooltip.css'; // Needed by for { Tooltip } from 'react-tooltip' to work properly
 
-import App from './App.jsx';
+import App from './App';
 import { store, persistor } from './store';
 import { ConnectedIntl } from './utils/internationalization';
 import { register, unregister, onServiceWorkerUpdate } from './serviceWorkerRegistration';
 import { ENABLE_SERVICEWORKER, SENTRY_FRONTEND_DSN, ENVIRONMENT } from './config';
+import { StrictMode } from "react";
 
 if (SENTRY_FRONTEND_DSN) {
   init({
@@ -40,16 +41,16 @@ load({
   },
 });
 
-const container = document.getElementById('root');
-const root = createRoot(container);
-root.render(
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <ConnectedIntl>
-        <App />
-      </ConnectedIntl>
-    </PersistGate>
-  </Provider>,
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ConnectedIntl>
+          <App />
+        </ConnectedIntl>
+      </PersistGate>
+    </Provider>
+  </StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change

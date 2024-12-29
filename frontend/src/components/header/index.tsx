@@ -82,8 +82,6 @@ export const Header = () => {
     }
   };
 
-  console.log("USERDETAILS", userDetails);
-
   const checkUserEmail = () =>
     userDetails?.hasOwnProperty('emailAddress') && !userDetails?.emailAddress ? (
       <Popup modal open closeOnEscape={false} closeOnDocumentClick={false}>
@@ -297,7 +295,7 @@ export const ActionItems = ({
     </>
   );
 
-export const PopupItems = (props) => {
+export const PopupItems = (props: any) => {
   const dispatch = useDispatch();
 
   return (

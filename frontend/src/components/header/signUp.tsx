@@ -7,6 +7,7 @@ import { ORG_PRIVACY_POLICY_URL, OSM_REGISTER_URL } from '../../config';
 import { setItem } from '../../utils/safe_storage';
 import { Button } from '../button';
 import { useState } from 'react';
+import { createLoginWindow } from '../../utils/login';
 
 export const LoginModal = ({ step, login }: {
   step: { number: number; errMessage: React.ReactNode };
@@ -147,9 +148,9 @@ const SignupForm = ({ data, setData, step, setStep }: {
       <p className="blue-dark lh-copy" >
         <FormattedMessage {...messages.signUpQuestion} />
       </p>
-      <div >
+      <div>
         <div>
-          <p className="b f6" >
+          <p className="b f6">
             <FormattedMessage {...messages.signupLabelName} />
           </p>
           <FormattedMessage {...messages.namePlaceHolder}>
@@ -170,7 +171,7 @@ const SignupForm = ({ data, setData, step, setStep }: {
           </FormattedMessage>
         </div>
       </div>
-      <p className="b f6" >
+      <p className="b f6">
         <FormattedMessage {...messages.signupLabelEmail} />
       </p>
       <FormattedMessage {...messages.emailPlaceholder}>
@@ -195,13 +196,12 @@ const SignupForm = ({ data, setData, step, setStep }: {
       <div>
         {
           ORG_PRIVACY_POLICY_URL && (
-            <p className="mb0 f6" >
+            <p className="mb0 f6">
               <a
                 className="link pointer red fw5"
                 target="_blank"
                 rel="noopener noreferrer"
-                href={`${ORG_PRIVACY_POLICY_URL}`
-                }
+                href={`${ORG_PRIVACY_POLICY_URL}`}
               >
                 <FormattedMessage {...messages.privacyPolicy} />
               </a>
@@ -221,9 +221,8 @@ const SignupForm = ({ data, setData, step, setStep }: {
   );
 };
 
-export const SignUp = ({ closeModal, createLoginWindow }: {
+export const SignUp = ({ closeModal }: {
   closeModal: () => void,
-  createLoginWindow: (redirect: string) => void,
 }) => {
   const [data, setData] = useState({ name: '', email: '' });
   const [step, setStep] = useState<{

@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 
-
 import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { LicenseCard, LicensesManagement, LicenseForm } from '../index';
 import userEvent from '@testing-library/user-event';
