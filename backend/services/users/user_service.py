@@ -3,9 +3,7 @@ import datetime
 from cachetools import TTLCache, cached
 from databases import Database
 from loguru import logger
-from sqlalchemy import Time, and_, cast, desc, distinct, func, insert, or_, select
-from sqlalchemy.sql import outerjoin
-
+from sqlalchemy import and_, desc, distinct, func, insert, select
 from backend.config import Settings
 from backend.exceptions import NotFound
 from backend.models.dtos.interests_dto import InterestDTO, InterestsListDTO
@@ -28,7 +26,7 @@ from backend.models.postgis.interests import Interest, project_interests
 from backend.models.postgis.message import MessageType
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
-from backend.models.postgis.task import Task, TaskAction, TaskHistory
+from backend.models.postgis.task import Task, TaskHistory
 from backend.models.postgis.user import MappingLevel, User, UserEmail, UserRole
 from backend.models.postgis.utils import timestamp
 from backend.services.messaging.smtp_service import SMTPService
@@ -69,26 +67,20 @@ class UserService:
 
     @staticmethod
     async def get_contributions_by_day(user_id: int, db: Database):
-        # Validate that user exists.
-        query = (
-            select(
-                func.DATE(TaskHistory.action_date).label("day"),
-                func.count(TaskHistory.action).label("cnt"),
-            )
-            .where(TaskHistory.user_id == user_id)
-            .where(TaskHistory.action == TaskAction.STATE_CHANGE.name)
-            .where(
-                func.DATE(TaskHistory.action_date)
-                > datetime.date.today() - datetime.timedelta(days=365)
-            )
-            .group_by("day")
-            .order_by(desc("day"))
-        )
+        # Define the query using raw SQL
+        query = """
+            SELECT
+                DATE(action_date) AS day,
+                COUNT(action) AS cnt
+            FROM task_history
+            WHERE user_id = :user_id
+            AND action = 'STATE_CHANGE'
+            AND DATE(action_date) > CURRENT_DATE - INTERVAL '1 year'
+            GROUP BY day
+            ORDER BY day DESC;
+        """
+        results = await db.fetch_all(query=query, values={"user_id": user_id})
 
-        # Execute the query and fetch all results
-        results = await db.fetch_all(query)
-
-        # Transform the results into a list of `UserContributionDTO` instances
         contributions = [
             UserContributionDTO(date=record["day"], count=record["cnt"])
             for record in results
@@ -399,97 +391,86 @@ class UserService:
         user_task_dtos.pagination = Pagination.from_total_count(
             page=int(page), per_page=int(page_size), total=len(all_tasks)
         )
-
         return user_task_dtos
 
     @staticmethod
     async def get_detailed_stats(username: str, db: Database) -> UserStatsDTO:
         stats_dto = UserStatsDTO()
-
-        # Fetch user ID based on username
-        user = await UserService.get_user_by_username(username, db)
-
-        # Define actions
-        actions = [
-            TaskStatus.VALIDATED.name,
-            TaskStatus.INVALIDATED.name,
-            TaskStatus.MAPPED.name,
+        user_query = """
+            SELECT id FROM users WHERE username = :username
+        """
+        user = await db.fetch_one(query=user_query, values={"username": username})
+        if not user:
+            raise ValueError("User not found")
+        user_id = user["id"]
+        stats_query = """
+            WITH user_actions AS (
+                SELECT
+                    action_text,
+                    COUNT(DISTINCT (project_id, task_id)) AS action_count
+                FROM task_history
+                WHERE user_id = :user_id
+                AND action_text IN ('VALIDATED', 'INVALIDATED', 'MAPPED')
+                GROUP BY action_text
+            ),
+            others_actions AS (
+                SELECT
+                    action_text,
+                    COUNT(DISTINCT (project_id, task_id)) AS action_count
+                FROM task_history th
+                WHERE task_id IN (
+                    SELECT task_id
+                    FROM task_history
+                    WHERE user_id = :user_id
+                )
+                AND user_id != :user_id
+                AND action_text IN ('VALIDATED', 'INVALIDATED')
+                GROUP BY action_text
+            )
+            SELECT
+                COALESCE(SUM(CASE WHEN u.action_text = 'VALIDATED' THEN u.action_count ELSE 0 END), 0) AS tasks_validated,
+                COALESCE(SUM(CASE WHEN u.action_text = 'INVALIDATED' THEN u.action_count ELSE 0 END), 0) AS tasks_invalidated,
+                COALESCE(SUM(CASE WHEN u.action_text = 'MAPPED' THEN u.action_count ELSE 0 END), 0) AS tasks_mapped,
+                COALESCE(SUM(CASE WHEN o.action_text = 'VALIDATED' THEN o.action_count ELSE 0 END), 0) AS tasks_validated_by_others,
+                COALESCE(SUM(CASE WHEN o.action_text = 'INVALIDATED' THEN o.action_count ELSE 0 END), 0) AS tasks_invalidated_by_others
+            FROM user_actions u
+            LEFT JOIN others_actions o
+                ON u.action_text = o.action_text;
+        """
+        stats_result = await db.fetch_one(
+            query=stats_query, values={"user_id": user_id}
+        )
+        stats_dto.tasks_mapped = stats_result["tasks_mapped"]
+        stats_dto.tasks_validated = stats_result["tasks_validated"]
+        stats_dto.tasks_invalidated = stats_result["tasks_invalidated"]
+        stats_dto.tasks_validated_by_others = stats_result["tasks_validated_by_others"]
+        stats_dto.tasks_invalidated_by_others = stats_result[
+            "tasks_invalidated_by_others"
         ]
 
-        # Get filtered actions
-        filtered_actions_query = select(
-            TaskHistory.user_id,
-            TaskHistory.project_id,
-            TaskHistory.task_id,
-            TaskHistory.action_text,
-        ).where(TaskHistory.action_text.in_(actions))
-
-        filtered_actions = await db.fetch_all(filtered_actions_query)
-
-        # Get user tasks
-        user_tasks_query = (
-            select(TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text)
-            .where(
-                TaskHistory.user_id == user["id"],
-                TaskHistory.action_text.in_(
-                    [row["action_text"] for row in filtered_actions]
-                ),
-            )
-            .distinct()
+        projects_mapped_query = """
+            SELECT COUNT(DISTINCT project_id) AS projects_count
+            FROM task_history
+            WHERE user_id = :user_id AND action_text = 'MAPPED';
+        """
+        projects_mapped = await db.fetch_one(
+            query=projects_mapped_query, values={"user_id": user_id}
         )
+        stats_dto.projects_mapped = projects_mapped["projects_count"]
 
-        user_tasks = await db.fetch_all(user_tasks_query)
-
-        # Get others' tasks
-        others_tasks_query = (
-            select(TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text)
-            .where(
-                TaskHistory.user_id != user["id"],
-                TaskHistory.task_id.in_([row["task_id"] for row in user_tasks]),
-                TaskHistory.project_id.in_([row["project_id"] for row in user_tasks]),
-                TaskHistory.action_text != TaskStatus.MAPPED.name,
-            )
-            .distinct()
-        )
-
-        others_tasks = await db.fetch_all(others_tasks_query)
-
-        # Combine results for user stats
-        user_stats = {action: 0 for action in actions}
-
-        for task in user_tasks:
-            user_stats[task["action_text"]] += 1
-
-        # Combine results for others stats
-        others_stats = {f"{action}_BY_OTHERS": 0 for action in actions}
-
-        for task in others_tasks:
-            try:
-                others_stats[task["action_text"] + "_BY_OTHERS"] += 1
-            except KeyError:
-                pass
-
-        # Combine user stats and others stats
-        results = {**user_stats, **others_stats}
-
-        projects_mapped = await UserService.get_projects_mapped(user["id"], db)
-
-        stats_dto.tasks_mapped = results.get("MAPPED", 0)
-        stats_dto.tasks_validated = results.get("VALIDATED", 0)
-        stats_dto.tasks_invalidated = results.get("INVALIDATED", 0)
-        stats_dto.tasks_validated_by_others = results.get("VALIDATED_BY_OTHERS", 0)
-        stats_dto.tasks_invalidated_by_others = results.get("INVALIDATED_BY_OTHERS", 0)
-        stats_dto.projects_mapped = len(projects_mapped)
         stats_dto.countries_contributed = await UserService.get_countries_contributed(
-            user["id"], db
+            user_id, db
         )
+
         stats_dto.contributions_by_day = await UserService.get_contributions_by_day(
-            user["id"], db
+            user_id, db
         )
+
         stats_dto.total_time_spent = 0
         stats_dto.time_spent_mapping = 0
         stats_dto.time_spent_validating = 0
 
+        # Total validation time
         total_validation_time_query = """
             WITH max_action_text_per_minute AS (
                 SELECT
@@ -504,39 +485,33 @@ class UserService:
                 SUM(EXTRACT(EPOCH FROM (tm || ' seconds')::interval)) AS total_time
             FROM max_action_text_per_minute
         """
-
-        # Execute the query
         result = await db.fetch_one(
             total_validation_time_query, values={"user_id": user.id}
         )
-
         if result and result["total_time"]:
             total_validation_time = result["total_time"]
             stats_dto.time_spent_validating = int(total_validation_time)
             stats_dto.total_time_spent += stats_dto.time_spent_validating
 
         # Total mapping time
-        total_mapping_time_query = select(
-            func.sum(
-                cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
-            )
-        ).where(
-            or_(
-                TaskHistory.action == TaskAction.LOCKED_FOR_MAPPING.name,
-                TaskHistory.action == TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name,
-            ),
-            TaskHistory.user_id == user["id"],
+        total_mapping_time_query = """
+            SELECT
+                SUM(EXTRACT(EPOCH FROM (CAST(action_text AS INTERVAL) || ' seconds')::interval)) AS total_mapping_time_seconds
+            FROM task_history
+            WHERE user_id = :user_id
+            AND action IN ('LOCKED_FOR_MAPPING', 'AUTO_UNLOCKED_FOR_MAPPING')
+        """
+        result = await db.fetch_one(
+            total_mapping_time_query, values={"user_id": user.id}
         )
-
-        total_mapping_time = await db.fetch_one(total_mapping_time_query)
-        if total_mapping_time and total_mapping_time[0]:
-            stats_dto.time_spent_mapping = int(total_mapping_time[0].total_seconds())
+        if result and result["total_mapping_time_seconds"]:
+            total_mapping_time = result["total_mapping_time_seconds"]
+            stats_dto.time_spent_mapping = int(total_mapping_time)
             stats_dto.total_time_spent += stats_dto.time_spent_mapping
 
         stats_dto.contributions_interest = await UserService.get_interests_stats(
             user["id"], db
         )
-
         return stats_dto
 
     @staticmethod
@@ -622,67 +597,49 @@ class UserService:
 
     @staticmethod
     async def get_countries_contributed(user_id: int, db: Database):
-        # Define the base query
-        query = (
-            select(
-                func.unnest(Project.country).label("country"),
-                TaskHistory.action_text,
-                func.count(TaskHistory.action_text).label("count"),
+        query = """
+            WITH country_stats AS (
+                SELECT
+                    unnest(projects.country) AS country,
+                    task_history.action_text,
+                    COUNT(task_history.action_text) AS count
+                FROM task_history
+                LEFT JOIN projects ON task_history.project_id = projects.id
+                WHERE task_history.user_id = :user_id
+                AND task_history.action_text IN ('MAPPED', 'BADIMAGERY', 'VALIDATED')
+                GROUP BY country, task_history.action_text
+            ),
+            aggregated_stats AS (
+                SELECT
+                    country,
+                    SUM(CASE
+                        WHEN action_text IN ('MAPPED', 'BADIMAGERY') THEN count
+                        ELSE 0
+                    END) AS mapped,
+                    SUM(CASE
+                        WHEN action_text = 'VALIDATED' THEN count
+                        ELSE 0
+                    END) AS validated
+                FROM country_stats
+                GROUP BY country
             )
-            .select_from(
-                outerjoin(TaskHistory, Project, TaskHistory.project_id == Project.id)
-            )  # Use `outerjoin` function to join TaskHistory with Project
-            .where(TaskHistory.user_id == user_id)
-            .where(
-                TaskHistory.action_text.in_(
-                    [
-                        TaskStatus.MAPPED.name,
-                        TaskStatus.BADIMAGERY.name,
-                        TaskStatus.VALIDATED.name,
-                    ]
-                )
-            )
-            .group_by("country", TaskHistory.action_text)
+            SELECT
+                country AS name,
+                COALESCE(mapped, 0) AS mapped,
+                COALESCE(validated, 0) AS validated,
+                COALESCE(mapped, 0) + COALESCE(validated, 0) AS total
+            FROM aggregated_stats
+            WHERE country IS NOT NULL
+            ORDER BY total DESC;
+        """
+
+        results = await db.fetch_all(query=query, values={"user_id": user_id})
+        countries_contributed = [UserCountryContributed(**record) for record in results]
+
+        return UserCountriesContributed(
+            countries_contributed=countries_contributed,
+            total=len(countries_contributed),
         )
-
-        results = await db.fetch_all(query)
-        countries = list(set([q.country for q in results if q.country]))
-        result = []
-        for country in countries:
-            values = [q for q in results if q.country == country]
-
-            # Filter element to sum mapped values.
-            mapped = sum(
-                [
-                    v["count"]
-                    for v in values
-                    if v.action_text
-                    in [TaskStatus.MAPPED.name, TaskStatus.BADIMAGERY.name]
-                ]
-            )
-            validated = sum(
-                [
-                    v["count"]
-                    for v in values
-                    if v.action_text == TaskStatus.VALIDATED.name
-                ]
-            )
-            dto = UserCountryContributed(
-                **dict(
-                    name=country,
-                    mapped=mapped,
-                    validated=validated,
-                    total=mapped + validated,
-                )
-            )
-            result.append(dto)
-
-        # Order by total
-        result = sorted(result, reverse=True, key=lambda i: i.total)
-        countries_dto = UserCountriesContributed()
-        countries_dto.countries_contributed = result
-        countries_dto.total = len(result)
-        return countries_dto
 
     @staticmethod
     async def upsert_mapped_projects(user_id: int, project_id: int, db: Database):
