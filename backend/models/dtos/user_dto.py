@@ -103,12 +103,11 @@ class UserCountryContributed(BaseModel):
 class UserCountriesContributed(BaseModel):
     """DTO for countries a user has contributed"""
 
-    def __init__(self):
-        super().__init__()
-        self.countries_contributed = []
-
     countries_contributed: List[UserCountryContributed] = Field([], alias="countries")
     total: int = Field(None)
+
+    class Config:
+        populate_by_name = True
 
 
 class UserContributionDTO(BaseModel):
