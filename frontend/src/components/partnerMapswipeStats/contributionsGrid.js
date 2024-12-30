@@ -71,7 +71,7 @@ export const ContributionsGrid = ({ contributionsByDate = [] }) => {
 
   return (
     <div>
-      <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb4">
+      <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 mb4">
         <FormattedMessage {...messages.contributions} />
       </h3>
 
