@@ -59,7 +59,7 @@ async def get(
             description: Internal Server Error
     """
     stats_dto = await UserService.get_detailed_stats(username, db)
-    return stats_dto.model_dump(by_alias=True)
+    return stats_dto
 
 
 @router.get("/{user_id}/statistics/interests/")
