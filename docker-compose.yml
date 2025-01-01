@@ -10,9 +10,12 @@ networks:
 
 services:
   tm-db:
-    image: "postgis/postgis:${POSTGIS_TAG:-14-3.3}"
-    volumes:
-      - tm_db_data:/var/lib/postgresql/data/
+    # image: "postgis/postgis:${POSTGIS_TAG:-14-3.3}"
+    build:
+      context: ./postgres
+      dockerfile: "Dockerfile"
+    # volumes:
+      # - ./postgres_data_cron:/var/lib/postgresql/data/
     env_file:
       - tasking-manager.env
     restart: unless-stopped
@@ -33,17 +36,20 @@ services:
     depends_on:
       tm-db:
         condition: service_healthy
-      tm-migration:
-        condition: service_completed_successfully
+      # tm-migration:
+      #   condition: service_completed_successfully
     env_file:
       - tasking-manager.env
     restart: unless-stopped
-    healthcheck:
-      test: curl --fail http://localhost:5000 || exit 1
-      interval: 10s
-      retries: 5
-      start_period: 10s
-      timeout: 3s
+    volumes:
+      - .:/usr/src/app/
+      - ./migrations:/usr/src/app/migrations
+    # healthcheck:
+    #   test: curl --fail http://localhost:5000 || exit 1
+    #   interval: 10s
+    #   retries: 5
+    #   start_period: 10s
+    #   timeout: 3s
     deploy:
       replicas: ${API_REPLICAS:-1}
       resources:
@@ -91,5 +97,19 @@ services:
     command:
       - --entrypoints.web.address=:80
       - --providers.docker=true
+    networks:
+      - tm-net
+
+
+  tm-frontend:
+    image: ghcr.io/hotosm/tasking-manager/frontend:main
+    build:
+      context: .
+      dockerfile: "./scripts/docker/Dockerfile.frontend_development"
+    env_file:
+      - tasking-manager.env
+    labels:
+      - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
+      - traefik.http.services.frontend.loadbalancer.server.port=3000
     networks:
       - tm-net
