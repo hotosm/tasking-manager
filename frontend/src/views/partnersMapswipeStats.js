@@ -23,8 +23,6 @@ import messages from './messages';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 
 import './partnersMapswipeStats.scss';
-import 'react-placeholder/lib/reactPlaceholder.css';
-import 'react-datepicker/dist/react-datepicker.css';
 
 const PagePlaceholder = () => (
   <div className="bg-tan flex flex-column" style={{ gap: '1.25rem' }}>

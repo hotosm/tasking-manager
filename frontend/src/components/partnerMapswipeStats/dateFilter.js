@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
-import DatePicker from 'react-datepicker';
 import { format, parse } from 'date-fns';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import { CalendarIcon } from '../svgIcons';
 import messages from './messages';
@@ -24,10 +25,28 @@ export const DateFilter = ({ isLoading, filters, setFilters }) => {
     }));
   }, [setFilters]);
 
-  const handleDateSelect = (key, date) => {
+  const handleDateSelect = (key, selectedDate) => {
+    let { fromDate, toDate } = filters;
+    const selectedDateValue = new Date(selectedDate).valueOf();
+    const toDateValue = new Date(toDate).valueOf();
+    const fromDateValue = new Date(fromDate).valueOf();
+    // adjust from and to date based on greater/lesser value
+    if (key === 'fromDate' && selectedDateValue > toDateValue) {
+      fromDate = toDate;
+      toDate = selectedDate;
+    } else if (key === 'toDate' && selectedDateValue < fromDateValue) {
+      toDate = fromDate;
+      fromDate = selectedDate;
+    } else if (key === 'toDate') {
+      toDate = selectedDate;
+    } else {
+      fromDate = selectedDate;
+    }
+    // set filters state
     setFilters((prev) => ({
       ...prev,
-      [key]: date,
+      fromDate,
+      toDate,
     }));
   };
 
