@@ -120,7 +120,11 @@ export const PartnersMapswipeStats = () => {
         ) : (
           <>
             <div className="mt3">
-              <ContributionsGrid contributionsByDate={data?.contributionsByDate} />
+              <ContributionsGrid
+                startDate={filters?.fromDate}
+                endDate={filters?.toDate}
+                contributionsByDate={data?.contributionsByDate}
+              />
             </div>
 
             <div className="mt3">

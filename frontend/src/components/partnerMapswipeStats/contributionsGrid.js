@@ -1,11 +1,13 @@
 import CalendarHeatmap from 'react-calendar-heatmap';
 import { Tooltip } from 'react-tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 
 import messages from './messages';
 
 const LEGEND_INDEXES = [30, 50, 70, 100];
+
 const Legend = () => {
   const legendFontStyle = 'ph2 f7 blue-grey ttc';
 
@@ -25,26 +27,12 @@ const Legend = () => {
   );
 };
 
-export const ContributionsGrid = ({ contributionsByDate = [] }) => {
+export const ContributionsGrid = ({ contributionsByDate = [], startDate, endDate }) => {
   const gridData = contributionsByDate.map((contribution) => ({
     date: contribution.taskDate,
     count: contribution.totalcontributions,
   }));
   const intl = useIntl();
-
-  const getDate = (isEndDate = false) => {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-
-    const formatDate = (date) => {
-      const offset = date.getTimezoneOffset();
-      return new Date(date.getTime() - offset * 60 * 1000);
-    };
-
-    return !isEndDate
-      ? formatDate(new Date(currentYear - 1, 11, 31))
-      : formatDate(new Date(currentYear, 11, 31));
-  };
 
   const countValues = gridData.map((contribution) => contribution.count);
   const maxValue = Math.max(...countValues);
@@ -69,6 +57,9 @@ export const ContributionsGrid = ({ contributionsByDate = [] }) => {
     }
   };
 
+  const endDateYear = endDate.split('-')[0];
+  const formattedEndDate = format(new Date(endDateYear, 11, 31), 'yyyy-MM-dd');
+
   return (
     <div>
       <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 mb4">
@@ -77,8 +68,8 @@ export const ContributionsGrid = ({ contributionsByDate = [] }) => {
 
       <div className="bg-white pv4 pr4 shadow-6" style={{ fontSize: '1rem' }}>
         <CalendarHeatmap
-          startDate={getDate()}
-          endDate={getDate(true)}
+          startDate={startDate}
+          endDate={formattedEndDate}
           values={gridData}
           classForValue={(value) => {
             if (!value) return 'fill-tan';
@@ -114,4 +105,6 @@ ContributionsGrid.propTypes = {
       totalcontributions: PropTypes.number,
     }),
   ),
+  startDate: PropTypes.instanceOf(Date),
+  endDate: PropTypes.instanceOf(Date),
 };
