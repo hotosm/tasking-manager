@@ -418,8 +418,8 @@ class UserService:
                     action_text,
                     COUNT(DISTINCT (project_id, task_id)) AS action_count
                 FROM task_history th
-                WHERE task_id IN (
-                    SELECT task_id
+                WHERE (project_id, task_id) IN (
+                    SELECT project_id, task_id
                     FROM task_history
                     WHERE user_id = :user_id
                 )
@@ -428,11 +428,11 @@ class UserService:
                 GROUP BY action_text
             )
             SELECT
-                COALESCE(SUM(CASE WHEN u.action_text = 'VALIDATED' THEN u.action_count ELSE 0 END), 0) AS tasks_validated,
-                COALESCE(SUM(CASE WHEN u.action_text = 'INVALIDATED' THEN u.action_count ELSE 0 END), 0) AS tasks_invalidated,
-                COALESCE(SUM(CASE WHEN u.action_text = 'MAPPED' THEN u.action_count ELSE 0 END), 0) AS tasks_mapped,
-                COALESCE(SUM(CASE WHEN o.action_text = 'VALIDATED' THEN o.action_count ELSE 0 END), 0) AS tasks_validated_by_others,
-                COALESCE(SUM(CASE WHEN o.action_text = 'INVALIDATED' THEN o.action_count ELSE 0 END), 0) AS tasks_invalidated_by_others
+                CAST(COALESCE(SUM(CASE WHEN u.action_text = 'VALIDATED' THEN u.action_count ELSE 0 END), 0) AS INTEGER) AS tasks_validated,
+                CAST(COALESCE(SUM(CASE WHEN u.action_text = 'INVALIDATED' THEN u.action_count ELSE 0 END), 0) AS INTEGER) AS tasks_invalidated,
+                CAST(COALESCE(SUM(CASE WHEN u.action_text = 'MAPPED' THEN u.action_count ELSE 0 END), 0) AS INTEGER) AS tasks_mapped,
+                CAST(COALESCE(SUM(CASE WHEN o.action_text = 'VALIDATED' THEN o.action_count ELSE 0 END), 0) AS INTEGER) AS tasks_validated_by_others,
+                CAST(COALESCE(SUM(CASE WHEN o.action_text = 'INVALIDATED' THEN o.action_count ELSE 0 END), 0) AS INTEGER) AS tasks_invalidated_by_others
             FROM user_actions u
             LEFT JOIN others_actions o
                 ON u.action_text = o.action_text;
