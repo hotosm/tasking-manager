@@ -24,9 +24,6 @@ locals {
   environment  = local.environment_vars.locals.environment
   application  = local.environment_vars.locals.application
   team         = local.environment_vars.locals.team
-  aws_region   = local.environment_vars.locals.aws_region
-  default_tags = local.environment_vars.locals.default_tags
-
 
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
@@ -47,12 +44,11 @@ inputs = {
     logdriver = "awslogs"
     options = {
       awslogs-group         = format("%s-%s-%s-%s", local.application, local.team, local.environment, "fastapi")
-      awslogs-region        = local.aws_region
+      awslogs-region        = local.environment_vars.locals.aws_region
       awslogs-stream-prefix = "api"
     }
   }
 
-  default_tags = local.default_tags
   efs_settings = {
     file_system_id     = ""
     access_point_id    = ""
@@ -61,4 +57,11 @@ inputs = {
     iam_authz          = "DISABLED"
   }
 
+  container_settings = {
+    app_port         = 80
+    cpu_architecture = "X86_64"
+    image_url        = "ghcr.io/hotosm/tasking-manager-backend"
+    image_tag        = "fastapi"
+    service_name     = format("%s-%s-%s-%s", local.application, local.team, local.environment, "fastapi")
+  }
 }

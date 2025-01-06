@@ -13,6 +13,9 @@ terraform {
 }
 
 inputs = {
+  ## Override them by exporting the vars to the environment.
+  ## Example:
+  ## export TM_SECRET=`openssl rand -hex 32`
   container_secrets = [
     {
       name      = "TM_SECRET"

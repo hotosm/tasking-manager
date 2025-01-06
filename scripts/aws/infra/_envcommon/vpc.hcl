@@ -17,14 +17,7 @@ terraform {
 # Locals are named constants that are reusable within the configuration.
 # ---------------------------------------------------------------------------------------------------------------------
 locals {
-  # Automatically load environment-level variables
   environment_vars = read_terragrunt_config(find_in_parent_folders("deployment_env.hcl"))
-
-  # Extract out common variables for reuse
-  environment = local.environment_vars.locals.environment
-
-  # Expose the base source URL so different versions of the module can be deployed in different environments. This will
-  # be used to construct the terraform block in the child terragrunt configurations.
   base_source_url = "git::https://github.com/hotosm/terraform-aws-vpc/"
 }
 
@@ -37,17 +30,12 @@ locals {
 
 inputs = {
   project_meta = {
-    name       = "tasking-manager"
-    short_name = "tm"
-    version    = "1.1.2"
-    image_tag  = "develop"
-    url        = "https://tasks.hotosm.org"
+    name    = local.environment_vars.locals.project
+    short_name = local.environment_vars.locals.short_name
+    team       = local.environment_vars.locals.team
+    version    = local.environment_vars.locals.version
+    url        = local.environment_vars.locals.url
   }
 
-  deployment_environment = local.environment # or any other value you need
-
-  default_tags = {
-    Owner       = "DevOps Team"
-    Environment = local.environment
-  }
+  deployment_environment = local.environment_vars.locals.environment
 }
