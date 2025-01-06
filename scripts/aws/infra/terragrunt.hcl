@@ -8,35 +8,45 @@ locals {
   # Automatically load deployment environment-level variables
   deployment_vars = read_terragrunt_config(find_in_parent_folders("deployment_env.hcl"))
 
-  # Extract the variables we need for easy access
+  # Extract variables for easy access
   account_name = local.deployment_vars.locals.account_name
   aws_profile  = local.deployment_vars.locals.aws_profile
   aws_region   = local.deployment_vars.locals.aws_region
   environment  = local.deployment_vars.locals.environment
   application  = local.deployment_vars.locals.application
   team         = local.deployment_vars.locals.team
-  creator      = local.deployment_vars.locals.creator
   owner        = local.deployment_vars.locals.owner
+  url          = local.deployment_vars.locals.url
+
+  # Default tags
+  default_tags = {
+    Environment    = local.environment
+    Project        = local.deployment_vars.locals.project
+    Maintainer     = local.deployment_vars.locals.maintainer
+    Documentation  = local.deployment_vars.locals.documentation
+    CostCenter     = local.deployment_vars.locals.cost_center != null ? local.deployment_vars.locals.cost_center : ""
+    IaC_Management = local.deployment_vars.locals.IaC_Management
+    Team           = local.team
+    Creator        = local.account_name # Assuming account_name is used as Creator
+    Owner          = local.owner
+    Url            = local.url
+  }
 }
 
-# Generate an AWS provider block
+# Generate AWS provider block.
 generate "provider" {
   path      = "provider.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
-  provider "aws" {
-      region = "${local.aws_region}"
-      profile = "${local.aws_profile}"
-      default_tags {
-        tags = {
-          Environment = "${local.environment}"
-          Application = "${local.application}"
-          Team        = "${local.team}"
-          Creator     = "${local.creator}"
-          Owner       = "${local.owner}"
-        }
+provider "aws" {
+    region  = "${local.aws_region}"
+    profile = "${local.aws_profile}"
+    default_tags {
+      tags = {
+        ${join("\n        ", [for k, v in local.default_tags : "${k} = \"${v != null ? v : ""}\""])}
       }
     }
+}
 EOF
 }
 
