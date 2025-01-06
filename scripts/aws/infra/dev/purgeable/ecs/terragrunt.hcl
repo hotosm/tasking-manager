@@ -28,14 +28,6 @@ locals {
   # Automatically load environment-level variables
   environment_vars = read_terragrunt_config(find_in_parent_folders("deployment_env.hcl"))
 
-  # Extract out common variables for reuse
-  environment  = local.environment_vars.locals.environment
-  application  = local.environment_vars.locals.application
-  team         = local.environment_vars.locals.team
-  aws_region   = local.environment_vars.locals.aws_region
-  default_tags = local.environment_vars.locals.default_tags
-
-
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
   base_source_url = "git::https://github.com/hotosm/terraform-aws-ecs/"
@@ -61,17 +53,12 @@ dependency "extras" {
   config_path = "../../non-purgeable/extras"
 }
 
-# Add in any new inputs that you want to overide.
-
+## Add in any new inputs that you want to overide.
 inputs = {
-
+  # Inputs from dependencies (Rarely changed)
+  service_subnets = dependency.vpc.outputs.private_subnets
   aws_vpc_id = dependency.vpc.outputs.vpc_id
-
-  scaling_target_values = {
-    container_min_count = 1
-    container_max_count = 2
-  }
-
+  service_security_groups = [ dependency.alb.outputs.load_balancer_app_security_group ]
   load_balancer_settings = {
     enabled                 = true
     target_group_arn        = dependency.alb.outputs.target_group_arn
@@ -79,17 +66,21 @@ inputs = {
     arn_suffix              = dependency.alb.outputs.load_balancer_arn_suffix
     scaling_request_count   = 200
   }
-
   task_role_arn = dependency.extras.outputs.ecs_task_role_arn
-
   service_security_groups = [
     dependency.alb.outputs.load_balancer_app_security_group
   ]
 
   # Merge secrets with: key:ValueFrom together
   container_secrets = concat(dependency.extras.outputs.container_secrets,
-  dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
+      dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
 
+  ## Task count for ECS services.
+  tasks_count = {
+      desired_count   = 1
+      min_healthy_pct = 50
+      max_pct         = 200
+    }
   # Merge non-sensetive together 
   container_envvars = merge(
     dependency.rds.outputs.database_config_as_ecs_inputs,
@@ -134,22 +125,5 @@ inputs = {
       # TM_MAX_AOI_AREA            = "5000"
       # EXPORT_TOOL_S3_URL         = "https://foorawdataapi.s3.amazonaws.com"
       # ENABLE_EXPORT_TOOL         = "1"
-
   })
-
-  service_subnets = dependency.vpc.outputs.private_subnets
-
-  container_capacity = {
-    cpu       = 512
-    memory_mb = 1024
-  }
-
-  container_settings = {
-    app_port         = 80
-    cpu_architecture = "X86_64"
-    image_url        = "ghcr.io/hotosm/tasking-manager-backend"
-    image_tag        = "fastapi"
-    service_name     = format("%s-%s-%s-%s", local.application, local.team, local.environment, "fastapi")
-  }
-
 }
