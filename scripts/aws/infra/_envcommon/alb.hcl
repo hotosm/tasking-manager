@@ -41,7 +41,6 @@ locals {
 
 inputs = {
   app_port                 = "5000"                                                                                #TODOTM
-  acm_tls_cert_backend_arn = "arn:aws:acm:us-east-2:685797548389:certificate/810d8829-5e61-44f6-a030-f06eb5b66ae6" #TODOTM
   health_check_path        = "/api/v2/system/heartbeat/"                                                           #TODOTM
   alb_name                 = format("%s-%s-%s-%s", local.application, local.team, local.environment, "alb")
   target_group_name        = format("%s-%s-%s-%s", local.application, local.team, local.environment, "tg")

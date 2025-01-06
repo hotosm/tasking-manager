@@ -18,10 +18,24 @@ dependency "vpc" {
 
 # Add in any new inputs that you want to overide.
 inputs = {
+  ## VPC Inputs for RDS Instance
   vpc_id     = dependency.vpc.outputs.vpc_id
   subnet_ids = dependency.vpc.outputs.private_subnets
+
+  ## RDS Module inputs 
   serverless_capacity = {
-    minimum = 1
-    maximum = 1
+      minimum = 0.5 # Lowest possible APU for Aurora Serverless
+      maximum = 1   # Max APU to keep cost low for dev
+    }
+  
+  ## RDS Backup/Snapshot Config
+  backup = {
+    retention_days            = 1
+    skip_final_snapshot       = true
+    final_snapshot_identifier = "final"
   }
+
+  # RDS Dev Deployment only.
+  public_access     = true
+  deletion_protection     = true
 }

@@ -9,9 +9,12 @@ include "envcommon" {
 }
 
 terraform {
-  source = "${include.envcommon.locals.base_source_url}"
+  # source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
+  source = "file:///app/modules/terraform-aws-vpc"
 }
 
-inputs = {
-  deployment_environment = "dev" # or any other value you need
-}
+## Modify inputs for overriding _envcommon's inputs.
+
+# inputs = {
+#   deployment_environment = "dev" # or any other value you need
+# }

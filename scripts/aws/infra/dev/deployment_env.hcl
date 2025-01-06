@@ -1,22 +1,17 @@
-# Set common variables for the environment. This is automatically pulled in in the root terragrunt.hcl configuration to
-# feed forward to the child modules.
-# Check ../README.md  ## Inputs and Local Variables for details.
-
 locals {
-  environment  = "dev"
-  account_name = "naxadevelopers"
-  aws_profile  = "default"
-  aws_region   = "us-east-2"
-  application  = "tasking-manager"
-  team         = "hotosm"
-  creator      = "HOTOSM"
-  owner        = "HOTOSM"
-
-  default_tags = {
-    project        = "tasking-manager"
-    maintainer     = "dev@hotosm.org"
-    documentation  = "null"
-    cost_center    = null
-    IaC_Management = "Terraform"
-  }
+  account_name    = "naxadevelopers"
+  aws_profile     = "default"
+  aws_region      = "us-east-2"
+  team            = "hotosm"
+  owner           = "HOTOSM"
+  environment     = "dev"
+  project         = "tasking-manager"
+  application     = "tasking-manager"
+  short_name      = "tm"
+  maintainer      = "dev@hotosm.org"
+  url             = "https://tm-ecs.naxa.com.np"
+  documentation   = "https://hotosm.github.io"
+  IaC_Management  = "Terraform/Terragrunt"
+  cost_center     = "False"
+  version         = "4.8.2"
 }
