@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
@@ -9,6 +10,7 @@ import {
   getShortNumber,
   formatSecondsToTwoUnits,
 } from '../components/partnerMapswipeStats/overview';
+import { DateFilter } from '../components/partnerMapswipeStats/dateFilter';
 import { GroupMembers } from '../components/partnerMapswipeStats/groupMembers';
 import { ContributionsGrid } from '../components/partnerMapswipeStats/contributionsGrid';
 import { ContributionsHeatmap } from '../components/partnerMapswipeStats/contributionsHeatmap';
@@ -19,6 +21,7 @@ import { SwipesByProjectType } from '../components/partnerMapswipeStats/swipesBy
 import { SwipesByOrganization } from '../components/partnerMapswipeStats/swipesByOrganization';
 import messages from './messages';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
+
 import './partnersMapswipeStats.scss';
 
 const PagePlaceholder = () => (
@@ -57,23 +60,18 @@ const InfoBanner = () => {
 
 export const PartnersMapswipeStats = () => {
   const { id: partnerPermalink } = useParams();
+  const [filters, setFilters] = useState({}); // state for date filter
   const { isLoading, isError, data, isRefetching } = useQuery({
-    queryKey: ['partners-mapswipe-filtered-statistics', partnerPermalink],
+    queryKey: [
+      'partners-mapswipe-filtered-statistics',
+      partnerPermalink,
+      filters.fromDate,
+      filters.toDate,
+    ],
     queryFn: async () => {
-      const today = new Date();
-      const currentYear = today.getFullYear();
-
-      const formatDate = (date) => {
-        const offset = date.getTimezoneOffset();
-        const adjustedDate = new Date(date.getTime() - offset * 60 * 1000);
-        return adjustedDate.toISOString().split('T')[0];
-      };
-
-      const fromDate = formatDate(new Date(currentYear, 0, 1));
-      const endDate = formatDate(today);
-
+      const { fromDate, toDate } = filters;
       const response = await fetchLocalJSONAPI(
-        `partners/${partnerPermalink}/filtered-statistics/?fromDate=${fromDate}&toDate=${endDate}`,
+        `partners/${partnerPermalink}/filtered-statistics/?fromDate=${fromDate}&toDate=${toDate}`,
       );
       return response;
     },
@@ -105,6 +103,8 @@ export const PartnersMapswipeStats = () => {
       <InfoBanner />
       <Overview />
 
+      <DateFilter isLoading={isLoading} filters={filters} setFilters={setFilters} />
+
       <ReactPlaceholder customPlaceholder={<PagePlaceholder />} ready={!isLoading && !isRefetching}>
         {!isLoading && isError ? (
           <div className="pa3 pl0 bg-tan">
@@ -118,7 +118,11 @@ export const PartnersMapswipeStats = () => {
         ) : (
           <>
             <div className="mt3">
-              <ContributionsGrid contributionsByDate={data?.contributionsByDate} />
+              <ContributionsGrid
+                startDate={filters?.fromDate}
+                endDate={filters?.toDate}
+                contributionsByDate={data?.contributionsByDate}
+              />
             </div>
 
             <div className="mt3">
