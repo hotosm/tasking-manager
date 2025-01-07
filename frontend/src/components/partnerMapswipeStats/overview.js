@@ -59,7 +59,7 @@ export const getShortNumber = (value) => {
     <span>
       <FormattedNumber value={Number(shortNumberValue.substr(0, shortNumberValue.length - 1))} />
       &nbsp;
-      <span className="fw1">{shortNumberValue.substr(-1)}</span>
+      <span>{shortNumberValue.substr(-1)}</span>
     </span>
   );
 };
