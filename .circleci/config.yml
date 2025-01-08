@@ -33,7 +33,7 @@ jobs:
           no_output_timeout: 20m
           command: |
             cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
-            CI=true yarn test -w 1 --silent
+            CI=true yarn test --silent
             CI=true GENERATE_SOURCEMAP=false yarn build
 
   backend-code-check-PEP8:
