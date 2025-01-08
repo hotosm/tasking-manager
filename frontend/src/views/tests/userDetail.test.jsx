@@ -1,7 +1,5 @@
-
 import { render, screen, act, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-
 import { UserDetail } from '../userDetail';
 import { store } from '../../store';
 import {
@@ -58,8 +56,7 @@ describe('User Detail Component', () => {
       </MemoryRouter>,
     );
 
-    // TODO: Fix this test
-    // expect(await screen.findByText('Somebody')).toBeInTheDocument();
+    expect(await screen.findByText('Somebody')).toBeInTheDocument();
     expect(screen.getByText(/time spent mapping/i)).toBeInTheDocument();
     expect(await screen.findByTitle('American Red Cross')).toBeInTheDocument();
     expect(await screen.findByText('Philippines')).toBeInTheDocument();
