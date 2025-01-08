@@ -15,8 +15,8 @@ describe('test correct elements of TaskStatus', () => {
     );
     expect(container.querySelectorAll("span")[0]).toHaveStyle({
       backgroundColor: '#fff',
-      height: '0.875rem',
-      width: '0.875rem',
+      height: '14px',
+      width: '14px',
     });
     expect(container.querySelectorAll("span")[0]).toHaveClass('ba bw1 b--grey-light dib v-mid');
     expect(screen.getByText("Locked for mapping by test_user")).toBeInTheDocument();
@@ -32,8 +32,8 @@ describe('test correct elements of TaskStatus', () => {
 
     expect(container.querySelector("span")).toHaveStyle({
       backgroundColor: '#fff',
-      height: '0.875rem',
-      width: '0.875rem',
+      height: '14px',
+      width: '14px',
     });
     expect(container.querySelector("span")).toHaveClass(
       'ba bw1 b--grey-light dib v-mid',
@@ -51,8 +51,8 @@ describe('test correct elements of TaskStatus', () => {
 
     expect(container.querySelector("span")).toHaveStyle({
       backgroundColor: '#ade6ef',
-      height: '1rem',
-      width: '1rem',
+      height: '16px',
+      width: '16px',
     });
     expect(container.querySelector("span")).toHaveClass(' dib v-mid');
     expect(screen.getByText("Locked for validation by test_user")).toBeInTheDocument();
@@ -68,8 +68,8 @@ describe('test correct elements of TaskStatus', () => {
 
     expect(container.querySelector("span")).toHaveStyle({
       backgroundColor: '#ade6ef',
-      height: '1rem',
-      width: '1rem',
+      height: '16px',
+      width: '16px',
     });
     expect(container.querySelector("span")).toHaveClass(' dib v-mid');
     expect(screen.getByText(messages.taskStatus_LOCKED_FOR_VALIDATION.defaultMessage)).toBeInTheDocument();
@@ -85,8 +85,8 @@ describe('test correct elements of TaskStatus', () => {
 
     expect(container.querySelector("span")).toHaveStyle({
       backgroundColor: '#fff',
-      height: '0.875rem',
-      width: '0.875rem',
+      height: '14px',
+      width: '14px',
     });
     expect(container.querySelector("span")).toHaveClass(
       'ba bw1 b--grey-light dib v-mid',
@@ -104,8 +104,8 @@ describe('test correct elements of TaskStatus', () => {
 
     expect(container.querySelector("span")).toHaveStyle({
       backgroundColor: '#ade6ef',
-      height: '1rem',
-      width: '1rem',
+      height: '16px',
+      width: '16px',
     });
     expect(container.querySelector("span")).toHaveClass(' dib v-mid');
     expect(screen.getByText(messages.taskStatus_MAPPED.defaultMessage)).toBeInTheDocument();
@@ -121,8 +121,8 @@ describe('test correct elements of TaskStatus', () => {
 
     expect(container.querySelector("span")).toHaveStyle({
       backgroundColor: '#40ac8c',
-      height: '1rem',
-      width: '1rem',
+      height: '16px',
+      width: '16px',
     });
     expect(container.querySelector("span")).toHaveClass(' dib v-mid');
     expect(screen.getByText(messages.taskStatus_VALIDATED.defaultMessage)).toBeInTheDocument();
@@ -138,8 +138,8 @@ describe('test correct elements of TaskStatus', () => {
 
     expect(container.querySelector("span")).toHaveStyle({
       backgroundColor: '#fceca4',
-      height: '1rem',
-      width: '1rem',
+      height: '16px',
+      width: '16px',
     });
     expect(container.querySelector("span")).toHaveClass(' dib v-mid');
     expect(screen.getByText(messages.taskStatus_INVALIDATED.defaultMessage)).toBeInTheDocument();
@@ -155,8 +155,8 @@ describe('test correct elements of TaskStatus', () => {
 
     expect(container.querySelector("span")).toHaveStyle({
       backgroundColor: '#d8dae4',
-      height: '1rem',
-      width: '1rem',
+      height: '16px',
+      width: '16px',
     });
     expect(container.querySelector("span")).toHaveClass(' dib v-mid');
     expect(screen.getByText(messages.taskStatus_BADIMAGERY.defaultMessage)).toBeInTheDocument();

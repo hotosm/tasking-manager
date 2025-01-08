@@ -1,7 +1,5 @@
-
 import { render, screen, act, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-
 import { UserDetail } from '../userDetail';
 import { store } from '../../store';
 import {

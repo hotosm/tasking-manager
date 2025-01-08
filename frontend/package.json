@@ -134,6 +134,7 @@
     "@vitejs/plugin-react-swc": "^3.7.0",
     "@vitest/ui": "2.1.8",
     "combine-react-intl-messages": "^4.0.0",
+    "happy-dom": "^16.5.2",
     "msw": "^2.7.0",
     "prettier": "^2.8.8",
     "react-scripts": "^5.0.1",

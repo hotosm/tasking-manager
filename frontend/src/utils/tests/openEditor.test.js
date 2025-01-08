@@ -13,7 +13,7 @@ import {
 } from '../openEditor';
 
 describe('test if getIdUrl', () => {
-  const urlEncoded = encodeURIComponent(import.meta.env.VITE_API_URL);
+  const urlEncoded = encodeURIComponent(API_URL);
   it('returns the correct url with locale=pt-BR', () => {
     const testProject = {
       changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
@@ -26,12 +26,12 @@ describe('test if getIdUrl', () => {
         '#map=18/-9.663953/120.25684' +
         '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
         '&background=custom:https%3A%2F%2Fapi.mapbox.com%2Fstyles%2Fv1%2Ftm4%2Fcode123%2Ftiles%2F256%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D%3Faccess_token%3Dpk.123' +
-        '&gpx=' + urlEncoded + 'api%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
+        '&gpx=' + urlEncoded + 'projects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
     );
   });
 
   it('with customUrl returns the correct formatted url', () => {
-    const urlEncoded = encodeURIComponent(import.meta.env.VITE_API_URL);
+    const urlEncoded = encodeURIComponent(API_URL);
     const testProject = {
       changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
       projectId: 1234,
@@ -43,12 +43,12 @@ describe('test if getIdUrl', () => {
         '#map=18/-9.663953/120.25684' +
         '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
         '&background=custom:https%3A%2F%2Fapi.mapbox.com%2Fstyles%2Fv1%2Ftm4%2Fcode123%2Ftiles%2F256%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D%3Faccess_token%3Dpk.123' +
-        '&gpx='+ urlEncoded +'api%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
+        '&gpx='+ urlEncoded +'projects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
     );
   });
 
   it('with idPresets returns the url param', () => {
-    const urlEncoded = encodeURIComponent(import.meta.env.VITE_API_URL);
+    const urlEncoded = encodeURIComponent(API_URL);
     const testProject = {
       changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
       projectId: 1234,
@@ -58,7 +58,7 @@ describe('test if getIdUrl', () => {
       'https://www.openstreetmap.org/edit?editor=id&' +
         '#map=18/-9.663953/120.25684' +
         '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
-        '&gpx=' + urlEncoded + 'api%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1' +
+        '&gpx=' + urlEncoded + 'projects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1' +
         '&presets=building%2Chighway%2Cnatural%2Fwater',
     );
   });
@@ -78,7 +78,7 @@ describe('test if getIdUrl', () => {
   });
 
   it('without imagery and with multiple tasks returns the correct url', () => {
-    const urlEncoded = encodeURIComponent(import.meta.env.VITE_API_URL);
+    const urlEncoded = encodeURIComponent(API_URL);
     const testProject = {
       changesetComment: '#hotosm-project-5522',
       projectId: 1234,
@@ -87,12 +87,12 @@ describe('test if getIdUrl', () => {
       'https://www.openstreetmap.org/edit?editor=id&' +
         '#map=18/-9.663953/120.25684' +
         '&comment=%23hotosm-project-5522' +
-        '&gpx=' + urlEncoded + 'api%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1%2C2',
+        '&gpx=' + urlEncoded + 'projects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1%2C2',
     );
   });
 
   it('with a imagery that is not a URL and with multiple tasks returns the correct url', () => {
-    const urlEncoded = encodeURIComponent(import.meta.env.VITE_API_URL);
+    const urlEncoded = encodeURIComponent(API_URL);
     const testProject = {
       changesetComment: '#hotosm-project-5522',
       projectId: 1234,
@@ -103,7 +103,7 @@ describe('test if getIdUrl', () => {
         '#map=18/-9.663953/120.25684' +
         '&comment=%23hotosm-project-5522' +
         '&background=Maxar-Premium' +
-        '&gpx=' + urlEncoded + 'api%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1%2C2',
+        '&gpx=' + urlEncoded + 'projects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1%2C2',
     );
   });
 });

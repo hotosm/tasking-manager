@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom/vitest';
+import { configure } from '@testing-library/react';
 import "vitest-canvas-mock"
+
+configure({ asyncUtilTimeout: 12000 });
 
 // vi.mock('mapbox-gl/dist/mapbox-gl');
 

@@ -38,7 +38,7 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  useMeta({ property: 'og:url', content: import.meta.env.VITE_BASE_URL });
+  useMeta({ property: 'og:url', content: import.meta.env.REACT_APP_BASE_URL });
   useMeta({ name: 'author', content: ORG_NAME });
   const isLoading = useSelector((state: RootStore) => state.loader.isLoading);
   const locale = useSelector((state: RootStore) => state.preferences.locale);
