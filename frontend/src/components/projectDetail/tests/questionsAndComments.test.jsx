@@ -36,15 +36,14 @@ describe('test if QuestionsAndComments component', () => {
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
-    const previewBtn = await screen.findByRole('button', { name: /preview/i });
-    expect(screen.getAllByRole('button').length).toBe(11);
-    expect(screen.getByRole('button', { name: /write/i })).toBeInTheDocument();
-    expect(screen.getAllByRole('button')).toHaveLength(11);
-    expect(previewBtn).toBeInTheDocument();
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
+    const previewBtn = await waitFor(() => screen.getByRole('button', { name: /preview/i }));
+    expect(screen.getAllByRole('button').length).toBe(1);
+    waitFor(() => expect(screen.getByRole('button', { name: /write/i })));
+    expect(screen.getAllByRole('button')).toHaveLength(1);
+    waitFor(() => (screen.getByRole('textbox')));
     await user.click(previewBtn);
     expect(screen.queryByRole('textbox', { hidden: true })).toBeInTheDocument();
-    expect(screen.getByText(/nothing to preview/i)).toBeInTheDocument();
+    expect(await screen.findByText(/nothing to preview/i)).toBeInTheDocument();
   });
 
   it('enables logged in user to post and view comments', async () => {

@@ -59,7 +59,7 @@ import {
   teamUpdationSuccess,
   teamDeletionSuccess,
 } from './mockData/teams';
-import { userTasks } from './mockData/tasksStats';
+import { tasksStats, userTasks } from './mockData/tasksStats';
 import { homepageStats } from './mockData/homepageStats';
 import {
   banner,
@@ -204,7 +204,7 @@ const handlers = [
     return HttpResponse.json(newUsersStats);
   }),
   http.get(API_URL + 'tasks/statistics/', async () => {
-    return HttpResponse.json(newUsersStats);
+    return HttpResponse.json(tasksStats);
   }),
   http.get(API_URL + 'users/queries/:username', async () => {
     return HttpResponse.json(userQueryDetails);
