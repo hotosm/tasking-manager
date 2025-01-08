@@ -13,7 +13,7 @@ import {
 } from '../openEditor';
 
 describe('test if getIdUrl', () => {
-  const urlEncoded = encodeURIComponent(import.meta.env.VITE_API_URL);
+  const urlEncoded = encodeURIComponent(import.meta.env.REACT_APP_API_URL);
   it('returns the correct url with locale=pt-BR', () => {
     const testProject = {
       changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
@@ -31,7 +31,7 @@ describe('test if getIdUrl', () => {
   });
 
   it('with customUrl returns the correct formatted url', () => {
-    const urlEncoded = encodeURIComponent(import.meta.env.VITE_API_URL);
+    const urlEncoded = encodeURIComponent(import.meta.env.REACT_APP_API_URL);
     const testProject = {
       changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
       projectId: 1234,
@@ -48,7 +48,7 @@ describe('test if getIdUrl', () => {
   });
 
   it('with idPresets returns the url param', () => {
-    const urlEncoded = encodeURIComponent(import.meta.env.VITE_API_URL);
+    const urlEncoded = encodeURIComponent(import.meta.env.REACT_APP_API_URL);
     const testProject = {
       changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
       projectId: 1234,
@@ -78,7 +78,7 @@ describe('test if getIdUrl', () => {
   });
 
   it('without imagery and with multiple tasks returns the correct url', () => {
-    const urlEncoded = encodeURIComponent(import.meta.env.VITE_API_URL);
+    const urlEncoded = encodeURIComponent(import.meta.env.REACT_APP_API_URL);
     const testProject = {
       changesetComment: '#hotosm-project-5522',
       projectId: 1234,
@@ -92,7 +92,7 @@ describe('test if getIdUrl', () => {
   });
 
   it('with a imagery that is not a URL and with multiple tasks returns the correct url', () => {
-    const urlEncoded = encodeURIComponent(import.meta.env.VITE_API_URL);
+    const urlEncoded = encodeURIComponent(import.meta.env.REACT_APP_API_URL);
     const testProject = {
       changesetComment: '#hotosm-project-5522',
       projectId: 1234,

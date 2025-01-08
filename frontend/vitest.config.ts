@@ -11,4 +11,5 @@ export default defineConfig({
     environment: "jsdom",
     testTimeout: 20000
   },
+  envPrefix: 'REACT_APP_',
 })
