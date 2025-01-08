@@ -13,7 +13,7 @@ import {
 } from '../openEditor';
 
 describe('test if getIdUrl', () => {
-  const urlEncoded = encodeURIComponent(import.meta.env.REACT_APP_API_URL);
+  const urlEncoded = encodeURIComponent(API_URL);
   it('returns the correct url with locale=pt-BR', () => {
     const testProject = {
       changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
