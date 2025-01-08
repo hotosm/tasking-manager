@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
 import {
@@ -423,17 +423,29 @@ export function EditTeam(props) {
 export function TeamDetail() {
   const { id } = useParams();
   useSetTitleTag(`Team #${id}`);
+  const location = useLocation();
+  const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const [error, loading, team] = useFetch(`teams/${id}/`);
   // eslint-disable-next-line
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?teamId=${id}&omitMapResults=true&projectStatuses=PUBLISHED,DRAFT,ARCHIVED`,
+    `projects/?teamId=${id}&omitMapResults=true&projectStatuses=PUBLISHED`,
     id,
   );
   const [isMember, setIsMember] = useState(false);
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login', {
+        state: {
+          from: location.pathname,
+        },
+      });
+    }
+  }, [location.pathname, navigate, token]);
 
   useEffect(() => {
     if (team && team.members) {

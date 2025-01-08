@@ -56,6 +56,14 @@ export default defineMessages({
     id: 'management.partners.stats.mapswipe.groupMembers.error',
     defaultMessage: 'Something went wrong!',
   },
+  groupStatsboard: {
+    id: 'management.partners.stats.mapswipe.groupStatsboard',
+    defaultMessage: 'Group Statsboard',
+  },
+  dateFilterSubText: {
+    id: 'management.partners.stats.mapswipe.dateFilterSubText',
+    defaultMessage: 'All dates are calculated in UTC',
+  },
   contributions: {
     id: 'management.partners.stats.mapswipe.contributions',
     defaultMessage: 'Contributions',
