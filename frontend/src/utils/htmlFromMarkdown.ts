@@ -52,7 +52,7 @@ const parseMarkdown = async (markdownText: string) => {
 
 /* per https://stackoverflow.com/a/34688574/272018 */
 export const htmlFromMarkdown = async (markdownText: string) => {
-  console.log("STRING!!", markdownText);
+  if (!markdownText) return '';
   DOMPurify.addHook('afterSanitizeAttributes', function (node) {
     // set all elements owning target to target=_blank
     if ('target' in node) {
@@ -82,7 +82,6 @@ export const htmlFromMarkdown = async (markdownText: string) => {
     ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder'],
   };
 
-  console.log("CONFIG", markdownText);
   return DOMPurify.sanitize(await parseMarkdown(markdownText), config);
 };
 
