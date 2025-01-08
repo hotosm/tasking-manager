@@ -8,7 +8,7 @@ export default defineConfig({
     globals: true,
     clearMocks: true,
     setupFiles: ['./src/setup.ts', './src/network/tests/server.ts'],
-    environment: "jsdom",
+    environment: "happy-dom",
     testTimeout: 20000
   },
   envPrefix: 'REACT_APP_',
