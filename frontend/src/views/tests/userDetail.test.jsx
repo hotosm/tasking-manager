@@ -37,7 +37,7 @@ describe('User Detail Component', () => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
       store.dispatch({
         type: 'SET_USER_DETAILS',
-        userDetails: { username: 'Somebody' },
+        userDetails: { username: 'user123' },
       });
     });
 
