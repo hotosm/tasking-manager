@@ -59,7 +59,7 @@ describe('test if QuestionsAndComments component', () => {
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
-    await waitFor(() => expect(screen.getByText('hello world')).toBeInTheDocument());
+    expect(await screen.findByText('hello world')).toBeInTheDocument();
     const textarea = screen.getByRole('textbox');
     const postBtn = screen.getByRole('button', { name: /post/i });
     await user.type(textarea, 'Test comment');

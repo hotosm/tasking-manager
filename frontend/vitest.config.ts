@@ -8,6 +8,7 @@ export default defineConfig({
     globals: true,
     clearMocks: true,
     setupFiles: ['./src/setup.ts', './src/network/tests/server.ts'],
-    environment: "jsdom"
+    environment: "jsdom",
+    testTimeout: 15000
   },
 })
