@@ -36,12 +36,12 @@ describe('test if QuestionsAndComments component', () => {
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
-    const previewBtn = waitFor(() => screen.getByRole('button', { name: /preview/i }));
+    const previewBtn = await waitFor(() => screen.getByRole('button', { name: /preview/i }));
     expect(screen.getAllByRole('button').length).toBe(1);
     waitFor(() => expect(screen.getByRole('button', { name: /write/i })));
     expect(screen.getAllByRole('button')).toHaveLength(1);
     waitFor(() => (screen.getByRole('textbox')));
-    await user.click(await previewBtn);
+    await user.click(previewBtn);
     expect(screen.queryByRole('textbox', { hidden: true })).toBeInTheDocument();
     expect(await screen.findByText(/nothing to preview/i)).toBeInTheDocument();
   });
