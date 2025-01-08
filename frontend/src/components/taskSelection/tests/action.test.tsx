@@ -36,20 +36,18 @@ describe('Task Map Action', () => {
     setupFaultyHandlers();
     const { user } = setup();
     await user.click(
-      screen.getByRole('button', {
+      await screen.findByRole('button', {
         name: /iD Editor/i,
       }),
     );
-    await user.click(screen.getByText('JOSM'));
-    await waitFor(() =>
-      expect(
-        screen.getByRole('heading', {
-          name: messages.JOSMError.defaultMessage,
-        }),
-      ).toBeInTheDocument(),
-    );
+    await user.click(await screen.findByText('JOSM'));
+    expect(
+      await screen.findByRole('heading', {
+        name: messages.JOSMError.defaultMessage,
+      }),
+    ).toBeInTheDocument()
     await user.click(
-      screen.getByRole('button', {
+      await screen.findByRole('button', {
         name: /close/i,
       }),
     );
