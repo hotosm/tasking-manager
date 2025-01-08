@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest';
+import "vitest-canvas-mock"
 
 // vi.mock('mapbox-gl/dist/mapbox-gl');
 
