@@ -5,7 +5,6 @@ orbs:
   aws-ecs: circleci/aws-ecs@4.0.0
   opsgenie: opsgenie/opsgenie@1.0.8
 
-
 jobs:
   frontend-code-test:
     resource_class: large
@@ -61,7 +60,6 @@ jobs:
   backend-functional-tests:
     resource_class: large
     docker:
-
       - image: cimg/python:3.10
         environment:
           SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
@@ -266,7 +264,7 @@ workflows:
   production-all:
     when:
       and:
-        - equal: [ deployment/hot-tasking-manager, << pipeline.git.branch >> ]
+        - equal: [deployment/hot-tasking-manager, << pipeline.git.branch >>]
     jobs:
       - database-backup:
           name: Backup production database
@@ -315,7 +313,8 @@ workflows:
   production-frontend-only:
     when:
       and:
-        - equal: [ deployment/hot-tasking-manager-frontend, << pipeline.git.branch >> ]
+        - equal:
+            [deployment/hot-tasking-manager-frontend, << pipeline.git.branch >>]
     jobs:
       - frontend-code-test
       - frontend_wait_for_approval:
@@ -334,7 +333,8 @@ workflows:
   production-backend-only:
     when:
       and:
-        - equal: [ deployment/hot-tasking-manager-backend, << pipeline.git.branch >> ]
+        - equal:
+            [deployment/hot-tasking-manager-backend, << pipeline.git.branch >>]
     jobs:
       - database-backup:
           name: Backup production database
@@ -370,7 +370,8 @@ workflows:
   teachosm-all:
     when:
       and:
-        - equal: [ deployment/teachosm-tasking-manager, << pipeline.git.branch >> ]
+        - equal:
+            [deployment/teachosm-tasking-manager, << pipeline.git.branch >>]
     jobs:
       - database-backup:
           name: Backup TeachOSM database
@@ -401,7 +402,7 @@ workflows:
             matches:
               pattern: "^deployment/.*"
               value: << pipeline.git.branch >>
-        - equal: [ main, << pipeline.git.branch >> ]
+        - equal: [main, << pipeline.git.branch >>]
     jobs:
       - database-backup:
           name: Backup staging database
@@ -451,8 +452,8 @@ workflows:
               pattern: "^deployment/.*"
               value: << pipeline.git.branch >>
         - or:
-          ## - equal: [ develop, << pipeline.git.branch >> ] # Disabled while we use dev setup for e2e testing
-          - equal: [ typescript-vite, << pipeline.git.branch >> ]
+            ## - equal: [ develop, << pipeline.git.branch >> ] # Disabled while we use dev setup for e2e testing
+            - equal: [typescript-vite, << pipeline.git.branch >>]
     jobs:
       - database-backup:
           name: Backup development database
@@ -501,8 +502,8 @@ workflows:
           - matches:
               pattern: "^deployment/.*"
               value: << pipeline.git.branch >>
-          - equal: [ develop, << pipeline.git.branch >> ]
-          - equal: [ main, << pipeline.git.branch >> ]
+          - equal: [develop, << pipeline.git.branch >>]
+          - equal: [main, << pipeline.git.branch >>]
     jobs:
       - frontend-code-test
       - backend-code-check-PEP8
