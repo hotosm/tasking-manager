@@ -24,7 +24,7 @@ export default function useHasLiveMonitoringFeature() {
 
     // set hasLiveMonitoringFeature to false if project is not published
     // or expert mode is not enabled
-    if (project.data.status !== 'PUBLISHED' || !userDetails.isExpert) {
+    if (project.data.status !== 'PUBLISHED' || !userDetails?.isExpert) {
       setHasLiveMonitoringFeature(false);
       return;
     }

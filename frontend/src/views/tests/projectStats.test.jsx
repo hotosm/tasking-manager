@@ -1,0 +1,57 @@
+
+import { render, waitFor, screen } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+
+import { store } from '../../store';
+import { QueryClientProviders, ReduxIntlProviders } from '../../utils/testWithIntl';
+import { ProjectStats } from '../projectStats';
+
+// Lazy imports from ProjectStats (these can cause timeouts on slow disks)
+import '../../components/projectStats/contributorsStats';
+import '../../components/projectStats/taskStatus';
+import '../../components/projectDetail/timeline';
+
+vi.mock('react-chartjs-2', () => ({
+  Doughnut: () => null,
+  Bar: () => null,
+  Line: () => null,
+}));
+
+describe('ProjectStats dashboard', () => {
+  it('fetch urls and render sections title', async () => {
+    store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
+    const { container } = render(
+      <MemoryRouter initialEntries={['/projects/1']}>
+        <Routes>
+          <Route
+            path="/projects/:id"
+            element={
+              <QueryClientProviders>
+                <ReduxIntlProviders>
+                  <ProjectStats />
+                </ReduxIntlProviders>
+              </QueryClientProviders>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    screen.debug();
+    expect(await screen.findByText('#1')).toBeInTheDocument();
+    expect(await screen.findByText('Urgent')).toBeInTheDocument();
+    await waitFor(() => container.querySelector('[aria-valuenow="28"]'));
+
+    expect(await screen.findByText('Edits')).toBeInTheDocument();
+    expect(screen.getByText('987,654,321')).toBeInTheDocument();
+    expect(screen.getByText('123,456,789')).toBeInTheDocument();
+    expect(screen.getByText('Changesets')).toBeInTheDocument();
+    expect(screen.getByText('Total map edits')).toBeInTheDocument();
+    expect(await screen.findByText('Tasks by status')).toBeInTheDocument();
+    expect(screen.getByText('Project timeline')).toBeInTheDocument();
+    await waitFor(() => screen.getByText('Time statistics'));
+    expect(screen.getByText('Time statistics')).toBeInTheDocument();
+    await waitFor(() => screen.getByText('Contributors'));
+    expect(screen.getByText('Contributors')).toBeInTheDocument();
+  });
+});
