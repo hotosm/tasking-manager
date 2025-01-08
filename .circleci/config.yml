@@ -452,7 +452,7 @@ workflows:
               value: << pipeline.git.branch >>
         - or:
           ## - equal: [ develop, << pipeline.git.branch >> ] # Disabled while we use dev setup for e2e testing
-          - equal: [ dev-switch-to-sandbox, << pipeline.git.branch >> ]
+          - equal: [ typescript-vite, << pipeline.git.branch >> ]
     jobs:
       - database-backup:
           name: Backup development database
