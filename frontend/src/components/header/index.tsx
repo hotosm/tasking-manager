@@ -1,4 +1,4 @@
-import { Fragment, useRef } from 'react';
+import React, { Fragment, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
@@ -209,15 +209,13 @@ const UserDisplay = ({ username }: { username: string }) => {
   );
 };
 
-const SignupTrigger = (
-  props: ButtonProps & {
-    signUpStyle: string;
-    alternativeSignUpText?: boolean;
-  },
-) => {
+const SignupTrigger = React.forwardRef<HTMLButtonElement, ButtonProps & {
+  signUpStyle: string;
+  alternativeSignUpText?: boolean;
+}>((props, ref) => {
   const { signUpStyle, alternativeSignUpText, ...remainingProps } = props;
   return (
-    <Button className={signUpStyle} {...remainingProps}>
+    <Button className={signUpStyle} {...remainingProps} ref={ref}>
       {alternativeSignUpText ? (
         <FormattedMessage {...messages.createAccount} />
       ) : (
@@ -225,7 +223,7 @@ const SignupTrigger = (
       )}
     </Button>
   );
-};
+});
 
 export const AuthButtons = ({
   logInStyle,
