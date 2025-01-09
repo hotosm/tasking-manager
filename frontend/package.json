@@ -67,7 +67,7 @@
     "redux-thunk": "^2.4.2",
     "sass": "^1.71.0",
     "short-number": "^1.0.7",
-    "shpjs": "^4.0.4",
+    "shpjs": "^6.1.0",
     "slug": "^8.2.3",
     "swiper": "^11.1.4",
     "tachyons": "^4.12.0",
