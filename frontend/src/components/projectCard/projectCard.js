@@ -19,7 +19,7 @@ export function ProjectTeaser({
   className,
   littleFont = 'f7',
   bigFont = 'f6',
-}) {
+}: Object) {
   /* outerDivStyles must have f6 even if sub-divs have f7 to fix grid issues*/
   const outerDivStyles = 'f6 tl blue-grey truncate mb2';
 
@@ -64,7 +64,7 @@ export function ProjectCard({
   percentValidated,
   totalContributors,
   showBottomButtons = false,
-}) {
+}: Object) {
   const [isHovered, setHovered] = useState(false);
   const linkCombo = 'link pa2 f6 ba b--grey-light di w-50 truncate tc';
 
