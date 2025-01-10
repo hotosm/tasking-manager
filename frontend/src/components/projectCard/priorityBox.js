@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { ClockIcon } from '../svgIcons';
 
-export function PriorityBox({ priority, extraClasses, showIcon }: Object) {
+export function PriorityBox({ priority, extraClasses, showIcon }) {
   let color = 'blue-grey b--blue-grey';
   if (priority === 'URGENT') color = 'red b--red';
   if (priority === 'HIGH') color = 'orange b--orange';

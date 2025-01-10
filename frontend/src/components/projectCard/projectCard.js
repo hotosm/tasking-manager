@@ -1,3 +1,4 @@
+import ReactMarkdown from 'react-markdown';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -18,7 +19,7 @@ export function ProjectTeaser({
   className,
   littleFont = 'f7',
   bigFont = 'f6',
-}: Object) {
+}) {
   /* outerDivStyles must have f6 even if sub-divs have f7 to fix grid issues*/
   const outerDivStyles = 'f6 tl blue-grey truncate mb2';
 
@@ -63,7 +64,7 @@ export function ProjectCard({
   percentValidated,
   totalContributors,
   showBottomButtons = false,
-}: Object) {
+}) {
   const [isHovered, setHovered] = useState(false);
   const linkCombo = 'link pa2 f6 ba b--grey-light di w-50 truncate tc';
 
@@ -126,7 +127,8 @@ export function ProjectCard({
               </h3>
               <div className="tc f6">
                 <div className="w-100 tl pr2 f7 blue-grey dib mb2 project-desc">
-                  {shortDescription} {campaignTag ? ' · ' + campaignTag : ''}
+                  <ReactMarkdown>{shortDescription}</ReactMarkdown>
+                   {campaignTag ? ' · ' + campaignTag : ''}
                 </div>
               </div>
             </div>
