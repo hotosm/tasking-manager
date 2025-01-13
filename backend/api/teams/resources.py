@@ -410,7 +410,7 @@ class TeamsJoinRequestAPI(Resource):
             team_members = (
                 TeamMembers.query.join(User, TeamMembers.user_id == User.id)
                 .join(Team, TeamMembers.team_id == Team.id)
-                .filter(TeamMembers.team_id == team_id, TeamMembers.active == False)
+                .filter(TeamMembers.team_id == team_id, ~TeamMembers.active)
                 .with_entities(
                     User.username.label("username"),
                     TeamMembers.joined_date.label("joined_date"),
@@ -422,7 +422,7 @@ class TeamsJoinRequestAPI(Resource):
             if not team_members:
                 return {
                     "message": "No inactive members found for the specified team"
-                }, 404
+                }, 200
 
             # Generate CSV in memory
             csv_output = io.StringIO()
@@ -448,7 +448,10 @@ class TeamsJoinRequestAPI(Resource):
                 csv_output.getvalue(),
                 mimetype="text/csv",
                 headers={
-                    "Content-Disposition": f"attachment; filename=join_requests_{team_id}_{datetime.now().strftime('%Y%m%d')}.csv"
+                    "Content-Disposition": (
+                        "attachment; filename=join_requests_"
+                        f"{team_id}_{datetime.now().strftime('%Y%m%d')}.csv"
+                    )
                 },
             )
         except Exception as e:
