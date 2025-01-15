@@ -1,6 +1,7 @@
 from functools import wraps
-from flask import request
-from schematics.exceptions import DataError
+
+# from flask import request
+# from schematics.exceptions import DataError
 
 
 from backend.exceptions import BadRequest

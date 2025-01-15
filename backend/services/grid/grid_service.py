@@ -1,9 +1,11 @@
-import geojson
 import json
+
+import geojson
+import shapely.geometry
+from loguru import logger
 from shapely.geometry import MultiPolygon, mapping
 from shapely.ops import unary_union
-import shapely.geometry
-from flask import current_app
+
 from backend.models.dtos.grid_dto import GridDTO
 from backend.models.postgis.utils import InvalidGeoJson
 
@@ -12,8 +14,7 @@ class GridServiceError(Exception):
     """Custom Exception to notify callers an error occurred when handling projects"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.error(message)
+        logger.error(message)
 
 
 class GridService:
