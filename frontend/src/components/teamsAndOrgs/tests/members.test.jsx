@@ -48,7 +48,7 @@ describe('test JoinRequest list', () => {
   });
   it('Accept and Deny buttons are present', () => {
     const { container } = setup();
-    expect(screen.getAllByRole("button")).toHaveLength(4);
+    expect(screen.getAllByRole("button")).toHaveLength(5);
     expect(container.querySelectorAll('.pr2.blue-dark.bg-white')).toHaveLength(2);
     expect(container.querySelectorAll('.pr2.bg-red.white')).toHaveLength(2);
   });
