@@ -105,7 +105,9 @@ class ValidatorService:
                     "ProjectNotPublished- Validation not allowed because: Project not published"
                 )
             elif error_reason == ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
-                user_tasks = Task.get_locked_tasks_for_user(validation_dto.user_id, db)
+                user_tasks = await Task.get_locked_tasks_for_user(
+                    validation_dto.user_id, db
+                )
                 if set(user_tasks.locked_tasks) != set(validation_dto.task_ids):
                     raise ValidatorServiceError(
                         "UserAlreadyHasTaskLocked- User already has a task locked"
