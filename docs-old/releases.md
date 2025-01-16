@@ -31,3 +31,4 @@ A minor release refers to the third digit (like 3.2.1 or 3.2.2). It is meant to 
 * Merge into `master` and `develop`.
 * Rebase `develop` on `master`.
 * Create a tag with a release from the `master` branch.
+
