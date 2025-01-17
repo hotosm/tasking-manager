@@ -704,9 +704,12 @@ class UserService:
             SELECT DISTINCT
                 p.*,
                 o.name AS organisation_name,
-                o.logo AS organisation_logo
+                o.logo AS organisation_logo,
+                u.name AS author_name,
+                u.username AS author_username
             FROM projects p
             LEFT JOIN organisations o ON p.organisation_id = o.id
+            LEFT JOIN users u ON u.id = p.author_id
             JOIN campaign_projects cp ON p.id = cp.project_id
             JOIN campaigns c ON cp.campaign_id = c.id
             WHERE c.name = ANY(:campaign_tags)
@@ -721,14 +724,14 @@ class UserService:
                 "limit": limit,
             },
         )
-
         # Get only projects matching the user's mapping level if needed
         len_projs = len(recommended_projects)
         if len_projs < limit:
             remaining_projects_query = """
-                SELECT DISTINCT p.*, o.name AS organisation_name, o.logo AS organisation_logo
+                SELECT DISTINCT p.*, o.name AS organisation_name, o.logo AS organisation_logo, u.name AS author_name,u.username AS author_username
                 FROM projects p
                 LEFT JOIN organisations o ON p.organisation_id = o.id
+                LEFT JOIN users u ON u.id = p.author_id
                 WHERE difficulty = :mapping_level
                 LIMIT :remaining_limit
             """

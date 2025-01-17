@@ -607,7 +607,6 @@ class ProjectSearchService:
                     "project_manager_role": TeamRoles.PROJECT_MANAGER.value,
                 },
             )
-
             # Combine and flatten the project IDs from both queries
             project_ids = tuple(
                 set(
