@@ -10,7 +10,6 @@ from pyinstrument import Profiler
 from starlette.middleware.authentication import AuthenticationMiddleware
 
 from backend.config import settings
-from backend.cron import setup_cron_jobs
 from backend.db import db_connection
 from backend.routes import add_api_end_points
 from backend.services.users.authentication_service import TokenAuthBackend
@@ -39,9 +38,6 @@ def get_application() -> FastAPI:
         openapi_url="/api/openapi.json",
         docs_url="/api/docs",
     )
-
-    # Set custom logger
-    # _app.logger = get_logger()
 
     # Custom exception handler for 401 errors
     @_app.exception_handler(HTTPException)
@@ -88,7 +84,6 @@ def get_application() -> FastAPI:
     _app.add_middleware(
         AuthenticationMiddleware, backend=TokenAuthBackend(), on_error=None
     )
-    setup_cron_jobs()
     add_api_end_points(_app)
     return _app
 
