@@ -625,8 +625,11 @@ class ProjectSearchService:
 
             if order_by == "percent_mapped":
                 percent_mapped_sql = """
-                    (p.tasks_mapped + p.tasks_validated) * 100
-                    / NULLIF((p.total_tasks - p.tasks_bad_imagery), 0)
+                    CASE
+                        WHEN (p.total_tasks - p.tasks_bad_imagery) = 0 THEN 0
+                        ELSE (p.tasks_mapped + p.tasks_validated) * 100
+                        / (p.total_tasks - p.tasks_bad_imagery)
+                    END
                 """
                 if search_dto.order_by_type == "DESC":
                     order_by_clause = f" ORDER BY {percent_mapped_sql} DESC"
@@ -635,8 +638,11 @@ class ProjectSearchService:
 
             elif order_by == "percent_validated":
                 percent_validated_sql = """
-                    p.tasks_validated * 100
-                    / NULLIF((p.total_tasks - p.tasks_bad_imagery), 0)
+                    CASE
+                        WHEN (p.total_tasks - p.tasks_bad_imagery) = 0 THEN 0
+                        ELSE p.tasks_validated * 100
+                        / (p.total_tasks - p.tasks_bad_imagery)
+                    END
                 """
                 if search_dto.order_by_type == "DESC":
                     order_by_clause = f" ORDER BY {percent_validated_sql} DESC"
