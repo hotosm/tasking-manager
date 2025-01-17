@@ -12,7 +12,6 @@ from backend.models.dtos.organisation_dto import (
 )
 from backend.models.dtos.stats_dto import OrganizationStatsDTO
 from backend.models.dtos.user_dto import AuthUserDTO
-from backend.models.postgis.statuses import OrganisationType
 from backend.models.postgis.user import User
 from backend.services.organisation_service import (
     OrganisationService,
@@ -384,7 +383,7 @@ async def update_organisation(
         user = await User.get_by_id(user.id, db)
         if user.role != 1:
             org = await OrganisationService.get_organisation_by_id(organisation_id, db)
-            organisation_dto.type = OrganisationType(org.type).name
+            organisation_dto.type = org.type
             organisation_dto.subscription_tier = org.subscription_tier
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
