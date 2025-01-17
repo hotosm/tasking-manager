@@ -8,7 +8,6 @@ from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.dtos.team_dto import (
-    ListTeamsDTO,
     NewTeamDTO,
     ProjectTeamDTO,
     TeamDetailsDTO,
@@ -496,7 +495,7 @@ class TeamService:
             query=query, values={"project_id": project_id}
         )
         # Initialize the DTO
-        teams_list_dto = ListTeamsDTO()
+        teams_list_dto = TeamsListDTO()
 
         # Populate the DTO with team data
         for project_team in project_teams:
@@ -773,7 +772,9 @@ class TeamService:
         """Given a project and permitted team roles, check user's membership in the team list"""
         teams_dto = await TeamService.get_project_teams_as_dto(project_id, db)
         teams_allowed = [
-            team_dto for team_dto in teams_dto.teams if team_dto.role in allowed_roles
+            team_dto
+            for team_dto in teams_dto.teams
+            if int(team_dto.role) in allowed_roles
         ]
         user_membership = [
             team_dto.team_id
