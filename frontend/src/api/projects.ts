@@ -39,7 +39,7 @@ export const useProjectsQuery = (
   return useQuery({
     queryKey: ['projects', fullProjectsQuery, action],
     queryFn: ({ signal, queryKey }) => fetchProjects(signal, queryKey),
-    keepPreviousData: true,
+    placeholderData: (prevData) => prevData,
     ...queryOptions,
   });
 };
