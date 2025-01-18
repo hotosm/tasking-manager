@@ -160,7 +160,7 @@ export const TasksMap = ({
 
         let taskStatusCondition = ['case'];
 
-        if (authDetails.id !== undefined) {
+        if (authDetails?.id !== undefined) {
           const all_condition = ['all', locked, ['==', ['get', 'lockedBy'], authDetails.id]];
           taskStatusCondition = [...taskStatusCondition, ...[all_condition, 'redlock']];
         }
@@ -368,7 +368,7 @@ export const TasksMap = ({
       map.on('mousemove', 'tasks-fill', function (e) {
         // To now allow validators to select tasks that they mapped
         if (
-          e.features[0].properties.mappedBy === authDetails.id &&
+          e.features[0].properties.mappedBy === authDetails?.id &&
           e.features[0].properties.taskStatus === 'MAPPED'
         ) {
           popup.addTo(map);
@@ -378,7 +378,7 @@ export const TasksMap = ({
         }
         if (showTaskIds) {
           // when the user hover on a task they are validating, enable the task id dialog
-          if (e.features[0].properties.lockedBy === authDetails.id) {
+          if (e.features[0].properties.lockedBy === authDetails?.id) {
             setHoveredTaskId(e.features[0].properties.taskId);
           } else {
             setHoveredTaskId(null);

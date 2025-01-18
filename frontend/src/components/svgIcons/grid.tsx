@@ -22,7 +22,7 @@ export const NineCellsGridIcon = (props: HTMLProps<SVGSVGElement>) => (
 );
 
 export const FilledNineCellsGridIcon = (props: HTMLProps<SVGSVGElement>) => (
-  <svg enable-background="new 0 0 32 32" viewBox="0 0 32 32" {...props}>
+  <svg enableBackground="new 0 0 32 32" viewBox="0 0 32 32" {...props}>
     <g id="grid-2">
       <path
         d="M10.246,4.228c0-0.547-0.443-0.991-0.99-0.991H3.914c-0.548,0-0.991,0.443-0.991,0.991V9.57   c0,0.546,0.443,0.99,0.991,0.99h5.342c0.547,0,0.99-0.444,0.99-0.99V4.228z"

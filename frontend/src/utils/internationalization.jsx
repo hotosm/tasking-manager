@@ -59,9 +59,9 @@ async function getTranslatedMessages(locale) {
   }
   if (val) {
     const parsed = val.replace('-', '_');
-    return await import(/* webpackChunkName: "lang-[request]" */ `../locales/${parsed}.json`);
+    return (await import(/* webpackChunkName: "lang-[request]" */ `../locales/${parsed}.json`)).default;
   }
-  return await import(/* webpackChunkName: "lang-en" */ '../locales/en.json');
+  return (await import(/* webpackChunkName: "lang-en" */ '../locales/en.json')).default;
 }
 
 /* textComponent is for orderBy <select>, see codesandbox at https://github.com/facebook/react/issues/15513 */
