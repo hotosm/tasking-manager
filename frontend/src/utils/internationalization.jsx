@@ -73,9 +73,7 @@ let ConnectedIntl = (props) => {
       props.setLocale(getSupportedLocale(navigator.language).value);
     }
     getTranslatedMessages(props.locale)
-      .then((messages) => {
-        setI18nMessages(messages.default)
-      })
+      .then((messages) => setI18nMessages(messages.default))
       .catch((err) => console.error(err));
   }, [props]);
 
