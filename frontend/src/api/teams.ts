@@ -1,8 +1,7 @@
 import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
-
 import api from './apiClient';
-import { RootStore } from '../store';
+import type { RootStore } from '../store';
 
 export const useTeamsQuery = (params: any, otherOptions: any) => {
   const token = useSelector((state: RootStore) => state.auth.token);
