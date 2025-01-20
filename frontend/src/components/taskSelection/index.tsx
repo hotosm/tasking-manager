@@ -81,7 +81,7 @@ export function TaskSelection({
   const { data: userTeams, isLoading: isUserTeamsLoading } = useTeamsQuery(
     {
       omitMemberList: true,
-      member: user.id,
+      member: user?.id,
     },
     {
       useErrorBoundary: true,
@@ -158,23 +158,23 @@ export function TaskSelection({
     // do not redirect if user is not from project detail page
     if (location?.state?.from !== `/projects/${projectId}`) return;
     if (contributions && isFirstRender.current) {
-      const currentUserContributions = contributions.filter((u) => u.username === user.username);
-      if (textSearch || (user.isExpert && currentUserContributions.length > 0)) {
+      const currentUserContributions = contributions.filter((u) => u.username === user?.username);
+      if (textSearch || (user?.isExpert && currentUserContributions.length > 0)) {
         setActiveSection('tasks');
       } else {
         setActiveSection('instructions');
       }
       isFirstRender.current = false;
     }
-  }, [contributions, user.username, user, textSearch, setActiveSection, location, projectId]);
+  }, [contributions, user?.username, user, textSearch, setActiveSection, location, projectId]);
 
   useEffect(() => {
     // run it only when the component is initialized
     // it checks if the user has tasks locked on the project and suggests to resume them
-    if (!mapInit && activities && activities.activity && user.username && !isUserTeamsLoading) {
+    if (!mapInit && activities && activities.activity && user?.username && !isUserTeamsLoading) {
       const lockedByCurrentUser = activities.activity
         .filter((i) => i.taskStatus.startsWith('LOCKED_FOR_'))
-        .filter((i) => i.actionBy === user.username);
+        .filter((i) => i.actionBy === user?.username);
       if (lockedByCurrentUser.length) {
         const userLockedTasks = lockedByCurrentUser.map((i) => i.taskId);
         setSelectedTasks(userLockedTasks);
@@ -287,7 +287,7 @@ export function TaskSelection({
               {(close) => (
                 <UserPermissionErrorContent
                   project={project}
-                  userLevel={user.mappingLevel}
+                  userLevel={user?.mappingLevel}
                   close={close}
                 />
               )}
@@ -382,7 +382,7 @@ export function TaskSelection({
       <div className="cf w-100 bt b--grey-light fixed bottom-0 left-0 z-4">
         <Suspense fallback={<div>Loading...</div>}>
           <TaskSelectionFooter
-            defaultUserEditor={user ? user.defaultEditor : 'iD'}
+            defaultUserEditor={user ? user?.defaultEditor : 'iD'}
             project={project}
             tasks={tasks}
             taskAction={taskAction}

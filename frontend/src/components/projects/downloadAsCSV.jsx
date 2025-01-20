@@ -76,5 +76,5 @@ export default function DownloadAsCSV({ allQueryParams }) {
 }
 
 DownloadAsCSV.propTypes = {
-  allQueryParams: PropTypes.string.isRequired,
+  allQueryParams: PropTypes.object.isRequired,
 };

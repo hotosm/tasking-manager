@@ -162,7 +162,7 @@ function LockErrorButtons({
 
   const handleDeselectAndValidate = () => {
     const userMappedTaskIds = tasks.features
-      .filter((feature) => feature.properties.mappedBy === user.id)
+      .filter((feature) => feature.properties.mappedBy === user?.id)
       .map((feature) => feature.properties.taskId);
 
     const remainingSelectedTasks = selectedTasks.filter(
