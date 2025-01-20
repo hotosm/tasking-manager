@@ -49,10 +49,10 @@ describe('AddToFavorites button', () => {
     const { user } = createComponentWithMemoryRouter(
       <ReduxIntlProviders>
         <AddToFavorites projectId={123} />
-      </ReduxIntlProviders>,
+      </ReduxIntlProviders>
     );
     expect(screen.getByText(messages.addToFavorites.defaultMessage)).toBeInTheDocument();
-    await user.click(screen.getByRole('button'));
+    await user.click(await screen.findByRole('button'));
     await waitFor(() =>
       expect(screen.queryByText(messages.addToFavorites.defaultMessage)).not.toBeInTheDocument(),
     );
