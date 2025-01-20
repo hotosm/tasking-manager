@@ -1,5 +1,5 @@
 from typing import List, Optional
-
+from datetime import datetime
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, field_validator
 
@@ -68,6 +68,7 @@ class TeamMembersDTO(BaseModel):
         default=False, alias="joinRequestNotifications"
     )
     picture_url: Optional[str] = Field(None, alias="pictureUrl")
+    joined_date: Optional[datetime] = Field(None, alias="joinedDate")
 
     @field_validator("function")
     def validate_function(cls, value):
@@ -75,6 +76,7 @@ class TeamMembersDTO(BaseModel):
 
     class Config:
         populate_by_name = True
+        json_encoders = {datetime: lambda v: v.isoformat() + "Z" if v else None}
 
 
 class TeamProjectDTO(BaseModel):

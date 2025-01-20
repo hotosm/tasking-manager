@@ -272,7 +272,6 @@ class ProjectSearchService:
                     "locale": search_dto.preferred_locale or "en",
                 },
             )
-            row["author"] = row["author_name"] or row["author_username"]
 
             row["project_name"] = result["name"] if result else None
 
@@ -296,7 +295,6 @@ class ProjectSearchService:
             "tasks_mapped",
             "tasks_validated",
             "total_tasks",
-            "centroid",
             "author_name",
             "author_username",
         ]

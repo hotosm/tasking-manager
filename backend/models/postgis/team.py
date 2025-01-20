@@ -1,16 +1,16 @@
 from databases import Database
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-from sqlalchemy import Column, Integer, BigInteger, Boolean, ForeignKey, String, DateTime
 from sqlalchemy import (
+    Column,
+    Integer,
     BigInteger,
     Boolean,
-    Column,
     ForeignKey,
-    Integer,
     String,
+    DateTime,
+)
+from sqlalchemy import (
     insert,
-    select,
 )
 from sqlalchemy.orm import backref, relationship
 
@@ -32,8 +32,6 @@ from backend.models.postgis.statuses import (
 )
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
-from backend.db import Base, get_session
-from sqlalchemy import select
 
 
 class TeamMembers(Base):
@@ -64,6 +62,7 @@ class TeamMembers(Base):
                 function=self.function,
                 active=self.active,
                 join_request_notifications=False,
+                joined_date=timestamp(),
             )
         )
         return team_member
@@ -138,7 +137,6 @@ class Team(Base):
             )
             .returning(Team.__table__.c.id)
         )
-
         if team_id and self.members:
             members_to_insert = [
                 {
@@ -146,6 +144,7 @@ class Team(Base):
                     "user_id": member.user_id,
                     "function": member.function,
                     "active": member.active,
+                    "joined_date": member.joined_date,
                     "join_request_notifications": member.join_request_notifications,
                 }
                 for member in self.members
@@ -176,7 +175,6 @@ class Team(Base):
         new_member.active = True
         new_member.joined_date = timestamp()
         new_member.join_request_notifications = False
-        new_team.members.append(new_member)
 
         team = await Team.create(new_team, db)
         return team
@@ -301,7 +299,7 @@ class Team(Base):
         if not user:
             raise NotFound(sub_code="USER_NOT_FOUND", user_id=user_id)
         member_query = """
-            SELECT function, active, join_request_notifications
+            SELECT function, active, join_request_notifications, joined_date
             FROM team_members WHERE user_id = :user_id AND team_id = :team_id
         """
         member = await db.fetch_one(
@@ -316,6 +314,7 @@ class Team(Base):
             picture_url=user["picture_url"],
             active=member["active"],
             join_request_notifications=member["join_request_notifications"],
+            joined_date=member["joined_date"],
         )
 
     def as_dto_team_project(project) -> TeamProjectDTO:
@@ -332,7 +331,7 @@ class Team(Base):
 
         # SQL query to fetch all members of the team, including their username, picture_url, function, and active status
         query = """
-            SELECT u.username, u.picture_url, tm.function, tm.active
+            SELECT u.username, u.picture_url, tm.function, tm.active, tm.joined_date
             FROM team_members tm
             JOIN users u ON tm.user_id = u.id
             WHERE tm.team_id = :team_id
@@ -348,6 +347,7 @@ class Team(Base):
                 "pictureUrl": row["picture_url"],
                 "function": TeamMemberFunctions(row["function"]).name,
                 "active": row["active"],
+                "joined_date": row["joined_date"],
             }
             for row in rows
         ]
