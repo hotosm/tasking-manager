@@ -1,7 +1,10 @@
+import csv
+import io
 from distutils.util import strtobool
+from datetime import datetime
 
 from databases import Database
-from fastapi import APIRouter, Body, Depends, Request
+from fastapi import APIRouter, Body, Depends, Request, Response, Query
 from fastapi.responses import JSONResponse
 from loguru import logger
 
@@ -118,7 +121,7 @@ async def patch(
         return JSONResponse(content={"Error": str(e)}, status_code=402)
 
 
-@router.get("/{team_id}/")
+@router.get("/{team_id:int}/")
 async def retrieve_team(
     request: Request,
     team_id: int,
@@ -413,3 +416,91 @@ async def post(
             )
     except TeamServiceError as e:
         return JSONResponse(content={"Error": str(e)}, status_code=400)
+
+
+@router.get("/join_requests/")
+async def get(
+    request: Request,
+    team_id: int = Query(..., description="ID of the team to filter by"),
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
+    """
+    Downloads join requests for a specific team as a CSV.
+    ---
+    tags:
+        - teams
+    produces:
+        - text/csv
+    parameters:
+        - in: query
+          name: team_id
+          description: ID of the team to filter by
+          required: true
+          type: integer
+    responses:
+        200:
+            description: CSV file with inactive team members
+        400:
+            description: Missing or invalid parameters
+        401:
+            description: Unauthorized access
+        500:
+            description: Internal server error
+    """
+    try:
+        query = """
+            SELECT
+                u.username AS username,
+                tm.joined_date AS joined_date,
+                t.name AS team_name
+            FROM
+                team_members tm
+            INNER JOIN
+                users u ON tm.user_id = u.id
+            INNER JOIN
+                teams t ON tm.team_id = t.id
+            WHERE
+                tm.team_id = :team_id
+                AND tm.active = FALSE
+        """
+        team_members = await db.fetch_all(query=query, values={"team_id": int(team_id)})
+
+        if not team_members:
+            return JSONResponse(
+                content={"message": "No inactive members found for the specified team"},
+                status_code=200,
+            )
+
+        csv_output = io.StringIO()
+        writer = csv.writer(csv_output)
+        writer.writerow(["Username", "Date Joined (UTC)", "Team Name"])
+
+        for member in team_members:
+            joined_date = getattr(member, "joined_date")
+            joined_date_str = (
+                joined_date.strftime("%Y-%m-%dT%H:%M:%S") if joined_date else "N/A"
+            )
+            writer.writerow(
+                [
+                    getattr(member, "username"),
+                    joined_date_str,
+                    getattr(member, "team_name"),
+                ]
+            )
+
+        csv_output.seek(0)
+        return Response(
+            content=csv_output.getvalue(),
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": (
+                    f"attachment; filename=join_requests_{team_id}_"
+                    f"{datetime.now().strftime('%Y%m%d')}.csv"
+                )
+            },
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={"message": f"Error occurred: {str(e)}"}, status_code=500
+        )
