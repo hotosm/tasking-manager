@@ -1,9 +1,9 @@
 include "root" {
-  path = find_in_parent_folders()
+  path = find_in_parent_folders("root.hcl")
 }
 
 include "envcommon" {
-  path = "${dirname(find_in_parent_folders())}/_envcommon/alb.hcl"
+  path = "${dirname(find_in_parent_folders("root.hcl"))}/_envcommon/alb.hcl"
   # We want to reference the variables from the included config in this configuration, so we expose it.
   expose = true
 }
