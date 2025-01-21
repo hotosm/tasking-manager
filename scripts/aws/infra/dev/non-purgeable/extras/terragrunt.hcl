@@ -9,7 +9,7 @@ include "envcommon" {
 }
 
 terraform {
-  source = "${include.envcommon.locals.base_source_url}"
+  source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
 }
 
 inputs = {
