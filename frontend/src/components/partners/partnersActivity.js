@@ -4,7 +4,7 @@ import ReactPlaceholder from 'react-placeholder';
 
 import PartnersProgresBar from './partnersProgresBar';
 import messages from './messages';
-import { OHSOME_STATS_BASE_URL } from '../../config';
+import { OHSOME_STATS_API_URL } from '../../config';
 
 export const Activity = ({ partner }) => {
   const [data, setData] = useState(null);
@@ -22,7 +22,7 @@ export const Activity = ({ partner }) => {
         ?.map((tag) => tag.trim().replace('#', '').toLowerCase())
         ?.join(',');
       const response = await fetch(
-        OHSOME_STATS_BASE_URL + `/stats/hashtags/${primaryHashtag},${secondaryHashtags}`,
+        OHSOME_STATS_API_URL + `/stats/hashtags/${primaryHashtag},${secondaryHashtags}`,
       );
 
       if (response.ok) {
