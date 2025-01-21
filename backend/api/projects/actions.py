@@ -18,7 +18,7 @@ from backend.services.project_admin_service import (
     ProjectAdminServiceError,
 )
 from backend.services.project_service import ProjectService
-from backend.services.users.authentication_service import login_required
+from backend.services.users.authentication_service import login_required, pm_only
 
 router = APIRouter(
     prefix="/projects",
@@ -379,10 +379,9 @@ async def post(
 
 
 @router.post("/actions/intersecting-tiles/")
-# @tm.pm_only()
 async def post(
     request: Request,
-    user: AuthUserDTO = Depends(login_required),
+    user: AuthUserDTO = Depends(pm_only),
     grid_dto: GridDTO = Body(...),
 ):
     """

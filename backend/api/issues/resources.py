@@ -7,7 +7,7 @@ from backend.db import get_db
 from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.mapping_issues_service import MappingIssueCategoryService
-from backend.services.users.authentication_service import login_required
+from backend.services.users.authentication_service import pm_only
 
 router = APIRouter(
     prefix="/tasks",
@@ -50,11 +50,10 @@ async def get(category_id: int, db: Database = Depends(get_db)):
 
 
 @router.patch("/issues/categories/{category_id}/")
-# @tm.pm_only()
 async def patch(
     request: Request,
     category_id: int,
-    user: AuthUserDTO = Depends(login_required),
+    user: AuthUserDTO = Depends(pm_only),
     db: Database = Depends(get_db),
     data: MappingIssueCategoryDTO = Body(...),
 ):
@@ -120,11 +119,10 @@ async def patch(
 
 
 @router.delete("/issues/categories/{category_id}/")
-# @tm.pm_only()
 async def delete(
     request: Request,
     category_id: int,
-    user: AuthUserDTO = Depends(login_required),
+    user: AuthUserDTO = Depends(pm_only),
     db: Database = Depends(get_db),
 ):
     """
@@ -195,10 +193,9 @@ async def get(request: Request, db: Database = Depends(get_db)):
 
 
 @router.post("/issues/categories/", response_model=MappingIssueCategoryDTO)
-# @tm.pm_only()
 async def post(
     request: Request,
-    user: AuthUserDTO = Depends(login_required),
+    user: AuthUserDTO = Depends(pm_only),
     db: Database = Depends(get_db),
     data: dict = Body(...),
 ):

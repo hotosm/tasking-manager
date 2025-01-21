@@ -7,7 +7,7 @@ from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO, UserDTO, UserRegisterEmailDTO
 from backend.services.interests_service import InterestService
 from backend.services.messaging.message_service import MessageService
-from backend.services.users.authentication_service import login_required
+from backend.services.users.authentication_service import login_required, pm_only
 from backend.services.users.user_service import UserService, UserServiceError
 
 router = APIRouter(
@@ -115,15 +115,12 @@ async def patch(
     return verification_sent
 
 
-# class UsersActionsSetLevelAPI(Resource):
-# @token_auth.login_required
 @router.patch("/{username}/actions/set-level/{level}/")
-# @tm.pm_only()
 async def patch(
     request: Request,
     username,
     level,
-    user: AuthUserDTO = Depends(login_required),
+    user: AuthUserDTO = Depends(pm_only),
     db: Database = Depends(get_db),
 ):
     """
@@ -175,12 +172,11 @@ async def patch(
 
 
 @router.patch("/{username}/actions/set-role/{role}/")
-# @tm.pm_only()
 async def patch(
     request: Request,
     username: str,
     role: str,
-    user: AuthUserDTO = Depends(login_required),
+    user: AuthUserDTO = Depends(pm_only),
     db: Database = Depends(get_db),
 ):
     """
@@ -232,12 +228,12 @@ async def patch(
 
 
 @router.patch("/{user_name}/actions/set-expert-mode/{is_expert}/")
-# @tm.pm_only()
+# @tm.
 async def patch(
     request: Request,
     user_name,
     is_expert,
-    user: AuthUserDTO = Depends(login_required),
+    user: AuthUserDTO = Depends(pm_only),
     db: Database = Depends(get_db),
 ):
     """
@@ -279,7 +275,6 @@ async def patch(
 
 
 @router.patch("/me/actions/verify-email/")
-# @tm.pm_only()
 async def patch(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
