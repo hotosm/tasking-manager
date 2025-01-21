@@ -9,8 +9,7 @@ include "envcommon" {
 }
 
 terraform {
-  # source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
-  source = "file:///app/modules/terraform-aws-vpc"
+  source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
 }
 
 ## Modify inputs for overriding _envcommon's inputs.

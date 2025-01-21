@@ -11,7 +11,6 @@
 # deployed version.
 terraform {
   source = "${local.base_source_url}?ref=tasking-manager-infra"
-
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
