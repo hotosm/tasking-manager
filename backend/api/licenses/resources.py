@@ -1,3 +1,5 @@
+from backend.models.dtos.user_dto import AuthUserDTO
+from backend.services.users.authentication_service import pm_only
 from databases import Database
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -14,10 +16,11 @@ router = APIRouter(
 
 
 @router.post("/")
-# TODO: refactor decorator functions
-# @requires("authenticated")
-# @tm.pm_only()
-async def post(license_dto: LicenseDTO, db: Database = Depends(get_db)):
+async def post(
+    license_dto: LicenseDTO,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(pm_only),
+):
     """
     Creates a new mapping license
     ---
@@ -93,10 +96,11 @@ async def get(
 
 
 @router.patch("/{license_id}/")
-# @requires("authenticated")
-# @tm.pm_only()
 async def patch(
-    license_dto: LicenseDTO, license_id: int, db: Database = Depends(get_db)
+    license_dto: LicenseDTO,
+    license_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(pm_only),
 ):
     """
     Update a specified mapping license
@@ -148,9 +152,11 @@ async def patch(
 
 
 @router.delete("/{license_id}/")
-# @requires("authenticated")
-# @tm.pm_only()
-async def delete(license_id: int, db: Database = Depends(get_db)):
+async def delete(
+    license_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(pm_only),
+):
     """
     Delete a specified mapping license
     ---
