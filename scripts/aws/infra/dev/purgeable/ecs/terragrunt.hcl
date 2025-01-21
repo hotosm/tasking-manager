@@ -7,13 +7,13 @@
 # Include the root `terragrunt.hcl` configuration. The root configuration contains settings that are common across all
 # components and environments, such as how to configure remote state.
 include "root" {
-  path = find_in_parent_folders()
+  path = find_in_parent_folders("root.hcl")
 }
 
 # Include the envcommon configuration for the component. The envcommon configuration contains settings that are common
 # for the component across all environments.
 include "envcommon" {
-  path = "${dirname(find_in_parent_folders())}/_envcommon/ecs.hcl"
+  path = "${dirname(find_in_parent_folders("root.hcl"))}/_envcommon/ecs.hcl"
   # We want to reference the variables from the included config in this configuration, so we expose it.
   expose = true
 }
@@ -92,33 +92,33 @@ inputs = {
   container_envvars = merge(
     dependency.rds.outputs.database_config_as_ecs_inputs,
     {
-      EXTRA_CORS_ORIGINS            = "[\"https://tm-ecs-frontend.naxa.com.np\", \"http://localhost:3000\"]"
-      TM_SMTP_HOST                  = "smtp.gmail.com"
-      TM_SMTP_PORT                  = "587"
-      TM_SMTP_USE_TLS               = "0"
-      TM_SMTP_USE_SSL               = "1"
-      TM_APP_BASE_URL               = "https://tm-ecs.naxa.com.np"
-      TM_APP_API_URL                = "https://tm-ecs.naxa.com.np/api"
-      TM_APP_API_VERSION            = "v2"
-      TM_ORG_NAME                   = "Humanitarian OpenStreetMap Team"
-      TM_ORG_CODE                   = "HOT"
-      TM_ORG_LOGO                   = "https://cdn.img.url/logo.png"
-      TM_ORG_URL                    = "example.com"
-      TM_ORG_PRIVACY_POLICY_URL     = "https://www.hotosm.org/privacy"
-      TM_ORG_TWITTER                = "http://twitter.com/hotosm"
-      TM_ORG_FB                     = "https://www.facebook.com/hotosm"
-      TM_ORG_INSTAGRAM              = "https://www.instagram.com/open.mapping.hubs/"
-      TM_ORG_YOUTUBE                = "https://www.youtube.com/user/hotosm"
-      TM_ORG_GITHUB                 = "https://github.com/hotosm"
-      OSM_SERVER_URL                = "https://www.openstreetmap.org"
-      OSM_SERVER_API_URL            = "https://api.openstreetmap.org"
-      OSM_NOMINATIM_SERVER_URL      = "https://nominatim.openstreetmap.org"
-      OSM_REGISTER_URL              = "https://www.openstreetmap.org/user/new"
-      POSTGRES_TEST_DB              = "tasking-manager-test"
-      UNDERPASS_URL                 = "https://underpass.hotosm.org"
-      TM_REDIRECT_URI               = "https://tm-ecs.naxa.com.np/authorized"
-      TM_SEND_PROJECT_EMAIL_UPDATES = "1"
-      TM_DEFAULT_LOCALE             = "en"
+      EXTRA_CORS_ORIGINS            = get_env("EXTRA_CORS_ORIGINS" ,"[\"https://tm-ecs-frontend.naxa.com.np\", \"http://localhost:3000\"]")
+      TM_SMTP_HOST                  = get_env("TM_SMTP_HOST" ,"smtp.gmail.com")
+      TM_SMTP_PORT                  = get_env("TM_SMTP_PORT" ,"587")
+      TM_SMTP_USE_TLS               = get_env("TM_SMTP_USE_TLS" ,"0")
+      TM_SMTP_USE_SSL               = get_env("TM_SMTP_USE_SSL" ,"1")
+      TM_APP_BASE_URL               = get_env("TM_APP_BASE_URL" ,"https://tm-ecs.naxa.com.np")
+      TM_APP_API_URL                = get_env("TM_APP_API_URL" ,"https://tm-ecs.naxa.com.np/api")
+      TM_APP_API_VERSION            = get_env("TM_APP_API_VERSION" ,"v2")
+      TM_ORG_NAME                   = get_env("TM_ORG_NAME" ,"Humanitarian OpenStreetMap Team")
+      TM_ORG_CODE                   = get_env("TM_ORG_CODE" ,"HOT")
+      TM_ORG_LOGO                   = get_env("TM_ORG_LOGO" ,"https://cdn.img.url/logo.png")
+      TM_ORG_URL                    = get_env("TM_ORG_URL" ,"example.com")
+      TM_ORG_PRIVACY_POLICY_URL     = get_env("TM_ORG_PRIVACY_POLICY_URL" ,"https://www.hotosm.org/privacy")
+      TM_ORG_TWITTER                = get_env("TM_ORG_TWITTER" ,"http://twitter.com/hotosm")
+      TM_ORG_FB                     = get_env("TM_ORG_FB" ,"https://www.facebook.com/hotosm")
+      TM_ORG_INSTAGRAM              = get_env("TM_ORG_INSTAGRAM" ,"https://www.instagram.com/open.mapping.hubs/")
+      TM_ORG_YOUTUBE                = get_env("TM_ORG_YOUTUBE" ,"https://www.youtube.com/user/hotosm")
+      TM_ORG_GITHUB                 = get_env("TM_ORG_GITHUB" ,"https://github.com/hotosm")
+      OSM_SERVER_URL                = get_env("OSM_SERVER_URL" ,"https://www.openstreetmap.org")
+      OSM_SERVER_API_URL            = get_env("OSM_SERVER_API_URL" ,"https://api.openstreetmap.org")
+      OSM_NOMINATIM_SERVER_URL      = get_env("OSM_NOMINATIM_SERVER_URL" ,"https://nominatim.openstreetmap.org")
+      OSM_REGISTER_URL              = get_env("OSM_REGISTER_URL" ,"https://www.openstreetmap.org/user/new")
+      POSTGRES_TEST_DB              = get_env("POSTGRES_TEST_DB" ,"tasking-manager-test")
+      UNDERPASS_URL                 = get_env("UNDERPASS_URL" ,"https://underpass.hotosm.org")
+      TM_REDIRECT_URI               = get_env("TM_REDIRECT_URI" ,"https://tm-ecs.naxa.com.np/authorized")
+      TM_SEND_PROJECT_EMAIL_UPDATES = get_env("TM_SEND_PROJECT_EMAIL_UPDATES" ,"1")
+      TM_DEFAULT_LOCALE             = get_env("TM_DEFAULT_LOCALE" ,"en")
       # Uncomment the following as needed
       # TM_EMAIL_FROM_ADDRESS      = "noreply@localhost"
       # TM_EMAIL_CONTACT_ADDRESS   = "sysadmin@localhost"

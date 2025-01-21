@@ -1,0 +1,15 @@
+name: Terragrunt Plan
+
+on:
+  workflow_dispatch:
+
+jobs:
+  plan:
+    uses: naxa-developers/gh-workflows/.github/workflows/plan.yml@master
+    with:
+      working_dir: ./scripts/aws/infra/dev/purgeable/ecs
+      terraform_version: "1.9.5"
+      terragrunt_version: "0.67.15"
+      aws_region: us-west-2
+
+    secrets: inherit
