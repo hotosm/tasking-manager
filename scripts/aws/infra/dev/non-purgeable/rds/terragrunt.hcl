@@ -1,9 +1,9 @@
 include "root" {
-  path = find_in_parent_folders()
+  path = find_in_parent_folders("root.hcl")
 }
 
 include "envcommon" {
-  path   = "${dirname(find_in_parent_folders())}/_envcommon/rds.hcl"
+  path   = "${dirname(find_in_parent_folders("root.hcl"))}/_envcommon/rds.hcl"
   expose = true
 }
 
