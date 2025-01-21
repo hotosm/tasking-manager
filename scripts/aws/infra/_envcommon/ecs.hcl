@@ -64,4 +64,24 @@ inputs = {
     image_tag        = "fastapi"
     service_name     = format("%s-%s-%s-%s", local.application, local.team, local.environment, "fastapi")
   }
+
+  ## Default tested resources needed for fastapi container. Override using ../<environment>/purgeable/ecs/terragrunt.hcl
+  container_capacity = {
+    cpu       = 512
+    memory_mb = 1024
+  } 
+
+  ## Scaling Policies enabled for cpu,memory in addition to ALB Count.
+  scale_by_cpu = {
+    enabled = true
+    cpu_pct = 70
+    scale_in_cooldown = 30
+    scale_out_cooldown = 60
+  }
+  scale_by_memory = {
+    enabled    = true
+    memory_pct = 80
+    scale_in_cooldown = 30
+    scale_out_cooldown = 30
+  }
 }
