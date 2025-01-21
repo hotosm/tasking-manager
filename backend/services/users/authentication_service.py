@@ -5,7 +5,7 @@ from random import SystemRandom
 from typing import Optional
 
 from databases import Database
-from fastapi import HTTPException, Security, status
+from fastapi import Depends, HTTPException, Security, status
 from fastapi.responses import JSONResponse
 from fastapi.security.api_key import APIKeyHeader
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
@@ -19,7 +19,9 @@ from starlette.authentication import (
 
 from backend.api.utils import TMAPIDecorators
 from backend.config import settings
+from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.postgis.statuses import UserRole
 from backend.models.postgis.user import User
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import NotFound, UserService
@@ -283,6 +285,7 @@ async def login_required_optional(
 
 async def pm_only(
     Authorization: str = Security(APIKeyHeader(name="Authorization")),
+    db: Database = Depends(get_db),
 ):
     if not Authorization:
         raise HTTPException(status_code=401, detail="Authorization header missing")
@@ -293,15 +296,24 @@ async def pm_only(
         try:
             decoded_token = base64.b64decode(credentials).decode("ascii")
         except UnicodeDecodeError:
-            logger.debug("Unable to decode token")
             raise HTTPException(status_code=401, detail="Invalid token")
     except (ValueError, UnicodeDecodeError, binascii.Error):
-        raise AuthenticationError("Invalid auth credentials")
+        raise HTTPException(status_code=401, detail="Invalid auth credentials")
+
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:
-        logger.debug("Token not valid")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail={"Error": "Token is expired or invalid", "SubCode": "InvalidToken"},
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    query = "SELECT id, username, role FROM users WHERE id = :user_id"
+    user = await db.fetch_one(query=query, values={"user_id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user["role"] != UserRole.ADMIN.value:
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    return AuthUserDTO(id=user["id"])
