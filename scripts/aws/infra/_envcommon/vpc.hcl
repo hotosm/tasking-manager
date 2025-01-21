@@ -10,7 +10,7 @@
 # needs to deploy a different module version, it should redefine this block with a different ref to override the
 # deployed version.
 terraform {
-  source = "${local.base_source_url}"
+  source = "${local.base_source_url}?ref=tasking-manager-infra"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------

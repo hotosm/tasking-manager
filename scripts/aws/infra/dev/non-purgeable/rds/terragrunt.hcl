@@ -9,7 +9,7 @@ include "envcommon" {
 
 terraform {
   // source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
-  source = "file:///app/modules/terraform-aws-rds"
+  source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
 }
 
 dependency "vpc" {
