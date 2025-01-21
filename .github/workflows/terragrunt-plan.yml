@@ -5,9 +5,9 @@ on:
 
 jobs:
   plan:
-    uses: naxa-developers/gh-workflows/.github/workflows/plan.yml@master
+    uses: naxa-developers/gh-workflows/.github/workflows/plan.yml@tm
     with:
-      working_dir: ./scripts/aws/infra/dev/purgeable/ecs
+      working_dir: ./scripts/aws/infra/dev/
       terraform_version: "1.9.5"
       terragrunt_version: "0.67.15"
       aws_region: us-west-2
