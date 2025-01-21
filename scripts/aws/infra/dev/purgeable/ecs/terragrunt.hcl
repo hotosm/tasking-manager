@@ -21,7 +21,7 @@ include "envcommon" {
 # Configure the version of the module to use in this environment. This allows you to promote new versions one
 # environment at a time (e.g., qa -> stage -> prod).
 terraform {
-  source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
+  source = "file:///app/modules/terraform-aws-ecs"
 }
 
 locals {
@@ -81,16 +81,24 @@ inputs = {
       min_healthy_pct = 50
       max_pct         = 200
     }
+  
+  ## Scaling Policy Target Values
+  scaling_target_values = {
+    container_min_count = 1
+    container_max_count = 4
+  }
+
   # Merge non-sensetive together 
   container_envvars = merge(
     dependency.rds.outputs.database_config_as_ecs_inputs,
     {
+      EXTRA_CORS_ORIGINS            = "[\"https://tm-ecs-frontend.naxa.com.np\", \"http://localhost:3000\"]"
       TM_SMTP_HOST                  = "smtp.gmail.com"
       TM_SMTP_PORT                  = "587"
       TM_SMTP_USE_TLS               = "0"
       TM_SMTP_USE_SSL               = "1"
-      TM_APP_BASE_URL               = "https://tmtf.naxa.com.np"
-      TM_APP_API_URL                = "https://tmtf.naxa.com.np/api"
+      TM_APP_BASE_URL               = "https://tm-ecs.naxa.com.np"
+      TM_APP_API_URL                = "https://tm-ecs.naxa.com.np/api"
       TM_APP_API_VERSION            = "v2"
       TM_ORG_NAME                   = "Humanitarian OpenStreetMap Team"
       TM_ORG_CODE                   = "HOT"
@@ -108,7 +116,7 @@ inputs = {
       OSM_REGISTER_URL              = "https://www.openstreetmap.org/user/new"
       POSTGRES_TEST_DB              = "tasking-manager-test"
       UNDERPASS_URL                 = "https://underpass.hotosm.org"
-      TM_REDIRECT_URI               = "https://tmtf.naxa.com.np/authorized"
+      TM_REDIRECT_URI               = "https://tm-ecs.naxa.com.np/authorized"
       TM_SEND_PROJECT_EMAIL_UPDATES = "1"
       TM_DEFAULT_LOCALE             = "en"
       # Uncomment the following as needed

@@ -25,7 +25,7 @@ inputs = {
   ## RDS Module inputs 
   serverless_capacity = {
       minimum = 0.5 # Lowest possible APU for Aurora Serverless
-      maximum = 1   # Max APU to keep cost low for dev
+      maximum = 4   # Max APU to keep cost low for dev
     }
   
   ## RDS Backup/Snapshot Config
