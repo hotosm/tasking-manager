@@ -73,8 +73,8 @@ remote_state {
   backend = "s3"
   config = {
     encrypt        = true
-    bucket         = "${local.application}-${local.team}-${local.environment}"
-    key            = "${path_relative_to_include()}/terraform.tfstate"
+    bucket         = "${local.application}-${local.team}"
+    key            = "${local.environment}/${path_relative_to_include()}/terraform.tfstate"
     region         = local.aws_region
     dynamodb_table = "tm-locks"
     profile        = "${local.aws_profile}"

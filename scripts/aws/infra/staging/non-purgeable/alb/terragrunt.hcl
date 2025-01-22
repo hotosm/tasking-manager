@@ -22,5 +22,5 @@ inputs = {
   alb_subnets = dependency.vpc.outputs.public_subnets
 
   # TLS and Certificate Configuration
-  acm_tls_cert_backend_arn = "arn:aws:acm:us-east-2:685797548389:certificate/810d8829-5e61-44f6-a030-f06eb5b66ae6"
+  acm_tls_cert_backend_arn = get_env("ACM_TLS_CERT_BACKEND_ARN", "arn:aws:acm:us-east-1:670261699094:certificate/1d74321b-1e5b-4e31-b97a-580deb39c539")
 }
