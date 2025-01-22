@@ -93,12 +93,14 @@ inputs = {
     dependency.rds.outputs.database_config_as_ecs_inputs,
     {
       EXTRA_CORS_ORIGINS            = get_env("EXTRA_CORS_ORIGINS" ,"[\"https://tm-ecs-frontend.naxa.com.np\", \"http://localhost:3000\"]")
-      TM_SMTP_HOST                  = get_env("TM_SMTP_HOST" ,"smtp.gmail.com")
+      TM_SMTP_HOST                  = get_env("TM_SMTP_HOST" ,"email-smtp.us-east-1.amazonaws.com")
       TM_SMTP_PORT                  = get_env("TM_SMTP_PORT" ,"587")
-      TM_SMTP_USE_TLS               = get_env("TM_SMTP_USE_TLS" ,"0")
-      TM_SMTP_USE_SSL               = get_env("TM_SMTP_USE_SSL" ,"1")
-      TM_APP_BASE_URL               = get_env("TM_APP_BASE_URL" ,"https://tm-ecs.naxa.com.np")
-      TM_APP_API_URL                = get_env("TM_APP_API_URL" ,"https://tm-ecs.naxa.com.np/api")
+      TM_SMTP_USE_TLS               = get_env("TM_SMTP_USE_TLS" ,"1")
+      TM_SMTP_USE_SSL               = get_env("TM_SMTP_USE_SSL" ,"0")
+      TM_EMAIL_FROM_ADDRESS         = get_env("TM_EMAIL_FROM_ADDRESS", "noreply@localhost")
+      TM_EMAIL_CONTACT_ADDRESS      = get_env("TM_EMAIL_CONTACT_ADDRESS", "sysadmin@localhost")
+      TM_APP_BASE_URL               = get_env("TM_APP_BASE_URL" ,"https://tasks-stage.hotosm.org")
+      TM_APP_API_URL                = get_env("TM_APP_API_URL" ,"https://tasking-manager-staging-api.hotosm.org")
       TM_APP_API_VERSION            = get_env("TM_APP_API_VERSION" ,"v2")
       TM_ORG_NAME                   = get_env("TM_ORG_NAME" ,"Humanitarian OpenStreetMap Team")
       TM_ORG_CODE                   = get_env("TM_ORG_CODE" ,"HOT")
@@ -116,22 +118,22 @@ inputs = {
       OSM_REGISTER_URL              = get_env("OSM_REGISTER_URL" ,"https://www.openstreetmap.org/user/new")
       POSTGRES_TEST_DB              = get_env("POSTGRES_TEST_DB" ,"tasking-manager-test")
       UNDERPASS_URL                 = get_env("UNDERPASS_URL" ,"https://underpass.hotosm.org")
-      TM_REDIRECT_URI               = get_env("TM_REDIRECT_URI" ,"https://tm-ecs.naxa.com.np/authorized")
+      TM_REDIRECT_URI               = get_env("TM_REDIRECT_URI" ,"https://tasks-stage.hotosm.org/authorized")
       TM_SEND_PROJECT_EMAIL_UPDATES = get_env("TM_SEND_PROJECT_EMAIL_UPDATES" ,"1")
       TM_DEFAULT_LOCALE             = get_env("TM_DEFAULT_LOCALE" ,"en")
-      # Uncomment the following as needed
-      # TM_EMAIL_FROM_ADDRESS      = "noreply@localhost"
-      # TM_EMAIL_CONTACT_ADDRESS   = "sysadmin@localhost"
-      # TM_LOG_LEVEL               = "DEBUG"
-      # TM_LOG_DIR                 = "logs"
-      # TM_SUPPORTED_LANGUAGES_CODES = "en, es"
-      # TM_SUPPORTED_LANGUAGES     = "English, Español"
-      # TM_TASK_AUTOUNLOCK_AFTER   = "2h"
-      # TM_MAPPER_LEVEL_INTERMEDIATE = "250"
-      # TM_MAPPER_LEVEL_ADVANCED   = "500"
-      # TM_IMPORT_MAX_FILESIZE     = "1000000"
-      # TM_MAX_AOI_AREA            = "5000"
-      # EXPORT_TOOL_S3_URL         = "https://foorawdataapi.s3.amazonaws.com"
-      # ENABLE_EXPORT_TOOL         = "1"
+      TM_LOG_LEVEL                  = get_env("TM_LOG_LEVEL" ,"INFO")
+      TM_LOG_DIR                    = get_env("TM_LOG_DIR", "logs")
+      TM_SUPPORTED_LANGUAGES_CODES  = get_env("TM_SUPPORTED_LANGUAGES_CODES", "en, es")
+      TM_SUPPORTED_LANGUAGES        = get_env("TM_SUPPORTED_LANGUAGES", "English, Español")
+      TM_DEFAULT_CHANGESET_COMMENT  = get_env("TM_DEFAULT_CHANGESET_COMMENT", "#hot-tm-stage-project")
+      TM_ENVIRONMENT                = get_env("TM_ENVIRONMENT", "tasking-manager-staging")
+      # Uncomment the following as needed.
+      # TM_TASK_AUTOUNLOCK_AFTER    = get_env("TM_TASK_AUTOUNLOCK_AFTER", "2h")
+      # TM_MAPPER_LEVEL_INTERMEDIATE = get_env("TM_MAPPER_LEVEL_INTERMEDIATE", "250")
+      # TM_MAPPER_LEVEL_ADVANCED   = get_env("TM_MAPPER_LEVEL_ADVANCED", "500")
+      # TM_IMPORT_MAX_FILESIZE     = get_env("TM_IMPORT_MAX_FILESIZE", "1000000")
+      # TM_MAX_AOI_AREA            = get_env("TM_MAX_AOI_AREA", "5000")
+      # EXPORT_TOOL_S3_URL         = get_env("EXPORT_TOOL_S3_URL", "https://foorawdataapi.s3.amazonaws.com")
+      # ENABLE_EXPORT_TOOL         = get_env("ENABLE_EXPORT_TOOL", "1")
   })
 }

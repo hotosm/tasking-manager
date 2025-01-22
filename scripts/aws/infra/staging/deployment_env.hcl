@@ -4,7 +4,7 @@ locals {
   aws_region      = "us-east-2"
   team            = "hotosm"
   owner           = "HOTOSM"
-  environment     = "dev"
+  environment     = "staging"
   project         = "tasking-manager"
   application     = "tasking-manager"
   short_name      = "tm"

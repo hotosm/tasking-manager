@@ -41,6 +41,6 @@ locals {
 inputs = {
   app_port                 = "5000"                                                                                #TODOTM
   health_check_path        = "/api/v2/system/heartbeat/"                                                           #TODOTM
-  alb_name                 = format("%s-%s-%s-%s", local.application, local.team, local.environment, "alb")
-  target_group_name        = format("%s-%s-%s-%s", local.application, local.team, local.environment, "tg")
+  alb_name                 = format("%s-%s-%s", local.application, local.environment, "alb")
+  target_group_name        = format("%s-%s-%s", local.application, local.environment, "tg")
 }
