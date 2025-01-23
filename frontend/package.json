@@ -90,7 +90,7 @@
     "patch-rapid": "bash -c \"cp patch/rapid-imagery.min.json public/static/rapid/data/imagery.min.json\"",
     "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
     "dev": "vite",
-    "start": "npm run preparation && npm run copy-static && npm run copy-id-static && npm run patch-rapid && vite start",
+    "start": "npm run preparation && npm run copy-static && npm run copy-id-static && npm run patch-rapid && vite",
     "build": "npm run preparation && npm run update-static && npm run update-id-static && npm run patch-rapid && vite build && npm run sentry:sourcemaps",
     "prettier": "prettier --write 'src/**/*.js'",
     "lint": "eslint src",
