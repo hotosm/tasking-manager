@@ -814,18 +814,6 @@ class Task(Base):
         rows = await db.fetch_all(query=query, values=values)
         return rows
 
-    # @staticmethod
-    # def get_tasks_by_status(project_id: int, status: str):
-    #     "Returns all tasks filtered by status in a project"
-    #     return (
-    #         session.query(Task)
-    #         .filter(
-    #             Task.project_id == project_id,
-    #             Task.task_status == TaskStatus[status].value,
-    #         )
-    #         .all()
-    #     )
-
     @staticmethod
     async def get_tasks_by_status(project_id: int, status: str, db: Database):
         """
