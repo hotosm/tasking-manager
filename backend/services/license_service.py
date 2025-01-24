@@ -53,6 +53,19 @@ class LicenseService:
     @staticmethod
     async def delete_license(license_id: int, db: Database):
         """Delete specified license"""
+        check_query = """
+            SELECT 1
+            FROM projects
+            WHERE license_id = :license_id
+            LIMIT 1;
+        """
+        associated = await db.fetch_one(check_query, {"license_id": license_id})
+        if associated:
+            raise HTTPException(
+                status_code=500,
+                detail="Cannot delete the license as it is associated with a project.",
+            )
+
         query = """
             DELETE FROM licenses
             WHERE id = :license_id;

@@ -81,6 +81,30 @@ services:
     networks:
       - tm-net
 
+  tm-cron-jobs:
+    image: ghcr.io/hotosm/tasking-manager/backend:main
+    build:
+      context: .
+    command: ["python", "backend/cron_jobs.py"]
+    depends_on:
+      tm-db:
+        condition: service_healthy
+    env_file:
+      - tasking-manager.env
+    environment:
+      - PYTHONPATH=/usr/src/app
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.2"
+          memory: 128M
+    networks:
+      - tm-net
+
   traefik:
     image: traefik:v2.10
     restart: always

@@ -80,6 +80,37 @@ class InterestService:
 
     @staticmethod
     async def delete(interest_id: int, db: Database):
+        check_user_association_query = """
+            SELECT 1
+            FROM user_interests
+            WHERE interest_id = :interest_id
+            LIMIT 1;
+        """
+
+        user_associated = await db.fetch_one(
+            check_user_association_query, {"interest_id": interest_id}
+        )
+        if user_associated:
+            raise HTTPException(
+                status_code=500,
+                detail="Interest is associated with a user and cannot be deleted.",
+            )
+
+        check_project_association_query = """
+            SELECT 1
+            FROM project_interests
+            WHERE interest_id = :interest_id
+            LIMIT 1;
+        """
+        project_associated = await db.fetch_one(
+            check_project_association_query, {"interest_id": interest_id}
+        )
+        if project_associated:
+            raise HTTPException(
+                status_code=500,
+                detail="Interest is associated with a project and cannot be deleted.",
+            )
+
         query = """
             DELETE FROM interests
             WHERE id = :interest_id;
