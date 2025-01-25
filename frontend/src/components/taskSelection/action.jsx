@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import Popup from 'reactjs-popup';
@@ -48,8 +48,8 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
   const location = useLocation();
   const aboutToExpireTimeoutRef = useRef();
   const expiredTimeoutRef = useRef();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);

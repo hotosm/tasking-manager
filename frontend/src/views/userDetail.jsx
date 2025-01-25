@@ -1,6 +1,6 @@
 import { lazy, useEffect, useState, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 
@@ -24,12 +24,12 @@ const TopCauses = lazy(() =>
 
 export const UserDetail = ({ withHeader = true }) => {
   const navigate = useNavigate();
-  const loggedInUsername = useSelector((state) => state.auth.userDetails?.username);
+  const loggedInUsername = useTypedSelector((state) => state.auth.userDetails?.username);
   const { username: usernameParam } = useParams();
   const username = usernameParam || loggedInUsername;
   useSetTitleTag(username);
-  const token = useSelector((state) => state.auth.token);
-  const currentUser = useSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
+  const currentUser = useTypedSelector((state) => state.auth.userDetails);
   const [userOsmDetails, setUserOsmDetails] = useState({});
   const [errorDetails, loadingDetails, userDetails] = useFetch(
     `users/queries/${username}/`,

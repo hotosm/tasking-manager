@@ -1,6 +1,6 @@
 import { lazy, useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import { useQueryParam, StringParam } from 'use-query-params';
 import Popup from 'reactjs-popup';
 import ReactPlaceholder from 'react-placeholder';
@@ -33,7 +33,6 @@ import {
 } from '../../api/projects';
 import { useTeamsQuery } from '../../api/teams';
 
-import { RootStore } from '../../store/index.js';
 const TaskSelectionFooter = lazy(() => import('./footer'));
 
 const getRandomTaskByAction = (activities, taskAction) => {
@@ -64,10 +63,10 @@ export function TaskSelection({
   const { tabname: activeSection } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
-  const token = useSelector((state: RootStore) => state.auth.token);
-  const user = useSelector((state: RootStore) => state.auth.userDetails);
-  const userOrgs = useSelector((state: RootStore) => state.auth.organisations);
+  const dispatch = useTypedDispatch();
+  const token = useTypedSelector((state) => state.auth.token);
+  const user = useTypedSelector((state) => state.auth.userDetails);
+  const userOrgs = useTypedSelector((state) => state.auth.organisations);
   const lockedTasks = useGetLockedTasks();
   const [zoomedTaskId, setZoomedTaskId] = useState(null);
   const [selected, setSelectedTasks] = useState([]);

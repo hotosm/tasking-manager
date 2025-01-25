@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryParam, StringParam } from 'use-query-params';
 import { FormattedMessage } from 'react-intl';
@@ -24,8 +24,8 @@ export function ValidateTask() {
 
 export function TaskAction({ projectId, action }) {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+  const dispatch = useTypedDispatch();
+  const token = useTypedSelector((state) => state.auth.token);
   // eslint-disable-next-line
   const [editor, setEditor] = useQueryParam('editor', StringParam);
 

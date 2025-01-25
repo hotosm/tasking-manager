@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -74,7 +74,7 @@ export function SameProjectLock({ lockedTasks, action }) {
 }
 
 export const LicenseError = ({ id, close, lockTasks }) => {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [license, setLicense] = useState(null);
 
   useEffect(() => {
@@ -157,7 +157,7 @@ function LockErrorButtons({
   selectedTasks,
   setSelectedTasks,
 }) {
-  const user = useSelector((state) => state.auth.userDetails);
+  const user = useTypedSelector((state) => state.auth.userDetails);
   const [hasTasksChanged, setHasTasksChanged] = useState(false);
 
   const handleDeselectAndValidate = () => {

@@ -1,5 +1,5 @@
 import { lazy, useState, useLayoutEffect, useCallback, Suspense, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useNavigate } from 'react-router-dom';
 import { useQueryParam, NumberParam } from 'use-query-params';
 import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
@@ -40,7 +40,7 @@ const ProjectCreationMap = lazy(() =>
 
 const ProjectCreate = () => {
   const intl = useIntl();
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const navigate = useNavigate();
   const [drawModeIsActive, setDrawModeIsActive] = useState(false);
   const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(false);

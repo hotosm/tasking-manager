@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect, Suspense, lazy, forwardRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import Popup from 'reactjs-popup';
 import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
@@ -82,7 +82,7 @@ const ActionStatus = ({ status, action }) => {
 };
 
 const ResetTasksModal = ({ projectId, close }) => {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
 
   const resetTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/reset-all/`, token, 'POST');
@@ -118,7 +118,7 @@ const ResetTasksModal = ({ projectId, close }) => {
 };
 
 const ResetBadImageryModal = ({ projectId, close }) => {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
 
   const resetBadImagery = () => {
     return fetchLocalJSONAPI(
@@ -162,7 +162,7 @@ const ResetBadImageryModal = ({ projectId, close }) => {
 };
 
 const ValidateAllTasksModal = ({ projectId, close }) => {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
 
   const validateAllTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/validate-all/`, token, 'POST');
@@ -202,7 +202,7 @@ const ValidateAllTasksModal = ({ projectId, close }) => {
 };
 
 const InvalidateAllTasksModal = ({ projectId, close }) => {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
 
   const invalidateAllTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/invalidate-all/`, token, 'POST');
@@ -242,7 +242,7 @@ const InvalidateAllTasksModal = ({ projectId, close }) => {
 };
 
 const MapAllTasksModal = ({ projectId, close }) => {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
 
   const mapAllTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/map-all/`, token, 'POST');
@@ -281,7 +281,7 @@ const MapAllTasksModal = ({ projectId, close }) => {
 const MessageContributorsModal = ({ projectId, close }) => {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
 
   const messageAllContributors = () => {
     return pushToLocalJSONAPI(
@@ -364,7 +364,7 @@ const MessageContributorsModal = ({ projectId, close }) => {
 };
 
 const RevertTasks = ({ projectId, action }) => {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [user, setUser] = useState(null);
   const [, contributorsLoading, contributors] = useFetch(`projects/${projectId}/contributions/`);
 
@@ -422,7 +422,7 @@ const RevertTasks = ({ projectId, action }) => {
 };
 
 const TransferProject = ({ projectId, orgId }) => {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const { projectInfo } = useContext(StateContext);
   const [username, setUsername] = useState('');
   const [managers, setManagers] = useState([]);
@@ -461,7 +461,7 @@ const TransferProject = ({ projectId, orgId }) => {
   const handleSelect = (value) => {
     setUsername(value);
   };
-  const { username: loggedInUsername, role: loggedInUserRole } = useSelector(
+  const { username: loggedInUsername, role: loggedInUserRole } = useTypedSelector(
     (state) => state.auth.userDetails,
   );
   const hasAccess =

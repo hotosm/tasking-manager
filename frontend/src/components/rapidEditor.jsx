@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 
 import PropTypes from 'prop-types';
 
@@ -147,11 +147,11 @@ function RapidEditor({
   powerUser = false,
   showSidebar = true,
 }) {
-  const dispatch = useDispatch();
-  const session = useSelector((state) => state.auth.session);
+  const dispatch = useTypedDispatch();
+  const session = useTypedSelector((state) => state.auth.session);
   const [rapidLoaded, setRapidLoaded] = useState(window.Rapid !== undefined);
-  const { context, dom } = useSelector((state) => state.editor.rapidContext);
-  const locale = useSelector((state) => state.preferences.locale);
+  const { context, dom } = useTypedSelector((state) => state.editor.rapidContext);
+  const locale = useTypedSelector((state) => state.preferences.locale);
   const windowInit = typeof window !== 'undefined';
 
   // This significantly reduces build time _and_ means different TM instances can share the same download of Rapid.

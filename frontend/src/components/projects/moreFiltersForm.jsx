@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Link } from 'react-router-dom';
 import { useQueryParam, BooleanParam } from 'use-query-params';
 import { FormattedMessage } from 'react-intl';
@@ -16,8 +16,8 @@ import { formatFilterCountriesData } from '../../utils/countries';
 
 export const MoreFiltersForm = (props) => {
   /* one useQueryParams for the main form */
-  const isLoggedIn = useSelector((state) => state.auth.token);
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const isLoggedIn = useTypedSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [formQuery, setFormQuery] = useExploreProjectsQueryParams();
   const isAdmin = userDetails && userDetails.role === 'ADMIN';
 

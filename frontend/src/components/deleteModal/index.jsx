@@ -1,5 +1,5 @@
 import { forwardRef, useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import Popup from 'reactjs-popup';
@@ -15,7 +15,7 @@ const DeleteTrigger = forwardRef((props, ref) => <DeleteButton {...props} />);
 export function DeleteModal({ id, name, type, className, endpointURL, onDelete }) {
   const navigate = useNavigate();
   const modalRef = useRef();
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [deleteStatus, setDeleteStatus] = useState(null);
   const [error, setErrorMessage] = useState(null);
 

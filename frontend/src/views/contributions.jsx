@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 
 import useForceUpdate from '../hooks/UseForceUpdate';
 import {
@@ -27,7 +27,7 @@ export const ContributionsPage = () => {
   };
 
   const location = useLocation();
-  const userToken = useSelector((state) => state.auth.token);
+  const userToken = useTypedSelector((state) => state.auth.token);
   //eslint-disable-next-line
   const [contributionsQuery, setContributionsQuery] = useTaskContributionQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
@@ -71,7 +71,7 @@ export const ContributionsPageIndex = (props) => {
 
 export const UserStats = () => {
   useSetTitleTag('My stats');
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
 
   return <UserDetail username={userDetails?.username} withHeader={false} />;
 };

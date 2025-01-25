@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import Select from 'react-select';
 import ReactDatePicker from 'react-datepicker';
 import { FormattedMessage } from 'react-intl';
@@ -22,8 +22,8 @@ export const PartnersFilterSelect = ({
     startDate: null,
     endDate: null,
   });
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const { isPending, isError, data: partners } = useAllPartnersQuery(token, userDetails?.id);
 
   useEffect(() => {

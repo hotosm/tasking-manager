@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
@@ -24,8 +24,8 @@ import '../components/partners/styles.scss';
 export function ListPartners() {
   useSetTitleTag('Manage partners');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.token);
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [partners, setPartners] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -57,8 +57,8 @@ export function ListPartners() {
 export function CreatePartner() {
   useSetTitleTag('Create new partner');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.token);
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [error, setError] = useState(null);
   const createPartner = (payload) => {
     pushToLocalJSONAPI('partners/', JSON.stringify(payload), token, 'POST')
@@ -152,8 +152,8 @@ export function CreatePartner() {
 
 export function EditPartners() {
   const { id } = useParams();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
 
   const [error, loading, partner] = useFetch(`partners/${id}/`, id);
 

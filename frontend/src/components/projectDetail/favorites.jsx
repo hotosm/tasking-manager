@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
@@ -8,7 +8,7 @@ import messages from './messages';
 
 export const AddToFavorites = (props) => {
   const navigate = useNavigate();
-  const userToken = useSelector((state) => state.auth.token);
+  const userToken = useTypedSelector((state) => state.auth.token);
   const [state, dispatchToggle] = useFavProjectAPI(false, props.projectId, userToken);
   const isFav = state.isFav;
   const isLoading = state.isLoading;

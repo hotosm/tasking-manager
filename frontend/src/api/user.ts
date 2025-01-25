@@ -1,12 +1,11 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useQuery } from '@tanstack/react-query';
 
 import api from './apiClient';
-import { RootStore } from '../store';
 
 export const useLockedTasksQuery = () => {
-  const token = useSelector((state: RootStore) => state.auth.token);
-  const locale = useSelector((state: RootStore) => state.preferences['locale']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
 
   const fetchLockedTasks = ({ signal }: {
     signal: AbortSignal;

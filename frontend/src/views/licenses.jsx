@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -17,8 +17,8 @@ import { EntityError } from '../components/alert';
 
 export const EditLicense = () => {
   const { id } = useParams();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const [error, loading, license] = useFetch(`licenses/${id}/`);
   const [isError, setIsError] = useState(false);
   useSetTitleTag(`Edit ${license.name}`);
@@ -52,7 +52,7 @@ export const EditLicense = () => {
 
 export const ListLicenses = () => {
   useSetTitleTag('Manage licenses');
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   // TO DO: filter teams of current user
   const [error, loading, licenses] = useFetch(`licenses/`);
   const isLicensesFetched = !loading && !error;
@@ -69,7 +69,7 @@ export const ListLicenses = () => {
 export const CreateLicense = () => {
   useSetTitleTag('Create new license');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [isError, setIsError] = useState(false);
 
   const createLicense = (payload) => {

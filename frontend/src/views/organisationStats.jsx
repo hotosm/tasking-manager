@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
@@ -18,8 +18,8 @@ import { OrganisationProjectStats } from '../components/teamsAndOrgs/organisatio
 export const OrganisationStats = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const token = useSelector((state) => state.auth.token);
-  const isOrgManager = useSelector(
+  const token = useTypedSelector((state) => state.auth.token);
+  const isOrgManager = useTypedSelector(
     (state) =>
       state.auth.userDetails?.role === 'ADMIN' || state.auth.organisations?.includes(Number(id)),
   );

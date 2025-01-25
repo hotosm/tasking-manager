@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect, useState, useLayoutEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import ReactPlaceholder from 'react-placeholder';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -42,10 +42,10 @@ export const CreateProject = () => {
 export const ProjectsPage = () => {
   useSetTitleTag('Explore projects');
   const { pathname } = useLocation();
-  const action = useSelector((state) => state.preferences['action']);
+  const action = useTypedSelector((state) => state.preferences['action']);
   const [fullProjectsQuery, setProjectQuery] = useExploreProjectsQueryParams();
-  const isMapShown = useSelector((state) => state.preferences['mapShown']);
-  const isExploreProjectsTableView = useSelector(
+  const isMapShown = useTypedSelector((state) => state.preferences['mapShown']);
+  const isExploreProjectsTableView = useTypedSelector(
     (state) => state.preferences['isExploreProjectsTableView'],
   );
   const searchResultWidth = isMapShown ? 'two-column' : 'one-column';
@@ -100,10 +100,10 @@ export const UserProjectsPage = ({ management }) => {
   const location = useLocation();
   const navigate = useNavigate();
   useSetTitleTag(management ? 'Manage projects' : 'My projects');
-  const userToken = useSelector((state) => state.auth.token);
+  const userToken = useTypedSelector((state) => state.auth.token);
 
   const [fullProjectsQuery, setProjectQuery] = useExploreProjectsQueryParams();
-  const isMapShown = useSelector((state) => state.preferences['mapShown']);
+  const isMapShown = useTypedSelector((state) => state.preferences['mapShown']);
   const searchResultWidth = isMapShown ? 'two-column' : 'one-column';
 
   const { data: projects, status, refetch } = useProjectsQuery(fullProjectsQuery);

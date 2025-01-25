@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 
 import { fetchLocalJSONAPI, fetchLocalJSONAPIWithAbort } from '../network/genericJSONRequest';
 import { useInterval } from './UseInterval';
-import { RootStore } from '../store';
 
 export const useFetch = (url: string, trigger: boolean = true) => {
-  const token = useSelector((state: RootStore) => state.auth.token);
-  const locale = useSelector((state: RootStore) => state.preferences['locale']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
   const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<unknown>({});
@@ -39,8 +38,8 @@ export const useFetch = (url: string, trigger: boolean = true) => {
 };
 
 export const useFetchWithAbort = <T extends object>(url: string, trigger: boolean = true) => {
-  const token = useSelector((state: RootStore) => state.auth.token);
-  const locale = useSelector((state: RootStore) => state.preferences['locale']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
   const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<T | null>(null);
@@ -85,8 +84,8 @@ export const useFetchWithAbort = <T extends object>(url: string, trigger: boolea
 };
 
 export function useFetchIntervaled(url: string, delay: number, trigger = true) {
-  const token = useSelector((state: RootStore) => state.auth.token);
-  const locale = useSelector((state: RootStore) => state.preferences['locale']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
   const [data, setData] = useState();
   const [error, setError] = useState<null | string>(null);
 

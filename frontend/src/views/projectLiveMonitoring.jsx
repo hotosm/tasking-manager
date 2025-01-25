@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import Select from 'react-select';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useTypedDispatch } from '@Store/hooks';
 import centroid from '@turf/centroid';
 import {
   UnderpassFeatureList,
@@ -31,7 +31,7 @@ const availableImageryValues = availableImageryOptions.map((item) => item.value)
 
 export function ProjectLiveMonitoring() {
   const { id } = useParams();
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const navigate = useNavigate();
   const [coords, setCoords] = useState([0, 0]);
   const [activeFeature, setActiveFeature] = useState(null);

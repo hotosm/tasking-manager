@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, FormattedNumber, FormattedRelativeTime } from 'react-intl';
 import { selectUnit } from '../../utils/selectUnit';
@@ -37,7 +37,7 @@ export function APIKeyCard({ token }) {
 }
 
 export function OSMCard({ username }) {
-  const osmUserInfo = useSelector((state) => state.auth.osm);
+  const osmUserInfo = useTypedSelector((state) => state.auth.osm);
   const { value, unit } = selectUnit(
     osmUserInfo ? new Date(osmUserInfo.accountCreated) : new Date(),
   );

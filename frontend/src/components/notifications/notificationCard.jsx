@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import Popup from 'reactjs-popup';
 import { Tooltip } from 'react-tooltip';
 import DOMPurify from 'dompurify';
@@ -70,8 +70,8 @@ export function NotificationCard({
   selected,
   setSelected,
 }) {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+  const dispatch = useTypedDispatch();
+  const token = useTypedSelector((state) => state.auth.token);
   const ref = useRef();
   const [replacedSubjectHTML, setReplacedSubjectHTML] = useState('');
 
@@ -210,7 +210,7 @@ export function NotificationCardMini({
   retryFn,
   read,
 }) {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [subjectHTML, setSubjectHTML] = useState('');
 
   useEffect(() => {

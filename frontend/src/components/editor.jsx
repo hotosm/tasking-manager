@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import { useIntl } from 'react-intl';
 import { gpx } from '@tmcw/togeojson';
 import * as iD from '@hotosm/id';
@@ -9,11 +9,11 @@ import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } fr
 import messages from './messages';
 
 export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }) {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const intl = useIntl();
-  const session = useSelector((state) => state.auth.session);
-  const iDContext = useSelector((state) => state.editor.context);
-  const locale = useSelector((state) => state.preferences.locale);
+  const session = useTypedSelector((state) => state.auth.session);
+  const iDContext = useTypedSelector((state) => state.editor.context);
+  const locale = useTypedSelector((state) => state.preferences.locale);
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
   const windowInit = typeof window !== 'undefined';
   const customSource =

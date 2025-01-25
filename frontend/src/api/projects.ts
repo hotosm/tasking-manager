@@ -1,20 +1,19 @@
 import axios from 'axios';
 import { subMonths, format } from 'date-fns';
 import { QueryKey, QueryOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import api from './apiClient';
-import { API_URL, UNDERPASS_URL } from '../config';
-import { RootStore } from '../store';
+import { UNDERPASS_URL } from '../config';
 
 export const useProjectsQuery = (
   fullProjectsQuery: string,
   action: string,
   queryOptions: QueryOptions,
 ) => {
-  const token = useSelector((state: RootStore) => state.auth.token);
-  const locale = useSelector((state: RootStore) => state.preferences['locale']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
 
   const fetchProjects = async (signal: AbortSignal | undefined, queryKey: QueryKey) => {
     const [, fullProjectsQuery, action] = queryKey;
@@ -45,8 +44,8 @@ export const useProjectsQuery = (
 };
 
 export const useProjectQuery = (projectId: string, otherOptions: any) => {
-  const token = useSelector((state: RootStore) => state.auth.token);
-  const locale = useSelector((state: RootStore) => state.preferences['locale']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
   const fetchProject = ({ signal }: { signal: AbortSignal }) => {
     return api(token, locale).get(`projects/${projectId}/`, {
       signal,
@@ -63,8 +62,8 @@ export const useProjectQuery = (projectId: string, otherOptions: any) => {
 type ProjectSummaryQueryOptions = Omit<UseQueryOptions<any>, ('queryKey' | 'queryFn' | 'select')>;
 
 export const useProjectSummaryQuery = (projectId: string, otherOptions?: ProjectSummaryQueryOptions) => {
-  const token = useSelector((state: RootStore) => state.auth.token);
-  const locale = useSelector((state: RootStore) => state.preferences['locale']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
 
   const fetchProjectSummary = ({ signal }: { signal: AbortSignal }) => {
     return api(token, locale).get(`projects/${projectId}/queries/summary/`, {
@@ -158,7 +157,7 @@ export const useProjectTimelineQuery = (projectId: string) => {
 };
 
 export const useTaskDetail = (projectId: string, taskId: number, shouldRefetch: boolean) => {
-  const token = useSelector((state: RootStore) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
 
   const fetchTaskDetail = ({ signal }: { signal: AbortSignal }) => {
     return api(token).get(`projects/${projectId}/tasks/${taskId}/`, {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
@@ -60,7 +60,7 @@ export function MyTeams() {
 }
 
 export function ListTeams({ managementView = false }) {
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [query, setQuery] = useQueryParams({
     page: withDefault(NumberParam, 1),
     showAll: BooleanParam,
@@ -132,8 +132,8 @@ const leaveTeamRequest = (team_id, username, role, token) => {
 export function CreateTeam() {
   useSetTitleTag('Create new team');
   const navigate = useNavigate();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const {
     members: managers,
     setMembers: setManagers,
@@ -234,8 +234,8 @@ export function CreateTeam() {
 
 export function EditTeam(props) {
   const { id } = useParams();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const [forceUpdated, forceUpdate] = useForceUpdate();
   const [error, loading, team] = useFetch(`teams/${id}/`, forceUpdated);
   const [initManagers, setInitManagers] = useState(false);
@@ -425,8 +425,8 @@ export function TeamDetail() {
   useSetTitleTag(`Team #${id}`);
   const location = useLocation();
   const navigate = useNavigate();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const [error, loading, team] = useFetch(`teams/${id}/`);
   // eslint-disable-next-line
   const [projectsError, projectsLoading, projects] = useFetch(

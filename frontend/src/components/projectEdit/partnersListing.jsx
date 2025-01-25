@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import ReactDatePicker from 'react-datepicker';
 import { FormattedMessage } from 'react-intl';
 import Popup from 'reactjs-popup';
@@ -51,7 +51,7 @@ export const Listing = ({ partnerIdToDetailsMapping }) => {
   const [errorMessage, setErrorMessage] = useState({});
   const [actionType, setActionType] = useState(''); // "edit" or "remove"
 
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const { id } = useParams();
   const queryClient = useQueryClient();
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useFetch } from '../hooks/UseFetch';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Form } from 'react-final-form';
@@ -19,7 +19,7 @@ import { EntityError } from '../components/alert';
 export const CreateInterest = () => {
   useSetTitleTag('Create new category');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [isError, setIsError] = useState(false);
 
   const createInterest = (payload) => {
@@ -89,7 +89,7 @@ export const CreateInterest = () => {
 
 export const ListInterests = () => {
   useSetTitleTag('Manage categories');
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   // TO DO: filter teams of current user
   const [error, loading, interests] = useFetch(`interests/`);
   const isInterestsFetched = !loading && !error;
@@ -105,8 +105,8 @@ export const ListInterests = () => {
 
 export const EditInterest = () => {
   const { id } = useParams();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const [isError, setIsError] = useState(false);
   const [error, loading, interest] = useFetch(`interests/${id}/`);
   useSetTitleTag(`Edit ${interest.name}`);

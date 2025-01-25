@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import toast from 'react-hot-toast';
 
 import { downloadAsCSV } from '../../api/projects';
@@ -10,8 +10,8 @@ import messages from './messages';
 
 export default function DownloadAsCSV({ allQueryParams }) {
   const [isLoading, setIsLoading] = useState(false);
-  const token = useSelector((state) => state.auth.token);
-  const action = useSelector((state) => state.preferences['action']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const action = useTypedSelector((state) => state.preferences['action']);
 
   const allQueryParamsCopy = { ...allQueryParams };
   allQueryParamsCopy.downloadAsCSV = true;

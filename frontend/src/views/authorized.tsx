@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useTypedDispatch } from '@Store/hooks';
 import { setAuthDetails } from '../store/actions/auth';
 
 export function Authorized(props) {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const [isReadyToRedirect, setIsReadyToRedirect] = useState(false);
 
   useEffect(() => {

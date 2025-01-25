@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 
 import { TopNavLink } from './NavLink';
 import { BellIcon } from '../svgIcons';
@@ -10,8 +10,8 @@ import { useOnResize } from '../../hooks/UseOnResize';
 import { useNotificationsQuery, useUnreadNotificationsCountQuery } from '../../api/notifications';
 
 export const NotificationBell = () => {
-  const token = useSelector((state) => state.auth.token);
-  const dispatch = useDispatch();
+  const token = useTypedSelector((state) => state.auth.token);
+  const dispatch = useTypedDispatch();
 
   const [bellPosition, setBellPosition] = useState(0);
   /* these below make the references stable so hooks doesn't re-request forever */

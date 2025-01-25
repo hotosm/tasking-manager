@@ -1,5 +1,5 @@
 import React, { Fragment, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
@@ -24,17 +24,16 @@ import { useDebouncedCallback } from '../../hooks/UseThrottle';
 import { HorizontalScroll } from '../horizontalScroll';
 
 import './styles.scss';
-import { RootStore } from '../../store/index';
 
 export const Header = () => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const location = useLocation();
   const navigate = useNavigate();
   const menuItemsContainerRef = useRef(null);
 
-  const userDetails = useSelector((state: RootStore) => state.auth.userDetails);
-  const organisations = useSelector((state: RootStore) => state.auth.organisations);
-  const showOrgBar = useSelector((state: RootStore) => state.orgBarVisibility.isVisible);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const organisations = useTypedSelector((state) => state.auth.organisations);
+  const showOrgBar = useTypedSelector((state) => state.orgBarVisibility.isVisible);
 
   const linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu lh-solid nowrap pv2';
 
@@ -294,7 +293,7 @@ export const ActionItems = ({
   );
 
 export const PopupItems = (props: any) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
 
   return (
     <div className="v-mid tc">

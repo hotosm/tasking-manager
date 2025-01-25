@@ -1,7 +1,6 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 
-import { RootStore } from '../../store';
 import messages from './messages';
 
 export const TabSelector = ({
@@ -11,7 +10,7 @@ export const TabSelector = ({
   activeSection: string;
   setActiveSection: (section: string) => void;
 }) => {
-  const token = useSelector((state: RootStore) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const tabs = token ? ['tasks', 'instructions', 'contributions'] as const : ['instructions'] as const;
 
   return (

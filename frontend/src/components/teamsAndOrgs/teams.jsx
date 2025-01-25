@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
@@ -26,7 +26,7 @@ export function TeamsManagement({
   query,
   setQuery,
 }) {
-  const isOrgManager = useSelector(
+  const isOrgManager = useTypedSelector(
     (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
 

@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
@@ -19,8 +19,8 @@ export const ProjectSearchResults = ({
   showBottomButtons,
   isExploreProjectsPage = false,
 }) => {
-  const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
-  const isExploreProjectsTableView = useSelector(
+  const listViewIsActive = useTypedSelector((state) => state.preferences['projectListView']);
+  const isExploreProjectsTableView = useTypedSelector(
     (state) => state.preferences['isExploreProjectsTableView'],
   );
 

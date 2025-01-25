@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import Select from 'react-select';
 import { FormattedMessage } from 'react-intl';
 
@@ -17,8 +17,8 @@ import { getFilterId } from '../../utils/osmchaLink';
 export const MetadataForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
   const [interests, setInterests] = useState([]);
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const [organisations, setOrganisations] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
 

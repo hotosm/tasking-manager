@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useSelector, useDispatch } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import messages from './messages';
 import { Dropdown } from '../dropdown';
 
 export const ProjectsActionFilter = ({ setQuery, fullProjectsQuery }) => {
-  const dispatch = useDispatch();
-  const action = useSelector((state) => state.preferences.action);
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const dispatch = useTypedDispatch();
+  const action = useTypedSelector((state) => state.preferences.action);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
 
   useEffect(() => {
     // if action is not set on redux/localStorage,

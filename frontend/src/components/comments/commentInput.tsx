@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import MDEditor from '@uiw/react-md-editor';
 import Tribute from 'tributejs';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -17,7 +17,6 @@ import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMar
 import { iconConfig } from './editorIconConfig';
 import messages from './messages';
 import { CurrentUserAvatar } from '../user/avatar';
-import { RootStore } from '../../store';
 
 function CommentInputField({
   comment,
@@ -42,7 +41,7 @@ function CommentInputField({
   placeholderMsg?: any;
   markdownTextareaProps?: any;
 }) {
-  const token = useSelector((state: RootStore) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const textareaRef = useRef();
   const isBundle = useRef(false);
   const [isShowPreview, setIsShowPreview] = useState(false);

@@ -3,7 +3,7 @@ import { RouterProvider } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import ReactPlaceholder from 'react-placeholder';
 import { useMeta } from 'react-meta-elements';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { ErrorBoundary } from '@sentry/react';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -11,7 +11,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import './assets/styles/index.scss';
 
 import { getUserDetails } from './store/actions/auth';
-import { RootStore, store } from './store';
+import { store } from './store';
 import { ORG_NAME, MATOMO_ID } from './config';
 import { Preloader } from './components/preloader';
 import { FallbackComponent } from './views/fallback';
@@ -40,8 +40,8 @@ const queryClient = new QueryClient({
 const App = () => {
   useMeta({ property: 'og:url', content: import.meta.env.REACT_APP_BASE_URL });
   useMeta({ name: 'author', content: ORG_NAME });
-  const isLoading = useSelector((state: RootStore) => state.loader.isLoading);
-  const locale = useSelector((state: RootStore) => state.preferences.locale);
+  const isLoading = useTypedSelector((state) => state.loader.isLoading);
+  const locale = useTypedSelector((state) => state.preferences.locale);
 
   useEffect(() => {
     // fetch user details endpoint when the user is returning to a logged in session

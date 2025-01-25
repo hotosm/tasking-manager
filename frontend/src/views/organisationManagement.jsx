@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
@@ -29,9 +29,9 @@ import { updateEntity } from '../utils/management';
 
 export function ListOrganisations() {
   useSetTitleTag('Manage organizations');
-  const token = useSelector((state) => state.auth.token);
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const isOrgManager = useSelector(
+  const token = useTypedSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const isOrgManager = useTypedSelector(
     (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
   const [organisations, setOrganisations] = useState(null);
@@ -75,8 +75,8 @@ export function ListOrganisations() {
 export function CreateOrganisation() {
   useSetTitleTag('Create new organization');
   const navigate = useNavigate();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const {
     members: managers,
     setMembers: setManagers,
@@ -168,8 +168,8 @@ export function CreateOrganisation() {
 
 export function EditOrganisation() {
   const { id } = useParams();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const [initManagers, setInitManagers] = useState(false);
   const {
     members: managers,

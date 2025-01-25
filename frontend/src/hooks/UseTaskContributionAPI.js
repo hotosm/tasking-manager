@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useEffect, useReducer } from 'react';
 import axios from 'axios';
 
@@ -101,8 +101,8 @@ export const useTaskContributionAPI = (
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
 
   /* Get the user bearer token from the Redux store */
-  const token = useSelector((state) => state.auth.token);
-  const user_id = useSelector((state) => state.auth.userDetails && state.auth.userDetails?.id);
+  const token = useTypedSelector((state) => state.auth.token);
+  const user_id = useTypedSelector((state) => state.auth.userDetails && state.auth.userDetails?.id);
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import area from '@turf/area';
 import { featureCollection } from '@turf/helpers';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
@@ -37,7 +37,7 @@ const removeTinyTasks = (metadata, updateMetadata) => {
 };
 
 export default function TrimProject({ metadata, mapObj, updateMetadata }) {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [clipStatus, setClipStatus] = useState(false);
   const [tinyTasksNumber, setTinyTasksNumber] = useState(0);
 
