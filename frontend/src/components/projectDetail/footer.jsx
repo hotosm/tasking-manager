@@ -1,6 +1,6 @@
 import { useRef, Fragment } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 
 import { Button } from '../button';
@@ -56,7 +56,7 @@ const menuItems = [
 ];
 
 export const ProjectDetailFooter = ({ className, projectId }) => {
-  const userIsloggedIn = useSelector((state) => state.auth.token);
+  const userIsloggedIn = useTypedSelector((state) => state.auth.token);
   const menuItemsContainerRef = useRef(null);
   const { pathname } = useLocation();
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import toast from 'react-hot-toast';
@@ -144,9 +144,9 @@ export const SearchNav = ({ filters, setFilters, initialFilters }) => {
 };
 
 export const UsersTable = ({ filters, setFilters }) => {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [response, setResponse] = useState(null);
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 

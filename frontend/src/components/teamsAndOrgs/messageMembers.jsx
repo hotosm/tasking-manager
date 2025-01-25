@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 import toast from 'react-hot-toast';
 
@@ -14,7 +14,7 @@ const CommentInputField = lazy(() =>
 );
 
 export function MessageMembers({ teamId, members }) {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [message, setMessage] = useState('');
   const [subject, setSubject] = useState('');
   const [status, setStatus] = useState(null);

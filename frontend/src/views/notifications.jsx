@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 
 import { useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
 import { InboxNav, InboxNavMini, InboxNavMiniBottom } from '../components/notifications/inboxNav';
@@ -59,7 +59,7 @@ export const NotificationsPage = () => {
   useSetTitleTag('Notifications');
   const navigate = useNavigate();
   const location = useLocation();
-  const userToken = useSelector((state) => state.auth.token);
+  const userToken = useTypedSelector((state) => state.auth.token);
   const [inboxQuery, setInboxQuery] = useInboxQueryParams();
   const { data: notifications, isError, isLoading, refetch } = useNotificationsQuery(inboxQuery);
 

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 import { useMutation } from '@tanstack/react-query';
 import ReactPlaceholder from 'react-placeholder';
@@ -23,8 +23,8 @@ const CommentInputField = lazy(() =>
 );
 
 export const PostProjectComment = ({ projectId, refetchComments, contributors }) => {
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
   const [comment, setComment] = useState('');
 
   const mutation = useMutation({
@@ -75,7 +75,7 @@ export const PostProjectComment = ({ projectId, refetchComments, contributors })
 };
 
 export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [page, setPage] = useState(1);
   const [userCanEditProject] = useEditProjectAllowed(project);
   const projectId = project.projectId;
@@ -143,7 +143,7 @@ export const QuestionsAndComments = ({ project, contributors, titleClass }) => {
 };
 
 export function CommentList({ userCanEditProject, projectId, comments, retryFn }) {
-  const username = useSelector((state) => state.auth.userDetails?.username);
+  const username = useTypedSelector((state) => state.auth.userDetails?.username);
   const [commentsMessageHTML, setCommentsMessageHTML] = useState([]);
 
   useEffect(() => {

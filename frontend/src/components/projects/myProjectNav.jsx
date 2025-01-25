@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -14,11 +14,11 @@ import { ShowMapToggle, ProjectListViewToggle } from './projectNav';
 import { CustomButton } from '../button';
 
 export const MyProjectNav = (props) => {
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const isOrgManager = useSelector(
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const isOrgManager = useTypedSelector(
     (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
-  const isPMTeamMember = useSelector(
+  const isPMTeamMember = useTypedSelector(
     (state) => state.auth.pmTeams && state.auth.pmTeams.length > 0,
   );
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
@@ -236,7 +236,7 @@ export function FilterButton({ currentQuery, newQueryParams, setQuery, isActive,
 }
 
 function ManagerFilters({ query, setQuery }) {
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [campaignsError, campaignsLoading, campaigns] = useFetch('campaigns/');
   const [orgsError, orgsLoading, organisations] = useFetch(
     `organisations/?omitManagerList=true${

@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
@@ -50,7 +50,7 @@ const isActiveButton = (buttonName, projectQuery) => {
 };
 
 export const InboxNavMini = ({ setPopoutFocus }) => {
-  const unreadNotificationCount = useSelector((state) => state.notifications.unreadCount);
+  const unreadNotificationCount = useTypedSelector((state) => state.notifications.unreadCount);
   return (
     /* mb1 mb2-ns (removed for map, but now small gap for more-filters) */
     <header className="notifications-header">

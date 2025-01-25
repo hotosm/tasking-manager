@@ -1,5 +1,5 @@
 import { useLayoutEffect, useEffect, useCallback, useState, createRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { featureCollection } from '@turf/helpers';
@@ -34,7 +34,7 @@ try {
 const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step, uploadFile }) => {
   const mapRef = createRef();
   const mapboxSupportedLanguage = useMapboxSupportedLanguage();
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(true);
   const [aoiCanBeActivated, setAOICanBeActivated] = useState(false);
   const [existingProjectsList, setExistingProjectsList] = useState([]);

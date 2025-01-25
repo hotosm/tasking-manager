@@ -1,6 +1,6 @@
 import { useEffect, useState, forwardRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import Select from 'react-select';
 import ReactDatePicker from 'react-datepicker';
 import { FormattedMessage } from 'react-intl';
@@ -96,8 +96,8 @@ export const PartnersForm = () => {
     endDate: null,
   });
   const [errorMessage, setErrorMessage] = useState({});
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const queryClient = useQueryClient();
   const { id } = useParams();
 

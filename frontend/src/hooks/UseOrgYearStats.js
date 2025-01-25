@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { startOfYear, format, startOfToday, parse } from 'date-fns';
 
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
@@ -27,7 +27,7 @@ export function useIsOrgYearQuery(query) {
 export function useCurrentYearStats(organisationId, query, stats) {
   const isOrgYearQuery = useIsOrgYearQuery(query);
   const [yearStats, setYearStats] = useState([]);
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
 
   useEffect(() => {
     if (!isOrgYearQuery) {

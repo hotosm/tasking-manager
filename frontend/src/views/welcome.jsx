@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useNavigate } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
@@ -67,8 +67,8 @@ function NewContributor({ username, userIsloggedIn }) {
 export function Welcome() {
   useSetTitleTag('Welcome');
   const navigate = useNavigate();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const userIsloggedIn = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const userIsloggedIn = useTypedSelector((state) => state.auth.token);
   const completeness = calculateCompleteness(userDetails);
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { useState, useMemo, Suspense, lazy } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 
 import { viewport } from '@placemarkio/geo-viewport';
 import { FormattedMessage } from 'react-intl';
@@ -33,8 +33,8 @@ const CommentInputField = lazy(() =>
 );
 
 const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => {
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
   const [comment, setComment] = useState('');
 
   const saveComment = () => {
@@ -267,8 +267,8 @@ export const TaskActivity = ({
   updateActivities,
   userCanValidate,
 }: Object) => {
-  const token = useSelector((state) => state.auth.token);
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   // use it to hide the reset task action button
   const [resetSuccess, setResetSuccess] = useState(false);
   const queryClient = useQueryClient();

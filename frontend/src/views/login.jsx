@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
@@ -13,7 +13,7 @@ export function Login({ redirectTo }) {
   useSetTitleTag('Login');
   const navigate = useNavigate();
   const location = useLocation();
-  const userIsloggedIn = useSelector((state) => state.auth.token);
+  const userIsloggedIn = useTypedSelector((state) => state.auth.token);
 
   useEffect(() => {
     if (userIsloggedIn) {

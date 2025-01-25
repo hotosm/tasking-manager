@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import { useSelector, useDispatch } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import PropTypes from 'prop-types';
 
 import messages from './messages';
@@ -17,9 +17,9 @@ import DownloadAsCSV from './downloadAsCSV';
 import { GripIcon, ListIcon, FilledNineCellsGridIcon, TableListIcon } from '../svgIcons';
 
 export const ShowMapToggle = (props) => {
-  const dispatch = useDispatch();
-  const isMapShown = useSelector((state) => state.preferences['mapShown']);
-  const isExploreProjectsTableView = useSelector(
+  const dispatch = useTypedDispatch();
+  const isMapShown = useTypedSelector((state) => state.preferences['mapShown']);
+  const isExploreProjectsTableView = useTypedSelector(
     (state) => state.preferences['isExploreProjectsTableView'],
   );
 
@@ -43,8 +43,8 @@ export const ShowMapToggle = (props) => {
 };
 
 export const ProjectListViewToggle = (props) => {
-  const dispatch = useDispatch();
-  const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
+  const dispatch = useTypedDispatch();
+  const listViewIsActive = useTypedSelector((state) => state.preferences['projectListView']);
   return (
     <div className="fr pv2 dib-ns dn">
       <ListIcon
@@ -66,8 +66,8 @@ export const ProjectListViewToggle = (props) => {
 };
 
 const ExploreProjectsViewToggle = () => {
-  const dispatch = useDispatch();
-  const isExploreProjectsTableView = useSelector(
+  const dispatch = useTypedDispatch();
+  const isExploreProjectsTableView = useTypedSelector(
     (state) => state.preferences['isExploreProjectsTableView'],
   );
 
@@ -124,8 +124,8 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
   const encodedParams = stringify(fullProjectsQuery)
     ? ['?', stringify(fullProjectsQuery)].join('')
     : '';
-  const isMapShown = useSelector((state) => state.preferences['mapShown']);
-  const isExploreProjectsTableView = useSelector(
+  const isMapShown = useTypedSelector((state) => state.preferences['mapShown']);
+  const isExploreProjectsTableView = useTypedSelector(
     (state) => state.preferences['isExploreProjectsTableView'],
   );
 

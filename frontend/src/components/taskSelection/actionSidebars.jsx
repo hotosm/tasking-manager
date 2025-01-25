@@ -1,5 +1,5 @@
 import { useState, useEffect, Suspense, lazy } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useNavigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { Tooltip } from 'react-tooltip';
@@ -57,8 +57,8 @@ export function CompletionTabForMapping({
   setSelectedStatus,
 }) {
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
   const queryClient = useQueryClient();
   const [showHelp, setShowHelp] = useState(false);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
@@ -350,8 +350,8 @@ export function CompletionTabForValidation({
   setValidationComments,
 }) {
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences.locale);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences.locale);
   const queryClient = useQueryClient();
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const [redirectToPreviousProject, setRedirectToPreviousProject] = useState(true);
@@ -587,7 +587,7 @@ const TaskValidationSelector = ({
   copyCommentToTasks,
   isValidatingMultipleTasks,
 }) => {
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [enableCopy, setEnableCopy] = useState(false);
   const setComment = (newComment) => updateComment(id, newComment);
@@ -770,7 +770,7 @@ export function ReopenEditor({ project, action, editor, callEditor }) {
 }
 
 export function SidebarToggle({ setShowSidebar, activeEditor }) {
-  const iDContext = useSelector((state) => state.editor.context);
+  const iDContext = useTypedSelector((state) => state.editor.context);
 
   return (
     <div>

@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
@@ -39,7 +39,7 @@ export function HeaderLine({ author, projectId, priority, showEditLink, organisa
 }
 
 export const ProjectHeader = ({ project, showEditLink }) => {
-  const locale = useSelector((state) => state.preferences.locale);
+  const locale = useTypedSelector((state) => state.preferences.locale);
   const [userCanEditProject] = useEditProjectAllowed(project);
 
   return (
@@ -75,7 +75,7 @@ export const ProjectHeader = ({ project, showEditLink }) => {
 };
 
 export function TagLine({ campaigns = [], countries = [], interests = [] }) {
-  const locale = useSelector((state) => state.preferences.locale);
+  const locale = useTypedSelector((state) => state.preferences.locale);
   const formattedCampaigns = campaigns.map((campaign) => campaign.name).join(', ');
   const formattedCountries = locale.includes('en') ? countries.join(', ') : countries;
   const formattedInterests = interests.map((interest) => interest.name).join(', ');

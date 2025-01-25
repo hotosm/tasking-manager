@@ -1,16 +1,15 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import Select from 'react-select';
 import { FormattedMessage } from 'react-intl';
 import { useFetch } from '../../hooks/UseFetch';
 import messages from './messages';
-import { RootStore } from '../../store';
 
 export default function MyProjectsDropdown({ className, setQuery, allQueryParams }: {
   className?: string;
   setQuery: any;
   allQueryParams: any;
 }) {
-  const username = useSelector((state: RootStore) => state.auth.userDetails?.username);
+  const username = useTypedSelector((state) => state.auth.userDetails?.username);
   const [, , projects] = useFetch(`projects/queries/${username}/touched/`);
 
   const onSortSelect = (projectId: string) => {

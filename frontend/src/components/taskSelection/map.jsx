@@ -1,5 +1,5 @@
 import { createRef, useLayoutEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import bbox from '@turf/bbox';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -44,7 +44,7 @@ export const TasksMap = ({
   const intl = useIntl();
   const mapRef = createRef();
   const mapboxSupportedLanguage = useMapboxSupportedLanguage();
-  const authDetails = useSelector((state) => state.auth.userDetails);
+  const authDetails = useTypedSelector((state) => state.auth.userDetails);
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
 
   const [map, setMapObj] = useState(null);

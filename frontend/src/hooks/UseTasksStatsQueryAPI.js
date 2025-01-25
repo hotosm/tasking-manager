@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import {
   useQueryParams,
   encodeQueryParams,
@@ -85,7 +85,7 @@ export const useTasksStatsQueryAPI = (
   extraQuery = '',
 ) => {
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const controller = new AbortController();
 
   const [state, dispatch] = useReducer(dataFetchReducer, {

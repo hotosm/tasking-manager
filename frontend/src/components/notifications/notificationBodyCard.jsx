@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 import { selectUnit } from '../../utils/selectUnit';
@@ -89,7 +89,7 @@ export function NotificationBodyCard({
     sentDate,
   },
 }) {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const { value, unit } = selectUnit(new Date((sentDate && new Date(sentDate)) || new Date()));
   const showASendingUser =
     fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && ORG_NAME);

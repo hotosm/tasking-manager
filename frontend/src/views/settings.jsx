@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useNavigate } from 'react-router-dom';
 
 import { UserTopBar } from '../components/user/topBar';
@@ -13,8 +13,8 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 export function Settings() {
   useSetTitleTag(`Settings`);
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.token);
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
 
   useEffect(() => {
     if (!token) {

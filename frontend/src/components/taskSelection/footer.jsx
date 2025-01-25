@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
@@ -25,13 +25,13 @@ const TaskSelectionFooter = ({
 }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences.locale);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences.locale);
   const [editor, setEditor] = useState(defaultUserEditor);
   const [editorOptions, setEditorOptions] = useState([]);
   const [isPending, setIsPending] = useState(false);
   const [lockError, setLockError] = useState(null);
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
   const fetchLockedTasks = useFetchLockedTasks();
 
   const lockSuccess = (status, endpoint, windowObjectReference) => {

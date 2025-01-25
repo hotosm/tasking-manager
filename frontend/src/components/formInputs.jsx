@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Field } from 'react-final-form';
 import Select from 'react-select';
 import { FormattedMessage } from 'react-intl';
@@ -53,8 +53,8 @@ export const SwitchToggle = ({
 );
 
 export const OrganisationSelect = ({ className, orgId, onChange }) => {
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const [organisations, setOrganisations] = useState([]);
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export function OrganisationSelectInput({ className }) {
 }
 
 export function UserCountrySelect({ className, isDisabled = false }) {
-  const locale = useSelector((state) => state.preferences.locale);
+  const locale = useTypedSelector((state) => state.preferences.locale);
   const [options, setOptions] = useState([]);
 
   useEffect(() => {

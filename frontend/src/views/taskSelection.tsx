@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 import { TaskSelection } from '../components/taskSelection';
@@ -7,7 +7,6 @@ import { NotFound } from './notFound';
 import { useProjectSummaryQuery, useProjectQuery } from '../api/projects';
 import { Preloader } from '../components/preloader';
 import PrivateProjectError from '../components/projectDetail/privateProjectError';
-import { RootStore } from '../store';
 
 const publicRoutes = ['/instructions'];
 
@@ -15,7 +14,7 @@ export function SelectTask() {
   const { id } = useParams();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const token = useSelector((state: RootStore) => state?.auth.token);
+  const token = useTypedSelector((state) => state?.auth.token);
   const {
     data: projectSummaryData,
     error: projectSummaryError,

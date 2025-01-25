@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Link } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
 import Select from 'react-select';
@@ -193,8 +193,8 @@ const TIER_OPTIONS = levels.map((level) => ({
 }));
 
 export function OrgInformation({ hasSlug, formState }) {
-  const token = useSelector((state) => state.auth.token);
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [uploadError, uploading, uploadImg] = useUploadImage();
   const intl = useIntl();
   //eslint-disable-next-line

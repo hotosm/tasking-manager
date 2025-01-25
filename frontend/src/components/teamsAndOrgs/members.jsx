@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useIntl, FormattedMessage } from 'react-intl';
 import AsyncSelect from 'react-select/async';
 import toast from 'react-hot-toast';
@@ -30,7 +30,7 @@ export function Members({
   managerJoinTeamError,
   setManagerJoinTeamError,
 }) {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [editMode, setEditMode] = useState(false);
   const [membersBackup, setMembersBackup] = useState(null);
   const selectPlaceHolder = <FormattedMessage {...messages.searchUsers} />;
@@ -175,8 +175,8 @@ export function JoinRequests({
 }) {
   const intl = useIntl();
   const { id } = useParams();
-  const token = useSelector((state) => state.auth.token);
-  const { username: loggedInUsername } = useSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
+  const { username: loggedInUsername } = useTypedSelector((state) => state.auth.userDetails);
   const showJoinRequestSwitch =
     joinMethod === 'BY_REQUEST' &&
     managers?.filter(

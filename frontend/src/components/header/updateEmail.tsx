@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import { func } from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
@@ -8,15 +8,14 @@ import { updateUserEmail } from '../../store/actions/auth';
 import { PROFILE_RELEVANT_FIELDS } from '../user/forms/personalInformation';
 import { ORG_PRIVACY_POLICY_URL } from '../../config';
 import { Button } from '../button';
-import { RootStore } from '../../store/index.js';
 
 export const UpdateEmail = ({ closeModal }: {
   closeModal: () => void;
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useTypedDispatch();
 
-  const userDetails = useSelector((state: RootStore) => state.auth.userDetails);
-  const token = useSelector((state: RootStore) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
   const [userState, setUserState] = useState({ email: '', success: false, details: '' });
 
   const onChange = (e) => {

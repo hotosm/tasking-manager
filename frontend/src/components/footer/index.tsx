@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Link, matchRoutes, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import {
@@ -21,7 +21,6 @@ import {
   ORG_PRIVACY_POLICY_URL,
 } from '../../config';
 import './styles.scss';
-import { RootStore } from '../../store';
 
 const socialNetworks = [
   { link: ORG_TWITTER, icon: <TwitterIcon style={{ height: '20px', width: '20px' }} noBg /> },
@@ -33,7 +32,7 @@ const socialNetworks = [
 
 export function Footer() {
   const location = useLocation();
-  const userDetails = useSelector((state: RootStore) => state.auth.userDetails);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
 
   const footerDisabledPaths = [
     'projects/:id/tasks',

@@ -1,10 +1,9 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useQuery } from '@tanstack/react-query';
 import api from './apiClient';
-import type { RootStore } from '../store';
 
 export const useTeamsQuery = (params: any, otherOptions: any) => {
-  const token = useSelector((state: RootStore) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
 
   const fetchUserTeams = ({ signal }: {
     signal: AbortSignal;

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import { useQueryParams, StringParam, NumberParam } from 'use-query-params';
 import queryString from 'query-string';
 import axios from 'axios';
@@ -61,10 +61,10 @@ export const useInboxQueryAPI = (
 ) => {
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
   /* Get the user bearer token from the Redux store */
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
 
-  const state = useSelector((state) => state.notifications);
-  const dispatch = useDispatch();
+  const state = useTypedSelector((state) => state.notifications);
+  const dispatch = useTypedDispatch();
 
   useEffect(() => {
     let didCancel = false;

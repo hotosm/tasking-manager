@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 
 import messages from '../messages';
@@ -8,8 +8,8 @@ import { InterestsList } from '../../formInputs';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../../network/genericJSONRequest';
 
 export function UserInterestsForm() {
-  const token = useSelector((state) => state.auth.token);
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [interests, setInterests] = useState([]);
   const [enableSaveButton, setEnableSaveButton] = useState(false);
   const [success, setSuccess] = useState(null);

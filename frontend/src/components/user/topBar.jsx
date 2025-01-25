@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import { TextRow } from 'react-placeholder/lib/placeholders';
@@ -42,8 +42,8 @@ export function NextMappingLevel({ changesetsCount }) {
 }
 
 export function UserTopBar() {
-  const user = useSelector((state) => state.auth.userDetails);
-  const osmUserInfo = useSelector((state) => state.auth.osm);
+  const user = useTypedSelector((state) => state.auth.userDetails);
+  const osmUserInfo = useTypedSelector((state) => state.auth.osm);
 
   const placeholder = (
     <div className="pl2 dib">

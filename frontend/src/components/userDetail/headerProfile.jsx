@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from '../user/messages';
@@ -125,7 +125,7 @@ export const MyContributionsNav = ({ username, authUser }) => {
 };
 
 export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
-  const authDetails = useSelector((state) => state.auth.userDetails);
+  const authDetails = useTypedSelector((state) => state.auth.userDetails);
   const [user, setUser] = useState({});
 
   useEffect(() => {

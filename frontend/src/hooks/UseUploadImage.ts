@@ -1,9 +1,8 @@
 import { useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { slugifyFileName } from '../utils/slugifyFileName';
-import { RootStore } from '../store';
 
 export const useUploadImage = () => {
   const [uploading, setUploading] = useState(false);
@@ -52,7 +51,7 @@ export const useUploadImage = () => {
 };
 
 export const useOnDrop = (appendImgToComment: string) => {
-  const token = useSelector((state: RootStore) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const [uploadError, uploading, uploadImg] = useUploadImage();
 
   const onDrop = useCallback(

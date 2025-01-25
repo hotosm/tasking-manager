@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
@@ -12,7 +12,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export function ManagementPageIndex() {
   useSetTitleTag('Manage');
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [projectsError, projectsLoading, projects] = useFetch(
     `projects/?managedByMe=true&omitMapResults=true`,
   );
@@ -42,9 +42,9 @@ export function ManagementPageIndex() {
 export const ManagementSection = (props) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
-  const isOrgManager = useSelector(
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
+  const token = useTypedSelector((state) => state.auth.token);
+  const isOrgManager = useTypedSelector(
     (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
 

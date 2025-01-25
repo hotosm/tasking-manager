@@ -1,13 +1,12 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useQuery } from '@tanstack/react-query';
 
 import { backendToQueryConversion } from '../hooks/UseInboxQueryAPI';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import api from './apiClient';
-import { RootStore } from '../store';
 
 export const useNotificationsQuery = (inboxQuery: string) => {
-  const token = useSelector((state: RootStore) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const fetchNotifications = async (signal: AbortSignal, queryKey: string) => {
     const [, inboxQuery] = queryKey;
     const response = await api(token).get(`notifications/?${serializeParams(inboxQuery)}`, {
@@ -25,7 +24,7 @@ export const useNotificationsQuery = (inboxQuery: string) => {
 };
 
 export const useUnreadNotificationsCountQuery = () => {
-  const token = useSelector((state: RootStore) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   const fetchUnreadNotificationCount = async (signal: AbortSignal) => {
     const response = await api(token).get('notifications/queries/own/count-unread/', {
       signal,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 
 import deletionMessages from '../deleteModal/messages';
@@ -19,8 +19,8 @@ export const ActionButtons = ({
   pageOfCards,
   totalPages,
 }) => {
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+  const dispatch = useTypedDispatch();
+  const token = useTypedSelector((state) => state.auth.token);
   const param = inboxQuery.types ? `?messageType=${inboxQuery.types?.join(',')}` : '';
   const payload = JSON.stringify({ messageIds: selected });
 

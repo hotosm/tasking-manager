@@ -1,15 +1,14 @@
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 
 import { ProfilePictureIcon, CloseIcon } from '../svgIcons';
 import { getRandomArrayItem } from '../../utils/random';
 import { useAvatarStyle } from '../../hooks/UseAvatarStyle';
 import { useAvatarText } from '../../hooks/UseAvatarText';
 import { HtmlHTMLAttributes } from 'react';
-import { RootStore } from '../../store';
 
 export const CurrentUserAvatar = (props: HtmlHTMLAttributes<any>) => {
-  const userPicture = useSelector((state: RootStore) => state.auth.userDetails?.pictureUrl);
+  const userPicture = useTypedSelector((state) => state.auth.userDetails?.pictureUrl);
   if (userPicture) {
     return (
       <div

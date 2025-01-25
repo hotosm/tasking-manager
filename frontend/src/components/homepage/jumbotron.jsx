@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { Link } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
@@ -12,7 +12,7 @@ import bannerLR from '../../assets/img/banner_824.jpg';
 import { HOMEPAGE_VIDEO_URL, HOMEPAGE_IMG_HIGH, HOMEPAGE_IMG_LOW } from '../../config';
 
 function JumbotronButtons() {
-  const token = useSelector((state) => state.auth.token);
+  const token = useTypedSelector((state) => state.auth.token);
   return (
     <div className="buttons">
       <Link to={'explore'}>

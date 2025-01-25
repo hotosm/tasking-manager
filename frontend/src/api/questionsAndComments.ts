@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 
 import api from './apiClient';
-import { RootStore } from '../store';
 
 export const useCommentsQuery = (projectId: string, page: number) => {
-  const token = useSelector((state: RootStore) => state.auth.token);
-  const locale = useSelector((state: RootStore) => state.preferences['locale']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
 
   const getComments = ({ signal }: {
     signal: AbortSignal;
