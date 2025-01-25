@@ -25,6 +25,18 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "types": ["vitest/globals", "@testing-library/jest-dom/vitest"],
+    "baseUrl": "./src/",
+    "paths": {
+      "@Api/*": ["api/*"],
+      "@Assets/*": ["assets/*"],
+      "@Components/*": ["components/*"],
+      "@Config/*": ["config/*"],
+      "@Hooks/*": ["hooks/*"],
+      "@Network/*": ["network/*"],
+      "@Store/*": ["store/*"],
+      "@Utils/*": ["utils/*"],
+      "@Views/*": ["views/*"]
+    }
   },
   "include": [
     "src"
