@@ -13,7 +13,7 @@ function getItem(key: string) {
       return null;
     }
     return JSON.parse(gotKey) as unknown;
-  } catch (err) {
+  } catch {
     console.warn('Could not read from localStorage.');
     return null;
   }
@@ -25,7 +25,7 @@ function getItem(key: string) {
 function setItem(key: string, value: unknown): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
-  } catch (err) {
+  } catch {
     console.warn('Could not write to localStorage.');
   }
 }
@@ -36,7 +36,7 @@ function setItem(key: string, value: unknown): void {
 function removeItem(key: string): void {
   try {
     localStorage.removeItem(key);
-  } catch (err) {
+  } catch {
     console.warn('Could not delete from localStorage.');
   }
 }

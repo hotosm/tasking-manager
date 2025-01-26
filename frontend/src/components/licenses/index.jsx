@@ -28,7 +28,7 @@ export const LicenseCard = ({ license }) => {
   );
 };
 
-export const LicensesManagement = ({ licenses, userDetails, isLicensesFetched }) => {
+export const LicensesManagement = ({ licenses, isLicensesFetched }) => {
   const [query, setQuery] = useState('');
 
   const onSearchInputChange = (e) => setQuery(e.target.value);
@@ -98,7 +98,7 @@ export const LicenseInformation = () => {
   );
 };
 
-export const LicenseForm = ({ license, updateLicense, disabledForm }) => {
+export const LicenseForm = ({ license, updateLicense }) => {
   return (
     <Form
       onSubmit={(values) => updateLicense(values)}
@@ -110,7 +110,6 @@ export const LicenseForm = ({ license, updateLicense, disabledForm }) => {
         dirtySinceLastSubmit,
         form,
         submitting,
-        values,
       }) => {
         const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
         return (

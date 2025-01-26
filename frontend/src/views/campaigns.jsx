@@ -79,7 +79,7 @@ export function CreateCampaign() {
   return (
     <Form
       onSubmit={(values) => createCampaignAsync.execute(values)}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      render={({ handleSubmit, pristine, submitting }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
             <div className="cf vh-100">

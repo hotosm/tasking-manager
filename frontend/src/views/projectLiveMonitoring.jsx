@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import Select from 'react-select';
 import { useNavigate, useParams, Link } from 'react-router-dom';
@@ -90,8 +90,8 @@ export function ProjectLiveMonitoring() {
     const mapSourceValue = hasCustomImagery
       ? 'custom'
       : availableImageryValues.includes(data.imagery)
-      ? data.imagery
-      : 'osm';
+        ? data.imagery
+        : 'osm';
     setMapSource(mapSourceValue);
   }, [data]);
 

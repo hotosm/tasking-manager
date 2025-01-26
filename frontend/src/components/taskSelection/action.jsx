@@ -58,11 +58,11 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
     () =>
       activeTasks
         ? activeTasks
-          .map((task) => task.taskId)
-          .sort((n1, n2) => {
-            // in ascending order
-            return n1 - n2;
-          })
+            .map((task) => task.taskId)
+            .sort((n1, n2) => {
+              // in ascending order
+              return n1 - n2;
+            })
         : [],
     [activeTasks],
   );
@@ -184,7 +184,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
         if (arr[0].value === 'JOSM') {
           try {
             await fetch(formatJosmUrl('version', { jsonp: 'checkJOSM' }));
-          } catch (e) {
+          } catch {
             setIsJosmError(true);
             return;
           }
@@ -194,7 +194,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
       }
     } else {
       // we need to return a promise in order to be called by useAsync
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         setShowMapChangesModal('reload editor');
         resolve();
       });
@@ -367,7 +367,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                         {(editor === 'ID' || editor === 'RAPID') && (
                           <Popup
                             modal
-                            trigger={(open) => (
+                            trigger={() => (
                               <div className="w-50 cf fl tc pt4">
                                 <Button className="blue-dark bg-white dib">
                                   <FormattedMessage {...messages.tasksMap} />
@@ -383,7 +383,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                                 );
                             }}
                           >
-                            {(close) => (
+                            {() => (
                               <div className="vh-75">
                                 <TasksMap
                                   mapResults={tasks}

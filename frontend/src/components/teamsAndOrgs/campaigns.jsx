@@ -74,7 +74,7 @@ export function CampaignCard({ campaign }) {
   );
 }
 
-export function CampaignInformation(props) {
+export function CampaignInformation() {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
 
@@ -90,13 +90,7 @@ export function CampaignInformation(props) {
   );
 }
 
-export function CampaignForm({
-  userDetails,
-  campaign,
-  updateCampaignAsync,
-  disabled,
-  disableErrorAlert,
-}) {
+export function CampaignForm({ campaign, updateCampaignAsync, disabled, disableErrorAlert }) {
   return (
     <Form
       onSubmit={(values) => updateCampaignAsync.execute(values)}
@@ -108,7 +102,6 @@ export function CampaignForm({
         dirtySinceLastSubmit,
         form,
         submitting,
-        values,
       }) => {
         const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
         if (dirtySinceLastSubmit) {

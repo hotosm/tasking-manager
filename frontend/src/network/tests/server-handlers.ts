@@ -1,4 +1,4 @@
-import { DefaultBodyType, PathParams, ResponseComposition, http, RestContext, RestRequest, HttpResponse } from 'msw';
+import { PathParams, http, HttpResponse } from 'msw';
 
 import {
   getProjectSummary,
@@ -140,18 +140,12 @@ const handlers = [
   http.get(API_URL + 'projects/:projectId/tasks/:taskId/', async (info) => {
     return HttpResponse.json(taskDetail(Number(info.params.taskId)));
   }),
-  http.post(
-    API_URL + 'projects/:projectId/tasks/actions/stop-mapping/:taskId/',
-    async () => {
-      return HttpResponse.json(stopMapping);
-    },
-  ),
-  http.post(
-    API_URL + 'projects/:projectId/tasks/actions/stop-validation/',
-    async () => {
-      return HttpResponse.json(stopValidation);
-    },
-  ),
+  http.post(API_URL + 'projects/:projectId/tasks/actions/stop-mapping/:taskId/', async () => {
+    return HttpResponse.json(stopMapping);
+  }),
+  http.post(API_URL + 'projects/:projectId/tasks/actions/stop-validation/', async () => {
+    return HttpResponse.json(stopValidation);
+  }),
   http.get(API_URL + 'projects/queries/:projectId/similar-projects/', async () => {
     return HttpResponse.json(similarProjects);
   }),
@@ -301,18 +295,24 @@ const handlers = [
   http.get(API_URL + 'interests/:id/', () => {
     return HttpResponse.json(interest);
   }),
-  http.patch<PathParams, {
+  http.patch<
+    PathParams,
+    {
       name: string;
-    }>(API_URL + 'interests/:id', async (info) => {
+    }
+  >(API_URL + 'interests/:id', async (info) => {
     const body = await info.request.json();
     return HttpResponse.json(interestUpdationSuccess(body.name));
   }),
   http.delete(API_URL + 'interests/:id', () => {
     return HttpResponse.json(interestDeletionSuccess);
   }),
-  http.post<PathParams, {
+  http.post<
+    PathParams,
+    {
       name: string;
-    }>(API_URL + 'interests', async (info) => {
+    }
+  >(API_URL + 'interests', async (info) => {
     const body = await info.request.json();
     return HttpResponse.json(interestCreationSuccess(body.name));
   }),
@@ -323,27 +323,18 @@ const handlers = [
     return HttpResponse.json(banner);
   }),
   //TASKS
-  http.post(
-    API_URL + 'projects/:projectId/tasks/actions/lock-for-mapping/:taskId',
-    () => {
-      return HttpResponse.json(lockForMapping);
-    },
-  ),
+  http.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-mapping/:taskId', () => {
+    return HttpResponse.json(lockForMapping);
+  }),
   http.post(API_URL + 'projects/:projectId/tasks/actions/lock-for-validation/', () => {
     return HttpResponse.json(lockForValidation);
   }),
-  http.post(
-    API_URL + 'projects/:projectId/tasks/actions/unlock-after-mapping/:taskId',
-    () => {
-      return HttpResponse.json(submitMappingTask);
-    },
-  ),
-  http.post(
-    API_URL + 'projects/:projectId/tasks/actions/unlock-after-validation/',
-    () => {
-      return HttpResponse.json(submitValidationTask);
-    },
-  ),
+  http.post(API_URL + 'projects/:projectId/tasks/actions/unlock-after-mapping/:taskId', () => {
+    return HttpResponse.json(submitMappingTask);
+  }),
+  http.post(API_URL + 'projects/:projectId/tasks/actions/unlock-after-validation/', () => {
+    return HttpResponse.json(submitValidationTask);
+  }),
   http.get(API_URL + 'users/queries/tasks/locked/', () => {
     return HttpResponse.json(userLockedTasks);
   }),
@@ -388,24 +379,38 @@ const failedToConnectError = () => {
 };
 
 const faultyHandlers = [
-  http.get(API_URL + 'projects/:id/', async () => {
-    return Response.json({
-      SubCode: `PrivateProject`,
-    }, {
-      status: 403,
-    });
-  }, {
-    once: true,
-  }),
-  http.get(API_URL + 'projects/:id/', async () => {
-    return Response.json({
-      SubCode: `Project Not Found`,
-    }, {
-      status: 403,
-    });
-  }, {
-    once: true,
-  }),
+  http.get(
+    API_URL + 'projects/:id/',
+    async () => {
+      return Response.json(
+        {
+          SubCode: `PrivateProject`,
+        },
+        {
+          status: 403,
+        },
+      );
+    },
+    {
+      once: true,
+    },
+  ),
+  http.get(
+    API_URL + 'projects/:id/',
+    async () => {
+      return Response.json(
+        {
+          SubCode: `Project Not Found`,
+        },
+        {
+          status: 403,
+        },
+      );
+    },
+    {
+      once: true,
+    },
+  ),
   http.get('http://127.0.0.1:8111/version', failedToConnectError),
   http.post(
     API_URL + 'projects/:projectId/tasks/actions/lock-for-mapping/:taskId',

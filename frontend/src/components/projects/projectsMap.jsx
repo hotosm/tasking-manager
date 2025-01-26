@@ -78,13 +78,13 @@ export const mapboxLayerDefn = (map, mapResults, clickOnProjectID, disablePoiCli
       'text-halo-color': '#fff',
     },
   });
-  map.on('mouseenter', 'projects-unclustered-points', function (e) {
+  map.on('mouseenter', 'projects-unclustered-points', function () {
     // Change the cursor style as a UI indicator.
     if (!disablePoiClick) {
       map.getCanvas().style.cursor = 'pointer';
     }
   });
-  map.on('mouseleave', 'projects-unclustered-points', function (e) {
+  map.on('mouseleave', 'projects-unclustered-points', function () {
     // Change the cursor style as a UI indicator.
     map.getCanvas().style.cursor = '';
   });

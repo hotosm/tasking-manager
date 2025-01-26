@@ -39,7 +39,7 @@ export function ManagementPageIndex() {
   );
 }
 
-export const ManagementSection = (props) => {
+export const ManagementSection = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const userDetails = useTypedSelector((state) => state.auth.userDetails);

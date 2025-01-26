@@ -9,8 +9,8 @@ import { MessageStatus } from '../comments/status';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import ReactPlaceholder from 'react-placeholder';
 
-const CommentInputField = lazy(() =>
-  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
+const CommentInputField = lazy(
+  () => import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
 );
 
 export function MessageMembers({ teamId, members }) {
@@ -28,13 +28,13 @@ export function MessageMembers({ teamId, members }) {
         token,
         'POST',
       )
-        .then((res) => {
+        .then(() => {
           toast.success(<FormattedMessage {...messages.sendMessageSuccess} />);
           setStatus('messageSent');
           setMessage('');
           setSubject('');
         })
-        .catch((e) => {
+        .catch(() => {
           toast.error(<FormattedMessage {...messages.sendMessageFailure} />);
           setStatus('error');
         });

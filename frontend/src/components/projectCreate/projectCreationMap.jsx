@@ -235,7 +235,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
 
   useLayoutEffect(() => {
     if (mapObj.map !== null && mapboxgl.supported()) {
-      mapObj.map.on('moveend', (event) => {
+      mapObj.map.on('moveend', () => {
         debouncedGetProjectsAOI();
       });
     }
@@ -250,11 +250,11 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
       });
 
       // Remove area and geometry when aoi is deleted.
-      mapObj.map.on('draw.delete', (event) => {
+      mapObj.map.on('draw.delete', () => {
         updateMetadata({ ...metadata, geom: null, area: 0 });
       });
       // enable disable the project AOI visualization checkbox
-      mapObj.map.on('zoomend', (event) => {
+      mapObj.map.on('zoomend', () => {
         if (mapObj.map.getZoom() < minZoomLevelToAOIVisualization) {
           setAOICanBeActivated(false);
         } else {
@@ -262,7 +262,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
         }
       });
 
-      mapObj.map.on('style.load', (event) => {
+      mapObj.map.on('style.load', () => {
         if (!MAPBOX_TOKEN) {
           return;
         }

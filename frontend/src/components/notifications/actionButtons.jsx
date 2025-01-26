@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 import { FormattedMessage } from 'react-intl';
 
@@ -79,15 +78,15 @@ export const ActionButtons = ({
   };
 
   function handleSuccess(shouldRetry = true) {
-    console.log("CALLED??")
+    console.log('CALLED??');
     setSelected([]);
     shouldRetry && retryFn();
     isAllSelected
       ? updateUnreadCount()
       : // The decrement count is readily available; deducting count from selected
-      Array.from({ length: unreadCountInSelected }, () =>
-        dispatch({ type: 'DECREMENT_UNREAD_COUNT' }),
-      );
+        Array.from({ length: unreadCountInSelected }, () =>
+          dispatch({ type: 'DECREMENT_UNREAD_COUNT' }),
+        );
   }
 
   if (selected.length) {

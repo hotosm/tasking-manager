@@ -42,15 +42,15 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   useEffect(() => {
     if (!mapObj.map) return;
     if (splitMode === 'click') {
-      mapObj.map.on('mouseenter', 'grid', (event) => {
+      mapObj.map.on('mouseenter', 'grid', () => {
         mapObj.map.getCanvas().style.cursor = 'pointer';
       });
-      mapObj.map.on('mouseleave', 'grid', (event) => {
+      mapObj.map.on('mouseleave', 'grid', () => {
         mapObj.map.getCanvas().style.cursor = '';
       });
       mapObj.map.on('click', 'grid', splitHandler);
     } else {
-      mapObj.map.on('mouseenter', 'grid', (event) => {
+      mapObj.map.on('mouseenter', 'grid', () => {
         mapObj.map.getCanvas().style.cursor = '';
       });
       mapObj.map.off('click', 'grid', splitHandler);
@@ -60,10 +60,10 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   const splitDrawing = () => {
     setSplitMode('draw');
     if (!mapObj.map) return;
-    mapObj.map.on('mouseenter', 'grid', (event) => {
+    mapObj.map.on('mouseenter', 'grid', () => {
       mapObj.map.getCanvas().style.cursor = 'crosshair';
     });
-    mapObj.map.on('mouseleave', 'grid', (event) => {
+    mapObj.map.on('mouseleave', 'grid', () => {
       mapObj.map.getCanvas().style.cursor = '';
     });
     mapObj.map.once('draw.create', (event) => {

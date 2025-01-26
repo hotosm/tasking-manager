@@ -46,11 +46,11 @@ export function UserInterestsForm() {
         JSON.stringify({ interests: ids, id: userDetails?.id }),
         token,
       )
-        .then((res) => {
+        .then(() => {
           setSuccess(true);
           setEnableSaveButton(false);
         })
-        .catch((e) => setSuccess(false));
+        .catch(() => setSuccess(false));
     };
 
     // Get all true ids.

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
 
@@ -184,7 +184,7 @@ export function PartnersForm(props) {
   );
 }
 
-export function PartnersInformation({ hasSlug, setFormState, formState }) {
+export function PartnersInformation() {
   const webLinkKeys = Array.from({ length: 5 }, (_, i) => i + 1);
 
   const labelClasses = 'db pt3 pb2';

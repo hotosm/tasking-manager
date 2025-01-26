@@ -92,7 +92,7 @@ export const TimeSpentContributingByDay = ({ contributionTimeByDate = [] }) => {
     // Convert to array and sort by weekday index
     return Object.entries(aggregatedData)
       .sort(([a], [b]) => Number(a) - Number(b))
-      .map(([_, value]) => value);
+      .map(([, value]) => value);
   };
 
   return (

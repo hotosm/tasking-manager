@@ -44,7 +44,7 @@ export const CreateInterest = () => {
   return (
     <Form
       onSubmit={(values) => createInterest(values)}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      render={({ handleSubmit, pristine, submitting }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
             <div className="cf vh-100">

@@ -61,7 +61,7 @@ export const InboxNavMini = ({ setPopoutFocus }) => {
         {unreadNotificationCount > 0 && (
           <Link
             to="/inbox?orderBy=read&orderByType=DESC"
-            onClick={(e) => {
+            onClick={() => {
               setPopoutFocus(false);
             }}
           >
@@ -88,7 +88,7 @@ export const InboxNavMiniBottom = (props) => {
       <Link
         className="absolute flex items-center justify-center hover-darken tc pv2 w-100 b--grey-light bg-red white f5 no-underline br2 br--bottom"
         to="/inbox"
-        onClick={(e) => {
+        onClick={() => {
           props.setPopoutFocus(false);
         }}
         style={{ height: '3rem' }}

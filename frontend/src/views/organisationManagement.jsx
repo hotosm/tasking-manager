@@ -107,7 +107,7 @@ export function CreateOrganisation() {
   return (
     <Form
       onSubmit={(values) => createOrg(values)}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      render={({ handleSubmit, pristine, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
             <div className="cf pv4 pb5">

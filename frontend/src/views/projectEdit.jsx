@@ -105,12 +105,12 @@ export function ProjectEdit() {
       try {
         const res = await fetchLocalJSONAPI(`projects/${id}/`, token, 'GET');
         setProjectInfo(res);
-      } catch (e) {}
+      } catch {}
     }
     fetchData();
   }, [id, token]);
 
-  const saveChanges = (resolve, reject) => {
+  const saveChanges = () => {
     const [defaultLocaleInfo] = projectInfo.projectInfoLocales.filter(
       (l) => l.locale === projectInfo.defaultLocale,
     );
@@ -179,11 +179,11 @@ export function ProjectEdit() {
       return new Promise((resolve, reject) => reject());
     } else {
       return pushToLocalJSONAPI(`projects/${id}/`, JSON.stringify(projectInfo), token, 'PATCH')
-        .then((res) => {
+        .then(() => {
           setSuccess(true);
           setError(null);
         })
-        .catch((e) => setError('SERVER'));
+        .catch(() => setError('SERVER'));
     }
   };
   const saveChangesAsync = useAsync(saveChanges);

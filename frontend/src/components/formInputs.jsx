@@ -22,14 +22,7 @@ export const RadioField = ({ name, value, className, required = false }) => (
   />
 );
 
-export const SwitchToggle = ({
-  label,
-  isChecked,
-  onChange,
-  labelPosition,
-  small = false,
-  isDisabled = false,
-}) => (
+export const SwitchToggle = ({ label, isChecked, onChange, labelPosition, isDisabled = false }) => (
   <div className="v-mid justify-center">
     {label && labelPosition !== 'right' && <span className="di mr2 nowrap f6 dn-m">{label}</span>}
     <div className="relative dib">
@@ -142,7 +135,7 @@ export const CheckBoxInput = ({ isActive, changeState, className = '', disabled 
     disabled={disabled}
     aria-checked={isActive}
     onClick={disabled ? () => {} : changeState}
-    onKeyPress={disabled ? () => {} : changeState}
+    onKeyDown={disabled ? () => {} : changeState}
     tabIndex="0"
     className={`bg-white w1 h1 ma1 ba bw1 ${
       disabled ? 'b--grey-light' : 'b--red'

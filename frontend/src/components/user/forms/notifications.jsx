@@ -4,7 +4,7 @@ import messages from '../messages';
 import { CustomField } from './customField';
 import { SwitchToggleField } from './switchToggleField';
 
-export function UserNotificationsForm(props) {
+export function UserNotificationsForm() {
   const fields = [
     {
       labelId: 'mentions',

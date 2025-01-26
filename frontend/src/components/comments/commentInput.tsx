@@ -68,7 +68,7 @@ function CommentInputField({
 
         const res = await fetchLocalJSONAPI(`users/queries/filter/${query}/`, token);
         cb(res.usernames.map((username) => ({ username })));
-      } catch (e) {
+      } catch {
         return [];
       }
     },
@@ -113,16 +113,18 @@ function CommentInputField({
           <div className="pv3-ns ph3 ph3-m bg-grey-light dib">
             <span
               role="button"
-              className={`pointer db dib-ns pb1 bb bw1 ${!isShowPreview ? 'b--blue-dark' : 'b--grey-light'
-                }`}
+              className={`pointer db dib-ns pb1 bb bw1 ${
+                !isShowPreview ? 'b--blue-dark' : 'b--grey-light'
+              }`}
               onClick={() => setIsShowPreview(false)}
             >
               <FormattedMessage {...messages.write} />
             </span>
             <span
               role="button"
-              className={`pointer ml3 db dib-ns pb1 bb bw1 ${isShowPreview ? 'b--blue-dark' : 'b--grey-light'
-                }`}
+              className={`pointer ml3 db dib-ns pb1 bb bw1 ${
+                isShowPreview ? 'b--blue-dark' : 'b--grey-light'
+              }`}
               onClick={() => setIsShowPreview(true)}
             >
               <FormattedMessage {...messages.preview} />

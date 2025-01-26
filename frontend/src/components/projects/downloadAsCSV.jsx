@@ -47,7 +47,7 @@ export default function DownloadAsCSV({ allQueryParams }) {
 
       // Clean up the URL object
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch {
       toast.error(<FormattedMessage {...messages.downloadAsCSVError} />);
     } finally {
       setIsLoading(false);

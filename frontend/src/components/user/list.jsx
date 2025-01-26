@@ -13,7 +13,7 @@ import { SearchIcon, CloseIcon, SettingsIcon, CheckIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { nCardPlaceholders } from './usersPlaceholder';
 
-const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
+const UserFilter = ({ filters, setFilters, updateFilters }) => {
   const inputRef = useRef(null);
 
   return (
@@ -64,7 +64,7 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
   );
 };
 
-const RoleFilter = ({ filters, setFilters, updateFilters }) => {
+const RoleFilter = ({ filters, updateFilters }) => {
   const roles = ['ALL', 'MAPPER', 'ADMIN', 'READ_ONLY'];
 
   const options = roles.map((role) => {
@@ -86,7 +86,7 @@ const RoleFilter = ({ filters, setFilters, updateFilters }) => {
   );
 };
 
-const MapperLevelFilter = ({ filters, setFilters, updateFilters }) => {
+const MapperLevelFilter = ({ filters, updateFilters }) => {
   const mapperLevels = ['ALL', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
 
   const options = mapperLevels.map((l) => {
@@ -115,7 +115,7 @@ export const SearchNav = ({ filters, setFilters, initialFilters }) => {
     });
   };
 
-  const clearFilters = (e) => {
+  const clearFilters = () => {
     setFilters(initialFilters);
   };
 

@@ -16,7 +16,7 @@ import { SwitchToggle } from '../formInputs';
 import DownloadAsCSV from './downloadAsCSV';
 import { GripIcon, ListIcon, FilledNineCellsGridIcon, TableListIcon } from '../svgIcons';
 
-export const ShowMapToggle = (props) => {
+export const ShowMapToggle = () => {
   const dispatch = useTypedDispatch();
   const isMapShown = useTypedSelector((state) => state.preferences['mapShown']);
   const isExploreProjectsTableView = useTypedSelector(
@@ -42,7 +42,7 @@ export const ShowMapToggle = (props) => {
   );
 };
 
-export const ProjectListViewToggle = (props) => {
+export const ProjectListViewToggle = () => {
   const dispatch = useTypedDispatch();
   const listViewIsActive = useTypedSelector((state) => state.preferences['projectListView']);
   return (

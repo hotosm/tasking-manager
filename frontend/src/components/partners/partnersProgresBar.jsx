@@ -1,10 +1,8 @@
-import React from 'react';
-
 import { OHSOME_STATS_BASE_URL } from '../../config';
 
 const height = '1.65rem';
 
-const ProgressBar = ({ className, firstBarValue, secondBarValue = 0, children, data }) => {
+const ProgressBar = ({ className, firstBarValue, secondBarValue = 0, data }) => {
   return (
     <div className={`cf db ${className || ''}`}>
       <div className="relative">
@@ -62,7 +60,7 @@ const ProgressBar = ({ className, firstBarValue, secondBarValue = 0, children, d
   );
 };
 
-export default function PartnersProgresBar({ data, totalData, percentValidated, label, value }) {
+export default function PartnersProgresBar({ data, percentValidated }) {
   return (
     <ProgressBar
       className={'bg-white'}

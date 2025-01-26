@@ -60,7 +60,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
         } else {
           window.iD.presetManager.addablePresetIDs(null);
         }
-      } catch (e) {
+      } catch {
         window.iD.presetManager.addablePresetIDs(null);
       }
       // setup the context
@@ -89,7 +89,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
             });
             iDContext.layers().layer('data').geojson(gpx(gpxData));
           })
-          .catch((error) => {
+          .catch(() => {
             console.error('Error loading GPX data');
           });
       }

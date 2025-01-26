@@ -13,7 +13,7 @@ export const ContactForm = (props) => {
     <Form
       onSubmit={(values) => props.submitMessage(values)}
       initialValues={props.contactUsValues}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      render={({ handleSubmit, pristine, submitting }) => {
         return (
           <div className="blue-grey mb3">
             <div className={`bg-white b--grey-light pa4`}>

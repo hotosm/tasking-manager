@@ -110,7 +110,7 @@ export const useFavProjectAPI = (initialData, projectId, token) => {
           }
           dispatch({ type: `FETCH${isToggle}_SUCCESS`, payload: result.data });
         }
-      } catch (error) {
+      } catch {
         /* if cancelled, this setting state of unmounted
          * component would be a memory leak */
         if (!didCancel) {

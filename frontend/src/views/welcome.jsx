@@ -36,7 +36,7 @@ const RecommendedProjectsCards = ({ projects }) => {
   });
 };
 
-const RecommendedProjects = ({ username, userIsloggedIn }) => {
+const RecommendedProjects = ({ username }) => {
   const [error, loading, projects] = useFetch(
     `users/${username}/recommended-projects/`,
     username !== undefined,

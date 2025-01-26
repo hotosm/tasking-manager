@@ -3,7 +3,7 @@ import { getItem, removeItem } from './safe_storage';
 import { OSM_REDIRECT_URI } from '../config';
 
 // Code taken from https://github.com/mapbox/osmcha-frontend/blob/master/src/utils/create_popup.js
-export function createPopup(title: string = 'Authentication', location: string) {
+export function createPopup(location: string) {
   const width = 500;
   const height = 630;
   const settings = [

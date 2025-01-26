@@ -28,11 +28,11 @@ const CustomEditorTextInput = ({ name, value, handleChange }) => {
   );
 };
 
-export const CustomEditorForm = ({ languages }) => {
+export const CustomEditorForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
 
   const handleChange = (event) => {
-    var value = (val) =>
+    var value = () =>
       event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     var customEditor = { ...projectInfo.customEditor, [event.target.name]: value() };
     setProjectInfo({ ...projectInfo, customEditor: customEditor });
@@ -58,7 +58,7 @@ export const CustomEditorForm = ({ languages }) => {
     setProjectInfo({ ...projectInfo, validationEditors: editors });
   };
 
-  const handleRemove = (event) => {
+  const handleRemove = () => {
     setProjectInfo({ ...projectInfo, customEditor: null });
   };
 

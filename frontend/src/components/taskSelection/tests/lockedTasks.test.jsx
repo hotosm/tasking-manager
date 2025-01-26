@@ -1,6 +1,3 @@
-import TestRenderer from 'react-test-renderer';
-import { FormattedMessage } from 'react-intl';
-import { MemoryRouter } from 'react-router-dom';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -13,7 +10,6 @@ import {
 } from '../lockedTasks';
 import {
   createComponentWithMemoryRouter,
-  createComponentWithReduxAndIntl,
   IntlProviders,
   ReduxIntlProviders,
   renderWithRouter,
@@ -55,8 +51,8 @@ describe('test LockedTaskModalContent', () => {
       store.dispatch({ type: 'SET_TASKS_STATUS', status: 'LOCKED_FOR_MAPPING' });
     });
     expect(screen.getByText(messages.anotherLockedTask.defaultMessage)).toBeInTheDocument();
-    expect(screen.getByRole("link")).toBeInTheDocument();
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/projects/2/map/");
+    expect(screen.getByRole('link')).toBeInTheDocument();
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/projects/2/map/');
   });
 
   it('return LicenseError message', () => {
@@ -66,7 +62,7 @@ describe('test LockedTaskModalContent', () => {
           project={{ projectId: 1, licenseId: 123 }}
           error={'UserLicenseError'}
         />
-      </ReduxIntlProviders>
+      </ReduxIntlProviders>,
     );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: null });
@@ -80,7 +76,7 @@ describe('test LockedTaskModalContent', () => {
     render(
       <ReduxIntlProviders>
         <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'JOSM'} />
-      </ReduxIntlProviders>
+      </ReduxIntlProviders>,
     );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: null });
@@ -97,7 +93,7 @@ describe('test LockedTaskModalContent', () => {
     render(
       <ReduxIntlProviders>
         <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'FORBIDDEN'} />
-      </ReduxIntlProviders>
+      </ReduxIntlProviders>,
     );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: null });
@@ -114,21 +110,23 @@ describe('test LockedTaskModalContent', () => {
           project={{ projectId: 1, licenseId: 123 }}
           error={'noMappedTasksSelected'}
         />
-      </ReduxIntlProviders>
+      </ReduxIntlProviders>,
     );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: null });
       store.dispatch({ type: 'SET_LOCKED_TASKS', tasks: [] });
       store.dispatch({ type: 'SET_TASKS_STATUS', status: null });
     });
-    expect(screen.getByText(messages.noMappedTasksSelectedError.defaultMessage)).toBeInTheDocument();
+    expect(
+      screen.getByText(messages.noMappedTasksSelectedError.defaultMessage),
+    ).toBeInTheDocument();
   });
 
   it('return LockError message', () => {
     render(
       <ReduxIntlProviders>
         <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'BAD REQUEST'} />
-      </ReduxIntlProviders>
+      </ReduxIntlProviders>,
     );
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: null });

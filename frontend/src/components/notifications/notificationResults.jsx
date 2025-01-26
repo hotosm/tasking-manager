@@ -180,7 +180,7 @@ const NotificationCards = ({
       {useMiniCard &&
         pageOfCards
           .slice(0, 5)
-          .map((card, n) => (
+          .map((card) => (
             <NotificationCardMini
               {...card}
               key={card.messageId}
