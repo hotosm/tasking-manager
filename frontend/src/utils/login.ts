@@ -23,7 +23,7 @@ export function createPopup(title: string = 'Authentication', location: string) 
 
 export const createLoginWindow = (redirectTo) => {
   const popup = createPopup('OSM auth', '');
-  let url = `system/authentication/login/?redirect_uri=${OSM_REDIRECT_URI}`;
+  const url = `system/authentication/login/?redirect_uri=${OSM_REDIRECT_URI}`;
   fetchLocalJSONAPI(url).then((resp) => {
     popup.location = resp.auth_url;
     // Perform token exchange.

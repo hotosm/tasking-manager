@@ -104,7 +104,7 @@ export const TaskHistory = ({ projectId, taskId }) => {
 
   const groupBySession = () => {
     if (shownHistory.length === 0) return;
-    let res = [];
+    const res = [];
     let username = shownHistory[0].actionBy;
 
     shownHistory.forEach((history) => {
@@ -220,7 +220,7 @@ export const TaskHistory = ({ projectId, taskId }) => {
   );
 };
 
-export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) => {
+export const TaskDataDropdown = ({ history, changesetComment, bbox }: object) => {
   const firstDate = useFirstTaskActionDate(history);
   const contributors = useGetContributors(history);
   const osmchaLink = useMemo(
@@ -266,7 +266,7 @@ export const TaskActivity = ({
   close,
   updateActivities,
   userCanValidate,
-}: Object) => {
+}: object) => {
   const token = useTypedSelector((state) => state.auth.token);
   const userDetails = useTypedSelector((state) => state.auth.userDetails);
   // use it to hide the reset task action button
@@ -350,10 +350,10 @@ export const TaskActivity = ({
   );
 };
 
-function EditorDropdown({ project, taskId, bbox }: Object) {
+function EditorDropdown({ project, taskId, bbox }: object) {
   const loadTaskOnEditor = (arr) => {
     if (arr[0].value === 'ID') {
-      let windowObjectReference = window.open('', `iD-${project.projectId}-${taskId}`);
+      const windowObjectReference = window.open('', `iD-${project.projectId}-${taskId}`);
       const { center, zoom } = viewport(bbox, [window.innerWidth, window.innerHeight]);
       windowObjectReference.location.href = getIdUrl(
         project,
@@ -382,7 +382,7 @@ function EditorDropdown({ project, taskId, bbox }: Object) {
   );
 }
 
-function UndoLastTaskAction({ status, resetFn }: Object) {
+function UndoLastTaskAction({ status, resetFn }: object) {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   return (

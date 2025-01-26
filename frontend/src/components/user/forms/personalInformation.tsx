@@ -83,7 +83,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
   const [resendStatus, setResendStatus] = useState(null);
 
   const prepareUserDetailsToPush = (values, fields) => {
-    let data = { id: userDetails?.id };
+    const data = { id: userDetails?.id };
     fields.filter((key) => values.hasOwnProperty(key)).forEach((key) => (data[key] = values[key]));
     return JSON.stringify(data);
   };

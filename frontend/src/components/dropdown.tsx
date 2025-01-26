@@ -42,7 +42,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>((props,
         return;
       }
       const value = props.value;
-      let ourObj = data;
+      const ourObj = data;
       if (!ourObj) return;
 
       let isRemove = false;

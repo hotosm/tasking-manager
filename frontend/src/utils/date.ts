@@ -9,7 +9,7 @@ import {
 } from 'date-fns';
 
 export function getPastMonths(months: number) {
-  let today = new Date();
+  const today = new Date();
   return today.setMonth(today.getMonth() - months);
 }
 

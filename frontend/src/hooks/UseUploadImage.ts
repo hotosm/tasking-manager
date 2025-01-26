@@ -14,6 +14,7 @@ export const useUploadImage = () => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
+          //eslint-disable-next-line no-extra-boolean-cast
           if (!!reader.result) {
             resolve(reader.result);
           } else {

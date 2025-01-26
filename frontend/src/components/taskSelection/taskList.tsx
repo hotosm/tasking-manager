@@ -18,7 +18,7 @@ import { Dropdown } from '../dropdown';
 import { TextField } from '../formInputs';
 import useCloseOnDocumentClick from '../../hooks/UseCloseOnDocumentClick';
 
-export function TaskStatus({ status, lockHolder }: Object) {
+export function TaskStatus({ status, lockHolder }: object) {
   const isReadyOrLockedForMapping = ['READY', 'LOCKED_FOR_MAPPING'].includes(status);
   const dotSize = isReadyOrLockedForMapping ? '0.875rem' : '1rem';
   const isLockedStatus = ['LOCKED_FOR_VALIDATION', 'LOCKED_FOR_MAPPING'].includes(status);
@@ -59,7 +59,7 @@ export function TaskItem({
   updateActivities,
   userCanValidate,
   selected = [],
-}: Object) {
+}: object) {
   const [isCopied, setIsCopied] = useState(false);
   const location = useLocation();
   const { value, unit } = selectUnit(new Date(data.actionDate));
@@ -166,7 +166,7 @@ export function TaskItem({
   );
 }
 
-export function TaskFilter({ userCanValidate, statusFilter, setStatusFn }: Object) {
+export function TaskFilter({ userCanValidate, statusFilter, setStatusFn }: object) {
   const options = [
     { label: <FormattedMessage {...messages.filterAll} />, value: 'ALL' },
     { label: <FormattedMessage {...messages.filterReadyToMap} />, value: 'READY' },
@@ -213,7 +213,7 @@ export function TaskList({
   updateActivities,
   textSearch,
   setTextSearch,
-}: Object) {
+}: object) {
   const [readyTasks, setTasks] = useState([]);
   const [sortBy, setSortingOption] = useQueryParam('sortBy', StringParam);
   const [statusFilter, setStatusFilter] = useQueryParam('filter', StringParam);
@@ -276,7 +276,7 @@ export function TaskList({
     }
   }, [textSearch, statusFilter, tasks, userContributions]);
 
-  function updateSortingOption(data: Object) {
+  function updateSortingOption(data: object) {
     if (data) {
       setSortingOption(data[0].value);
       setItem('tasksSortOrder', data[0].value);
@@ -346,7 +346,7 @@ function TaskActivityDetail({
   updateActivities,
   userCanValidate,
   close,
-}: Object) {
+}: object) {
   const [taskData, setActiveTaskData] = useState();
 
   useEffect(() => {
@@ -395,7 +395,7 @@ function PaginatedList({
   tasks,
   updateActivities,
   userCanValidate,
-}: Object) {
+}: object) {
   const [page, setPage] = useQueryParam('page', NumberParam);
   const lastPage = howManyPages(items.length, pageSize);
   // reset page number to 1 if it is not valid any more
