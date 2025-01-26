@@ -11,8 +11,8 @@ export function Authorized(props) {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    let authCode = params.get('code');
-    let state = params.get('state');
+    const authCode = params.get('code');
+    const state = params.get('state');
     if (authCode !== null) {
       window.opener.authComplete(authCode, state);
       window.close();

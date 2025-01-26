@@ -51,7 +51,7 @@ export const Header = () => {
   };
 
   const renderMenuItems = () => {
-    let filteredMenuItems = getMenuItemsForUser(userDetails, organisations);
+    const filteredMenuItems = getMenuItemsForUser(userDetails, organisations);
 
     return (
       <nav className="navigation-items-container flex overflow-x-auto" ref={menuItemsContainerRef}>

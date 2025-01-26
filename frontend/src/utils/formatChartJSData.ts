@@ -1,5 +1,5 @@
 export const formatChartData = (reference: any, stats: any) => {
-  let data = { datasets: [{ data: [], backgroundColor: [] }], labels: [] };
+  const data = { datasets: [{ data: [], backgroundColor: [] }], labels: [] };
 
   data.datasets[0].data = reference.map((f) => stats[f.field]);
   const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
@@ -12,14 +12,14 @@ export const formatChartData = (reference: any, stats: any) => {
 };
 
 export const formatTimelineData = (stats: any, mappedTasksConfig: any, validatedTasksConfig: any) => {
-  let mapped = {
+  const mapped = {
     data: [],
     backgroundColor: mappedTasksConfig.color,
     borderColor: mappedTasksConfig.color,
     fill: false,
     label: mappedTasksConfig.label,
   };
-  let validated = {
+  const validated = {
     data: [],
     backgroundColor: validatedTasksConfig.color,
     borderColor: validatedTasksConfig.color,
@@ -39,12 +39,12 @@ export const formatTimelineData = (stats: any, mappedTasksConfig: any, validated
 };
 
 export const formatTasksStatsData = (stats: any, mappedTasksConfig: any, validatedTasksConfig: any) => {
-  let mapped = {
+  const mapped = {
     data: [],
     backgroundColor: mappedTasksConfig.color,
     label: mappedTasksConfig.label,
   };
-  let validated = {
+  const validated = {
     data: [],
     backgroundColor: validatedTasksConfig.color,
     label: validatedTasksConfig.label,
@@ -58,7 +58,7 @@ export const formatTasksStatsData = (stats: any, mappedTasksConfig: any, validat
 };
 
 export const formatTooltip = (context: any) => {
-  var label = context.label;
+  let label = context.label;
   if (label) label += ': ';
   label += context.dataset.data[context.dataIndex];
 
@@ -66,7 +66,7 @@ export const formatTooltip = (context: any) => {
 };
 
 export const formatTimelineTooltip = (context: any, isPercent: boolean) => {
-  var label = context.dataset.label || '';
+  let label = context.dataset.label || '';
   if (label) label += ': ';
   label += context.dataset.data[context.dataIndex];
 

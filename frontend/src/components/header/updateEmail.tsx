@@ -24,7 +24,7 @@ export const UpdateEmail = ({ closeModal }: {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    let userData = userDetails;
+    const userData = userDetails;
     if (userData) {
       userData.emailAddress = userState.email;
     }

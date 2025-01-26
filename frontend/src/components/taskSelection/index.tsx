@@ -134,6 +134,7 @@ export function TaskSelection({
   // use route instead of local state for active tab states
   const setActiveSection = useCallback(
     (section) => {
+      //eslint-disable-next-line no-extra-boolean-cast
       if (!!textSearch) return; // if search param not present, do not set active section
       navigate(`/projects/${projectId}/${section}`);
     },
@@ -274,8 +275,8 @@ export function TaskSelection({
     project.enforceRandomTaskSelection && taskAction !== 'validateSelectedTask'
       ? randomTask
       : selected.length && !taskAction.endsWith('AnotherTask')
-      ? selected
-      : randomTask;
+        ? selected
+        : randomTask;
 
   return (
     <div>

@@ -26,7 +26,7 @@ export function fetchExternalJSONAPI(url: string, init?: {
 
 export function fetchLocalJSONAPI(endpoint: string, token: string, method = 'GET', language = 'en') {
   const url = new URL(endpoint, API_URL);
-  let headers = {
+  const headers = {
     'Content-Type': 'application/json',
     'Accept-Language': language.replace('-', '_'),
   } as Record<string, string>;
@@ -53,7 +53,7 @@ export function fetchLocalJSONAPIWithAbort(
   language = 'en',
 ) {
   const url = new URL(endpoint, API_URL);
-  let headers = {
+  const headers = {
     'Content-Type': 'application/json',
     'Accept-Language': language.replace('-', '_'),
   } as Record<string, string>
