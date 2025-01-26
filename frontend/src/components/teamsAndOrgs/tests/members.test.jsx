@@ -1,17 +1,9 @@
-import { Provider } from 'react-redux';
-import { act, render, screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import messages from '../messages';
 import { usersList } from '../../../network/tests/mockData/userList';
 import { store } from '../../../store';
-import {
-  createComponentWithIntl,
-  renderWithRouter,
-  ReduxIntlProviders,
-} from '../../../utils/testWithIntl';
+import { renderWithRouter, ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { JoinRequests, Members } from '../members';
-import { UserAvatar } from '../../user/avatar';
-import { Button } from '../../button';
-import { MemoryRouter } from 'react-router-dom';
 
 describe('test JoinRequest list', () => {
   const requests = [
@@ -29,11 +21,12 @@ describe('test JoinRequest list', () => {
       userDetails: { username: 'somebody' },
     });
   });
-  const setup = () => renderWithRouter(
-    <ReduxIntlProviders>
-      <JoinRequests requests={requests} managers={[]} />
-    </ReduxIntlProviders>,
-  );
+  const setup = () =>
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <JoinRequests requests={requests} managers={[]} />
+      </ReduxIntlProviders>,
+    );
   it('initial div has the correct classes', () => {
     const { container } = setup();
     expect(container.querySelector('div')).toHaveClass('bg-white b--grey-light pa4 ba blue-dark');
@@ -44,11 +37,11 @@ describe('test JoinRequest list', () => {
   });
   it('number of UserAvatar components is correct', () => {
     setup();
-    expect(screen.getAllByRole("link")).toHaveLength(4);
+    expect(screen.getAllByRole('link')).toHaveLength(4);
   });
   it('Accept and Deny buttons are present', () => {
     const { container } = setup();
-    expect(screen.getAllByRole("button")).toHaveLength(5);
+    expect(screen.getAllByRole('button')).toHaveLength(5);
     expect(container.querySelectorAll('.pr2.blue-dark.bg-white')).toHaveLength(2);
     expect(container.querySelectorAll('.pr2.bg-red.white')).toHaveLength(2);
   });
@@ -65,11 +58,12 @@ describe('test JoinRequest list without requests', () => {
       userDetails: { username: 'somebody' },
     });
   });
-  const setup = () => renderWithRouter(
-    <ReduxIntlProviders>
-      <JoinRequests requests={[]} managers={[]} />
-    </ReduxIntlProviders>,
-  );
+  const setup = () =>
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <JoinRequests requests={[]} managers={[]} />
+      </ReduxIntlProviders>,
+    );
   it('initial div has the correct classes', () => {
     const { container } = setup();
     expect(container.querySelector('div')).toHaveClass('bg-white b--grey-light pa4 ba blue-dark');
@@ -80,11 +74,11 @@ describe('test JoinRequest list without requests', () => {
   });
   it('number of UserAvatar components is correct', () => {
     setup();
-    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
   it('Accept and Deny buttons are present', () => {
     const { container } = setup();
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
     expect(container.querySelectorAll('.pr2.blue-dark.bg-white')).toHaveLength(0);
     expect(container.querySelectorAll('.pr2.bg-red.white')).toHaveLength(0);
   });

@@ -394,10 +394,10 @@ export const TasksMap = ({
             navigate('./tasks');
           }
         };
-        map.on('mouseenter', 'point-tasks-centroid', function (e) {
+        map.on('mouseenter', 'point-tasks-centroid', function () {
           map.getCanvas().style.cursor = 'pointer';
         });
-        map.on('mouseleave', 'point-tasks-centroid', function (e) {
+        map.on('mouseleave', 'point-tasks-centroid', function () {
           map.getCanvas().style.cursor = '';
         });
         map.on('click', 'point-tasks-centroid', navigateToTasks);
@@ -405,7 +405,7 @@ export const TasksMap = ({
       }
 
       map.on('click', 'tasks-fill', onSelectTaskClick);
-      map.on('mouseleave', 'tasks-fill', function (e) {
+      map.on('mouseleave', 'tasks-fill', function () {
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = '';
         // disable the task id dialog when the mouse go outside the task grid

@@ -56,7 +56,7 @@ export const ContributionsPage = () => {
   );
 };
 
-export const ContributionsPageIndex = (props) => {
+export const ContributionsPageIndex = () => {
   return (
     <div className="bg-blue-light 0-10 w-100 cf" style={{ background: 'rgba(146, 157, 179,0.1)' }}>
       <div className="w-100 cf">

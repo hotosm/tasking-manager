@@ -1,4 +1,3 @@
-import { FormattedMessage } from 'react-intl';
 import { screen } from '@testing-library/react';
 import {
   createComponentWithMemoryRouter,
@@ -7,7 +6,6 @@ import {
   renderWithRouter,
 } from '../../../utils/testWithIntl';
 import { UserPermissionErrorContent } from '../permissionErrorModal';
-import { Button } from '../../button';
 import messages from '../messages';
 import userEvent from '@testing-library/user-event';
 
@@ -20,28 +18,31 @@ describe('test if UserPermissionErrorContent', () => {
   };
   let value = false;
   const closeTestFn = (v) => (value = v);
-  const setup = () => renderWithRouter(
-    <ReduxIntlProviders>
-      <UserPermissionErrorContent
-        project={project}
-        userLevel="BEGINNER"
-        close={() => closeTestFn(true)}
-      />
-    </ReduxIntlProviders>,
-  );
+  const setup = () =>
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <UserPermissionErrorContent
+          project={project}
+          userLevel="BEGINNER"
+          close={() => closeTestFn(true)}
+        />
+      </ReduxIntlProviders>,
+    );
   const user = userEvent.setup();
   it('has a span with a CloseIcon as children', () => {
     const { container } = setup();
-    expect(container.querySelector('span.fr.relative.blue-light.pt1.link.pointer')).toBeInTheDocument();
-    expect(container.querySelector('span.fr.relative.blue-light.pt1.link.pointer').children[0].tagName).toBe("svg");
+    expect(
+      container.querySelector('span.fr.relative.blue-light.pt1.link.pointer'),
+    ).toBeInTheDocument();
+    expect(
+      container.querySelector('span.fr.relative.blue-light.pt1.link.pointer').children[0].tagName,
+    ).toBe('svg');
   });
   it('when clicking on the CloseIcon parent element, executes the closeTestFn', async () => {
     const { container } = setup();
     expect(value).toBeFalsy();
     screen.debug();
-    await user.click(
-      container.querySelector('span.fr.relative.blue-light.pt1.link.pointer'),
-    );
+    await user.click(container.querySelector('span.fr.relative.blue-light.pt1.link.pointer'));
     expect(value).toBeTruthy();
   });
   it('has a red Button', () => {

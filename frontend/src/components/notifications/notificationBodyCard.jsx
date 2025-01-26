@@ -78,23 +78,14 @@ export function NotificationBodyCard({
   loading,
   retryFn,
   closeModal,
-  card: {
-    messageId,
-    name,
-    messageType,
-    fromUsername,
-    displayPictureUrl,
-    subject,
-    message,
-    sentDate,
-  },
+  card: { messageId, messageType, fromUsername, displayPictureUrl, subject, message, sentDate },
 }) {
   const token = useTypedSelector((state) => state.auth.token);
   const { value, unit } = selectUnit(new Date((sentDate && new Date(sentDate)) || new Date()));
   const showASendingUser =
     fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && ORG_NAME);
   const [replacedSubjectHTML, setReplacedSubjectHTML] = useState('');
-  const [replacedMessageHTML, setReplacedMessageHTML] = useState("");
+  const [replacedMessageHTML, setReplacedMessageHTML] = useState('');
   const deleteNotification = (id) => {
     fetchLocalJSONAPI(`notifications/${id}/`, token, 'DELETE')
       .then(() => {
@@ -135,13 +126,13 @@ export function NotificationBodyCard({
           <strong
             className={`pv3 messageSubjectLinks bodyCard`}
             dangerouslySetInnerHTML={{
-              __html: replacedSubjectHTML
+              __html: replacedSubjectHTML,
             }}
           ></strong>
           <div
             className={`pv3 f6 lh-title messageBodyLinks bodyCard`}
             dangerouslySetInnerHTML={{
-              __html: replacedMessageHTML
+              __html: replacedMessageHTML,
             }}
           />
         </div>

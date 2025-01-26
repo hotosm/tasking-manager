@@ -7,7 +7,7 @@ describe('useAsync', () => {
   it('with successful result', async () => {
     const mockFn = vi.fn();
     const testFn = () =>
-      new Promise((resolve, reject) => {
+      new Promise((resolve) => {
         mockFn();
         resolve();
       });

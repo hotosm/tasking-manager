@@ -62,7 +62,7 @@ export const ContactPage = () => {
     setSentStatus('started');
 
     pushToLocalJSONAPI(`system/contact-admin/`, JSON.stringify(form), null, 'POST')
-      .then((success) => setSentStatus('success'))
+      .then(() => setSentStatus('success'))
       .catch((e) => {
         setSentStatus('failure');
         setPopupMessage(

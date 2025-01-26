@@ -6,7 +6,7 @@ import { Alert } from '../alert';
 
 import { OrganisationSelect } from '../formInputs';
 
-export default function Review({ metadata, updateMetadata, token, projectId, cloneProjectData }) {
+export default function Review({ metadata, updateMetadata, cloneProjectData }) {
   const [error, setError] = useState(null);
 
   const setProjectName = (event) => {

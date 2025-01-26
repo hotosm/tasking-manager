@@ -199,7 +199,7 @@ export function JoinRequests({
         type: 'join-response',
         action: action,
       });
-      pushToLocalJSONAPI(`teams/${teamId}/actions/join/`, payload, token, 'PATCH').then((res) => {
+      pushToLocalJSONAPI(`teams/${teamId}/actions/join/`, payload, token, 'PATCH').then(() => {
         if (action === 'accept') {
           addMembers([user]);
         }
@@ -240,7 +240,7 @@ export function JoinRequests({
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch {
       toast.error(<FormattedMessage {...projectsMessages.downloadAsCSVError} />);
     } finally {
       setIsCSVDownloading(false);

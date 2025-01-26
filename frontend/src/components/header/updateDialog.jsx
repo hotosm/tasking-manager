@@ -8,7 +8,7 @@ import { Button } from '../button';
 const updateServiceWorker = (registration) => {
   if (registration && registration.waiting) {
     let preventReloadLoop;
-    navigator.serviceWorker.addEventListener('controllerchange', (event) => {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (preventReloadLoop) {
         return;
       }

@@ -26,9 +26,8 @@ export function Testimonials() {
         //   <LeftIcon className="pr2" /> <RightIcon />
         // </div>
       }
-      {testimonials.map((person, n) => (
+      {testimonials.map((person) => (
         <div className="testimony relative" key={person.name}>
-          {/* <div key={n} className={`blue-dark testimonial-${person.cssCode} relative`} /> */}
           <div className="testimonial-image-parent">
             <img className="testimonial-image" src={person.image} alt={person.name} />
           </div>

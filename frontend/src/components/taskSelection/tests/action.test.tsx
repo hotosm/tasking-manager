@@ -1,5 +1,4 @@
-
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 
 import { getProjectSummary } from '../../../network/tests/mockData/projects';
 import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/userStats';
@@ -45,7 +44,7 @@ describe('Task Map Action', () => {
       await screen.findByRole('heading', {
         name: messages.JOSMError.defaultMessage,
       }),
-    ).toBeInTheDocument()
+    ).toBeInTheDocument();
     await user.click(
       await screen.findByRole('button', {
         name: /close/i,

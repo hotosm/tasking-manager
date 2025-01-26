@@ -92,7 +92,7 @@ export const CreateLicense = () => {
   return (
     <Form
       onSubmit={(values) => createLicense(values)}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      render={({ handleSubmit, pristine, submitting }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
             <div className="cf vh-100">

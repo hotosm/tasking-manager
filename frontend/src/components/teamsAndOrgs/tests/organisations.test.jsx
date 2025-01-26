@@ -1,15 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
-import {
-  createComponentWithIntl,
-  IntlProviders,
-  ReduxIntlProviders,
-  renderWithRouter,
-} from '../../../utils/testWithIntl';
+import { IntlProviders, ReduxIntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import { store } from '../../../store';
 import { OrgsManagement, OrganisationCard } from '../organisations';
-import { MemoryRouter } from 'react-router-dom';
 import messages from '../messages';
 
 it('test organisation card component', async () => {
@@ -29,7 +23,7 @@ it('test organisation card component', async () => {
       <IntlProviders localStore={orgData}>
         <OrganisationCard details={orgData} />
       </IntlProviders>
-    </Provider>
+    </Provider>,
   );
   expect(await screen.findByRole('img', { name: 'Singapore Red Cross logo' })).toBeInTheDocument();
   // TODO: Revisit - might need more tests, removed a lot which were deprecated with ts/vite/vitest revamp
@@ -64,8 +58,8 @@ describe('OrgsManagement with', () => {
       </IntlProviders>,
     );
     expect(await screen.findByText(messages.notAllowed.defaultMessage)).toBeInTheDocument();
-    expect(await screen.findAllByRole("button")).toHaveLength(1);
-    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(await screen.findAllByRole('button')).toHaveLength(1);
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
   it('isOrgManager and isAdmin SHOULD list organisations and have a link to /new ', () => {
@@ -92,8 +86,8 @@ describe('OrgsManagement with', () => {
         <OrgsManagement organisations={orgData.organisations} isOrgManager={false} isAdmin={true} />
       </IntlProviders>,
     );
-    expect(await screen.findByRole("link", { name: /new/i })).toBeInTheDocument();
-    expect(await screen.findAllByRole("link")).toHaveLength(1);
+    expect(await screen.findByRole('link', { name: /new/i })).toBeInTheDocument();
+    expect(await screen.findAllByRole('link')).toHaveLength(1);
   });
 
   it('OrgsManagement with isOrgManager = true and isAdmin = false SHOULD list organisations, but should NOT have an AddButton', async () => {
@@ -108,7 +102,7 @@ describe('OrgsManagement with', () => {
       </IntlProviders>,
     );
     expect(await screen.findByText(orgData.organisations[0].name)).toBeInTheDocument();
-    expect(await screen.findAllByRole("button")).toHaveLength(1);
+    expect(await screen.findAllByRole('button')).toHaveLength(1);
   });
 
   it('renders loading placeholder when API is being fetched', () => {
@@ -120,7 +114,7 @@ describe('OrgsManagement with', () => {
           isAdmin={false}
           isOrganisationsFetched={false}
         />
-      </IntlProviders>
+      </IntlProviders>,
     );
     // TODO: Check this - was 4, but now it's 20 in testing
     expect(container.getElementsByClassName('show-loading-animation')).toHaveLength(20);
@@ -135,7 +129,7 @@ describe('OrgsManagement with', () => {
           isAdmin={false}
           isOrganisationsFetched={true}
         />
-      </IntlProviders>
+      </IntlProviders>,
     );
     expect(container.getElementsByClassName('show-loading-animation')).toHaveLength(0);
   });

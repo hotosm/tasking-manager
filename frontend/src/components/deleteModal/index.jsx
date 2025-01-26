@@ -10,9 +10,9 @@ import { DeleteButton } from '../teamsAndOrgs/management';
 import { Button } from '../button';
 import { AlertIcon } from '../svgIcons';
 
-const DeleteTrigger = forwardRef((props, ref) => <DeleteButton {...props} />);
+const DeleteTrigger = forwardRef((props) => <DeleteButton {...props} />);
 
-export function DeleteModal({ id, name, type, className, endpointURL, onDelete }) {
+export function DeleteModal({ id, type, className, endpointURL, onDelete }) {
   const navigate = useNavigate();
   const modalRef = useRef();
   const token = useTypedSelector((state) => state.auth.token);
@@ -24,7 +24,7 @@ export function DeleteModal({ id, name, type, className, endpointURL, onDelete }
   const deleteEntity = () => {
     setDeleteStatus('started');
     fetchLocalJSONAPI(deleteURL, token, 'DELETE')
-      .then((success) => {
+      .then(() => {
         setDeleteStatus('success');
         if (type === 'notifications') {
           setTimeout(() => navigate(`/inbox`), 750);

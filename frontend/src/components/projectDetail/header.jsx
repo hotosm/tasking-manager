@@ -10,7 +10,7 @@ import { ProjectStatusBox } from './statusBox';
 import { EditButton } from '../button';
 import { useEditProjectAllowed } from '../../hooks/UsePermissions';
 
-export function HeaderLine({ author, projectId, priority, showEditLink, organisation }) {
+export function HeaderLine({ projectId, priority, showEditLink, organisation }) {
   const projectIdLink = (
     <Link to={`/projects/${projectId}`} className="no-underline pointer">
       <span className="blue-light">#{projectId}</span>

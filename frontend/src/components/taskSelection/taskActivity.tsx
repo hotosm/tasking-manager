@@ -28,8 +28,8 @@ import { postTaskComment } from '../../api/questionsAndComments';
 
 import './styles.scss';
 
-const CommentInputField = lazy(() =>
-  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
+const CommentInputField = lazy(
+  () => import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
 );
 
 const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => {
@@ -167,7 +167,7 @@ export const TaskHistory = ({ projectId, taskId }) => {
             <FormattedMessage {...messages.noCommentsYet} />
           </div>
         ) : (
-          groupBySession()?.map((grouped, n) => (
+          groupBySession()?.map((grouped) => (
             <div
               key={grouped[0].historyId}
               className={`grouped-ctr session ph3 mt4 bb b--grey-light`}

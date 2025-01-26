@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTypedSelector } from '@Store/hooks';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
@@ -62,7 +62,7 @@ export function CreatePartner() {
   const [error, setError] = useState(null);
   const createPartner = (payload) => {
     pushToLocalJSONAPI('partners/', JSON.stringify(payload), token, 'POST')
-      .then((result) => {
+      .then(() => {
         toast.success(
           <FormattedMessage
             {...messages.entityCreationSuccess}
@@ -90,7 +90,7 @@ export function CreatePartner() {
       {userDetails?.role === 'ADMIN' ? (
         <Form
           onSubmit={(values) => createPartner(values)}
-          render={({ handleSubmit, pristine, form, submitting, values }) => {
+          render={({ handleSubmit, pristine, submitting, values }) => {
             return (
               <form onSubmit={handleSubmit} className="blue-grey  w-50-l w-50-m ">
                 <div className="w-100 cf pb5 ">

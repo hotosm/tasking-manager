@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTypedDispatch } from '@Store/hooks';
 import { setAuthDetails } from '../store/actions/auth';
 
-export function Authorized(props) {
+export function Authorized() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useTypedDispatch();

@@ -74,11 +74,13 @@ export function ListTeams({ managementView = false }) {
     fullMemberList: false,
     paginate: true,
     team_name: searchQuery, // Pass the searchQuery as team_name
-    ...(managementView ? userTeamsOnly && { manager: userDetails?.id } : { member: userDetails?.id }),
+    ...(managementView
+      ? userTeamsOnly && { manager: userDetails?.id }
+      : { member: userDetails?.id }),
     ...restQuery,
   });
 
-  console.log("teamsStatus", teamsStatus);
+  console.log('teamsStatus', teamsStatus);
 
   useEffect(() => {
     setQuery({ ...query, page: 1, showAll: userTeamsOnly === false ? true : undefined });
@@ -232,7 +234,7 @@ export function CreateTeam() {
   );
 }
 
-export function EditTeam(props) {
+export function EditTeam() {
   const { id } = useParams();
   const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const token = useTypedSelector((state) => state.auth.token);
@@ -466,7 +468,7 @@ export function TeamDetail() {
       JSON.stringify({ role: 'MEMBER', username: userDetails?.username }),
       token,
       'POST',
-    ).then((res) => {
+    ).then(() => {
       setIsMember(team.inviteOnly ? 'requested' : true);
       setMembers((members) => [...members, userDetails]);
     });
@@ -478,9 +480,11 @@ export function TeamDetail() {
       JSON.stringify({ username: userDetails?.username }),
       token,
       'POST',
-    ).then((res) => {
+    ).then(() => {
       setIsMember(false);
-      setMembers((members) => members.filter((member) => member.username !== userDetails?.username));
+      setMembers((members) =>
+        members.filter((member) => member.username !== userDetails?.username),
+      );
     });
   };
 

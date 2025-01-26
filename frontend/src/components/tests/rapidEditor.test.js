@@ -8,7 +8,8 @@ describe('equalsUrlParameters', () => {
     Object.defineProperty(prototype, 'size', {
       get: function () {
         let counter = 0;
-        for (const [_] of this) { // eslint-disable-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
+        for (const [_] of this) {
           counter += 1;
         }
         return counter;

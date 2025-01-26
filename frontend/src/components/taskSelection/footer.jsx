@@ -78,7 +78,7 @@ const TaskSelectionFooter = ({
     if (editor === 'JOSM' && !window.safari) {
       try {
         await fetch(formatJosmUrl('version', { jsonp: 'checkJOSM' }));
-      } catch (e) {
+      } catch {
         setLockError('JOSM');
         return;
       }
@@ -103,7 +103,7 @@ const TaskSelectionFooter = ({
           JSON.stringify({ taskIds: mappedTasks }),
           token,
         )
-          .then((res) => {
+          .then(() => {
             lockSuccess('LOCKED_FOR_VALIDATION', 'validate', windowObjectReference);
           })
           .catch((e) => lockFailed(windowObjectReference, e.message));
@@ -116,7 +116,7 @@ const TaskSelectionFooter = ({
         token,
         'POST',
       )
-        .then((res) => {
+        .then(() => {
           lockSuccess('LOCKED_FOR_MAPPING', 'map', windowObjectReference);
         })
         .catch((e) => lockFailed(windowObjectReference, e.message));

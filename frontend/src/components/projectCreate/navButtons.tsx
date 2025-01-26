@@ -58,7 +58,7 @@ const NavButtons = (props: any) => {
   const intl = useIntl();
 
   const createProjectFn = () => {
-    return new Promise((resolve, reject) => props.handleCreate());
+    return new Promise(() => props.handleCreate());
   };
   const createProjectAsync = useAsync(createProjectFn);
 

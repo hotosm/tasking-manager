@@ -14,8 +14,8 @@ import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSON
 import { useFetch } from '../../hooks/UseFetch';
 import { useAsync } from '../../hooks/UseAsync';
 import ReactPlaceholder from 'react-placeholder';
-const CommentInputField = lazy(() =>
-  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
+const CommentInputField = lazy(
+  () => import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
 );
 
 const ActionStatus = ({ status, action }) => {
@@ -324,7 +324,7 @@ const MessageContributorsModal = ({ projectId, close }) => {
         }}
       </FormattedMessage>
       <FormattedMessage {...messages.messagePlaceholder}>
-        {(msg) => {
+        {() => {
           return (
             <div className="dib w-100 mt-3">
               <Suspense
@@ -508,9 +508,7 @@ const TransferProject = ({ projectId, orgId }) => {
   );
 };
 
-const FormattedButtonTrigger = forwardRef((props, ref) => (
-  <Button {...props}>{props.children}</Button>
-));
+const FormattedButtonTrigger = forwardRef((props) => <Button {...props}>{props.children}</Button>);
 
 export const ActionsForm = ({ projectId, projectName, orgId }) => {
   const navigate = useNavigate();

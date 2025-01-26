@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
@@ -113,7 +113,7 @@ export function CurrentProjects({ currentProjects }) {
                 <div>
                   <h3
                     className="f2 fw5 mt3 mt2-ns mb3 ttu barlow-condensed blue-dark dib mr3"
-                  // lang={project.info.locale}
+                    // lang={project.info.locale}
                   >
                     {project.info && project.info.name}
                   </h3>

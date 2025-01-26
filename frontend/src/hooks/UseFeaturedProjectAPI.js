@@ -88,7 +88,7 @@ export const useFeaturedProjectAPI = (initialData) => {
         } else {
           cancel && cancel.end();
         }
-      } catch (error) {
+      } catch {
         /* if cancelled, this setting state of unmounted
          * component would be a memory leak */
         if (!didCancel) {

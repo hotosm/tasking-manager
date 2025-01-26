@@ -14,13 +14,8 @@ export function TaskCard({
   projectId,
   taskStatus,
   lockHolder,
-  title,
-  taskHistory,
-  taskAnnotation,
-  isUndoable,
   autoUnlockSeconds,
   lastUpdated,
-  lastUpdatedBy,
   numberOfComments,
 }) {
   const [isHovered, setHovered] = useState(false);

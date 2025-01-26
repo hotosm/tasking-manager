@@ -19,8 +19,8 @@ export function EmailVerification() {
   useEffect(() => {
     if (token && username) {
       fetchLocalJSONAPI(`/api/v2/system/authentication/email/?token=${token}&username=${username}`)
-        .then((success) => setStatus('emailVerified'))
-        .catch((error) => setStatus('verificationError'));
+        .then(() => setStatus('emailVerified'))
+        .catch(() => setStatus('verificationError'));
     }
   }, [token, username]);
 

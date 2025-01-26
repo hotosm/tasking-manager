@@ -1,9 +1,11 @@
 import { HTMLProps } from 'react';
 
-export const TwitterIcon = (props: HTMLProps<SVGSVGElement> & {
-  noBg?: boolean;
-}) => {
-  const { noBg, ...rest } = props;
+export const TwitterIcon = (
+  props: HTMLProps<SVGSVGElement> & {
+    noBg?: boolean;
+  },
+) => {
+  const { ...rest } = props;
 
   return (
     <svg
@@ -21,5 +23,5 @@ export const TwitterIcon = (props: HTMLProps<SVGSVGElement> & {
         fill="white"
       />
     </svg>
-  )
-}
+  );
+};

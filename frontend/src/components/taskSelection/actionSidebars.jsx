@@ -38,8 +38,8 @@ import {
 } from '../../api/projects';
 import ReactPlaceholder from 'react-placeholder';
 
-const CommentInputField = lazy(() =>
-  import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
+const CommentInputField = lazy(
+  () => import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
 );
 
 export function CompletionTabForMapping({
@@ -81,7 +81,7 @@ export function CompletionTabForMapping({
       if (err.response?.data?.SubCode === 'SmallToSplit') {
         setSplitTaskError(true);
       } else {
-        console.log("TOAST ERROR", err);
+        console.log('TOAST ERROR', err);
         toast.error(<FormattedMessage {...messages.splitTaskGenericError} />);
       }
     },
@@ -95,7 +95,7 @@ export function CompletionTabForMapping({
       navigateToTasksPage(tasksIds);
     },
     onError: () => {
-      console.log("TOAST ERROR 2");
+      console.log('TOAST ERROR 2');
       toast.error(<FormattedMessage {...messages.stopMappingError} />);
     },
   });
@@ -111,7 +111,7 @@ export function CompletionTabForMapping({
       navigateToTasksPage(tasksIds);
     },
     onError: () => {
-      console.log("TOAST ERROR 3");
+      console.log('TOAST ERROR 3');
       toast.error(
         <FormattedMessage {...messages.submitTaskError} values={{ numTasks: tasksIds.length }} />,
       );
@@ -120,7 +120,7 @@ export function CompletionTabForMapping({
 
   const onStopMapping = () => {
     if (disabled) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         setShowMapChangesModal('unlock');
         resolve();
       });
@@ -130,7 +130,7 @@ export function CompletionTabForMapping({
 
   const onSplitTask = () => {
     if (disabled) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         setShowMapChangesModal('unlock');
         resolve();
       });
@@ -368,7 +368,7 @@ export function CompletionTabForValidation({
       navigateToTasksPage();
     },
     onError: () => {
-      console.log("TOAST ERROR 4");
+      console.log('TOAST ERROR 4');
       toast.error(<FormattedMessage {...messages.stopValidationError} />);
     },
   });
@@ -381,7 +381,7 @@ export function CompletionTabForValidation({
       navigateToTasksPage(true);
     },
     onError: () => {
-      console.log("TOAST ERROR 5");
+      console.log('TOAST ERROR 5');
       toast.error(
         <FormattedMessage {...messages.submitTaskError} values={{ numTasks: tasksIds.length }} />,
       );
@@ -409,7 +409,7 @@ export function CompletionTabForValidation({
 
   const onStopValidation = () => {
     if (disabled) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         setShowMapChangesModal('unlock');
         resolve();
       });
@@ -863,7 +863,7 @@ function TaskSpecificInstructions({ instructions, open = true }) {
         <div
           className="markdown-content"
           dangerouslySetInnerHTML={{
-            __html: htmlInstructionsHTML
+            __html: htmlInstructionsHTML,
           }}
         />
       )}

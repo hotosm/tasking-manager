@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useState, useLayoutEffect, useRef } from 'react';
+import { Suspense, lazy, useEffect, useState, useLayoutEffect, useRef } from 'react';
 import { useTypedSelector } from '@Store/hooks';
 import ReactPlaceholder from 'react-placeholder';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -163,7 +163,7 @@ UserProjectsPage.propTypes = {
   management: PropTypes.bool.isRequired,
 };
 
-export const ProjectsPageIndex = (props) => {
+export const ProjectsPageIndex = () => {
   return null;
 };
 

@@ -169,7 +169,7 @@ export function TeamCard({ team }) {
   );
 }
 
-export function TeamInformation(props) {
+export function TeamInformation() {
   const intl = useIntl();
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
@@ -276,7 +276,6 @@ export function TeamForm(props) {
         dirtySinceLastSubmit,
         form,
         submitting,
-        values,
       }) => {
         const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
         return (

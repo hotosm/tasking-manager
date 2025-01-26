@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { latLngToCell, cellToBoundary } from 'h3-js';
 import { FormattedMessage } from 'react-intl';
@@ -171,7 +171,7 @@ export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
       const currentZoom = map.current.getZoom();
       const h3ResBasedOnZoom =
         currentZoom >= 1
-          ? zoomToH3ResMapping[parseInt(currentZoom)] ?? Math.floor((currentZoom - 2) * 0.7)
+          ? (zoomToH3ResMapping[parseInt(currentZoom)] ?? Math.floor((currentZoom - 2) * 0.7))
           : 1;
 
       map.current.getSource('hexbin').setData({

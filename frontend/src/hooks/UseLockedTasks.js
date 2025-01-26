@@ -3,7 +3,7 @@ import { useTypedDispatch, useTypedSelector } from '@Store/hooks';
 
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 
-export const useGetLockedTasks = (taskId) => {
+export const useGetLockedTasks = () => {
   const lockedTasks = useTypedSelector((state) => state.lockedTasks);
   return lockedTasks;
 };
