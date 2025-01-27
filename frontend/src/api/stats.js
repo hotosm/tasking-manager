@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
-import { OHSOME_STATS_BASE_URL, defaultChangesetComment } from '../config';
+import { OHSOME_STATS_API_URL, defaultChangesetComment } from '../config';
 
 const ohsomeProxyAPI = (url) => {
   const token = localStorage.getItem('token');
@@ -39,7 +39,7 @@ export const useProjectStatisticsQuery = (projectId) => {
 
 export const useOsmStatsQuery = () => {
   const fetchOsmStats = ({ signal }) => {
-    return api().get(`${OHSOME_STATS_BASE_URL}/stats/${defaultChangesetComment}-%2A`, {
+    return api().get(`${OHSOME_STATS_API_URL}/stats/${defaultChangesetComment}-%2A`, {
       signal,
     });
   };
@@ -54,7 +54,7 @@ export const useOsmStatsQuery = () => {
 
 export const useOsmHashtagStatsQuery = (defaultComment) => {
   const fetchOsmStats = ({ signal }) => {
-    return api().get(`${OHSOME_STATS_BASE_URL}/stats/${defaultComment[0].replace('#', '')}`, {
+    return api().get(`${OHSOME_STATS_API_URL}/stats/${defaultComment[0].replace('#', '')}`, {
       signal,
     });
   };
@@ -71,7 +71,7 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
 export const useUserOsmStatsQuery = (id) => {
   const fetchUserOsmStats = () => {
     return ohsomeProxyAPI(
-      `${OHSOME_STATS_BASE_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
+      `${OHSOME_STATS_API_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
     );
   };
 
@@ -87,7 +87,7 @@ export const useUserOsmStatsQuery = (id) => {
 
 export const useOsmStatsMetadataQuery = () => {
   const fetchOsmStatsMetadata = () => {
-    return fetchExternalJSONAPI(`${OHSOME_STATS_BASE_URL}/metadata`);
+    return fetchExternalJSONAPI(`${OHSOME_STATS_API_URL}/metadata`);
   };
 
   return useQuery({
