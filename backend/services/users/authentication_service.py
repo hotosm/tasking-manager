@@ -14,7 +14,7 @@ token_auth = HTTPTokenAuth(scheme="Token")
 tm = TMAPIDecorators()
 
 UNICODE_ASCII_CHARACTER_SET = (
-    "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "0123456789" "-_"
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 )
 
 
