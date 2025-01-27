@@ -51,11 +51,11 @@ inputs = {
     },
     {
       name      = "TM_IMAGE_UPLOAD_API_URL"
-      valueFrom = get_env("TM_IMAGE_UPLOAD_API_URL")
+      valueFrom = get_env("TM_IMAGE_UPLOAD_API_URL", "")
     },
     {
       name      = "TM_IMAGE_UPLOAD_API_KEY"
-      valueFrom = get_env("TM_IMAGE_UPLOAD_API_KEY")
+      valueFrom = get_env("TM_IMAGE_UPLOAD_API_KEY", "")
     }
   ]
 }
