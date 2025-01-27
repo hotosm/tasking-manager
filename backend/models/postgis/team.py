@@ -15,6 +15,7 @@ from backend.models.postgis.statuses import (
     TeamRoles,
 )
 from backend.models.postgis.user import User
+from backend.models.postgis.utils import timestamp
 
 
 class TeamMembers(db.Model):
@@ -36,6 +37,7 @@ class TeamMembers(db.Model):
     team = db.relationship(
         "Team", backref=db.backref("members", cascade="all, delete-orphan")
     )
+    joined_date = db.Column(db.DateTime, default=timestamp)
 
     def create(self):
         """Creates and saves the current model to the DB"""
@@ -105,6 +107,7 @@ class Team(db.Model):
         new_member.user_id = new_team_dto.creator
         new_member.function = TeamMemberFunctions.MANAGER.value
         new_member.active = True
+        new_member.joined_date = timestamp()
 
         new_team.members.append(new_member)
 
@@ -222,6 +225,7 @@ class Team(db.Model):
         member_dto.picture_url = user.picture_url
         member_dto.active = member.active
         member_dto.join_request_notifications = member.join_request_notifications
+        member_dto.joined_date = member.joined_date
         return member_dto
 
     def as_dto_team_project(self, project) -> TeamProjectDTO:
@@ -242,6 +246,7 @@ class Team(db.Model):
                     "pictureUrl": mem.member.picture_url,
                     "function": TeamMemberFunctions(mem.function).name,
                     "active": mem.active,
+                    "joinedDate": mem.joined_date,
                 }
             )
 
