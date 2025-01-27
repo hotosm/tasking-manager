@@ -5,11 +5,11 @@ on:
 
 jobs:
   plan:
-    uses: naxa-developers/gh-workflows/.github/workflows/plan.yml@tm
+    uses: naxa-developers/gh-workflows/.github/workflows/terragrunt-plan.yml@v0.4
     with:
-      working_dir: ./scripts/aws/infra/dev/
+      working_dir: ./scripts/aws/infra/staging/purgeable/ecs/
       terraform_version: "1.9.5"
       terragrunt_version: "0.67.15"
       aws_region: us-west-2
-
+      load_env: true
     secrets: inherit
