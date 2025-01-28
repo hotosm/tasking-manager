@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import userDetailMessages from '../userDetail/messages';
-import { OHSOME_STATS_BASE_URL, defaultChangesetComment } from '../../config';
+import { OHSOME_STATS_API_URL, defaultChangesetComment } from '../../config';
 import { RoadIcon, HomeIcon, WavesIcon, MarkerIcon } from '../svgIcons';
 import { StatsCard } from '../statsCard';
 import StatsInfoFooter from '../statsInfoFooter';
@@ -14,7 +14,7 @@ export const FeatureStats = () => {
   const getStats = async () => {
     try {
       const response = await axios.get(
-        `${OHSOME_STATS_BASE_URL}/stats/${defaultChangesetComment}-%2A`,
+        `${OHSOME_STATS_API_URL}/stats/${defaultChangesetComment}-%2A`,
       );
       const { edits, buildings, roads } = response.data.result;
       setStats({

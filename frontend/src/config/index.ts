@@ -4,7 +4,9 @@ export const API_URL = import.meta.env.REACT_APP_API_URL
   ? new URL('/api/' + API_VERSION + '/', import.meta.env.REACT_APP_API_URL)
   : 'http://127.0.0.1:5000/api/' + API_VERSION + '/';
 export const OHSOME_STATS_BASE_URL =
-  import.meta.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org/api';
+  import.meta.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org';
+export const OHSOME_STATS_API_URL =
+  import.meta.env.REACT_APP_OHSOME_STATS_API_URL || 'https://stats.now.ohsome.org/api';
 // APPLICATION SETTINGS
 export const DEFAULT_LOCALE = import.meta.env.REACT_APP_DEFAULT_LOCALE || 'en';
 export const ENVIRONMENT = import.meta.env.REACT_APP_ENVIRONMENT || '';
@@ -12,7 +14,8 @@ export const PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD =
   import.meta.env.REACT_APP_PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD || 5;
 export const INTERMEDIATE_LEVEL_COUNT =
   Number(import.meta.env.REACT_APP_TM_MAPPER_LEVEL_INTERMEDIATE) || 250;
-export const ADVANCED_LEVEL_COUNT = Number(import.meta.env.REACT_APP_TM_MAPPER_LEVEL_ADVANCED) || 500;
+export const ADVANCED_LEVEL_COUNT =
+  Number(import.meta.env.REACT_APP_TM_MAPPER_LEVEL_ADVANCED) || 500;
 export const MAPBOX_TOKEN = import.meta.env.REACT_APP_MAPBOX_TOKEN || '';
 export const ENABLE_SERVICEWORKER = import.meta.env.REACT_APP_ENABLE_SERVICEWORKER || 0;
 export const MAX_AOI_AREA = Number(import.meta.env.REACT_APP_MAX_AOI_AREA) || 5000;
@@ -57,7 +60,8 @@ export const ID_EDITOR_URL =
 export const POTLATCH2_EDITOR_URL =
   import.meta.env.REACT_APP_POTLATCH2_EDITOR_URL ||
   'https://www.openstreetmap.org/edit?editor=potlatch2';
-export const RAPID_EDITOR_URL = import.meta.env.REACT_APP_RAPID_EDITOR_URL || 'https://mapwith.ai/rapid';
+export const RAPID_EDITOR_URL =
+  import.meta.env.REACT_APP_RAPID_EDITOR_URL || 'https://mapwith.ai/rapid';
 export const EXPORT_TOOL_S3_URL = import.meta.env.REACT_APP_EXPORT_TOOL_S3_URL || '';
 export const ENABLE_EXPORT_TOOL = import.meta.env.REACT_APP_ENABLE_EXPORT_TOOL || '';
 
@@ -173,7 +177,8 @@ export const MAP_STYLE = MAPBOX_TOKEN
 export const MAPBOX_RTL_PLUGIN_URL =
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';
 
-export const UNDERPASS_URL = import.meta.env.REACT_APP_UNDERPASS_URL || 'https://underpass.hotosm.org';
+export const UNDERPASS_URL =
+  import.meta.env.REACT_APP_UNDERPASS_URL || 'https://underpass.hotosm.org';
 
 export const DROPZONE_SETTINGS = {
   accept: {
