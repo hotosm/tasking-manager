@@ -69,7 +69,7 @@ import {
   ohsomeNowMetadata,
 } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
-import { API_URL, OHSOME_STATS_BASE_URL, defaultChangesetComment } from '../../config';
+import { API_URL, OHSOME_STATS_API_URL, defaultChangesetComment } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
 import { authLogin, setUser, userRegister } from './mockData/auth';
 import {
@@ -348,16 +348,16 @@ const handlers = [
     return HttpResponse.json(systemStats);
   }),
   // EXTERNAL API
-  http.get(`${OHSOME_STATS_BASE_URL}/stats/${defaultChangesetComment}-%2A`, () => {
+  http.get(`${OHSOME_STATS_API_URL}/stats/${defaultChangesetComment}-%2A`, () => {
     return HttpResponse.json(homepageStats);
   }),
-  http.get(`${OHSOME_STATS_BASE_URL}/hot-tm-user`, () => {
+  http.get(`${OHSOME_STATS_API_URL}/hot-tm-user`, () => {
     return HttpResponse.json(ohsomeNowUserStats);
   }),
-  http.get(`${OHSOME_STATS_BASE_URL}/stats/:projectId`, () => {
+  http.get(`${OHSOME_STATS_API_URL}/stats/:projectId`, () => {
     return HttpResponse.json(osmStatsProject);
   }),
-  http.get(`${OHSOME_STATS_BASE_URL}/metadata`, () => {
+  http.get(`${OHSOME_STATS_API_URL}/metadata`, () => {
     return HttpResponse.json(ohsomeNowMetadata);
   }),
   http.get('http://127.0.0.1:8111/version', () => {
