@@ -67,8 +67,8 @@ inputs = {
 
   ## Default tested resources needed for fastapi container. Override using ../<environment>/purgeable/ecs/terragrunt.hcl
   container_capacity = {
-    cpu       = 512
-    memory_mb = 1024
+    cpu       = 2048
+    memory_mb = 4096
   } 
 
   ## Scaling Policies enabled for cpu,memory in addition to ALB Count.
@@ -78,6 +78,7 @@ inputs = {
     scale_in_cooldown = 30
     scale_out_cooldown = 60
   }
+
   scale_by_memory = {
     enabled    = true
     memory_pct = 80
