@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import { useParams } from 'react-router-dom';
 
 import { useProjectQuery } from '../api/projects';
@@ -13,7 +13,7 @@ import { useAvailableCountriesQuery } from '../api/projects';
  */
 export default function useHasLiveMonitoringFeature() {
   const { id: projectId } = useParams();
-  const userDetails = useSelector((state) => state.auth.userDetails);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [hasLiveMonitoringFeature, setHasLiveMonitoringFeature] = useState(null);
 
   const { data: project } = useProjectQuery(projectId);
@@ -24,7 +24,7 @@ export default function useHasLiveMonitoringFeature() {
 
     // set hasLiveMonitoringFeature to false if project is not published
     // or expert mode is not enabled
-    if (project.data.status !== 'PUBLISHED' || !userDetails.isExpert) {
+    if (project.data.status !== 'PUBLISHED' || !userDetails?.isExpert) {
       setHasLiveMonitoringFeature(false);
       return;
     }

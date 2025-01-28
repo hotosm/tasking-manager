@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import {
   useQueryParams,
   encodeQueryParams,
@@ -124,9 +124,9 @@ export const useProjectsQueryAPI = (
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
 
   /* Get the user bearer token from the Redux store */
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences['locale']);
-  const action = useSelector((state) => state.preferences['action']);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences['locale']);
+  const action = useTypedSelector((state) => state.preferences['action']);
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,

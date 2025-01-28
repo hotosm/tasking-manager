@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 const { supportedLanguages } = new MapboxLanguage();
@@ -12,7 +12,7 @@ const defaultLocale = 'en';
  *
  */
 export default function useMapboxSupportedLanguage() {
-  const locale = useSelector((state) => state.preferences.locale);
+  const locale = useTypedSelector((state) => state.preferences.locale);
 
   if (!locale) return defaultLocale;
 

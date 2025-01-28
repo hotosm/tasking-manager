@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "allowJs": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    /* Linting */
+    "strict": false,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "types": ["vitest/globals", "@testing-library/jest-dom/vitest"],
+    "baseUrl": "./src/",
+    "paths": {
+      "@Api/*": ["api/*"],
+      "@Assets/*": ["assets/*"],
+      "@Components/*": ["components/*"],
+      "@Config/*": ["config/*"],
+      "@Hooks/*": ["hooks/*"],
+      "@Network/*": ["network/*"],
+      "@Store/*": ["store/*"],
+      "@Utils/*": ["utils/*"],
+      "@Views/*": ["views/*"]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}

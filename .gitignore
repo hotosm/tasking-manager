@@ -4,7 +4,7 @@ tasking-manager*.env
 
 # Generated frontend #
 frontend/node_modules/
-frontend/build/
+frontend/dist/
 frontend/public/static/
 frontend/assets/styles/
 frontend/package-lock.json
