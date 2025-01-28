@@ -1,37 +1,34 @@
-from schematics import Model
-from schematics.types import StringType, IntType, BooleanType, UTCDateTimeType
-from schematics.types.compound import ListType, ModelType
+from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
+
 from backend.models.dtos.stats_dto import Pagination
 
 
-class MessageDTO(Model):
+class MessageDTO(BaseModel):
     """DTO used to define a message that will be sent to a user"""
 
-    message_id = IntType(serialized_name="messageId")
-    subject = StringType(
-        serialized_name="subject",
-        required=True,
-        serialize_when_none=False,
-        min_length=1,
-    )
-    message = StringType(
-        serialized_name="message",
-        required=True,
-        serialize_when_none=False,
-        min_length=1,
-    )
-    from_user_id = IntType(required=True, serialize_when_none=False)
-    from_username = StringType(serialized_name="fromUsername", default="")
-    display_picture_url = StringType(serialized_name="displayPictureUrl", default="")
-    project_id = IntType(serialized_name="projectId")
-    project_title = StringType(serialized_name="projectTitle")
-    task_id = IntType(serialized_name="taskId")
-    message_type = StringType(serialized_name="messageType")
-    sent_date = UTCDateTimeType(serialized_name="sentDate")
-    read = BooleanType()
+    message_id: Optional[int] = Field(None, alias="messageId")
+    subject: Optional[str] = Field(min_length=1, alias="subject")
+    message: Optional[str] = Field(min_length=1, alias="message")
+    from_user_id: Optional[int] = Field(alias="fromUserId")
+    from_username: Optional[str] = Field("", alias="fromUsername")
+    display_picture_url: Optional[str] = Field("", alias="displayPictureUrl")
+    project_id: Optional[int] = Field(None, alias="projectId")
+    project_title: Optional[str] = Field(None, alias="projectTitle")
+    task_id: Optional[int] = Field(None, alias="taskId")
+    message_type: Optional[str] = Field(None, alias="messageType")
+    sent_date: Optional[datetime] = Field(None, alias="sentDate")
+    read: Optional[bool] = None
+
+    class Config:
+        populate_by_name = True
+
+        json_encoders = {datetime: lambda v: v.isoformat() + "Z" if v else None}
 
 
-class MessagesDTO(Model):
+class MessagesDTO(BaseModel):
     """DTO used to return all user messages"""
 
     def __init__(self):
@@ -39,23 +36,48 @@ class MessagesDTO(Model):
         super().__init__()
         self.user_messages = []
 
-    pagination = ModelType(Pagination)
-    user_messages = ListType(ModelType(MessageDTO), serialized_name="userMessages")
+    pagination: Optional[Pagination] = None
+    user_messages: Optional[List[MessageDTO]] = Field([], alias="userMessages")
+
+    class Config:
+        populate_by_name = True
 
 
-class ChatMessageDTO(Model):
+class ChatMessageDTO(BaseModel):
     """DTO describing an individual project chat message"""
 
-    id = IntType(required=False, serialize_when_none=False)
-    message = StringType(required=True)
-    user_id = IntType(required=True, serialize_when_none=False)
-    project_id = IntType(required=True, serialize_when_none=False)
-    picture_url = StringType(default=None, serialized_name="pictureUrl")
-    timestamp = UTCDateTimeType()
-    username = StringType()
+    id: Optional[int] = Field(None, alias="id")
+    message: str = Field(required=True)
+    user_id: int = Field(required=True)
+    project_id: int = Field(required=True)
+    picture_url: str = Field(default=None, alias="pictureUrl")
+    timestamp: datetime
+    username: str
+
+    class Config:
+        populate_by_name = True
+
+    #     json_encoders = {
+    #         datetime: lambda v: v.isoformat() + "Z" if v else None
+    #     }
 
 
-class ProjectChatDTO(Model):
+class ListChatMessageDTO(BaseModel):
+    """DTO describing an individual project chat message"""
+
+    id: Optional[int] = Field(None, alias="id")
+    message: str = Field(required=True)
+    picture_url: Optional[str] = Field(None, alias="pictureUrl")
+    timestamp: datetime
+    username: str
+
+    class Config:
+        populate_by_name = True
+
+        json_encoders = {datetime: lambda v: v.isoformat() + "Z" if v else None}
+
+
+class ProjectChatDTO(BaseModel):
     """DTO describing all chat messages on one project"""
 
     def __init__(self):
@@ -63,5 +85,5 @@ class ProjectChatDTO(Model):
         super().__init__()
         self.chat = []
 
-    chat = ListType(ModelType(ChatMessageDTO))
-    pagination = ModelType(Pagination)
+    chat: Optional[List[ListChatMessageDTO]] = None
+    pagination: Optional[Pagination] = None

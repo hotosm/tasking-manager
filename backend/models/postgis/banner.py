@@ -1,34 +1,40 @@
 import bleach
+from databases import Database
 from markdown import markdown
+from sqlalchemy import Boolean, Column, Integer, String, insert, update
 
-from backend import db
+from backend.db import Base
 from backend.models.dtos.banner_dto import BannerDTO
 
 
-class Banner(db.Model):
+class Banner(Base):
     """Model for Banners"""
 
     __tablename__ = "banner"
 
     # Columns
-    id = db.Column(db.Integer, primary_key=True)
-    message = db.Column(db.String(255), nullable=False)
-    visible = db.Column(db.Boolean, default=False, nullable=False)
+    id = Column(Integer, primary_key=True)
+    message = Column(String(255), nullable=False)
+    visible = Column(Boolean, default=False, nullable=False)
 
-    def create(self):
+    async def create(self, db: Database):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        query = insert(Banner.__table__).values(
+            message=self.message, visible=self.visible
+        )
+        await db.execute(query)
 
-    def update(self):
-        """Updates the current model in the DB"""
-        db.session.commit()
-
-    def update_from_dto(self, dto: BannerDTO):
+    async def update_from_dto(self, db: Database, dto: BannerDTO):
         """Updates the current model in the DB"""
         self.message = dto.message
         self.visible = dto.visible
-        db.session.commit()
+        query = (
+            update(Banner.__table__)
+            .where(Banner.id == self.id)
+            .values(message=self.message, visible=self.visible)
+        )
+        await db.execute(query)
+        return self
 
     def as_dto(self):
         """Returns a dto for the banner"""
@@ -38,14 +44,15 @@ class Banner(db.Model):
         return banner_dto
 
     @staticmethod
-    def get():
+    async def get(db: Database):
         """Returns a banner and creates one if it doesn't exist"""
-        banner = Banner.query.first()
+        query = """SELECT * FROM banner LIMIT 1"""
+        banner = await db.fetch_one(query=query)
         if banner is None:
             banner = Banner()
             banner.message = "Welcome to the API"
             banner.visible = True
-            banner.create()
+            await banner.create(db)
         return banner
 
     @staticmethod
