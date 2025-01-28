@@ -9,7 +9,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { Leaderboard } from '../components/partners/leaderboard';
 import { PartnersMapswipeStats } from './partnersMapswipeStats';
 import { Resources } from '../components/partners/partnersResources';
-import { OHSOME_STATS_BASE_URL } from '../config';
+import { OHSOME_STATS_API_URL } from '../config';
 import { Button } from '../components/button';
 import { TwitterIcon, FacebookIcon, InstagramIcon } from '../components/svgIcons';
 
@@ -45,7 +45,7 @@ export const PartnersStats = () => {
         hashtag = hashtag.slice(1);
       }
       hashtag = hashtag.toLowerCase();
-      const response = await fetch(OHSOME_STATS_BASE_URL + '/stats/hashtags/' + hashtag);
+      const response = await fetch(OHSOME_STATS_API_URL + '/stats/hashtags/' + hashtag);
       if (response.ok) {
         const jsonData = await response.json();
         if (jsonData.result !== undefined && Object.keys(jsonData.result).length !== 0)
