@@ -77,7 +77,7 @@ inputs = {
 
   ## Task count for ECS services.
   tasks_count = {
-      desired_count   = 1
+      desired_count   = 2
       min_healthy_pct = 50
       max_pct         = 200
     }
@@ -85,7 +85,7 @@ inputs = {
   ## Scaling Policy Target Values
   scaling_target_values = {
     container_min_count = 1
-    container_max_count = 4
+    container_max_count = 16
   }
 
   # Merge non-sensetive together 
