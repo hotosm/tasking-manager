@@ -59,6 +59,7 @@ inputs = {
   service_subnets = dependency.vpc.outputs.private_subnets
   aws_vpc_id = dependency.vpc.outputs.vpc_id
   service_security_groups = [ dependency.alb.outputs.load_balancer_app_security_group ]
+  deployment_environment = local.environment_vars.locals.environment
   load_balancer_settings = {
     enabled                 = true
     target_group_arn        = dependency.alb.outputs.target_group_arn
@@ -75,16 +76,29 @@ inputs = {
   container_secrets = concat(dependency.extras.outputs.container_secrets,
       dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
 
+  container_commands = [
+                "uvicorn",
+                "backend.main:api",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "5000",
+                "--log-level",
+                "error",
+                "--workers",
+                "8"
+            ],
+
   ## Task count for ECS services.
   tasks_count = {
-      desired_count   = 2
-      min_healthy_pct = 50
+      desired_count   = 1
+      min_healthy_pct = 25
       max_pct         = 200
     }
   
   ## Scaling Policy Target Values
   scaling_target_values = {
-    container_min_count = 1
+    container_min_count = 2
     container_max_count = 16
   }
 
@@ -92,13 +106,13 @@ inputs = {
   container_envvars = merge(
     dependency.rds.outputs.database_config_as_ecs_inputs,
     {
-      EXTRA_CORS_ORIGINS            = get_env("EXTRA_CORS_ORIGINS" ,"[\"https://tm-ecs-frontend.naxa.com.np\", \"http://localhost:3000\"]")
+      EXTRA_CORS_ORIGINS            = get_env("EXTRA_CORS_ORIGINS" ,"[\"https://tasks-stage.hotosm.org\", \"http://localhost:3000\"]")
       TM_SMTP_HOST                  = get_env("TM_SMTP_HOST" ,"email-smtp.us-east-1.amazonaws.com")
       TM_SMTP_PORT                  = get_env("TM_SMTP_PORT" ,"587")
       TM_SMTP_USE_TLS               = get_env("TM_SMTP_USE_TLS" ,"1")
       TM_SMTP_USE_SSL               = get_env("TM_SMTP_USE_SSL" ,"0")
-      TM_EMAIL_FROM_ADDRESS         = get_env("TM_EMAIL_FROM_ADDRESS", "noreply@localhost")
-      TM_EMAIL_CONTACT_ADDRESS      = get_env("TM_EMAIL_CONTACT_ADDRESS", "sysadmin@localhost")
+      TM_EMAIL_FROM_ADDRESS         = get_env("TM_EMAIL_FROM_ADDRESS", "noreply-tasks@hotosm.org")
+      TM_EMAIL_CONTACT_ADDRESS      = get_env("TM_EMAIL_CONTACT_ADDRESS", "sysadmin@hotosm.org")
       TM_APP_BASE_URL               = get_env("TM_APP_BASE_URL" ,"https://tasks-stage.hotosm.org")
       TM_APP_API_URL                = get_env("TM_APP_API_URL" ,"https://tasking-manager-staging-api.hotosm.org")
       TM_APP_API_VERSION            = get_env("TM_APP_API_VERSION" ,"v2")
@@ -121,7 +135,7 @@ inputs = {
       TM_REDIRECT_URI               = get_env("TM_REDIRECT_URI" ,"https://tasks-stage.hotosm.org/authorized")
       TM_SEND_PROJECT_EMAIL_UPDATES = get_env("TM_SEND_PROJECT_EMAIL_UPDATES" ,"1")
       TM_DEFAULT_LOCALE             = get_env("TM_DEFAULT_LOCALE" ,"en")
-      TM_LOG_LEVEL                  = get_env("TM_LOG_LEVEL" ,"INFO")
+      TM_LOG_LEVEL                  = get_env("TM_LOG_LEVEL" ,10)
       TM_LOG_DIR                    = get_env("TM_LOG_DIR", "logs")
       TM_SUPPORTED_LANGUAGES_CODES  = get_env("TM_SUPPORTED_LANGUAGES_CODES", "en, es")
       TM_SUPPORTED_LANGUAGES        = get_env("TM_SUPPORTED_LANGUAGES", "English, Español")

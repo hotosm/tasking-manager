@@ -22,7 +22,6 @@ locals {
 
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
-  // base_source_url = "/Users/nischal/NAXA/tasking-manager/scripts/aws/infra//terraform-aws-extras"
   base_source_url = "${get_path_to_repo_root()}/scripts/aws/infra//terraform-aws-extras"
 }
 
