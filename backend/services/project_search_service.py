@@ -678,106 +678,108 @@ class ProjectSearchService:
         return all_results, paginated_results, pagination_dto
 
     @staticmethod
-    async def filter_by_user_permission(db: Database, user, permission: str):
-        """Add permission filter to the project query based on user permissions."""
-
-        # Set the permission class and team roles based on the type of permission
+    async def filter_by_user_permission(user, permission: str):
+        """Generate SQL conditions for user permissions matching original Flask logic"""
         if permission == "validation_permission":
-            permission_class = ValidationPermission
-            team_roles = [
-                TeamRoles.VALIDATOR.value,
-                TeamRoles.PROJECT_MANAGER.value,
-            ]
+            perm_column = "validation_permission"
+            perm_class = ValidationPermission
+            team_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
         else:
-            permission_class = MappingPermission
+            perm_column = "mapping_permission"
+            perm_class = MappingPermission
             team_roles = [
                 TeamRoles.MAPPER.value,
                 TeamRoles.VALIDATOR.value,
                 TeamRoles.PROJECT_MANAGER.value,
             ]
 
-        subquery = """
-            AND EXISTS (
-                SELECT 1
-                FROM project_teams pt
-                JOIN teams t ON t.id = pt.team_id
-                WHERE pt.project_id = p.id
-                AND t.id IN (
-                    SELECT tm.team_id
-                    FROM team_members tm
-                    WHERE tm.user_id = :user_id AND tm.active = true
-                )
-                AND pt.role = ANY(:team_roles)
-            )
-        """
+        conditions = []
+        params = {}
 
-        if user.mapping_level == MappingLevel.BEGINNER.value:
-            subquery += f"""
-                AND (p.{permission} IN (:teams_permission, :any_permission))
+        # For non-admins, apply permission filters
+        if user.role != UserRole.ADMIN.value:
+            # Team-based permissions
+            team_condition = f"""
+                EXISTS (
+                    SELECT 1 FROM project_teams pt
+                    JOIN team_members tm ON pt.team_id = tm.team_id
+                    WHERE pt.project_id = p.id
+                    AND tm.user_id = :user_id
+                    AND pt.role = ANY(:team_roles_{perm_column})
+                )
             """
-            params = {
-                "user_id": user.id,
-                "team_roles": tuple(team_roles),
-                "teams_permission": permission_class.TEAMS.value,
-                "any_permission": permission_class.ANY.value,
-            }
-        else:
-            subquery += f"""
-                AND (p.{permission} IN (:any_permission, :level_permission))
-            """
-            params = {
-                "user_id": user.id,
-                "team_roles": tuple(team_roles),
-                "any_permission": permission_class.ANY.value,
-                "level_permission": permission_class.LEVEL.value,
-            }
-        return subquery, params
+            conditions.append(team_condition)
+            params.update({f"team_roles_{perm_column}": team_roles, "user_id": user.id})
+
+            # Permission type conditions
+            if user.mapping_level == MappingLevel.BEGINNER.value:
+                conditions.append(
+                    f"p.{perm_column} IN (:any_perm_{perm_column}, :teams_perm_{perm_column})"
+                )
+                params.update(
+                    {
+                        f"any_perm_{perm_column}": perm_class.ANY.value,
+                        f"teams_perm_{perm_column}": perm_class.TEAMS.value,
+                    }
+                )
+            else:
+                conditions.append(
+                    f"(p.{perm_column} = :any_perm_{perm_column} OR "
+                    f"(p.{perm_column} = :level_perm_{perm_column} AND :user_level >= p.difficulty))"
+                )
+                params.update(
+                    {
+                        f"any_perm_{perm_column}": perm_class.ANY.value,
+                        f"level_perm_{perm_column}": perm_class.LEVEL.value,
+                        "user_level": user.mapping_level,
+                    }
+                )
+
+        return " OR ".join(conditions), params
 
     @staticmethod
     async def filter_projects_to_map(user, db: Database):
-        """Filter projects that need mapping and can be mapped by the current user."""
-        query = """
-            SELECT DISTINCT p.id
-            FROM projects p
+        """Filter projects needing mapping with proper permission checks"""
+        base_query = """
+            SELECT p.id FROM projects p
             WHERE (p.tasks_mapped + p.tasks_validated) < (p.total_tasks - p.tasks_bad_imagery)
         """
         params = {}
+
         if user and user.role != UserRole.ADMIN.value:
             (
-                subquery,
-                subquery_params,
+                perm_condition,
+                perm_params,
             ) = await ProjectSearchService.filter_by_user_permission(
-                db, user, "mapping_permission"
+                user, "mapping_permission"
             )
-            query += subquery
-            params.update(subquery_params)
+            base_query += f" AND ({perm_condition})"
+            params.update(perm_params)
 
-        project_records = await db.fetch_all(query, params)
-        return [record["id"] for record in project_records] if project_records else []
+        records = await db.fetch_all(base_query, params)
+        return [r["id"] for r in records] if records else []
 
     @staticmethod
     async def filter_projects_to_validate(user, db: Database):
-        """Filter projects that need validation and can be validated by the current user."""
-        # Base query to get unique project IDs that need validation
-        query = """
-        SELECT DISTINCT p.id
-        FROM projects p
-        WHERE p.tasks_validated < (p.total_tasks - p.tasks_bad_imagery)
+        """Filter projects needing validation with proper permission checks"""
+        base_query = """
+            SELECT p.id FROM projects p
+            WHERE p.tasks_validated < (p.total_tasks - p.tasks_bad_imagery)
         """
-
         params = {}
+
         if user and user.role != UserRole.ADMIN.value:
             (
-                subquery,
-                subquery_params,
+                perm_condition,
+                perm_params,
             ) = await ProjectSearchService.filter_by_user_permission(
-                db, user, "validation_permission"
+                user, "validation_permission"
             )
-            query += subquery
-            params.update(subquery_params)
+            base_query += f" AND ({perm_condition})"
+            params.update(perm_params)
 
-        project_records = await db.fetch_all(query, params)
-        return [record["id"] for record in project_records] if project_records else []
+        records = await db.fetch_all(base_query, params)
+        return [r["id"] for r in records] if records else []
 
     @staticmethod
     async def get_projects_geojson(
