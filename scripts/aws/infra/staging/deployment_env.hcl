@@ -1,7 +1,7 @@
 locals {
-  account_name    = "naxadevelopers"
+  account_name    = "hotosm"
   aws_profile     = "default"
-  aws_region      = "us-east-2"
+  aws_region      = "us-east-1"
   team            = "hotosm"
   owner           = "HOTOSM"
   environment     = "staging"
@@ -9,7 +9,7 @@ locals {
   application     = "tasking-manager"
   short_name      = "tm"
   maintainer      = "dev@hotosm.org"
-  url             = "https://tm-ecs.naxa.com.np"
+  url             = "https://tasks-stage.hotosm.org"
   documentation   = "https://hotosm.github.io"
   IaC_Management  = "Terraform/Terragrunt"
   cost_center     = "False"

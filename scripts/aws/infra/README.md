@@ -90,13 +90,12 @@ As an option for CI, their values can be overridden from env variables too.
 Example:
 
 ```conf
-EXTRA_CORS_ORIGINS            = get_env("EXTRA_CORS_ORIGINS" ,"[\"https://tm-ecs-frontend.naxa.com.np\", \"http://localhost:3000\"]")
+EXTRA_CORS_ORIGINS            = get_env("EXTRA_CORS_ORIGINS" ,"[\"https://tasks-stage.hotosm.org\", \"http://localhost:3000\"]")
 TM_SMTP_HOST                  = get_env("TM_SMTP_HOST" ,"smtp.gmail.com")
 TM_SMTP_PORT                  = get_env("TM_SMTP_PORT" ,"587")
 TM_SMTP_USE_TLS               = get_env("TM_SMTP_USE_TLS" ,"0")
 TM_SMTP_USE_SSL               = get_env("TM_SMTP_USE_SSL" ,"1")
-TM_APP_BASE_URL               = get_env("TM_APP_BASE_URL" ,"https://tm-ecs.naxa.com.np")
-TM_APP_API_URL                = get_env("TM_APP_API_URL" ,"https://tm-ecs.naxa.com.np/api")
+TM_APP_BASE_URL               = get_env("TM_APP_BASE_URL" ,"https://tasks-stage.hotosm.org")
 ```
 
 #### 2. Container Secrets
