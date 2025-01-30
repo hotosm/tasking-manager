@@ -71,3 +71,6 @@ htmlcov/
 # Docker & Docker compose
 docker-compose.override.yml
 postgres_data/
+
+# Variables
+scripts/aws/infra/staging/variables.yml
