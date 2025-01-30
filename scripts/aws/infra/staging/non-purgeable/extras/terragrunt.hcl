@@ -42,20 +42,16 @@ inputs = {
       valueFrom = get_env("TM_SMTP_PASSWORD", "default_smtp_password")
     },
     {
-      name      = "TM_SENTRY_FRONTEND_DSN"
-      valueFrom = get_env("TM_SENTRY_FRONTEND_DSN", "https://tm.ingest.sentry.io/1234567")
-    },
-    {
       name      = "TM_SENTRY_BACKEND_DSN"
-      valueFrom = get_env("TM_SENTRY_BACKEND_DSN", "https://tm.ingest.sentry.io/8901234")
+      valueFrom = get_env("TM_SENTRY_BACKEND_DSN", "https://sentryyourpublickey@o68147.ingest.sentry.io/projectid")
     },
     {
       name      = "TM_IMAGE_UPLOAD_API_URL"
-      valueFrom = get_env("TM_IMAGE_UPLOAD_API_URL", "")
+      valueFrom = get_env("TM_IMAGE_UPLOAD_API_URL", "https://somethinglikethis.execute-api.us-east-1.amazonaws.com/environment/upload")
     },
     {
       name      = "TM_IMAGE_UPLOAD_API_KEY"
-      valueFrom = get_env("TM_IMAGE_UPLOAD_API_KEY", "")
+      valueFrom = get_env("TM_IMAGE_UPLOAD_API_KEY", "keytoimageuploadapiurl")
     }
   ]
 }
