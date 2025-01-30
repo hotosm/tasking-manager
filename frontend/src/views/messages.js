@@ -132,10 +132,6 @@ export default defineMessages({
     id: 'management.partner.currentProjects',
     defaultMessage: 'Current Projects',
   },
-  newToMapping: {
-    id: 'management.partner.newToMapping',
-    defaultMessage: '¿New to Mapping?',
-  },
   activity: {
     id: 'management.partner.activity',
     defaultMessage: 'Activity',

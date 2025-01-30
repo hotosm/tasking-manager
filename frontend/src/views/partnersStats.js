@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
-import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
 import { NotFound } from './notFound';
 import { useFetch } from '../hooks/UseFetch';
 import { Leaderboard } from '../components/partners/leaderboard';
 import { PartnersMapswipeStats } from './partnersMapswipeStats';
 import { Resources } from '../components/partners/partnersResources';
 import { OHSOME_STATS_API_URL } from '../config';
-import { Button } from '../components/button';
 import { TwitterIcon, FacebookIcon, InstagramIcon } from '../components/svgIcons';
 
 function getSocialIcons(link) {
@@ -128,13 +125,6 @@ export const PartnersStats = () => {
                 ))}
               </div>
               <div className="flex gap-1.5">
-                {/* new to mapping button */}
-                <Link to={`/learn/map/`}>
-                  <Button className="bg-transparent white br1 f5 fw5 bn partners-banner-button">
-                    <FormattedMessage {...messages.newToMapping} />
-                  </Button>
-                </Link>
-
                 {/* resources button */}
                 <Resources partner={partner} />
 
