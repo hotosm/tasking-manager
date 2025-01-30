@@ -24,12 +24,12 @@ inputs = {
   ## RDS Module inputs 
   serverless_capacity = {
       minimum = 4   # Lowest possible APU for Aurora Serverless
-      maximum = 16   # Max APU to keep cost low for dev
+      maximum = 8   # Max APU to keep cost low for Stag
     }
   
   ## RDS Backup/Snapshot Config
   backup = {
-    retention_days            = 1
+    retention_days            = 7
     skip_final_snapshot       = true
     final_snapshot_identifier = "final"
   }
