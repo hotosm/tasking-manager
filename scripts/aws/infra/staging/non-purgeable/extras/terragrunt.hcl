@@ -52,6 +52,10 @@ inputs = {
     {
       name      = "TM_IMAGE_UPLOAD_API_KEY"
       valueFrom = get_env("TM_IMAGE_UPLOAD_API_KEY", "keytoimageuploadapiurl")
+    },
+    {
+      name      = "NEW_RELIC_LICENSE_KEY"
+      valueFrom = get_env("NEW_RELIC_LICENSE_KEY", "newrelicliscencekey")
     }
   ]
 }

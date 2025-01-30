@@ -77,17 +77,10 @@ inputs = {
       dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
 
   container_commands = [
-                "uvicorn",
-                "backend.main:api",
-                "--host",
-                "0.0.0.0",
-                "--port",
-                "5000",
-                "--log-level",
-                "error",
-                "--workers",
-                "8"
-            ],
+      "sh",
+      "-c",
+      "alembic -c migrations/alembic.ini upgrade head && uvicorn backend.main:api --host 0.0.0.0 --port 5000 --log-level error --workers 8"
+  ]
 
   ## Task count for ECS services.
   tasks_count = {
@@ -119,8 +112,8 @@ inputs = {
       TM_APP_API_VERSION            = get_env("TM_APP_API_VERSION" ,"v2")
       TM_ORG_NAME                   = get_env("TM_ORG_NAME" ,"Humanitarian OpenStreetMap Team")
       TM_ORG_CODE                   = get_env("TM_ORG_CODE" ,"HOT")
-      TM_ORG_LOGO                   = get_env("TM_ORG_LOGO" ,"https://cdn.img.url/logo.png")
-      TM_ORG_URL                    = get_env("TM_ORG_URL" ,"example.com")
+      TM_ORG_LOGO                   = get_env("TM_ORG_LOGO" ,"https://cdn.hotosm.org/tasking-manager/uploads/1588741335578_hot-logo.png")
+      TM_ORG_URL                    = get_env("TM_ORG_URL" ,"https://www.hotosm.org/")
       TM_ORG_PRIVACY_POLICY_URL     = get_env("TM_ORG_PRIVACY_POLICY_URL" ,"https://www.hotosm.org/privacy")
       TM_ORG_TWITTER                = get_env("TM_ORG_TWITTER" ,"http://twitter.com/hotosm")
       TM_ORG_FB                     = get_env("TM_ORG_FB" ,"https://www.facebook.com/hotosm")
@@ -142,6 +135,7 @@ inputs = {
       TM_DEFAULT_CHANGESET_COMMENT  = get_env("TM_DEFAULT_CHANGESET_COMMENT", "#hot-tm-stage-project")
       TM_ENVIRONMENT                = get_env("TM_ENVIRONMENT", "tasking-manager-staging")
       NEW_RELIC_ENVIRONMENT         = get_env("TM_ENVIRONMENT", "tasking-manager-staging")
+      NEW_RELIC_CONFIG_FILE         = get_env("NEW_RELIC_CONFIG_FILE", "./scripts/aws/cloudformation/newrelic.ini")
       # Uncomment the following as needed.
       # TM_TASK_AUTOUNLOCK_AFTER    = get_env("TM_TASK_AUTOUNLOCK_AFTER", "2h")
       # TM_MAPPER_LEVEL_INTERMEDIATE = get_env("TM_MAPPER_LEVEL_INTERMEDIATE", "250")
