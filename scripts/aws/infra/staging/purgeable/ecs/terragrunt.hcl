@@ -28,9 +28,6 @@ locals {
   # Automatically load environment-level variables
   environment_vars = read_terragrunt_config(find_in_parent_folders("deployment_env.hcl"))
 
-  # Expose the base source URL so different versions of the module can be deployed in different environments. This will
-  # be used to construct the terraform block in the child terragrunt configurations.
-  base_source_url = "git::https://github.com/hotosm/terraform-aws-ecs/"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -92,7 +89,7 @@ inputs = {
   ## Scaling Policy Target Values
   scaling_target_values = {
     container_min_count = 2
-    container_max_count = 9
+    container_max_count = 3
   }
 
   # Merge non-sensetive together 
