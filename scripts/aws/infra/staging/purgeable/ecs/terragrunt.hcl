@@ -99,7 +99,7 @@ inputs = {
   ## Scaling Policy Target Values
   scaling_target_values = {
     container_min_count = 2
-    container_max_count = 16
+    container_max_count = 9
   }
 
   # Merge non-sensetive together 
@@ -111,10 +111,11 @@ inputs = {
       TM_SMTP_PORT                  = get_env("TM_SMTP_PORT" ,"587")
       TM_SMTP_USE_TLS               = get_env("TM_SMTP_USE_TLS" ,"1")
       TM_SMTP_USE_SSL               = get_env("TM_SMTP_USE_SSL" ,"0")
-      TM_EMAIL_FROM_ADDRESS         = get_env("TM_EMAIL_FROM_ADDRESS", "noreply-tasks@hotosm.org")
+      TM_EMAIL_FROM_ADDRESS         = get_env("TM_EMAIL_FROM_ADDRESS", "noreply-tasks@naxa.com.np")
       TM_EMAIL_CONTACT_ADDRESS      = get_env("TM_EMAIL_CONTACT_ADDRESS", "sysadmin@hotosm.org")
-      TM_APP_BASE_URL               = get_env("TM_APP_BASE_URL" ,"https://tasks-stage.hotosm.org")
-      TM_APP_API_URL                = get_env("TM_APP_API_URL" ,"https://tasking-manager-staging-api.hotosm.org")
+      TM_APP_BASE_URL               = get_env("TM_APP_BASE_URL" ,"https://tm-ecs-frontend.naxa.com.np")
+      // TM_APP_API_URL                = get_env("TM_APP_API_URL" ,"https://tasking-manager-staging-api.hotosm.org")
+      TM_APP_API_URL                = get_env("TM_APP_API_URL" ,"https://tm-ecs.naxa.com.np/api")
       TM_APP_API_VERSION            = get_env("TM_APP_API_VERSION" ,"v2")
       TM_ORG_NAME                   = get_env("TM_ORG_NAME" ,"Humanitarian OpenStreetMap Team")
       TM_ORG_CODE                   = get_env("TM_ORG_CODE" ,"HOT")
@@ -132,7 +133,7 @@ inputs = {
       OSM_REGISTER_URL              = get_env("OSM_REGISTER_URL" ,"https://www.openstreetmap.org/user/new")
       POSTGRES_TEST_DB              = get_env("POSTGRES_TEST_DB" ,"tasking-manager-test")
       UNDERPASS_URL                 = get_env("UNDERPASS_URL" ,"https://underpass.hotosm.org")
-      TM_REDIRECT_URI               = get_env("TM_REDIRECT_URI" ,"https://tasks-stage.hotosm.org/authorized")
+      TM_REDIRECT_URI               = get_env("TM_REDIRECT_URI" ,"https://tm-ecs-frontend.naxa.com.np/authorized")
       TM_SEND_PROJECT_EMAIL_UPDATES = get_env("TM_SEND_PROJECT_EMAIL_UPDATES" ,"1")
       TM_DEFAULT_LOCALE             = get_env("TM_DEFAULT_LOCALE" ,"en")
       TM_LOG_LEVEL                  = get_env("TM_LOG_LEVEL" ,10)
