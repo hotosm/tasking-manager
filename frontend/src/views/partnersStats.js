@@ -9,6 +9,7 @@ import { PartnersMapswipeStats } from './partnersMapswipeStats';
 import { Resources } from '../components/partners/partnersResources';
 import { OHSOME_STATS_API_URL } from '../config';
 import { TwitterIcon, FacebookIcon, InstagramIcon } from '../components/svgIcons';
+import { Button } from '../components/button';
 
 function getSocialIcons(link) {
   const socialName = link.split('_')?.[1];
@@ -93,16 +94,39 @@ export const PartnersStats = () => {
       ) : (
         <div className="">
           <div className="flex flex-column bg-blue-dark ph4">
-            {/* logo */}
-            {partner.logo_url ? (
-              <div className="partners-banner-logo">
-                <img src={partner.logo_url} alt="logo" height={70} />
-              </div>
-            ) : (
-              <h3 className="f2 fw6 ttu barlow-condensed white" style={{ marginBottom: '1.75rem' }}>
-                {partner.name}
-              </h3>
-            )}
+            <div className="flex items-center justify-between">
+              {/* logo */}
+              {partner.logo_url ? (
+                <div className="partners-banner-logo">
+                  <img src={partner.logo_url} alt="logo" height={70} />
+                </div>
+              ) : (
+                <h3
+                  className="f2 fw6 ttu barlow-condensed white"
+                  // style={{ marginBottom: '1.75rem' }}
+                >
+                  {partner.name}
+                </h3>
+              )}
+              {activeTab === 'mapswipe' && (
+                <div>
+                  <Button
+                    className="white bg-mapswipe-theme pa3 flex items-center"
+                    onClick={() => {
+                      window.open('https://web.mapswipe.org/#/en', '_blank', 'noopener');
+                    }}
+                  >
+                    Start Mapping with
+                    <img
+                      className="ml2"
+                      src="https://mapswipe.org/_next/static/chunks/images/logo.1920.75.svg"
+                      height={22}
+                      alt="mapswipe_logo"
+                    />
+                  </Button>
+                </div>
+              )}
+            </div>
             <div className="flex justify-between">
               <div className="flex gap-0.75">
                 {modifiedTabData.map(({ id: tabId, title }) => (
