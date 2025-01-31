@@ -154,7 +154,7 @@ export const PartnersStats = () => {
 
                 {/* social logos */}
                 {!!socialLinks.length && (
-                  <div className="flex items-center gap-0.625">
+                  <div className="flex items-center gap-0.75">
                     {socialLinks.map((link) => (
                       <a
                         key={link}
