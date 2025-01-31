@@ -132,9 +132,9 @@ export default defineMessages({
     id: 'management.partner.currentProjects',
     defaultMessage: 'Current Projects',
   },
-  activity: {
-    id: 'management.partner.activity',
-    defaultMessage: 'Activity',
+  contributions: {
+    id: 'management.partner.contributions',
+    defaultMessage: 'Contributions',
   },
   resources: {
     id: 'management.partner.resources',
