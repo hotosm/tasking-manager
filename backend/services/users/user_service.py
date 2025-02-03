@@ -969,8 +969,9 @@ class UserService:
         if user is None:
             user = UserEmail(email=user_email)
             user = await user.create(db)
-
-        return user
+            return user
+        else:
+            return user.id
 
     @staticmethod
     async def get_interests(user: User, db: Database) -> InterestsListDTO:
