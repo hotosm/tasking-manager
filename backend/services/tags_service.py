@@ -3,6 +3,6 @@ from backend.models.postgis.project import Project
 
 class TagsService:
     @staticmethod
-    def get_all_countries():
+    async def get_all_countries(db):
         """Get all countries"""
-        return Project.get_all_countries()
+        return await Project.get_all_countries(db)
