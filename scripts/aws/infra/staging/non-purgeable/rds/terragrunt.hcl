@@ -21,12 +21,12 @@ inputs = {
   vpc_id     = dependency.vpc.outputs.vpc_id
   subnet_ids = dependency.vpc.outputs.private_subnets
 
-  ## RDS Module inputs 
+  ## RDS Module inputs
   serverless_capacity = {
       minimum = 4   # Lowest possible APU for Aurora Serverless
       maximum = 8   # Max APU to keep cost low for Stag
     }
-  
+
   ## RDS Backup/Snapshot Config
   backup = {
     retention_days            = 7

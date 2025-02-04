@@ -69,7 +69,7 @@ inputs = {
   container_capacity = {
     cpu       = 2048
     memory_mb = 4096
-  } 
+  }
 
   ## Scaling Policies enabled for cpu,memory in addition to ALB Count.
   scale_by_cpu = {
