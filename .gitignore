@@ -1,4 +1,3 @@
-
 # Configuration files #
 tasking-manager*.env
 
@@ -65,7 +64,13 @@ htmlcov/
 
 # Terragrunt
 .terragrunt-cache
+**/.terragrunt-cache/
+**/.terragrunt-cache
+**/infra.env
 
 # Docker & Docker compose
 docker-compose.override.yml
 postgres_data/
+
+# Variables
+scripts/aws/infra/staging/variables.py
