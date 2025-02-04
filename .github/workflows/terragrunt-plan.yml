@@ -2,14 +2,42 @@ name: Terragrunt Plan
 
 on:
   workflow_dispatch:
+    inputs:
+      module_path:
+        description: "Select Terragrunt Module to run"
+        required: true
+        type: choice
+        default: purgeable/ecs/
+        options:
+          - purgeable/ecs/
+          - non-purgeable/extras/
 
 jobs:
+  # workaround for using GHActions environment variables feature. In future we can use ${{ github.ref_name }} directly in the workflow as INFRA_BRANCH
+  get_deployment_meta:
+    runs-on: ubuntu-latest
+    outputs:
+      INFRA_BRANCH: ${{ steps.get_deployment_meta.outputs.INFRA_BRANCH }}
+    steps:
+      - name: Get Deployment Meta
+        id: get_deployment_meta
+        shell: bash
+        run: |
+          case "${{ github.ref }}" in
+          refs/heads/tasking-manager-fastapi)
+            export INFRA_BRANCH=staging
+            ;;
+          esac
+          echo "INFRA_BRANCH=${INFRA_BRANCH}" >> $GITHUB_OUTPUT
+
   plan:
     uses: naxa-developers/gh-workflows/.github/workflows/terragrunt-plan.yml@v0.4
+    needs:
+      - get_deployment_meta
     with:
-      working_dir: ./scripts/aws/infra/staging/purgeable/ecs/
+      working_dir: ./scripts/aws/infra/${{ needs.get_deployment_meta.outputs.INFRA_BRANCH }}/${{ github.event.inputs.module_path }}
       terraform_version: "1.9.5"
       terragrunt_version: "0.67.15"
-      aws_region: us-west-2
+      aws_region: us-west-1
       load_env: true
     secrets: inherit
