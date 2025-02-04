@@ -8,10 +8,12 @@ on:
 env:
   REGISTRY: ghcr.io
   AWS_REGION: us-east-1
-  ECS_CLUSTER: tasking-manager
-  ECS_SERVICE: backend-fastAPI
-  CONTAINER_NAME: backend
-  IMAGE_NAME: hotosm/tasking-manager-backend # was ${{ github.repository }}
+  IMAGE_NAME: hotosm/tasking-manager-backend
+  TASK_DEFINITION: tasking-manager-hotosm-staging-fastapi
+  ECS_CLUSTER: tasking-manager-staging-cluster
+  ECS_SERVICE: tasking-manager-hotosm-staging-fastapi
+  CONTAINER_NAME: tasking-manager-hotosm-staging-fastapi
+  OIDC_ROLE_ARN: arn:aws:iam::670261699094:role/Github-AWS-OIDC
 
 jobs:
   image-build-and-push:
@@ -56,7 +58,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-
   deploy:
     name: Deploy to ECS
     runs-on: ubuntu-latest
@@ -74,13 +75,13 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: us-east-1
-          role-to-assume: arn:aws:iam::670261699094:role/Github-AWS-OIDC
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.OIDC_ROLE_ARN }}
           role-session-name: gh-ci-ecs-deploy
 
       - name: Download task definition
         run: |
-           aws ecs describe-task-definition --task-definition tasking-manager-fastAPI --query taskDefinition > task-definition.json
+          aws ecs describe-task-definition --task-definition ${{ env.TASK_DEFINITION }} --query taskDefinition > task-definition.json
 
       - name: Task definition rendition
         id: task-def
