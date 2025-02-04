@@ -85,14 +85,14 @@ inputs = {
       min_healthy_pct = 25
       max_pct         = 200
     }
-  
+
   ## Scaling Policy Target Values
   scaling_target_values = {
     container_min_count = 2
     container_max_count = 3
   }
 
-  # Merge non-sensetive together 
+  # Merge non-sensetive together
   container_envvars = merge(
     dependency.rds.outputs.database_config_as_ecs_inputs,
     {

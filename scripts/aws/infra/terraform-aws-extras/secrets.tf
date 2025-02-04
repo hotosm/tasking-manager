@@ -22,6 +22,5 @@ resource "aws_secretsmanager_secret_version" "tm_secret_version" {
   }
 
   secret_id     = aws_secretsmanager_secret.tm_secrets[each.key].id
-  secret_string = each.value.valueFrom 
+  secret_string = each.value.valueFrom
 }
-
