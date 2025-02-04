@@ -679,63 +679,35 @@ class ProjectSearchService:
 
     @staticmethod
     async def filter_by_user_permission(user, permission: str):
-        """Generate SQL conditions for user permissions matching original Flask logic"""
+        if not user or user.role == UserRole.ADMIN.value:
+            return "TRUE", {}  # Admin can access all projects
+
+        # Select permission class and team roles based on the permission type
         if permission == "validation_permission":
-            perm_column = "validation_permission"
-            perm_class = ValidationPermission
+            permission_class = ValidationPermission
             team_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
         else:
-            perm_column = "mapping_permission"
-            perm_class = MappingPermission
+            permission_class = MappingPermission
             team_roles = [
                 TeamRoles.MAPPER.value,
                 TeamRoles.VALIDATOR.value,
                 TeamRoles.PROJECT_MANAGER.value,
             ]
-
-        conditions = []
-        params = {}
-
-        # For non-admins, apply permission filters
-        if user.role != UserRole.ADMIN.value:
-            # Team-based permissions
-            team_condition = f"""
-                EXISTS (
-                    SELECT 1 FROM project_teams pt
-                    JOIN team_members tm ON pt.team_id = tm.team_id
-                    WHERE pt.project_id = p.id
-                    AND tm.user_id = :user_id
-                    AND pt.role = ANY(:team_roles_{perm_column})
+        condition = f"""
+            (
+                p.id IN (
+                    SELECT DISTINCT pt.project_id
+                    FROM team_members tm
+                    JOIN project_teams pt ON tm.team_id = pt.team_id
+                    WHERE tm.user_id = :user_id
+                      AND pt.role = ANY(:team_roles)
                 )
-            """
-            conditions.append(team_condition)
-            params.update({f"team_roles_{perm_column}": team_roles, "user_id": user.id})
-
-            # Permission type conditions
-            if user.mapping_level == MappingLevel.BEGINNER.value:
-                conditions.append(
-                    f"p.{perm_column} IN (:any_perm_{perm_column}, :teams_perm_{perm_column})"
-                )
-                params.update(
-                    {
-                        f"any_perm_{perm_column}": perm_class.ANY.value,
-                        f"teams_perm_{perm_column}": perm_class.TEAMS.value,
-                    }
-                )
-            else:
-                conditions.append(
-                    f"(p.{perm_column} = :any_perm_{perm_column} OR "
-                    f"(p.{perm_column} = :level_perm_{perm_column} AND :user_level >= p.difficulty))"
-                )
-                params.update(
-                    {
-                        f"any_perm_{perm_column}": perm_class.ANY.value,
-                        f"level_perm_{perm_column}": perm_class.LEVEL.value,
-                        "user_level": user.mapping_level,
-                    }
-                )
-
-        return " OR ".join(conditions), params
+                { "AND p." + permission + f" = {permission_class.TEAMS.value}" if user.mapping_level == MappingLevel.BEGINNER.value else "" }
+            )
+            OR p.{permission} IN ({permission_class.ANY.value}{", " + str(permission_class.LEVEL.value) if user.mapping_level != MappingLevel.BEGINNER.value else ""})
+        """
+        params = {"user_id": user.id, "team_roles": team_roles}
+        return condition, params
 
     @staticmethod
     async def filter_projects_to_map(user, db: Database):
