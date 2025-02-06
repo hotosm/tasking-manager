@@ -15,29 +15,55 @@ on:
 jobs:
   # workaround for using GHActions environment variables feature. In future we can use ${{ github.ref_name }} directly in the workflow as INFRA_BRANCH
   get_deployment_meta:
+    name: Get Deployment Meta
     runs-on: ubuntu-latest
     outputs:
-      INFRA_BRANCH: ${{ steps.get_deployment_meta.outputs.INFRA_BRANCH }}
+      INFRA_BRANCH_NAME: ${{ steps.export_meta.outputs.INFRA_BRANCH_NAME }}
+      INFRA_BRANCH_URL: ${{ steps.export_meta.outputs.INFRA_BRANCH_URL }}
     steps:
-      - name: Get Deployment Meta
-        id: get_deployment_meta
+      - name: Export Deployment Meta
+        id: export_meta
         shell: bash
         run: |
           case "${{ github.ref }}" in
           refs/heads/tasking-manager-fastapi)
-            export INFRA_BRANCH=staging
+            export INFRA_BRANCH_NAME=staging
+            export INFRA_BRANCH_URL=https://tasks-stage.hotosm.org
+            ;;
+          refs/heads/ci/feat/terragrunt-multi-module)
+            export INFRA_BRANCH_NAME=staging
+            export INFRA_BRANCH_URL=https://tasks-stage.hotosm.org
             ;;
           esac
-          echo "INFRA_BRANCH=${INFRA_BRANCH}" >> $GITHUB_OUTPUT
+          echo "INFRA_BRANCH_NAME=${INFRA_BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "INFRA_BRANCH_URL=${INFRA_BRANCH_URL}" >> $GITHUB_OUTPUT
+
+      - name: Write Inputs as Artifacts
+        shell: bash
+        run: |
+          set -e
+          echo INFRA_BRANCH_NAME=${{ steps.export_meta.outputs.INFRA_BRANCH_NAME }} >> PLAN_WORKFLOW_META
+          echo INFRA_BRANCH_URL=${{ steps.export_meta.outputs.INFRA_BRANCH_URL }} >> PLAN_WORKFLOW_META
+          echo INFRA_MODULE_PATH=${{ inputs.module_path }} >> PLAN_WORKFLOW_META
+
+      - name: Upload Inputs as Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PLAN_WORKFLOW_META.info
+          path: ./PLAN_WORKFLOW_META
+          retention-days: 1
 
   plan:
-    uses: naxa-developers/gh-workflows/.github/workflows/terragrunt-plan.yml@v0.4
+    name: Terragrunt Plan
+    uses: naxa-developers/gh-workflows/.github/workflows/terragrunt-plan.yml@tm
     needs:
       - get_deployment_meta
     with:
-      working_dir: ./scripts/aws/infra/${{ needs.get_deployment_meta.outputs.INFRA_BRANCH }}/${{ github.event.inputs.module_path }}
+      working_dir: ./scripts/aws/infra/${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}/${{ github.event.inputs.module_path }}
       terraform_version: "1.9.5"
       terragrunt_version: "0.67.15"
       aws_region: us-west-1
       load_env: true
+      environment_name: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}
+      environment_url: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_URL }}
     secrets: inherit
