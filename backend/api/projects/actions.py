@@ -381,7 +381,7 @@ async def post(
 @router.post("/actions/intersecting-tiles/")
 async def post(
     request: Request,
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(login_required),
     grid_dto: GridDTO = Body(...),
 ):
     """
