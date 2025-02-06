@@ -1,16 +1,12 @@
 name: Terragrunt Apply
 
 on:
+  workflow_run:
+    workflows: ["Terragrunt Plan"]
+    types:
+      - completed
   workflow_dispatch:
     inputs:
-      module_path:
-        description: "Select Terragrunt Module to run"
-        required: true
-        type: choice
-        default: purgeable/ecs/
-        options:
-          - purgeable/ecs/
-          - non-purgeable/extras/
       plan_file_name:
         description: "Enter Terragrunt Plan File name to run"
         required: true
@@ -18,30 +14,58 @@ on:
 jobs:
   # workaround for using GHActions environment variables feature. In future we can use ${{ github.ref_name }} directly in the workflow as INFRA_BRANCH
   get_deployment_meta:
+    name: Get Deployment Meta
     runs-on: ubuntu-latest
     outputs:
-      INFRA_BRANCH: ${{ steps.get_deployment_meta.outputs.INFRA_BRANCH }}
+      PLAN_NAME: ${{ steps.export_meta.outputs.PLAN_NAME }}
+      INFRA_BRANCH_NAME: ${{ steps.export_triggering_wf_meta.outputs.INFRA_BRANCH_NAME }}
+      INFRA_BRANCH_URL: ${{ steps.export_triggering_wf_meta.outputs.INFRA_BRANCH_URL }}
+      INFRA_MODULE_PATH: ${{ steps.export_triggering_wf_meta.outputs.INFRA_MODULE_PATH }}
+
     steps:
-      - name: Get Deployment Meta
-        id: get_deployment_meta
+      - name: Export Deployment Meta
+        id: export_meta
         shell: bash
         run: |
-          case "${{ github.ref }}" in
-          refs/heads/tasking-manager-fastapi)
-            export INFRA_BRANCH=staging
+          case "${{ github.event_name }}" in
+          workflow_run)
+            export PLAN_NAME=tasking-manager-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}
+            ;;
+          workflow_dispatch)
+            export PLAN_NAME=${{ inputs.plan_file_name }}
             ;;
           esac
-          echo "INFRA_BRANCH=${INFRA_BRANCH}" >> $GITHUB_OUTPUT
+          echo "PLAN_NAME=${PLAN_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Get Input Params from GitHub Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: PLAN_WORKFLOW_META.info
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Export triggering plan workflow meta
+        id: export_triggering_wf_meta
+        shell: bash
+        run: |
+          for line in $(cat PLAN_WORKFLOW_META);
+          do
+            echo $line >> $GITHUB_OUTPUT
+          done
 
   apply:
-    uses: naxa-developers/gh-workflows/.github/workflows/terragrunt-apply.yml@v0.4
+    name: Terragrunt Apply
+    uses: naxa-developers/gh-workflows/.github/workflows/terragrunt-apply.yml@tm
     needs:
       - get_deployment_meta
     with:
-      working_dir: ./scripts/aws/infra/${{ needs.get_deployment_meta.outputs.INFRA_BRANCH }}/${{ github.event.inputs.module_path }}
+      working_dir: ./scripts/aws/infra/${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}/${{ needs.get_deployment_meta.outputs.INFRA_MODULE_PATH }}
       terraform_version: "1.9.5"
       terragrunt_version: "0.67.15"
       aws_region: us-west-1
-      plan_file_name: ${{ inputs.plan_file_name }}
+      plan_file_name: ${{ needs.get_deployment_meta.outputs.PLAN_NAME }}
       use_gh_artifacts: true
+      environment_name: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}
+      environment_url: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_URL }}
     secrets: inherit
