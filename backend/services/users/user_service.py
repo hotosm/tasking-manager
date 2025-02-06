@@ -482,21 +482,20 @@ class UserService:
                 GROUP BY date_trunc('minute', action_date)
             )
             SELECT
-                SUM(EXTRACT(EPOCH FROM (tm || ' seconds')::interval)) AS total_time
+                SUM(EXTRACT(EPOCH FROM to_timestamp(tm, 'HH24:MI:SS') - to_timestamp('00:00:00', 'HH24:MI:SS'))) AS total_time
             FROM max_action_text_per_minute
         """
         result = await db.fetch_one(
             total_validation_time_query, values={"user_id": user.id}
         )
         if result and result["total_time"]:
-            total_validation_time = result["total_time"]
-            stats_dto.time_spent_validating = int(total_validation_time)
+            stats_dto.time_spent_validating = int(result["total_time"])
             stats_dto.total_time_spent += stats_dto.time_spent_validating
 
         # Total mapping time
         total_mapping_time_query = """
             SELECT
-                SUM(EXTRACT(EPOCH FROM (CAST(action_text AS INTERVAL) || ' seconds')::interval)) AS total_mapping_time_seconds
+                SUM(EXTRACT(EPOCH FROM to_timestamp(action_text, 'HH24:MI:SS') - to_timestamp('00:00:00', 'HH24:MI:SS'))) AS total_mapping_time_seconds
             FROM task_history
             WHERE user_id = :user_id
             AND action IN ('LOCKED_FOR_MAPPING', 'AUTO_UNLOCKED_FOR_MAPPING')
@@ -505,8 +504,7 @@ class UserService:
             total_mapping_time_query, values={"user_id": user.id}
         )
         if result and result["total_mapping_time_seconds"]:
-            total_mapping_time = result["total_mapping_time_seconds"]
-            stats_dto.time_spent_mapping = int(total_mapping_time)
+            stats_dto.time_spent_mapping = int(result["total_mapping_time_seconds"])
             stats_dto.total_time_spent += stats_dto.time_spent_mapping
 
         stats_dto.contributions_interest = await UserService.get_interests_stats(
