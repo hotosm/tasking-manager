@@ -746,7 +746,6 @@ async def get(
         if user_id:
             user = await UserService.get_user_by_id(user_id, db)
         search_dto = setup_search_dto(request)
-
         if search_dto.omit_map_results and search_dto.download_as_csv:
             return JSONResponse(
                 content={
@@ -793,6 +792,8 @@ async def get(
             return JSONResponse(content={"Error": error_msg}, status_code=401)
 
         if search_dto.download_as_csv:
+            if user:
+                user = user.id
             all_results_csv = await ProjectSearchService.search_projects_as_csv(
                 search_dto, user, db, True
             )

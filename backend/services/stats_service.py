@@ -30,6 +30,7 @@ from backend.models.postgis.utils import timestamp  # noqa: F401
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.project_service import ProjectService
 from backend.services.users.user_service import UserService
+from aiocache import cached, Cache
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
@@ -441,14 +442,17 @@ class StatsService:
 
         return contrib_dto
 
+    def homepage_cache_key_builder(func, *args, **kwargs):
+        args_without_db = args[:-1]
+        return f"{func.__name__}:{args_without_db}:{kwargs}"
+
     @staticmethod
-    @cached(homepage_stats_cache)
+    @cached(cache=Cache.MEMORY, key_builder=homepage_cache_key_builder, ttl=600)
     async def get_homepage_stats(
         abbrev: bool = True, db: Database = None
     ) -> HomePageStatsDTO:
         """Get overall TM stats to give community a feel for progress that's being made"""
         dto = HomePageStatsDTO()
-
         # Total Projects
         query = select(func.count(Project.id))
         dto.total_projects = await db.fetch_val(query)
@@ -690,7 +694,12 @@ class StatsService:
             "bad_imagery": row["bad_imagery"],
         }
 
+    def cache_key_builder(func, *args, **kwargs):
+        args_without_first = args[1:]
+        return f"{func.__name__}:{args_without_first}:{kwargs}"
+
     @staticmethod
+    @cached(cache=Cache.MEMORY, key_builder=cache_key_builder, ttl=300)
     async def get_task_stats(
         db: Database,
         start_date,
@@ -702,7 +711,6 @@ class StatsService:
         country=None,
     ):
         """Creates task stats for a period using the TaskStatsDTO"""
-
         # Base query components
         base_query = """
             WITH filtered_projects AS (
