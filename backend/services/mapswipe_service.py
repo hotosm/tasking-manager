@@ -1,7 +1,7 @@
 import json
 
 import requests
-from cachetools import TTLCache, cached
+# from cachetools import TTLCache, cached
 
 from backend.exceptions import Conflict
 from backend.models.dtos.partner_stats_dto import (
@@ -18,8 +18,8 @@ from backend.models.dtos.partner_stats_dto import (
     UserGroupMemberDTO,
 )
 
-grouped_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
-filtered_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
+# grouped_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
+# filtered_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
 MAPSWIPE_API_URL = "https://api.mapswipe.org/graphql/"
 
 
@@ -290,7 +290,7 @@ class MapswipeService:
         filtered_stats_dto.contributions_by_organization_name = organizations
         return filtered_stats_dto
 
-    @cached(grouped_partner_stats_cache)
+    # @cached(grouped_partner_stats_cache)
     def fetch_grouped_partner_stats(
         self,
         partner_id: int,
@@ -316,7 +316,7 @@ class MapswipeService:
         group_dto = self.setup_group_dto(partner_id, group_id, resp_body)
         return group_dto
 
-    @cached(filtered_partner_stats_cache)
+    # @cached(filtered_partner_stats_cache)
     def fetch_filtered_partner_stats(
         self,
         partner_id: str,

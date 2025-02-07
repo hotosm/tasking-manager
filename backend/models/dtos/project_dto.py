@@ -563,8 +563,6 @@ class ProjectSummary(BaseModel):
     class Config:
         populate_by_name = True
 
-    # TODO: Make Validators work.
-
     # @field_validator('mapping_types', 'mapping_editors', 'validation_editors', mode='plain')
     # def validate_list_fields(cls, v, field):
     #     print(field,'-----')

@@ -1516,21 +1516,6 @@ class Project(Base):
 
         return summary
 
-    # TODO Remove if not used.
-    # @staticmethod
-    # async def calculate_tasks_percent(status: str, project_id: int, db: Database) -> float:
-    #     """Calculate the percentage of tasks with a given status for a project."""
-    #     query = f"""
-    #     SELECT COUNT(*)
-    #     FROM tasks
-    #     WHERE project_id = :project_id AND status = :status
-    #     """
-    #     total_tasks_query = "SELECT COUNT(*) FROM tasks WHERE project_id = :project_id"
-
-    #     total_tasks = await db.fetch_val(total_tasks_query, {"project_id": project_id})
-    #     status_tasks = await db.fetch_val(query, {"project_id": project_id, "status": status})
-    #     return (status_tasks / total_tasks) * 100 if total_tasks > 0 else 0.0
-
     @staticmethod
     async def get_dto_for_locale(
         project_id: int, preferred_locale: str, default_locale: str, db: Database

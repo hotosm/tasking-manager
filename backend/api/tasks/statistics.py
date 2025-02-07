@@ -10,6 +10,7 @@ from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.stats_service import StatsService
 from backend.services.users.authentication_service import login_required
 
+
 router = APIRouter(
     prefix="/tasks",
     tags=["tasks"],

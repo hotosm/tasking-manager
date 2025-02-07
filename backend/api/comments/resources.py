@@ -195,8 +195,6 @@ async def delete(
 
 
 @router.post("/{project_id}/comments/tasks/{task_id}/")
-# TODO Decorator
-# @tm.pm_only(False)
 async def post(
     request: Request,
     project_id: int,

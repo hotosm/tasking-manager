@@ -10,6 +10,7 @@ from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import ProjectStatus
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
+from aiocache import cached, Cache
 
 similar_projects_cache = TTLCache(maxsize=1000, ttl=60 * 60 * 24)  # 24 hours
 
@@ -117,14 +118,17 @@ class ProjectRecommendationService:
 
         return similar_projects
 
-    # TODO: Cache
+    def matrix_cache_key_builder(func, *args, **kwargs):
+        # Remove the last two arguments
+        args_without_db = args[:-1]
+        return f"{func.__name__}:{args_without_db}:{kwargs}"
+
     # This function is cached so that the matrix is not calculated every time
     # as it is expensive and not changing often
-    # # @cached(cache=similar_projects_cache)
     @staticmethod
+    @cached(cache=Cache.MEMORY, key_builder=matrix_cache_key_builder, ttl=3600)
     async def create_project_matrix(db: Database) -> pd.DataFrame:
         """Creates project matrix required to calculate similarity."""
-
         # Query to fetch all published projects with their related data
         query = """
             SELECT p.id, p.default_locale, p.difficulty, p.mapping_types, p.country,

@@ -309,7 +309,6 @@ class User(Base):
         """
         await db.execute(query, values={"user_id": user_id, "project_id": project_id})
 
-    # TODO Optimization: Get only project name instead of all the locale attributes.
     @staticmethod
     async def get_mapped_projects(
         user_id: int, preferred_locale: str, db: Database
