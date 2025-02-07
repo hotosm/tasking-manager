@@ -108,7 +108,7 @@ class MappingService:
             user_can_map, error_reason = await ProjectService.is_user_permitted_to_map(
                 lock_task_dto.project_id, lock_task_dto.user_id, db
             )
-            # TODO Handle error exceptions..
+            # TODO Handle error exceptions.
             if not user_can_map:
                 if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                     raise UserLicenseError("User must accept license to map this task")

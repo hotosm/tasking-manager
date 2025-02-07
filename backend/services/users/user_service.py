@@ -1,6 +1,6 @@
 import datetime
 
-from cachetools import TTLCache, cached
+# from cachetools import TTLCache, cached
 from databases import Database
 from loguru import logger
 from sqlalchemy import and_, desc, distinct, func, insert, select
@@ -38,7 +38,7 @@ from backend.services.users.osm_service import OSMService, OSMServiceError
 
 settings = Settings()
 
-user_filter_cache = TTLCache(maxsize=1024, ttl=600)
+# user_filter_cache = TTLCache(maxsize=1024, ttl=600)
 
 
 class UserServiceError(Exception):
@@ -545,7 +545,7 @@ class UserService:
         return await User.get_all_users(query, db)
 
     @staticmethod
-    @cached(user_filter_cache)
+    # @cached(user_filter_cache)
     async def filter_users(
         username: str, project_id: int, page: int, db: Database
     ) -> UserFilterDTO:

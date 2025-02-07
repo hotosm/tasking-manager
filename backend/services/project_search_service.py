@@ -4,7 +4,7 @@ from typing import List
 
 import geojson
 import pandas as pd
-from cachetools import TTLCache, cached
+from aiocache import cached, Cache
 from databases import Database
 from fastapi import HTTPException
 from geoalchemy2 import shape
@@ -34,8 +34,8 @@ from backend.models.postgis.statuses import (
 )
 from backend.services.users.user_service import UserService
 
-search_cache = TTLCache(maxsize=128, ttl=300)
-csv_download_cache = TTLCache(maxsize=16, ttl=600)
+# search_cache = TTLCache(maxsize=128, ttl=300)
+# csv_download_cache = TTLCache(maxsize=16, ttl=600)
 
 # max area allowed for passed in bbox, calculation shown to help future maintenance
 # client resolution (mpp)* arbitrary large map size on a large screen in pixels * 50% buffer, all squared
@@ -238,11 +238,17 @@ class ProjectSearchService:
 
         return [row["total"] for row in result]
 
+    def csv_cache_key_builder(func, *args, **kwargs):
+        args_without_db = args[:-2]
+        return f"{func.__name__}:{args_without_db}:{kwargs}"
+
     @staticmethod
-    # @cached(csv_download_cache)
+    @cached(cache=Cache.MEMORY, key_builder=csv_cache_key_builder, ttl=3600)
     async def search_projects_as_csv(
         search_dto: ProjectSearchDTO, user, db: Database, as_csv: bool = False
     ) -> str:
+        if user:
+            user = await UserService.get_user_by_id(user, db)
         all_results = await ProjectSearchService._filter_projects(
             search_dto, user, db, as_csv
         )
@@ -326,7 +332,7 @@ class ProjectSearchService:
         return df.to_csv(index=False)
 
     @staticmethod
-    @cached(search_cache)
+    # @cached(cache=Cache.MEMORY, key_builder=cache_key_builder, ttl=300)
     async def search_projects(
         search_dto: ProjectSearchDTO, user, db
     ) -> ProjectSearchResultsDTO:
@@ -378,7 +384,6 @@ class ProjectSearchService:
         )
         # Initialize filter list and parameters dictionary
         filters = []
-
         if search_dto.preferred_locale or search_dto.text_search:
             subquery_filters = []
             if search_dto.preferred_locale:

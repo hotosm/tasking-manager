@@ -4,7 +4,7 @@ import time
 from typing import List
 
 import bleach
-from cachetools import TTLCache, cached
+from cachetools import TTLCache
 from databases import Database
 from loguru import logger
 from markdown import markdown
@@ -783,8 +783,8 @@ class MessageService:
         )
         return list(set(usernames))
 
+    # @cached(message_cache)
     @staticmethod
-    @cached(message_cache)
     async def has_user_new_messages(user_id: int, db: Database) -> dict:
         """Determines if the user has any unread messages"""
         count = await Notification.get_unread_message_count(user_id, db)

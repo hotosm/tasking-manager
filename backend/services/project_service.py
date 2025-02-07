@@ -2,7 +2,8 @@ import json
 from datetime import datetime, timedelta, timezone
 
 import geojson
-from cachetools import TTLCache, cached
+
+# from cachetools import TTLCache, cached
 from databases import Database
 from fastapi import HTTPException
 from loguru import logger
@@ -38,8 +39,10 @@ from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.team_service import TeamService
 from backend.services.users.user_service import UserService
+from aiocache import cached, Cache
 
-summary_cache = TTLCache(maxsize=1024, ttl=600)
+
+# summary_cache = TTLCache(maxsize=1024, ttl=600)
 
 
 class ProjectServiceError(Exception):
@@ -312,7 +315,6 @@ class ProjectService:
         if len(tasks) == 0:
             raise NotFound(sub_code="TASK_NOT_FOUND")
 
-        # TODO put the task details in to a DTO
         dtos = []
         for task in tasks:
             dtos.append(
@@ -520,8 +522,12 @@ class ProjectService:
 
         return True, "User allowed to validate"
 
+    def summary_cache_key_builder(func, *args, **kwargs):
+        args_without_db = args[:-1]
+        return f"{func.__name__}:{args_without_db}:{kwargs}"
+
     @staticmethod
-    @cached(summary_cache)
+    @cached(cache=Cache.MEMORY, key_builder=summary_cache_key_builder, ttl=600)
     def get_cached_project_summary(
         project_id: int, preferred_locale: str = "en"
     ) -> ProjectSummary:
@@ -647,7 +653,6 @@ class ProjectService:
             )
             for project, total_contributors in zip_items
         ]
-        # TODO Check if pagination needed.
         dto.pagination = None
         return dto
 
@@ -672,8 +677,12 @@ class ProjectService:
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_title(preferred_locale)
 
+    def stats_cache_key_builder(func, *args, **kwargs):
+        args_without_db = args[:-1]
+        return f"{func.__name__}:{args_without_db}:{kwargs}"
+
     @staticmethod
-    @cached(TTLCache(maxsize=1024, ttl=600))
+    @cached(cache=Cache.MEMORY, key_builder=stats_cache_key_builder, ttl=600)
     async def get_project_stats(project_id: int, db: Database) -> ProjectStatsDTO:
         """Gets the project stats DTO"""
         project = await ProjectService.exists(project_id, db)
