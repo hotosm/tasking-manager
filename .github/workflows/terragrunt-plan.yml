@@ -55,7 +55,10 @@ jobs:
 
   plan:
     name: Terragrunt Plan
-    uses: hotosm/gh-workflows/.github/workflows/terragrunt-plan.yml@3.0.0
+    uses: hotosm/gh-workflows/.github/workflows/terragrunt-plan.yml@3.1.0
+    permissions:
+      id-token: write
+      contents: read
     needs:
       - get_deployment_meta
     with:
@@ -66,4 +69,5 @@ jobs:
       load_env: true
       environment_name: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}
       environment_url: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_URL }}
+      encrypt_plan_file: true
     secrets: inherit
