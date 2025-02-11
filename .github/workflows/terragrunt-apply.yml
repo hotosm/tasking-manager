@@ -56,7 +56,10 @@ jobs:
 
   apply:
     name: Terragrunt Apply
-    uses: hotosm/gh-workflows/.github/workflows/terragrunt-apply.yml@3.0.0
+    uses: hotosm/gh-workflows/.github/workflows/terragrunt-apply.yml@3.1.0
+    permissions:
+      id-token: write
+      contents: read
     needs:
       - get_deployment_meta
     with:
@@ -64,8 +67,10 @@ jobs:
       terraform_version: "1.9.5"
       terragrunt_version: "0.67.15"
       aws_region: us-west-1
+      load_env: true
       plan_file_name: ${{ needs.get_deployment_meta.outputs.PLAN_NAME }}
       use_gh_artifacts: true
       environment_name: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}
       environment_url: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_URL }}
+      decrypt_plan_file: true
     secrets: inherit
