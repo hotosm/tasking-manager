@@ -55,7 +55,7 @@ jobs:
 
   plan:
     name: Terragrunt Plan
-    uses: naxa-developers/gh-workflows/.github/workflows/terragrunt-plan.yml@tm
+    uses: hotosm/gh-workflows/.github/workflows/terragrunt-plan.yml@3.0.0
     needs:
       - get_deployment_meta
     with:
