@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     APP_BASE_URL: str = os.getenv("TM_APP_BASE_URL", "http://127.0.0.1:5000/").rstrip(
         "/"
     )
-
+    TM_APP_API_URL: str = os.getenv("TM_APP_API_URL", "http://127.0.0.1:3000/api")
     API_VERSION: str = os.getenv("TM_APP_API_VERSION", "v2")
     ORG_CODE: str = os.getenv("TM_ORG_CODE", "HOT")
     ORG_NAME: str = os.getenv("TM_ORG_NAME", "Humanitarian OpenStreetMap Team")
