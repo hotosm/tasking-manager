@@ -34,7 +34,7 @@ def get_application() -> FastAPI:
             "url": "https://raw.githubusercontent.com/hotosm/tasking-manager/develop/LICENSE.md",
         },
         debug=settings.DEBUG,
-        root_path=settings.APP_BASE_URL,
+        root_path=settings.TM_APP_API_URL,
         openapi_url="/api/openapi.json",
         docs_url="/api/docs",
     )
