@@ -56,7 +56,7 @@ jobs:
 
   apply:
     name: Terragrunt Apply
-    uses: naxa-developers/gh-workflows/.github/workflows/terragrunt-apply.yml@tm
+    uses: hotosm/gh-workflows/.github/workflows/terragrunt-apply.yml@3.0.0
     needs:
       - get_deployment_meta
     with:
