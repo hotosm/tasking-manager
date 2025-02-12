@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { Form, Field } from 'react-final-form';
 import { Tooltip } from 'react-tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -8,9 +8,10 @@ import messages from '../messages';
 import { FormSubmitButton } from '../../button';
 import { InfoIcon, CheckIcon, CloseIcon } from '../../svgIcons';
 import { UserCountrySelect, RadioField } from '../../formInputs';
-import { pushUserDetails } from '../../../store/actions/auth';
+import { logout, pushUserDetails } from '../../../store/actions/auth';
 import { fetchLocalJSONAPI } from '../../../network/genericJSONRequest';
 import { ORG_CODE } from '../../../config';
+import { DeleteModal } from '../../deleteModal';
 
 export const PROFILE_RELEVANT_FIELDS = [
   'name',
@@ -75,6 +76,7 @@ const RequiredIndicator = () => <span className="ml1 b red">*</span>;
 
 function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
   const intl = useIntl();
+  const dispatch = useDispatch();
   const labelClasses = 'db pt3 pb2';
   const fieldClasses =
     'blue-dark w-100 pv2 ph2 input-reset ba br1 b--grey-light bg-transparent lh-copy';
@@ -257,6 +259,13 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                 >
                   <FormattedMessage {...messages.save} />
                 </FormSubmitButton>
+                <DeleteModal
+                  id={userDetails.id}
+                  name={userDetails.username}
+                  className="bg-transparent bw0 w2 h2 lh-copy overflow-hidden blue-light p0 mb1 hover-red"
+                  type="users"
+                  onDelete={() => dispatch(logout())}
+                />
               </div>
               <p className="f6 mt2 tr mb0">
                 <RequiredIndicator /> <FormattedMessage {...messages.required} />

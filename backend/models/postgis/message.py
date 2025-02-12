@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy.sql.expression import false
 
 from backend import db
@@ -178,7 +180,7 @@ class Message(db.Model):
         db.session.commit()
 
     @staticmethod
-    def delete_all_messages(user_id: int, message_type_filters: list = None):
+    def delete_all_messages(user_id: int, message_type_filters: List[int] = None):
         """Deletes all messages to the user
         -----------------------------------
         :param user_id: user id of the user whose messages are to be deleted

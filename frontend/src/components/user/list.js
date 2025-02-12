@@ -12,6 +12,7 @@ import { PaginatorLine } from '../paginator';
 import { SearchIcon, CloseIcon, SettingsIcon, CheckIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { nCardPlaceholders } from './usersPlaceholder';
+import { DeleteModal } from '../deleteModal';
 
 const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
   const inputRef = useRef(null);
@@ -289,7 +290,7 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
           );
         })}
       </div>
-      <div className="w-100">
+      <div className="w-100 bb b--tan">
         <p className="b mv3">
           <FormattedMessage {...messages.setLevel} />
         </p>
@@ -315,6 +316,7 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
 
 export function UserListCard({ user, token, username, setStatus }: Object) {
   const [isHovered, setHovered] = useState(false);
+  const [other_username, setUserName] = useState(user.username);
 
   return (
     <li
@@ -328,16 +330,16 @@ export function UserListCard({ user, token, username, setStatus }: Object) {
       <div className="w-50-ns w-100 fl">
         <UserAvatar
           picture={user.pictureUrl}
-          username={user.username}
+          username={other_username}
           colorClasses="white bg-blue-grey"
         />
         <a
           className="blue-grey mr2 ml3 link"
           rel="noopener noreferrer"
           target="_blank"
-          href={`/users/${user.username}`}
+          href={`/users/${other_username}`}
         >
-          {user.username}
+          {other_username}
         </a>
       </div>
       <div className="w-20 fl dib-ns dn tc">
@@ -363,6 +365,13 @@ export function UserListCard({ user, token, username, setStatus }: Object) {
               <UserEditMenu user={user} token={token} close={close} setStatus={setStatus} />
             )}
           </Popup>
+          <DeleteModal
+            id={user.id}
+            name={user.username}
+            type="users"
+            className="bg-transparent bw0 w2 h2 lh-copy overflow-hidden blue-light p0 mb1 hover-red"
+            onDelete={() => setUserName('user_' + user.id)}
+          />
         </div>
       )}
     </li>
