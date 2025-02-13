@@ -1522,7 +1522,7 @@ class Project(Base):
             ProjectTeamDTO(
                 team_id=team["team_id"],
                 team_name=team["team_name"],
-                role=TeamRoles(team["role"]),
+                role=TeamRoles(team["role"]).name,
             )
             for team in teams
         ]
