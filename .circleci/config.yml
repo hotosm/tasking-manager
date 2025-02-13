@@ -401,7 +401,7 @@ workflows:
             matches:
               pattern: "^deployment/.*"
               value: << pipeline.git.branch >>
-        - equal: [ main, << pipeline.git.branch >> ]
+        - equal: [ tasking-manager-fastapi, << pipeline.git.branch >> ]
     jobs:
       - database-backup:
           name: Backup staging database
