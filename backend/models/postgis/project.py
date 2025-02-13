@@ -12,6 +12,7 @@ from geoalchemy2 import Geometry, WKTElement
 from geoalchemy2.shape import to_shape
 from loguru import logger
 from shapely.geometry import shape
+from shapely import wkb
 from sqlalchemy import (
     BigInteger,
     Boolean,
@@ -311,8 +312,25 @@ class Project(Base):
 
     def set_country_info(self):
         """Sets the default country based on centroid"""
-        centroid = WKTElement(self.centroid, srid=4326)
+        if not self.centroid:
+            logger.debug("Skipping country lookup due to missing centroid")
+            return
 
+        centroid_wkt = None
+        if isinstance(self.centroid, str):
+            centroid_wkt = self.centroid
+
+        elif isinstance(self.centroid, bytes):
+            try:
+                centroid_geom = wkb.loads(self.centroid)
+                centroid_wkt = centroid_geom.wkt
+            except Exception as e:
+                logger.debug(f"Error converting EWKB to WKT: {e}", exc_info=True)
+                return
+        else:
+            centroid_wkt = self.centroid
+
+        centroid = WKTElement(centroid_wkt, srid=4326)
         centroid = to_shape(centroid)
         lat, lng = (centroid.y, centroid.x)
         url = "{0}/reverse?format=jsonv2&lat={1}&lon={2}&accept-language=en".format(
@@ -682,7 +700,7 @@ class Project(Base):
                 )
             )
             if project_info is None:
-                new_info = await ProjectInfo.create_from_dto(
+                await ProjectInfo.create_from_dto(
                     dto, self.id, db
                 )  # Can't find info so must be new locale
             else:
