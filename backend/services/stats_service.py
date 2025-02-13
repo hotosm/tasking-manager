@@ -699,7 +699,7 @@ class StatsService:
         return f"{func.__name__}:{args_without_first}:{kwargs}"
 
     @staticmethod
-    @cached(cache=Cache.MEMORY, key_builder=cache_key_builder, ttl=300)
+    @cached(cache=Cache.MEMORY, key_builder=cache_key_builder, ttl=3600)
     async def get_task_stats(
         db: Database,
         start_date,
