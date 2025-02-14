@@ -39,7 +39,7 @@ def get_application() -> FastAPI:
         docs_url="/api/docs",
     )
 
-    # Custom exception handler for 401 errors
+    # Custom exception handler for invalid token and logout.
     @_app.exception_handler(HTTPException)
     async def custom_http_exception_handler(request: Request, exc: HTTPException):
         if exc.status_code == 401 and "InvalidToken" in exc.detail.get("SubCode", ""):
