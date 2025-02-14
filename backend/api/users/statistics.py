@@ -168,7 +168,7 @@ async def get(
         return stats.model_dump(by_alias=True)
     except (KeyError, ValueError) as e:
         return JSONResponse(
-            content={"Error": str(e), "SubCode": str(e).split("-")[0]},
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
             status_code=400,
         )
 
