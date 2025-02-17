@@ -422,20 +422,18 @@ class UserService:
                     SELECT project_id, task_id
                     FROM task_history
                     WHERE user_id = :user_id
+                    AND action_text IN ('VALIDATED', 'INVALIDATED', 'MAPPED')
                 )
                 AND user_id != :user_id
                 AND action_text IN ('VALIDATED', 'INVALIDATED')
                 GROUP BY action_text
             )
             SELECT
-                CAST(COALESCE(SUM(CASE WHEN u.action_text = 'VALIDATED' THEN u.action_count ELSE 0 END), 0) AS INTEGER) AS tasks_validated,
-                CAST(COALESCE(SUM(CASE WHEN u.action_text = 'INVALIDATED' THEN u.action_count ELSE 0 END), 0) AS INTEGER) AS tasks_invalidated,
-                CAST(COALESCE(SUM(CASE WHEN u.action_text = 'MAPPED' THEN u.action_count ELSE 0 END), 0) AS INTEGER) AS tasks_mapped,
-                CAST(COALESCE(SUM(CASE WHEN o.action_text = 'VALIDATED' THEN o.action_count ELSE 0 END), 0) AS INTEGER) AS tasks_validated_by_others,
-                CAST(COALESCE(SUM(CASE WHEN o.action_text = 'INVALIDATED' THEN o.action_count ELSE 0 END), 0) AS INTEGER) AS tasks_invalidated_by_others
-            FROM user_actions u
-            LEFT JOIN others_actions o
-                ON u.action_text = o.action_text;
+                CAST(COALESCE((SELECT SUM(action_count) FROM user_actions WHERE action_text = 'VALIDATED'), 0) AS INTEGER) AS tasks_validated,
+                CAST(COALESCE((SELECT SUM(action_count) FROM user_actions WHERE action_text = 'INVALIDATED'), 0) AS INTEGER) AS tasks_invalidated,
+                CAST(COALESCE((SELECT SUM(action_count) FROM user_actions WHERE action_text = 'MAPPED'), 0) AS INTEGER) AS tasks_mapped,
+                CAST(COALESCE((SELECT SUM(action_count) FROM others_actions WHERE action_text = 'VALIDATED'), 0) AS INTEGER) AS tasks_validated_by_others,
+                CAST(COALESCE((SELECT SUM(action_count) FROM others_actions WHERE action_text = 'INVALIDATED'), 0) AS INTEGER) AS tasks_invalidated_by_others;
         """
         stats_result = await db.fetch_one(
             query=stats_query, values={"user_id": user_id}
