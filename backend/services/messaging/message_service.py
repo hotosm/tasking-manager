@@ -5,6 +5,7 @@ from typing import List
 
 import bleach
 from cachetools import TTLCache
+from backend.models.postgis.statuses import TeamRoles
 from databases import Database
 from loguru import logger
 from markdown import markdown
@@ -744,16 +745,19 @@ class MessageService:
 
         # Add project managers if mentioned
         if "managers" in parsed:
+            team_manager_role = TeamRoles.PROJECT_MANAGER.value
+
             team_members = await db.fetch_all(
                 """
-                SELECT u.username
+                SELECT DISTINCT u.username
                 FROM users u
                 JOIN team_members tm ON u.id = tm.user_id
-                JOIN teams t ON tm.team_id = t.id
-                WHERE t.role = 'PROJECT_MANAGER'
-                AND t.project_id = :project_id
+                JOIN project_teams pt ON tm.team_id = pt.team_id
+                WHERE pt.role = :team_manager_role
+                AND pt.project_id = :project_id
+                AND tm.active = TRUE
                 """,
-                {"project_id": project_id},
+                {"project_id": project_id, "team_manager_role": team_manager_role},
             )
             usernames.extend([member["username"] for member in team_members])
 
