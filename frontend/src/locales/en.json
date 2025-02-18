@@ -1173,7 +1173,6 @@
   "management.partner.edit.error": "Partner name already exists",
   "management.partner.learnToMap": "Learn to Map",
   "management.partner.currentProjects": "Current Projects",
-  "management.partner.newToMapping": "New to Mapping?",
   "management.partner.activity": "Activity",
   "management.partner.resources": "Resources",
   "management.entity.creation.success": "{entity, select, organization {Organization} partner {Partner} license {License} project {Project} category {Category} campaign {Campaign} team {Team} other {}} created successfully",
