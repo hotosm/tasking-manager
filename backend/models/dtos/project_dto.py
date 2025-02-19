@@ -243,7 +243,7 @@ class ProjectDTO(BaseModel):
     rapid_power_user: Optional[bool] = Field(False, alias="rapidPowerUser")
     mapping_types: List[str] = Field(default=[], alias="mappingTypes")
     campaigns: List[CampaignDTO] = Field(default=[])
-    organisation: int
+    organisation: Optional[int] = None
     organisation_name: Optional[str] = Field(None, alias="organisationName")
     organisation_slug: Optional[str] = Field(None, alias="organisationSlug")
     organisation_logo: Optional[str] = Field(None, alias="organisationLogo")
