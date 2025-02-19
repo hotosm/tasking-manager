@@ -401,7 +401,7 @@ class UserService:
         """
         user = await db.fetch_one(query=user_query, values={"username": username})
         if not user:
-            raise ValueError("User not found")
+            raise NotFound(sub_code="USER_NOT_FOUND", username=username)
         user_id = user["id"]
         stats_query = """
             WITH user_actions AS (
