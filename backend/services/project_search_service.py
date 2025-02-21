@@ -705,6 +705,7 @@ class ProjectSearchService:
                     FROM team_members tm
                     JOIN project_teams pt ON tm.team_id = pt.team_id
                     WHERE tm.user_id = :user_id
+                    AND tm.active = True
                       AND pt.role = ANY(:team_roles)
                 )
                 { "AND p." + permission + f" = {permission_class.TEAMS.value}" if user.mapping_level == MappingLevel.BEGINNER.value else "" }
