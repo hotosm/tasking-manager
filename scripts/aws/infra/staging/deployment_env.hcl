@@ -2,7 +2,7 @@ locals {
   account_name    = "hotosm"
   aws_profile     = "default"
   aws_region      = "us-east-1"
-  team            = "hotosm"
+  team            = get_env("TEAM", "hotosm")
   owner           = "HOTOSM"
   environment     = "staging"
   project         = "tasking-manager"
