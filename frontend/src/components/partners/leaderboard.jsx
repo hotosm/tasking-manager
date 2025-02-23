@@ -27,7 +27,7 @@ export const Leaderboard = ({ partner, partnerStats }) => {
       {/* activity section */}
       <div className="w-100 fl cf">
         <h3 className="f2 fw6 ttu barlow-condensed blue-dark mt0 pt2 mb3">
-          <FormattedMessage {...messages.activity} />
+          <FormattedMessage {...messages.contributions} />
         </h3>
         <Activity partner={partner} />
       </div>

@@ -70,6 +70,7 @@ export function ProjectEdit() {
   const [errorLanguages, loadingLanguages, languages] = useFetch('system/languages/');
   const mandatoryFields = ['name', 'shortDescription', 'description', 'instructions'];
   const token = useTypedSelector((state) => state.auth.token);
+  const userDetails = useTypedSelector((state) => state.auth.userDetails);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [option, setOption] = useState('description');
@@ -213,7 +214,6 @@ export function ProjectEdit() {
       { value: 'description', required: true },
       { value: 'instructions', required: true },
       { value: 'metadata', required: true },
-      { value: 'partners' },
       { value: 'priority_areas' },
       { value: 'imagery' },
       { value: 'permissions' },
@@ -221,6 +221,8 @@ export function ProjectEdit() {
       { value: 'actions' },
       { value: 'custom_editor' },
     ];
+
+    if (userDetails.role === 'ADMIN') elements.splice(3, 0, { value: 'partners' });
 
     return (
       <div>
