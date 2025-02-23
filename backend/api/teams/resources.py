@@ -428,14 +428,14 @@ class TeamsJoinRequestAPI(Resource):
             csv_output = io.StringIO()
             writer = csv.writer(csv_output)
             writer.writerow(
-                ["Username", "Date Joined (UTC)", "Team Name"]
+                ["Username", "Application Date (UTC)", "Team Name"]
             )  # CSV header
 
             for member in team_members:
                 writer.writerow(
                     [
                         member.username,
-                        member.joined_date.strftime("%Y-%m-%d %H:%M:%S")
+                        member.joined_date.strftime("%Y-%m-%dT%H:%M:%S")
                         if member.joined_date
                         else "N/A",
                         member.team_name,

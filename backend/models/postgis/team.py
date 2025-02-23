@@ -246,7 +246,9 @@ class Team(db.Model):
                     "pictureUrl": mem.member.picture_url,
                     "function": TeamMemberFunctions(mem.function).name,
                     "active": mem.active,
-                    "joinedDate": mem.joined_date,
+                    "joinedDate": mem.joined_date.isoformat()
+                    if mem.joined_date
+                    else None,
                 }
             )
 
