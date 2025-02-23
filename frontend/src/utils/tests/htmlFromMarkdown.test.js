@@ -1,16 +1,16 @@
 import { htmlFromMarkdown, formatUserNamesToLink } from '../htmlFromMarkdown';
 
-test('htmlFromMarkdown returns correct content', () => {
-  expect(htmlFromMarkdown('![test](https://a.co/img.jpg)').__html).toContain(
+test('htmlFromMarkdown returns correct content', async () => {
+  expect(await htmlFromMarkdown('![test](https://a.co/img.jpg)')).toContain(
     '<p><img alt="test" src="https://a.co/img.jpg"></p>',
   );
-  expect(htmlFromMarkdown('[test](https://a.co/)').__html).toContain(
+  expect(await htmlFromMarkdown('[test](https://a.co/)')).toContain(
     '<p><a href="https://a.co/" target="_blank">test</a></p>',
   );
 });
 
-test('htmlFromMarkdown with youtube tag', () => {
-  const html = htmlFromMarkdown('::youtube[UzT0i5XhsOQ]').__html;
+test('htmlFromMarkdown with youtube tag', async () => {
+  const html = await htmlFromMarkdown('::youtube[UzT0i5XhsOQ]');
   expect(html).toContain('<iframe');
   expect(html).toContain('width="480"');
   expect(html).toContain('height="270"');
@@ -24,8 +24,8 @@ test('htmlFromMarkdown with youtube tag', () => {
   expect(html).toContain('src="https://www.youtube.com/embed/UzT0i5XhsOQ"');
 });
 
-test('htmlFromMarkdown should not render other iframes', () => {
-  const html = htmlFromMarkdown('<iframe src="https://osm.org"></iframe>').__html;
+test('htmlFromMarkdown should not render other iframes', async () => {
+  const html = await htmlFromMarkdown('<iframe src="https://osm.org"></iframe>');
   expect(html).not.toContain('<iframe');
   expect(html).not.toContain('src="https://osm.org"');
 });
