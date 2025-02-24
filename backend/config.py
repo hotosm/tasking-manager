@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     )
     APP_NAME: str = "Tasking Manager"
     DEBUG: bool = False
+    PROFILING: bool = os.getenv("PROFILING", False)
     EXTRA_CORS_ORIGINS: list = []
 
     # The base url the application is reachable

@@ -51,13 +51,25 @@ def get_application() -> FastAPI:
                 status_code=exc.status_code,
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
+        if isinstance(exc.detail, dict) and "error" in exc.detail:
+            error_response = exc.detail
+        else:
+            error_response = {
+                "error": {
+                    "code": exc.status_code,
+                    "sub_code": "UNKNOWN_ERROR",
+                    "message": str(exc.detail),
+                    "details": {},
+                }
+            }
+
         return JSONResponse(
             status_code=exc.status_code,
-            content={"detail": exc.detail},
+            content=error_response,
         )
 
-    PROFILING = True  # Set this from a settings model
-
+    PROFILING = settings.PROFILING
     if PROFILING:
 
         @_app.middleware("http")
