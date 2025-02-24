@@ -1,23 +1,25 @@
 import json
+
+import requests
+# from cachetools import TTLCache, cached
+
 from backend.exceptions import Conflict
 from backend.models.dtos.partner_stats_dto import (
-    GroupedPartnerStatsDTO,
-    FilteredPartnerStatsDTO,
-    UserGroupMemberDTO,
-    UserContributionsDTO,
-    GeojsonDTO,
-    GeoContributionsDTO,
     AreaSwipedByProjectTypeDTO,
     ContributionsByDateDTO,
-    ContributionTimeByDateDTO,
     ContributionsByProjectTypeDTO,
+    ContributionTimeByDateDTO,
+    FilteredPartnerStatsDTO,
+    GeoContributionsDTO,
+    GeojsonDTO,
+    GroupedPartnerStatsDTO,
     OrganizationContributionsDTO,
+    UserContributionsDTO,
+    UserGroupMemberDTO,
 )
-from cachetools import TTLCache, cached
-import requests
 
-grouped_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
-filtered_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
+# grouped_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
+# filtered_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
 MAPSWIPE_API_URL = "https://api.mapswipe.org/graphql/"
 
 
@@ -138,9 +140,8 @@ class MapswipeService:
         self, partner_id: str, group_id: str, resp_body: str
     ) -> GroupedPartnerStatsDTO:
         group_stats = json.loads(resp_body)["data"]
-        group_dto = GroupedPartnerStatsDTO()
+        group_dto = GroupedPartnerStatsDTO(provider="mapswipe")
         group_dto.id = partner_id
-        group_dto.provider = "mapswipe"
         group_dto.id_inside_provider = group_id
 
         if group_stats["userGroup"] is None:
@@ -194,9 +195,8 @@ class MapswipeService:
         to_date: str,
         resp_body: str,
     ):
-        filtered_stats_dto = FilteredPartnerStatsDTO()
+        filtered_stats_dto = FilteredPartnerStatsDTO(provider="mapswipe")
         filtered_stats_dto.id = partner_id
-        filtered_stats_dto.provider = "mapswipe"
         filtered_stats_dto.id_inside_provider = group_id
         filtered_stats_dto.from_date = from_date
         filtered_stats_dto.to_date = to_date
@@ -290,7 +290,7 @@ class MapswipeService:
         filtered_stats_dto.contributions_by_organization_name = organizations
         return filtered_stats_dto
 
-    @cached(grouped_partner_stats_cache)
+    # @cached(grouped_partner_stats_cache)
     def fetch_grouped_partner_stats(
         self,
         partner_id: int,
@@ -316,7 +316,7 @@ class MapswipeService:
         group_dto = self.setup_group_dto(partner_id, group_id, resp_body)
         return group_dto
 
-    @cached(filtered_partner_stats_cache)
+    # @cached(filtered_partner_stats_cache)
     def fetch_filtered_partner_stats(
         self,
         partner_id: str,
