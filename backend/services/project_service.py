@@ -584,7 +584,8 @@ class ProjectService:
         params = {"id": project_id}
         # Execute query
         project = await db.fetch_one(query, params)
-
+        if not project:
+            raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
         """Gets the project summary DTO"""
 
         summary = await Project.get_project_summary(
