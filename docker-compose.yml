@@ -12,7 +12,7 @@ services:
   tm-db:
     image: "postgis/postgis:${POSTGIS_TAG:-14-3.3}"
     volumes:
-      - tm_db_data:/var/lib/postgresql/data/
+      - ./postgres_data:/var/lib/postgresql/data/
     env_file:
       - tasking-manager.env
     restart: unless-stopped
@@ -24,6 +24,14 @@ services:
       retries: 3
     networks:
       - tm-net
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 8G
+        reservations:
+          cpus: "1"
+          memory: 512M    
 
   tm-backend:
     image: ghcr.io/hotosm/tasking-manager/backend:main
@@ -33,23 +41,25 @@ services:
     depends_on:
       tm-db:
         condition: service_healthy
-      tm-migration:
-        condition: service_completed_successfully
+      # tm-migration:
+      #   condition: service_completed_successfully
     env_file:
       - tasking-manager.env
     restart: unless-stopped
-    healthcheck:
-      test: curl --fail http://localhost:5000 || exit 1
-      interval: 10s
-      retries: 5
-      start_period: 10s
-      timeout: 3s
+    volumes:
+      - .:/usr/src/app/
+    # healthcheck:
+    #   test: curl --fail http://localhost:5000 || exit 1
+    #   interval: 10s
+    #   retries: 5
+    #   start_period: 10s
+    #   timeout: 3s
     deploy:
-      replicas: ${API_REPLICAS:-1}
+      replicas: ${API_REPLICAS:-1}      
       resources:
         limits:
-          cpus: "1"
-          memory: 1500M
+          cpus: "2"
+          memory: 4G
         reservations:
           cpus: "1"
           memory: 100M
@@ -58,6 +68,12 @@ services:
       - traefik.http.services.backend.loadbalancer.server.port=5000
     networks:
       - tm-net
+    command: ["uvicorn", "backend.main:api", "--host", "0.0.0.0", "--port", "5000","--log-level", "error", "--reload", "--workers", "5"]
+    # ulimits:
+    #   nofile:
+    #     soft: "65536"
+    #     hard: "65536"
+
 
   tm-migration:
     image: ghcr.io/hotosm/tasking-manager/backend:main
@@ -81,11 +97,12 @@ services:
     networks:
       - tm-net
 
+
   tm-cron-jobs:
     image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
-    command: ["python", "backend/cron_jobs.py"]
+    command: ["python", "backend/cron_jobs.py"]  # Path to the script containing job definitions
     depends_on:
       tm-db:
         condition: service_healthy
@@ -115,5 +132,19 @@ services:
     command:
       - --entrypoints.web.address=:80
       - --providers.docker=true
+    networks:
+      - tm-net
+
+
+  tm-frontend:
+    image: ghcr.io/hotosm/tasking-manager/frontend:main
+    build:
+      context: .
+      dockerfile: "./scripts/docker/Dockerfile.frontend_development"
+    env_file:
+      - tasking-manager.env
+    labels:
+      - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
+      - traefik.http.services.frontend.loadbalancer.server.port=3000
     networks:
       - tm-net

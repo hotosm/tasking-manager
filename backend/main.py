@@ -34,9 +34,8 @@ def get_application() -> FastAPI:
             "url": "https://raw.githubusercontent.com/hotosm/tasking-manager/develop/LICENSE.md",
         },
         debug=settings.DEBUG,
-        root_path=settings.TM_APP_API_URL,
-        openapi_url="/api/openapi.json",
-        docs_url="/api/docs",
+        openapi_url="/api/v2/openapi.json",
+        docs_url="/api/v2/docs",
     )
 
     # Custom exception handler for invalid token and logout.
@@ -86,6 +85,7 @@ def get_application() -> FastAPI:
     )
     add_api_end_points(_app)
     return _app
+
 
 
 class InterceptHandler(logging.Handler):
