@@ -75,7 +75,7 @@ async def app(create_test_database):
 async def client(app):
     logger.info("Creating test client for FastAPI app.")
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
+        transport=ASGITransport(app=app), base_url="https://test"
     ) as ac:
         logger.info("Test client created; yielding client for test execution.")
         yield ac
