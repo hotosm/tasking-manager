@@ -715,6 +715,7 @@ class ProjectSearchService:
                 TeamRoles.VALIDATOR.value,
                 TeamRoles.PROJECT_MANAGER.value,
             ]
+
         condition = f"""
             (
                 p.id IN (
@@ -725,15 +726,22 @@ class ProjectSearchService:
                     AND tm.active = True
                     AND pt.role = ANY(:team_roles)
                 )
-                { "AND p." + permission + f" = {permission_class.TEAMS.value}"
-                if user.mapping_level == MappingLevel.BEGINNER.value else "" }
+                {
+                    "AND p." + permission + f" = {permission_class.TEAMS.value}"
+                    if user.mapping_level == MappingLevel.BEGINNER.value
+                    else ""
+                }
             )
             OR p.{permission} IN (
                 {permission_class.ANY.value}
-                {", " + str(permission_class.LEVEL.value)
-                if user.mapping_level != MappingLevel.BEGINNER.value else ""}
+                {
+                    ", " + str(permission_class.LEVEL.value)
+                    if user.mapping_level != MappingLevel.BEGINNER.value
+                    else ""
+                }
             )
         """
+
         params = {"user_id": user.id, "team_roles": team_roles}
         return condition, params
 
