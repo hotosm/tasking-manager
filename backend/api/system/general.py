@@ -232,7 +232,9 @@ async def contact_admin(request: Request, data: dict = Body(...)):
         await SMTPService.send_contact_admin_email(data)
         return JSONResponse(content={"Success": "Email sent"}, status_code=201)
     except ValueError as e:
-        return JSONResponse(content={"Error": str(e), "SubCode": "NotImplemented"}, status_code=501)
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "NotImplemented"}, status_code=501
+        )
 
 
 @router.post("/release/")
@@ -252,11 +254,15 @@ async def release(db: Database = Depends(get_db)):
       500:
         description: Internal server error
     """
-    response = requests.get("https://api.github.com/repos/hotosm/tasking-manager/releases/latest")
+    response = requests.get(
+        "https://api.github.com/repos/hotosm/tasking-manager/releases/latest"
+    )
     try:
         tag_name = response.json()["tag_name"]
         published_date = response.json()["published_at"]
-        published_date = datetime.strptime(published_date, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=None)
+        published_date = datetime.strptime(
+            published_date, "%Y-%m-%dT%H:%M:%SZ"
+        ).replace(tzinfo=None)
         release = await ReleaseVersion.get(db)
         if release is None:
             release = ReleaseVersion()

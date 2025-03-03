@@ -1,6 +1,10 @@
 from unittest.mock import patch
 
-from backend.models.postgis.statuses import TeamJoinMethod, TeamMemberFunctions, TeamRoles
+from backend.models.postgis.statuses import (
+    TeamJoinMethod,
+    TeamMemberFunctions,
+    TeamRoles,
+)
 from backend.services.team_service import MessageService, TeamService, TeamServiceError
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
@@ -25,9 +29,13 @@ class TestTeamService(BaseTestCase):
         test_project, test_user = create_canned_project()
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
         assign_team_to_project(test_project, self.test_team, allowed_roles[0])
-        add_user_to_team(self.test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=True)
+        add_user_to_team(
+            self.test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=True
+        )
         # Act
-        is_team_member = TeamService.check_team_membership(test_project.id, allowed_roles, test_user.id)
+        is_team_member = TeamService.check_team_membership(
+            test_project.id, allowed_roles, test_user.id
+        )
         # Assert
         self.assertTrue(is_team_member)
 
@@ -39,7 +47,9 @@ class TestTeamService(BaseTestCase):
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
         assign_team_to_project(test_project, self.test_team, TeamRoles.MAPPER.value)
         # Act
-        is_team_member = TeamService.check_team_membership(test_project.id, allowed_roles, test_user.id)
+        is_team_member = TeamService.check_team_membership(
+            test_project.id, allowed_roles, test_user.id
+        )
         # Assert
         self.assertFalse(is_team_member)
 
@@ -49,9 +59,13 @@ class TestTeamService(BaseTestCase):
         # Arrange
         test_project, test_user = create_canned_project()
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
-        add_user_to_team(self.test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=True)
+        add_user_to_team(
+            self.test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=True
+        )
         # Act
-        is_team_member = TeamService.check_team_membership(test_project.id, allowed_roles, test_user.id)
+        is_team_member = TeamService.check_team_membership(
+            test_project.id, allowed_roles, test_user.id
+        )
         # Assert
         self.assertFalse(is_team_member)
 
@@ -59,10 +73,14 @@ class TestTeamService(BaseTestCase):
         # Arrange
         test_project, test_user = create_canned_project()
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
-        add_user_to_team(self.test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=False)
+        add_user_to_team(
+            self.test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=False
+        )
         assign_team_to_project(test_project, self.test_team, TeamRoles.MAPPER.value)
         # Act
-        is_team_member = TeamService.check_team_membership(test_project.id, allowed_roles, test_user.id)
+        is_team_member = TeamService.check_team_membership(
+            test_project.id, allowed_roles, test_user.id
+        )
         # Assert
         self.assertFalse(is_team_member)
 
@@ -77,10 +95,14 @@ class TestTeamService(BaseTestCase):
         self.assertNotEqual(len(teams_dto["teams"]), 0)
 
     @patch.object(TeamService, "is_user_team_member")
-    def test_request_to_join_team_raises_error_if_user_already_team_member(self, mock_is_team_member):
+    def test_request_to_join_team_raises_error_if_user_already_team_member(
+        self, mock_is_team_member
+    ):
         # Arrange
         test_user = create_canned_user()
-        add_user_to_team(self.test_team, test_user, TeamMemberFunctions.MEMBER.value, True)
+        add_user_to_team(
+            self.test_team, test_user, TeamMemberFunctions.MEMBER.value, True
+        )
         mock_is_team_member.return_value = True
         # Act/Assert
         with self.assertRaises(TeamServiceError):

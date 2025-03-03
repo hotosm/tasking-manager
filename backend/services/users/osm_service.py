@@ -31,7 +31,9 @@ class OSMService:
         return OSMService._parse_osm_user_details_response(response.json())
 
     @staticmethod
-    def _parse_osm_user_details_response(osm_response: dict, user_element="user") -> UserOSMDTO:
+    def _parse_osm_user_details_response(
+        osm_response: dict, user_element="user"
+    ) -> UserOSMDTO:
         """Parses the OSM user details response and extracts user info"""
         osm_user = osm_response.get(user_element, None)
 

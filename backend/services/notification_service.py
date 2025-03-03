@@ -23,7 +23,9 @@ class NotificationService:
                 SET date = :timestamp
                 WHERE user_id = :user_id
             """
-            await db.execute(update_query, {"user_id": user_id, "timestamp": timestamp()})
+            await db.execute(
+                update_query, {"user_id": user_id, "timestamp": timestamp()}
+            )
 
             return notifications["unread_count"]
 

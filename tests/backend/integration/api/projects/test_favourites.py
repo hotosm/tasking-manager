@@ -1,6 +1,9 @@
 from backend.services.project_service import ProjectService
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import create_canned_project, generate_encoded_token
+from tests.backend.helpers.test_helpers import (
+    create_canned_project,
+    generate_encoded_token,
+)
 
 
 class TestValidateProjectFavouritedAPI(BaseTestCase):
@@ -20,13 +23,17 @@ class TestValidateProjectFavouritedAPI(BaseTestCase):
         # Arrange
         url = "/api/v2/projects/999/favorite/"
         # Act
-        response = self.client.get(url, headers={"Authorization": self.test_author_session_token})
+        response = self.client.get(
+            url, headers={"Authorization": self.test_author_session_token}
+        )
         # Assert
         self.assertEqual(404, response.status_code)
 
     def test_returns_correct_favourite_status(self):
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.test_author_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.test_author_session_token}
+        )
         # Assert
         self.assertEqual(200, response.status_code)
         self.assertEqual({"favorited": False}, response.json)
@@ -34,7 +41,9 @@ class TestValidateProjectFavouritedAPI(BaseTestCase):
         # Arrange
         ProjectService.favorite(self.test_project.id, self.test_author.id)
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.test_author_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.test_author_session_token}
+        )
         # Assert
         self.assertEqual(200, response.status_code)
         self.assertEqual({"favorited": True}, response.json)
@@ -57,16 +66,22 @@ class SetProjectFavouriteAPI(BaseTestCase):
         # Arrange
         url = "/api/v2/projects/99999/favorite/"
         # Act
-        response = self.client.post(url, headers={"Authorization": self.test_author_session_token})
+        response = self.client.post(
+            url, headers={"Authorization": self.test_author_session_token}
+        )
         # Assert
         self.assertEqual(404, response.status_code)
 
     def test_returns_200_if_user_authenticated_and_project_exists(self):
         # Act
-        response = self.client.post(self.url, headers={"Authorization": self.test_author_session_token})
+        response = self.client.post(
+            self.url, headers={"Authorization": self.test_author_session_token}
+        )
         # Assert
         self.assertEqual(200, response.status_code)
-        self.assertEqual(ProjectService.is_favorited(self.test_project.id, self.test_author.id), True)
+        self.assertEqual(
+            ProjectService.is_favorited(self.test_project.id, self.test_author.id), True
+        )
 
 
 class UnsetProjectFavouriteAPI(BaseTestCase):
@@ -86,13 +101,17 @@ class UnsetProjectFavouriteAPI(BaseTestCase):
         # Arrange
         url = "/api/v2/projects/999999/favorite/"
         # Act
-        response = self.client.delete(url, headers={"Authorization": self.test_author_session_token})
+        response = self.client.delete(
+            url, headers={"Authorization": self.test_author_session_token}
+        )
         # Assert
         self.assertEqual(404, response.status_code)
 
     def test_returns_400_on_not_favourited_projects(self):
         # Act
-        response = self.client.delete(self.url, headers={"Authorization": self.test_author_session_token})
+        response = self.client.delete(
+            self.url, headers={"Authorization": self.test_author_session_token}
+        )
         # Assert
         self.assertEqual(400, response.status_code)
 
@@ -100,7 +119,9 @@ class UnsetProjectFavouriteAPI(BaseTestCase):
         # Arrange
         ProjectService.favorite(self.test_project.id, self.test_author.id)
         # Act
-        response = self.client.delete(self.url, headers={"Authorization": self.test_author_session_token})
+        response = self.client.delete(
+            self.url, headers={"Authorization": self.test_author_session_token}
+        )
         # Assert
         self.assertEqual(200, response.status_code)
         self.assertEqual(

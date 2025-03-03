@@ -5,7 +5,10 @@ from fastapi.responses import JSONResponse
 from backend.db import get_db
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.user_dto import AuthUserDTO
-from backend.services.messaging.message_service import MessageService, MessageServiceError
+from backend.services.messaging.message_service import (
+    MessageService,
+    MessageServiceError,
+)
 from backend.services.notification_service import NotificationService
 from backend.services.users.authentication_service import login_required
 
@@ -206,7 +209,9 @@ async def get_notifications(
 
 
 @router.get("/queries/own/count-unread/")
-async def get_unreads(user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
+async def get_unreads(
+    user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)
+):
     """
     Gets count of unread messages
     ---
@@ -232,7 +237,9 @@ async def get_unreads(user: AuthUserDTO = Depends(login_required), db: Database 
 
 
 @router.post("/queries/own/post-unread/")
-async def post_unreads(user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)):
+async def post_unreads(
+    user: AuthUserDTO = Depends(login_required), db: Database = Depends(get_db)
+):
     """
     Updates notification datetime for user
     ---

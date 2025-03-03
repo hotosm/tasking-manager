@@ -52,7 +52,9 @@ class StatsService:
             return
         project = await ProjectService.get_project_by_id(project_id, db)
         user = await UserService.get_user_by_id(user_id, db)
-        project, user = await StatsService._update_tasks_stats(project, user, last_state, new_state, db, action)
+        project, user = await StatsService._update_tasks_stats(
+            project, user, last_state, new_state, db, action
+        )
         # Upsert mapped projects for the user
         await UserService.upsert_mapped_projects(user_id, project_id, db)
         query = """
@@ -153,7 +155,9 @@ class StatsService:
         return project_stats, user
 
     @staticmethod
-    async def get_latest_activity(project_id: int, page: int, db: Database) -> ProjectActivityDTO:
+    async def get_latest_activity(
+        project_id: int, page: int, db: Database
+    ) -> ProjectActivityDTO:
         """Gets all the activity on a project"""
 
         # Pagination setup
@@ -208,12 +212,16 @@ class StatsService:
             th.project_id = :project_id
             AND th.action != :comment_action
         """
-        total_items_result = await db.fetch_one(total_query, {"project_id": project_id, "comment_action": "COMMENT"})
+        total_items_result = await db.fetch_one(
+            total_query, {"project_id": project_id, "comment_action": "COMMENT"}
+        )
 
         total_items = total_items_result["count"] if total_items_result else 0
 
         # Use the from_total_count method to correctly initialize the Pagination DTO
-        activity_dto.pagination = Pagination.from_total_count(page=page, per_page=page_size, total=total_items)
+        activity_dto.pagination = Pagination.from_total_count(
+            page=page, per_page=page_size, total=total_items
+        )
 
         return activity_dto
 
@@ -258,17 +266,24 @@ class StatsService:
         projects = await db.fetch_all(project_query, query_params)
 
         # Get total contributors for each project
-        contrib_counts = await ProjectSearchService.get_total_contributions(project_ids, db)
+        contrib_counts = await ProjectSearchService.get_total_contributions(
+            project_ids, db
+        )
         zip_items = zip(projects, contrib_counts)
 
         # Prepare the final DTO with all project details
         dto = ProjectSearchResultsDTO()
-        dto.results = [await ProjectSearchService.create_result_dto(p, "en", t, db) for p, t in zip_items]
+        dto.results = [
+            await ProjectSearchService.create_result_dto(p, "en", t, db)
+            for p, t in zip_items
+        ]
 
         return dto
 
     @staticmethod
-    async def get_last_activity(project_id: int, db: Database) -> ProjectLastActivityDTO:
+    async def get_last_activity(
+        project_id: int, db: Database
+    ) -> ProjectLastActivityDTO:
         """Gets the last activity for a project's tasks"""
 
         # Subquery: Fetch latest actions for each task, excluding comments
@@ -298,7 +313,9 @@ class StatsService:
         """
 
         # Execute the query
-        results = await db.fetch_all(query_task_statuses, {"project_id": project_id, "comment_action": "COMMENT"})
+        results = await db.fetch_all(
+            query_task_statuses, {"project_id": project_id, "comment_action": "COMMENT"}
+        )
 
         # Create DTO
         dto = ProjectLastActivityDTO(activity=[])
@@ -314,7 +331,9 @@ class StatsService:
         return dto
 
     @staticmethod
-    async def get_user_contributions(project_id: int, db: Database) -> ProjectContributionsDTO:
+    async def get_user_contributions(
+        project_id: int, db: Database
+    ) -> ProjectContributionsDTO:
         # Query to get user contributions
         query = """
             WITH mapped AS (
@@ -396,9 +415,17 @@ class StatsService:
                     bad_imagery=row["bad_imagery"],
                     validated=row["validated"],
                     total=row["total"],
-                    mapped_tasks=(row["mapped_tasks"] if row["mapped_tasks"] is not None else []),
-                    bad_imagery_tasks=(row["bad_imagery_tasks"] if row["bad_imagery_tasks"] else []),
-                    validated_tasks=(row["validated_tasks"] if row["validated_tasks"] is not None else []),
+                    mapped_tasks=(
+                        row["mapped_tasks"] if row["mapped_tasks"] is not None else []
+                    ),
+                    bad_imagery_tasks=(
+                        row["bad_imagery_tasks"] if row["bad_imagery_tasks"] else []
+                    ),
+                    validated_tasks=(
+                        row["validated_tasks"]
+                        if row["validated_tasks"] is not None
+                        else []
+                    ),
                     date_registered=(
                         row["date_registered"].date()
                         if isinstance(row["date_registered"], datetime.datetime)
@@ -418,7 +445,9 @@ class StatsService:
 
     @staticmethod
     @cached(cache=Cache.MEMORY, key_builder=homepage_cache_key_builder, ttl=600)
-    async def get_homepage_stats(abbrev: bool = True, db: Database = None) -> HomePageStatsDTO:
+    async def get_homepage_stats(
+        abbrev: bool = True, db: Database = None
+    ) -> HomePageStatsDTO:
         """Get overall TM stats to give community a feel for progress that's being made"""
         dto = HomePageStatsDTO()
         # Total Projects
@@ -426,7 +455,9 @@ class StatsService:
         dto.total_projects = await db.fetch_val(query)
 
         # Mappers online (distinct users who locked tasks)
-        query = select(func.count(Task.locked_by.distinct())).where(Task.locked_by.isnot(None))
+        query = select(func.count(Task.locked_by.distinct())).where(
+            Task.locked_by.isnot(None)
+        )
         dto.mappers_online = await db.fetch_val(query)
 
         # Total Mappers
@@ -434,7 +465,9 @@ class StatsService:
         dto.total_mappers = await db.fetch_val(query)
 
         # Tasks mapped (status: MAPPED, VALIDATED)
-        query = select(func.count()).where(Task.task_status.in_([TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value]))
+        query = select(func.count()).where(
+            Task.task_status.in_([TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value])
+        )
         dto.tasks_mapped = await db.fetch_val(query)
 
         if not abbrev:
@@ -445,23 +478,27 @@ class StatsService:
             dto.total_validators = await db.fetch_val(query)
 
             # Tasks Validated
-            query = select(func.count()).where(Task.task_status == TaskStatus.VALIDATED.value)
+            query = select(func.count()).where(
+                Task.task_status == TaskStatus.VALIDATED.value
+            )
             dto.tasks_validated = await db.fetch_val(query)
 
             # Total Area (sum of project areas in km²)
-            query = select(func.coalesce(func.sum(func.ST_Area(Project.geometry, True) / 1000000)))
+            query = select(
+                func.coalesce(func.sum(func.ST_Area(Project.geometry, True) / 1000000))
+            )
             dto.total_area = await db.fetch_val(query)
 
             # Total Mapped Area
-            query = select(func.coalesce(func.sum(func.ST_Area(Task.geometry, True) / 1000000))).where(
-                Task.task_status == TaskStatus.MAPPED.value
-            )
+            query = select(
+                func.coalesce(func.sum(func.ST_Area(Task.geometry, True) / 1000000))
+            ).where(Task.task_status == TaskStatus.MAPPED.value)
             dto.total_mapped_area = await db.fetch_val(query)
 
             # Total Validated Area
-            query = select(func.coalesce(func.sum(func.ST_Area(Task.geometry, True) / 1000000))).where(
-                Task.task_status == TaskStatus.VALIDATED.value
-            )
+            query = select(
+                func.coalesce(func.sum(func.ST_Area(Task.geometry, True) / 1000000))
+            ).where(Task.task_status == TaskStatus.VALIDATED.value)
             dto.total_validated_area = await db.fetch_val(query)
 
             # Campaign Stats
@@ -481,7 +518,9 @@ class StatsService:
 
             dto.campaigns = [CampaignStatsDTO(row) for row in linked_campaigns_count]
             if no_campaign_count:
-                dto.campaigns.append(CampaignStatsDTO(("Unassociated", no_campaign_count)))
+                dto.campaigns.append(
+                    CampaignStatsDTO(("Unassociated", no_campaign_count))
+                )
 
             dto.total_campaigns = unique_campaigns
 
@@ -500,10 +539,14 @@ class StatsService:
             query = select(func.count()).where(~Organisation.id.in_(subquery))
             no_org_project_count = await db.fetch_val(query)
 
-            dto.organisations = [OrganizationListStatsDTO(row) for row in linked_orgs_count]
+            dto.organisations = [
+                OrganizationListStatsDTO(row) for row in linked_orgs_count
+            ]
 
             if no_org_project_count:
-                no_org_proj = OrganizationListStatsDTO(("Unassociated", no_org_project_count))
+                no_org_proj = OrganizationListStatsDTO(
+                    ("Unassociated", no_org_project_count)
+                )
                 dto.organisations.append(no_org_proj)
 
             dto.total_organisations = unique_orgs
@@ -564,7 +607,9 @@ class StatsService:
     @staticmethod
     async def get_all_users_statistics(start_date: date, end_date: date, db: Database):
         # Base query for users within the date range
-        base_query = select(User).filter(User.date_registered >= start_date, User.date_registered <= end_date)
+        base_query = select(User).filter(
+            User.date_registered >= start_date, User.date_registered <= end_date
+        )
 
         # Execute total user count
         stats_dto = UserStatsDTO()
@@ -574,21 +619,27 @@ class StatsService:
 
         # Beginner count
         beginner_count_query = select(func.count()).select_from(
-            base_query.filter(User.mapping_level == MappingLevel.BEGINNER.value).subquery()
+            base_query.filter(
+                User.mapping_level == MappingLevel.BEGINNER.value
+            ).subquery()
         )
         result = await db.execute(beginner_count_query)
         stats_dto.beginner = result
 
         # Intermediate count
         intermediate_count_query = select(func.count()).select_from(
-            base_query.filter(User.mapping_level == MappingLevel.INTERMEDIATE.value).subquery()
+            base_query.filter(
+                User.mapping_level == MappingLevel.INTERMEDIATE.value
+            ).subquery()
         )
         result = await db.execute(intermediate_count_query)
         stats_dto.intermediate = result
 
         # Advanced count
         advanced_count_query = select(func.count()).select_from(
-            base_query.filter(User.mapping_level == MappingLevel.ADVANCED.value).subquery()
+            base_query.filter(
+                User.mapping_level == MappingLevel.ADVANCED.value
+            ).subquery()
         )
         result = await db.execute(advanced_count_query)
         stats_dto.advanced = result

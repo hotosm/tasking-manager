@@ -1,13 +1,33 @@
 from databases import Database
-from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Integer, String, insert, select
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    insert,
+    select,
+)
 from sqlalchemy.orm import backref, relationship
 
 from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.organisation_dto import OrganisationTeamsDTO
-from backend.models.dtos.team_dto import NewTeamDTO, TeamDTO, TeamMembersDTO, TeamProjectDTO
+from backend.models.dtos.team_dto import (
+    NewTeamDTO,
+    TeamDTO,
+    TeamMembersDTO,
+    TeamProjectDTO,
+)
 from backend.models.postgis.organisation import Organisation
-from backend.models.postgis.statuses import TeamJoinMethod, TeamMemberFunctions, TeamRoles, TeamVisibility
+from backend.models.postgis.statuses import (
+    TeamJoinMethod,
+    TeamMemberFunctions,
+    TeamRoles,
+    TeamVisibility,
+)
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
 
@@ -15,14 +35,20 @@ from backend.models.postgis.utils import timestamp
 class TeamMembers(Base):
     __tablename__ = "team_members"
     team_id = Column(Integer, ForeignKey("teams.id", name="fk_teams"), primary_key=True)
-    user_id = Column(BigInteger, ForeignKey("users.id", name="fk_users"), primary_key=True)
+    user_id = Column(
+        BigInteger, ForeignKey("users.id", name="fk_users"), primary_key=True
+    )
     function = Column(Integer, nullable=False)  # either 'editor' or 'manager'
     active = Column(Boolean, default=False)
     join_request_notifications = Column(
         Boolean, nullable=False, default=False
     )  # Managers can turn notifications on/off for team join requests
-    member = relationship(User, backref=backref("teams", cascade="all, delete-orphan", lazy="joined"))
-    team = relationship("Team", backref=backref("members", cascade="all, delete-orphan", lazy="joined"))
+    member = relationship(
+        User, backref=backref("teams", cascade="all, delete-orphan", lazy="joined")
+    )
+    team = relationship(
+        "Team", backref=backref("members", cascade="all, delete-orphan", lazy="joined")
+    )
     joined_date = Column(DateTime, default=timestamp)
 
     async def create(self, db: Database):
@@ -65,7 +91,9 @@ class TeamMembers(Base):
             SELECT * FROM team_members
             WHERE team_id = :team_id AND user_id = :user_id
         """
-        member = await db.fetch_one(query, values={"team_id": team_id, "user_id": user_id})
+        member = await db.fetch_one(
+            query, values={"team_id": team_id, "user_id": user_id}
+        )
 
         return member  # Returns the team member if found, otherwise None
 
@@ -152,7 +180,9 @@ class Team(Base):
     async def update(team, team_dto: TeamDTO, db: Database):
         """Updates Team from DTO"""
         if team_dto.organisation:
-            team.organisation = Organisation.get_organisation_by_name(team_dto.organisation, db)
+            team.organisation = Organisation.get_organisation_by_name(
+                team_dto.organisation, db
+            )
 
         # Build the update query for the team attributes
         update_fields = {}
@@ -171,7 +201,9 @@ class Team(Base):
         # Update the team in the database
         if update_fields:
             update_query = (
-                "UPDATE teams SET " + ", ".join([f"{k} = :{k}" for k in update_fields.keys()]) + " WHERE id = :id"
+                "UPDATE teams SET "
+                + ", ".join([f"{k} = :{k}" for k in update_fields.keys()])
+                + " WHERE id = :id"
             )
             await db.execute(update_query, {**update_fields, "id": team.id})
 
@@ -253,7 +285,9 @@ class Team(Base):
 
         return team_dto
 
-    async def as_dto_team_member(user_id: int, team_id: int, db: Database) -> TeamMembersDTO:
+    async def as_dto_team_member(
+        user_id: int, team_id: int, db: Database
+    ) -> TeamMembersDTO:
         """Returns a DTO for the team member"""
         user_query = """
             SELECT username, picture_url FROM users WHERE id = :user_id
@@ -266,7 +300,9 @@ class Team(Base):
             SELECT function, active, join_request_notifications, joined_date
             FROM team_members WHERE user_id = :user_id AND team_id = :team_id
         """
-        member = await db.fetch_one(query=member_query, values={"user_id": user_id, "team_id": team_id})
+        member = await db.fetch_one(
+            query=member_query, values={"user_id": user_id, "team_id": team_id}
+        )
         if not member:
             raise NotFound(sub_code="MEMBER_NOT_FOUND", user_id=user_id)
 
@@ -424,7 +460,9 @@ class Team(Base):
         results = await db.fetch_all(query=query, values=values)
         return [TeamMembersDTO(**result) for result in results]
 
-    async def get_members_count_by_role(db: Database, team_id: int, role: TeamMemberFunctions):
+    async def get_members_count_by_role(
+        db: Database, team_id: int, role: TeamMemberFunctions
+    ):
         """
         Returns the number of members with the specified role in the team.
         --------------------------------
@@ -450,14 +488,20 @@ class Team(Base):
             "SELECT user_id FROM team_members WHERE team_id = :team_id",
             {"team_id": team.id},
         )
-        existing_members_list = list(set([existing_member.user_id for existing_member in existing_members]))
+        existing_members_list = list(
+            set([existing_member.user_id for existing_member in existing_members])
+        )
 
-        new_member_usernames = list(set([member.username for member in team_dto.members]))
+        new_member_usernames = list(
+            set([member.username for member in team_dto.members])
+        )
         new_members_records = await db.fetch_all(
             "SELECT id FROM users WHERE username = ANY(:new_member_usernames)",
             {"new_member_usernames": new_member_usernames},
         )
-        new_member_list = list(set([new_member.id for new_member in new_members_records]))
+        new_member_list = list(
+            set([new_member.id for new_member in new_members_records])
+        )
         if existing_members_list != new_member_list:
             for member in existing_members_list:
                 if member not in new_member_list:

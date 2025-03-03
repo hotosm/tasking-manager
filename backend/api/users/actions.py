@@ -87,7 +87,9 @@ async def update_user(
     try:
         user_dto = UserDTO(**data)
         if user_dto.email_address == "":
-            user_dto.email_address = None  # Replace empty string with None so validation doesn't break
+            user_dto.email_address = (
+                None  # Replace empty string with None so validation doesn't break
+            )
         if user.id != user_dto.id:
             return JSONResponse(
                 content={
@@ -298,9 +300,13 @@ async def send_verification_email(
     """
     try:
         await MessageService.resend_email_validation(user.id, db)
-        return JSONResponse(content={"Success": "Verification email resent"}, status_code=200)
+        return JSONResponse(
+            content={"Success": "Verification email resent"}, status_code=200
+        )
     except ValueError as e:
-        return JSONResponse(content={"Error": str(e), "SubCode": str(e).split("-")[0]}, status_code=400)
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": str(e).split("-")[0]}, status_code=400
+        )
 
 
 @router.post("/actions/register/")
@@ -390,7 +396,9 @@ async def set_user_interests(
             description: Internal Server Error
     """
     try:
-        user_interests = await InterestService.create_or_update_user_interests(user.id, data["interests"], db)
+        user_interests = await InterestService.create_or_update_user_interests(
+            user.id, data["interests"], db
+        )
         return user_interests
     except (ValueError, KeyError) as e:
         return JSONResponse(content={"Error": str(e)}, status_code=400)

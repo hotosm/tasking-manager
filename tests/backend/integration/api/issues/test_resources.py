@@ -1,6 +1,10 @@
 from backend.exceptions import get_message_from_sub_code
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import create_canned_mapping_issue, create_canned_user, generate_encoded_token
+from tests.backend.helpers.test_helpers import (
+    create_canned_mapping_issue,
+    create_canned_user,
+    generate_encoded_token,
+)
 
 TEST_ISSUE_NAME = "Test Issue"
 TEST_ISSUE_DESCRIPTION = "Test issue description"
@@ -62,7 +66,9 @@ class TestIssuesRestAPI(BaseTestCase):
         )
         response_json = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json["Error"], "Unable to update mapping issue category")
+        self.assertEqual(
+            response_json["Error"], "Unable to update mapping issue category"
+        )
         self.assertEqual(response_json["SubCode"], "InvalidData")
 
     def test_update_non_existent_issue_fails(self):
@@ -114,7 +120,9 @@ class TestIssuesRestAPI(BaseTestCase):
         """
         Test that endpoint returns 404 to delete a non-existent issue
         """
-        response = self.client.delete(self.non_existent_url, headers={"Authorization": self.test_user_token})
+        response = self.client.delete(
+            self.non_existent_url, headers={"Authorization": self.test_user_token}
+        )
         response_json = response.get_json()
         error_details = response_json["error"]
         self.assertEqual(response.status_code, 404)
@@ -125,7 +133,9 @@ class TestIssuesRestAPI(BaseTestCase):
         """
         Test that endpoint returns 200 to successfully delete an issue
         """
-        response = self.client.delete(self.url, headers={"Authorization": self.test_user_token})
+        response = self.client.delete(
+            self.url, headers={"Authorization": self.test_user_token}
+        )
         response_json = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json["Success"], "Mapping-issue category deleted")
@@ -184,7 +194,9 @@ class TestIssuesAllAPI(BaseTestCase):
         )
         response_json = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json["Error"], "Unable to create a new mapping issue category")
+        self.assertEqual(
+            response_json["Error"], "Unable to create a new mapping issue category"
+        )
         self.assertEqual(response_json["SubCode"], "InvalidData")
 
     def test_create_mapping_issue_passes(self):

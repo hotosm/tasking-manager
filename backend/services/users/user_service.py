@@ -31,7 +31,10 @@ from backend.models.postgis.task import Task, TaskHistory
 from backend.models.postgis.user import MappingLevel, User, UserEmail, UserRole
 from backend.models.postgis.utils import timestamp
 from backend.services.messaging.smtp_service import SMTPService
-from backend.services.messaging.template_service import get_txt_template, template_var_replacing
+from backend.services.messaging.template_service import (
+    get_txt_template,
+    template_var_replacing,
+)
 from backend.services.users.osm_service import OSMService, OSMServiceError
 
 settings = Settings()
@@ -79,7 +82,10 @@ class UserService:
         """
         results = await db.fetch_all(query=query, values={"user_id": user_id})
 
-        contributions = [UserContributionDTO(date=record["day"], count=record["cnt"]) for record in results]
+        contributions = [
+            UserContributionDTO(date=record["day"], count=record["cnt"])
+            for record in results
+        ]
 
         return contributions
 
@@ -104,7 +110,9 @@ class UserService:
         return users
 
     @staticmethod
-    async def update_user(user_id: int, osm_username: str, picture_url: str, db: Database) -> User:
+    async def update_user(
+        user_id: int, osm_username: str, picture_url: str, db: Database
+    ) -> User:
         user = await UserService.get_user_by_id(user_id, db)
         if user.username != osm_username:
             await user.update_username(osm_username, db)
@@ -126,7 +134,10 @@ class UserService:
         if not project_ids_rows:
             return ProjectFavoritesDTO(favorited_projects=[])
 
-        projects_dto = [await Project.as_dto_for_admin(row["project_id"], db) for row in project_ids_rows]
+        projects_dto = [
+            await Project.as_dto_for_admin(row["project_id"], db)
+            for row in project_ids_rows
+        ]
 
         fav_dto = ProjectFavoritesDTO()
         fav_dto.favorited_projects = projects_dto
@@ -199,7 +210,9 @@ class UserService:
         return new_user
 
     @staticmethod
-    async def get_user_dto_by_username(requested_username: str, logged_in_user_id: int, db: Database) -> UserDTO:
+    async def get_user_dto_by_username(
+        requested_username: str, logged_in_user_id: int, db: Database
+    ) -> UserDTO:
         """Gets user DTO for supplied username"""
         query = """
         SELECT * FROM users
@@ -215,7 +228,9 @@ class UserService:
         return requested_user.as_dto(logged_in_user.username)
 
     @staticmethod
-    async def get_user_dto_by_id(user_id: int, request_user: int, db: Database) -> UserDTO:
+    async def get_user_dto_by_id(
+        user_id: int, request_user: int, db: Database
+    ) -> UserDTO:
         """Gets user DTO for supplied user id"""
         user = await UserService.get_user_by_id(user_id, db)
         if request_user:
@@ -226,14 +241,20 @@ class UserService:
     @staticmethod
     async def get_interests_stats(user_id: int, db: Database):
         # Get all projects that the user has contributed.
-        stmt = select(TaskHistory.project_id).distinct().where(TaskHistory.user_id == user_id)
+        stmt = (
+            select(TaskHistory.project_id)
+            .distinct()
+            .where(TaskHistory.user_id == user_id)
+        )
 
         # Prepare the query for interests
         interests_query = (
             select(
                 Interest.id,
                 Interest.name,
-                func.count(distinct(project_interests.c.project_id)).label("count_projects"),
+                func.count(distinct(project_interests.c.project_id)).label(
+                    "count_projects"
+                ),
             )
             .join(
                 project_interests,
@@ -279,7 +300,9 @@ class UserService:
         )
 
         if task_status:
-            base_query = base_query.where(TaskHistory.action_text == TaskStatus[task_status.upper()].name)
+            base_query = base_query.where(
+                TaskHistory.action_text == TaskStatus[task_status.upper()].name
+            )
 
         if start_date:
             base_query = base_query.where(TaskHistory.action_date >= start_date)
@@ -360,7 +383,9 @@ class UserService:
 
         # Create list of task DTOs from the results
         task_list = [
-            await Task.task_as_dto(row, last_updated=row["max"], comments=row["comments"], db=db)
+            await Task.task_as_dto(
+                row, last_updated=row["max"], comments=row["comments"], db=db
+            )
             for row in paginated_tasks
         ]
 
@@ -418,24 +443,34 @@ class UserService:
                 CAST(COALESCE((SELECT SUM(action_count) FROM others_actions WHERE action_text = 'INVALIDATED'), 0)
                     AS INTEGER) AS tasks_invalidated_by_others;
         """
-        stats_result = await db.fetch_one(query=stats_query, values={"user_id": user_id})
+        stats_result = await db.fetch_one(
+            query=stats_query, values={"user_id": user_id}
+        )
         stats_dto.tasks_mapped = stats_result["tasks_mapped"]
         stats_dto.tasks_validated = stats_result["tasks_validated"]
         stats_dto.tasks_invalidated = stats_result["tasks_invalidated"]
         stats_dto.tasks_validated_by_others = stats_result["tasks_validated_by_others"]
-        stats_dto.tasks_invalidated_by_others = stats_result["tasks_invalidated_by_others"]
+        stats_dto.tasks_invalidated_by_others = stats_result[
+            "tasks_invalidated_by_others"
+        ]
 
         projects_mapped_query = """
             SELECT COUNT(DISTINCT project_id) AS projects_count
             FROM task_history
             WHERE user_id = :user_id AND action_text = 'MAPPED';
         """
-        projects_mapped = await db.fetch_one(query=projects_mapped_query, values={"user_id": user_id})
+        projects_mapped = await db.fetch_one(
+            query=projects_mapped_query, values={"user_id": user_id}
+        )
         stats_dto.projects_mapped = projects_mapped["projects_count"]
 
-        stats_dto.countries_contributed = await UserService.get_countries_contributed(user_id, db)
+        stats_dto.countries_contributed = await UserService.get_countries_contributed(
+            user_id, db
+        )
 
-        stats_dto.contributions_by_day = await UserService.get_contributions_by_day(user_id, db)
+        stats_dto.contributions_by_day = await UserService.get_contributions_by_day(
+            user_id, db
+        )
 
         stats_dto.total_time_spent = 0
         stats_dto.time_spent_mapping = 0
@@ -456,7 +491,9 @@ class UserService:
                 AS total_time
             FROM max_action_text_per_minute
         """
-        result = await db.fetch_one(total_validation_time_query, values={"user_id": user.id})
+        result = await db.fetch_one(
+            total_validation_time_query, values={"user_id": user.id}
+        )
         if result and result["total_time"]:
             stats_dto.time_spent_validating = int(result["total_time"])
             stats_dto.total_time_spent += stats_dto.time_spent_validating
@@ -473,23 +510,34 @@ class UserService:
             WHERE user_id = :user_id
             AND action IN ('LOCKED_FOR_MAPPING', 'AUTO_UNLOCKED_FOR_MAPPING')
         """
-        result = await db.fetch_one(total_mapping_time_query, values={"user_id": user.id})
+        result = await db.fetch_one(
+            total_mapping_time_query, values={"user_id": user.id}
+        )
         if result and result["total_mapping_time_seconds"]:
             stats_dto.time_spent_mapping = int(result["total_mapping_time_seconds"])
             stats_dto.total_time_spent += stats_dto.time_spent_mapping
 
-        stats_dto.contributions_interest = await UserService.get_interests_stats(user["id"], db)
+        stats_dto.contributions_interest = await UserService.get_interests_stats(
+            user["id"], db
+        )
         return stats_dto
 
     @staticmethod
-    async def update_user_details(user_id: int, user_dto: UserDTO, db: Database) -> dict:
+    async def update_user_details(
+        user_id: int, user_dto: UserDTO, db: Database
+    ) -> dict:
         """Update user with info supplied by user, if they add or change their email address a verification mail
         will be sent"""
         user = await UserService.get_user_by_id(user_id, db)
         verification_email_sent = False
-        if user_dto.email_address and user.email_address != user_dto.email_address.lower():
+        if (
+            user_dto.email_address
+            and user.email_address != user_dto.email_address.lower()
+        ):
             # Send user verification email if they are adding or changing their email address
-            await SMTPService.send_verification_email(user_dto.email_address.lower(), user.username)
+            await SMTPService.send_verification_email(
+                user_dto.email_address.lower(), user.username
+            )
             await User.set_email_verified_status(user, is_verified=False, db=db)
             verification_email_sent = True
 
@@ -508,7 +556,9 @@ class UserService:
 
     @staticmethod
     # @cached(user_filter_cache)
-    async def filter_users(username: str, project_id: int, page: int, db: Database) -> UserFilterDTO:
+    async def filter_users(
+        username: str, project_id: int, page: int, db: Database
+    ) -> UserFilterDTO:
         """Gets paginated list of users, filtered by username, for autocomplete"""
         return await User.filter_users(username, project_id, page, db)
 
@@ -611,7 +661,9 @@ class UserService:
         return await User.get_mapped_projects(user.id, preferred_locale, db)
 
     @staticmethod
-    async def get_recommended_projects(user_name: str, preferred_locale: str, db: Database) -> ProjectSearchResultsDTO:
+    async def get_recommended_projects(
+        user_name: str, preferred_locale: str, db: Database
+    ) -> ProjectSearchResultsDTO:
         from backend.services.project_search_service import ProjectSearchService
 
         """Gets all projects a user has mapped or validated on"""
@@ -633,7 +685,9 @@ class UserService:
             FROM task_history
             WHERE user_id = :user_id
         """
-        contributed_projects = await db.fetch_all(contributed_projects_query, {"user_id": user["id"]})
+        contributed_projects = await db.fetch_all(
+            contributed_projects_query, {"user_id": user["id"]}
+        )
         contributed_project_ids = [row["project_id"] for row in contributed_projects]
 
         # Fetch campaign tags for contributed or authored projects
@@ -702,10 +756,14 @@ class UserService:
         dto = ProjectSearchResultsDTO()
 
         project_ids = [project["id"] for project in recommended_projects]
-        contrib_counts = await ProjectSearchService.get_total_contributions(project_ids, db)
+        contrib_counts = await ProjectSearchService.get_total_contributions(
+            project_ids, db
+        )
 
         dto.results = [
-            await ProjectSearchService.create_result_dto(project, preferred_locale, contrib_count, db)
+            await ProjectSearchService.create_result_dto(
+                project, preferred_locale, contrib_count, db
+            )
             for project, contrib_count in zip(recommended_projects, contrib_counts)
         ]
         dto.pagination = None
@@ -713,7 +771,9 @@ class UserService:
         return dto
 
     @staticmethod
-    async def add_role_to_user(admin_user_id: int, username: str, role: str, db: Database):
+    async def add_role_to_user(
+        admin_user_id: int, username: str, role: str, db: Database
+    ):
         """
         Add role to user
         :param admin_user_id: ID of admin attempting to add the role
@@ -725,14 +785,17 @@ class UserService:
             requested_role = UserRole[role.upper()]
         except KeyError:
             raise UserServiceError(
-                "UnknownAddRole- " + f"Unknown role {role} accepted values are ADMIN, PROJECT_MANAGER, VALIDATOR"
+                "UnknownAddRole- "
+                + f"Unknown role {role} accepted values are ADMIN, PROJECT_MANAGER, VALIDATOR"
             )
 
         admin = await UserService.get_user_by_id(admin_user_id, db)
         admin_role = UserRole(admin.role)
 
         if admin_role != UserRole.ADMIN and requested_role == UserRole.ADMIN:
-            raise UserServiceError("NeedAdminRole- You must be an Admin to assign Admin role")
+            raise UserServiceError(
+                "NeedAdminRole- You must be an Admin to assign Admin role"
+            )
 
         user = await UserService.get_user_by_username(username, db)
         await User.set_user_role(user, requested_role, db)
@@ -747,7 +810,8 @@ class UserService:
             requested_level = MappingLevel[level.upper()]
         except KeyError:
             raise UserServiceError(
-                "UnknownUserRole- " + f"Unknown role {level} accepted values are BEGINNER, INTERMEDIATE, ADVANCED"
+                "UnknownUserRole- "
+                + f"Unknown role {level} accepted values are BEGINNER, INTERMEDIATE, ADVANCED"
             )
 
         user = await UserService.get_user_by_username(username, db)
@@ -773,7 +837,9 @@ class UserService:
         await user.accept_license_terms(user_id, license_id, db)
 
     @staticmethod
-    async def has_user_accepted_license(user_id: int, license_id: int, db: Database) -> bool:
+    async def has_user_accepted_license(
+        user_id: int, license_id: int, db: Database
+    ) -> bool:
         """Checks if a user has accepted the specified license."""
         query = """
         SELECT EXISTS (
@@ -782,7 +848,9 @@ class UserService:
             WHERE "user" = :user_id AND license = :license_id
         )
         """
-        result = await db.fetch_one(query, values={"user_id": user_id, "license_id": license_id})
+        result = await db.fetch_one(
+            query, values={"user_id": user_id, "license_id": license_id}
+        )
         return result[0] if result else False
 
     @staticmethod
@@ -811,7 +879,10 @@ class UserService:
         try:
             osm_details = OSMService.get_osm_details_for_user(user_id)
 
-            if osm_details.changeset_count > advanced_level.value and user_level != MappingLevel.ADVANCED.value:
+            if (
+                osm_details.changeset_count > advanced_level.value
+                and user_level != MappingLevel.ADVANCED.value
+            ):
                 update_query = """
                     UPDATE users
                     SET mapping_level = :new_level
@@ -821,24 +892,32 @@ class UserService:
                     update_query,
                     {"new_level": MappingLevel.ADVANCED.value, "user_id": user_id},
                 )
-                await UserService.notify_level_upgrade(user_id, user.username, "ADVANCED", db)
+                await UserService.notify_level_upgrade(
+                    user_id, user.username, "ADVANCED", db
+                )
 
             elif (
-                intermediate_level.value < osm_details.changeset_count < advanced_level.value
+                intermediate_level.value
+                < osm_details.changeset_count
+                < advanced_level.value
                 and user_level != MappingLevel.INTERMEDIATE.value
             ):
                 await db.execute(
                     update_query,
                     {"new_level": MappingLevel.INTERMEDIATE.value, "user_id": user_id},
                 )
-                await UserService.notify_level_upgrade(user_id, user.username, "INTERMEDIATE", db)
+                await UserService.notify_level_upgrade(
+                    user_id, user.username, "INTERMEDIATE", db
+                )
 
         except OSMServiceError:
             # Log the error and move on; don't block the process
             logger.error("Error attempting to update mapper level for user %s", user_id)
 
     @staticmethod
-    async def notify_level_upgrade(user_id: int, username: str, level: str, db: Database):
+    async def notify_level_upgrade(
+        user_id: int, username: str, level: str, db: Database
+    ):
         text_template = get_txt_template("level_upgrade_message_en.txt")
 
         replace_list = [

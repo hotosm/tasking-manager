@@ -32,7 +32,9 @@ class UserDTO(BaseModel):
     mapping_level: Optional[str] = Field(None, alias="mappingLevel")
     projects_mapped: Optional[int] = Field(None, alias="projectsMapped")
     email_address: Optional[str] = Field(None, alias="emailAddress")
-    is_email_verified: Optional[bool] = Field(None, alias="isEmailVerified", serialize_when_none=False)
+    is_email_verified: Optional[bool] = Field(
+        None, alias="isEmailVerified", serialize_when_none=False
+    )
     is_expert: bool = Field(None, alias="isExpert", serialize_when_none=False)
     twitter_id: Optional[str] = Field(None, alias="twitterId")
     facebook_id: Optional[str] = Field(None, alias="facebookId")
@@ -46,11 +48,15 @@ class UserDTO(BaseModel):
     picture_url: Optional[str] = Field(None, alias="pictureUrl")
     default_editor: Optional[str] = Field(None, alias="defaultEditor")
     mentions_notifications: bool = Field(None, alias="mentionsNotifications")
-    projects_comments_notifications: bool = Field(None, alias="questionsAndCommentsNotifications")
+    projects_comments_notifications: bool = Field(
+        None, alias="questionsAndCommentsNotifications"
+    )
     projects_notifications: bool = Field(None, alias="projectsNotifications")
     tasks_notifications: bool = Field(None, alias="tasksNotifications")
     tasks_comments_notifications: bool = Field(None, alias="taskCommentsNotifications")
-    teams_announcement_notifications: bool = Field(None, alias="teamsAnnouncementNotifications")
+    teams_announcement_notifications: bool = Field(
+        None, alias="teamsAnnouncementNotifications"
+    )
 
     # these are read only
     gender: Optional[str] = Field(
@@ -77,7 +83,10 @@ class UserDTO(BaseModel):
             )
 
     def validate_self_description(self, data, value):
-        if data["gender"] == "SELF_DESCRIBE" and data["self_description_gender"] is None:
+        if (
+            data["gender"] == "SELF_DESCRIBE"
+            and data["self_description_gender"] is None
+        ):
             raise ValueError("selfDescription field is not defined")
         return value
 
@@ -113,14 +122,20 @@ class UserStatsDTO(BaseModel):
     time_spent_mapping: int = Field(None, alias="timeSpentMapping")
     time_spent_validating: int = Field(None, alias="timeSpentValidating")
     projects_mapped: int = Field(None, alias="projectsMapped")
-    countries_contributed: UserCountriesContributed = Field(None, alias="countriesContributed")
-    contributions_by_day: List[UserContributionDTO] = Field([], alias="contributionsByDay")
+    countries_contributed: UserCountriesContributed = Field(
+        None, alias="countriesContributed"
+    )
+    contributions_by_day: List[UserContributionDTO] = Field(
+        [], alias="contributionsByDay"
+    )
     tasks_mapped: int = Field(None, alias="tasksMapped")
     tasks_validated: int = Field(None, alias="tasksValidated")
     tasks_invalidated: int = Field(None, alias="tasksInvalidated")
     tasks_invalidated_by_others: int = Field(None, alias="tasksInvalidatedByOthers")
     tasks_validated_by_others: int = Field(None, alias="tasksValidatedByOthers")
-    contributions_interest: List[InterestDTO] = Field([], alias="ContributionsByInterest")
+    contributions_interest: List[InterestDTO] = Field(
+        [], alias="ContributionsByInterest"
+    )
 
 
 class UserOSMDTO(BaseModel):
@@ -147,7 +162,9 @@ class MappedProject(BaseModel):
 class UserMappedProjectsDTO(BaseModel):
     """DTO for projects a user has mapped"""
 
-    mapped_projects: Optional[List[MappedProject]] = Field(default_factory=list, alias="mappedProjects")
+    mapped_projects: Optional[List[MappedProject]] = Field(
+        default_factory=list, alias="mappedProjects"
+    )
 
     class Config:
         populate_by_name = True

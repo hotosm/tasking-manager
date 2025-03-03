@@ -46,7 +46,9 @@ class TestMappingService(BaseTestCase):
 
         link = metadata.find("{http://www.topografix.com/GPX/1/1}link")
         self.assertIsNotNone(link)
-        self.assertEqual(link.attrib["href"], "https://github.com/hotosm/tasking-manager")
+        self.assertEqual(
+            link.attrib["href"], "https://github.com/hotosm/tasking-manager"
+        )
         text = link.find("{http://www.topografix.com/GPX/1/1}text")
         self.assertIsNotNone(text)
         self.assertEqual(text.text.strip(), ORG_NAME)
@@ -135,7 +137,9 @@ class TestMappingService(BaseTestCase):
         # Assert
         self.assertEqual(
             self.test_project.tasks_mapped,
-            self.test_project.total_tasks - self.test_project.tasks_validated - self.test_project.tasks_bad_imagery,
+            self.test_project.total_tasks
+            - self.test_project.tasks_validated
+            - self.test_project.tasks_bad_imagery,
         )
 
     def test_mapped_by_is_set_after_mapping_all(self):

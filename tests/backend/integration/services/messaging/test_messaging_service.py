@@ -43,7 +43,9 @@ class TestMessageService(BaseTestCase):
         task_id = 1  # random task id
         # Act/Assert
         self.assertFalse(
-            MessageService.send_message_after_validation(status, validated_by, mapped_by, project_id, task_id)
+            MessageService.send_message_after_validation(
+                status, validated_by, mapped_by, project_id, task_id
+            )
         )
 
     @patch.object(MessageService, "_push_messages")
@@ -53,7 +55,9 @@ class TestMessageService(BaseTestCase):
         canned_project, canned_author = create_canned_project()
         update_project_with_info(canned_project)
         # Act
-        MessageService.send_message_after_validation(status, canned_author.id, self.test_user.id, 1, canned_project.id)
+        MessageService.send_message_after_validation(
+            status, canned_author.id, self.test_user.id, 1, canned_project.id
+        )
 
         # Assert
         mock_push_message.assert_called()
@@ -86,7 +90,9 @@ class TestMessageService(BaseTestCase):
         canned_project, canned_author = create_canned_project()
         canned_project = update_project_with_info(canned_project)
         # Act
-        MessageService.send_message_after_comment(canned_author.id, "@test_user Test message", 1, canned_project.id)
+        MessageService.send_message_after_comment(
+            canned_author.id, "@test_user Test message", 1, canned_project.id
+        )
         # Assert
         mock_push_message.assert_called()
 
@@ -99,7 +105,9 @@ class TestMessageService(BaseTestCase):
         test_organisation = create_canned_organisation()
         test_project.organisation = test_organisation
         add_manager_to_organisation(test_organisation, self.test_user)
-        MessageService.send_project_transfer_message(test_project.id, self.test_user.username, test_author.username)
+        MessageService.send_project_transfer_message(
+            test_project.id, self.test_user.username, test_author.username
+        )
         mock_send_message.assert_called()
 
     def send_multiple_welcome_messages(self, number_of_messages: int):

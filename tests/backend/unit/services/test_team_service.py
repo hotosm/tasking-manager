@@ -49,7 +49,11 @@ class TestTeamService(BaseTestCase):
         # Act
         TeamService.add_team_member(team_id, user_id, function, active)
         # Assert
-        self.assertTrue(TeamService.is_user_an_active_team_member(self.test_team.id, self.test_user.id))
+        self.assertTrue(
+            TeamService.is_user_an_active_team_member(
+                self.test_team.id, self.test_user.id
+            )
+        )
 
     def test_delete_team_project(self):
         # Act
@@ -68,4 +72,8 @@ class TestTeamService(BaseTestCase):
         # Act
         TeamService.leave_team(team_id, username)
         # Assert
-        self.assertFalse(TeamService.is_user_an_active_team_member(self.test_team.id, self.test_user.id))
+        self.assertFalse(
+            TeamService.is_user_an_active_team_member(
+                self.test_team.id, self.test_user.id
+            )
+        )

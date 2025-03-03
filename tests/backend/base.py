@@ -84,7 +84,8 @@ class BaseTestCase(unittest.TestCase):
             hasattr(expected, "__geo_interface__")
             and hasattr(actual, "__geo_interface__")
             and expected.__geo_interface__["type"] == actual.__geo_interface__["type"]
-            and expected.__geo_interface__["type"] not in ["Feature", "FeatureCollection"]
+            and expected.__geo_interface__["type"]
+            not in ["Feature", "FeatureCollection"]
         ):
             shape_expected = shape(expected)
             shape_actual = shape(actual)
@@ -99,6 +100,8 @@ class BaseTestCase(unittest.TestCase):
         elif isinstance(expected, dict):
             self.assertEqual(set(expected), set(actual))
             for key in expected:
-                self.assertDeepAlmostEqual(expected[key], actual[key], __trace=repr(key), *args, **kwargs)
+                self.assertDeepAlmostEqual(
+                    expected[key], actual[key], __trace=repr(key), *args, **kwargs
+                )
         else:
             self.assertEqual(expected, actual)

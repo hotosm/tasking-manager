@@ -7,7 +7,12 @@ from loguru import logger
 
 from backend.config import settings
 from backend.exceptions import NotFound
-from backend.models.dtos.project_dto import DraftProjectDTO, ProjectCommentsDTO, ProjectDTO, ProjectSearchDTO
+from backend.models.dtos.project_dto import (
+    DraftProjectDTO,
+    ProjectCommentsDTO,
+    ProjectDTO,
+    ProjectSearchDTO,
+)
 from backend.models.postgis.project import Project, ProjectStatus, Task
 from backend.models.postgis.statuses import TaskCreationMode, TeamRoles
 from backend.models.postgis.task import TaskAction, TaskHistory, TaskStatus
@@ -37,7 +42,9 @@ class ProjectStoreError(Exception):
 
 class ProjectAdminService:
     @staticmethod
-    async def create_draft_project(draft_project_dto: DraftProjectDTO, db: Database) -> int:
+    async def create_draft_project(
+        draft_project_dto: DraftProjectDTO, db: Database
+    ) -> int:
         """
         Validates and then persists draft projects in the DB
         :param draft_project_dto: Draft Project DTO with data from API
@@ -46,7 +53,9 @@ class ProjectAdminService:
         """
         user_id = draft_project_dto.user_id
         is_admin = await UserService.is_user_an_admin(user_id, db)
-        user_orgs = await OrganisationService.get_organisations_managed_by_user_as_dto(user_id, db)
+        user_orgs = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user_id, db
+        )
         is_org_manager = len(user_orgs.organisations) > 0
 
         # First things first, we need to validate that the author_id is a PM. issue #1715
@@ -60,10 +69,14 @@ class ProjectAdminService:
 
         # If we're cloning we'll copy all the project details from the clone, otherwise create brand new project
         if draft_project_dto.cloneFromProjectId:
-            draft_project = await Project.clone(draft_project_dto.cloneFromProjectId, user_id, db)
+            draft_project = await Project.clone(
+                draft_project_dto.cloneFromProjectId, user_id, db
+            )
         else:
             draft_project = Project()
-            org = await OrganisationService.get_organisation_by_id(draft_project_dto.organisation, db)
+            org = await OrganisationService.get_organisation_by_id(
+                draft_project_dto.organisation, db
+            )
             draft_project_dto.organisation = org
 
             draft_project.create_draft_project(draft_project_dto)
@@ -72,7 +85,9 @@ class ProjectAdminService:
 
         # if arbitrary_tasks requested, create tasks from aoi otherwise use tasks in DTO
         if draft_project_dto.has_arbitrary_tasks:
-            tasks = GridService.tasks_from_aoi_features(draft_project_dto.area_of_interest)
+            tasks = GridService.tasks_from_aoi_features(
+                draft_project_dto.area_of_interest
+            )
             draft_project.task_creation_mode = TaskCreationMode.ARBITRARY.value
         else:
             tasks = draft_project_dto.tasks
@@ -113,21 +128,32 @@ class ProjectAdminService:
         return await Project.as_dto_for_admin(project_id, db)
 
     @staticmethod
-    async def update_project(project_dto: ProjectDTO, authenticated_user_id: int, db: Database):
+    async def update_project(
+        project_dto: ProjectDTO, authenticated_user_id: int, db: Database
+    ):
         project_id = project_dto.project_id
 
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:
-            ProjectAdminService._validate_default_locale(project_dto.default_locale, project_dto.project_info_locales)
+            ProjectAdminService._validate_default_locale(
+                project_dto.default_locale, project_dto.project_info_locales
+            )
 
         if project_dto.license_id:
-            await ProjectAdminService._validate_imagery_licence(project_dto.license_id, db)
+            await ProjectAdminService._validate_imagery_licence(
+                project_dto.license_id, db
+            )
 
         # To be handled before reaching this function
-        if await ProjectAdminService.is_user_action_permitted_on_project(authenticated_user_id, project_id, db):
+        if await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
+        ):
             project = await ProjectAdminService._get_project_by_id(project_id, db)
             await Project.update(project, project_dto, db)
         else:
-            raise ValueError(str(project_id) + " :Project can only be updated by admins or by the owner")
+            raise ValueError(
+                str(project_id)
+                + " :Project can only be updated by admins or by the owner"
+            )
 
         return project
 
@@ -137,7 +163,9 @@ class ProjectAdminService:
         try:
             await LicenseService.get_license_as_dto(license_id, db)
         except NotFound:
-            raise ProjectAdminServiceError(f"RequireLicenseId- LicenseId {license_id} not found")
+            raise ProjectAdminServiceError(
+                f"RequireLicenseId- LicenseId {license_id} not found"
+            )
 
     @staticmethod
     async def delete_project(project_id: int, authenticated_user_id: int, db: Database):
@@ -145,16 +173,22 @@ class ProjectAdminService:
 
         project = await ProjectAdminService._get_project_by_id(project_id, db)
         is_admin = await UserService.is_user_an_admin(authenticated_user_id, db)
-        user_orgs = await OrganisationService.get_organisations_managed_by_user_as_dto(authenticated_user_id, db)
+        user_orgs = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            authenticated_user_id, db
+        )
         is_org_manager = len(user_orgs.organisations) > 0
 
         if is_admin or is_org_manager:
             if await Project.can_be_deleted(project, db):
                 await Project.delete(project, db)
             else:
-                raise ProjectAdminServiceError("HasMappedTasks- Project has mapped tasks, cannot be deleted")
+                raise ProjectAdminServiceError(
+                    "HasMappedTasks- Project has mapped tasks, cannot be deleted"
+                )
         else:
-            raise ProjectAdminServiceError("DeletePermissionError- User does not have permissions to delete project")
+            raise ProjectAdminServiceError(
+                "DeletePermissionError- User does not have permissions to delete project"
+            )
 
     @staticmethod
     async def reset_all_tasks(project_id: int, user_id: int, db: Database):
@@ -191,7 +225,9 @@ class ProjectAdminService:
             )
 
             # Reset the task's status to READY
-            await Task.reset_task(task_id=task_id, project_id=project_id, user_id=user_id, db=db)
+            await Task.reset_task(
+                task_id=task_id, project_id=project_id, user_id=user_id, db=db
+            )
 
         # Reset project counters using raw SQL
         project_update_query = """
@@ -214,7 +250,9 @@ class ProjectAdminService:
         return comments
 
     @staticmethod
-    async def _attach_tasks_to_project(draft_project: Project, tasks_geojson, db: Database):
+    async def _attach_tasks_to_project(
+        draft_project: Project, tasks_geojson, db: Database
+    ):
         """
         Validates then iterates over the array of tasks and attach them to the draft project
         :param draft_project: Draft project in scope
@@ -224,10 +262,14 @@ class ProjectAdminService:
         tasks = geojson.loads(json.dumps(tasks_geojson))
 
         if type(tasks) is not geojson.FeatureCollection:
-            raise InvalidGeoJson("MustBeFeatureCollection- Invalid: GeoJson must be FeatureCollection")
+            raise InvalidGeoJson(
+                "MustBeFeatureCollection- Invalid: GeoJson must be FeatureCollection"
+            )
 
         if not tasks.is_valid:
-            raise InvalidGeoJson("InvalidFeatureCollection - " + ", ".join(tasks.errors()))
+            raise InvalidGeoJson(
+                "InvalidFeatureCollection - " + ", ".join(tasks.errors())
+            )
 
         task_count = 1
         for feature in tasks["features"]:
@@ -258,20 +300,30 @@ class ProjectAdminService:
                 break
 
         if default_info is None:
-            raise ProjectAdminServiceError("InfoForLocaleRequired- Project Info for Default Locale not provided")
+            raise ProjectAdminServiceError(
+                "InfoForLocaleRequired- Project Info for Default Locale not provided"
+            )
         for attr, value in default_info.dict().items():
             if attr == "per_task_instructions":
                 continue  # Not mandatory field
 
             if not value:
-                raise (ProjectAdminServiceError(f"MissingRequiredAttribute- {attr} not provided for Default Locale"))
+                raise (
+                    ProjectAdminServiceError(
+                        f"MissingRequiredAttribute- {attr} not provided for Default Locale"
+                    )
+                )
 
         return True  # Indicates valid default locale for unit testing
 
     @staticmethod
-    async def get_projects_for_admin(admin_id: int, preferred_locale: str, search_dto: ProjectSearchDTO, db: Database):
+    async def get_projects_for_admin(
+        admin_id: int, preferred_locale: str, search_dto: ProjectSearchDTO, db: Database
+    ):
         """Get all projects for provided admin"""
-        return await Project.get_projects_for_admin(admin_id, preferred_locale, search_dto, db)
+        return await Project.get_projects_for_admin(
+            admin_id, preferred_locale, search_dto, db
+        )
 
     @staticmethod
     async def transfer_project_to(
@@ -296,7 +348,9 @@ class ProjectAdminService:
 
             is_admin = await UserService.is_user_an_admin(transfering_user_id, db)
 
-            is_author = UserService.is_user_the_project_author(transfering_user_id, project.author_id)
+            is_author = UserService.is_user_the_project_author(
+                transfering_user_id, project.author_id
+            )
             is_org_manager = await OrganisationService.is_user_an_org_manager(
                 project.organisation_id, transfering_user_id, db
             )
@@ -327,7 +381,9 @@ class ProjectAdminService:
             )
 
     @staticmethod
-    async def is_user_action_permitted_on_project(authenticated_user_id: int, project_id: int, db: Database) -> bool:
+    async def is_user_action_permitted_on_project(
+        authenticated_user_id: int, project_id: int, db: Database
+    ) -> bool:
         """Is user action permitted on project"""
         # Fetch the project details
         project_query = """
@@ -335,7 +391,9 @@ class ProjectAdminService:
             FROM projects
             WHERE id = :project_id
         """
-        project = await db.fetch_one(query=project_query, values={"project_id": project_id})
+        project = await db.fetch_one(
+            query=project_query, values={"project_id": project_id}
+        )
         if not project:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 

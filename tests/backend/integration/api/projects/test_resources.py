@@ -62,7 +62,9 @@ class TestDeleteProjectsRestAPI(BaseTestCase):
         super().setUp()
         self.test_project, self.test_author = create_canned_project()
         self.url = f"/api/v2/projects/{self.test_project.id}/"
-        self.test_user = return_canned_user(username=TEST_USER_USERNAME, id=TEST_USER_ID)
+        self.test_user = return_canned_user(
+            username=TEST_USER_USERNAME, id=TEST_USER_ID
+        )
         self.test_user.create()
         test_organistion = create_canned_organisation()
         self.test_project.organisation = test_organistion
@@ -83,7 +85,9 @@ class TestDeleteProjectsRestAPI(BaseTestCase):
         # Reset all tasks to READY so that project can be deleted
         ProjectAdminService.reset_all_tasks(self.test_project.id, self.test_user.id)
         # Act
-        response = self.client.delete(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.delete(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json["SubCode"], "UserPermissionError")
@@ -94,7 +98,9 @@ class TestDeleteProjectsRestAPI(BaseTestCase):
         # Only admin and org manager can delete project
         add_manager_to_organisation(self.test_project.organisation, self.test_author)
         # Act
-        response = self.client.delete(self.url, headers={"Authorization": self.author_session_token})
+        response = self.client.delete(
+            self.url, headers={"Authorization": self.author_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json["SubCode"], "HasMappedTasks")
@@ -109,7 +115,9 @@ class TestDeleteProjectsRestAPI(BaseTestCase):
         ProjectAdminService.reset_all_tasks(self.test_project.id, self.test_user.id)
 
         # Act
-        response = self.client.delete(self.url, headers={"Authorization": self.author_session_token})
+        response = self.client.delete(
+            self.url, headers={"Authorization": self.author_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
         with self.assertRaises(NotFound):
@@ -125,7 +133,9 @@ class TestDeleteProjectsRestAPI(BaseTestCase):
         ProjectAdminService.reset_all_tasks(self.test_project.id, self.test_user.id)
 
         # Act
-        response = self.client.delete(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.delete(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
         with self.assertRaises(NotFound):
@@ -135,7 +145,9 @@ class TestDeleteProjectsRestAPI(BaseTestCase):
 class TestCreateProjectsRestAPI(BaseTestCase):
     def setUp(self):
         super().setUp()
-        self.test_user = return_canned_user(username=TEST_USER_USERNAME, id=TEST_USER_ID)
+        self.test_user = return_canned_user(
+            username=TEST_USER_USERNAME, id=TEST_USER_ID
+        )
         self.test_user.create()
         self.test_organisation = create_canned_organisation()
         self.url = "/api/v2/projects/"
@@ -147,10 +159,17 @@ class TestCreateProjectsRestAPI(BaseTestCase):
         "Test project response"
         assert expected_project["organisation"] == project_response.organisation_id
         # Only assert coordinates as the rest of the geometry is not converted before saving to db.
-        expected_aoi = [expected_project["areaOfInterest"]["features"][0]["geometry"]["coordinates"]]
-        assert expected_aoi == project_response.get_aoi_geometry_as_geojson()["coordinates"]
+        expected_aoi = [
+            expected_project["areaOfInterest"]["features"][0]["geometry"]["coordinates"]
+        ]
+        assert (
+            expected_aoi
+            == project_response.get_aoi_geometry_as_geojson()["coordinates"]
+        )
         assert project_response.status == ProjectStatus.DRAFT.value
-        assert expected_project["projectName"] == project_response.get_project_title("en")
+        assert expected_project["projectName"] == project_response.get_project_title(
+            "en"
+        )
 
     def test_create_project_returns_401_without_token(self):
         "Test returns 401 on request without session token."
@@ -177,7 +196,9 @@ class TestCreateProjectsRestAPI(BaseTestCase):
         self.test_user.role = UserRole.ADMIN.value
         self.test_user.save()
         # Act
-        response = self.client.post(self.url, json={}, headers={"Authorization": self.session_token})
+        response = self.client.post(
+            self.url, json={}, headers={"Authorization": self.session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json["SubCode"], "InvalidData")
@@ -195,7 +216,9 @@ class TestCreateProjectsRestAPI(BaseTestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn("projectId", response.json)
         draft_project = ProjectService.get_project_by_id(response.json["projectId"])
-        TestCreateProjectsRestAPI.assert_draft_project_response(draft_project, self.canned_project_json)
+        TestCreateProjectsRestAPI.assert_draft_project_response(
+            draft_project, self.canned_project_json
+        )
 
     def test_admin_can_create_project(self):
         "Test project can be created by admins."
@@ -212,7 +235,9 @@ class TestCreateProjectsRestAPI(BaseTestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn("projectId", response.json)
         draft_project = ProjectService.get_project_by_id(response.json["projectId"])
-        TestCreateProjectsRestAPI.assert_draft_project_response(draft_project, self.canned_project_json)
+        TestCreateProjectsRestAPI.assert_draft_project_response(
+            draft_project, self.canned_project_json
+        )
 
 
 class TestGetProjectsRestAPI(BaseTestCase):
@@ -221,7 +246,9 @@ class TestGetProjectsRestAPI(BaseTestCase):
         self.test_project, self.test_author = create_canned_project()
         self.test_project.status = ProjectStatus.PUBLISHED.value
         self.url = f"/api/v2/projects/{self.test_project.id}/"
-        self.test_user = return_canned_user(username=TEST_USER_USERNAME, id=TEST_USER_ID)
+        self.test_user = return_canned_user(
+            username=TEST_USER_USERNAME, id=TEST_USER_ID
+        )
         self.test_user.create()
         test_organistion = create_canned_organisation()
         self.test_project.organisation = test_organistion
@@ -234,13 +261,20 @@ class TestGetProjectsRestAPI(BaseTestCase):
         assert expected_project.id == project_response["projectId"]
         # Since some of the fields are not returned in summary mode we need to skip them
         if assert_type != "summary":
-            assert geojson.loads(geojson.dumps(project_response["areaOfInterest"])).is_valid
-            assert ["type", "coordinates"] == list(project_response["areaOfInterest"].keys())
+            assert geojson.loads(
+                geojson.dumps(project_response["areaOfInterest"])
+            ).is_valid
+            assert ["type", "coordinates"] == list(
+                project_response["areaOfInterest"].keys()
+            )
             if assert_type == "notasks":
                 assert "tasks" not in project_response
             else:
                 assert geojson.loads(geojson.dumps(project_response["tasks"])).is_valid
-            assert is_known_task_creation_mode(project_response["taskCreationMode"]) is None
+            assert (
+                is_known_task_creation_mode(project_response["taskCreationMode"])
+                is None
+            )
             assert "activeMappers" in project_response
             assert "interests" in project_response
             assert "priorityAreas" in project_response
@@ -273,13 +307,22 @@ class TestGetProjectsRestAPI(BaseTestCase):
         for mapping_type in project_response["mappingTypes"]:
             assert is_known_mapping_type(mapping_type) is None
 
-        for editor in set(project_response["mappingEditors"] + project_response["validationEditors"]):
+        for editor in set(
+            project_response["mappingEditors"] + project_response["validationEditors"]
+        ):
             assert is_known_editor(editor) is None
-        assert is_known_mapping_permission(project_response["mappingPermission"]) is None
-        assert is_known_validation_permission(project_response["validationPermission"]) is None
+        assert (
+            is_known_mapping_permission(project_response["mappingPermission"]) is None
+        )
+        assert (
+            is_known_validation_permission(project_response["validationPermission"])
+            is None
+        )
 
         assert expected_project.private == project_response["private"]
-        assert expected_project.changeset_comment == project_response["changesetComment"]
+        assert (
+            expected_project.changeset_comment == project_response["changesetComment"]
+        )
         assert expected_project.default_locale == project_response["defaultLocale"]
         assert expected_project.organisation_id == project_response["organisation"]
         assert expected_project.author.username == project_response["author"]
@@ -322,7 +365,9 @@ class TestGetProjectsRestAPI(BaseTestCase):
         self.test_project.save()
 
         # Authenticated user with that is not a manager or admin
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json["SubCode"], "ProjectNotFetched")
@@ -330,7 +375,9 @@ class TestGetProjectsRestAPI(BaseTestCase):
         # Authenticated user with that is a admin
         self.test_user.role = UserRole.ADMIN.value
         self.test_user.save()
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         self.assertEqual(response.status_code, 200)
         TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
 
@@ -338,7 +385,9 @@ class TestGetProjectsRestAPI(BaseTestCase):
         self.test_user.role = UserRole.MAPPER.value
         self.test_user.save()
         add_manager_to_organisation(self.test_project.organisation, self.test_user)
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["projectId"], self.test_project.id)
@@ -351,7 +400,9 @@ class TestGetProjectsRestAPI(BaseTestCase):
         self.test_project.save()
 
         # Authenticated user with that is not a manager or admin
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json["SubCode"], "PrivateProject")
@@ -361,7 +412,9 @@ class TestGetProjectsRestAPI(BaseTestCase):
         self.test_user.role = UserRole.ADMIN.value
         self.test_user.save()
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
         TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
@@ -372,7 +425,9 @@ class TestGetProjectsRestAPI(BaseTestCase):
         self.test_user.save()
         add_manager_to_organisation(self.test_project.organisation, self.test_user)
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
         TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
@@ -390,7 +445,9 @@ class TestGetProjectsRestAPI(BaseTestCase):
         # Assign team to project
         assign_team_to_project(self.test_project, test_team, TeamRoles.MAPPER.value)
         # Act
-        response = self.client.get(self.url, headers={"Authorization": test_user_1_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": test_user_1_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
         TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
@@ -447,7 +504,9 @@ class TestPatchProjectRestAPI(BaseTestCase):
         super().setUp()
         self.test_project, self.test_author = create_canned_project()
         self.url = f"/api/v2/projects/{self.test_project.id}/"
-        self.test_user = return_canned_user(username=TEST_USER_USERNAME, id=TEST_USER_ID)
+        self.test_user = return_canned_user(
+            username=TEST_USER_USERNAME, id=TEST_USER_ID
+        )
         self.test_user.create()
         test_organistion = create_canned_organisation()
         self.test_project.organisation = test_organistion
@@ -467,14 +526,18 @@ class TestPatchProjectRestAPI(BaseTestCase):
     def test_patch_project_returns_404_if_project_does_not_exist(self):
         "Test patch project returns 404 if project does not exist."
         # Act
-        response = self.client.patch("/api/v2/projects/1000/", headers={"Authorization": self.user_session_token})
+        response = self.client.patch(
+            "/api/v2/projects/1000/", headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 404)
 
     def test_patch_project_returns_403_if_user_is_not_project_manager(self):
         "Test patch project returns 403 if user is not project manager."
         # Act
-        response = self.client.patch(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.patch(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json["SubCode"], "UserPermissionError")
@@ -504,14 +567,18 @@ class TestPatchProjectRestAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         updated_project = ProjectService.get_project_by_id(self.test_project.id)
-        TestGetProjectsRestAPI.assert_project_response(self.project_update_body, updated_project)
+        TestGetProjectsRestAPI.assert_project_response(
+            self.project_update_body, updated_project
+        )
 
     def test_member_of_team_with_PM_permission_can_update_project(self):
         "Test member of team with PM permission can update project."
         # Arrange
         team = create_canned_team()
         add_user_to_team(team, self.test_user, TeamMemberFunctions.MEMBER.value, True)
-        project_team = assign_team_to_project(self.test_project, team, TeamRoles.PROJECT_MANAGER.value)
+        project_team = assign_team_to_project(
+            self.test_project, team, TeamRoles.PROJECT_MANAGER.value
+        )
         # Act
         response = self.client.patch(
             self.url,
@@ -522,7 +589,9 @@ class TestPatchProjectRestAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         updated_project = ProjectService.get_project_by_id(self.test_project.id)
-        TestGetProjectsRestAPI.assert_project_response(self.project_update_body, updated_project)
+        TestGetProjectsRestAPI.assert_project_response(
+            self.project_update_body, updated_project
+        )
         # Cleanup
         project_team.delete()
 
@@ -531,7 +600,9 @@ class TestPatchProjectRestAPI(BaseTestCase):
         # Arrange
         team = create_canned_team()
         add_user_to_team(team, self.test_user, TeamMemberFunctions.MEMBER.value, True)
-        project_team = assign_team_to_project(self.test_project, team, TeamRoles.VALIDATOR.value)
+        project_team = assign_team_to_project(
+            self.test_project, team, TeamRoles.VALIDATOR.value
+        )
         # Act
         response = self.client.patch(
             self.url,
@@ -559,7 +630,9 @@ class TestPatchProjectRestAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         updated_project = ProjectService.get_project_by_id(self.test_project.id)
-        TestGetProjectsRestAPI.assert_project_response(self.project_update_body, updated_project)
+        TestGetProjectsRestAPI.assert_project_response(
+            self.project_update_body, updated_project
+        )
         # Cleanup
         self.test_user.role = UserRole.MAPPER.value
         self.test_user.save()
@@ -578,7 +651,9 @@ class TestPatchProjectRestAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         updated_project = ProjectService.get_project_by_id(self.test_project.id)
-        TestGetProjectsRestAPI.assert_project_response(self.project_update_body, updated_project)
+        TestGetProjectsRestAPI.assert_project_response(
+            self.project_update_body, updated_project
+        )
 
 
 class TestProjectsAllAPI(BaseTestCase):
@@ -618,7 +693,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
     def test_get_all_projects_returns_user_permitted_published_projects_if_token_supplied(
         self,
@@ -628,12 +705,18 @@ class TestProjectsAllAPI(BaseTestCase):
         self.test_project_2.private = False
         self.test_project_2.save()
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.author_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.author_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 2)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
-        self.assertEqual(response.json["results"][1]["projectId"], self.test_project_2.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
+        self.assertEqual(
+            response.json["results"][1]["projectId"], self.test_project_2.id
+        )
 
     def test_returns_projects_with_tasks_to_validate_if_action_set_to_validate(self):
         """
@@ -660,7 +743,9 @@ class TestProjectsAllAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         # Test_project_2 has no tasks to validate, it should not be returned even when user has permsiion to validate.
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
     def test_returns_projects_with_tasks_to_map_if_action_set_to_map(self):
         """
@@ -686,7 +771,9 @@ class TestProjectsAllAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         # Test_project_2 has no tasks to map, it should not be returned even when user has permission to map.
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
     def test_returns_all_projects_that_user_is_permitted_if_action_set_to_any(self):
         """
@@ -714,8 +801,12 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 2)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
-        self.assertEqual(response.json["results"][1]["projectId"], self.test_project_2.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
+        self.assertEqual(
+            response.json["results"][1]["projectId"], self.test_project_2.id
+        )
 
     def test_returns_easy_projects_if_difficulty_set_to_easy(self):
         """
@@ -735,7 +826,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_2.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_2.id
+        )
 
     def test_returns_moderate_projects_if_difficulty_set_to_moderate(self):
         """
@@ -757,7 +850,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
     def test_returns_challenging_projects_if_difficulty_set_to_changelling(self):
         """
@@ -777,7 +872,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_2.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_2.id
+        )
 
     def test_returns_all_projects_if_difficulty_set_to_all(self):
         """
@@ -804,7 +901,9 @@ class TestProjectsAllAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         # User is only permitted for test_project 1, 2 and 4, since test_project_3 is DRAFT.
         self.assertEqual(len(response.json["results"]), 3)
-        self.assertNotIn(self.test_project_3.id, [i["projectId"] for i in response.json["results"]])
+        self.assertNotIn(
+            self.test_project_3.id, [i["projectId"] for i in response.json["results"]]
+        )
 
     def test_returns_sorted_projects_by_priority_if_sort_by_set_to_priority(self):
         """
@@ -843,7 +942,9 @@ class TestProjectsAllAPI(BaseTestCase):
             self.test_project_2.id,
             self.test_project_1.id,
         ]
-        self.assertListEqual([i["projectId"] for i in response_desc.json["results"]], expected_desc_order)
+        self.assertListEqual(
+            [i["projectId"] for i in response_desc.json["results"]], expected_desc_order
+        )
 
         # Test for ascending order
         # Act
@@ -892,7 +993,9 @@ class TestProjectsAllAPI(BaseTestCase):
             self.test_project_2.id,
             self.test_project_1.id,
         ]
-        self.assertListEqual([i["projectId"] for i in response_desc.json["results"]], expected_desc_order)
+        self.assertListEqual(
+            [i["projectId"] for i in response_desc.json["results"]], expected_desc_order
+        )
 
         # Test for ascending order
         # Act
@@ -936,7 +1039,9 @@ class TestProjectsAllAPI(BaseTestCase):
             self.test_project_2.id,
             self.test_project_1.id,
         ]
-        self.assertListEqual([i["projectId"] for i in response_desc.json["results"]], expected_desc_order)
+        self.assertListEqual(
+            [i["projectId"] for i in response_desc.json["results"]], expected_desc_order
+        )
 
         # Test returns sorted projects by created_at in ascending order.
         # Act
@@ -985,7 +1090,9 @@ class TestProjectsAllAPI(BaseTestCase):
             self.test_project_2.id,
             self.test_project_3.id,
         ]
-        self.assertListEqual([i["projectId"] for i in response_desc.json["results"]], expected_desc_order)
+        self.assertListEqual(
+            [i["projectId"] for i in response_desc.json["results"]], expected_desc_order
+        )
 
         # Test returns sorted projects by last_updated_in ascending order.
         # Act
@@ -1032,7 +1139,9 @@ class TestProjectsAllAPI(BaseTestCase):
             self.test_project_2.id,
             self.test_project_1.id,
         ]
-        self.assertListEqual([i["projectId"] for i in response_desc.json["results"]], expected_desc_order)
+        self.assertListEqual(
+            [i["projectId"] for i in response_desc.json["results"]], expected_desc_order
+        )
 
         # Test returns sorted projects by due_date in ascending order.
         # Act
@@ -1072,7 +1181,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response_pub.status_code, 200)
         self.assertEqual(len(response_pub.json["results"]), 1)
-        self.assertEqual(response_pub.json["results"][0]["projectId"], self.test_project_2.id)
+        self.assertEqual(
+            response_pub.json["results"][0]["projectId"], self.test_project_2.id
+        )
 
         # Act
         response_draft = self.client.get(
@@ -1083,7 +1194,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response_draft.status_code, 200)
         self.assertEqual(len(response_draft.json["results"]), 1)
-        self.assertEqual(response_draft.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response_draft.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
         # Act
         response_archived = self.client.get(
@@ -1094,7 +1207,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response_archived.status_code, 200)
         self.assertEqual(len(response_archived.json["results"]), 1)
-        self.assertEqual(response_archived.json["results"][0]["projectId"], self.test_project_3.id)
+        self.assertEqual(
+            response_archived.json["results"][0]["projectId"], self.test_project_3.id
+        )
 
         # Test multiple statuses returns all projects with those statuses.
         # Act
@@ -1252,7 +1367,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response_exact.status_code, 200)
         self.assertEqual(len(response_exact.json["results"]), 1)
-        self.assertEqual(response_exact.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response_exact.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
     def test_returns_projects_filtered_by_organisation(self):
         # Arrange
@@ -1277,7 +1394,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response_org_id.status_code, 200)
         self.assertEqual(len(response_org_id.json["results"]), 1)
-        self.assertEqual(response_org_id.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response_org_id.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
         # Test organisationName filters projects organisation.
         # Act
@@ -1289,7 +1408,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response_org_name.status_code, 200)
         self.assertEqual(len(response_org_name.json["results"]), 1)
-        self.assertEqual(response_org_name.json["results"][0]["projectId"], self.test_project_2.id)
+        self.assertEqual(
+            response_org_name.json["results"][0]["projectId"], self.test_project_2.id
+        )
 
     def test_returns_projects_filtered_by_campaign(self):
         # Arrange
@@ -1318,7 +1439,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
     def test_returns_projects_filtered_by_search(self):
         # Arrange
@@ -1351,7 +1474,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
     def test_returns_projects_filtered_by_country(self):
         # Arrange
@@ -1366,7 +1491,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
     def test_returns_projects_filtering_by_last_updated_param(self):
         # Arrange
@@ -1389,14 +1516,18 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response_from.status_code, 200)
         self.assertEqual(len(response_from.json["results"]), 1)
-        self.assertEqual(response_from.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response_from.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
         # Test last updated from filter returns projects updated before the date
         # Act
         response_to = self.client.get(
             self.url,
             headers={"Authorization": self.user_session_token},
-            query_string={"lastUpdatedTo": (datetime.utcnow() - timedelta(days=1)).date()},
+            query_string={
+                "lastUpdatedTo": (datetime.utcnow() - timedelta(days=1)).date()
+            },
         )
         # Assert
         self.assertEqual(response_to.status_code, 200)
@@ -1427,7 +1558,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response_from.status_code, 200)
         self.assertEqual(len(response_from.json["results"]), 1)
-        self.assertEqual(response_from.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response_from.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
         # Test created from filter returns projects created before the date
         # Act
@@ -1453,8 +1586,12 @@ class TestProjectsAllAPI(BaseTestCase):
         InterestService.create_or_update_project_interests(
             self.test_project_1.id, [test_interest_1.id, test_interest_2.id]
         )
-        InterestService.create_or_update_project_interests(self.test_project_2.id, [test_interest_2.id])
-        InterestService.create_or_update_project_interests(self.test_project_3.id, [test_interest_3.id])
+        InterestService.create_or_update_project_interests(
+            self.test_project_2.id, [test_interest_2.id]
+        )
+        InterestService.create_or_update_project_interests(
+            self.test_project_3.id, [test_interest_3.id]
+        )
 
         # Make sure all projects can be accessed by the user
         self.test_project_2.private = False
@@ -1472,14 +1609,18 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response_single.status_code, 200)
         self.assertEqual(len(response_single.json["results"]), 1)
-        self.assertEqual(response_single.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response_single.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
         # Test filter by multiple interests returns projects with union of interests provided
         # Act
         response_multiple = self.client.get(
             self.url,
             headers={"Authorization": self.user_session_token},
-            query_string={"interests": f"{test_interest_1.name},{test_interest_2.name}"},
+            query_string={
+                "interests": f"{test_interest_1.name},{test_interest_2.name}"
+            },
         )
         # Assert
         self.assertEqual(response_multiple.status_code, 200)
@@ -1506,7 +1647,9 @@ class TestProjectsAllAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
     def test_returns_projects_managed_by_me(self):
         """
@@ -1514,11 +1657,17 @@ class TestProjectsAllAPI(BaseTestCase):
         """
         # Arrange
         # test_user is the member of team that has PM role in test_project_1 so it must be returned
-        test_organisation_1 = return_canned_organisation(111, "test_organisation_2", "T2")
+        test_organisation_1 = return_canned_organisation(
+            111, "test_organisation_2", "T2"
+        )
         test_organisation_1.create()
         test_team = return_canned_team("test_team", test_organisation_1.name)
-        add_user_to_team(test_team, self.test_user, TeamMemberFunctions.MEMBER.value, True)
-        assign_team_to_project(self.test_project_1, test_team, TeamRoles.PROJECT_MANAGER.value)
+        add_user_to_team(
+            test_team, self.test_user, TeamMemberFunctions.MEMBER.value, True
+        )
+        assign_team_to_project(
+            self.test_project_1, test_team, TeamRoles.PROJECT_MANAGER.value
+        )
 
         # test_user is the manager of organisation that test_project_2 belongs to so it must be returned
         test_organisation_2 = create_canned_organisation()
@@ -1586,7 +1735,9 @@ class TestProjectsAllAPI(BaseTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
     def test_returns_projects_favourited_by_user_if_favourited_by_me_is_true(self):
         """
@@ -1608,7 +1759,9 @@ class TestProjectsAllAPI(BaseTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 1)
-        self.assertEqual(response.json["results"][0]["projectId"], self.test_project_1.id)
+        self.assertEqual(
+            response.json["results"][0]["projectId"], self.test_project_1.id
+        )
 
     def test_omit_map_results_removes_mao_results_from_response(self):
         """
@@ -1793,7 +1946,9 @@ class TestProjectsQueriesSummaryAPI(BaseTestCase):
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 200)
-        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project, assert_type="summary")
+        TestGetProjectsRestAPI.assert_project_response(
+            response.json, self.test_project, assert_type="summary"
+        )
 
 
 class TestProjectsQueriesTouchedAPI(BaseTestCase):
@@ -1867,7 +2022,9 @@ class TestProjectsQueriesPriorityAreasAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json), 1)
-        self.assertDeepAlmostEqual(response.json[0], json_data["priorityAreas"][0], places=6)
+        self.assertDeepAlmostEqual(
+            response.json[0], json_data["priorityAreas"][0], places=6
+        )
 
 
 class TestProjectsQueriesAoiAPI(BaseTestCase):
@@ -1954,7 +2111,9 @@ class TestProjectsQueriesOwnerAPI(BaseTestCase):
         # Add user to organisation so that it has PM role
         add_manager_to_organisation(self.test_organisation, self.test_author)
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.author_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.author_session_token}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["activeProjects"]), 1)
 
@@ -2012,10 +2171,14 @@ class TestProjectsQueriesNoTasksAPI(BaseTestCase):
         self.test_user.role = UserRole.ADMIN.value
         self.test_user.save()
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
-        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project, assert_type="notasks")
+        TestGetProjectsRestAPI.assert_project_response(
+            response.json, self.test_project, assert_type="notasks"
+        )
 
     def test_returns_200_if_user_org_manager(self):
         """
@@ -2026,10 +2189,14 @@ class TestProjectsQueriesNoTasksAPI(BaseTestCase):
         self.test_user.save()
         add_manager_to_organisation(self.test_project.organisation, self.test_user)
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
-        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project, assert_type="notasks")
+        TestGetProjectsRestAPI.assert_project_response(
+            response.json, self.test_project, assert_type="notasks"
+        )
 
     def test_returns_200_if_user_team_member(self):
         """
@@ -2038,14 +2205,22 @@ class TestProjectsQueriesNoTasksAPI(BaseTestCase):
         # Arrange
         # Create a team and add user to it
         test_team = create_canned_team()
-        add_user_to_team(test_team, self.test_user, TeamMemberFunctions.MEMBER.value, True)
+        add_user_to_team(
+            test_team, self.test_user, TeamMemberFunctions.MEMBER.value, True
+        )
         # Assign team to project
-        assign_team_to_project(self.test_project, test_team, TeamRoles.PROJECT_MANAGER.value)
+        assign_team_to_project(
+            self.test_project, test_team, TeamRoles.PROJECT_MANAGER.value
+        )
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
-        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project, assert_type="notasks")
+        TestGetProjectsRestAPI.assert_project_response(
+            response.json, self.test_project, assert_type="notasks"
+        )
 
 
 class TestProjectQueriesSimilarProjectsAPI(BaseTestCase):
@@ -2117,12 +2292,18 @@ class TestProjectQueriesSimilarProjectsAPI(BaseTestCase):
         self.test_author.role = UserRole.ADMIN.value
         self.test_author.save()
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 3)
-        returned_project_ids = sorted([i["projectId"] for i in response.json["results"]])
-        self.assertEqual(returned_project_ids, [project_1.id, project_2.id, project_3.id])
+        returned_project_ids = sorted(
+            [i["projectId"] for i in response.json["results"]]
+        )
+        self.assertEqual(
+            returned_project_ids, [project_1.id, project_2.id, project_3.id]
+        )
 
     def test_returns_limit_projects(self):
         """
@@ -2132,7 +2313,9 @@ class TestProjectQueriesSimilarProjectsAPI(BaseTestCase):
         # Create and arrange test projects
         self.arrange_projects()
         # Act
-        response = self.client.get(f"{self.url}?limit=1", headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            f"{self.url}?limit=1", headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["results"]), 1)

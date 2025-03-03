@@ -6,7 +6,9 @@ from databases import Database
 
 class TaskAnnotationsService:
     @staticmethod
-    async def add_or_update_annotation(annotation, project_id, annotation_type, db: Database):
+    async def add_or_update_annotation(
+        annotation, project_id, annotation_type, db: Database
+    ):
         """Takes a JSON of tasks and creates or updates annotations in the database."""
 
         task_id = annotation["taskId"]

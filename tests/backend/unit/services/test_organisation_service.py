@@ -3,7 +3,11 @@ from unittest.mock import patch
 from backend.models.postgis.statuses import UserRole
 from backend.services.organisation_service import NotFound, OrganisationService
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import create_canned_organisation, create_canned_user, return_canned_user
+from tests.backend.helpers.test_helpers import (
+    create_canned_organisation,
+    create_canned_user,
+    return_canned_user,
+)
 
 
 class TestOrganisationService(BaseTestCase):
@@ -39,7 +43,9 @@ class TestOrganisationService(BaseTestCase):
         test_org.managers = [test_user]
         test_org.save()
         # Act
-        organisations = OrganisationService.get_organisations_managed_by_user(test_user.id)
+        organisations = OrganisationService.get_organisations_managed_by_user(
+            test_user.id
+        )
         # Assert
         self.assertEqual(test_org.name, organisations[0].name)
 
@@ -51,6 +57,8 @@ class TestOrganisationService(BaseTestCase):
         test_org = create_canned_organisation()
 
         # Act
-        organisations = OrganisationService.get_organisations_managed_by_user(test_user.id)
+        organisations = OrganisationService.get_organisations_managed_by_user(
+            test_user.id
+        )
         # Assert
         self.assertEqual(test_org.name, organisations[0].name)

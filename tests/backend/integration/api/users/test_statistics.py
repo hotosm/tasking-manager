@@ -4,7 +4,11 @@ from datetime import datetime, timedelta
 
 from backend.models.postgis.task import Task, TaskStatus
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import create_canned_project, generate_encoded_token, return_canned_user
+from tests.backend.helpers.test_helpers import (
+    create_canned_project,
+    generate_encoded_token,
+    return_canned_user,
+)
 from tests.backend.integration.api.users.test_resources import USER_NOT_FOUND_SUB_CODE
 
 
@@ -41,7 +45,9 @@ class TestUsersStatisticsAPI(BaseTestCase):
         time.sleep(5)
         task.unlock_task(self.test_user.id, TaskStatus.MAPPED)
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["totalTimeSpent"], 5)
@@ -137,7 +143,9 @@ class TestUsersStatisticsAllAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": (datetime.today() - timedelta(days=100)).strftime("%Y-%m-%d"),
+                "startDate": (datetime.today() - timedelta(days=100)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "endDate": datetime.now().strftime("%Y-%m-%d"),
             },
         )

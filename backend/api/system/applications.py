@@ -79,7 +79,9 @@ async def post_application_key(
 
 
 @router.patch("/authentication/applications/{application_key}/")
-async def patch_application_key(request: Request, application_key: str, db: Database = Depends(get_db)):
+async def patch_application_key(
+    request: Request, application_key: str, db: Database = Depends(get_db)
+):
     """
     Checks the validity of an application key
     ---

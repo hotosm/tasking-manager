@@ -86,7 +86,9 @@ class TestDeleteTasksJsonAPI(BaseTestCase):
     def test_returns_403_if_user_not_admin(self):
         """Test that a 403 is returned if the user is not a project manager."""
         # Act
-        response = self.client.delete(self.url, headers={"Authorization": self.test_user_access_token})
+        response = self.client.delete(
+            self.url, headers={"Authorization": self.test_user_access_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 403)
 
@@ -110,7 +112,9 @@ class TestDeleteTasksJsonAPI(BaseTestCase):
         # Arrange
         add_manager_to_organisation(self.test_organization, self.test_user)
         # Act
-        response = self.client.delete(self.url, headers={"Authorization": self.test_user_access_token})
+        response = self.client.delete(
+            self.url, headers={"Authorization": self.test_user_access_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 403)
 
@@ -178,7 +182,9 @@ class TestTaskRestAPI(BaseTestCase):
     def test_returns_404_if_task_does_not_exist(self):
         """Test that a 404 is returned if the task does not exist."""
         # Act
-        response = self.client.get(f"/api/v2/projects/{self.test_project.id}/tasks/999/")
+        response = self.client.get(
+            f"/api/v2/projects/{self.test_project.id}/tasks/999/"
+        )
         # Assert
         self.assertEqual(response.status_code, 404)
 
@@ -212,7 +218,9 @@ class TestTaskRestAPI(BaseTestCase):
         self.assertEqual(response.json["projectId"], self.test_project.id)
         self.assertEqual(response.json["taskStatus"], TaskStatus.VALIDATED.name)
         self.assertEqual(len(response.json["taskHistory"]), 3)
-        self.assertEqual(response.json["taskHistory"][2]["action"], "LOCKED_FOR_VALIDATION")
+        self.assertEqual(
+            response.json["taskHistory"][2]["action"], "LOCKED_FOR_VALIDATION"
+        )
         self.assertEqual(response.json["taskHistory"][1]["action"], "COMMENT")
         self.assertEqual(response.json["taskHistory"][0]["action"], "STATE_CHANGE")
 
@@ -239,13 +247,17 @@ class TestTasksQueriesGpxAPI(BaseTestCase):
         ns = {"gpx": "http://www.topografix.com/GPX/1/1"}
         self.assertEqual(response.status_code, 200)
         response_xml = ET.fromstring(response.get_data(as_text=True))
-        self.assertEqual(response_xml.attrib, {"version": "1.1", "creator": "HOT Tasking Manager"})
+        self.assertEqual(
+            response_xml.attrib, {"version": "1.1", "creator": "HOT Tasking Manager"}
+        )
         trk = response_xml.find("gpx:trk", namespaces=ns)
         self.assertEqual(
             trk.find("gpx:name", ns).text,
             f"Task for project {self.test_project.id}. Do not edit outside of this area!",
         )
-        self.assertEqual(len([i for i in trk.findall("gpx:trkseg", ns)]), 4)  # Since project has 4 tasks
+        self.assertEqual(
+            len([i for i in trk.findall("gpx:trkseg", ns)]), 4
+        )  # Since project has 4 tasks
 
     def test_returns_gpx_for_specified_tasks(self):
         """Test that the specified tasks are returned."""
@@ -255,13 +267,17 @@ class TestTasksQueriesGpxAPI(BaseTestCase):
         ns = {"gpx": "http://www.topografix.com/GPX/1/1"}
         self.assertEqual(response.status_code, 200)
         response_xml = ET.fromstring(response.get_data(as_text=True))
-        self.assertEqual(response_xml.attrib, {"version": "1.1", "creator": "HOT Tasking Manager"})
+        self.assertEqual(
+            response_xml.attrib, {"version": "1.1", "creator": "HOT Tasking Manager"}
+        )
         trk = response_xml.find("gpx:trk", namespaces=ns)
         self.assertEqual(
             trk.find("gpx:name", ns).text,
             f"Task for project {self.test_project.id}. Do not edit outside of this area!",
         )
-        self.assertEqual(len([i for i in trk.findall("gpx:trkseg", ns)]), 2)  # Since we only asked for tasks 1 and 2
+        self.assertEqual(
+            len([i for i in trk.findall("gpx:trkseg", ns)]), 2
+        )  # Since we only asked for tasks 1 and 2
 
     def test_returns_file_if_as_file_set_true(self):
         """Test that the file is returned if the as_file parameter is set to true."""
@@ -301,7 +317,9 @@ class TestTasksQueriesXmlAPI(BaseTestCase):
             response_xml.attrib,
             {"version": "0.6", "upload": "never", "creator": "HOT Tasking Manager"},
         )
-        self.assertEqual(len([i for i in response_xml.findall("way")]), 4)  # Since project has 4 tasks
+        self.assertEqual(
+            len([i for i in response_xml.findall("way")]), 4
+        )  # Since project has 4 tasks
 
     def test_returns_xml_for_specified_tasks(self):
         """Test that the specified tasks are returned."""
@@ -314,7 +332,9 @@ class TestTasksQueriesXmlAPI(BaseTestCase):
             response_xml.attrib,
             {"version": "0.6", "upload": "never", "creator": "HOT Tasking Manager"},
         )
-        self.assertEqual(len([i for i in response_xml.findall("way")]), 2)  # Since we are only requesting 2 tasks
+        self.assertEqual(
+            len([i for i in response_xml.findall("way")]), 2
+        )  # Since we are only requesting 2 tasks
 
     def test_returns_file_if_as_file_set_true(self):
         """Test that the file is returned if the as_file parameter is set to true."""
@@ -337,7 +357,9 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         self.test_user = return_canned_user("TEST USER", 11111)
         self.test_user.create()
         self.test_user_access_token = generate_encoded_token(self.test_user.id)
-        self.url = f"/api/v2/projects/{self.test_user.username}/tasks/queries/own/invalidated/"
+        self.url = (
+            f"/api/v2/projects/{self.test_user.username}/tasks/queries/own/invalidated/"
+        )
 
     @staticmethod
     def invalidate_task(task: Task, mapper_id: int, validator_id: int):
@@ -382,7 +404,9 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         # Arrange
         # Lets map a task by test user
         task = Task.get(2, self.test_project.id)
-        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(task, self.test_user.id, self.test_author.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task, self.test_user.id, self.test_author.id
+        )
         # Act
         response = self.client.get(
             self.url + "?asValidator=false",
@@ -392,7 +416,9 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["pagination"]["total"], 1)
         self.assertEqual(len(response.json["invalidatedTasks"]), 1)
-        self.assertEqual(response.json["invalidatedTasks"][0]["taskId"], 2)  # Since we invalidated task 2
+        self.assertEqual(
+            response.json["invalidatedTasks"][0]["taskId"], 2
+        )  # Since we invalidated task 2
 
     def test_returns_tasks_invalidated_by_user_if_as_validator_set_true(self):
         """
@@ -401,7 +427,9 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         # Arrange
         # Lets map a task by test author and invalidate it by test user
         task = Task.get(2, self.test_project.id)
-        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(task, self.test_author.id, self.test_user.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task, self.test_author.id, self.test_user.id
+        )
         # Act
         response = self.client.get(
             self.url + "?asValidator=true",
@@ -431,11 +459,17 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         test_project_3, _ = create_canned_project()
         # Lets map a task by test author and invalidate it by test user
         task_1 = Task.get(2, self.test_project.id)
-        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(task_1, self.test_author.id, self.test_user.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task_1, self.test_author.id, self.test_user.id
+        )
         task_3 = Task.get(2, test_project_3.id)
-        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(task_3, self.test_author.id, self.test_user.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task_3, self.test_author.id, self.test_user.id
+        )
         task_2 = Task.get(2, test_project_2.id)
-        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(task_2, self.test_author.id, self.test_user.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task_2, self.test_author.id, self.test_user.id
+        )
         # Sort by projectId in ascending order
         # Act
         response = self.client.get(
@@ -446,9 +480,15 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["pagination"]["total"], 3)
         self.assertEqual(len(response.json["invalidatedTasks"]), 3)
-        self.assertEqual(response.json["invalidatedTasks"][0]["projectId"], self.test_project.id)
-        self.assertEqual(response.json["invalidatedTasks"][1]["projectId"], test_project_2.id)
-        self.assertEqual(response.json["invalidatedTasks"][2]["projectId"], test_project_3.id)
+        self.assertEqual(
+            response.json["invalidatedTasks"][0]["projectId"], self.test_project.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][1]["projectId"], test_project_2.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][2]["projectId"], test_project_3.id
+        )
         # Act
         # Sort by projectId in descending order
         response = self.client.get(
@@ -459,9 +499,15 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["pagination"]["total"], 3)
         self.assertEqual(len(response.json["invalidatedTasks"]), 3)
-        self.assertEqual(response.json["invalidatedTasks"][0]["projectId"], test_project_3.id)
-        self.assertEqual(response.json["invalidatedTasks"][1]["projectId"], test_project_2.id)
-        self.assertEqual(response.json["invalidatedTasks"][2]["projectId"], self.test_project.id)
+        self.assertEqual(
+            response.json["invalidatedTasks"][0]["projectId"], test_project_3.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][1]["projectId"], test_project_2.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][2]["projectId"], self.test_project.id
+        )
         # Act
         # Sort by updatedDate in ascending order
         response = self.client.get(
@@ -472,9 +518,15 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["pagination"]["total"], 3)
         self.assertEqual(len(response.json["invalidatedTasks"]), 3)
-        self.assertEqual(response.json["invalidatedTasks"][0]["projectId"], self.test_project.id)
-        self.assertEqual(response.json["invalidatedTasks"][1]["projectId"], test_project_3.id)
-        self.assertEqual(response.json["invalidatedTasks"][2]["projectId"], test_project_2.id)
+        self.assertEqual(
+            response.json["invalidatedTasks"][0]["projectId"], self.test_project.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][1]["projectId"], test_project_3.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][2]["projectId"], test_project_2.id
+        )
         # Act
         # Sort by updatedDate in descending order
         response = self.client.get(
@@ -485,16 +537,24 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["pagination"]["total"], 3)
         self.assertEqual(len(response.json["invalidatedTasks"]), 3)
-        self.assertEqual(response.json["invalidatedTasks"][0]["projectId"], test_project_2.id)
-        self.assertEqual(response.json["invalidatedTasks"][1]["projectId"], test_project_3.id)
-        self.assertEqual(response.json["invalidatedTasks"][2]["projectId"], self.test_project.id)
+        self.assertEqual(
+            response.json["invalidatedTasks"][0]["projectId"], test_project_2.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][1]["projectId"], test_project_3.id
+        )
+        self.assertEqual(
+            response.json["invalidatedTasks"][2]["projectId"], self.test_project.id
+        )
 
     def test_filters_by_closed(self):
         """Test that the tasks are filtered by closed."""
         # Arrange
         # Lets map a task by test author and invalidate it by test user
         task_1 = Task.get(2, self.test_project.id)
-        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(task_1, self.test_author.id, self.test_user.id)
+        TestTasksQueriesOwnInvalidatedAPI.invalidate_task(
+            task_1, self.test_author.id, self.test_user.id
+        )
         # Act
         response = self.client.get(
             self.url + "?asValidator=true&closed=true",
@@ -502,7 +562,9 @@ class TestTasksQueriesOwnInvalidatedAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json["pagination"]["total"], 0)  # No closed invalidated tasks
+        self.assertEqual(
+            response.json["pagination"]["total"], 0
+        )  # No closed invalidated tasks
         self.assertEqual(len(response.json["invalidatedTasks"]), 0)
 
         # Arrange
@@ -554,8 +616,12 @@ class TestTasksQueriesMappedAPI(BaseTestCase):
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json["mappedTasks"][0]["username"], self.test_user.username)
-        self.assertEqual(response.json["mappedTasks"][1]["username"], self.test_author.username)
+        self.assertEqual(
+            response.json["mappedTasks"][0]["username"], self.test_user.username
+        )
+        self.assertEqual(
+            response.json["mappedTasks"][1]["username"], self.test_author.username
+        )
         self.assertEqual(response.json["mappedTasks"][0]["mappedTaskCount"], 1)
         self.assertEqual(response.json["mappedTasks"][1]["mappedTaskCount"], 1)
         self.assertEqual(response.json["mappedTasks"][0]["tasksMapped"], [1])

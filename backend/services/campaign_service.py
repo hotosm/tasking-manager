@@ -3,7 +3,12 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 
 from backend.exceptions import NotFound
-from backend.models.dtos.campaign_dto import CampaignDTO, CampaignListDTO, CampaignProjectDTO, NewCampaignDTO
+from backend.models.dtos.campaign_dto import (
+    CampaignDTO,
+    CampaignListDTO,
+    CampaignProjectDTO,
+    NewCampaignDTO,
+)
 from backend.models.postgis.campaign import Campaign
 from backend.services.organisation_service import OrganisationService
 from backend.services.project_service import ProjectService
@@ -49,13 +54,17 @@ class CampaignService:
             DELETE FROM campaign_organisations
             WHERE campaign_id = :campaign_id
             """
-            await db.execute(query=query_delete_orgs, values={"campaign_id": campaign_id})
+            await db.execute(
+                query=query_delete_orgs, values={"campaign_id": campaign_id}
+            )
 
             query_delete_campaign = """
             DELETE FROM campaigns
             WHERE id = :campaign_id
             """
-            await db.execute(query=query_delete_campaign, values={"campaign_id": campaign_id})
+            await db.execute(
+                query=query_delete_campaign, values={"campaign_id": campaign_id}
+            )
 
     @staticmethod
     async def get_campaign_as_dto(campaign_id: int, db) -> CampaignDTO:
@@ -64,7 +73,9 @@ class CampaignService:
         return campaign
 
     @staticmethod
-    async def get_project_campaigns_as_dto(project_id: int, db: Database) -> CampaignListDTO:
+    async def get_project_campaigns_as_dto(
+        project_id: int, db: Database
+    ) -> CampaignListDTO:
         """Gets all the campaigns for a specified project"""
         # Test if project exists
         await ProjectService.get_project_by_id(project_id, db)
@@ -95,7 +106,9 @@ class CampaignService:
             JOIN campaign_projects pc ON c.id = pc.campaign_id
             WHERE pc.project_id = :project_id
         """
-        project_campaigns = await db.fetch_all(query=query, values={"project_id": project_id})
+        project_campaigns = await db.fetch_all(
+            query=query, values={"project_id": project_id}
+        )
 
         if campaign_id not in [campaign.id for campaign in project_campaigns]:
             raise NotFound(
@@ -110,9 +123,13 @@ class CampaignService:
             WHERE project_id = :project_id
             AND campaign_id = :campaign_id
         """
-        await db.execute(delete_query, values={"project_id": project_id, "campaign_id": campaign_id})
+        await db.execute(
+            delete_query, values={"project_id": project_id, "campaign_id": campaign_id}
+        )
         # Fetch the updated list of campaigns
-        updated_campaigns = await CampaignService.get_project_campaigns_as_dto(project_id, db)
+        updated_campaigns = await CampaignService.get_project_campaigns_as_dto(
+            project_id, db
+        )
         return updated_campaigns
 
     @staticmethod
@@ -148,7 +165,9 @@ class CampaignService:
                 campaign_id = await db.execute(query, values)
                 if campaign_dto.organisations:
                     for org_id in campaign_dto.organisations:
-                        organisation = await OrganisationService.get_organisation_by_id(org_id, db)
+                        organisation = await OrganisationService.get_organisation_by_id(
+                            org_id, db
+                        )
                         if organisation:
                             org_query = """
                                 INSERT INTO campaign_organisations (campaign_id, organisation_id)
@@ -161,10 +180,14 @@ class CampaignService:
 
                 return campaign_id
         except Exception as e:
-            raise HTTPException(status_code=500, detail="Failed to create campaign.") from e
+            raise HTTPException(
+                status_code=500, detail="Failed to create campaign."
+            ) from e
 
     @staticmethod
-    async def create_campaign_project(dto: CampaignProjectDTO, db: Database) -> CampaignListDTO:
+    async def create_campaign_project(
+        dto: CampaignProjectDTO, db: Database
+    ) -> CampaignListDTO:
         """Assign a campaign to a project"""
 
         # Check if the project exists
@@ -182,11 +205,15 @@ class CampaignService:
             query=insert_query,
             values={"campaign_id": dto.campaign_id, "project_id": dto.project_id},
         )
-        new_campaigns = await CampaignService.get_project_campaigns_as_dto(dto.project_id, db)
+        new_campaigns = await CampaignService.get_project_campaigns_as_dto(
+            dto.project_id, db
+        )
         return new_campaigns
 
     @staticmethod
-    async def create_campaign_organisation(organisation_id: int, campaign_id: int, db: Database):
+    async def create_campaign_organisation(
+        organisation_id: int, campaign_id: int, db: Database
+    ):
         """Creates new campaign organisation from DTO"""
         # Check if campaign exists
         await CampaignService.get_campaign(campaign_id, db)
@@ -203,7 +230,9 @@ class CampaignService:
         )
 
     @staticmethod
-    async def get_organisation_campaigns_as_dto(organisation_id: int, database: Database) -> CampaignListDTO:
+    async def get_organisation_campaigns_as_dto(
+        organisation_id: int, database: Database
+    ) -> CampaignListDTO:
         """Gets all the campaigns for a specified organisation"""
 
         # Check if organisation exists
@@ -215,13 +244,17 @@ class CampaignService:
         JOIN campaign_organisations co ON c.id = co.campaign_id
         WHERE co.organisation_id = :organisation_id
         """
-        campaigns = await database.fetch_all(query=query, values={"organisation_id": organisation_id})
+        campaigns = await database.fetch_all(
+            query=query, values={"organisation_id": organisation_id}
+        )
 
         # Convert the result to a list of campaign DTOs
         return Campaign.campaign_list_as_dto(campaigns)
 
     @staticmethod
-    async def campaign_organisation_exists(campaign_id: int, org_id: int, database: Database) -> bool:
+    async def campaign_organisation_exists(
+        campaign_id: int, org_id: int, database: Database
+    ) -> bool:
         query = """
         SELECT 1
         FROM campaign_organisations
@@ -229,26 +262,38 @@ class CampaignService:
         AND campaign_id = :campaign_id
         LIMIT 1
         """
-        result = await database.fetch_one(query=query, values={"org_id": org_id, "campaign_id": campaign_id})
+        result = await database.fetch_one(
+            query=query, values={"org_id": org_id, "campaign_id": campaign_id}
+        )
         return result is not None
 
     @staticmethod
-    async def delete_organisation_campaign(organisation_id: int, campaign_id: int, db: Database):
+    async def delete_organisation_campaign(
+        organisation_id: int, campaign_id: int, db: Database
+    ):
         """Delete campaign for an organisation"""
 
         # Check if campaign exists
         query_campaign = "SELECT 1 FROM campaigns WHERE id = :campaign_id LIMIT 1"
-        campaign_exists = await db.fetch_one(query=query_campaign, values={"campaign_id": campaign_id})
+        campaign_exists = await db.fetch_one(
+            query=query_campaign, values={"campaign_id": campaign_id}
+        )
         if not campaign_exists:
             raise NotFound(sub_code="CAMPAIGN_NOT_FOUND", campaign_id=campaign_id)
 
         # Check if organisation exists
         query_org = "SELECT 1 FROM organisations WHERE id = :organisation_id LIMIT 1"
-        org_exists = await db.fetch_one(query=query_org, values={"organisation_id": organisation_id})
+        org_exists = await db.fetch_one(
+            query=query_org, values={"organisation_id": organisation_id}
+        )
         if not org_exists:
-            raise NotFound(sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id)
+            raise NotFound(
+                sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
+            )
 
-        campaign_org_exists = await CampaignService.campaign_organisation_exists(campaign_id, organisation_id, db)
+        campaign_org_exists = await CampaignService.campaign_organisation_exists(
+            campaign_id, organisation_id, db
+        )
         if not campaign_org_exists:
             raise NotFound(
                 sub_code="ORGANISATION_CAMPAIGN_NOT_FOUND",
@@ -267,7 +312,9 @@ class CampaignService:
         )
 
     @staticmethod
-    async def update_campaign(campaign_dto: CampaignDTO, campaign_id: int, db: Database):
+    async def update_campaign(
+        campaign_dto: CampaignDTO, campaign_id: int, db: Database
+    ):
         campaign_query = "SELECT * FROM campaigns WHERE id = :id"
         campaign = await db.fetch_one(query=campaign_query, values={"id": campaign_id})
 
@@ -287,7 +334,9 @@ class CampaignService:
             WHERE id = :id
             RETURNING id
             """
-            campaign = await db.fetch_one(query=update_query, values={**campaign_dict, "id": campaign_id})
+            campaign = await db.fetch_one(
+                query=update_query, values={**campaign_dict, "id": campaign_id}
+            )
             if not campaign:
                 raise HTTPException(status_code=404, detail="Campaign not found")
 

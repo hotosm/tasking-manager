@@ -28,7 +28,9 @@ def upgrade():
         sa.Column("date", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id", name="notifications_pkey"),
     )
-    op.create_index("idx_notifications_user_id", "notifications", ["user_id"], unique=False)
+    op.create_index(
+        "idx_notifications_user_id", "notifications", ["user_id"], unique=False
+    )
     fetch_all_users = "select id from users;"
     all_users = conn.execute(sa.text(fetch_all_users))
     for user in all_users:

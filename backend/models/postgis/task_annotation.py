@@ -1,5 +1,14 @@
 from databases import Database
-from sqlalchemy import JSON, Column, DateTime, ForeignKey, ForeignKeyConstraint, Index, Integer, String
+from sqlalchemy import (
+    JSON,
+    Column,
+    DateTime,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Index,
+    Integer,
+    String,
+)
 
 from backend.db import Base
 from backend.models.dtos.project_dto import ProjectTaskAnnotationsDTO
@@ -111,7 +120,9 @@ class TaskAnnotation(Base):
         return project_task_annotations_dto
 
     @staticmethod
-    async def get_task_annotations_by_project_id(project_id: int, db: Database) -> ProjectTaskAnnotationsDTO:
+    async def get_task_annotations_by_project_id(
+        project_id: int, db: Database
+    ) -> ProjectTaskAnnotationsDTO:
         """Get all annotations for a project"""
         query = """
         SELECT

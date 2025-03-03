@@ -2,7 +2,10 @@ from unittest.mock import patch
 
 from backend.services.users.osm_service import OSMService, OSMServiceError, UserOSMDTO
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import generate_encoded_token, return_canned_user
+from tests.backend.helpers.test_helpers import (
+    generate_encoded_token,
+    return_canned_user,
+)
 
 TEST_USERNAME = "testuser"
 TEST_USER_ID = 111111
@@ -36,7 +39,9 @@ class TestUsersOpenStreetMapAPI(BaseTestCase):
         # Arrange
         mock_osm_service.side_effect = OSMServiceError("Bad response from OSM")
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.user_access_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_access_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 502)
 
@@ -46,7 +51,9 @@ class TestUsersOpenStreetMapAPI(BaseTestCase):
         user_dto = UserOSMDTO({"accountCreated": "1234567890", "changesetCount": 123})
         mock_osm_service.return_value = user_dto
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.user_access_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_access_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["accountCreated"], user_dto.account_created)

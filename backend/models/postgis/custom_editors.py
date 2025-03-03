@@ -37,7 +37,9 @@ class CustomEditor(Base):
 
     async def delete(self, db: Database):
         """Deletes the current model from the DB"""
-        await db.execute(delete(CustomEditor.__table__).where(CustomEditor.id == self.id))
+        await db.execute(
+            delete(CustomEditor.__table__).where(CustomEditor.id == self.id)
+        )
 
     def as_dto(self) -> CustomEditorDTO:
         """Returns the CustomEditor as a DTO"""

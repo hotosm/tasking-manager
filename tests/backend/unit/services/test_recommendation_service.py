@@ -14,7 +14,9 @@ class TestProjectRecommendationService(BaseTestCase):
     def create_project(self, is_published=True):
         """Create a canned project"""
         project, _ = create_canned_project()
-        project.status = ProjectStatus.PUBLISHED.value if is_published else ProjectStatus.DRAFT.value
+        project.status = (
+            ProjectStatus.PUBLISHED.value if is_published else ProjectStatus.DRAFT.value
+        )
         project.save()
         return project
 
@@ -102,7 +104,9 @@ class TestProjectRecommendationService(BaseTestCase):
             }
         )
         # Act
-        transformed_df = self.service.mlb_transform(test_df, "mapping_types", "mapping_types_")
+        transformed_df = self.service.mlb_transform(
+            test_df, "mapping_types", "mapping_types_"
+        )
         # Assert
         self.assertEqual(transformed_df.shape, (2, 4))
         self.assertEqual(transformed_df["mapping_types_building"].tolist(), [1, 1])
@@ -123,7 +127,9 @@ class TestProjectRecommendationService(BaseTestCase):
             }
         )
         # Act
-        transformed_df = self.service.mlb_transform(test_df, "mapping_types", "mapping_types_")
+        transformed_df = self.service.mlb_transform(
+            test_df, "mapping_types", "mapping_types_"
+        )
         # Assert
         self.assertEqual(transformed_df.shape, (2, 1))
         self.assertEqual(transformed_df["id"].tolist(), [1, 2])

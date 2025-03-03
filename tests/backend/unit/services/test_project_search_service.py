@@ -34,4 +34,6 @@ class TestProjectService(BaseTestCase):
 
         search_dto.validate()
         # Act/Assert
-        self.assertIsNotNone(ProjectSearchService.search_projects(search_dto, test_user))
+        self.assertIsNotNone(
+            ProjectSearchService.search_projects(search_dto, test_user)
+        )

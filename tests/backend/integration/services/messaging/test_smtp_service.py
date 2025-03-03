@@ -32,7 +32,9 @@ class TestSMTPService(BaseTestCase):
         if os.getenv("TM_SMTP_HOST") is None:
             return  # If SMTP not setup there's no value attempting the integration tests
 
-        self.assertTrue(SMTPService.send_verification_email("hot-test@mailinator.com", "mrtest"))
+        self.assertTrue(
+            SMTPService.send_verification_email("hot-test@mailinator.com", "mrtest")
+        )
 
     def test_send_alert(self):
         if os.getenv("TM_SMTP_HOST") is None:
@@ -141,7 +143,9 @@ class TestSMTPService(BaseTestCase):
 
         self.assertEqual(parsed_url.path, "/verify-email/")
         self.assertEqual(query["username"], [test_user])
-        self.assertTrue(query["token"])  # Token random every time so just check we have something
+        self.assertTrue(
+            query["token"]
+        )  # Token random every time so just check we have something
 
     def test_send_message_raises_error_if_sender_not_defined(self):
         # Arrange
@@ -153,7 +157,9 @@ class TestSMTPService(BaseTestCase):
         # Act/Assert
         with self.assertRaises(ValueError):
             SMTPService._send_message(to_address, subject, content, content)
-        current_app.config["MAIL_DEFAULT_SENDER"] = os.environ.get("TM_EMAIL_FROM_ADDRESS", None)
+        current_app.config["MAIL_DEFAULT_SENDER"] = os.environ.get(
+            "TM_EMAIL_FROM_ADDRESS", None
+        )
 
     def test_send_message_sends_mail_if_sender_is_defined(self):
         # Arrange

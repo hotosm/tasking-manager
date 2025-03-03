@@ -58,8 +58,12 @@ def upgrade():
         # Map existing restrictions to V4 permission integers
         d = Determiner()
         mapping_permission = d.determine_mapping_permission(mapping_restriction)
-        validation_restriction = str(validation_role_restriction) + "," + str(validation_level_restriction)
-        validation_permission = d.determine_validation_permission(validation_restriction)
+        validation_restriction = (
+            str(validation_role_restriction) + "," + str(validation_level_restriction)
+        )
+        validation_permission = d.determine_validation_permission(
+            validation_restriction
+        )
 
         update_query = (
             "update projects set mapping_permission = '"
@@ -77,10 +81,18 @@ def upgrade():
 
 def downgrade():
     conn = op.get_bind()
-    conn.execute(sa.text("ALTER TABLE projects ADD restrict_mapping_level_to_project boolean;"))
+    conn.execute(
+        sa.text("ALTER TABLE projects ADD restrict_mapping_level_to_project boolean;")
+    )
     conn.execute(sa.text("ALTER TABLE projects ADD restrict_validation_role boolean;"))
-    conn.execute(sa.text("ALTER TABLE projects ADD restrict_validation_level_intermediate boolean;"))
-    fetch_all_projects = "select id, mapping_permission, validation_permission from projects;"
+    conn.execute(
+        sa.text(
+            "ALTER TABLE projects ADD restrict_validation_level_intermediate boolean;"
+        )
+    )
+    fetch_all_projects = (
+        "select id, mapping_permission, validation_permission from projects;"
+    )
     all_projects = conn.execute(sa.text(fetch_all_projects))
     for project in all_projects:
         project_id = project[0]
@@ -94,11 +106,15 @@ def downgrade():
         d = Determiner()
 
         try:
-            mapping_restriction = d.determine_mapping_permission(mapping_permission, True)
+            mapping_restriction = d.determine_mapping_permission(
+                mapping_permission, True
+            )
         except Exception:
             mapping_restriction = False
 
-        validation_restriction = d.determine_validation_permission(validation_permission, True).split(",")
+        validation_restriction = d.determine_validation_permission(
+            validation_permission, True
+        ).split(",")
         validation_role_restriction = validation_restriction[0]
         validation_level_restriction = validation_restriction[1]
 

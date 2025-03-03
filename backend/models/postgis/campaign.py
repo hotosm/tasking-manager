@@ -15,7 +15,9 @@ campaign_organisations = Table(
     Base.metadata,
     Column("campaign_id", Integer, ForeignKey("campaigns.id")),
     Column("organisation_id", Integer, ForeignKey("organisations.id")),
-    UniqueConstraint("campaign_id", "organisation_id", name="campaign_organisation_key"),
+    UniqueConstraint(
+        "campaign_id", "organisation_id", name="campaign_organisation_key"
+    ),
 )
 
 

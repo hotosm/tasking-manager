@@ -33,13 +33,22 @@ from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from backend.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
-from backend.models.dtos.project_dto import LockedTasksForUser, ProjectComment, ProjectCommentsDTO
+from backend.models.dtos.project_dto import (
+    LockedTasksForUser,
+    ProjectComment,
+    ProjectCommentsDTO,
+)
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from backend.models.dtos.validator_dto import MappedTasks, MappedTasksByUser
 from backend.models.postgis.statuses import MappingLevel, TaskStatus
 from backend.models.postgis.task_annotation import TaskAnnotation
 from backend.models.postgis.user import User
-from backend.models.postgis.utils import InvalidData, InvalidGeoJson, parse_duration, timestamp
+from backend.models.postgis.utils import (
+    InvalidData,
+    InvalidGeoJson,
+    parse_duration,
+    timestamp,
+)
 
 
 class TaskAction(Enum):
@@ -67,13 +76,17 @@ class TaskInvalidationHistory(Base):
     mapped_date = Column(DateTime)
     invalidator_id = Column(BigInteger, ForeignKey("users.id", name="fk_invalidators"))
     invalidated_date = Column(DateTime)
-    invalidation_history_id = Column(Integer, ForeignKey("task_history.id", name="fk_invalidation_history"))
+    invalidation_history_id = Column(
+        Integer, ForeignKey("task_history.id", name="fk_invalidation_history")
+    )
     validator_id = Column(BigInteger, ForeignKey("users.id", name="fk_validators"))
     validated_date = Column(DateTime)
     updated_date = Column(DateTime, default=timestamp)
 
     __table_args__ = (
-        ForeignKeyConstraint([task_id, project_id], ["tasks.id", "tasks.project_id"], name="fk_tasks"),
+        ForeignKeyConstraint(
+            [task_id, project_id], ["tasks.id", "tasks.project_id"], name="fk_tasks"
+        ),
         Index("idx_task_validation_history_composite", "task_id", "project_id"),
         Index(
             "idx_task_validation_validator_status_composite",
@@ -120,15 +133,23 @@ class TaskInvalidationHistory(Base):
                 AND project_id = :project_id
                 AND is_closed = FALSE
             """
-            entry = await db.fetch_one(query=query, values={"task_id": task_id, "project_id": project_id})
+            entry = await db.fetch_one(
+                query=query, values={"task_id": task_id, "project_id": project_id}
+            )
             return entry
 
         except MultipleResultsFound:
-            await TaskInvalidationHistory.close_duplicate_invalidation_history_rows(project_id, task_id, db)
-            return await TaskInvalidationHistory.get_open_for_task(project_id, task_id, db)
+            await TaskInvalidationHistory.close_duplicate_invalidation_history_rows(
+                project_id, task_id, db
+            )
+            return await TaskInvalidationHistory.get_open_for_task(
+                project_id, task_id, db
+            )
 
     @staticmethod
-    async def close_duplicate_invalidation_history_rows(project_id: int, task_id: int, db: Database):
+    async def close_duplicate_invalidation_history_rows(
+        project_id: int, task_id: int, db: Database
+    ):
         """
         Closes duplicate TaskInvalidationHistory entries except for the latest one for the given project and task.
         """
@@ -142,7 +163,9 @@ class TaskInvalidationHistory(Base):
             ORDER BY id ASC
             LIMIT 1
         """
-        oldest_dupe = await db.fetch_one(query=query, values={"task_id": task_id, "project_id": project_id})
+        oldest_dupe = await db.fetch_one(
+            query=query, values={"task_id": task_id, "project_id": project_id}
+        )
 
         if oldest_dupe:
             update_query = """
@@ -171,7 +194,9 @@ class TaskInvalidationHistory(Base):
         await db.execute(query=update_query, values=values)
 
     @staticmethod
-    async def record_invalidation(project_id: int, task_id: int, invalidator_id: int, history, db: Database):
+    async def record_invalidation(
+        project_id: int, task_id: int, invalidator_id: int, history, db: Database
+    ):
         # Invalidation always kicks off a new entry for a task, so close any existing ones.
         await TaskInvalidationHistory.close_all_for_task(project_id, task_id, db)
 
@@ -249,7 +274,9 @@ class TaskMappingIssue(Base):
 
     __tablename__ = "task_mapping_issues"
     id = Column(Integer, primary_key=True)
-    task_history_id = Column(Integer, ForeignKey("task_history.id"), nullable=False, index=True)
+    task_history_id = Column(
+        Integer, ForeignKey("task_history.id"), nullable=False, index=True
+    )
     issue = Column(String, nullable=False)
     mapping_issue_category_id = Column(
         Integer,
@@ -292,13 +319,17 @@ class TaskHistory(Base):
         index=True,
         nullable=False,
     )
-    invalidation_history = relationship(TaskInvalidationHistory, lazy="dynamic", cascade="all")
+    invalidation_history = relationship(
+        TaskInvalidationHistory, lazy="dynamic", cascade="all"
+    )
 
     actioned_by = relationship(User)
     task_mapping_issues = relationship(TaskMappingIssue, cascade="all")
 
     __table_args__ = (
-        ForeignKeyConstraint([task_id, project_id], ["tasks.id", "tasks.project_id"], name="fk_tasks"),
+        ForeignKeyConstraint(
+            [task_id, project_id], ["tasks.id", "tasks.project_id"], name="fk_tasks"
+        ),
         Index("idx_task_history_composite", "task_id", "project_id"),
         Index("idx_task_history_project_id_user_id", "user_id", "project_id"),
         {},
@@ -380,10 +411,14 @@ class TaskHistory(Base):
                 return
 
             # Calculate the duration the task was locked for
-            duration_task_locked = datetime.datetime.utcnow() - last_locked["action_date"]
+            duration_task_locked = (
+                datetime.datetime.utcnow() - last_locked["action_date"]
+            )
 
             # Cast duration to ISO format
-            action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
+            action_text = (
+                (datetime.datetime.min + duration_task_locked).time().isoformat()
+            )
 
             # Update the task history with the duration
             update_query = """
@@ -402,10 +437,14 @@ class TaskHistory(Base):
             # remove the oldest duplicate rows, and update the newest on the basis that this was the last action
             # the user was attempting to make.
             # Handle race conditions by removing duplicates.
-            await TaskHistory.remove_duplicate_task_history_rows(task_id, project_id, lock_action, user_id, db)
+            await TaskHistory.remove_duplicate_task_history_rows(
+                task_id, project_id, lock_action, user_id, db
+            )
 
             # Recursively call the method to update the remaining row
-            await TaskHistory.update_task_locked_with_duration(task_id, project_id, lock_action, user_id, db)
+            await TaskHistory.update_task_locked_with_duration(
+                task_id, project_id, lock_action, user_id, db
+            )
 
     async def remove_duplicate_task_history_rows(
         task_id: int,
@@ -518,7 +557,9 @@ class TaskHistory(Base):
         return comments_dto
 
     @staticmethod
-    async def get_last_status(project_id: int, task_id: int, db: Database, for_undo: bool = False) -> TaskStatus:
+    async def get_last_status(
+        project_id: int, task_id: int, db: Database, for_undo: bool = False
+    ) -> TaskStatus:
         """Get the status the task was set to the last time the task had a STATUS_CHANGE."""
 
         query = """
@@ -529,7 +570,9 @@ class TaskHistory(Base):
               AND action = 'STATE_CHANGE'
             ORDER BY action_date DESC
         """
-        result = await db.fetch_all(query, values={"project_id": project_id, "task_id": task_id})
+        result = await db.fetch_all(
+            query, values={"project_id": project_id, "task_id": task_id}
+        )
 
         # If no results, return READY status
         if not result:
@@ -564,7 +607,9 @@ class TaskHistory(Base):
         return await db.fetch_one(query, {"project_id": project_id, "task_id": task_id})
 
     @staticmethod
-    async def get_last_action_of_type(project_id: int, task_id: int, allowed_task_actions: list, db: Database):
+    async def get_last_action_of_type(
+        project_id: int, task_id: int, allowed_task_actions: list, db: Database
+    ):
         """Gets the most recent task history record having provided TaskAction"""
         query = """
             SELECT id, action, action_date
@@ -597,7 +642,9 @@ class TaskHistory(Base):
         )
 
     @staticmethod
-    async def get_last_locked_or_auto_unlocked_action(task_id: int, project_id: int, db: Database):
+    async def get_last_locked_or_auto_unlocked_action(
+        task_id: int, project_id: int, db: Database
+    ):
         """Fetch the last locked or auto-unlocked action for a task."""
         query = """
             SELECT action
@@ -613,7 +660,9 @@ class TaskHistory(Base):
             ORDER BY action_date DESC
             LIMIT 1
         """
-        row = await db.fetch_one(query=query, values={"task_id": task_id, "project_id": project_id})
+        row = await db.fetch_one(
+            query=query, values={"task_id": task_id, "project_id": project_id}
+        )
         return row["action"] if row else None
 
     @staticmethod
@@ -631,7 +680,9 @@ class TaskHistory(Base):
             ORDER BY action_date DESC
             LIMIT 1
         """
-        last_mapped = await db.fetch_one(query=query, values={"project_id": project_id, "task_id": task_id})
+        last_mapped = await db.fetch_one(
+            query=query, values={"project_id": project_id, "task_id": task_id}
+        )
         return last_mapped
 
 
@@ -642,7 +693,9 @@ class Task(Base):
 
     # Table has composite PK on (id and project_id)
     id = Column(Integer, primary_key=True)
-    project_id = Column(Integer, ForeignKey("projects.id"), index=True, primary_key=True)
+    project_id = Column(
+        Integer, ForeignKey("projects.id"), index=True, primary_key=True
+    )
     x = Column(Integer)
     y = Column(Integer)
     zoom = Column(Integer)
@@ -651,12 +704,20 @@ class Task(Base):
     is_square = Column(Boolean, default=True)
     geometry = Column(Geometry("MULTIPOLYGON", srid=4326))
     task_status = Column(Integer, default=TaskStatus.READY.value)
-    locked_by = Column(BigInteger, ForeignKey("users.id", name="fk_users_locked"), index=True)
-    mapped_by = Column(BigInteger, ForeignKey("users.id", name="fk_users_mapper"), index=True)
-    validated_by = Column(BigInteger, ForeignKey("users.id", name="fk_users_validator"), index=True)
+    locked_by = Column(
+        BigInteger, ForeignKey("users.id", name="fk_users_locked"), index=True
+    )
+    mapped_by = Column(
+        BigInteger, ForeignKey("users.id", name="fk_users_mapper"), index=True
+    )
+    validated_by = Column(
+        BigInteger, ForeignKey("users.id", name="fk_users_validator"), index=True
+    )
 
     # Mapped objects
-    task_history = relationship(TaskHistory, cascade="all", order_by=desc(TaskHistory.action_date))
+    task_history = relationship(
+        TaskHistory, cascade="all", order_by=desc(TaskHistory.action_date)
+    )
     task_annotations = relationship(TaskAnnotation, cascade="all")
     lock_holder = relationship(User, foreign_keys=[locked_by])
     mapper = relationship(User, foreign_keys=[mapped_by])
@@ -678,7 +739,9 @@ class Task(Base):
             raise InvalidGeoJson("MustBeMultiPolygon - Geometry must be a MultiPolygon")
 
         if not task_geometry.is_valid:
-            raise InvalidGeoJson("InvalidMultiPolygon - " + ", ".join(task_geometry.errors()))
+            raise InvalidGeoJson(
+                "InvalidMultiPolygon - " + ", ".join(task_geometry.errors())
+            )
 
         task = cls()
         try:
@@ -688,10 +751,14 @@ class Task(Base):
             task.is_square = task_feature.properties["isSquare"]
             task.geometry = shape(task_feature.geometry).wkt
         except KeyError as e:
-            raise InvalidData(f"PropertyNotFound: Expected property not found: {str(e)}")
+            raise InvalidData(
+                f"PropertyNotFound: Expected property not found: {str(e)}"
+            )
 
         if "extra_properties" in task_feature.properties:
-            task.extra_properties = json.dumps(task_feature.properties["extra_properties"])
+            task.extra_properties = json.dumps(
+                task_feature.properties["extra_properties"]
+            )
         task.id = task_id
         return task
 
@@ -713,7 +780,9 @@ class Task(Base):
                 id = :task_id AND project_id = :project_id
             LIMIT 1
         """
-        task = await db.fetch_one(query, values={"task_id": task_id, "project_id": project_id})
+        task = await db.fetch_one(
+            query, values={"task_id": task_id, "project_id": project_id}
+        )
         return task if task else None
 
     @staticmethod
@@ -731,7 +800,9 @@ class Task(Base):
             WHERE id = :task_id AND project_id = :project_id
             LIMIT 1
         """
-        task = await db.fetch_one(query, values={"task_id": task_id, "project_id": project_id})
+        task = await db.fetch_one(
+            query, values={"task_id": task_id, "project_id": project_id}
+        )
         return task is not None
 
     @staticmethod
@@ -813,7 +884,9 @@ class Task(Base):
               AND tasks.project_id = :project_id
               AND task_history.action_date <= :expiry_date
         """
-        old_task_ids = await db.fetch_all(query=query, values={"project_id": project_id, "expiry_date": expiry_date})
+        old_task_ids = await db.fetch_all(
+            query=query, values={"project_id": project_id, "expiry_date": expiry_date}
+        )
         old_task_ids = [row["id"] for row in old_task_ids]
         if not old_task_ids:
             return  # No tasks to unlock
@@ -822,12 +895,20 @@ class Task(Base):
             await Task.auto_unlock_expired_tasks(task_id, project_id, expiry_date, db)
 
     @staticmethod
-    async def auto_unlock_expired_tasks(task_id: int, project_id: int, expiry_date: datetime, db: Database):
+    async def auto_unlock_expired_tasks(
+        task_id: int, project_id: int, expiry_date: datetime, db: Database
+    ):
         """Unlock all tasks locked before expiry date. Clears task lock if needed."""
-        lock_duration = (datetime.datetime.min + await Task.auto_unlock_delta()).time().isoformat()
+        lock_duration = (
+            (datetime.datetime.min + await Task.auto_unlock_delta()).time().isoformat()
+        )
 
-        await TaskHistory.update_expired_and_locked_actions(task_id, project_id, expiry_date, lock_duration, db)
-        last_action = await TaskHistory.get_last_locked_or_auto_unlocked_action(task_id, project_id, db)
+        await TaskHistory.update_expired_and_locked_actions(
+            task_id, project_id, expiry_date, lock_duration, db
+        )
+        last_action = await TaskHistory.get_last_locked_or_auto_unlocked_action(
+            task_id, project_id, db
+        )
 
         if last_action in ["AUTO_UNLOCKED_FOR_MAPPING", "AUTO_UNLOCKED_FOR_VALIDATION"]:
             await Task.clear_lock(task_id, project_id, db)
@@ -851,7 +932,9 @@ class Task(Base):
         db: Database,
         comment: Optional[str] = None,
         new_state: Optional[TaskStatus] = None,
-        mapping_issues: Optional[List[Dict[str, Any]]] = None,  # Updated to accept a list of dictionaries
+        mapping_issues: Optional[
+            List[Dict[str, Any]]
+        ] = None,  # Updated to accept a list of dictionaries
     ):
         """Sets the task history for the action that the user has just performed."""
 
@@ -903,7 +986,9 @@ class Task(Base):
                     placeholders.append(":issue")
 
                 if "mapping_issue_category_id" in issue:
-                    fields["mapping_issue_category_id"] = issue["mapping_issue_category_id"]
+                    fields["mapping_issue_category_id"] = issue[
+                        "mapping_issue_category_id"
+                    ]
                     placeholders.append(":mapping_issue_category_id")
 
                 if "count" in issue:
@@ -923,10 +1008,14 @@ class Task(Base):
         return task_history
 
     @staticmethod
-    async def lock_task_for_mapping(task_id: int, project_id: int, user_id: int, db: Database):
+    async def lock_task_for_mapping(
+        task_id: int, project_id: int, user_id: int, db: Database
+    ):
         """Locks a task for mapping by a user."""
         # Insert a task history record for the action
-        await Task.set_task_history(task_id, project_id, user_id, TaskAction.LOCKED_FOR_MAPPING, db)
+        await Task.set_task_history(
+            task_id, project_id, user_id, TaskAction.LOCKED_FOR_MAPPING, db
+        )
 
         # Update the task's status and set it as locked by the user for the specific project_id
         query = """
@@ -943,10 +1032,14 @@ class Task(Base):
         await db.execute(query=query, values=values)
 
     @staticmethod
-    async def lock_task_for_validating(task_id: int, project_id: int, user_id: int, db: Database):
+    async def lock_task_for_validating(
+        task_id: int, project_id: int, user_id: int, db: Database
+    ):
         """Lock the task for validation."""
         # Insert a task history record for the action
-        await Task.set_task_history(task_id, project_id, user_id, TaskAction.LOCKED_FOR_VALIDATION, db)
+        await Task.set_task_history(
+            task_id, project_id, user_id, TaskAction.LOCKED_FOR_VALIDATION, db
+        )
         query = """
             UPDATE tasks
             SET task_status = :status, locked_by = :user_id
@@ -973,7 +1066,9 @@ class Task(Base):
             FROM tasks
             WHERE id = :task_id AND project_id = :project_id
         """
-        task = await db.fetch_one(query=query, values={"task_id": task_id, "project_id": project_id})
+        task = await db.fetch_one(
+            query=query, values={"task_id": task_id, "project_id": project_id}
+        )
 
         if TaskStatus(task["task_status"]) in [
             TaskStatus.LOCKED_FOR_MAPPING,
@@ -1019,13 +1114,17 @@ class Task(Base):
                 DELETE FROM task_history
                 WHERE id = :history_id
             """
-            await db.execute(query=delete_action_query, values={"history_id": last_action["id"]})
+            await db.execute(
+                query=delete_action_query, values={"history_id": last_action["id"]}
+            )
 
         # Clear the lock from the task itself
         await Task.clear_lock(task_id=task_id, project_id=project_id, db=db)
 
     @staticmethod
-    async def record_auto_unlock(task_id: int, project_id: int, lock_duration: str, db: Database):
+    async def record_auto_unlock(
+        task_id: int, project_id: int, lock_duration: str, db: Database
+    ):
         """Automatically unlocks the task and records the auto-unlock action in task history"""
 
         # Fetch the locked user and last locked action for the task
@@ -1135,7 +1234,9 @@ class Task(Base):
             current_status = TaskStatus(current_status_result["task_status"])
             # Handle specific state changes
             if new_state == TaskStatus.VALIDATED:
-                await TaskInvalidationHistory.record_validation(project_id, task_id, user_id, history, db)
+                await TaskInvalidationHistory.record_validation(
+                    project_id, task_id, user_id, history, db
+                )
                 update_query = """
                     UPDATE tasks
                     SET validated_by = :user_id
@@ -1151,7 +1252,9 @@ class Task(Base):
                 )
 
             elif new_state == TaskStatus.INVALIDATED:
-                await TaskInvalidationHistory.record_invalidation(project_id, task_id, user_id, history, db)
+                await TaskInvalidationHistory.record_invalidation(
+                    project_id, task_id, user_id, history, db
+                )
                 update_query = """
                     UPDATE tasks
                     SET mapped_by = NULL, validated_by = NULL
@@ -1345,7 +1448,9 @@ class Task(Base):
                 lockedBy=row["locked_by"],
                 mappedBy=row["mapped_by"],
             )
-            feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
+            feature = geojson.Feature(
+                geometry=task_geometry, properties=task_properties
+            )
             tasks_features.append(feature)
 
         return geojson.FeatureCollection(tasks_features)
@@ -1429,7 +1534,11 @@ class Task(Base):
             tasks_mapped = json.loads(tasks_mapped_str) if tasks_mapped_str else []
 
             mapping_level_value = row["mapping_level"]
-            mapping_level_name = MappingLevel(mapping_level_value).name if mapping_level_value is not None else None
+            mapping_level_name = (
+                MappingLevel(mapping_level_value).name
+                if mapping_level_value is not None
+                else None
+            )
 
             user_mapped = MappedTasksByUser(
                 username=row["username"],
@@ -1463,7 +1572,9 @@ class Task(Base):
         return result
 
     @staticmethod
-    async def as_dto(task_id: int, project_id: int, db: Database, last_updated: str) -> TaskDTO:
+    async def as_dto(
+        task_id: int, project_id: int, db: Database, last_updated: str
+    ) -> TaskDTO:
         """Fetch basic TaskDTO details without history or instructions"""
         query = """
         SELECT
@@ -1479,7 +1590,9 @@ class Task(Base):
             t.id = :task_id AND t.project_id = :project_id;
         """
 
-        task = await db.fetch_one(query=query, values={"task_id": task_id, "project_id": project_id})
+        task = await db.fetch_one(
+            query=query, values={"task_id": task_id, "project_id": project_id}
+        )
         auto_unlock_seconds = await Task.auto_unlock_delta()
         task_dto = TaskDTO(
             task_id=task["task_id"],
@@ -1506,17 +1619,25 @@ class Task(Base):
         task_dto.task_id = self.id
         task_dto.project_id = self.project_id
         task_dto.task_status = TaskStatus(self.task_status).name
-        user = await UserService.get_user_by_id(self.locked_by, db) if self.locked_by else None
+        user = (
+            await UserService.get_user_by_id(self.locked_by, db)
+            if self.locked_by
+            else None
+        )
         task_dto.lock_holder = user.username if user else None
         task_dto.task_history = task_history
         task_dto.last_updated = last_updated if last_updated else None
         unlock_delta = await Task.auto_unlock_delta()
-        task_dto.auto_unlock_seconds = unlock_delta.total_seconds() if unlock_delta else None
+        task_dto.auto_unlock_seconds = (
+            unlock_delta.total_seconds() if unlock_delta else None
+        )
         task_dto.comments_number = comments if isinstance(comments, int) else None
         return task_dto
 
     @staticmethod
-    async def get_task_history(task_id: int, project_id: int, db: Database) -> List[TaskHistoryDTO]:
+    async def get_task_history(
+        task_id: int, project_id: int, db: Database
+    ) -> List[TaskHistoryDTO]:
         """Get the task history"""
         query = """
             SELECT id, action, action_text, action_date, user_id
@@ -1524,7 +1645,9 @@ class Task(Base):
             WHERE task_id = :task_id AND project_id = :project_id
             ORDER BY action_date DESC
         """
-        task_history_records = await db.fetch_all(query, values={"task_id": task_id, "project_id": project_id})
+        task_history_records = await db.fetch_all(
+            query, values={"task_id": task_id, "project_id": project_id}
+        )
 
         task_history = []
         for record in task_history_records:
@@ -1533,8 +1656,12 @@ class Task(Base):
             history.action = record.action
             history.action_text = record.action_text
             history.action_date = record.action_date
-            history.action_by = record.user_id  # Simplified to user_id, username lookup can be done separately
-            history.picture_url = None  # Add a separate query to fetch user picture if needed
+            history.action_by = (
+                record.user_id
+            )  # Simplified to user_id, username lookup can be done separately
+            history.picture_url = (
+                None  # Add a separate query to fetch user picture if needed
+            )
             task_history.append(history)
 
         return task_history
@@ -1573,7 +1700,9 @@ class Task(Base):
             ORDER BY
                 th.action_date DESC;
         """
-        rows = await db.fetch_all(query=query, values={"task_id": task_id, "project_id": project_id})
+        rows = await db.fetch_all(
+            query=query, values={"task_id": task_id, "project_id": project_id}
+        )
         task_history = []
 
         for row in rows:
@@ -1598,9 +1727,15 @@ class Task(Base):
 
             task_history.append(history)
 
-        last_updated = task_history[0].action_date.replace(tzinfo=timezone.utc).isoformat() if task_history else None
+        last_updated = (
+            task_history[0].action_date.replace(tzinfo=timezone.utc).isoformat()
+            if task_history
+            else None
+        )
         task_dto = await Task.as_dto(task_id, project_id, db, last_updated)
-        per_task_instructions = await Task.get_per_task_instructions(task_id, project_id, preferred_locale, db)
+        per_task_instructions = await Task.get_per_task_instructions(
+            task_id, project_id, preferred_locale, db
+        )
         if not per_task_instructions:
             query_locale = """
                 SELECT
@@ -1610,11 +1745,17 @@ class Task(Base):
                 WHERE
                     p.id = :project_id
             """
-            default_locale_row = await db.fetch_one(query=query_locale, values={"project_id": project_id})
-            default_locale = default_locale_row["default_locale"] if default_locale_row else None
+            default_locale_row = await db.fetch_one(
+                query=query_locale, values={"project_id": project_id}
+            )
+            default_locale = (
+                default_locale_row["default_locale"] if default_locale_row else None
+            )
 
             per_task_instructions = (
-                await Task.get_per_task_instructions(task_id, project_id, default_locale, db)
+                await Task.get_per_task_instructions(
+                    task_id, project_id, default_locale, db
+                )
                 if default_locale
                 else None
             )
@@ -1629,7 +1770,9 @@ class Task(Base):
         return result
 
     @staticmethod
-    async def get_per_task_instructions(task_id: int, project_id: int, search_locale: str, db: Database) -> str:
+    async def get_per_task_instructions(
+        task_id: int, project_id: int, search_locale: str, db: Database
+    ) -> str:
         """Gets any per task instructions attached to the project"""
         query = """
         SELECT
@@ -1645,13 +1788,17 @@ class Task(Base):
             values={"project_id": project_id, "search_locale": search_locale},
         )
         return (
-            await Task.format_per_task_instructions(result["per_task_instructions"], task_id, project_id, db)
+            await Task.format_per_task_instructions(
+                result["per_task_instructions"], task_id, project_id, db
+            )
             if result
             else ""
         )
 
     @staticmethod
-    async def format_per_task_instructions(instructions: str, task_id: int, project_id: int, db: Database) -> str:
+    async def format_per_task_instructions(
+        instructions: str, task_id: int, project_id: int, db: Database
+    ) -> str:
         """Format instructions by looking for X, Y, Z tokens and replacing them with the task values"""
         if not instructions:
             return ""  # No instructions, return empty string
@@ -1668,7 +1815,9 @@ class Task(Base):
             t.id = :task_id AND t.project_id = :project_id;
         """
 
-        task = await db.fetch_one(query=query, values={"task_id": task_id, "project_id": project_id})
+        task = await db.fetch_one(
+            query=query, values={"task_id": task_id, "project_id": project_id}
+        )
         properties = {}
 
         if task["x"]:
@@ -1688,7 +1837,9 @@ class Task(Base):
         return instructions
 
     @staticmethod
-    async def get_task_annotations(task_id: int, db: Database) -> List[TaskAnnotationDTO]:
+    async def get_task_annotations(
+        task_id: int, db: Database
+    ) -> List[TaskAnnotationDTO]:
         """Fetch annotations related to the task"""
         query = """
         SELECT
@@ -1717,7 +1868,9 @@ class Task(Base):
         ]
 
     @staticmethod
-    async def copy_task_history(original_task_id: int, new_task_id: int, project_id: int, db: Database) -> None:
+    async def copy_task_history(
+        original_task_id: int, new_task_id: int, project_id: int, db: Database
+    ) -> None:
         """
         Copy all task history records from the original task to a new task.
 
@@ -1743,7 +1896,9 @@ class Task(Base):
             },
         )
 
-    async def get_locked_tasks_for_user(user_id: int, db: Database) -> LockedTasksForUser:
+    async def get_locked_tasks_for_user(
+        user_id: int, db: Database
+    ) -> LockedTasksForUser:
         """Gets tasks on projects locked by the specified user id"""
 
         query = """
@@ -1757,7 +1912,9 @@ class Task(Base):
 
         if rows:
             tasks_dto.locked_tasks = [row["id"] for row in rows]
-            tasks_dto.project = rows[0]["project_id"]  # Assuming all tasks belong to the same project
+            tasks_dto.project = rows[0][
+                "project_id"
+            ]  # Assuming all tasks belong to the same project
             tasks_dto.task_status = TaskStatus(rows[0]["task_status"]).name
 
         return tasks_dto

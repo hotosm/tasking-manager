@@ -117,7 +117,11 @@ async def list_users(
         query = UserSearchQuery()
         query.pagination = strtobool(request.query_params.get("pagination", "True"))
         if query.pagination:
-            query.page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
+            query.page = (
+                int(request.query_params.get("page"))
+                if request.query_params.get("page")
+                else 1
+            )
         query.per_page = int(request.query_params.get("perPage", 20))
         query.username = request.query_params.get("username")
         query.mapping_level = request.query_params.get("level")
@@ -249,7 +253,9 @@ async def get_paginated_osm_user_info(
         500:
             description: Internal Server Error
     """
-    page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
+    page = (
+        int(request.query_params.get("page")) if request.query_params.get("page") else 1
+    )
     project_id = request.query_params.get("projectId", None)
     if project_id:
         project_id = int(project_id)
@@ -328,7 +334,9 @@ async def get_task_details_locked_by_user(
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
-    locked_tasks = await ProjectService.get_task_details_for_logged_in_user(user.id, preferred_locale, db)
+    locked_tasks = await ProjectService.get_task_details_for_logged_in_user(
+        user.id, preferred_locale, db
+    )
     return locked_tasks.model_dump(by_alias=True)
 
 
@@ -424,6 +432,10 @@ async def get_recommended_projects(
         500:
             description: Internal Server Error
     """
-    locale = request.headers.get("accept-language") if request.headers.get("accept-language") else "en"
+    locale = (
+        request.headers.get("accept-language")
+        if request.headers.get("accept-language")
+        else "en"
+    )
     user_dto = await UserService.get_recommended_projects(username, locale, db)
     return user_dto.model_dump(by_alias=True)

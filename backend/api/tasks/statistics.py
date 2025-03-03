@@ -88,11 +88,17 @@ async def get_task_stats(
                 },
                 status_code=400,
             )
-        end_date = validate_date_input(request.query_params.get("endDate", date.today()))
+        end_date = validate_date_input(
+            request.query_params.get("endDate", date.today())
+        )
         if end_date < start_date:
-            raise ValueError("InvalidDateRange- Start date must be earlier than end date")
+            raise ValueError(
+                "InvalidDateRange- Start date must be earlier than end date"
+            )
         if (end_date - start_date) > timedelta(days=366):
-            raise ValueError("InvalidDateRange- Date range can not be bigger than 1 year")
+            raise ValueError(
+                "InvalidDateRange- Date range can not be bigger than 1 year"
+            )
         organisation_id = request.query_params.get("organisationId", None)
         organisation_name = request.query_params.get("organisationName", None)
         campaign = request.query_params.get("campaign", None)

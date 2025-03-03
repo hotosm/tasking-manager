@@ -37,7 +37,9 @@ class LicenseService:
         return new_license_id
 
     @staticmethod
-    async def update_license(license_dto: LicenseDTO, license_id: int, db: Database) -> LicenseDTO:
+    async def update_license(
+        license_dto: LicenseDTO, license_id: int, db: Database
+    ) -> LicenseDTO:
         """Create License in DB"""
 
         query = """

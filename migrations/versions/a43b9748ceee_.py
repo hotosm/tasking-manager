@@ -53,8 +53,12 @@ def _set_project_counters_from_task_states(project_id: int):
 
     # Set values to the stats in the database
     tasks_mapped = sum([n for s, n in tasks_statuses if s == TaskStatus.MAPPED.value])
-    tasks_validated = sum([n for s, n in tasks_statuses if s == TaskStatus.VALIDATED.value])
-    tasks_bad_imagery = sum([n for s, n in tasks_statuses if s == TaskStatus.BADIMAGERY.value])
+    tasks_validated = sum(
+        [n for s, n in tasks_statuses if s == TaskStatus.VALIDATED.value]
+    )
+    tasks_bad_imagery = sum(
+        [n for s, n in tasks_statuses if s == TaskStatus.BADIMAGERY.value]
+    )
     query = (
         "UPDATE projects "
         + "SET tasks_mapped ="

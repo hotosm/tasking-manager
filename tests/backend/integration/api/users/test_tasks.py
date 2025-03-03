@@ -1,7 +1,10 @@
 from backend.models.postgis.statuses import ProjectStatus
 from backend.models.postgis.task import Task, TaskStatus
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import create_canned_project, generate_encoded_token
+from tests.backend.helpers.test_helpers import (
+    create_canned_project,
+    generate_encoded_token,
+)
 
 
 class TetUsersTasksAPI(BaseTestCase):
@@ -80,7 +83,9 @@ class TetUsersTasksAPI(BaseTestCase):
         self.assertEqual(len(response.json["tasks"]), 1)
         self.assertEqual(response.json["tasks"][0]["taskId"], 1)
         self.assertEqual(response.json["tasks"][0]["projectId"], test_project_2.id)
-        self.assertEqual(response.json["tasks"][0]["taskStatus"], TaskStatus.MAPPED.name)
+        self.assertEqual(
+            response.json["tasks"][0]["taskStatus"], TaskStatus.MAPPED.name
+        )
 
     def test_filters_by_status_if_status_passed(self):
         """Test that the API filters by status if status is passed"""
@@ -101,7 +106,9 @@ class TetUsersTasksAPI(BaseTestCase):
         self.assertEqual(len(response.json["tasks"]), 1)
         self.assertEqual(response.json["tasks"][0]["taskId"], 1)
         self.assertEqual(response.json["tasks"][0]["projectId"], self.test_project.id)
-        self.assertEqual(response.json["tasks"][0]["taskStatus"], TaskStatus.MAPPED.name)
+        self.assertEqual(
+            response.json["tasks"][0]["taskStatus"], TaskStatus.MAPPED.name
+        )
 
     def test_filters_by_project_status_if_project_status_passed(self):
         """Test that the API filters by project status if passed"""

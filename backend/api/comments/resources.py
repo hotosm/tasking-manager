@@ -83,7 +83,9 @@ async def post_comment(
     )
     try:
         async with db.transaction():
-            project_messages = await ChatService.post_message(chat_dto, project_id, user.id, db, background_tasks)
+            project_messages = await ChatService.post_message(
+                chat_dto, project_id, user.id, db, background_tasks
+            )
             return project_messages
     except ValueError as e:
         return JSONResponse(
@@ -93,7 +95,9 @@ async def post_comment(
 
 
 @router.get("/{project_id}/comments/")
-async def ge_comments(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def ge_comments(
+    request: Request, project_id: int, db: Database = Depends(get_db)
+):
     """
     Get all chat messages for a project
     ---
@@ -127,7 +131,9 @@ async def ge_comments(request: Request, project_id: int, db: Database = Depends(
             description: Internal Server Error
     """
     await ProjectService.exists(project_id, db)
-    page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
+    page = (
+        int(request.query_params.get("page")) if request.query_params.get("page") else 1
+    )
     per_page = int(request.query_params.get("perPage", 20))
     project_messages = await ChatService.get_messages(project_id, db, page, per_page)
     return project_messages
@@ -179,7 +185,9 @@ async def delete_comment(
     authenticated_user_id = user.id
     try:
         async with db.transaction():
-            await ChatService.delete_project_chat_by_id(project_id, comment_id, authenticated_user_id, db)
+            await ChatService.delete_project_chat_by_id(
+                project_id, comment_id, authenticated_user_id, db
+            )
             return JSONResponse(content={"Success": "Comment deleted"}, status_code=200)
     except ValueError as e:
         return JSONResponse(
@@ -258,7 +266,9 @@ async def post_task_comment(
     try:
         request_json = await request.json()
         comment = request_json.get("comment")
-        task_comment = TaskCommentDTO(user_id=user.id, task_id=task_id, project_id=project_id, comment=comment)
+        task_comment = TaskCommentDTO(
+            user_id=user.id, task_id=task_id, project_id=project_id, comment=comment
+        )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return JSONResponse(

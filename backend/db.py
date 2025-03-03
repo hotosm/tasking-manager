@@ -10,7 +10,9 @@ class DatabaseConnection:
     """Manages database connection (encode databases)"""
 
     def __init__(self):
-        self.database = Database(settings.SQLALCHEMY_DATABASE_URI.unicode_string(), min_size=4, max_size=8)
+        self.database = Database(
+            settings.SQLALCHEMY_DATABASE_URI.unicode_string(), min_size=4, max_size=8
+        )
 
     async def connect(self):
         """Connect to the database."""

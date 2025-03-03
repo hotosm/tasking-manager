@@ -41,7 +41,9 @@ class TestValidatorService(BaseTestCase):
 
     @patch.object(UserService, "is_user_blocked")
     @patch.object(Task, "get")
-    def test_lock_tasks_for_validation_raises_error_if_task_not_mapped(self, mock_task, mock_blocked):
+    def test_lock_tasks_for_validation_raises_error_if_task_not_mapped(
+        self, mock_task, mock_blocked
+    ):
         # Arrange
         task_stub = Task()
         task_stub.task_status = TaskStatus.READY.value
@@ -80,7 +82,9 @@ class TestValidatorService(BaseTestCase):
     @patch.object(UserService, "is_user_an_admin")
     @patch.object(Task, "get")
     @patch.object(ProjectService, "is_user_permitted_to_validate")
-    def test_lock_tasks_raises_error_if_user_has_not_accepted_license(self, mock_project, mock_task, mock_user):
+    def test_lock_tasks_raises_error_if_user_has_not_accepted_license(
+        self, mock_project, mock_task, mock_user
+    ):
         # Arrange
         task_stub = Task()
         task_stub.task_status = TaskStatus.MAPPED.value
@@ -102,7 +106,9 @@ class TestValidatorService(BaseTestCase):
             ValidatorService.lock_tasks_for_validation(lock_dto)
 
     @patch.object(Task, "get")
-    def test_unlock_tasks_for_validation_raises_error_if_task_not_found(self, mock_task):
+    def test_unlock_tasks_for_validation_raises_error_if_task_not_found(
+        self, mock_task
+    ):
         # Arrange
         mock_task.return_value = None
 
@@ -119,7 +125,9 @@ class TestValidatorService(BaseTestCase):
             ValidatorService.unlock_tasks_after_validation(unlock_dto)
 
     @patch.object(Task, "get")
-    def test_unlock_tasks_for_validation_raises_error_if_task_not_done_or_validated(self, mock_task):
+    def test_unlock_tasks_for_validation_raises_error_if_task_not_done_or_validated(
+        self, mock_task
+    ):
         # Arrange
         self.unlock_task_stub.task_status = TaskStatus.READY.value
         mock_task.return_value = self.unlock_task_stub
@@ -137,7 +145,9 @@ class TestValidatorService(BaseTestCase):
             ValidatorService.unlock_tasks_after_validation(unlock_dto)
 
     @patch.object(Task, "get")
-    def test_unlock_tasks_for_validation_raises_error_if_task_not_locked(self, mock_task):
+    def test_unlock_tasks_for_validation_raises_error_if_task_not_locked(
+        self, mock_task
+    ):
         # Arrange
         self.unlock_task_stub.task_locked = False
         mock_task.return_value = self.unlock_task_stub
@@ -155,7 +165,9 @@ class TestValidatorService(BaseTestCase):
             ValidatorService.unlock_tasks_after_validation(unlock_dto)
 
     @patch.object(Task, "get")
-    def test_unlock_tasks_for_validation_raises_error_if_user_doesnt_own_the_lock(self, mock_task):
+    def test_unlock_tasks_for_validation_raises_error_if_user_doesnt_own_the_lock(
+        self, mock_task
+    ):
         mock_task.return_value = self.unlock_task_stub
 
         validated_task = ValidatedTask()
@@ -172,27 +184,35 @@ class TestValidatorService(BaseTestCase):
             ValidatorService.unlock_tasks_after_validation(unlock_dto)
 
     @patch.object(UserService, "is_user_an_admin")
-    def test_user_can_validate_task_returns_false_when_user_not_a_pm_and_validating_own_task(self, mock_user):
+    def test_user_can_validate_task_returns_false_when_user_not_a_pm_and_validating_own_task(
+        self, mock_user
+    ):
         # Arrange
         mock_user.return_value = False
         user_id = 1234
         mapped_by = 1234
 
         # act
-        user_can_validate_task = ValidatorService._user_can_validate_task(user_id, mapped_by)
+        user_can_validate_task = ValidatorService._user_can_validate_task(
+            user_id, mapped_by
+        )
 
         # assert
         self.assertFalse(user_can_validate_task)
 
     @patch.object(UserService, "is_user_an_admin")
-    def test_user_can_validate_task_returns_true_when_user_not_a_pm_and_not_validating_own_task(self, mock_user):
+    def test_user_can_validate_task_returns_true_when_user_not_a_pm_and_not_validating_own_task(
+        self, mock_user
+    ):
         # Arrange
         mock_user.return_value = False
         user_id = 5678
         mapped_by = 1234
 
         # act
-        user_can_validate_task = ValidatorService._user_can_validate_task(user_id, mapped_by)
+        user_can_validate_task = ValidatorService._user_can_validate_task(
+            user_id, mapped_by
+        )
 
         # assert
         self.assertTrue(user_can_validate_task)

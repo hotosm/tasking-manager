@@ -13,7 +13,10 @@ from backend.models.postgis.utils import InvalidGeoJson
 from backend.services.grid.grid_service import GridService
 from backend.services.interests_service import InterestService
 from backend.services.messaging.message_service import MessageService
-from backend.services.project_admin_service import ProjectAdminService, ProjectAdminServiceError
+from backend.services.project_admin_service import (
+    ProjectAdminService,
+    ProjectAdminServiceError,
+)
 from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import login_required
 
@@ -79,7 +82,9 @@ async def transfer_ownership(
             status_code=400,
         )
     try:
-        await ProjectAdminService.transfer_project_to(project_id, user.id, username, db, background_tasks)
+        await ProjectAdminService.transfer_project_to(
+            project_id, user.id, username, db, background_tasks
+        )
         return JSONResponse(content={"Success": "Project Transferred"}, status_code=200)
     except (ValueError, ProjectAdminServiceError) as e:
         return JSONResponse(
@@ -153,7 +158,9 @@ async def message_contributors(
             },
             status_code=400,
         )
-    if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
+    if not await ProjectAdminService.is_user_action_permitted_on_project(
+        user.id, project_id, db
+    ):
         return JSONResponse(
             content={
                 "Error": "User is not a manager of the project",
@@ -170,7 +177,9 @@ async def message_contributors(
         return JSONResponse(content={"Success": "Messages started"}, status_code=200)
     except Exception as e:
         logger.error(f"Error starting background task: {str(e)}")
-        return JSONResponse(content={"Error": "Failed to send messages"}, status_code=500)
+        return JSONResponse(
+            content={"Error": "Failed to send messages"}, status_code=500
+        )
 
 
 @router.post("/{project_id}/actions/feature/")
@@ -213,7 +222,9 @@ async def feature(
             description: Internal Server Error
     """
     try:
-        if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            user.id, project_id, db
+        ):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -274,7 +285,9 @@ async def remove_feature(
             description: Internal Server Error
     """
     try:
-        if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            user.id, project_id, db
+        ):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -346,7 +359,9 @@ async def set_interests(
             description: Internal Server Error
     """
     try:
-        if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            user.id, project_id, db
+        ):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -357,7 +372,9 @@ async def set_interests(
             status_code=403,
         )
 
-    project_interests = await InterestService.create_or_update_project_interests(project_id, data["interests"], db)
+    project_interests = await InterestService.create_or_update_project_interests(
+        project_id, data["interests"], db
+    )
     return project_interests.model_dump(by_alias=True)
 
 
@@ -445,4 +462,6 @@ async def intersecting_tiles(
                 },
                 status_code=400,
             )
-        return JSONResponse(content={"error": str(wrapped), "SubCode": "InternalServerError"})
+        return JSONResponse(
+            content={"error": str(wrapped), "SubCode": "InternalServerError"}
+        )

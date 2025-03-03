@@ -35,7 +35,9 @@ async def get_statistics(request: Request, db: Database = Depends(get_db)):
             description: Internal Server Error
     """
     abbreviated = (
-        strtobool(request.query_params.get("abbreviated")) if request.query_params.get("abbreviated") else True
+        strtobool(request.query_params.get("abbreviated"))
+        if request.query_params.get("abbreviated")
+        else True
     )
 
     stats = await StatsService.get_homepage_stats(abbreviated, db)

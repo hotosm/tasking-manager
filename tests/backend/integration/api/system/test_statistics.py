@@ -15,7 +15,9 @@ class TestSystemStatisticsAPI(BaseTestCase):
         test_user.create()
         test_project, _ = create_canned_project()
         # Lock a task for mapping as mappers online is calculated based on locked tasks
-        task = Task.get(2, test_project.id)  # Set task 2 to mapped since it's created unmapped
+        task = Task.get(
+            2, test_project.id
+        )  # Set task 2 to mapped since it's created unmapped
         task.lock_task_for_mapping(test_user.id)
         url = "/api/v2/system/statistics/"
         # Act

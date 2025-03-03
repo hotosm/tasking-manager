@@ -110,6 +110,8 @@ class TestSplitService(BaseTestCase):
         split_task_dto.task_id = 2
 
         # Split tasks
-        expected = geojson.loads(json.dumps(get_canned_json("non_square_split_results.json")))
+        expected = geojson.loads(
+            json.dumps(get_canned_json("non_square_split_results.json"))
+        )
         result = SplitService._create_split_tasks(task.x, task.y, task.zoom, task)
         self.assertDeepAlmostEqual(expected, result)

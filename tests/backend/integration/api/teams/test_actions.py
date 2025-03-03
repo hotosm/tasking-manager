@@ -1,7 +1,11 @@
 from unittest.mock import patch
 
 from backend.exceptions import get_message_from_sub_code
-from backend.models.postgis.statuses import TeamJoinMethod, TeamMemberFunctions, UserRole
+from backend.models.postgis.statuses import (
+    TeamJoinMethod,
+    TeamMemberFunctions,
+    UserRole,
+)
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     add_user_to_team,
@@ -48,7 +52,9 @@ class TestTeamsActionsJoinAPI(BaseTestCase):
         """
         Test that endpoint returns 200 when authenticated user requests to join a team
         """
-        response = self.client.post(self.endpoint_url, headers={"Authorization": self.session_token})
+        response = self.client.post(
+            self.endpoint_url, headers={"Authorization": self.session_token}
+        )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_body["Success"], "Join request successful")
@@ -70,7 +76,9 @@ class TestTeamsActionsJoinAPI(BaseTestCase):
         Test that endpoint returns 400 when a user requests to join a team that can only be joined by invite
         """
         self.test_team.join_method = TeamJoinMethod.BY_INVITE.value
-        response = self.client.post(self.endpoint_url, headers={"Authorization": self.session_token})
+        response = self.client.post(
+            self.endpoint_url, headers={"Authorization": self.session_token}
+        )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_body["Error"], "Team join method is BY_INVITE")
@@ -234,7 +242,9 @@ class TestTeamsActionsAddAPI(BaseTestCase):
         self.assertEqual(response.status_code, 500)
         error_resp = response_body["error"]
         self.assertEqual(error_resp["sub_code"], "INTERNAL_SERVER_ERROR")
-        self.assertTrue("User is not allowed to add member to the team" in error_resp["message"])
+        self.assertTrue(
+            "User is not allowed to add member to the team" in error_resp["message"]
+        )
 
     def test_add_non_existent_members_to_team_fails(self):
         """
@@ -387,7 +397,9 @@ class TestTeamsActionsMessageMembersAPI(BaseTestCase):
         self.test_admin.role = UserRole.ADMIN.value
         self.admin_token = generate_encoded_token(self.test_admin.id)
         self.session_token = generate_encoded_token(self.test_user.id)
-        self.endpoint_url = f"/api/v2/teams/{self.test_team.id}/actions/message-members/"
+        self.endpoint_url = (
+            f"/api/v2/teams/{self.test_team.id}/actions/message-members/"
+        )
 
     def test_message_members_non_existent_team_fails(self):
         """
@@ -427,7 +439,9 @@ class TestTeamsActionsMessageMembersAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response_body["Error"], "Unauthorised to send message to team members")
+        self.assertEqual(
+            response_body["Error"], "Unauthorised to send message to team members"
+        )
         self.assertEqual(response_body["SubCode"], "UserNotPermitted")
 
     def test_message_team_members_with_invalid_data_fails(self):
@@ -444,7 +458,9 @@ class TestTeamsActionsMessageMembersAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_body["Error"], "Request payload did not match validation")
+        self.assertEqual(
+            response_body["Error"], "Request payload did not match validation"
+        )
         self.assertEqual(response_body["SubCode"], "InvalidData")
 
     @patch("threading.Thread.start")

@@ -34,7 +34,9 @@ class TestTemplateService(BaseTestCase):
 
     def test_clean_html(self):
         self.assertEqual(
-            clean_html('Welcome to <a href="https://tasks.hotosm.org">Tasking Manager</a>!'),
+            clean_html(
+                'Welcome to <a href="https://tasks.hotosm.org">Tasking Manager</a>!'
+            ),
             "Welcome to Tasking Manager!",
         )
 
@@ -48,6 +50,8 @@ class TestTemplateService(BaseTestCase):
             ),
         )
         self.assertEqual(
-            format_username_link("testing @user! Write me at i@we.com [test](http://link.com)"),
+            format_username_link(
+                "testing @user! Write me at i@we.com [test](http://link.com)"
+            ),
             "testing @user! Write me at i@we.com [test](http://link.com)",
         )

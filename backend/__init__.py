@@ -76,9 +76,15 @@ def initialise_logger(app):
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    file_handler = RotatingFileHandler(log_dir + "/tasking-manager.log", "a", 2 * 1024 * 1024, 3)
+    file_handler = RotatingFileHandler(
+        log_dir + "/tasking-manager.log", "a", 2 * 1024 * 1024, 3
+    )
     file_handler.setLevel(log_level)
-    file_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]"))
+    file_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]"
+        )
+    )
     app.logger.addHandler(file_handler)
     app.logger.setLevel(log_level)
 

@@ -33,7 +33,9 @@ class TestCustomEditor(BaseTestCase):
         custom_editor_dto.url = self.custom_editor.url
 
         # Act
-        custom_editor = CustomEditor.create_from_dto(self.test_project.id, custom_editor_dto)
+        custom_editor = CustomEditor.create_from_dto(
+            self.test_project.id, custom_editor_dto
+        )
 
         # Assert
         self.assertEqual(custom_editor.project_id, self.test_project.id)
@@ -85,5 +87,7 @@ class TestCustomEditor(BaseTestCase):
         # Assert
         self.assertEqual(test_new_project_id, cloned_custom_editor.project_id)
         self.assertEqual(self.custom_editor.name, cloned_custom_editor.name)
-        self.assertEqual(self.custom_editor.description, cloned_custom_editor.description)
+        self.assertEqual(
+            self.custom_editor.description, cloned_custom_editor.description
+        )
         self.assertEqual(self.custom_editor.url, cloned_custom_editor.url)

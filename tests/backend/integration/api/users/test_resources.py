@@ -194,7 +194,9 @@ class TestUsersQueriesOwnLockedAPI(BaseTestCase):
         self.assertEqual(len(response.json["lockedTasks"]), 1)
         self.assertEqual(response.json["lockedTasks"][0], 1)
         self.assertEqual(response.json["projectId"], test_project.id)
-        self.assertEqual(response.json["taskStatus"], TaskStatus.LOCKED_FOR_MAPPING.name)
+        self.assertEqual(
+            response.json["taskStatus"], TaskStatus.LOCKED_FOR_MAPPING.name
+        )
 
 
 class UsersQueriesInterestsAPI(BaseTestCase):
@@ -294,7 +296,9 @@ class TestUsersQueriesUsernameFilterAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 200)
-        self.assertListEqual(list(response.json.keys()), ["pagination", "usernames", "users"])
+        self.assertListEqual(
+            list(response.json.keys()), ["pagination", "usernames", "users"]
+        )
         self.assertEqual(len(response.json["usernames"]), 1)
         self.assertEqual(response.json["usernames"][0], self.user.username)
         self.assertEqual(response.json["pagination"]["page"], 1)

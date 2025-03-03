@@ -108,9 +108,15 @@ async def get_user_tasks(
         project_status = request.query_params.get("project_status")
         project_id = int(request.query_params.get("project_id", 0))
         start_date = (
-            date_parse(request.query_params.get("start_date")) if request.query_params.get("start_date") else None
+            date_parse(request.query_params.get("start_date"))
+            if request.query_params.get("start_date")
+            else None
         )
-        end_date = date_parse(request.query_params.get("end_date")) if request.query_params.get("end_date") else None
+        end_date = (
+            date_parse(request.query_params.get("end_date"))
+            if request.query_params.get("end_date")
+            else None
+        )
         sort_by = request.query_params.get("sort_by", "-action_date")
 
         tasks = await UserService.get_tasks_dto(
@@ -128,4 +134,6 @@ async def get_user_tasks(
         return tasks
     except ValueError:
         print("InvalidDateRange- Date range can not be bigger than 1 year")
-        return JSONResponse(content={"tasks": [], "pagination": {"total": 0}}, status_code=200)
+        return JSONResponse(
+            content={"tasks": [], "pagination": {"total": 0}}, status_code=200
+        )

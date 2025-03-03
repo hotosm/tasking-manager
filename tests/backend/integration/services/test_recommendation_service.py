@@ -5,7 +5,11 @@ import pandas as pd
 from backend.models.postgis.project import ProjectStatus
 from backend.services.recommendation_service import ProjectRecommendationService
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import create_canned_interest, create_canned_project, update_project_with_info
+from tests.backend.helpers.test_helpers import (
+    create_canned_interest,
+    create_canned_project,
+    update_project_with_info,
+)
 
 
 class TestProjectRecommendationService(BaseTestCase):
@@ -16,7 +20,9 @@ class TestProjectRecommendationService(BaseTestCase):
     def create_project(self, is_published=True):
         """Create a canned project"""
         project, _ = create_canned_project()
-        project.status = ProjectStatus.PUBLISHED.value if is_published else ProjectStatus.DRAFT.value
+        project.status = (
+            ProjectStatus.PUBLISHED.value if is_published else ProjectStatus.DRAFT.value
+        )
         project.save()
         return project
 
@@ -75,11 +81,19 @@ class TestProjectRecommendationService(BaseTestCase):
         )
         df = self.service.build_encoded_data_frame(df)
         # Act
-        similar_project_ids = self.service.get_similar_project_ids(df, df[df["id"] == 1])
+        similar_project_ids = self.service.get_similar_project_ids(
+            df, df[df["id"] == 1]
+        )
         # Assert
-        self.assertEqual(similar_project_ids[0], 2)  # project id 2 is the most similar to project id 1
-        self.assertEqual(similar_project_ids[1], 3)  # project id 1 is the second most similar to project id 1
-        self.assertEqual(similar_project_ids[2], 5)  # project id 5 is the third most similar to project id 1
+        self.assertEqual(
+            similar_project_ids[0], 2
+        )  # project id 2 is the most similar to project id 1
+        self.assertEqual(
+            similar_project_ids[1], 3
+        )  # project id 1 is the second most similar to project id 1
+        self.assertEqual(
+            similar_project_ids[2], 5
+        )  # project id 5 is the third most similar to project id 1
 
     @staticmethod
     def set_project_columns(project, **kwargs):
@@ -134,7 +148,9 @@ class TestProjectRecommendationService(BaseTestCase):
         self.assertEqual(project_matrix["categories_2"].tolist(), [1, 1])
 
     @patch.object(ProjectRecommendationService, "get_similar_project_ids")
-    def test_get_similar_projects_returns_similar_projects(self, mock_get_similar_project_ids):
+    def test_get_similar_projects_returns_similar_projects(
+        self, mock_get_similar_project_ids
+    ):
         """Test that get_similar_projects returns similar projects"""
         # Arrange
         # Create test interests

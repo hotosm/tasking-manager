@@ -26,7 +26,9 @@ class License(Base):
     plain_text = Column(String)
 
     projects = relationship("Project", backref="license")
-    users = relationship("License", secondary=user_licenses_table)  # Many to Many relationship
+    users = relationship(
+        "License", secondary=user_licenses_table
+    )  # Many to Many relationship
 
     @staticmethod
     async def get_by_id(license_id: int, db: Database):

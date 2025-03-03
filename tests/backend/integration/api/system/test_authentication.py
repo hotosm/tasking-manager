@@ -11,7 +11,10 @@ from backend.services.users.authentication_service import AuthenticationService
 from backend.services.users.user_service import NotFound, UserService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import return_canned_user
-from tests.backend.integration.api.users.test_resources import USER_NOT_FOUND_MESSAGE, USER_NOT_FOUND_SUB_CODE
+from tests.backend.integration.api.users.test_resources import (
+    USER_NOT_FOUND_MESSAGE,
+    USER_NOT_FOUND_SUB_CODE,
+)
 
 USERNAME = "test_user"
 USER_ID = 1234
@@ -52,7 +55,9 @@ class TestSystemAuthenticationLoginAPI(BaseTestCase):
             response.json["auth_url"].split("?")[0],
             EnvironmentConfig.OSM_SERVER_URL + "/oauth2/authorize",
         )
-        self.assertEqual(response.json["auth_url"].split("?")[1].split("&")[0], "response_type=code")
+        self.assertEqual(
+            response.json["auth_url"].split("?")[1].split("&")[0], "response_type=code"
+        )
         self.assertEqual(
             response.json["auth_url"].split("?")[1].split("&")[1],
             "client_id=" + EnvironmentConfig.OAUTH_CLIENT_ID,
@@ -109,7 +114,9 @@ class TestSystemAuthenticationCallbackAPI(BaseTestCase):
 
     @patch.object(osm, "fetch_token")
     @patch.object(osm, "get")
-    def test_returns_error_if_osm_response_status_code_not_200(self, mock_get, mock_fetch_token):
+    def test_returns_error_if_osm_response_status_code_not_200(
+        self, mock_get, mock_fetch_token
+    ):
         mock_fetch_token.return_value = "1234"
         mock_get.return_value.status_code = 500
         url = "/api/v2/system/authentication/callback/?code=1234"
@@ -118,7 +125,9 @@ class TestSystemAuthenticationCallbackAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 502)
         self.assertEqual(response.json["SubCode"], "OSMServiceError")
-        self.assertEqual(response.json["Error"], "Couldn't fetch user details from OSM.")
+        self.assertEqual(
+            response.json["Error"], "Couldn't fetch user details from OSM."
+        )
 
     @patch.object(osm, "fetch_token")
     @patch.object(osm, "get")
@@ -137,7 +146,9 @@ class TestSystemAuthenticationCallbackAPI(BaseTestCase):
     @patch.object(MessageService, "send_welcome_message")
     @patch.object(osm, "fetch_token")
     @patch.object(osm, "get")
-    def test_returns_user_params_if_no_auth_service_error(self, mock_get, mock_fetch_token, mock_send_welcome_message):
+    def test_returns_user_params_if_no_auth_service_error(
+        self, mock_get, mock_fetch_token, mock_send_welcome_message
+    ):
         # Arrange
         user = return_canned_user(USERNAME, USER_ID)
         user.create()
@@ -157,14 +168,20 @@ class TestSystemAuthenticationCallbackAPI(BaseTestCase):
     @patch.object(MessageService, "send_welcome_message")
     @patch.object(osm, "fetch_token")
     @patch.object(osm, "get")
-    def test_creates_user_on_login_if_not_exists(self, mock_get, mock_fetch_token, mock_send_welcome_message):
+    def test_creates_user_on_login_if_not_exists(
+        self, mock_get, mock_fetch_token, mock_send_welcome_message
+    ):
         mock_fetch_token.return_value = USER_ID
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = USER_JSON
-        url = "/api/v2/system/authentication/callback/?code=1234&email_address=test_email"
+        url = (
+            "/api/v2/system/authentication/callback/?code=1234&email_address=test_email"
+        )
         # Assert
         with self.assertRaises(NotFound):
-            UserService.get_user_by_username(USERNAME)  # Should raise NotFound since user doesn't exist
+            UserService.get_user_by_username(
+                USERNAME
+            )  # Should raise NotFound since user doesn't exist
         # Act
         response = self.client.get(url)
         # Assert
@@ -172,7 +189,9 @@ class TestSystemAuthenticationCallbackAPI(BaseTestCase):
         self.assertEqual(response.json["username"], USERNAME)
         self.assertEqual(response.json["session"], USER_ID)
         self.assertEqual(response.json["picture"], USER_PICTURE)
-        self.assertEqual(UserService.get_user_by_username(USERNAME).email_address, "test_email")
+        self.assertEqual(
+            UserService.get_user_by_username(USERNAME).email_address, "test_email"
+        )
         mock_send_welcome_message.assert_called_once()
 
 
@@ -183,7 +202,9 @@ class TestSystemAuthenticationEmailAPI(BaseTestCase):
 
     def test_returns_404_if_user_does_not_exist(self):
         # Act
-        response = self.client.get(self.url, query_string={"username": "non_existent_user"})
+        response = self.client.get(
+            self.url, query_string={"username": "non_existent_user"}
+        )
         error_details = response.json["error"]
         # Assert
         self.assertEqual(response.status_code, 404)
@@ -195,7 +216,9 @@ class TestSystemAuthenticationEmailAPI(BaseTestCase):
         user = return_canned_user(USERNAME, USER_ID)
         user.create()
         # Act
-        response = self.client.get(self.url, query_string={"token": "1234", "username": USERNAME})
+        response = self.client.get(
+            self.url, query_string={"token": "1234", "username": USERNAME}
+        )
         # Assert
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json["SubCode"], "BadSignature")
@@ -208,10 +231,14 @@ class TestSystemAuthenticationEmailAPI(BaseTestCase):
         mock_is_valid_token.return_value = (False, "ExpiredToken- Token has expired")
         user = return_canned_user(USERNAME, USER_ID)
         user.create()
-        verification_url = SMTPService._generate_email_verification_url(USER_EMAIL, USERNAME)
+        verification_url = SMTPService._generate_email_verification_url(
+            USER_EMAIL, USERNAME
+        )
         token = verification_url.split("token=")[1].split("&")[0]
         # Act
-        response = self.client.get(self.url, query_string={"token": token, "username": USERNAME})
+        response = self.client.get(
+            self.url, query_string={"token": token, "username": USERNAME}
+        )
         # Assert
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json["SubCode"], "ExpiredToken")
@@ -222,10 +249,14 @@ class TestSystemAuthenticationEmailAPI(BaseTestCase):
         user = return_canned_user(USERNAME, USER_ID)
         user.email_address = "test_email_2"
         user.create()
-        verification_url = SMTPService._generate_email_verification_url(USER_EMAIL, USERNAME)
+        verification_url = SMTPService._generate_email_verification_url(
+            USER_EMAIL, USERNAME
+        )
         token = verification_url.split("token=")[1].split("&")[0]
         # Act
-        response = self.client.get(self.url, query_string={"token": token, "username": USERNAME})
+        response = self.client.get(
+            self.url, query_string={"token": token, "username": USERNAME}
+        )
         # Assert
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json["SubCode"], "InvalidEmail")
@@ -236,13 +267,23 @@ class TestSystemAuthenticationEmailAPI(BaseTestCase):
         user = return_canned_user(USERNAME, USER_ID)
         user.email_address = USER_EMAIL
         user.create()
-        verification_url = SMTPService._generate_email_verification_url(USER_EMAIL, USERNAME)
+        verification_url = SMTPService._generate_email_verification_url(
+            USER_EMAIL, USERNAME
+        )
         token = verification_url.split("token=")[1].split("&")[0]
         # Assert - User should not have email verified
-        self.assertEqual(UserService.get_user_by_username(USERNAME).is_email_verified, False)
+        self.assertEqual(
+            UserService.get_user_by_username(USERNAME).is_email_verified, False
+        )
         # Act
-        response = self.client.get(self.url, query_string={"token": token, "username": USERNAME})
+        response = self.client.get(
+            self.url, query_string={"token": token, "username": USERNAME}
+        )
         # Assert
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(UserService.get_user_by_username(USERNAME).email_address, USER_EMAIL)
-        self.assertEqual(UserService.get_user_by_username(USERNAME).is_email_verified, True)
+        self.assertEqual(
+            UserService.get_user_by_username(USERNAME).email_address, USER_EMAIL
+        )
+        self.assertEqual(
+            UserService.get_user_by_username(USERNAME).is_email_verified, True
+        )

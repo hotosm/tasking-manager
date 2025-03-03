@@ -76,7 +76,9 @@ class PartnerService:
             await db.execute(delete_partner_query, {"partner_id": partner_id})
             return JSONResponse(content={"Success": "Team deleted"}, status_code=200)
         else:
-            return JSONResponse(content={"Error": "Partner cannot be deleted"}, status_code=400)
+            return JSONResponse(
+                content={"Error": "Partner cannot be deleted"}, status_code=400
+            )
 
     @staticmethod
     async def update_partner(partner_id: int, data: dict, db: Database) -> dict:
