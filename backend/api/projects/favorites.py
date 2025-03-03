@@ -15,7 +15,7 @@ router = APIRouter(
 
 
 @router.get("/{project_id}/favorite/")
-async def get(
+async def get_favorite(
     request: Request,
     project_id: int,
     user: AuthUserDTO = Depends(login_required),
@@ -50,11 +50,7 @@ async def get(
         500:
             description: Internal Server Error
     """
-    user_id = (
-        request.user.display_name
-        if request.user and request.user.display_name
-        else None
-    )
+    user_id = request.user.display_name if request.user and request.user.display_name else None
 
     favorited = await ProjectService.is_favorited(project_id, user_id, db)
     if favorited is True:
@@ -63,7 +59,7 @@ async def get(
 
 
 @router.post("/{project_id}/favorite/")
-async def post(
+async def make_favorite(
     request: Request,
     project_id: int,
     user: AuthUserDTO = Depends(login_required),
@@ -104,7 +100,7 @@ async def post(
 
 
 @router.delete("/{project_id}/favorite/")
-async def delete(
+async def remove_favorite(
     request: Request,
     project_id: int,
     user: AuthUserDTO = Depends(login_required),

@@ -1,15 +1,7 @@
 from databases import Database
 from fastapi import HTTPException
 from slugify import slugify
-from sqlalchemy import (
-    BigInteger,
-    Column,
-    ForeignKey,
-    Integer,
-    String,
-    Table,
-    UniqueConstraint,
-)
+from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String, Table, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
 
 from backend.db import Base
@@ -58,9 +50,7 @@ class Organisation(Base):
         secondary=organisation_managers,
         backref=backref("organisations"),
     )
-    campaign = relationship(
-        Campaign, secondary=campaign_organisations, backref="organisation"
-    )
+    campaign = relationship(Campaign, secondary=campaign_organisations, backref="organisation")
 
     async def create_from_dto(new_organisation_dto: NewOrganisationDTO, db: Database):
         """Creates a new organisation from a DTO and associates managers"""
@@ -112,11 +102,7 @@ class Organisation(Base):
             if "type" in org_dict and org_dict["type"] is not None:
                 org_dict["type"] = OrganisationType[org_dict["type"].upper()].value
 
-            update_keys = {
-                key: org_dict[key]
-                for key in org_dict.keys()
-                if key not in ["organisation_id", "managers"]
-            }
+            update_keys = {key: org_dict[key] for key in org_dict.keys() if key not in ["organisation_id", "managers"]}
             set_clause = ", ".join(f"{key} = :{key}" for key in update_keys.keys())
             if set_clause:
                 update_query = f"""
@@ -134,14 +120,10 @@ class Organisation(Base):
                 await db.execute(clear_managers_query, values={"id": org_id})
                 for manager_username in organisation_dto.managers:
                     user_query = "SELECT id FROM users WHERE username = :username"
-                    user = await db.fetch_one(
-                        user_query, {"username": manager_username}
-                    )
+                    user = await db.fetch_one(user_query, {"username": manager_username})
 
                     if not user:
-                        raise NotFound(
-                            sub_code="USER_NOT_FOUND", username=manager_username
-                        )
+                        raise NotFound(sub_code="USER_NOT_FOUND", username=manager_username)
 
                     insert_manager_query = """
                     INSERT INTO organisation_managers (organisation_id, user_id)
@@ -161,18 +143,14 @@ class Organisation(Base):
             FROM projects
             WHERE organisation_id = :organisation_id
         """
-        projects_count = await db.fetch_val(
-            projects_query, values={"organisation_id": organisation_id}
-        )
+        projects_count = await db.fetch_val(projects_query, values={"organisation_id": organisation_id})
         # Check if the organization has any teams
         teams_query = """
             SELECT COUNT(*)
             FROM teams
             WHERE organisation_id = :organisation_id
         """
-        teams_count = await db.fetch_val(
-            teams_query, values={"organisation_id": organisation_id}
-        )
+        teams_count = await db.fetch_val(teams_query, values={"organisation_id": organisation_id})
         # Organisation can be deleted if it has no projects and no teams
         return projects_count == 0 and teams_count == 0
 
@@ -183,9 +161,7 @@ class Organisation(Base):
         :param organisation_id: organisation ID in scope
         :return: Organisation if found otherwise None
         """
-        organization = await db.fetch_one(
-            "SELECT * FROM organisations WHERE id = :id", values={"id": organisation_id}
-        )
+        organization = await db.fetch_one("SELECT * FROM organisations WHERE id = :id", values={"id": organisation_id})
         return organization["id"] if organization else None
 
     @staticmethod
@@ -201,14 +177,6 @@ class Organisation(Base):
 
         result = await db.fetch_one(query, values={"name": organisation_name})
         return result if result else None
-
-    @staticmethod
-    def get_organisation_name_by_id(organisation_id: int):
-        """Get organisation name by id
-        :param organisation_id:
-        :return: Organisation name
-        """
-        return session.query(Organisation).get(organisation_id).name
 
     @staticmethod
     async def get_all_organisations(db: Database):
@@ -286,30 +254,6 @@ class Organisation(Base):
     async def fetch_managers(self, session):
         """Fetch managers asynchronously"""
         await session.refresh(self, ["managers"])
-
-    # def as_dto(self, omit_managers=False):
-    #     """Returns a dto for an organisation"""
-    #     organisation_dto = OrganisationDTO()
-    #     organisation_dto.organisation_id = self.id
-    #     organisation_dto.name = self.name
-    #     organisation_dto.slug = self.slug
-    #     organisation_dto.logo = self.logo
-    #     organisation_dto.description = self.description
-    #     organisation_dto.url = self.url
-    #     organisation_dto.managers = []
-    #     organisation_dto.type = OrganisationType(self.type).name
-    #     organisation_dto.subscription_tier = self.subscription_tier
-
-    #     if omit_managers:
-    #         return organisation_dto
-
-    #     for manager in self.managers:
-    #         org_manager_dto = OrganisationManagerDTO()
-    #         org_manager_dto.username = manager.username
-    #         org_manager_dto.picture_url = manager.picture_url
-    #         organisation_dto.managers.append(org_manager_dto)
-
-    #     return organisation_dto
 
     def as_dto(org, omit_managers=False):
         """Returns a dto for an organisation"""

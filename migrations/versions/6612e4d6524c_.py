@@ -5,9 +5,8 @@ Revises: ee46f5e8723b
 Create Date: 2019-08-19 21:40:06.669352
 
 """
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "6612e4d6524c"
@@ -50,9 +49,7 @@ def upgrade():
     )
     op.add_column(
         "users",
-        sa.Column(
-            "expert_mode", sa.Boolean(), server_default=sa.false(), nullable=False
-        ),
+        sa.Column("expert_mode", sa.Boolean(), server_default=sa.false(), nullable=False),
     )
 
 

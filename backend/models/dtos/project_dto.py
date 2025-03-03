@@ -189,19 +189,14 @@ class ProjectInfoDTO(BaseModel):
     short_description: Optional[str] = Field(default="", alias="shortDescription")
     description: Optional[str] = ""
     instructions: Optional[str] = ""
-    per_task_instructions: Optional[str] = Field(
-        default="", alias="perTaskInstructions"
-    )
+    per_task_instructions: Optional[str] = Field(default="", alias="perTaskInstructions")
 
     class Config:
         populate_by_name = True
 
     @root_validator(pre=True)
     def replace_none_with_empty_string(cls, values):
-        return {
-            key: (value if value is not None or key == "locale" else "")
-            for key, value in values.items()
-        }
+        return {key: (value if value is not None or key == "locale" else "") for key, value in values.items()}
 
 
 class CustomEditorDTO(BaseModel):
@@ -223,15 +218,11 @@ class ProjectDTO(BaseModel):
     tasks: Optional[dict] = None
     default_locale: str = Field(alias="defaultLocale")
     project_info: Optional[ProjectInfoDTO] = Field(None, alias="projectInfo")
-    project_info_locales: Optional[List[ProjectInfoDTO]] = Field(
-        None, alias="projectInfoLocales"
-    )
+    project_info_locales: Optional[List[ProjectInfoDTO]] = Field(None, alias="projectInfoLocales")
     difficulty: str = Field(alias="difficulty")
     mapping_permission: str = Field(alias="mappingPermission")
     validation_permission: str = Field(alias="validationPermission")
-    enforce_random_task_selection: Optional[bool] = Field(
-        False, alias="enforceRandomTaskSelection"
-    )
+    enforce_random_task_selection: Optional[bool] = Field(False, alias="enforceRandomTaskSelection")
     private: bool
     changeset_comment: Optional[str] = Field(None, alias="changesetComment")
     osmcha_filter_id: Optional[str] = Field(None, alias="osmchaFilterId")
@@ -394,9 +385,7 @@ class ProjectSearchDTO(BaseModel):
         hashable_validation_editors = ""
         if self.validation_editors:
             for validation_editor in self.validation_editors:
-                hashable_validation_editors = (
-                    hashable_validation_editors + validation_editor
-                )
+                hashable_validation_editors = hashable_validation_editors + validation_editor
 
         return hash(
             (
@@ -542,9 +531,7 @@ class ProjectSummary(BaseModel):
     mapping_permission: Optional[int] = Field(None, alias="mappingPermission")
     validation_permission: Optional[int] = Field(None, alias="validationPermission")
     allowed_usernames: List[str] = Field(default_factory=list, alias="allowedUsernames")
-    random_task_selection_enforced: bool = Field(
-        default=False, alias="enforceRandomTaskSelection"
-    )
+    random_task_selection_enforced: bool = Field(default=False, alias="enforceRandomTaskSelection")
     private: Optional[bool] = Field(None, alias="private")
     allowed_users: List[str] = Field(default_factory=list, alias="allowedUsernames")
     project_teams: List[ProjectTeamDTO] = Field(default_factory=list, alias="teams")
@@ -585,30 +572,22 @@ class ProjectSummary(BaseModel):
 class PMDashboardDTO(BaseModel):
     """DTO for constructing the PM Dashboard"""
 
-    draft_projects: Optional[List[ProjectSummary]] = Field(
-        default_factory=list, alias="draftProjects"
-    )
-    active_projects: Optional[List[ProjectSummary]] = Field(
-        default_factory=list, alias="activeProjects"
-    )
-    archived_projects: Optional[List[ProjectSummary]] = Field(
-        default_factory=list, alias="archivedProjects"
-    )
+    draft_projects: Optional[List[ProjectSummary]] = Field(default_factory=list, alias="draftProjects")
+    active_projects: Optional[List[ProjectSummary]] = Field(default_factory=list, alias="activeProjects")
+    archived_projects: Optional[List[ProjectSummary]] = Field(default_factory=list, alias="archivedProjects")
 
     class Config:
         populate_by_name = True
 
 
 class ProjectTaskAnnotationsDTO(BaseModel):
-    """DTO for task annotations of a project"""
-
-    def __init__(self):
-        """DTO constructor set task arrays to empty"""
-        super().__init__()
-        self.tasks = []
+    """DTO for all task annotations on a project"""
 
     project_id: Optional[int] = Field(None, alias="projectId")
-    tasks: Optional[List[TaskAnnotationDTO]] = Field(None, alias="tasks")
+    tasks: Optional[List[TaskAnnotationDTO]] = Field(default_factory=list)
+
+    class Config:
+        populate_by_name = True
 
 
 class ProjectStatsDTO(BaseModel):
@@ -629,9 +608,7 @@ class ProjectStatsDTO(BaseModel):
     percent_bad_imagery: Optional[int] = Field(None, alias="percentBadImagery")
     aoi_centroid: Optional[str] = Field(None, alias="aoiCentroid")
     time_to_finish_mapping: Optional[int] = Field(None, alias="timeToFinishMapping")
-    time_to_finish_validating: Optional[int] = Field(
-        None, alias="timeToFinishValidating"
-    )
+    time_to_finish_validating: Optional[int] = Field(None, alias="timeToFinishValidating")
 
     class Config:
         populate_by_name = True

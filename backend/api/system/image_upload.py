@@ -16,7 +16,7 @@ router = APIRouter(
 
 
 @router.post("/image-upload/")
-async def post(
+async def post_image(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     data: dict = Body(...),
@@ -89,9 +89,7 @@ async def post(
             "x-api-key": settings.IMAGE_UPLOAD_API_KEY,
             "Content-Type": "application/json",
         }
-        url = "{}?filename={}".format(
-            settings.IMAGE_UPLOAD_API_URL, data.get("filename")
-        )
+        url = "{}?filename={}".format(settings.IMAGE_UPLOAD_API_URL, data.get("filename"))
         result = requests.post(url, headers=headers, data=json.dumps({"image": data}))
         if result.ok:
             return JSONResponse(content=result.json(), status_code=201)

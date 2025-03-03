@@ -1,8 +1,10 @@
-from backend.models.postgis.statuses import TaskStatus
-from backend.models.dtos.stats_dto import Pagination
-from pydantic import BaseModel, Field
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, Field, ValidationError
+
+from backend.models.dtos.stats_dto import Pagination
+from backend.models.postgis.statuses import TaskStatus
 
 
 class ExtendedStringType(str):
@@ -27,9 +29,7 @@ class ExtendedStringType(str):
         value = super().convert(value, context)
         for func in self.converters:
             value = func(value)
-        return (
-            value  # will have a value after going through all the conversions in order
-        )
+        return value  # will have a value after going through all the conversions in order
 
 
 def is_valid_validated_status(value):
@@ -94,9 +94,7 @@ class ValidatedTask(BaseModel):
     task_id: int = Field(None, alias="taskId")
     status: str = Field(None, validators=[is_valid_validated_status])
     comment: Optional[str] = None
-    issues: Optional[List[ValidationMappingIssue]] = Field(
-        None, alias="validationIssues"
-    )
+    issues: Optional[List[ValidationMappingIssue]] = Field(None, alias="validationIssues")
 
     class Config:
         populate_by_name = True
@@ -107,9 +105,7 @@ class ResetValidatingTask(BaseModel):
 
     task_id: int = Field(alias="taskId")
     comment: Optional[str] = None
-    issues: Optional[List[ValidationMappingIssue]] = Field(
-        None, alias="validationIssues"
-    )
+    issues: Optional[List[ValidationMappingIssue]] = Field(None, alias="validationIssues")
 
     class Config:
         populate_by_name = True
@@ -142,13 +138,13 @@ class StopValidationDTO(BaseModel):
 class MappedTasksByUser(BaseModel):
     """Describes number of tasks user has mapped on a project"""
 
-    username: str = Field(None)
-    mapped_task_count: int = Field(None, alias="mappedTaskCount")
-    tasks_mapped: List[int] = Field(None, alias="tasksMapped")
-    last_seen: datetime = Field(None, alias="lastSeen")
-    mapping_level: str = Field(None, alias="mappingLevel")
+    username: Optional[str] = None
+    mapped_task_count: Optional[int] = Field(default=None, alias="mappedTaskCount")
+    tasks_mapped: Optional[List[int]] = Field(default_factory=list, alias="tasksMapped")
+    last_seen: Optional[datetime] = Field(default=None, alias="lastSeen")
+    mapping_level: Optional[str] = Field(default=None, alias="mappingLevel")
     date_registered: datetime = Field(alias="dateRegistered")
-    last_validation_date: datetime = Field(alias="lastValidationDate")
+    last_validation_date: Optional[datetime] = Field(default=None, alias="lastValidationDate")
 
     class Config:
         populate_by_name = True
@@ -184,12 +180,7 @@ class InvalidatedTasks(BaseModel):
 class MappedTasks(BaseModel):
     """Describes all tasks currently mapped on a project"""
 
-    def __init__(self):
-        """DTO constructor initialise all arrays to empty"""
-        super().__init__()
-        self.mapped_tasks = []
-
-    mapped_tasks: List[MappedTasksByUser] = Field(alias="mappedTasks")
+    mapped_tasks: List[MappedTasksByUser] = Field(default_factory=list, alias="mappedTasks")
 
     class Config:
         populate_by_name = True

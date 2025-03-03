@@ -1,16 +1,13 @@
-from backend.models.postgis.task import Task, TaskStatus
-from backend.models.postgis.statuses import UserGender, UserRole, MappingLevel
 from backend.exceptions import get_message_from_sub_code
-
-
+from backend.models.postgis.statuses import MappingLevel, UserGender, UserRole
+from backend.models.postgis.task import Task, TaskStatus
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    return_canned_user,
-    generate_encoded_token,
-    create_canned_project,
     create_canned_interest,
+    create_canned_project,
+    generate_encoded_token,
+    return_canned_user,
 )
-
 
 TEST_USERNAME = "test_user"
 TEST_USER_ID = 1111111
@@ -197,9 +194,7 @@ class TestUsersQueriesOwnLockedAPI(BaseTestCase):
         self.assertEqual(len(response.json["lockedTasks"]), 1)
         self.assertEqual(response.json["lockedTasks"][0], 1)
         self.assertEqual(response.json["projectId"], test_project.id)
-        self.assertEqual(
-            response.json["taskStatus"], TaskStatus.LOCKED_FOR_MAPPING.name
-        )
+        self.assertEqual(response.json["taskStatus"], TaskStatus.LOCKED_FOR_MAPPING.name)
 
 
 class UsersQueriesInterestsAPI(BaseTestCase):
@@ -299,9 +294,7 @@ class TestUsersQueriesUsernameFilterAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 200)
-        self.assertListEqual(
-            list(response.json.keys()), ["pagination", "usernames", "users"]
-        )
+        self.assertListEqual(list(response.json.keys()), ["pagination", "usernames", "users"])
         self.assertEqual(len(response.json["usernames"]), 1)
         self.assertEqual(response.json["usernames"][0], self.user.username)
         self.assertEqual(response.json["pagination"]["page"], 1)

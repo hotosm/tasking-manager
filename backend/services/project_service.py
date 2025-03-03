@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta, timezone
 
 import geojson
+from aiocache import Cache, cached
 
 # from cachetools import TTLCache, cached
 from databases import Database
@@ -39,8 +40,6 @@ from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.team_service import TeamService
 from backend.services.users.user_service import UserService
-from aiocache import cached, Cache
-
 
 # summary_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -141,15 +140,9 @@ class ProjectService:
 
         dates_list = []
         for date in dates:
-            dto = ProjectContribDTO(
-                date=date, mapped=0, validated=0, total_tasks=project.total_tasks
-            )
+            dto = ProjectContribDTO(date=date, mapped=0, validated=0, total_tasks=project.total_tasks)
 
-            values = [
-                (row["action_text"], row["task_id"])
-                for row in rows
-                if row["day"] == date
-            ]
+            values = [(row["action_text"], row["task_id"]) for row in rows if row["day"] == date]
             values.sort(reverse=True)
 
             for task_status, task_id in values:
@@ -208,19 +201,15 @@ class ProjectService:
         project = await ProjectService.get_project_by_id(project_id, db)
         # if project is public and is not draft, we don't need to check permissions
         if not project.private and not project.status == ProjectStatus.DRAFT.value:
-            return await Project.as_dto_for_mapping(
-                project.id, db, current_user_id, locale, abbrev
-            )
+            return await Project.as_dto_for_mapping(project.id, db, current_user_id, locale, abbrev)
 
         is_allowed_user = True
         is_team_member = None
         is_manager_permission = False
 
         if current_user_id:
-            is_manager_permission = (
-                await ProjectAdminService.is_user_action_permitted_on_project(
-                    current_user_id, project_id, db
-                )
+            is_manager_permission = await ProjectAdminService.is_user_action_permitted_on_project(
+                current_user_id, project_id, db
             )
         # Draft Projects - admins, authors, org admins & team managers permitted
         if project.status == ProjectStatus.DRAFT.value:
@@ -258,9 +247,7 @@ class ProjectService:
                 )
 
         if is_allowed_user or is_manager_permission or is_team_member:
-            return await Project.as_dto_for_mapping(
-                project.id, db, current_user_id, locale, abbrev
-            )
+            return await Project.as_dto_for_mapping(project.id, db, current_user_id, locale, abbrev)
         else:
             return None
 
@@ -274,18 +261,16 @@ class ProjectService:
         status: int = None,
     ):
         await Project.exists(project_id, db)
-        return await Project.tasks_as_geojson(
-            db, project_id, task_ids_str, order_by, order_by_type, status
-        )
+        return await Project.tasks_as_geojson(db, project_id, task_ids_str, order_by, order_by_type, status)
 
     @staticmethod
     async def get_project_aoi(project_id, db: Database):
-        project = await Project.exists(project_id, db)
+        await Project.exists(project_id, db)
         return await Project.get_aoi_geometry_as_geojson(project_id, db)
 
     @staticmethod
     async def get_project_priority_areas(project_id: int, db: Database) -> list:
-        project = await Project.exists(project_id, db)
+        await Project.exists(project_id, db)
 
         # Fetch the priority areas' geometries as GeoJSON
         query = """
@@ -306,9 +291,7 @@ class ProjectService:
         return tasks
 
     @staticmethod
-    async def get_task_details_for_logged_in_user(
-        user_id: int, preferred_locale: str, db: Database
-    ):
+    async def get_task_details_for_logged_in_user(user_id: int, preferred_locale: str, db: Database):
         """if the user is working on a task in the project return it"""
         tasks = await Task.get_locked_tasks_details_for_user(user_id, db)
 
@@ -317,11 +300,7 @@ class ProjectService:
 
         dtos = []
         for task in tasks:
-            dtos.append(
-                await Task.as_dto_with_instructions(
-                    task.id, task.project_id, db, preferred_locale
-                )
-            )
+            dtos.append(await Task.as_dto_with_instructions(task.id, task.project_id, db, preferred_locale))
 
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
@@ -329,9 +308,7 @@ class ProjectService:
         return task_dtos
 
     @staticmethod
-    async def is_user_in_the_allowed_list(
-        project_id: int, current_user_id: int, db: Database
-    ) -> bool:
+    async def is_user_in_the_allowed_list(project_id: int, current_user_id: int, db: Database) -> bool:
         """For private projects, check if user is present in the allowed list"""
 
         query = """
@@ -340,24 +317,18 @@ class ProjectService:
         WHERE project_id = :project_id AND user_id = :user_id
         """
 
-        result = await db.fetch_val(
-            query, values={"project_id": project_id, "user_id": current_user_id}
-        )
+        result = await db.fetch_val(query, values={"project_id": project_id, "user_id": current_user_id})
         # Return True if the user is in the allowed list, False otherwise
         return result > 0
 
     @staticmethod
-    async def evaluate_mapping_permission(
-        project_id: int, user_id: int, mapping_permission: int, db: Database
-    ):
+    async def evaluate_mapping_permission(project_id: int, user_id: int, mapping_permission: int, db: Database):
         allowed_roles = [
             TeamRoles.MAPPER.value,
             TeamRoles.VALIDATOR.value,
             TeamRoles.PROJECT_MANAGER.value,
         ]
-        is_team_member = await TeamService.check_team_membership(
-            project_id, allowed_roles, user_id, db
-        )
+        is_team_member = await TeamService.check_team_membership(project_id, allowed_roles, user_id, db)
 
         # mapping_permission = 1(level),2(teams),3(teamsAndLevel)
         if mapping_permission == MappingPermission.TEAMS.value:
@@ -383,24 +354,15 @@ class ProjectService:
 
         project = await ProjectService.get_project_by_id(project_id, db)
         if project.license_id:
-            if not await UserService.has_user_accepted_license(
-                user_id, project.license_id, db
-            ):
+            if not await UserService.has_user_accepted_license(user_id, project.license_id, db):
                 return False, MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE
 
         mapping_permission = project.mapping_permission
-        is_manager_permission = (
-            False  # is_admin or is_author or is_org_manager or is_manager_team
-        )
-        if await ProjectAdminService.is_user_action_permitted_on_project(
-            user_id, project_id, db
-        ):
+        is_manager_permission = False  # is_admin or is_author or is_org_manager or is_manager_team
+        if await ProjectAdminService.is_user_action_permitted_on_project(user_id, project_id, db):
             is_manager_permission = True
         # Draft (public/private) accessible only for is_manager_permission
-        if (
-            ProjectStatus(project.status) == ProjectStatus.DRAFT
-            and not is_manager_permission
-        ):
+        if ProjectStatus(project.status) == ProjectStatus.DRAFT and not is_manager_permission:
             return False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
 
         is_restriction = None
@@ -415,18 +377,14 @@ class ProjectService:
         is_allowed_user = None
         if project.private and not is_manager_permission:
             # Check if user is in allowed user list
-            is_allowed_user = await ProjectService.is_user_in_the_allowed_list(
-                project.id, user_id
-            )
+            is_allowed_user = await ProjectService.is_user_in_the_allowed_list(project.id, user_id)
             if is_allowed_user:
                 return True, "User allowed to map"
 
         if not is_manager_permission and is_restriction:
             return is_restriction
 
-        elif project.private and not (
-            is_manager_permission or is_allowed_user or not is_restriction
-        ):
+        elif project.private and not (is_manager_permission or is_allowed_user or not is_restriction):
             return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
         return True, "User allowed to map"
 
@@ -440,13 +398,9 @@ class ProjectService:
         return True
 
     @staticmethod
-    async def evaluate_validation_permission(
-        project_id: int, user_id: int, validation_permission: int, db: Database
-    ):
+    async def evaluate_validation_permission(project_id: int, user_id: int, validation_permission: int, db: Database):
         allowed_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
-        is_team_member = await TeamService.check_team_membership(
-            project_id, allowed_roles, user_id, db
-        )
+        is_team_member = await TeamService.check_team_membership(project_id, allowed_roles, user_id, db)
         # validation_permission = 1(level),2(teams),3(teamsAndLevel)
         if validation_permission == ValidationPermission.TEAMS.value:
             if not is_team_member:
@@ -463,34 +417,25 @@ class ProjectService:
                 return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
     @staticmethod
-    async def is_user_permitted_to_validate(
-        project_id: int, user_id: int, db: Database
-    ):
+    async def is_user_permitted_to_validate(project_id: int, user_id: int, db: Database):
         """Check if the user is allowed to validate on the project in scope"""
         if await UserService.is_user_blocked(user_id, db):
             return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         project = await ProjectService.get_project_by_id(project_id, db)
         if project.license_id:
-            if not UserService.has_user_accepted_license(
-                user_id, project.license_id, db
-            ):
+            if not UserService.has_user_accepted_license(user_id, project.license_id, db):
                 return False, ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE
 
         validation_permission = project.validation_permission
 
         # is_admin or is_author or is_org_manager or is_manager_team
         is_manager_permission = False
-        if await ProjectAdminService.is_user_action_permitted_on_project(
-            user_id, project_id, db
-        ):
+        if await ProjectAdminService.is_user_action_permitted_on_project(user_id, project_id, db):
             is_manager_permission = True
 
         # Draft (public/private) accessible only for is_manager_permission
-        if (
-            ProjectStatus(project.status) == ProjectStatus.DRAFT
-            and not is_manager_permission
-        ):
+        if ProjectStatus(project.status) == ProjectStatus.DRAFT and not is_manager_permission:
             return False, ValidatingNotAllowed.PROJECT_NOT_PUBLISHED
 
         is_restriction = None
@@ -506,18 +451,14 @@ class ProjectService:
         is_allowed_user = None
         if project.private and not is_manager_permission:
             # Check if user is in allowed user list
-            is_allowed_user = await ProjectService.is_user_in_the_allowed_list(
-                project_id, user_id, db
-            )
+            is_allowed_user = await ProjectService.is_user_in_the_allowed_list(project_id, user_id, db)
 
             if is_allowed_user:
                 return True, "User allowed to validate"
 
         if not is_manager_permission and is_restriction:
             return is_restriction
-        elif project.private and not (
-            is_manager_permission or is_allowed_user or not is_restriction
-        ):
+        elif project.private and not (is_manager_permission or is_allowed_user or not is_restriction):
             return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         return True, "User allowed to validate"
@@ -528,18 +469,14 @@ class ProjectService:
 
     @staticmethod
     @cached(cache=Cache.MEMORY, key_builder=summary_cache_key_builder, ttl=600)
-    def get_cached_project_summary(
-        project_id: int, preferred_locale: str = "en"
-    ) -> ProjectSummary:
+    def get_cached_project_summary(project_id: int, preferred_locale: str = "en") -> ProjectSummary:
         """Gets the project summary DTO"""
         project = ProjectService.get_project_by_id(project_id)
         # We don't want to cache the project stats, so we set calculate_completion to False
         return project.get_project_summary(preferred_locale, calculate_completion=False)
 
     @staticmethod
-    async def get_project_summary(
-        project_id: int, db: Database, preferred_locale: str = "en"
-    ) -> ProjectSummary:
+    async def get_project_summary(project_id: int, db: Database, preferred_locale: str = "en") -> ProjectSummary:
         query = """
         SELECT
             p.id AS id,
@@ -588,9 +525,7 @@ class ProjectService:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
         """Gets the project summary DTO"""
 
-        summary = await Project.get_project_summary(
-            project, preferred_locale, db, calculate_completion=False
-        )
+        summary = await Project.get_project_summary(project, preferred_locale, db, calculate_completion=False)
         summary.percent_mapped = Project.calculate_tasks_percent(
             "mapped",
             project.tasks_mapped,
@@ -627,9 +562,7 @@ class ProjectService:
         await Project.unset_as_featured(project, db)
 
     @staticmethod
-    async def get_featured_projects(
-        preferred_locale: str, db: Database
-    ) -> ProjectSearchResultsDTO:
+    async def get_featured_projects(preferred_locale: str, db: Database) -> ProjectSearchResultsDTO:
         """Fetch featured projects and return results."""
 
         # Create the search query
@@ -642,16 +575,12 @@ class ProjectService:
         project_ids = [project["id"] for project in projects]
 
         # Get total contributors
-        contrib_counts = await ProjectSearchService.get_total_contributions(
-            project_ids, db
-        )
+        contrib_counts = await ProjectSearchService.get_total_contributions(project_ids, db)
         zip_items = zip(projects, contrib_counts)
 
         dto = ProjectSearchResultsDTO()
         dto.results = [
-            await ProjectSearchService.create_result_dto(
-                project, preferred_locale, total_contributors, db
-            )
+            await ProjectSearchService.create_result_dto(project, preferred_locale, total_contributors, db)
             for project, total_contributors in zip_items
         ]
         dto.pagination = None
@@ -686,13 +615,11 @@ class ProjectService:
     @cached(cache=Cache.MEMORY, key_builder=stats_cache_key_builder, ttl=600)
     async def get_project_stats(project_id: int, db: Database) -> ProjectStatsDTO:
         """Gets the project stats DTO"""
-        project = await ProjectService.exists(project_id, db)
+        await ProjectService.exists(project_id, db)
         return await Project.get_project_stats(project_id, db)
 
     @staticmethod
-    async def get_project_user_stats(
-        project_id: int, username: str, db: Database
-    ) -> ProjectUserStatsDTO:
+    async def get_project_user_stats(project_id: int, username: str, db: Database) -> ProjectUserStatsDTO:
         """Gets the user stats for a specific project"""
         await ProjectService.exists(project_id, db)
         user = await UserService.get_user_by_username(username, db)
@@ -768,18 +695,14 @@ class ProjectService:
     @staticmethod
     async def get_active_projects(interval: int, db: Database):
         # Calculate the action_date and make it naive
-        action_date = (datetime.now(timezone.utc) - timedelta(hours=interval)).replace(
-            tzinfo=None
-        )
+        action_date = (datetime.now(timezone.utc) - timedelta(hours=interval)).replace(tzinfo=None)
         # First query to get distinct project_ids
         query_project_ids = """
         SELECT DISTINCT project_id
         FROM task_history
         WHERE action_date >= :action_date
         """
-        project_ids_result = await db.fetch_all(
-            query_project_ids, {"action_date": action_date}
-        )
+        project_ids_result = await db.fetch_all(query_project_ids, {"action_date": action_date})
         project_ids = [row["project_id"] for row in project_ids_result]
 
         # If there are no project IDs, return an empty FeatureCollection

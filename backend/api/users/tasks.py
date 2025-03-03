@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from databases import Database
+from dateutil.parser import parse as date_parse
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
@@ -17,7 +18,7 @@ router = APIRouter(
 
 
 @router.get("/{user_id}/tasks/")
-async def get(
+async def get_user_tasks(
     request: Request,
     user_id: int,
     user: AuthUserDTO = Depends(login_required),
@@ -107,15 +108,9 @@ async def get(
         project_status = request.query_params.get("project_status")
         project_id = int(request.query_params.get("project_id", 0))
         start_date = (
-            date_parse(request.query_params.get("start_date"))
-            if request.query_params.get("start_date")
-            else None
+            date_parse(request.query_params.get("start_date")) if request.query_params.get("start_date") else None
         )
-        end_date = (
-            date_parse(request.query_params.get("end_date"))
-            if request.query_params.get("end_date")
-            else None
-        )
+        end_date = date_parse(request.query_params.get("end_date")) if request.query_params.get("end_date") else None
         sort_by = request.query_params.get("sort_by", "-action_date")
 
         tasks = await UserService.get_tasks_dto(
@@ -133,6 +128,4 @@ async def get(
         return tasks
     except ValueError:
         print("InvalidDateRange- Date range can not be bigger than 1 year")
-        return JSONResponse(
-            content={"tasks": [], "pagination": {"total": 0}}, status_code=200
-        )
+        return JSONResponse(content={"tasks": [], "pagination": {"total": 0}}, status_code=200)

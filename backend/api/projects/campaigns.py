@@ -22,7 +22,7 @@ router = APIRouter(
 
 
 @router.post("/{project_id}/campaigns/{campaign_id}/")
-async def post(
+async def create_project_campaign(
     project_id: int,
     campaign_id: int,
     db: Database = Depends(get_db),
@@ -66,9 +66,7 @@ async def post(
         500:
             description: Internal Server Error
     """
-    if not await ProjectAdminService.is_user_action_permitted_on_project(
-        user.id, project_id, db
-    ):
+    if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
         return {
             "Error": "User is not a manager of the project",
             "SubCode": "UserPermissionError",
@@ -80,9 +78,7 @@ async def post(
     FROM campaign_projects
     WHERE project_id = :project_id AND campaign_id = :campaign_id
     """
-    result = await db.fetch_val(
-        query, values={"project_id": project_id, "campaign_id": campaign_id}
-    )
+    result = await db.fetch_val(query, values={"project_id": project_id, "campaign_id": campaign_id})
 
     if result > 0:
         return JSONResponse(
@@ -93,19 +89,15 @@ async def post(
             status_code=400,
         )
 
-    campaign_project_dto = CampaignProjectDTO(
-        project_id=project_id, campaign_id=campaign_id
-    )
+    campaign_project_dto = CampaignProjectDTO(project_id=project_id, campaign_id=campaign_id)
 
     await CampaignService.create_campaign_project(campaign_project_dto, db)
-    message = "campaign with id {} assigned successfully for project with id {}".format(
-        campaign_id, project_id
-    )
+    message = "campaign with id {} assigned successfully for project with id {}".format(campaign_id, project_id)
     return JSONResponse(content={"Success": message}, status_code=200)
 
 
 @router.get("/{project_id}/campaigns/")
-async def get(project_id: int, db: Database = Depends(get_db)):
+async def get_project_campaigns(project_id: int, db: Database = Depends(get_db)):
     """
     Gets all campaigns for a project
     ---
@@ -135,7 +127,7 @@ async def get(project_id: int, db: Database = Depends(get_db)):
 
 
 @router.delete("/{project_id}/campaigns/{campaign_id}/")
-async def delete(
+async def delete_project_campaign(
     project_id: int,
     campaign_id: int,
     db: Database = Depends(get_db),
@@ -179,9 +171,7 @@ async def delete(
         500:
             description: Internal Server Error
     """
-    if not await ProjectAdminService.is_user_action_permitted_on_project(
-        user.id, project_id, db
-    ):
+    if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
         return JSONResponse(
             content={
                 "Error": "User is not a manager of the project",

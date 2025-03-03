@@ -1,7 +1,6 @@
 from backend.models.postgis.task import Task
-
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import return_canned_user, create_canned_project
+from tests.backend.helpers.test_helpers import create_canned_project, return_canned_user
 
 
 class TestSystemStatisticsAPI(BaseTestCase):
@@ -16,9 +15,7 @@ class TestSystemStatisticsAPI(BaseTestCase):
         test_user.create()
         test_project, _ = create_canned_project()
         # Lock a task for mapping as mappers online is calculated based on locked tasks
-        task = Task.get(
-            2, test_project.id
-        )  # Set task 2 to mapped since it's created unmapped
+        task = Task.get(2, test_project.id)  # Set task 2 to mapped since it's created unmapped
         task.lock_task_for_mapping(test_user.id)
         url = "/api/v2/system/statistics/"
         # Act

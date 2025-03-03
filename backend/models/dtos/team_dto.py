@@ -1,14 +1,11 @@
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, field_validator
 
 from backend.models.dtos.stats_dto import Pagination
-from backend.models.postgis.statuses import (
-    TeamJoinMethod,
-    TeamMemberFunctions,
-    TeamVisibility,
-)
+from backend.models.postgis.statuses import TeamJoinMethod, TeamMemberFunctions, TeamVisibility
 
 
 def validate_team_visibility(value: str) -> str:
@@ -64,9 +61,7 @@ class TeamMembersDTO(BaseModel):
     username: str
     function: str
     active: bool
-    join_request_notifications: bool = Field(
-        default=False, alias="joinRequestNotifications"
-    )
+    join_request_notifications: bool = Field(default=False, alias="joinRequestNotifications")
     picture_url: Optional[str] = Field(None, alias="pictureUrl")
     joined_date: Optional[datetime] = Field(None, alias="joinedDate")
 

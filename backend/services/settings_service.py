@@ -1,6 +1,7 @@
 from cachetools import TTLCache, cached
-from backend.models.dtos.settings_dto import SupportedLanguage, SettingsDTO
+
 from backend.config import settings
+from backend.models.dtos.settings_dto import SettingsDTO, SupportedLanguage
 
 settings_cache = TTLCache(maxsize=4, ttl=300)
 

@@ -1,5 +1,6 @@
 # from werkzeug.exceptions import HTTPException
 from fastapi import HTTPException
+
 from backend import ERROR_MESSAGES
 
 
@@ -32,28 +33,6 @@ def get_message_from_sub_code(sub_code: str) -> str:
         return ERROR_MESSAGES[sub_code]
     except KeyError:
         return sub_code
-
-
-# class BaseException(HTTPException):
-#     """Base exception class for all http exceptions in the application"""
-
-#     def __init__(self, sub_code, message, status_code, **kwargs):
-#         self.sub_code = sub_code
-#         self.message = message
-#         self.status_code = status_code
-#         self.kwargs = kwargs
-#         response = self.to_dict()
-#         HTTPException.__init__(self, message, response)
-
-#     def to_dict(self):
-#         return {
-#             "error": {
-#                 "code": self.status_code,
-#                 "sub_code": self.sub_code,
-#                 "message": self.message,
-#                 "details": self.kwargs,
-#             }
-#         }, self.status_code
 
 
 class BaseException(HTTPException):

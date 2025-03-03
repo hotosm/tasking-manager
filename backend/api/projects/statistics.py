@@ -14,7 +14,7 @@ router = APIRouter(
 
 
 @router.get("/queries/popular/")
-async def get(db: Database = Depends(get_db)):
+async def get_popular(db: Database = Depends(get_db)):
     """
     Get popular projects
     ---
@@ -33,7 +33,7 @@ async def get(db: Database = Depends(get_db)):
 
 
 @router.get("/{project_id}/statistics/")
-async def get(project_id: int, db: Database = Depends(get_db)):
+async def get_project_stats(project_id: int, db: Database = Depends(get_db)):
     """
     Get Project Stats
     ---
@@ -67,7 +67,7 @@ async def get(project_id: int, db: Database = Depends(get_db)):
 
 
 @router.get("/{project_id}/statistics/queries/{username}/")
-async def get(project_id: int, username: str, db: Database = Depends(get_db)):
+async def get_project_user_stats(project_id: int, username: str, db: Database = Depends(get_db)):
     """
     Get detailed stats about user
     ---

@@ -5,14 +5,14 @@ Revises: fcd9cebaa79c
 Create Date: 2019-05-24 23:05:45.512395
 
 """
-from alembic import op
-from sqlalchemy.dialects.postgresql import ARRAY
-import sqlalchemy as sa
 import json
-from shapely.geometry import shape
-import shapely.wkt
 import sys
 
+import shapely.wkt
+import sqlalchemy as sa
+from alembic import op
+from shapely.geometry import shape
+from sqlalchemy.dialects.postgresql import ARRAY
 
 # revision identifiers, used by Alembic.
 revision = "0eee8c1abd3a"
@@ -27,9 +27,7 @@ def upgrade():
 
     op.add_column("projects", sa.Column("country", ARRAY(sa.String()), nullable=True))
 
-    fetch_all_project_geoms = sa.text(
-        "SELECT id, ST_AsText(ST_GeomFromWKB(ST_AsEWKB(centroid))) from projects;"
-    )
+    fetch_all_project_geoms = sa.text("SELECT id, ST_AsText(ST_GeomFromWKB(ST_AsEWKB(centroid))) from projects;")
     projects = conn.execute(fetch_all_project_geoms)
     total_projects = projects.rowcount
     print("Total projects in the DB: " + str(total_projects))
@@ -85,12 +83,7 @@ def upgrade():
                             )
 
                             op.execute(update_country_info)
-                            print(
-                                str(match)
-                                + "/"
-                                + str(total_projects)
-                                + " projects mapped to countries"
-                            )
+                            print(str(match) + "/" + str(total_projects) + " projects mapped to countries")
                             sys.stdout.write("\033[F")
                             break
                     if count == total_projects:

@@ -5,9 +5,9 @@ Revises: dc250d726600
 Create Date: 2017-05-29 14:22:30.597232
 
 """
-from alembic import op
-import sqlalchemy as sa
 import geoalchemy2
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "e0741bdfde1d"
@@ -47,7 +47,5 @@ def downgrade():
         ),
         sa.PrimaryKeyConstraint("id", name="areas_of_interest_pkey"),
     )
-    op.create_foreign_key(
-        "projects_aoi_id_fkey", "projects", "areas_of_interest", ["aoi_id"], ["id"]
-    )
+    op.create_foreign_key("projects_aoi_id_fkey", "projects", "areas_of_interest", ["aoi_id"], ["id"])
     # ### end Alembic commands ###

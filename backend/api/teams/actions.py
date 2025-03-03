@@ -7,11 +7,7 @@ from backend.db import get_db
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.postgis.user import User
-from backend.services.team_service import (
-    TeamJoinNotAllowed,
-    TeamService,
-    TeamServiceError,
-)
+from backend.services.team_service import TeamJoinNotAllowed, TeamService, TeamServiceError
 from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
@@ -24,7 +20,7 @@ TEAM_NOT_FOUND = "Team not found"
 
 
 @router.post("/{team_id}/actions/join/")
-async def post(
+async def join_team(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -63,18 +59,14 @@ async def post(
     try:
         async with db.transaction():
             await TeamService.request_to_join_team(team_id, user.id, db)
-            return JSONResponse(
-                content={"Success": "Join request successful"}, status_code=200
-            )
+            return JSONResponse(content={"Success": "Join request successful"}, status_code=200)
     except TeamServiceError as e:
-        return JSONResponse(
-            content={"Error": str(e), "SubCode": "InvalidRequest"}, status_code=400
-        )
+        return JSONResponse(content={"Error": str(e), "SubCode": "InvalidRequest"}, status_code=400)
 
 
 @router.patch("/{team_id}/actions/join/")
 # @tm.pm_only(False)
-async def patch(
+async def action_team_invite(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -149,9 +141,7 @@ async def patch(
 
     if request_type == "join-response":
         if await TeamService.is_user_team_manager(team_id, user.id, db):
-            await TeamService.accept_reject_join_request(
-                team_id, user.id, username, role, action, db
-            )
+            await TeamService.accept_reject_join_request(team_id, user.id, username, role, action, db)
             return JSONResponse(content={"Success": "True"}, status_code=200)
         else:
             return JSONResponse(
@@ -162,14 +152,12 @@ async def patch(
                 status_code=403,
             )
     elif request_type == "invite-response":
-        await TeamService.accept_reject_invitation_request(
-            team_id, user.id, username, role, action, db
-        )
+        await TeamService.accept_reject_invitation_request(team_id, user.id, username, role, action, db)
         return JSONResponse(content={"Success": "True"}, status_code=200)
 
 
 @router.post("/{team_id}/actions/add/")
-async def post(
+async def add_team_member(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -233,9 +221,7 @@ async def post(
 
     try:
         await TeamService.add_user_to_team(team_id, user.id, username, role, db)
-        return JSONResponse(
-            content={"Success": "User added to the team"}, status_code=200
-        )
+        return JSONResponse(content={"Success": "User added to the team"}, status_code=200)
     except TeamJoinNotAllowed as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
@@ -244,7 +230,7 @@ async def post(
 
 
 @router.post("/{team_id}/actions/leave/")
-async def post(
+async def leave_team(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -293,20 +279,13 @@ async def post(
     """
     username = data["username"]
     request_user = await User.get_by_id(user.id, db)
-    if (
-        await TeamService.is_user_team_manager(team_id, user.id, db)
-        or request_user.username == username
-    ):
+    if await TeamService.is_user_team_manager(team_id, user.id, db) or request_user.username == username:
         await TeamService.leave_team(team_id, username, db)
-        return JSONResponse(
-            content={"Success": "User removed from the team"}, status_code=200
-        )
+        return JSONResponse(content={"Success": "User removed from the team"}, status_code=200)
     else:
         return JSONResponse(
             content={
-                "Error": "You don't have permissions to remove {} from this team.".format(
-                    username
-                ),
+                "Error": "You don't have permissions to remove {} from this team.".format(username),
                 "SubCode": "RemoveUserError",
             },
             status_code=403,
@@ -314,7 +293,7 @@ async def post(
 
 
 @router.post("/{team_id}/actions/message-members/")
-async def post(
+async def message_team(
     request: Request,
     background_tasks: BackgroundTasks,
     user: AuthUserDTO = Depends(login_required),
@@ -375,9 +354,7 @@ async def post(
         if not is_manager:
             raise ValueError
         if not message_dto.message.strip() or not message_dto.subject.strip():
-            raise Exception(
-                {"Error": "Empty message not allowed", "SubCode": "EmptyMessage"}
-            )
+            raise Exception({"Error": "Empty message not allowed", "SubCode": "EmptyMessage"})
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return JSONResponse(
@@ -404,8 +381,6 @@ async def post(
             message_dto,
             user.id,
         )
-        return JSONResponse(
-            content={"Success": "Message sent successfully"}, status_code=200
-        )
+        return JSONResponse(content={"Success": "Message sent successfully"}, status_code=200)
     except ValueError as e:
         return JSONResponse(content={"Error": str(e)}, status_code=400)

@@ -1,17 +1,16 @@
 import json
-from shapely.geometry import Polygon
-from geoalchemy2 import shape
 from unittest.mock import patch
 
 import geojson
+from geoalchemy2 import shape
+from shapely.geometry import Polygon
 
 from backend.models.dtos.grid_dto import SplitTaskDTO
 from backend.models.postgis.project import Project
 from backend.models.postgis.task import Task
 from backend.services.grid.split_service import SplitService, SplitServiceError
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import get_canned_json
-from tests.backend.helpers.test_helpers import create_canned_project
+from tests.backend.helpers.test_helpers import create_canned_project, get_canned_json
 
 
 class TestSplitService(BaseTestCase):
@@ -111,8 +110,6 @@ class TestSplitService(BaseTestCase):
         split_task_dto.task_id = 2
 
         # Split tasks
-        expected = geojson.loads(
-            json.dumps(get_canned_json("non_square_split_results.json"))
-        )
+        expected = geojson.loads(json.dumps(get_canned_json("non_square_split_results.json")))
         result = SplitService._create_split_tasks(task.x, task.y, task.zoom, task)
         self.assertDeepAlmostEqual(expected, result)

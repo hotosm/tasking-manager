@@ -1,36 +1,26 @@
-import geojson
 import base64
 import json
 import os
-from typing import Tuple
 import xml.etree.ElementTree as ET
-from backend.models.dtos.organisation_dto import (
-    UpdateOrganisationDTO,
-)
-from backend.models.dtos.project_dto import (
-    DraftProjectDTO,
-    ProjectDTO,
-    ProjectInfoDTO,
-    ProjectStatus,
-    ProjectPriority,
-)
-from backend.models.postgis.project import Project, ProjectTeams
+from typing import Tuple
+
+import geojson
+
+from backend.models.dtos.organisation_dto import UpdateOrganisationDTO
+from backend.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectInfoDTO, ProjectPriority, ProjectStatus
 from backend.models.postgis.campaign import Campaign
-from backend.models.postgis.statuses import MappingLevel, TaskStatus
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.notification import Notification
+from backend.models.postgis.organisation import Organisation
+from backend.models.postgis.project import Project, ProjectTeams
+from backend.models.postgis.statuses import MappingLevel, TaskStatus
 from backend.models.postgis.task import Task
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.user import User
-from backend.models.postgis.organisation import Organisation
-from backend.services.users.authentication_service import AuthenticationService
 from backend.services.interests_service import Interest
-from backend.services.license_service import LicenseService, LicenseDTO
-from backend.services.mapping_issues_service import (
-    MappingIssueCategoryService,
-    MappingIssueCategoryDTO,
-)
-
+from backend.services.license_service import LicenseDTO, LicenseService
+from backend.services.mapping_issues_service import MappingIssueCategoryDTO, MappingIssueCategoryService
+from backend.services.users.authentication_service import AuthenticationService
 
 TEST_USER_ID = 777777
 TEST_USERNAME = "Thinkwhere Test"
@@ -48,9 +38,7 @@ TEST_MESSAGE_DETAILS = "This is a test message"
 def get_canned_osm_user_details():
     """Helper method to find test file, dependent on where tests are being run from"""
 
-    location = os.path.join(
-        os.path.dirname(__file__), "test_files", "osm_user_details.json"
-    )
+    location = os.path.join(os.path.dirname(__file__), "test_files", "osm_user_details.json")
     try:
         with open(location, "r") as x:
             return json.load(x)
@@ -61,9 +49,7 @@ def get_canned_osm_user_details():
 def get_canned_osm_user_json_details():
     """Helper method to find test file, dependent on where tests are being run from"""
 
-    location = os.path.join(
-        os.path.dirname(__file__), "test_files", "osm_user_details.json"
-    )
+    location = os.path.join(os.path.dirname(__file__), "test_files", "osm_user_details.json")
     try:
         with open(location, "r") as x:
             return json.load(x)
@@ -74,9 +60,7 @@ def get_canned_osm_user_json_details():
 def get_canned_osm_user_details_changed_name():
     """Helper method to find test file, dependent on where tests are being run from"""
 
-    location = os.path.join(
-        os.path.dirname(__file__), "test_files", "osm_user_details_changed_name.xml"
-    )
+    location = os.path.join(os.path.dirname(__file__), "test_files", "osm_user_details_changed_name.xml")
 
     try:
         with open(location, "r"):
@@ -101,9 +85,7 @@ def get_canned_json(name_of_file):
 
 def get_canned_simplified_osm_user_details():
     """Helper that reads file and returns it as a string"""
-    location = os.path.join(
-        os.path.dirname(__file__), "test_files", "osm_user_details_simple.xml"
-    )
+    location = os.path.join(os.path.dirname(__file__), "test_files", "osm_user_details_simple.xml")
 
     with open(location, "r") as osm_file:
         data = osm_file.read().replace("\n", "")
@@ -148,12 +130,8 @@ def create_canned_project(name=TEST_PROJECT_NAME) -> Tuple[Project, User]:
     test_aoi_geojson = geojson.loads(json.dumps(get_canned_json("test_aoi.json")))
 
     task_feature = geojson.loads(json.dumps(get_canned_json("splittable_task.json")))
-    task_non_square_feature = geojson.loads(
-        json.dumps(get_canned_json("non_square_task.json"))
-    )
-    task_arbitrary_feature = geojson.loads(
-        json.dumps(get_canned_json("splittable_task.json"))
-    )
+    task_non_square_feature = geojson.loads(json.dumps(get_canned_json("non_square_task.json")))
+    task_arbitrary_feature = geojson.loads(json.dumps(get_canned_json("splittable_task.json")))
     test_user = get_canned_user(TEST_USERNAME)
     if test_user is None:
         test_user = create_canned_user()
@@ -205,9 +183,7 @@ def create_canned_project(name=TEST_PROJECT_NAME) -> Tuple[Project, User]:
 def return_canned_draft_project_json():
     """Helper method to find test file, dependent on where tests are being run from"""
 
-    location = os.path.join(
-        os.path.dirname(__file__), "test_files", "canned_draft_project.json"
-    )
+    location = os.path.join(os.path.dirname(__file__), "test_files", "canned_draft_project.json")
     try:
         with open(location, "r") as x:
             return json.load(x)

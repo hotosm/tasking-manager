@@ -1,12 +1,12 @@
-from backend.models.dtos.user_dto import AuthUserDTO
-from backend.services.users.authentication_service import pm_only
 from databases import Database
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from backend.db import get_db
 from backend.models.dtos.licenses_dto import LicenseDTO
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.license_service import LicenseService
+from backend.services.users.authentication_service import pm_only
 
 router = APIRouter(
     prefix="/licenses",
@@ -16,7 +16,7 @@ router = APIRouter(
 
 
 @router.post("/")
-async def post(
+async def post_license(
     license_dto: LicenseDTO,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(pm_only),
@@ -65,7 +65,7 @@ async def post(
 
 
 @router.get("/{license_id}/")
-async def get(
+async def retrieve_license(
     license_id: int,
     db: Database = Depends(get_db),
 ):
@@ -96,7 +96,7 @@ async def get(
 
 
 @router.patch("/{license_id}/")
-async def patch(
+async def patch_license(
     license_dto: LicenseDTO,
     license_id: int,
     db: Database = Depends(get_db),
@@ -152,7 +152,7 @@ async def patch(
 
 
 @router.delete("/{license_id}/")
-async def delete(
+async def delete_license(
     license_id: int,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(pm_only),
@@ -192,7 +192,7 @@ async def delete(
 
 
 @router.get("/")
-async def get(db: Database = Depends(get_db)):
+async def get_licenses(db: Database = Depends(get_db)):
     """
     Get all imagery licenses
     ---

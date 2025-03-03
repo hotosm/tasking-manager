@@ -152,9 +152,7 @@ def parse_duration(time_str):
     """
     parts = duration_regex.match(time_str)
     assert parts is not None, "Could not parse duration from '{}'".format(time_str)
-    time_params = {
-        name: float(param) for name, param in parts.groupdict().items() if param
-    }
+    time_params = {name: float(param) for name, param in parts.groupdict().items() if param}
     return datetime.timedelta(**time_params)
 
 

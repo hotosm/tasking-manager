@@ -1,15 +1,9 @@
 import geojson
-from backend.models.dtos.project_dto import DraftProjectDTO
 
-from tests.backend.base import BaseTestCase
-from backend.models.postgis.project import (
-    Task,
-    ProjectDTO,
-    ProjectStatus,
-    ProjectPriority,
-    Project,
-)
+from backend.models.dtos.project_dto import DraftProjectDTO
+from backend.models.postgis.project import Project, ProjectDTO, ProjectPriority, ProjectStatus, Task
 from backend.models.postgis.project_info import ProjectInfoDTO
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_project,
     return_canned_draft_project_json,
@@ -21,26 +15,18 @@ class TestProject(BaseTestCase):
     def test_project_can_be_persisted_to_db(self):
         self.test_project, self.test_user = create_canned_project()
         # Checks that code we ran in setUp actually created a project in the DB
-        self.assertIsNotNone(
-            self.test_project.id, "ID should be set if project successfully persisted"
-        )
+        self.assertIsNotNone(self.test_project.id, "ID should be set if project successfully persisted")
 
     def test_task_can_generate_valid_feature_collection(self):
         self.test_project, self.test_user = create_canned_project()
         # Act
-        feature_collection = Task.get_tasks_as_geojson_feature_collection(
-            self.test_project.id, "1"
-        )
+        feature_collection = Task.get_tasks_as_geojson_feature_collection(self.test_project.id, "1")
         self.assertIsInstance(feature_collection, geojson.FeatureCollection)
         self.assertEqual(1, len(feature_collection.features))
 
-        feature_collection = Task.get_tasks_as_geojson_feature_collection(
-            self.test_project.id, None
-        )
+        feature_collection = Task.get_tasks_as_geojson_feature_collection(self.test_project.id, None)
         self.assertIsInstance(feature_collection, geojson.FeatureCollection)
-        self.assertEqual(
-            self.test_project.total_tasks, len(feature_collection.features)
-        )
+        self.assertEqual(self.test_project.total_tasks, len(feature_collection.features))
 
     def test_project_can_be_generated_as_dto(self):
         self.test_project, self.test_user = create_canned_project()
@@ -122,9 +108,5 @@ class TestProject(BaseTestCase):
         # Act
         test_project_dto = test_project.as_dto_for_mapping(project_author.id)
 
-        self.assertEqual(
-            test_project.status, ProjectStatus[test_project_dto.project_status].value
-        )
-        self.assertEqual(
-            test_project.project_info[0].name, test_project_dto.project_info.name
-        )
+        self.assertEqual(test_project.status, ProjectStatus[test_project_dto.project_status].value)
+        self.assertEqual(test_project.project_info[0].name, test_project_dto.project_info.name)

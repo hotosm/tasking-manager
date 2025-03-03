@@ -1,4 +1,5 @@
 import pandas as pd
+from aiocache import Cache, cached
 from cachetools import TTLCache
 from databases import Database
 from sklearn.metrics.pairwise import cosine_similarity
@@ -10,7 +11,6 @@ from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import ProjectStatus
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
-from aiocache import cached, Cache
 
 similar_projects_cache = TTLCache(maxsize=1000, ttl=60 * 60 * 24)  # 24 hours
 
@@ -49,9 +49,7 @@ class ProjectRecommendationService:
         :return: provided data frame with encoded columns
         """
         for column in columns:
-            table = pd.concat(
-                [table, pd.get_dummies(table[column], prefix=column)], axis=1
-            )
+            table = pd.concat([table, pd.get_dummies(table[column], prefix=column)], axis=1)
             table = table.drop(column, axis=1)
         return table
 
@@ -73,23 +71,15 @@ class ProjectRecommendationService:
         # Since country is saved as array in the database
         table["country"] = table["country"].apply(lambda x: x[0] if x else None)
         # Since some categories and mapping_types are set as [None] we need to replace it with []
-        table["categories"] = table["categories"].apply(
-            lambda x: [] if x == [None] else x
-        )
-        table["mapping_types"] = table["mapping_types"].apply(
-            lambda x: [] if x is None else x
-        )
+        table["categories"] = table["categories"].apply(lambda x: [] if x == [None] else x)
+        table["mapping_types"] = table["mapping_types"].apply(lambda x: [] if x is None else x)
 
         # One hot encoding for the columns
         table = ProjectRecommendationService.one_hot_encoding(table, one_hot_columns)
 
         # Convert multi label column mapping_types into multiple columns
-        table = ProjectRecommendationService.mlb_transform(
-            table, "mapping_types", "mapping_types_"
-        )
-        table = ProjectRecommendationService.mlb_transform(
-            table, "categories", "categories_"
-        )
+        table = ProjectRecommendationService.mlb_transform(table, "mapping_types", "mapping_types_")
+        table = ProjectRecommendationService.mlb_transform(table, "categories", "categories_")
         return table
 
     @staticmethod
@@ -100,21 +90,15 @@ class ProjectRecommendationService:
         :return: list of similar project_ids
         """
         # Remove the target project from the all projects data frame
-        all_projects_df = all_projects_df[
-            all_projects_df["id"] != target_project_df["id"].values[0]
-        ]
+        all_projects_df = all_projects_df[all_projects_df["id"] != target_project_df["id"].values[0]]
 
         # Get the cosine similarity matrix
-        similarity_matrix = cosine_similarity(
-            all_projects_df.drop("id", axis=1), target_project_df.drop("id", axis=1)
-        )
+        similarity_matrix = cosine_similarity(all_projects_df.drop("id", axis=1), target_project_df.drop("id", axis=1))
 
         # Get the indices of the projects in the order of similarity
         similar_project_indices = similarity_matrix.flatten().argsort()[::-1]
         # Get the similar project ids in the order of similarity
-        similar_projects = all_projects_df.iloc[similar_project_indices][
-            "id"
-        ].values.tolist()
+        similar_projects = all_projects_df.iloc[similar_project_indices]["id"].values.tolist()
 
         return similar_projects
 
@@ -144,9 +128,7 @@ class ProjectRecommendationService:
         """
         try:
             # Execute the query and fetch results
-            result = await db.fetch_all(
-                query=query, values={"status": ProjectStatus.PUBLISHED.value}
-            )
+            result = await db.fetch_all(query=query, values={"status": ProjectStatus.PUBLISHED.value})
             # Convert the result into a DataFrame
             df = pd.DataFrame([dict(row) for row in result])
             # Optionally encode categorical data
@@ -169,14 +151,9 @@ class ProjectRecommendationService:
 
         # Fetch the target project details
         target_project_query = "SELECT * FROM projects WHERE id = :project_id"
-        target_project = await db.fetch_one(
-            query=target_project_query, values={"project_id": project_id}
-        )
+        target_project = await db.fetch_one(query=target_project_query, values={"project_id": project_id})
 
-        if (
-            not target_project
-            or target_project["status"] != ProjectStatus.PUBLISHED.value
-        ):
+        if not target_project or target_project["status"] != ProjectStatus.PUBLISHED.value:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
         # Create the project similarity matrix
@@ -184,9 +161,7 @@ class ProjectRecommendationService:
         target_project_df = projects_df[projects_df["id"] == project_id]
 
         if target_project_df.empty:
-            projects_df = await ProjectRecommendationService.create_project_matrix(
-                db, target_project=project_id
-            )
+            projects_df = await ProjectRecommendationService.create_project_matrix(db, target_project=project_id)
             target_project_df = projects_df[projects_df["id"] == project_id]
 
         dto = ProjectSearchResultsDTO()
@@ -195,9 +170,7 @@ class ProjectRecommendationService:
             return dto
 
         # Get IDs of similar projects
-        similar_projects = ProjectRecommendationService.get_similar_project_ids(
-            projects_df, target_project_df
-        )
+        similar_projects = ProjectRecommendationService.get_similar_project_ids(projects_df, target_project_df)
         user = await UserService.get_user_by_id(user_id, db) if user_id else None
 
         # Create the search query with filters applied based on user role
@@ -217,17 +190,13 @@ class ProjectRecommendationService:
                 similar_project_id = similar_projects[count]
             except IndexError:
                 break
-            project = await db.fetch_one(
-                query=search_query, values={**params, "project_id": similar_project_id}
-            )
+            project = await db.fetch_one(query=search_query, values={**params, "project_id": similar_project_id})
             if project:
                 dto.results.append(
                     await ProjectSearchService.create_result_dto(
                         project,
                         preferred_locale,
-                        await Project.get_project_total_contributions(
-                            project["id"], db
-                        ),
+                        await Project.get_project_total_contributions(project["id"], db),
                         db,
                     )
                 )

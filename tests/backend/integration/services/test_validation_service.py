@@ -1,10 +1,5 @@
-from backend.services.validator_service import (
-    ValidatorService,
-    ValidatorServiceError,
-    TaskStatus,
-    Task,
-)
 from backend.models.dtos.validator_dto import RevertUserTasksDTO
+from backend.services.validator_service import Task, TaskStatus, ValidatorService, ValidatorServiceError
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project, return_canned_user
 

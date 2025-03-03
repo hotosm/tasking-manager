@@ -1,7 +1,7 @@
 from databases import Database
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 from loguru import logger
-from starlette.authentication import requires
 
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
@@ -20,11 +20,10 @@ router = APIRouter(
 
 @router.get("/{project_id}/annotations/{annotation_type}/")
 @router.get("/{project_id}/annotations/")
-async def get(
+async def get_annotations(
     request: Request,
     project_id: int,
     annotation_type: str = None,
-    user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
 ):
     """
@@ -53,19 +52,22 @@ async def get(
         500:
             description: Internal Server Error
     """
-    ProjectService.exists(project_id)
+    await ProjectService.exists(project_id, db)
     if annotation_type:
-        annotations = TaskAnnotation.get_task_annotations_by_project_id_type(
-            project_id, annotation_type
-        )
+        annotations = await TaskAnnotation.get_task_annotations_by_project_id_type(project_id, annotation_type, db)
     else:
-        annotations = TaskAnnotation.get_task_annotations_by_project_id(project_id)
-    return annotations.model_dump(by_alias=True), 200
+        annotations = await TaskAnnotation.get_task_annotations_by_project_id(project_id, db)
+    return annotations.model_dump(by_alias=True)
 
 
 @router.post("/{project_id}/annotations/{annotation_type}/")
-@requires("authenticated")
-async def post(request: Request, project_id: int, annotation_type: str):
+async def post_annotations(
+    request: Request,
+    project_id: int,
+    annotation_type: str,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
     """
     Store new task annotations for tasks of a project
     ---
@@ -130,39 +132,31 @@ async def post(request: Request, project_id: int, annotation_type: str):
         500:
             description: Internal Server Error
     """
-
-    # if "Application-Token" in request.headers:
-    #     application_token = request.headers["Application-Token"]
-    #     is_valid_token = ApplicationService.check_token(application_token)  # noqa
-    # else:
-    #     logger.error("No token supplied")
-    #     return {"Error": "No token supplied", "SubCode": "NotFound"}, 500
-
     try:
         annotations = await request.json() or {}
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
 
-    ProjectService.exists(project_id)
+    await ProjectService.exists(project_id, db)
 
     task_ids = [t["taskId"] for t in annotations["tasks"]]
 
-    # check if task ids are valid
-    tasks = Task.get_tasks(project_id, task_ids)
+    tasks = await Task.get_tasks(project_id, task_ids, db)
     tasks_ids_db = [t.id for t in tasks]
     if len(task_ids) != len(tasks_ids_db):
-        return {"Error": "Invalid task id"}, 500
+        return JSONResponse(content={"Error": "Invalid task id"}, status_code=500)
 
     for annotation in annotations["tasks"]:
         try:
-            TaskAnnotationsService.add_or_update_annotation(
-                annotation, project_id, annotation_type
-            )
+            await TaskAnnotationsService.add_or_update_annotation(annotation, project_id, annotation_type, db)
         except Exception as e:
             logger.error(f"Error creating annotations: {str(e)}")
-            return {
-                "Error": "Error creating annotations",
-                "SubCode": "InvalidData",
-            }, 400
+            return JSONResponse(
+                content={
+                    "Error": "Error creating annotations",
+                    "SubCode": "InvalidData",
+                },
+                status_code=400,
+            )
 
-    return project_id, 200
+    return project_id

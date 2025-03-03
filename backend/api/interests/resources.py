@@ -20,7 +20,7 @@ INTEREST_NOT_FOUND = "Interest Not Found"
 
 
 @router.post("/")
-async def post(
+async def post_interest(
     interest_dto: InterestDTO,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
@@ -61,16 +61,12 @@ async def post(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
-            user_id=user.id, db=db
-        )
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(user_id=user.id, db=db)
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsAllAPI POST: {str(e)}"
-        return JSONResponse(
-            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
-        )
+        return JSONResponse(content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403)
 
     try:
         new_interest_dto = await InterestService.create(interest_dto.name, db)
@@ -87,7 +83,7 @@ async def post(
 
 
 @router.get("/")
-async def get(db: Database = Depends(get_db)):
+async def get_interests(db: Database = Depends(get_db)):
     """
     Get all interests
     ---
@@ -106,7 +102,7 @@ async def get(db: Database = Depends(get_db)):
 
 
 @router.get("/{interest_id}/")
-async def get(
+async def retrieve_interest(
     interest_id: int,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
@@ -146,23 +142,19 @@ async def get(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
-            user_id=user.id, db=db
-        )
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(user_id=user.id, db=db)
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsRestAPI GET: {str(e)}"
-        return JSONResponse(
-            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
-        )
+        return JSONResponse(content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403)
 
     interest_dto = await InterestService.get(interest_id, db)
     return interest_dto
 
 
 @router.patch("/{interest_id}/")
-async def patch(
+async def patch_interest(
     interest_id: int,
     interest_dto: InterestDTO,
     db: Database = Depends(get_db),
@@ -212,23 +204,19 @@ async def patch(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
-            user_id=user.id, db=db
-        )
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(user_id=user.id, db=db)
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsRestAPI PATCH: {str(e)}"
-        return JSONResponse(
-            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
-        )
+        return JSONResponse(content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403)
 
     update_interest = await InterestService.update(interest_id, interest_dto, db)
     return update_interest
 
 
 @router.delete("/{interest_id}/")
-async def delete(
+async def delete_interest(
     interest_id: int,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
@@ -266,16 +254,12 @@ async def delete(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
-            user_id=user.id, db=db
-        )
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(user_id=user.id, db=db)
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsRestAPI DELETE: {str(e)}"
-        return JSONResponse(
-            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
-        )
+        return JSONResponse(content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403)
 
     await InterestService.delete(interest_id, db)
     return JSONResponse(content={"Success": "Interest deleted"}, status_code=200)

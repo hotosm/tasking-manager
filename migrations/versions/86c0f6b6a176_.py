@@ -5,11 +5,10 @@ Revises: 7937dae319b5
 Create Date: 2021-02-09 03:29:03.763016
 
 """
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 from backend.models.postgis.statuses import OrganisationType
-
 
 # revision identifiers, used by Alembic.
 revision = "86c0f6b6a176"

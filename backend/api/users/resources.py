@@ -5,13 +5,11 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 
-
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO, UserSearchQuery
 from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
-
 
 router = APIRouter(
     prefix="/users",
@@ -21,7 +19,7 @@ router = APIRouter(
 
 
 @router.get("/{user_id}/")
-async def get(
+async def get_user(
     request: Request,
     user_id: int,
     user: AuthUserDTO = Depends(login_required),
@@ -62,7 +60,7 @@ async def get(
 
 
 @router.get("/")
-async def get(
+async def list_users(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -119,16 +117,12 @@ async def get(
         query = UserSearchQuery()
         query.pagination = strtobool(request.query_params.get("pagination", "True"))
         if query.pagination:
-            query.page = (
-                int(request.query_params.get("page"))
-                if request.query_params.get("page")
-                else 1
-            )
+            query.page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
         query.per_page = int(request.query_params.get("perPage", 20))
         query.username = request.query_params.get("username")
         query.mapping_level = request.query_params.get("level")
         query.role = request.query_params.get("role")
-    except Exception:
+    except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return JSONResponse(
             content={"Error": "Unable to fetch user list", "SubCode": "InvalidData"},
@@ -139,7 +133,7 @@ async def get(
 
 
 @router.get("/queries/favorites/")
-async def get(
+async def get_user_favorite_projects(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -170,10 +164,8 @@ async def get(
     return favs_dto
 
 
-# class UsersQueriesUsernameAPI():
-# @token_auth.login_required
 @router.get("/queries/{username}/")
-async def get(
+async def get_osm_user_info(
     request: Request,
     username: str,
     user: AuthUserDTO = Depends(login_required),
@@ -213,10 +205,8 @@ async def get(
     return user_dto
 
 
-# class UsersQueriesUsernameFilterAPI():
-# @token_auth.login_required
 @router.get("/queries/filter/{username}/")
-async def get(
+async def get_paginated_osm_user_info(
     request: Request,
     username,
     db: Database = Depends(get_db),
@@ -259,9 +249,7 @@ async def get(
         500:
             description: Internal Server Error
     """
-    page = (
-        int(request.query_params.get("page")) if request.query_params.get("page") else 1
-    )
+    page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
     project_id = request.query_params.get("projectId", None)
     if project_id:
         project_id = int(project_id)
@@ -270,7 +258,7 @@ async def get(
 
 
 @router.get("/queries/tasks/locked/")
-async def get(
+async def get_task_locked_by_user(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -304,7 +292,7 @@ async def get(
 
 
 @router.get("/queries/tasks/locked/details/")
-async def get(
+async def get_task_details_locked_by_user(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -340,14 +328,12 @@ async def get(
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
-    locked_tasks = await ProjectService.get_task_details_for_logged_in_user(
-        user.id, preferred_locale, db
-    )
+    locked_tasks = await ProjectService.get_task_details_for_logged_in_user(user.id, preferred_locale, db)
     return locked_tasks.model_dump(by_alias=True)
 
 
 @router.get("/{username}/queries/interests/")
-async def get(
+async def get_user_interests(
     request: Request,
     username: str,
     db: Database = Depends(get_db),
@@ -394,7 +380,7 @@ async def get(
 
 
 @router.get("/{username}/recommended-projects/")
-async def get(
+async def get_recommended_projects(
     request: Request,
     username,
     user: AuthUserDTO = Depends(login_required),
@@ -438,10 +424,6 @@ async def get(
         500:
             description: Internal Server Error
     """
-    locale = (
-        request.headers.get("accept-language")
-        if request.headers.get("accept-language")
-        else "en"
-    )
+    locale = request.headers.get("accept-language") if request.headers.get("accept-language") else "en"
     user_dto = await UserService.get_recommended_projects(username, locale, db)
     return user_dto.model_dump(by_alias=True)

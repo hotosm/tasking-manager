@@ -38,9 +38,7 @@ class SplitService:
                     new_x = x * 2 + i
                     new_y = y * 2 + j
                     new_zoom = zoom + 1
-                    new_square = await SplitService._create_square(
-                        new_x, new_y, new_zoom, db
-                    )
+                    new_square = await SplitService._create_square(new_x, new_y, new_zoom, db)
                     feature = geojson.Feature()
                     feature.geometry = new_square
                     feature.properties = {
@@ -73,9 +71,7 @@ class SplitService:
         ymax = (y + 1) * step - max
 
         # Create the MultiPolygon object
-        multipolygon = MultiPolygon(
-            [Polygon([(xmin, ymin), (xmax, ymin), (xmax, ymax), (xmin, ymax)])]
-        )
+        multipolygon = MultiPolygon([Polygon([(xmin, ymin), (xmax, ymin), (xmax, ymax), (xmin, ymax)])])
 
         # Convert MultiPolygon to WKT
         multipolygon_wkt = multipolygon.wkt
@@ -103,9 +99,7 @@ class SplitService:
             FROM tasks
             WHERE id = :task_id AND project_id = :project_id
         """
-        task_geojson_str = await db.fetch_val(
-            task_query, values={"task_id": task.id, "project_id": task.project_id}
-        )
+        task_geojson_str = await db.fetch_val(task_query, values={"task_id": task.id, "project_id": task.project_id})
         task_geojson = geojson.loads(task_geojson_str)
         geometry = shapely_shape(task_geojson)
         centroid = geometry.centroid
@@ -116,13 +110,9 @@ class SplitService:
         vertical_dividing_line = LineString([(centroid.x, miny), (centroid.x, maxy)])
         horizontal_dividing_line = LineString([(minx, centroid.y), (maxx, centroid.y)])
 
-        vertical_halves = SplitService._as_halves(
-            split(geometry, vertical_dividing_line), centroid, "x"
-        )
+        vertical_halves = SplitService._as_halves(split(geometry, vertical_dividing_line), centroid, "x")
         for half in vertical_halves:
-            split_geometries += SplitService._as_halves(
-                split(half, horizontal_dividing_line), centroid, "y"
-            )
+            split_geometries += SplitService._as_halves(split(half, horizontal_dividing_line), centroid, "y")
 
         # convert split geometries into GeoJSON features expected by Task
         split_features = []
@@ -152,16 +142,8 @@ class SplitService:
         with geometries greater than the centroid position -- and returns a tuple
         of two MultiPolygons
         """
-        first_half = [
-            g
-            for g in geometries.geoms
-            if getattr(g.centroid, axis) <= getattr(centroid, axis)
-        ]
-        second_half = [
-            g
-            for g in geometries.geoms
-            if getattr(g.centroid, axis) > getattr(centroid, axis)
-        ]
+        first_half = [g for g in geometries.geoms if getattr(g.centroid, axis) <= getattr(centroid, axis)]
+        second_half = [g for g in geometries.geoms if getattr(g.centroid, axis) > getattr(centroid, axis)]
         return (MultiPolygon(first_half), MultiPolygon(second_half))
 
     @staticmethod
@@ -223,15 +205,11 @@ class SplitService:
 
     @staticmethod
     async def split_task(split_task_dto: SplitTaskDTO, db: Database) -> list:
-        original_task = await Task.get(
-            split_task_dto.task_id, split_task_dto.project_id, db
-        )
+        original_task = await Task.get(split_task_dto.task_id, split_task_dto.project_id, db)
 
         if not original_task:
             raise SplitServiceError("TASK_NOT_FOUND- Task not found")
-        original_geometry = shape.to_shape(
-            WKBElement(original_task["geometry"], srid=4326)
-        )
+        original_geometry = shape.to_shape(WKBElement(original_task["geometry"], srid=4326))
 
         query = """
             SELECT ST_Area(ST_GeogFromWKB(geometry))
@@ -245,19 +223,13 @@ class SplitService:
                 "project_id": split_task_dto.project_id,
             },
         )
-        if (
-            original_task["zoom"] and original_task["zoom"] >= 18
-        ) or original_task_area_m < 25000:
+        if (original_task["zoom"] and original_task["zoom"] >= 18) or original_task_area_m < 25000:
             raise SplitServiceError("SmallToSplit- Task is too small to be split")
 
         if original_task["task_status"] != TaskStatus.LOCKED_FOR_MAPPING.value:
-            raise SplitServiceError(
-                "LockToSplit- Status must be LOCKED_FOR_MAPPING to split"
-            )
+            raise SplitServiceError("LockToSplit- Status must be LOCKED_FOR_MAPPING to split")
         if original_task["locked_by"] != split_task_dto.user_id:
-            raise SplitServiceError(
-                "SplitOtherUserTask- Attempting to split a task owned by another user"
-            )
+            raise SplitServiceError("SplitOtherUserTask- Attempting to split a task owned by another user")
 
         # Split the task geometry into smaller tasks
         new_tasks_geojson = await SplitService._create_split_tasks(
@@ -270,16 +242,13 @@ class SplitService:
 
         # Fetch the highest task ID for the project
         i = await Task.get_max_task_id_for_project(split_task_dto.project_id, db)
-        new_tasks = []
         new_tasks_dto = []
 
         for new_task_geojson in new_tasks_geojson:
             # Ensure the new task geometry intersects the original geometry
             new_geometry = shapely_shape(new_task_geojson["geometry"])
             if not new_geometry.intersects(original_geometry):
-                raise InvalidGeoJson(
-                    "SplitGeoJsonError- New split task does not intersect original task"
-                )
+                raise InvalidGeoJson("SplitGeoJsonError- New split task does not intersect original task")
 
             # Insert new task into database
             i += 1
@@ -301,9 +270,7 @@ class SplitService:
                 VALUES (:id, :project_id, :x, :y, :zoom, :is_square, :task_status, ST_SetSRID(ST_GeomFromGeoJSON(:geojson), 4326))
             """
             await db.execute(query, values=task_values)
-            await Task.copy_task_history(
-                split_task_dto.task_id, new_task.id, split_task_dto.project_id, db
-            )
+            await Task.copy_task_history(split_task_dto.task_id, new_task.id, split_task_dto.project_id, db)
             await Task.clear_task_lock(new_task.id, new_task.project_id, db)
             await Task.set_task_history(
                 task_id=new_task.id,
@@ -343,9 +310,7 @@ class SplitService:
                 )
             )
 
-        await SplitService.delete_task_and_related_records(
-            split_task_dto.task_id, split_task_dto.project_id, db
-        )
+        await SplitService.delete_task_and_related_records(split_task_dto.task_id, split_task_dto.project_id, db)
 
         query = """
             UPDATE projects

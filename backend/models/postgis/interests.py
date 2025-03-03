@@ -4,7 +4,6 @@ from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String, Table, s
 from backend.db import Base
 from backend.models.dtos.interests_dto import InterestDTO
 
-
 # Secondary table defining many-to-many join for interests of a user.
 user_interests = Table(
     "user_interests",

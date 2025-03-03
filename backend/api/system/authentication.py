@@ -9,10 +9,7 @@ from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 from backend import osm
 from backend.config import settings
 from backend.db import get_db
-from backend.services.users.authentication_service import (
-    AuthenticationService,
-    AuthServiceError,
-)
+from backend.services.users.authentication_service import AuthenticationService, AuthServiceError
 
 router = APIRouter(
     prefix="/system",
@@ -23,7 +20,7 @@ router = APIRouter(
 
 # class SystemAuthenticationLoginAPI():
 @router.get("/authentication/login/")
-async def get(request: Request):
+async def login(request: Request):
     """
     Redirects user to OSM to authenticate
     ---
@@ -54,7 +51,7 @@ async def get(request: Request):
 
 # class SystemAuthenticationCallbackAPI():
 @router.get("/authentication/callback/")
-async def get(request: Request, db: Database = Depends(get_db)):
+async def callback(request: Request, db: Database = Depends(get_db)):
     """
     Handles the OSM OAuth callback
     ---
@@ -136,9 +133,7 @@ async def get(request: Request, db: Database = Depends(get_db)):
         )
 
     try:
-        user_params = await AuthenticationService.login_user(
-            osm_response.json(), email, db
-        )
+        user_params = await AuthenticationService.login_user(osm_response.json(), email, db)
         user_params["session"] = osm_resp
         return user_params
     except AuthServiceError:
@@ -146,7 +141,7 @@ async def get(request: Request, db: Database = Depends(get_db)):
 
 
 @router.get("/authentication/email/")
-async def get(request: Request, db: Database = Depends(get_db)):
+async def authenticate_email(request: Request, db: Database = Depends(get_db)):
     """
     Authenticates user owns email address
     ---

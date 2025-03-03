@@ -1,11 +1,7 @@
 from unittest.mock import patch
+
 from backend.models.postgis.user import User
-from backend.services.users.user_service import (
-    UserService,
-    UserServiceError,
-    UserRole,
-    NotFound,
-)
+from backend.services.users.user_service import NotFound, UserRole, UserService, UserServiceError
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_user, return_canned_user
 

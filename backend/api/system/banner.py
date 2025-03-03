@@ -4,8 +4,8 @@ from fastapi.logger import logger
 from pydantic import ValidationError
 
 from backend.db import get_db
-from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.dtos.banner_dto import BannerDTO
+from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.postgis.banner import Banner
 from backend.models.postgis.statuses import UserRole
 from backend.services.users.authentication_service import login_required
@@ -19,7 +19,7 @@ router = APIRouter(
 
 
 @router.get("/banner/", response_model=BannerDTO)
-async def get(db: Database = Depends(get_db)):
+async def get_banner(db: Database = Depends(get_db)):
     """
     Returns a banner
     ---
@@ -39,7 +39,7 @@ async def get(db: Database = Depends(get_db)):
 
 
 @router.patch("/banner/", response_model=BannerDTO)
-async def patch(
+async def patch_banner(
     request: Request,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),

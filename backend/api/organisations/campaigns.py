@@ -17,7 +17,7 @@ router = APIRouter(
 
 
 @router.post("/{organisation_id}/campaigns/{campaign_id}/")
-async def post(
+async def post_organisation_campaign(
     request: Request,
     organisation_id: int,
     campaign_id: int,
@@ -62,26 +62,16 @@ async def post(
         500:
             description: Internal Server Error
     """
-    if await OrganisationService.can_user_manage_organisation(
-        organisation_id, request.user.display_name, db
-    ):
-        if await CampaignService.campaign_organisation_exists(
-            campaign_id, organisation_id, db
-        ):
-            message = "Campaign {} is already assigned to organisation {}.".format(
-                campaign_id, organisation_id
-            )
+    if await OrganisationService.can_user_manage_organisation(organisation_id, request.user.display_name, db):
+        if await CampaignService.campaign_organisation_exists(campaign_id, organisation_id, db):
+            message = "Campaign {} is already assigned to organisation {}.".format(campaign_id, organisation_id)
             return JSONResponse(
                 content={"Error": message, "SubCode": "CampaignAlreadyAssigned"},
                 status_code=400,
             )
         async with db.transaction():
-            await CampaignService.create_campaign_organisation(
-                organisation_id, campaign_id, db
-            )
-            message = "campaign with id {} assigned for organisation with id {}".format(
-                campaign_id, organisation_id
-            )
+            await CampaignService.create_campaign_organisation(organisation_id, campaign_id, db)
+            message = "campaign with id {} assigned for organisation with id {}".format(campaign_id, organisation_id)
             return JSONResponse(content={"Success": message}, status_code=200)
     else:
         return JSONResponse(
@@ -94,7 +84,7 @@ async def post(
 
 
 @router.get("/{organisation_id}/campaigns/", response_model=CampaignListDTO)
-async def get(organisation_id: int, db: Database = Depends(get_db)):
+async def get_organisation_campaigns(organisation_id: int, db: Database = Depends(get_db)):
     """
     Returns all campaigns related to an organisation
     ---
@@ -123,14 +113,12 @@ async def get(organisation_id: int, db: Database = Depends(get_db)):
         500:
             description: Internal Server Error
     """
-    campaigns = await CampaignService.get_organisation_campaigns_as_dto(
-        organisation_id, db
-    )
+    campaigns = await CampaignService.get_organisation_campaigns_as_dto(organisation_id, db)
     return campaigns
 
 
 @router.delete("/{organisation_id}/campaigns/{campaign_id}/")
-async def delete(
+async def delete_organisation_campaign(
     request: Request,
     organisation_id: int,
     campaign_id: int,
@@ -175,17 +163,11 @@ async def delete(
         500:
             description: Internal Server Error
     """
-    if await OrganisationService.can_user_manage_organisation(
-        organisation_id, request.user.display_name, db
-    ):
+    if await OrganisationService.can_user_manage_organisation(organisation_id, request.user.display_name, db):
         async with db.transaction():
-            await CampaignService.delete_organisation_campaign(
-                organisation_id, campaign_id, db
-            )
+            await CampaignService.delete_organisation_campaign(organisation_id, campaign_id, db)
             return JSONResponse(
-                content={
-                    "Success": "Organisation and campaign unassociated successfully"
-                },
+                content={"Success": "Organisation and campaign unassociated successfully"},
                 status_code=200,
             )
     else:

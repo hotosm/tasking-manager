@@ -6,9 +6,8 @@ Create Date: 2024-12-04 19:53:41.477085
 
 """
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "ecb6985693c0_"
@@ -19,9 +18,7 @@ depends_on = None
 
 def upgrade():
     # ### end Alembic commands ###
-    op.add_column(
-        "partners", sa.Column("mapswipe_group_id", sa.String(), nullable=True)
-    )
+    op.add_column("partners", sa.Column("mapswipe_group_id", sa.String(), nullable=True))
     # ### end Alembic commands ###
 
 

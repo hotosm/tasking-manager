@@ -3,8 +3,8 @@ from tests.backend.helpers.test_helpers import (
     create_canned_organisation,
     create_canned_project,
     generate_encoded_token,
-    return_canned_user,
     return_canned_campaign,
+    return_canned_user,
 )
 from tests.backend.integration.api.campaigns.test_resources import (
     CAMPAIGN_NOT_FOUND_MESSAGE,
@@ -48,18 +48,14 @@ class TestOrganisationsCampaignsAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            response_body["Error"], "Campaign 1 is already assigned to organisation 23."
-        )
+        self.assertEqual(response_body["Error"], "Campaign 1 is already assigned to organisation 23.")
         self.assertEqual(response_body["SubCode"], "CampaignAlreadyAssigned")
 
     def test_assign_org_new_campaign_passes(self):
         """
         Test that the endpoint returns 200 when a new campaign is assigned to the organisation
         """
-        new_campaign = return_canned_campaign(
-            id=2, name=CAMPAIGN_NAME, description=None, logo=None
-        )
+        new_campaign = return_canned_campaign(id=2, name=CAMPAIGN_NAME, description=None, logo=None)
         new_campaign.create()
         response = self.client.post(
             f"/api/v2/organisations/{self.test_org.id}/campaigns/{new_campaign.id}/",
@@ -82,9 +78,7 @@ class TestOrganisationsCampaignsAPI(BaseTestCase):
         """
         Test that the endpoint returns 403 when a non admin tries to add a new campaign to an organisation
         """
-        new_campaign = return_canned_campaign(
-            id=2, name=CAMPAIGN_NAME, description=None, logo=None
-        )
+        new_campaign = return_canned_campaign(id=2, name=CAMPAIGN_NAME, description=None, logo=None)
         new_campaign.create()
         response = self.client.post(
             f"/api/v2/organisations/{self.test_org.id}/campaigns/{new_campaign.id}/",
@@ -98,9 +92,7 @@ class TestOrganisationsCampaignsAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "User is not a manager of the organisation"
-        )
+        self.assertEqual(response_body["Error"], "User is not a manager of the organisation")
         self.assertEqual(response_body["SubCode"], "UserNotPermitted")
 
     # get
@@ -111,9 +103,7 @@ class TestOrganisationsCampaignsAPI(BaseTestCase):
         response = self.client.get(self.endpoint_url)
         response_body = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response_body, {"campaigns": [{"id": 1, "name": "Test Campaign"}]}
-        )
+        self.assertEqual(response_body, {"campaigns": [{"id": 1, "name": "Test Campaign"}]})
 
     # def test_get_non_existent_organisation_campaigns_fails(self):
     #     """
@@ -144,9 +134,7 @@ class TestOrganisationsCampaignsAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "User is not a manager of the organisation"
-        )
+        self.assertEqual(response_body["Error"], "User is not a manager of the organisation")
         self.assertEqual(response_body["SubCode"], "UserNotPermitted")
 
     def test_delete_non_existent_organisation_campaign_fails(self):

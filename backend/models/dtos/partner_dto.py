@@ -1,5 +1,3 @@
-# from schematics import Model
-# from schematics.types import StringType, ListType, LongType
 import json
 from typing import Dict, List, Optional
 

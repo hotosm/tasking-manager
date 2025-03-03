@@ -13,10 +13,7 @@ from backend.models.postgis.utils import InvalidGeoJson
 from backend.services.grid.grid_service import GridService
 from backend.services.interests_service import InterestService
 from backend.services.messaging.message_service import MessageService
-from backend.services.project_admin_service import (
-    ProjectAdminService,
-    ProjectAdminServiceError,
-)
+from backend.services.project_admin_service import ProjectAdminService, ProjectAdminServiceError
 from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import login_required
 
@@ -28,7 +25,7 @@ router = APIRouter(
 
 
 @router.post("/{project_id}/actions/transfer-ownership/")
-async def post(
+async def transfer_ownership(
     request: Request,
     background_tasks: BackgroundTasks,
     project_id: int,
@@ -82,9 +79,7 @@ async def post(
             status_code=400,
         )
     try:
-        await ProjectAdminService.transfer_project_to(
-            project_id, user.id, username, db, background_tasks
-        )
+        await ProjectAdminService.transfer_project_to(project_id, user.id, username, db, background_tasks)
         return JSONResponse(content={"Success": "Project Transferred"}, status_code=200)
     except (ValueError, ProjectAdminServiceError) as e:
         return JSONResponse(
@@ -94,7 +89,7 @@ async def post(
 
 
 @router.post("/{project_id}/actions/message-contributors/")
-async def post(
+async def message_contributors(
     request: Request,
     background_tasks: BackgroundTasks,
     project_id: int,
@@ -158,9 +153,7 @@ async def post(
             },
             status_code=400,
         )
-    if not await ProjectAdminService.is_user_action_permitted_on_project(
-        user.id, project_id, db
-    ):
+    if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
         return JSONResponse(
             content={
                 "Error": "User is not a manager of the project",
@@ -177,13 +170,11 @@ async def post(
         return JSONResponse(content={"Success": "Messages started"}, status_code=200)
     except Exception as e:
         logger.error(f"Error starting background task: {str(e)}")
-        return JSONResponse(
-            content={"Error": "Failed to send messages"}, status_code=500
-        )
+        return JSONResponse(content={"Error": "Failed to send messages"}, status_code=500)
 
 
 @router.post("/{project_id}/actions/feature/")
-async def post(
+async def feature(
     request: Request,
     project_id: int,
     user: AuthUserDTO = Depends(login_required),
@@ -222,9 +213,7 @@ async def post(
             description: Internal Server Error
     """
     try:
-        if not await ProjectAdminService.is_user_action_permitted_on_project(
-            user.id, project_id, db
-        ):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -246,7 +235,7 @@ async def post(
 
 
 @router.post("/{project_id}/actions/remove-feature/")
-async def post(
+async def remove_feature(
     request: Request,
     project_id: int,
     user: AuthUserDTO = Depends(login_required),
@@ -285,9 +274,7 @@ async def post(
             description: Internal Server Error
     """
     try:
-        if not await ProjectAdminService.is_user_action_permitted_on_project(
-            user.id, project_id, db
-        ):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -309,7 +296,7 @@ async def post(
 
 
 @router.post("/{project_id}/actions/set-interests/")
-async def post(
+async def set_interests(
     request: Request,
     project_id: int,
     user: AuthUserDTO = Depends(login_required),
@@ -359,9 +346,7 @@ async def post(
             description: Internal Server Error
     """
     try:
-        if not await ProjectAdminService.is_user_action_permitted_on_project(
-            user.id, project_id, db
-        ):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -372,14 +357,12 @@ async def post(
             status_code=403,
         )
 
-    project_interests = await InterestService.create_or_update_project_interests(
-        project_id, data["interests"], db
-    )
+    project_interests = await InterestService.create_or_update_project_interests(project_id, data["interests"], db)
     return project_interests.model_dump(by_alias=True)
 
 
 @router.post("/actions/intersecting-tiles/")
-async def post(
+async def intersecting_tiles(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     grid_dto: GridDTO = Body(...),
@@ -462,6 +445,4 @@ async def post(
                 },
                 status_code=400,
             )
-        return JSONResponse(
-            content={"error": str(wrapped), "SubCode": "InternalServerError"}
-        )
+        return JSONResponse(content={"error": str(wrapped), "SubCode": "InternalServerError"})

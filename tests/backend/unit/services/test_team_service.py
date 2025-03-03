@@ -1,6 +1,6 @@
 from backend.exceptions import NotFound
-from backend.services.team_service import TeamService
 from backend.models.dtos.team_dto import TeamSearchDTO
+from backend.services.team_service import TeamService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_team, create_canned_user
 
@@ -49,11 +49,7 @@ class TestTeamService(BaseTestCase):
         # Act
         TeamService.add_team_member(team_id, user_id, function, active)
         # Assert
-        self.assertTrue(
-            TeamService.is_user_an_active_team_member(
-                self.test_team.id, self.test_user.id
-            )
-        )
+        self.assertTrue(TeamService.is_user_an_active_team_member(self.test_team.id, self.test_user.id))
 
     def test_delete_team_project(self):
         # Act
@@ -72,8 +68,4 @@ class TestTeamService(BaseTestCase):
         # Act
         TeamService.leave_team(team_id, username)
         # Assert
-        self.assertFalse(
-            TeamService.is_user_an_active_team_member(
-                self.test_team.id, self.test_user.id
-            )
-        )
+        self.assertFalse(TeamService.is_user_an_active_team_member(self.test_team.id, self.test_user.id))

@@ -5,10 +5,10 @@ Revises: 068674f06b0f
 Create Date: 2019-06-17 18:34:11.058440
 
 """
-from alembic import op
 import sqlalchemy as sa
-from backend.models.postgis.statuses import TeamVisibility
+from alembic import op
 
+from backend.models.postgis.statuses import TeamVisibility
 
 # revision identifiers, used by Alembic.
 revision = "e3282e2db2d7"
@@ -50,9 +50,7 @@ def upgrade():
             nullable=False,
             server_default=str(TeamVisibility.PRIVATE.value),
         ),
-        sa.ForeignKeyConstraint(
-            ["organisation_id"], ["organisations.id"], name="fk_organisations"
-        ),
+        sa.ForeignKeyConstraint(["organisation_id"], ["organisations.id"], name="fk_organisations"),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
@@ -74,9 +72,7 @@ def upgrade():
         sa.PrimaryKeyConstraint("team_id", "user_id"),
     )
     op.add_column("projects", sa.Column("organisation_id", sa.Integer(), nullable=True))
-    op.alter_column(
-        "projects", "task_creation_mode", existing_type=sa.INTEGER(), nullable=False
-    )
+    op.alter_column("projects", "task_creation_mode", existing_type=sa.INTEGER(), nullable=False)
     op.create_index(
         op.f("ix_projects_organisation_id"),
         "projects",
@@ -84,9 +80,7 @@ def upgrade():
         unique=False,
     )
 
-    op.create_foreign_key(
-        "fk_organisations", "projects", "organisations", ["organisation_id"], ["id"]
-    )
+    op.create_foreign_key("fk_organisations", "projects", "organisations", ["organisation_id"], ["id"])
 
     op.drop_index(
         "idx_task_validation_mapper_status_composite",
@@ -151,9 +145,7 @@ def downgrade():
 
     op.drop_constraint("fk_organisations", "projects", type_="foreignkey")
     op.drop_index(op.f("ix_projects_organisation_id"), table_name="projects")
-    op.alter_column(
-        "projects", "task_creation_mode", existing_type=sa.INTEGER(), nullable=True
-    )
+    op.alter_column("projects", "task_creation_mode", existing_type=sa.INTEGER(), nullable=True)
     op.drop_column("projects", "organisation_id")
     op.drop_table("team_members")
     op.drop_table("project_teams")

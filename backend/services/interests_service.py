@@ -1,12 +1,7 @@
 from databases import Database
 from fastapi import HTTPException
 
-from backend.models.dtos.interests_dto import (
-    InterestDTO,
-    InterestRateDTO,
-    InterestRateListDTO,
-    InterestsListDTO,
-)
+from backend.models.dtos.interests_dto import InterestDTO, InterestRateDTO, InterestRateListDTO, InterestsListDTO
 from backend.models.postgis.interests import Interest
 from backend.models.postgis.project import Project
 from backend.services.project_service import ProjectService
@@ -87,9 +82,7 @@ class InterestService:
             LIMIT 1;
         """
 
-        user_associated = await db.fetch_one(
-            check_user_association_query, {"interest_id": interest_id}
-        )
+        user_associated = await db.fetch_one(check_user_association_query, {"interest_id": interest_id})
         if user_associated:
             raise HTTPException(
                 status_code=500,
@@ -102,9 +95,7 @@ class InterestService:
             WHERE interest_id = :interest_id
             LIMIT 1;
         """
-        project_associated = await db.fetch_one(
-            check_project_association_query, {"interest_id": interest_id}
-        )
+        project_associated = await db.fetch_one(check_project_association_query, {"interest_id": interest_id})
         if project_associated:
             raise HTTPException(
                 status_code=500,
@@ -146,10 +137,7 @@ class InterestService:
                 INSERT INTO user_interests (user_id, interest_id)
                 VALUES (:user_id, :interest_id)
             """
-            values = [
-                {"user_id": user_id, "interest_id": interest_id}
-                for interest_id in interests_ids
-            ]
+            values = [{"user_id": user_id, "interest_id": interest_id} for interest_id in interests_ids]
             await db.execute_many(insert_query, values)
             return await InterestService.get_user_interests(user_id, db)
 

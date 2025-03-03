@@ -1,12 +1,12 @@
+from backend.exceptions import get_message_from_sub_code
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     add_manager_to_organisation,
-    create_canned_organisation,
     create_canned_interest,
-    generate_encoded_token,
+    create_canned_organisation,
     create_canned_user,
+    generate_encoded_token,
 )
-from backend.exceptions import get_message_from_sub_code
 
 TEST_INTEREST_NAME = "test_interest"
 NEW_INTEREST_NAME = "New Interest"
@@ -44,9 +44,7 @@ class TestInterestsAllAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "InterestsAllAPI POST: User not a Org Manager"
-        )
+        self.assertEqual(response_body["Error"], "InterestsAllAPI POST: User not a Org Manager")
         self.assertEqual(response_body["SubCode"], "UserNotPermitted")
 
     def test_create_a_new_interest_using_invalid_data_fails(self):
@@ -77,9 +75,7 @@ class TestInterestsAllAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            response_body["Error"], f"Value '{TEST_INTEREST_NAME}' already exists"
-        )
+        self.assertEqual(response_body["Error"], f"Value '{TEST_INTEREST_NAME}' already exists")
         self.assertEqual(response_body["SubCode"], "NameExists")
 
     def test_create_a_new_interest_by_organisation_admin_passes(self):
@@ -154,9 +150,7 @@ class TestInterestsRestAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "InterestsRestAPI GET: User not a Org Manager"
-        )
+        self.assertEqual(response_body["Error"], "InterestsRestAPI GET: User not a Org Manager")
         self.assertEqual(response_body["SubCode"], "UserNotPermitted")
 
     def test_get_a_non_existent_interest_fails(self):
@@ -194,9 +188,7 @@ class TestInterestsRestAPI(BaseTestCase):
         """
         Test that endpoint returns 401 when updating an interest by an unauthenticated user
         """
-        response = self.client.patch(
-            self.endpoint_url, json={"name": NEW_INTEREST_NAME}
-        )
+        response = self.client.patch(self.endpoint_url, json={"name": NEW_INTEREST_NAME})
         response_body = response.get_json()
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response_body["SubCode"], "InvalidToken")
@@ -212,9 +204,7 @@ class TestInterestsRestAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "InterestsRestAPI PATCH: User not a Org Manager"
-        )
+        self.assertEqual(response_body["Error"], "InterestsRestAPI PATCH: User not a Org Manager")
         self.assertEqual(response_body["SubCode"], "UserNotPermitted")
 
     def test_update_a_non_existent_interest_fails(self):
@@ -299,9 +289,7 @@ class TestInterestsRestAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "InterestsRestAPI DELETE: User not a Org Manager"
-        )
+        self.assertEqual(response_body["Error"], "InterestsRestAPI DELETE: User not a Org Manager")
         self.assertEqual(response_body["SubCode"], "UserNotPermitted")
 
     def test_delete_a_non_existent_interest_fails(self):

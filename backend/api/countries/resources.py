@@ -1,9 +1,9 @@
+from databases import Database
+from fastapi import APIRouter, Depends
+
+from backend.db import get_db
 from backend.models.dtos.tags_dto import TagsDTO
 from backend.services.tags_service import TagsService
-from fastapi import APIRouter, Depends
-from backend.db import get_db
-from databases import Database
-
 
 router = APIRouter(
     prefix="/countries",
@@ -13,7 +13,7 @@ router = APIRouter(
 
 
 @router.get("/", response_model=TagsDTO)
-async def get(db: Database = Depends(get_db)):
+async def get_all_countries(db: Database = Depends(get_db)):
     """
     Fetch all Country tags
     ---

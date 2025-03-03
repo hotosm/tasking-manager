@@ -5,9 +5,8 @@ Revises: 0aaac86a48dc
 Create Date: 2017-05-03 13:59:37.296261
 
 """
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "c4670f3bb828"
@@ -31,9 +30,7 @@ def upgrade():
         sa.ForeignKeyConstraint(["to_user_id"], ["users.id"]),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        op.f("ix_messages_to_user_id"), "messages", ["to_user_id"], unique=False
-    )
+    op.create_index(op.f("ix_messages_to_user_id"), "messages", ["to_user_id"], unique=False)
     # ### end Alembic commands ###
 
 

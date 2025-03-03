@@ -1,23 +1,15 @@
+from backend.models.postgis.statuses import UserRole
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_organisation,
-    generate_encoded_token,
-    create_canned_user,
-    return_canned_user,
-    return_canned_team,
     create_canned_team,
+    create_canned_user,
+    generate_encoded_token,
+    return_canned_team,
+    return_canned_user,
 )
-from tests.backend.integration.api.teams.test_actions import (
-    TEAM_NOT_FOUND_SUB_CODE,
-    TEAM_NOT_FOUND_MESSAGE,
-)
-from tests.backend.integration.api.organisations.test_resources import (
-    ORG_NOT_FOUND_MESSAGE,
-    ORG_NOT_FOUND_SUB_CODE,
-)
-
-
-from backend.models.postgis.statuses import UserRole
+from tests.backend.integration.api.organisations.test_resources import ORG_NOT_FOUND_MESSAGE, ORG_NOT_FOUND_SUB_CODE
+from tests.backend.integration.api.teams.test_actions import TEAM_NOT_FOUND_MESSAGE, TEAM_NOT_FOUND_SUB_CODE
 
 TEST_ORGANISATION_NAME = "Kathmandu Living Labs"
 TEST_ORGANISATION_SLUG = "KLL"
@@ -95,9 +87,7 @@ class TestTeamsRestAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "User is not a admin or a manager for the team"
-        )
+        self.assertEqual(response_body["Error"], "User is not a admin or a manager for the team")
         self.assertEqual(response_body["SubCode"], "UserNotTeamManager")
 
     def test_update_team_with_invalid_data_fails(self):
@@ -119,9 +109,7 @@ class TestTeamsRestAPI(BaseTestCase):
         Test that endpoint returns 200 upon successful deletion of a team
         """
         self.test_user.role = UserRole.ADMIN.value
-        response = self.client.delete(
-            self.endpoint_url, headers={"Authorization": self.test_user_token}
-        )
+        response = self.client.delete(self.endpoint_url, headers={"Authorization": self.test_user_token})
         response_body = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_body["Success"], "Team deleted")
@@ -137,9 +125,7 @@ class TestTeamsRestAPI(BaseTestCase):
         """
         Test that endpoint returns 401 if a non_admin tries to delete a team
         """
-        response = self.client.delete(
-            self.endpoint_url, headers={"Authorization": self.test_user_token}
-        )
+        response = self.client.delete(self.endpoint_url, headers={"Authorization": self.test_user_token})
         response_body = response.get_json()
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response_body["Error"], "User is not a manager for the team")
@@ -150,9 +136,7 @@ class TestTeamsRestAPI(BaseTestCase):
         Test that endpoint returns 404 while deleting a non-existent team
         """
         self.test_user.role = UserRole.ADMIN.value
-        response = self.client.delete(
-            "/api/v2/teams/99/", headers={"Authorization": self.test_user_token}
-        )
+        response = self.client.delete("/api/v2/teams/99/", headers={"Authorization": self.test_user_token})
         response_body = response.get_json()
         error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
@@ -241,13 +225,9 @@ class TestTeamsAllPI(BaseTestCase):
         """
         Test that endpoint returns 200 when retrieving teams
         """
-        self.test_team = return_canned_team(
-            name=TEST_TEAM_NAME, org_name=self.test_org.name
-        )
+        self.test_team = return_canned_team(name=TEST_TEAM_NAME, org_name=self.test_org.name)
         self.test_team.create()
-        response = self.client.get(
-            self.endpoint_url, headers={"Authorization": self.admin_token}
-        )
+        response = self.client.get(self.endpoint_url, headers={"Authorization": self.admin_token})
         response_body = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response_body["teams"]), 1)

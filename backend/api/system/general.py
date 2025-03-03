@@ -1,8 +1,9 @@
-from databases import Database
 from datetime import datetime
-from fastapi import APIRouter, Depends, Request, Body
-from fastapi.responses import JSONResponse
+
 import requests
+from databases import Database
+from fastapi import APIRouter, Body, Depends, Request
+from fastapi.responses import JSONResponse
 
 from backend.db import get_db
 from backend.models.postgis.release_version import ReleaseVersion
@@ -17,7 +18,7 @@ router = APIRouter(
 
 
 @router.get("/docs/json/", response_class=JSONResponse)
-async def get(request: Request):
+async def get_docs(request: Request):
     """
     Generates Swagger UI readable JSON
     ---
@@ -161,7 +162,7 @@ async def get():
 
 
 @router.get("/heartbeat/")
-async def get(db: Database = Depends(get_db)):
+async def heartbeat(db: Database = Depends(get_db)):
     """
     Simple health-check, if this is unreachable load balancers should be configured to raise an alert
     ---
@@ -193,7 +194,7 @@ async def get(db: Database = Depends(get_db)):
 
 
 @router.post("/contact-admin/")
-async def post(request: Request, data: dict = Body(...)):
+async def contact_admin(request: Request, data: dict = Body(...)):
     """
     Send an email to the system admin
     ---
@@ -231,13 +232,11 @@ async def post(request: Request, data: dict = Body(...)):
         await SMTPService.send_contact_admin_email(data)
         return JSONResponse(content={"Success": "Email sent"}, status_code=201)
     except ValueError as e:
-        return JSONResponse(
-            content={"Error": str(e), "SubCode": "NotImplemented"}, status_code=501
-        )
+        return JSONResponse(content={"Error": str(e), "SubCode": "NotImplemented"}, status_code=501)
 
 
 @router.post("/release/")
-async def post(db: Database = Depends(get_db)):
+async def release(db: Database = Depends(get_db)):
     """
     Fetch latest release version form github and save to database.
     ---
@@ -253,15 +252,11 @@ async def post(db: Database = Depends(get_db)):
       500:
         description: Internal server error
     """
-    response = requests.get(
-        "https://api.github.com/repos/hotosm/tasking-manager/releases/latest"
-    )
+    response = requests.get("https://api.github.com/repos/hotosm/tasking-manager/releases/latest")
     try:
         tag_name = response.json()["tag_name"]
         published_date = response.json()["published_at"]
-        published_date = datetime.strptime(
-            published_date, "%Y-%m-%dT%H:%M:%SZ"
-        ).replace(tzinfo=None)
+        published_date = datetime.strptime(published_date, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=None)
         release = await ReleaseVersion.get(db)
         if release is None:
             release = ReleaseVersion()

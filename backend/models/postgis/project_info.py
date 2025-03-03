@@ -1,16 +1,7 @@
 from typing import List
 
 from databases import Database
-from sqlalchemy import (
-    Column,
-    ForeignKey,
-    Index,
-    Integer,
-    String,
-    insert,
-    inspect,
-    update,
-)
+from sqlalchemy import Column, ForeignKey, Index, Integer, String, insert, inspect, update
 from sqlalchemy.dialects.postgresql import TSVECTOR
 
 from backend.db import Base
@@ -29,9 +20,7 @@ class ProjectInfo(Base):
     description = Column(String)
     instructions = Column(String)
     project_id_str = Column(String)
-    text_searchable = Column(
-        TSVECTOR
-    )  # This contains searchable text and is populated by a DB Trigger
+    text_searchable = Column(TSVECTOR)  # This contains searchable text and is populated by a DB Trigger
     per_task_instructions = Column(String)
 
     __table_args__ = (
@@ -62,9 +51,7 @@ class ProjectInfo(Base):
         self.description = dto.description
         self.instructions = dto.instructions
         self.per_task_instructions = dto.per_task_instructions
-        columns = {
-            c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
-        }
+        columns = {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
         query = insert(ProjectInfo.__table__).values(**columns)
         result = await db.execute(query)
         return result
@@ -80,9 +67,7 @@ class ProjectInfo(Base):
         self.description = dto.description
         self.instructions = dto.instructions
         self.per_task_instructions = dto.per_task_instructions
-        columns = {
-            c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
-        }
+        columns = {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
         columns.pop("project_id", None)
         columns.pop("locale", None)
         query = (
@@ -114,9 +99,7 @@ class ProjectInfo(Base):
             WHERE project_id = :project_id AND locale = :locale
         """
         # Execute the query for the requested locale
-        project_info = await db.fetch_one(
-            query, values={"project_id": project_id, "locale": locale}
-        )
+        project_info = await db.fetch_one(query, values={"project_id": project_id, "locale": locale})
         if project_info is None:
             # Define the SQL query to get project info by default locale
             query_default = """
@@ -131,7 +114,9 @@ class ProjectInfo(Base):
             )
 
             if project_info is None:
-                error_message = f"BAD DATA: no info for project {project_id}, locale: {locale}, default {default_locale}"
+                error_message = (
+                    f"BAD DATA: no info for project {project_id}, locale: {locale}, default {default_locale}"
+                )
                 raise ValueError(error_message)
 
             return ProjectInfoDTO(**project_info)
@@ -156,23 +141,15 @@ class ProjectInfo(Base):
             raise ValueError(error_message)
 
         combined_info = ProjectInfoDTO(locale=project_info.locale)
-        combined_info.name = (
-            project_info.name if project_info.name else default_locale_info.name
-        )
+        combined_info.name = project_info.name if project_info.name else default_locale_info.name
         combined_info.description = (
-            project_info.description
-            if project_info.description
-            else default_locale_info.description
+            project_info.description if project_info.description else default_locale_info.description
         )
         combined_info.short_description = (
-            project_info.short_description
-            if project_info.short_description
-            else default_locale_info.short_description
+            project_info.short_description if project_info.short_description else default_locale_info.short_description
         )
         combined_info.instructions = (
-            project_info.instructions
-            if project_info.instructions
-            else default_locale_info.instructions
+            project_info.instructions if project_info.instructions else default_locale_info.instructions
         )
         combined_info.per_task_instructions = (
             project_info.per_task_instructions
@@ -199,9 +176,7 @@ class ProjectInfo(Base):
         )
 
     # Function to get DTOs for all locales of a project
-    async def get_dto_for_all_locales(
-        db: Database, project_id: int
-    ) -> List[ProjectInfoDTO]:
+    async def get_dto_for_all_locales(db: Database, project_id: int) -> List[ProjectInfoDTO]:
         """
         Get DTOs for all locales associated with a project
         :param database: The database connection
@@ -216,12 +191,7 @@ class ProjectInfo(Base):
         locales = await db.fetch_all(query=query, values={"project_id": project_id})
 
         project_info_dtos = (
-            [
-                await ProjectInfo.get_project_info_dto(locale_record)
-                for locale_record in locales
-            ]
-            if locales
-            else []
+            [await ProjectInfo.get_project_info_dto(locale_record) for locale_record in locales] if locales else []
         )
 
         return project_info_dtos

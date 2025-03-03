@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 from databases import Database
 from sqlalchemy import Column, Integer, String
@@ -6,7 +7,6 @@ from sqlalchemy import Column, Integer, String
 from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.partner_dto import PartnerDTO
-from typing import Optional
 
 
 class Partner(Base):

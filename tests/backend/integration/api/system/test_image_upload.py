@@ -1,12 +1,7 @@
 from unittest.mock import patch
 
-
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import (
-    create_canned_user,
-    generate_encoded_token,
-)
-
+from tests.backend.helpers.test_helpers import create_canned_user, generate_encoded_token
 
 IMAGE_UPLOAD_API_URL = "http://localhost:5000"
 IMAGE_UPLOAD_API_KEY = "test"
@@ -48,9 +43,7 @@ class TestSystemImageUploadRestAPI(BaseTestCase):
     def test_returns_400_if_filename_not_set(self):
         url = "/api/v2/system/image-upload/"
         self.json["filename"] = None
-        response = self.client.post(
-            url, headers={"Authorization": self.user_token}, json=self.json
-        )
+        response = self.client.post(url, headers={"Authorization": self.user_token}, json=self.json)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json["Error"], "Missing filename parameter")
         self.assertEqual(response.json["SubCode"], "MissingFilename")
@@ -58,9 +51,7 @@ class TestSystemImageUploadRestAPI(BaseTestCase):
     def test_returns_400_if_mime_not_set(self):
         url = "/api/v2/system/image-upload/"
         self.json["mime"] = None
-        response = self.client.post(
-            url, headers={"Authorization": self.user_token}, json=self.json
-        )
+        response = self.client.post(url, headers={"Authorization": self.user_token}, json=self.json)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json["Error"], "Missing mime parameter")
         self.assertEqual(response.json["SubCode"], "MissingMime")
@@ -68,9 +59,7 @@ class TestSystemImageUploadRestAPI(BaseTestCase):
     def test_returns_400_if_mime_not_valid(self):
         url = "/api/v2/system/image-upload/"
         self.json["mime"] = "test"
-        response = self.client.post(
-            url, headers={"Authorization": self.user_token}, json=self.json
-        )
+        response = self.client.post(url, headers={"Authorization": self.user_token}, json=self.json)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
             response.json["Error"],
@@ -86,9 +75,7 @@ class TestSystemImageUploadRestAPI(BaseTestCase):
             "Success": "Image uploaded successfully",
             "SubCode": "ImageUploaded",
         }
-        response = self.client.post(
-            url, headers={"Authorization": self.user_token}, json=self.json
-        )
+        response = self.client.post(url, headers={"Authorization": self.user_token}, json=self.json)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json["Success"], "Image uploaded successfully")
         self.assertEqual(response.json["SubCode"], "ImageUploaded")

@@ -5,10 +5,10 @@ Revises: 0eeaa5aed53b
 Create Date: 2019-06-12 12:50:15.809839
 
 """
-from alembic import op
 import sqlalchemy as sa
-from backend.models.postgis.statuses import TaskStatus
+from alembic import op
 
+from backend.models.postgis.statuses import TaskStatus
 
 # revision identifiers, used by Alembic.
 revision = "a43b9748ceee"
@@ -53,12 +53,8 @@ def _set_project_counters_from_task_states(project_id: int):
 
     # Set values to the stats in the database
     tasks_mapped = sum([n for s, n in tasks_statuses if s == TaskStatus.MAPPED.value])
-    tasks_validated = sum(
-        [n for s, n in tasks_statuses if s == TaskStatus.VALIDATED.value]
-    )
-    tasks_bad_imagery = sum(
-        [n for s, n in tasks_statuses if s == TaskStatus.BADIMAGERY.value]
-    )
+    tasks_validated = sum([n for s, n in tasks_statuses if s == TaskStatus.VALIDATED.value])
+    tasks_bad_imagery = sum([n for s, n in tasks_statuses if s == TaskStatus.BADIMAGERY.value])
     query = (
         "UPDATE projects "
         + "SET tasks_mapped ="

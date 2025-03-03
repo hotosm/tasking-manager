@@ -5,10 +5,10 @@ Revises: c40e1fdf6b70
 Create Date: 2020-01-29 11:19:20.113089
 
 """
-from alembic import op
-import sqlalchemy as sa
 import sys
 
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "7bbc01082457"
@@ -178,9 +178,7 @@ def upgrade():
     print("Populating organisation information for Projects....")
     # Select all existing distinct organisation tags from projects table
     org_tags = conn.execute(
-        sa.text(
-            "select distinct(organisation_tag) from projects where organisation_tag is not null"
-        )
+        sa.text("select distinct(organisation_tag) from projects where organisation_tag is not null")
     )
     total_orgs = org_tags.rowcount
     print("Total distinct organisations in the DB: " + str(total_orgs))
@@ -204,32 +202,18 @@ def upgrade():
             ).scalar()
 
             # Create new organisation only if it has not been inserted earlier
-            if (
-                (not select_org_id)
-                and (mapped_org)
-                and (mapped_org not in orgs_inserted)
-            ):
-                conn.execute(
-                    sa.text(
-                        "insert into organisations (name) values ('" + mapped_org + "')"
-                    )
-                )
+            if (not select_org_id) and (mapped_org) and (mapped_org not in orgs_inserted):
+                conn.execute(sa.text("insert into organisations (name) values ('" + mapped_org + "')"))
                 # Fetch organisation ID after the insert
                 select_org_id = conn.execute(
-                    sa.text(
-                        "select id from organisations where name ='" + mapped_org + "'"
-                    )
+                    sa.text("select id from organisations where name ='" + mapped_org + "'")
                 ).scalar()
 
             org_id = str(select_org_id)
 
             quote_index = original_org_name.find("'")
             if quote_index > -1:
-                original_org_name = (
-                    original_org_name[:quote_index]
-                    + "'"
-                    + original_org_name[quote_index:]
-                )
+                original_org_name = original_org_name[:quote_index] + "'" + original_org_name[quote_index:]
 
             # Update organisation ID
             conn.execute(
@@ -244,11 +228,7 @@ def upgrade():
 
             # Identify projects related to the org name
             fetch_first_author_id = conn.execute(
-                sa.text(
-                    "select author_id from projects where organisation_tag='"
-                    + original_org_name
-                    + "' limit 1"
-                )
+                sa.text("select author_id from projects where organisation_tag='" + original_org_name + "' limit 1")
             ).scalar()
             org_manager = str(fetch_first_author_id)
 
@@ -265,12 +245,7 @@ def upgrade():
                         + ")"
                     )
                 )
-                print(
-                    str(count)
-                    + "/"
-                    + str(total_orgs)
-                    + " organisations mapped to projects"
-                )
+                print(str(count) + "/" + str(total_orgs) + " organisations mapped to projects")
                 sys.stdout.write("\033[F")
 
             orgs_inserted.append(mapped_org)
@@ -292,21 +267,12 @@ def downgrade():
             org_name = org_name[:quote_index] + "'" + org_name[quote_index:]
         conn.execute(
             sa.text(
-                "update projects set organisation_tag='"
-                + str(org_name)
-                + "' where organisation_id="
-                + str(org_id)
+                "update projects set organisation_tag='" + str(org_name) + "' where organisation_id=" + str(org_id)
             )
         )
     conn.execute(sa.text("delete from project_teams where team_id is not null"))
     conn.execute(sa.text("delete from team_members where team_id is not null"))
     conn.execute(sa.text("delete from teams where organisation_id is not null"))
-    conn.execute(
-        sa.text("delete from organisation_managers where organisation_id is not null")
-    )
-    conn.execute(
-        sa.text(
-            "update projects set organisation_id = null where organisation_id is not null"
-        )
-    )
+    conn.execute(sa.text("delete from organisation_managers where organisation_id is not null"))
+    conn.execute(sa.text("update projects set organisation_id = null where organisation_id is not null"))
     conn.execute(sa.text("delete from organisations where name is not null"))

@@ -1,13 +1,13 @@
+from backend.exceptions import get_message_from_sub_code
+from backend.models.postgis.statuses import UserRole
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_organisation,
-    generate_encoded_token,
     create_canned_user,
-    return_canned_user,
+    generate_encoded_token,
     return_canned_campaign,
+    return_canned_user,
 )
-from backend.models.postgis.statuses import UserRole
-from backend.exceptions import get_message_from_sub_code
 
 CAMPAIGN_NAME = "Test Campaign"
 CAMPAIGN_ID = 1
@@ -87,9 +87,7 @@ class TestCampaignsRestAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "CampaignsRestAPI PATCH: User not a Org Manager"
-        )
+        self.assertEqual(response_body["Error"], "CampaignsRestAPI PATCH: User not a Org Manager")
         self.assertEqual(response_body["SubCode"], "UserNotPermitted")
 
     def test_update_existent_campaign_by_unauthenticated_user_fails(self):
@@ -167,9 +165,7 @@ class TestCampaignsRestAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "CampaignsRestAPI DELETE: User not a Org Manager"
-        )
+        self.assertEqual(response_body["Error"], "CampaignsRestAPI DELETE: User not a Org Manager")
         self.assertEqual(response_body["SubCode"], "UserNotPermitted")
 
     def test_delete_campaign_by_unauthenticated_user_fails(self):
@@ -183,9 +179,7 @@ class TestCampaignsRestAPI(BaseTestCase):
         """
         Test that endpoint returns 404 for deletion of non-existent campaign
         """
-        response = self.client.delete(
-            f"{self.endpoint_url}99/", headers={"Authorization": self.admin_token}
-        )
+        response = self.client.delete(f"{self.endpoint_url}99/", headers={"Authorization": self.admin_token})
         response_body = response.get_json()
         error_details = response_body["error"]
         self.assertEqual(response.status_code, 404)
@@ -213,9 +207,7 @@ class TestCampaignsAllAPI(BaseTestCase):
         response = self.client.get(self.endpoint_url)
         response_body = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response_body, {"campaigns": [{"id": 1, "name": "Test Campaign"}]}
-        )
+        self.assertEqual(response_body, {"campaigns": [{"id": 1, "name": "Test Campaign"}]})
 
     def test_get_non_existent_campaigns_returns_empty_list(self):
         """
@@ -263,9 +255,7 @@ class TestCampaignsAllAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "CampaignsAllAPI POST: User not a Org Manager"
-        )
+        self.assertEqual(response_body["Error"], "CampaignsAllAPI POST: User not a Org Manager")
         self.assertEqual(response_body["SubCode"], "UserNotPermitted")
 
     def test_create_new_campaign_by_unauthenticated_user_fails(self):
