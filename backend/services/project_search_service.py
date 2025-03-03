@@ -77,9 +77,14 @@ class ProjectSearchService:
                     u.name AS author_name,
                     u.username AS author_username,
                     o.name AS organisation_name,
-                    ROUND(COALESCE(
-                        (p.tasks_mapped + p.tasks_validated) * 100.0 / NULLIF(p.total_tasks - p.tasks_bad_imagery, 0), 0
-                    ), 2) AS percent_mapped,
+                    ROUND(
+                        COALESCE(
+                            (p.tasks_mapped + p.tasks_validated) * 100.0 /
+                            NULLIF(p.total_tasks - p.tasks_bad_imagery, 0),
+                            0
+                        ),
+                        2
+                    ) AS percent_mapped,
                     ROUND(COALESCE(
                         p.tasks_validated * 100.0 / NULLIF(p.total_tasks - p.tasks_bad_imagery, 0), 0
                     ), 2) AS percent_validated,
@@ -247,8 +252,16 @@ class ProjectSearchService:
 
             project_name_query = """
                 SELECT COALESCE(
-                    (SELECT pi.name FROM project_info pi WHERE pi.project_id = :project_id AND pi.locale = :locale LIMIT 1),
-                    (SELECT pi.name FROM project_info pi WHERE pi.project_id = :project_id AND pi.locale = 'en' LIMIT 1)
+                    (SELECT pi.name
+                    FROM project_info pi
+                    WHERE pi.project_id = :project_id
+                    AND pi.locale = :locale
+                    LIMIT 1),
+                    (SELECT pi.name
+                    FROM project_info pi
+                    WHERE pi.project_id = :project_id
+                    AND pi.locale = 'en'
+                    LIMIT 1)
                 ) AS name
             """
 
@@ -648,11 +661,16 @@ class ProjectSearchService:
                     JOIN project_teams pt ON tm.team_id = pt.team_id
                     WHERE tm.user_id = :user_id
                     AND tm.active = True
-                      AND pt.role = ANY(:team_roles)
+                    AND pt.role = ANY(:team_roles)
                 )
-                { "AND p." + permission + f" = {permission_class.TEAMS.value}" if user.mapping_level == MappingLevel.BEGINNER.value else "" }
+                { "AND p." + permission + f" = {permission_class.TEAMS.value}"
+                if user.mapping_level == MappingLevel.BEGINNER.value else "" }
             )
-            OR p.{permission} IN ({permission_class.ANY.value}{", " + str(permission_class.LEVEL.value) if user.mapping_level != MappingLevel.BEGINNER.value else ""})
+            OR p.{permission} IN (
+                {permission_class.ANY.value}
+                {", " + str(permission_class.LEVEL.value)
+                if user.mapping_level != MappingLevel.BEGINNER.value else ""}
+            )
         """
         params = {"user_id": user.id, "team_roles": team_roles}
         return condition, params

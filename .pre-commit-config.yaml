@@ -104,6 +104,7 @@ repos:
   #           "!frontend/pnpm-lock.yaml",
   #           "!backend/tests/test_data/**",
   #         ]
+
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
@@ -112,29 +113,28 @@ repos:
         args: ["--profile", "black", "--line-length", "119"]
 
   - repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 23.12.1
     hooks:
       - id: black
         args: ["--line-length", "119"]
+        files: '^(backend|tests|migrations|manage\.py)'
+        # Add this to actually format the files instead of just checking
+        verbose: true
 
   - repo: https://github.com/PyCQA/flake8
-    rev: "6.1.0"
+    rev: "7.1.2"
     hooks:
       - id: flake8
-        name: flake8 tests
-        entry: flake8
-        language: python
-        types: [python]
+        name: flake8
+        additional_dependencies: [mccabe>=0.7.0]
         args:
           [
             "--max-line-length=119",
             "--max-complexity=150",
-            "--extend-ignore=E203,E501,W503",
-            "manage.py",
-            "backend",
-            "tests",
-            "migrations",
+            "--ignore=E203,W503",
+            "--extend-exclude=migrations/*",
           ]
+        files: '^(backend|tests|manage\.py)'
 
   # - repo: https://github.com/psf/black
   #   rev: "23.12.1" # Please keep this version updated, should be same as your black version

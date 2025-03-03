@@ -86,7 +86,8 @@ class ProjectInfo(Base):
         db: Database, project_id: int, locale: str, default_locale: str = "en"
     ) -> ProjectInfoDTO:
         """
-        Gets the ProjectInfoDTO for the project for the requested locale. If not found, then the default locale is used.
+        Gets the ProjectInfoDTO for the project for the requested locale.
+        If not found, then the default locale is used.
         :param db: The async database connection
         :param project_id: ProjectID in scope
         :param locale: Locale requested by user

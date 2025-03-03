@@ -181,9 +181,14 @@ class TaskInvalidationHistory(Base):
 
         # Insert a new TaskInvalidationHistory entry
         insert_query = """
-            INSERT INTO task_invalidation_history
-            (project_id, task_id, invalidation_history_id, mapper_id, mapped_date, invalidator_id, invalidated_date, updated_date)
-            VALUES (:project_id, :task_id, :invalidation_history_id, :mapper_id, :mapped_date, :invalidator_id, :invalidated_date, :updated_date)
+            INSERT INTO task_invalidation_history (
+                project_id, task_id, invalidation_history_id, mapper_id, mapped_date,
+                invalidator_id, invalidated_date, updated_date
+            )
+            VALUES (
+                :project_id, :task_id, :invalidation_history_id, :mapper_id, :mapped_date,
+                :invalidator_id, :invalidated_date, :updated_date
+            )
         """
         values = {
             "project_id": project_id,
@@ -447,15 +452,20 @@ class TaskHistory(Base):
         query = """
             UPDATE task_history
             SET action = CASE
-                            WHEN action IN ('LOCKED_FOR_MAPPING', 'EXTENDED_FOR_MAPPING') THEN 'AUTO_UNLOCKED_FOR_MAPPING'
-                            WHEN action IN ('LOCKED_FOR_VALIDATION', 'EXTENDED_FOR_VALIDATION') THEN 'AUTO_UNLOCKED_FOR_VALIDATION'
-                         END,
-                action_text = :action_text
+                WHEN action IN ('LOCKED_FOR_MAPPING', 'EXTENDED_FOR_MAPPING')
+                    THEN 'AUTO_UNLOCKED_FOR_MAPPING'
+                WHEN action IN ('LOCKED_FOR_VALIDATION', 'EXTENDED_FOR_VALIDATION')
+                    THEN 'AUTO_UNLOCKED_FOR_VALIDATION'
+            END,
+            action_text = :action_text
             WHERE task_id = :task_id
-              AND project_id = :project_id
-              AND action_text IS NULL
-              AND action IN ('LOCKED_FOR_MAPPING', 'LOCKED_FOR_VALIDATION', 'EXTENDED_FOR_MAPPING', 'EXTENDED_FOR_VALIDATION')
-              AND action_date <= :expiry_date
+            AND project_id = :project_id
+            AND action_text IS NULL
+            AND action IN (
+                'LOCKED_FOR_MAPPING', 'LOCKED_FOR_VALIDATION',
+                'EXTENDED_FOR_MAPPING', 'EXTENDED_FOR_VALIDATION'
+            )
+            AND action_date <= :expiry_date
         """
         values = {
             "action_text": action_text,

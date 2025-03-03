@@ -26,7 +26,7 @@ class SplitService:
     @staticmethod
     async def _create_split_tasks(x, y, zoom, task, db) -> list:
         """
-        Refactored function for splitting a task square geometry into 4 smaller squares using asyncpg and encode databases.
+        Splitting a task square geometry into 4 smaller squares.
         """
         if x is None or y is None or zoom is None or not task.is_square:
             return await SplitService._create_split_tasks_from_geometry(task, db)
@@ -78,9 +78,16 @@ class SplitService:
 
         # Query to transform and get the GeoJSON
         create_square_query = """
-            SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Multi(ST_GeomFromText(:multipolygon_geometry)), 3857), 4326)) AS geojson
+            SELECT ST_AsGeoJSON(
+                ST_Transform(
+                    ST_SetSRID(
+                        ST_Multi(ST_GeomFromText(:multipolygon_geometry)),
+                        3857
+                    ),
+                    4326
+                )
+            ) AS geojson
         """
-
         # Use the WKT version of the multipolygon in the SQL query
         square_geojson_str = await db.fetch_val(
             create_square_query, values={"multipolygon_geometry": multipolygon_wkt}
@@ -92,7 +99,7 @@ class SplitService:
     @staticmethod
     async def _create_split_tasks_from_geometry(task, db) -> list:
         """
-        Splits a task into 4 smaller tasks based on its geometry (not OSM tile). Uses raw SQL with asyncpg/encode databases.
+        Splits a task into 4 smaller tasks based on its geometry (not OSM tile).
         """
         task_query = """
             SELECT ST_AsGeoJSON(geometry) AS geometry
@@ -119,7 +126,15 @@ class SplitService:
         for split_geometry in split_geometries:
             multipolygon_geometry_wkt = split_geometry.wkt
             multipolygon_as_geojson_query = """
-                SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Multi(ST_GeomFromText(:multipolygon_geometry)), 4326), 4326)) AS geojson
+                SELECT ST_AsGeoJSON(
+                    ST_Transform(
+                        ST_SetSRID(
+                            ST_Multi(ST_GeomFromText(:multipolygon_geometry)),
+                            4326
+                        ),
+                        4326
+                    )
+                ) AS geojson
             """
             feature_geojson = await db.fetch_val(
                 multipolygon_as_geojson_query,
@@ -266,8 +281,13 @@ class SplitService:
             }
 
             query = """
-                INSERT INTO tasks (id, project_id, x, y, zoom, is_square, task_status, geometry)
-                VALUES (:id, :project_id, :x, :y, :zoom, :is_square, :task_status, ST_SetSRID(ST_GeomFromGeoJSON(:geojson), 4326))
+                INSERT INTO tasks (
+                    id, project_id, x, y, zoom, is_square, task_status, geometry
+                )
+                VALUES (
+                    :id, :project_id, :x, :y, :zoom, :is_square, :task_status,
+                    ST_SetSRID(ST_GeomFromGeoJSON(:geojson), 4326)
+                )
             """
             await db.execute(query, values=task_values)
             await Task.copy_task_history(split_task_dto.task_id, new_task.id, split_task_dto.project_id, db)
