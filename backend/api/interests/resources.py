@@ -61,12 +61,16 @@ async def post_interest(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(user_id=user.id, db=db)
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user_id=user.id, db=db
+        )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsAllAPI POST: {str(e)}"
-        return JSONResponse(content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403)
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     try:
         new_interest_dto = await InterestService.create(interest_dto.name, db)
@@ -142,12 +146,16 @@ async def retrieve_interest(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(user_id=user.id, db=db)
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user_id=user.id, db=db
+        )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsRestAPI GET: {str(e)}"
-        return JSONResponse(content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403)
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     interest_dto = await InterestService.get(interest_id, db)
     return interest_dto
@@ -204,12 +212,16 @@ async def patch_interest(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(user_id=user.id, db=db)
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user_id=user.id, db=db
+        )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsRestAPI PATCH: {str(e)}"
-        return JSONResponse(content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403)
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     update_interest = await InterestService.update(interest_id, interest_dto, db)
     return update_interest
@@ -254,12 +266,16 @@ async def delete_interest(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(user_id=user.id, db=db)
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user_id=user.id, db=db
+        )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"InterestsRestAPI DELETE: {str(e)}"
-        return JSONResponse(content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403)
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     await InterestService.delete(interest_id, db)
     return JSONResponse(content={"Success": "Interest deleted"}, status_code=200)

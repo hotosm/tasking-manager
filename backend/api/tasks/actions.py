@@ -6,7 +6,12 @@ from loguru import logger
 from backend.db import get_db
 from backend.exceptions import NotFound
 from backend.models.dtos.grid_dto import SplitTaskDTO
-from backend.models.dtos.mapping_dto import ExtendLockTimeDTO, LockTaskDTO, MappedTaskDTO, StopMappingTaskDTO
+from backend.models.dtos.mapping_dto import (
+    ExtendLockTimeDTO,
+    LockTaskDTO,
+    MappedTaskDTO,
+    StopMappingTaskDTO,
+)
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.dtos.validator_dto import (
     LockForValidationDTO,
@@ -21,7 +26,11 @@ from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
-from backend.services.validator_service import UserLicenseError, ValidatorService, ValidatorServiceError
+from backend.services.validator_service import (
+    UserLicenseError,
+    ValidatorService,
+    ValidatorServiceError,
+)
 
 router = APIRouter(
     prefix="/projects",
@@ -304,7 +313,9 @@ async def unlock_after_mapping(
     try:
         await ProjectService.exists(project_id, db)
         async with db.transaction():
-            task = await MappingService.unlock_task_after_mapping(mapped_task, db, background_tasks)
+            task = await MappingService.unlock_task_after_mapping(
+                mapped_task, db, background_tasks
+            )
             return task
 
     except MappingServiceError as e:
@@ -382,9 +393,13 @@ async def undo_last_action(
         await ProjectService.exists(project_id, db)
         async with db.transaction():
             if preferred_locale:
-                task = await MappingService.undo_mapping(project_id, task_id, user.id, db, preferred_locale)
+                task = await MappingService.undo_mapping(
+                    project_id, task_id, user.id, db, preferred_locale
+                )
             else:
-                task = await MappingService.undo_mapping(project_id, task_id, user.id, db)
+                task = await MappingService.undo_mapping(
+                    project_id, task_id, user.id, db
+                )
             return task
     except MappingServiceError as e:
         return JSONResponse(
@@ -458,7 +473,9 @@ async def lock_for_validation(
         request_data = await request.json()
         task_ids = request_data.get("taskIds")
         preferred_locale = request.headers.get("accept-language", None)
-        validator_dto = LockForValidationDTO(project_id=project_id, task_ids=task_ids, user_id=user.id)
+        validator_dto = LockForValidationDTO(
+            project_id=project_id, task_ids=task_ids, user_id=user.id
+        )
         if preferred_locale:
             validator_dto.preferred_locale = preferred_locale
     except Exception as e:
@@ -550,7 +567,9 @@ async def stop_validation(
         request_data = await request.json()
         reset_tasks = request_data.get("resetTasks")
         preferred_locale = request.headers.get("accept-language", None)
-        validated_dto = StopValidationDTO(project_id=project_id, user_id=user.id, reset_tasks=reset_tasks)
+        validated_dto = StopValidationDTO(
+            project_id=project_id, user_id=user.id, reset_tasks=reset_tasks
+        )
         if preferred_locale:
             validated_dto.preferred_locale = preferred_locale
     except Exception as e:
@@ -647,7 +666,9 @@ async def unlock_after_validation(
         )
     try:
         await ProjectService.exists(project_id, db)
-        tasks = await ValidatorService.unlock_tasks_after_validation(validated_dto, db, background_tasks)
+        tasks = await ValidatorService.unlock_tasks_after_validation(
+            validated_dto, db, background_tasks
+        )
         return tasks
     except ValidatorServiceError as e:
         return JSONResponse(
@@ -695,7 +716,9 @@ async def map_all(
     """
     try:
         authenticated_user_id = user.id
-        if not await ProjectAdminService.is_user_action_permitted_on_project(authenticated_user_id, project_id, db):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
+        ):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -750,7 +773,9 @@ async def post(
     """
     try:
         authenticated_user_id = user.id
-        if not await ProjectAdminService.is_user_action_permitted_on_project(authenticated_user_id, project_id, db):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
+        ):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -805,7 +830,9 @@ async def invalidate_all(
     """
     try:
         authenticated_user_id = user.id
-        if not await ProjectAdminService.is_user_action_permitted_on_project(authenticated_user_id, project_id, db):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
+        ):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -816,8 +843,12 @@ async def invalidate_all(
             status_code=403,
         )
     async with db.transaction():
-        await ValidatorService.invalidate_all_tasks(project_id, authenticated_user_id, db)
-        return JSONResponse(content={"Success": "All tasks invalidated"}, status_code=200)
+        await ValidatorService.invalidate_all_tasks(
+            project_id, authenticated_user_id, db
+        )
+        return JSONResponse(
+            content={"Success": "All tasks invalidated"}, status_code=200
+        )
 
 
 @router.post("/{project_id}/tasks/actions/reset-all-badimagery/")
@@ -859,7 +890,9 @@ async def reset_all_bad_imagery(
     """
     try:
         authenticated_user_id = user.id
-        if not await ProjectAdminService.is_user_action_permitted_on_project(authenticated_user_id, project_id, db):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
+        ):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -916,7 +949,9 @@ async def reset_all(
     """
     try:
         authenticated_user_id = user.id
-        if not await ProjectAdminService.is_user_action_permitted_on_project(authenticated_user_id, project_id, db):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id, db
+        ):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -987,7 +1022,9 @@ async def split_task(
     """
     try:
         preferred_locale = request.headers.get("accept-language", None)
-        split_task_dto = SplitTaskDTO(user_id=user.id, project_id=project_id, task_id=task_id)
+        split_task_dto = SplitTaskDTO(
+            user_id=user.id, project_id=project_id, task_id=task_id
+        )
         if preferred_locale:
             split_task_dto.preferred_locale = preferred_locale
     except Exception as e:
@@ -1075,7 +1112,9 @@ async def extend_duration(
     try:
         request_data = await request.json()
         task_ids = request_data.get("taskIds", None)
-        extend_dto = ExtendLockTimeDTO(project_id=project_id, task_ids=task_ids, user_id=user.id)
+        extend_dto = ExtendLockTimeDTO(
+            project_id=project_id, task_ids=task_ids, user_id=user.id
+        )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return JSONResponse(
@@ -1104,7 +1143,8 @@ async def extend_duration(
 async def reset_by_user(
     request: Request,
     project_id: int,
-    username: str | None = Query(None, description="Username to revert tasks for", example="test"),
+    username: str
+    | None = Query(None, description="Username to revert tasks for", example="test"),
     action: str
     | None = Query(
         None,
@@ -1177,7 +1217,9 @@ async def reset_by_user(
 
         if username:
             user = await UserService.get_user_by_username(username, db)
-        revert_dto = RevertUserTasksDTO(project_id=project_id, user_id=user.id, action_by=user.id, action=action)
+        revert_dto = RevertUserTasksDTO(
+            project_id=project_id, user_id=user.id, action_by=user.id, action=action
+        )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return JSONResponse(
@@ -1190,7 +1232,9 @@ async def reset_by_user(
     try:
         async with db.transaction():
             await ValidatorService.revert_user_tasks(revert_dto, db)
-            return JSONResponse(content={"Success": "Successfully reverted tasks"}, status_code=200)
+            return JSONResponse(
+                content={"Success": "Successfully reverted tasks"}, status_code=200
+            )
     except ValidatorServiceError as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},

@@ -38,7 +38,9 @@ class TestProjectAdminService(BaseTestCase):
         test_project = Project()
 
         # Act
-        ProjectAdminService._attach_tasks_to_project(test_project, valid_feature_collection)
+        ProjectAdminService._attach_tasks_to_project(
+            test_project, valid_feature_collection
+        )
 
         # Assert
         self.assertEqual(

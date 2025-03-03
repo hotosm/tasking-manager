@@ -36,10 +36,14 @@ def upgrade():
             ["task_history.id"],
             name="fk_invalidation_history",
         ),
-        sa.ForeignKeyConstraint(["invalidator_id"], ["users.id"], name="fk_invalidators"),
+        sa.ForeignKeyConstraint(
+            ["invalidator_id"], ["users.id"], name="fk_invalidators"
+        ),
         sa.ForeignKeyConstraint(["mapper_id"], ["users.id"], name="fk_mappers"),
         sa.ForeignKeyConstraint(["project_id"], ["projects.id"]),
-        sa.ForeignKeyConstraint(["task_id", "project_id"], ["tasks.id", "tasks.project_id"], name="fk_tasks"),
+        sa.ForeignKeyConstraint(
+            ["task_id", "project_id"], ["tasks.id", "tasks.project_id"], name="fk_tasks"
+        ),
         sa.ForeignKeyConstraint(["validator_id"], ["users.id"], name="fk_validators"),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -64,6 +68,8 @@ def downgrade():
         "idx_task_validation_mapper_status_composite",
         table_name="task_invalidation_history",
     )
-    op.drop_index("idx_task_validation_history_composite", table_name="task_invalidation_history")
+    op.drop_index(
+        "idx_task_validation_history_composite", table_name="task_invalidation_history"
+    )
     op.drop_table("task_invalidation_history")
     # ### end Alembic commands ###

@@ -27,7 +27,9 @@ def upgrade():
 
     op.add_column("projects", sa.Column("country", ARRAY(sa.String()), nullable=True))
 
-    fetch_all_project_geoms = sa.text("SELECT id, ST_AsText(ST_GeomFromWKB(ST_AsEWKB(centroid))) from projects;")
+    fetch_all_project_geoms = sa.text(
+        "SELECT id, ST_AsText(ST_GeomFromWKB(ST_AsEWKB(centroid))) from projects;"
+    )
     projects = conn.execute(fetch_all_project_geoms)
     total_projects = projects.rowcount
     print("Total projects in the DB: " + str(total_projects))
@@ -83,7 +85,12 @@ def upgrade():
                             )
 
                             op.execute(update_country_info)
-                            print(str(match) + "/" + str(total_projects) + " projects mapped to countries")
+                            print(
+                                str(match)
+                                + "/"
+                                + str(total_projects)
+                                + " projects mapped to countries"
+                            )
                             sys.stdout.write("\033[F")
                             break
                     if count == total_projects:

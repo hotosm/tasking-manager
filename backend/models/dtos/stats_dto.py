@@ -33,7 +33,9 @@ class UserContribution(BaseModel):
     total: Optional[int] = None
     mapped_tasks: Optional[List[int]] = Field(alias="mappedTasks", default=None)
     validated_tasks: Optional[List[int]] = Field(alias="validatedTasks", default=None)
-    bad_imagery_tasks: Optional[List[int]] = Field(alias="badImageryTasks", default=None)
+    bad_imagery_tasks: Optional[List[int]] = Field(
+        alias="badImageryTasks", default=None
+    )
     name: Optional[str] = None
     date_registered: Optional[datetime] = Field(alias="dateRegistered", default=None)
 
@@ -45,7 +47,9 @@ class ProjectContributionsDTO(BaseModel):
         super().__init__()
         self.user_contributions = []
 
-    user_contributions: Optional[List[UserContribution]] = Field(alias="userContributions", default=None)
+    user_contributions: Optional[List[UserContribution]] = Field(
+        alias="userContributions", default=None
+    )
 
 
 class Pagination(BaseModel):
@@ -102,7 +106,9 @@ class OrganizationProjectsStatsDTO(BaseModel):
 class OrganizationTasksStatsDTO(BaseModel):
     ready: Optional[int] = 0
     locked_for_mapping: Optional[int] = Field(0, serialization_alias="lockedForMapping")
-    locked_for_validation: Optional[int] = Field(0, serialization_alias="lockedForValidation")
+    locked_for_validation: Optional[int] = Field(
+        0, serialization_alias="lockedForValidation"
+    )
     mapped: Optional[int] = 0
     validated: Optional[int] = 0
     invalidated: Optional[int] = 0
@@ -111,7 +117,9 @@ class OrganizationTasksStatsDTO(BaseModel):
 
 class OrganizationStatsDTO(BaseModel):
     projects: Optional[OrganizationProjectsStatsDTO] = None
-    active_tasks: Optional[OrganizationTasksStatsDTO] = Field(None, serialization_alias="activeTasks")
+    active_tasks: Optional[OrganizationTasksStatsDTO] = Field(
+        None, serialization_alias="activeTasks"
+    )
 
 
 class OrganizationListStatsDTO(BaseModel):

@@ -10,7 +10,10 @@ from backend import mail
 from backend.config import settings
 from backend.models.postgis.message import Message as PostgisMessage
 from backend.models.postgis.statuses import EncouragingEmailType
-from backend.services.messaging.template_service import format_username_link, get_template
+from backend.services.messaging.template_service import (
+    format_username_link,
+    get_template,
+)
 
 
 class SMTPService:
@@ -18,7 +21,9 @@ class SMTPService:
     async def send_verification_email(to_address: str, username: str):
         """Sends a verification email with a unique token so we can verify user owns this email address"""
         # TODO these could be localised if needed, in the future
-        verification_url = SMTPService._generate_email_verification_url(to_address, username)
+        verification_url = SMTPService._generate_email_verification_url(
+            to_address, username
+        )
         values = {
             "USERNAME": username,
             "VERIFICATION_LINK": verification_url,
@@ -44,7 +49,9 @@ class SMTPService:
     async def send_contact_admin_email(data):
         email_to = settings.EMAIL_CONTACT_ADDRESS
         if email_to is None:
-            raise ValueError("This feature is not implemented due to missing variable TM_EMAIL_CONTACT_ADDRESS.")
+            raise ValueError(
+                "This feature is not implemented due to missing variable TM_EMAIL_CONTACT_ADDRESS."
+            )
 
         message = """New contact from {name} - {email}.
             <p>{content}</p>
@@ -104,9 +111,17 @@ class SMTPService:
 
                 values["PROJECTS"] = projects
             html_template = get_template("encourage_mapper_en.html", values)
-            if contributor.email_address and contributor.is_email_verified and contributor.projects_notifications:
-                logger.debug(f"Sending {email_type} email to {contributor.email_address} for project {project_id}")
-                await SMTPService._send_message(contributor.email_address, subject, html_template)
+            if (
+                contributor.email_address
+                and contributor.is_email_verified
+                and contributor.projects_notifications
+            ):
+                logger.debug(
+                    f"Sending {email_type} email to {contributor.email_address} for project {project_id}"
+                )
+                await SMTPService._send_message(
+                    contributor.email_address, subject, html_template
+                )
 
     @staticmethod
     async def send_email_alert(
@@ -130,7 +145,9 @@ class SMTPService:
         logger.debug(f"Test if email required {to_address}")
         from_user_link = f"{settings.APP_BASE_URL}/users/{from_username}"
         project_link = f"{settings.APP_BASE_URL}/projects/{project_id}"
-        task_link = f"{settings.APP_BASE_URL}/projects/{project_id}/tasks/?search={task_id}"
+        task_link = (
+            f"{settings.APP_BASE_URL}/projects/{project_id}/tasks/?search={task_id}"
+        )
         settings_url = "{}/settings#notifications".format(settings.APP_BASE_URL)
 
         if not to_address:
@@ -159,7 +176,9 @@ class SMTPService:
         return True
 
     @staticmethod
-    async def _send_message(to_address: str, subject: str, html_message: str, text_message: str = None):
+    async def _send_message(
+        to_address: str, subject: str, html_message: str, text_message: str = None
+    ):
         """Helper sends SMTP message"""
         from_address = settings.MAIL_DEFAULT_SENDER
         if from_address is None:
@@ -180,7 +199,9 @@ class SMTPService:
                 logger.debug(f"Email sent {to_address}")
             except Exception as e:
                 # ERROR level logs are automatically captured by sentry so that admins are notified
-                logger.error(f"{e}: Sending email failed. Please check SMTP configuration")
+                logger.error(
+                    f"{e}: Sending email failed. Please check SMTP configuration"
+                )
 
     @staticmethod
     def _generate_email_verification_url(email_address: str, user_name: str):
@@ -193,6 +214,8 @@ class SMTPService:
         base_url = settings.APP_BASE_URL
 
         verification_params = {"token": token, "username": user_name}
-        verification_url = "{0}/verify-email/?{1}".format(base_url, urllib.parse.urlencode(verification_params))
+        verification_url = "{0}/verify-email/?{1}".format(
+            base_url, urllib.parse.urlencode(verification_params)
+        )
 
         return verification_url

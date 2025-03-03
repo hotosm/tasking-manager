@@ -29,8 +29,12 @@ def upgrade():
         sa.Column("partner_id", sa.INTEGER(), autoincrement=True, nullable=False),
         sa.Column("started_on", postgresql.TIMESTAMP(), nullable=False),
         sa.Column("ended_on", postgresql.TIMESTAMP(), nullable=True),
-        sa.ForeignKeyConstraint(["partner_id"], ["partners.id"], name="project_partners_partners_fk"),
-        sa.ForeignKeyConstraint(["project_id"], ["projects.id"], name="project_partners_projects_fk"),
+        sa.ForeignKeyConstraint(
+            ["partner_id"], ["partners.id"], name="project_partners_partners_fk"
+        ),
+        sa.ForeignKeyConstraint(
+            ["project_id"], ["projects.id"], name="project_partners_projects_fk"
+        ),
     )
 
     op.create_table(
@@ -39,12 +43,22 @@ def upgrade():
         sa.Column("partnership_id", sa.BIGINT(), autoincrement=True, nullable=True),
         sa.Column("project_id", sa.INTEGER(), autoincrement=True, nullable=False),
         sa.Column("partner_id", sa.INTEGER(), autoincrement=True, nullable=False),
-        sa.Column("action_date", postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
+        sa.Column(
+            "action_date", postgresql.TIMESTAMP(), autoincrement=False, nullable=False
+        ),
         sa.Column("action", sa.INTEGER(), autoincrement=False, nullable=False),
-        sa.Column("started_on_old", postgresql.TIMESTAMP(), autoincrement=False, nullable=True),
-        sa.Column("ended_on_old", postgresql.TIMESTAMP(), autoincrement=False, nullable=True),
-        sa.Column("started_on_new", postgresql.TIMESTAMP(), autoincrement=False, nullable=True),
-        sa.Column("ended_on_new", postgresql.TIMESTAMP(), autoincrement=False, nullable=True),
+        sa.Column(
+            "started_on_old", postgresql.TIMESTAMP(), autoincrement=False, nullable=True
+        ),
+        sa.Column(
+            "ended_on_old", postgresql.TIMESTAMP(), autoincrement=False, nullable=True
+        ),
+        sa.Column(
+            "started_on_new", postgresql.TIMESTAMP(), autoincrement=False, nullable=True
+        ),
+        sa.Column(
+            "ended_on_new", postgresql.TIMESTAMP(), autoincrement=False, nullable=True
+        ),
         sa.ForeignKeyConstraint(
             ["partnership_id"],
             ["project_partnerships.id"],

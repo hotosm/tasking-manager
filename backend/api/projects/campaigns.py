@@ -66,7 +66,9 @@ async def create_project_campaign(
         500:
             description: Internal Server Error
     """
-    if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
+    if not await ProjectAdminService.is_user_action_permitted_on_project(
+        user.id, project_id, db
+    ):
         return {
             "Error": "User is not a manager of the project",
             "SubCode": "UserPermissionError",
@@ -78,7 +80,9 @@ async def create_project_campaign(
     FROM campaign_projects
     WHERE project_id = :project_id AND campaign_id = :campaign_id
     """
-    result = await db.fetch_val(query, values={"project_id": project_id, "campaign_id": campaign_id})
+    result = await db.fetch_val(
+        query, values={"project_id": project_id, "campaign_id": campaign_id}
+    )
 
     if result > 0:
         return JSONResponse(
@@ -89,10 +93,14 @@ async def create_project_campaign(
             status_code=400,
         )
 
-    campaign_project_dto = CampaignProjectDTO(project_id=project_id, campaign_id=campaign_id)
+    campaign_project_dto = CampaignProjectDTO(
+        project_id=project_id, campaign_id=campaign_id
+    )
 
     await CampaignService.create_campaign_project(campaign_project_dto, db)
-    message = "campaign with id {} assigned successfully for project with id {}".format(campaign_id, project_id)
+    message = "campaign with id {} assigned successfully for project with id {}".format(
+        campaign_id, project_id
+    )
     return JSONResponse(content={"Success": message}, status_code=200)
 
 
@@ -171,7 +179,9 @@ async def delete_project_campaign(
         500:
             description: Internal Server Error
     """
-    if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
+    if not await ProjectAdminService.is_user_action_permitted_on_project(
+        user.id, project_id, db
+    ):
         return JSONResponse(
             content={
                 "Error": "User is not a manager of the project",

@@ -100,13 +100,17 @@ class ProjectTeams(Base):
     project_id = Column(Integer, ForeignKey("projects.id"), primary_key=True)
     role = Column(Integer, nullable=False)
 
-    project = relationship("Project", backref=backref("teams", cascade="all, delete-orphan"))
+    project = relationship(
+        "Project", backref=backref("teams", cascade="all, delete-orphan")
+    )
     team = relationship(Team, backref=backref("projects", cascade="all, delete-orphan"))
 
     async def create(self, db: Database):
         """Creates and saves the current model to the DB"""
         await db.execute(
-            self.__table__.insert().values(team_id=self.team_id, project_id=self.project_id, role=self.role)
+            self.__table__.insert().values(
+                team_id=self.team_id, project_id=self.project_id, role=self.role
+            )
         )
 
 
@@ -127,7 +131,11 @@ class Project(Base):
         for column in self.__table__.columns:
             if getattr(self, column.name) is None and column.default is not None:
                 # Retrieve the default value from the column
-                default_value = column.default.arg if callable(column.default.arg) else column.default.arg
+                default_value = (
+                    column.default.arg
+                    if callable(column.default.arg)
+                    else column.default.arg
+                )
                 setattr(self, column.name, default_value)
 
     # Columns
@@ -135,9 +143,15 @@ class Project(Base):
     status = Column(Integer, default=ProjectStatus.DRAFT.value, nullable=False)
     created = Column(DateTime, default=timestamp(), nullable=False)
     priority = Column(Integer, default=ProjectPriority.MEDIUM.value)
-    default_locale = Column(String(10), default="en")  # The locale that is returned if requested locale not available
-    author_id = Column(BigInteger, ForeignKey("users.id", name="fk_users"), nullable=False)
-    difficulty = Column(Integer, default=2, nullable=False, index=True)  # Mapper level project is suitable for
+    default_locale = Column(
+        String(10), default="en"
+    )  # The locale that is returned if requested locale not available
+    author_id = Column(
+        BigInteger, ForeignKey("users.id", name="fk_users"), nullable=False
+    )
+    difficulty = Column(
+        Integer, default=2, nullable=False, index=True
+    )  # Mapper level project is suitable for
     mapping_permission = Column(Integer, default=MappingPermission.ANY.value)
     validation_permission = Column(
         Integer, default=ValidationPermission.LEVEL.value
@@ -148,7 +162,9 @@ class Project(Base):
     private = Column(Boolean, default=False)  # Only allowed users can validate
     featured = Column(Boolean, default=False)  # Only PMs can set a project as featured
     changeset_comment = Column(String)
-    osmcha_filter_id = Column(String)  # Optional custom filter id for filtering on OSMCha
+    osmcha_filter_id = Column(
+        String
+    )  # Optional custom filter id for filtering on OSMCha
     due_date = Column(DateTime)
     imagery = Column(String)
     josm_preset = Column(String)
@@ -161,7 +177,9 @@ class Project(Base):
     geometry = Column(Geometry("MULTIPOLYGON", srid=4326), nullable=False)
     centroid = Column(Geometry("POINT", srid=4326), nullable=False)
     country = Column(ARRAY(String), default=[])
-    task_creation_mode = Column(Integer, default=TaskCreationMode.GRID.value, nullable=False)
+    task_creation_mode = Column(
+        Integer, default=TaskCreationMode.GRID.value, nullable=False
+    )
 
     organisation_id = Column(
         Integer,
@@ -203,14 +221,20 @@ class Project(Base):
     # Total tasks are always >= 1
     @hybrid_property
     def percent_mapped(self):
-        return (self.tasks_mapped + self.tasks_validated) * 100 // (self.total_tasks - self.tasks_bad_imagery)
+        return (
+            (self.tasks_mapped + self.tasks_validated)
+            * 100
+            // (self.total_tasks - self.tasks_bad_imagery)
+        )
 
     @hybrid_property
     def percent_validated(self):
         return self.tasks_validated * 100 // (self.total_tasks - self.tasks_bad_imagery)
 
     # Mapped Objects
-    tasks = orm.relationship(Task, backref="projects", cascade="all, delete, delete-orphan", lazy="dynamic")
+    tasks = orm.relationship(
+        Task, backref="projects", cascade="all, delete, delete-orphan", lazy="dynamic"
+    )
     project_info = orm.relationship(ProjectInfo, lazy="dynamic", cascade="all")
     project_chat = orm.relationship(ProjectChat, lazy="dynamic", cascade="all")
     author = orm.relationship(User)
@@ -221,12 +245,18 @@ class Project(Base):
         cascade="all, delete-orphan",
         single_parent=True,
     )
-    custom_editor = orm.relationship(CustomEditor, cascade="all, delete-orphan", uselist=False)
+    custom_editor = orm.relationship(
+        CustomEditor, cascade="all, delete-orphan", uselist=False
+    )
     favorited = orm.relationship(User, secondary=project_favorites, backref="favorites")
     # organisation = orm.relationship(Organisation, backref="projects", lazy="joined")
     organisation = orm.relationship(Organisation, backref="projects")
-    campaign = orm.relationship(Campaign, secondary=campaign_projects, backref="projects")
-    interests = orm.relationship(Interest, secondary=project_interests, backref="projects")
+    campaign = orm.relationship(
+        Campaign, secondary=campaign_projects, backref="projects"
+    )
+    interests = orm.relationship(
+        Interest, secondary=project_interests, backref="projects"
+    )
     partnerships = orm.relationship("ProjectPartnership", backref="project")
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
@@ -339,7 +369,11 @@ class Project(Base):
         values.pop("id", None)
 
         project = await db.execute(Project.__table__.insert().values(**values))
-        await db.execute(ProjectInfo.__table__.insert().values(project_id=project, locale="en", name=project_name))
+        await db.execute(
+            ProjectInfo.__table__.insert().values(
+                project_id=project, locale="en", name=project_name
+            )
+        )
         # Set the default changeset comment
         default_comment = settings.DEFAULT_CHANGESET_COMMENT
         self.changeset_comment = (
@@ -373,8 +407,12 @@ class Project(Base):
 
     async def save(self, db: Database):
         """Save changes to db"""
-        columns = {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
-        await db.execute(Project.__table__.update().where(Project.id == self.id).values(**columns))
+        columns = {
+            c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
+        }
+        await db.execute(
+            Project.__table__.update().where(Project.id == self.id).values(**columns)
+        )
 
         for task in self.tasks:
             await db.execute(
@@ -423,12 +461,16 @@ class Project(Base):
         # Construct the INSERT query for the new project
         columns = ", ".join(orig_metadata.keys())
         values = ", ".join([f":{key}" for key in orig_metadata.keys()])
-        insert_project_query = f"INSERT INTO projects ({columns}) VALUES ({values}) RETURNING id"
+        insert_project_query = (
+            f"INSERT INTO projects ({columns}) VALUES ({values}) RETURNING id"
+        )
         new_project_id = await db.execute(insert_project_query, orig_metadata)
 
         # Clone project_info data
         project_info_query = "SELECT * FROM project_info WHERE project_id = :project_id"
-        project_info_records = await db.fetch_all(project_info_query, {"project_id": project_id})
+        project_info_records = await db.fetch_all(
+            project_info_query, {"project_id": project_id}
+        )
 
         for info in project_info_records:
             info_data = dict(info)
@@ -436,7 +478,9 @@ class Project(Base):
             info_data.update({"project_id": new_project_id})
             columns_info = ", ".join(info_data.keys())
             values_info = ", ".join([f":{key}" for key in info_data.keys()])
-            insert_info_query = f"INSERT INTO project_info ({columns_info}) VALUES ({values_info})"
+            insert_info_query = (
+                f"INSERT INTO project_info ({columns_info}) VALUES ({values_info})"
+            )
             await db.execute(insert_info_query, info_data)
 
         # Clone teams data
@@ -449,11 +493,15 @@ class Project(Base):
             team_data.update({"project_id": new_project_id})
             columns_team = ", ".join(team_data.keys())
             values_team = ", ".join([f":{key}" for key in team_data.keys()])
-            insert_team_query = f"INSERT INTO project_teams ({columns_team}) VALUES ({values_team})"
+            insert_team_query = (
+                f"INSERT INTO project_teams ({columns_team}) VALUES ({values_team})"
+            )
             await db.execute(insert_team_query, team_data)
 
         # Clone campaigns associated with the original project
-        campaign_query = "SELECT campaign_id FROM campaign_projects WHERE project_id = :project_id"
+        campaign_query = (
+            "SELECT campaign_id FROM campaign_projects WHERE project_id = :project_id"
+        )
         campaign_ids = await db.fetch_all(campaign_query, {"project_id": project_id})
 
         for campaign in campaign_ids:
@@ -470,7 +518,9 @@ class Project(Base):
             )
 
         # Clone interests associated with the original project
-        interest_query = "SELECT interest_id FROM project_interests WHERE project_id = :project_id"
+        interest_query = (
+            "SELECT interest_id FROM project_interests WHERE project_id = :project_id"
+        )
         interest_ids = await db.fetch_all(interest_query, {"project_id": project_id})
 
         for interest in interest_ids:
@@ -490,7 +540,9 @@ class Project(Base):
         custom_editor_query = """
             SELECT name, description, url FROM project_custom_editors WHERE project_id = :project_id
         """
-        custom_editor = await db.fetch_one(custom_editor_query, {"project_id": project_id})
+        custom_editor = await db.fetch_one(
+            custom_editor_query, {"project_id": project_id}
+        )
 
         if custom_editor:
             clone_custom_editor_query = """
@@ -509,7 +561,9 @@ class Project(Base):
 
         # Return the new project data
         new_project_query = "SELECT * FROM projects WHERE id = :new_project_id"
-        new_project = await db.fetch_one(new_project_query, {"new_project_id": new_project_id})
+        new_project = await db.fetch_one(
+            new_project_query, {"new_project_id": new_project_id}
+        )
         return Project(**new_project)
 
     @staticmethod
@@ -556,7 +610,9 @@ class Project(Base):
         self.private = project_dto.private
         self.difficulty = ProjectDifficulty[project_dto.difficulty.upper()].value
         self.changeset_comment = project_dto.changeset_comment
-        self.due_date = project_dto.due_date.replace(tzinfo=None) if project_dto.due_date else None
+        self.due_date = (
+            project_dto.due_date.replace(tzinfo=None) if project_dto.due_date else None
+        )
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
         self.id_presets = project_dto.id_presets
@@ -568,13 +624,17 @@ class Project(Base):
         if project_dto.osmcha_filter_id:
             # Support simple extraction of OSMCha filter id from OSMCha URL
             match = re.search(r"aoi=([\w-]+)", project_dto.osmcha_filter_id)
-            self.osmcha_filter_id = match.group(1) if match else project_dto.osmcha_filter_id
+            self.osmcha_filter_id = (
+                match.group(1) if match else project_dto.osmcha_filter_id
+            )
         else:
             self.osmcha_filter_id = None
 
         if project_dto.organisation:
             organisation_query = "SELECT * FROM organisations WHERE id = :id"
-            organization = await db.fetch_one(organisation_query, values={"id": project_dto.organisation})
+            organization = await db.fetch_one(
+                organisation_query, values={"id": project_dto.organisation}
+            )
 
             if organization is None:
                 raise NotFound(
@@ -627,16 +687,22 @@ class Project(Base):
                 if team is None:
                     raise NotFound(sub_code="TEAM_NOT_FOUND", team_id=team_dto.team_id)
                 role = TeamRoles[team_dto.role].value
-                project_team = ProjectTeams(project_id=self.id, team_id=team.id, role=role)
+                project_team = ProjectTeams(
+                    project_id=self.id, team_id=team.id, role=role
+                )
                 await project_team.create(db)
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
             project_info = await db.fetch_one(
-                select(ProjectInfo).where(ProjectInfo.project_id == self.id, ProjectInfo.locale == dto.locale)
+                select(ProjectInfo).where(
+                    ProjectInfo.project_id == self.id, ProjectInfo.locale == dto.locale
+                )
             )
             if project_info is None:
-                await ProjectInfo.create_from_dto(dto, self.id, db)  # Can't find info so must be new locale
+                await ProjectInfo.create_from_dto(
+                    dto, self.id, db
+                )  # Can't find info so must be new locale
             else:
                 await ProjectInfo.update_from_dto(ProjectInfo(**project_info), dto, db)
 
@@ -658,10 +724,14 @@ class Project(Base):
 
         if project_dto.custom_editor:
             if not self.custom_editor:
-                new_editor = await CustomEditor.create_from_dto(self.id, project_dto.custom_editor, db)
+                new_editor = await CustomEditor.create_from_dto(
+                    self.id, project_dto.custom_editor, db
+                )
                 self.custom_editor = new_editor
             else:
-                await CustomEditor.update_editor(self.custom_editor, project_dto.custom_editor, db)
+                await CustomEditor.update_editor(
+                    self.custom_editor, project_dto.custom_editor, db
+                )
         else:
             if self.custom_editor:
                 await CustomEditor.delete(self.custom_editor, db)
@@ -677,7 +747,9 @@ class Project(Base):
             FROM campaign_projects
             WHERE project_id = :project_id
         """
-        campaign_results = await db.fetch_all(query, values={"project_id": project_dto.project_id})
+        campaign_results = await db.fetch_all(
+            query, values={"project_id": project_dto.project_id}
+        )
         current_ids = [c.campaign_id for c in campaign_results]
 
         new_set = set(new_ids)
@@ -714,10 +786,14 @@ class Project(Base):
                     )
 
         if project_dto.mapping_permission:
-            self.mapping_permission = MappingPermission[project_dto.mapping_permission.upper()].value
+            self.mapping_permission = MappingPermission[
+                project_dto.mapping_permission.upper()
+            ].value
 
         if project_dto.validation_permission:
-            self.validation_permission = ValidationPermission[project_dto.validation_permission.upper()].value
+            self.validation_permission = ValidationPermission[
+                project_dto.validation_permission.upper()
+            ].value
 
         # handle interests update
         try:
@@ -730,7 +806,9 @@ class Project(Base):
             FROM project_interests
             WHERE project_id = :project_id
         """
-        interest_results = await db.fetch_all(interest_query, values={"project_id": project_dto.project_id})
+        interest_results = await db.fetch_all(
+            interest_query, values={"project_id": project_dto.project_id}
+        )
         current_interest_ids = [i.interest_id for i in interest_results]
 
         new_interest_set = set(new_interest_ids)
@@ -771,13 +849,17 @@ class Project(Base):
         if not self.country:
             self.set_country_info()
 
-        columns = {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
+        columns = {
+            c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
+        }
         columns.pop("geometry", None)
         columns.pop("centroid", None)
         columns.pop("id", None)
         columns.pop("organisation_id", None)
         # Update the project in the database
-        await db.execute(self.__table__.update().where(Project.id == self.id).values(**columns))
+        await db.execute(
+            self.__table__.update().where(Project.id == self.id).values(**columns)
+        )
 
     async def delete(self, db: Database):
         """Deletes the current project and related records from the database using raw SQL."""
@@ -809,7 +891,9 @@ class Project(Base):
                 )
 
             # Finally, delete the project itself
-            await db.execute("DELETE FROM projects WHERE id = :project_id", {"project_id": self.id})
+            await db.execute(
+                "DELETE FROM projects WHERE id = :project_id", {"project_id": self.id}
+            )
 
     @staticmethod
     async def exists(project_id: int, db: Database) -> bool:
@@ -837,7 +921,9 @@ class Project(Base):
             LIMIT 1
         """
 
-        result = await db.fetch_one(query, values={"user_id": user_id, "project_id": project_id})
+        result = await db.fetch_one(
+            query, values={"user_id": user_id, "project_id": project_id}
+        )
         return result is not None
 
     @staticmethod
@@ -845,14 +931,18 @@ class Project(Base):
         check_query = """
         SELECT 1 FROM project_favorites WHERE project_id = :project_id AND user_id = :user_id
         """
-        exists = await db.fetch_one(check_query, {"project_id": project_id, "user_id": user_id})
+        exists = await db.fetch_one(
+            check_query, {"project_id": project_id, "user_id": user_id}
+        )
 
         if not exists:
             insert_query = """
             INSERT INTO project_favorites (project_id, user_id)
             VALUES (:project_id, :user_id)
             """
-            await db.execute(insert_query, {"project_id": project_id, "user_id": user_id})
+            await db.execute(
+                insert_query, {"project_id": project_id, "user_id": user_id}
+            )
 
     @staticmethod
     async def unfavorite(project_id: int, user_id: int, db: Database):
@@ -860,7 +950,9 @@ class Project(Base):
         SELECT 1 FROM project_favorites
         WHERE project_id = :project_id AND user_id = :user_id
         """
-        exists = await db.fetch_one(check_query, {"project_id": project_id, "user_id": user_id})
+        exists = await db.fetch_one(
+            check_query, {"project_id": project_id, "user_id": user_id}
+        )
 
         if not exists:
             raise ValueError("NotFeatured - Project has not been favorited by user")
@@ -905,7 +997,8 @@ class Project(Base):
             select(func.count())
             .select_from(Task)
             .where(
-                Task.project_id == self.id,  # Assuming `self.id` refers to the project instance ID
+                Task.project_id
+                == self.id,  # Assuming `self.id` refers to the project instance ID
                 Task.task_status != TaskStatus.READY.value,
             )
         )
@@ -987,12 +1080,16 @@ class Project(Base):
             elif project_status == ProjectStatus.ARCHIVED:
                 admin_projects_dto.archived_projects.append(pm_project)
             else:
-                raise HTTPException(status_code=500, detail=f"Unexpected state project {row['id']}")
+                raise HTTPException(
+                    status_code=500, detail=f"Unexpected state project {row['id']}"
+                )
 
         return admin_projects_dto
 
     @staticmethod
-    async def get_project_user_stats(project_id: int, user_id: int, db: Database) -> ProjectUserStatsDTO:
+    async def get_project_user_stats(
+        project_id: int, user_id: int, db: Database
+    ) -> ProjectUserStatsDTO:
         """Compute project-specific stats for a given user"""
         stats_dto = ProjectUserStatsDTO()
 
@@ -1004,7 +1101,9 @@ class Project(Base):
             AND project_id = :project_id
             AND user_id = :user_id
         """
-        total_mapping_result = await db.fetch_one(total_mapping_query, {"project_id": project_id, "user_id": user_id})
+        total_mapping_result = await db.fetch_one(
+            total_mapping_query, {"project_id": project_id, "user_id": user_id}
+        )
 
         total_mapping_time = (
             total_mapping_result["total_time"].total_seconds()
@@ -1052,10 +1151,16 @@ class Project(Base):
             WHERE id = :project_id
         """
 
-        result = await database.fetch_one(project_query, values={"project_id": project_id})
+        result = await database.fetch_one(
+            project_query, values={"project_id": project_id}
+        )
 
         project_stats.area = result["area"]
-        project_stats.aoi_centroid = geojson.loads(result["centroid_geojson"]) if result["centroid_geojson"] else None
+        project_stats.aoi_centroid = (
+            geojson.loads(result["centroid_geojson"])
+            if result["centroid_geojson"]
+            else None
+        )
         tasks_mapped = result["tasks_mapped"]
         tasks_validated = result["tasks_validated"]
         total_tasks = result["total_tasks"]
@@ -1080,8 +1185,12 @@ class Project(Base):
             FROM users
             WHERE :project_id = ANY(projects_mapped)
         """
-        total_mappers_result = await database.fetch_one(total_mappers_query, values={"project_id": project_id})
-        project_stats.total_mappers = total_mappers_result[0] if total_mappers_result else 0
+        total_mappers_result = await database.fetch_one(
+            total_mappers_query, values={"project_id": project_id}
+        )
+        project_stats.total_mappers = (
+            total_mappers_result[0] if total_mappers_result else 0
+        )
 
         # Query for total comments
         total_comments_query = """
@@ -1089,8 +1198,12 @@ class Project(Base):
             FROM project_chat
             WHERE project_id = :project_id
         """
-        total_comments_result = await database.fetch_one(total_comments_query, values={"project_id": project_id})
-        project_stats.total_comments = total_comments_result[0] if total_comments_result else 0
+        total_comments_result = await database.fetch_one(
+            total_comments_query, values={"project_id": project_id}
+        )
+        project_stats.total_comments = (
+            total_comments_result[0] if total_comments_result else 0
+        )
 
         # Initialize time stats
         project_stats.total_time_spent = 0
@@ -1108,7 +1221,9 @@ class Project(Base):
             WHERE action IN ('LOCKED_FOR_MAPPING', 'AUTO_UNLOCKED_FOR_MAPPING')
             AND project_id = :project_id
         """
-        total_mapping_result = await database.fetch_one(total_mapping_query, values={"project_id": project_id})
+        total_mapping_result = await database.fetch_one(
+            total_mapping_query, values={"project_id": project_id}
+        )
         total_mapping_time, total_mapping_tasks = (
             (total_mapping_result["total_time"], total_mapping_result["total_tasks"])
             if total_mapping_result
@@ -1118,7 +1233,9 @@ class Project(Base):
         if total_mapping_tasks > 0:
             total_mapping_time = total_mapping_time.total_seconds()
             project_stats.total_mapping_time = total_mapping_time
-            project_stats.average_mapping_time = total_mapping_time / total_mapping_tasks
+            project_stats.average_mapping_time = (
+                total_mapping_time / total_mapping_tasks
+            )
             project_stats.total_time_spent += total_mapping_time
 
         # Query total validation time and tasks
@@ -1130,7 +1247,9 @@ class Project(Base):
             WHERE action IN ('LOCKED_FOR_VALIDATION', 'AUTO_UNLOCKED_FOR_VALIDATION')
             AND project_id = :project_id
         """
-        total_validation_result = await database.fetch_one(total_validation_query, values={"project_id": project_id})
+        total_validation_result = await database.fetch_one(
+            total_validation_query, values={"project_id": project_id}
+        )
 
         # Safely unpack the results, or default to (0, 0) if the query returns no results
         total_validation_time, total_validation_tasks = (
@@ -1146,7 +1265,9 @@ class Project(Base):
         if total_validation_tasks > 0:
             total_validation_time = total_validation_time.total_seconds()
             project_stats.total_validation_time = total_validation_time
-            project_stats.average_validation_time = total_validation_time / total_validation_tasks
+            project_stats.average_validation_time = (
+                total_validation_time / total_validation_tasks
+            )
             project_stats.total_time_spent += total_validation_time
 
         # TODO: Understand the functionality of subquery used and incorporate this part.
@@ -1245,14 +1366,20 @@ class Project(Base):
         # Mapping editors
         if project_row.mapping_editors:
             mapping_editors = (
-                [Editors(mapping_editor).name for mapping_editor in project_row.mapping_editors]
+                [
+                    Editors(mapping_editor).name
+                    for mapping_editor in project_row.mapping_editors
+                ]
                 if project_row["mapping_editors"]
                 else []
             )
         # Validation editors
         if project_row.validation_editors:
             validation_editors = (
-                [Editors(validation_editor).name for validation_editor in project_row["validation_editors"]]
+                [
+                    Editors(validation_editor).name
+                    for validation_editor in project_row["validation_editors"]
+                ]
                 if project_row["validation_editors"]
                 else []
             )
@@ -1277,9 +1404,15 @@ class Project(Base):
         summary.last_updated = project_row.last_updated
         summary.osmcha_filter_id = project_row.osmcha_filter_id
         summary.difficulty = ProjectDifficulty(project_row["difficulty"]).name
-        summary.mapping_permission = MappingPermission(project_row["mapping_permission"]).name
-        summary.validation_permission = ValidationPermission(project_row["validation_permission"]).name
-        summary.random_task_selection_enforced = project_row.enforce_random_task_selection
+        summary.mapping_permission = MappingPermission(
+            project_row["mapping_permission"]
+        ).name
+        summary.validation_permission = ValidationPermission(
+            project_row["validation_permission"]
+        ).name
+        summary.random_task_selection_enforced = (
+            project_row.enforce_random_task_selection
+        )
         summary.private = project_row.private
         summary.license_id = project_row.license_id
         summary.status = ProjectStatus(project_row["status"]).name
@@ -1298,7 +1431,10 @@ class Project(Base):
         # Mapping types
         if project_row.mapping_types:
             summary.mapping_types = (
-                [MappingTypes(mapping_type).name for mapping_type in project_row.mapping_types]
+                [
+                    MappingTypes(mapping_type).name
+                    for mapping_type in project_row.mapping_types
+                ]
                 if project_row.mapping_types
                 else []
             )
@@ -1309,7 +1445,9 @@ class Project(Base):
             FROM project_custom_editors
             WHERE project_id = :project_id
         """
-        custom_editor_row = await db.fetch_one(custom_editor_query, {"project_id": project_id})
+        custom_editor_row = await db.fetch_one(
+            custom_editor_query, {"project_id": project_id}
+        )
         if custom_editor_row:
             summary.custom_editor = CustomEditorDTO(
                 name=custom_editor_row.name,
@@ -1318,10 +1456,14 @@ class Project(Base):
             )
 
         if summary.private:
-            allowed_user_ids = project_row.allowed_users if project_row.allowed_users else []
+            allowed_user_ids = (
+                project_row.allowed_users if project_row.allowed_users else []
+            )
             if allowed_user_ids:
                 query = "SELECT username FROM users WHERE id = ANY(:allowed_user_ids)"
-                allowed_users = await db.fetch_all(query, {"allowed_user_ids": allowed_user_ids})
+                allowed_users = await db.fetch_all(
+                    query, {"allowed_user_ids": allowed_user_ids}
+                )
                 summary.allowed_users = [user["username"] for user in allowed_users]
             else:
                 summary.allowed_users = []
@@ -1362,7 +1504,9 @@ class Project(Base):
         """
 
         campaigns = await db.fetch_all(query=query, values={"project_id": project_id})
-        campaigns_dto = [CampaignDTO(**campaign) for campaign in campaigns] if campaigns else []
+        campaigns_dto = (
+            [CampaignDTO(**campaign) for campaign in campaigns] if campaigns else []
+        )
         summary.campaigns = campaigns_dto
 
         # Project teams
@@ -1407,11 +1551,15 @@ class Project(Base):
         FROM project_info
         WHERE project_id = :project_id AND locale = :preferred_locale
         """
-        project_info = await db.fetch_one(query, {"project_id": project_id, "preferred_locale": preferred_locale})
+        project_info = await db.fetch_one(
+            query, {"project_id": project_id, "preferred_locale": preferred_locale}
+        )
 
         if not project_info:
             # Fallback to default locale if preferred locale is not available
-            project_info = await db.fetch_one(query, {"project_id": project_id, "preferred_locale": default_locale})
+            project_info = await db.fetch_one(
+                query, {"project_id": project_id, "preferred_locale": default_locale}
+            )
         return ProjectInfoDTO(**project_info) if project_info else None
 
     @staticmethod
@@ -1465,7 +1613,9 @@ class Project(Base):
 
     @staticmethod
     async def get_project_title(db: Database, project_id: int, preferred_locale):
-        project_info = await ProjectInfo.get_dto_for_locale(db, project_id, preferred_locale)
+        project_info = await ProjectInfo.get_dto_for_locale(
+            db, project_id, preferred_locale
+        )
         return project_info.name
 
     @staticmethod
@@ -1551,7 +1701,9 @@ class Project(Base):
             area_of_interest=area_of_interest,
             aoi_bbox=aoi_bbox,
             mapping_permission=MappingPermission(record.mapping_permission).name,
-            validation_permission=ValidationPermission(record.validation_permission).name,
+            validation_permission=ValidationPermission(
+                record.validation_permission
+            ).name,
             enforce_random_task_selection=record.enforce_random_task_selection,
             private=record.private,
             difficulty=ProjectDifficulty(record.difficulty).name,
@@ -1572,15 +1724,22 @@ class Project(Base):
             active_mappers=active_mappers,
             task_creation_mode=TaskCreationMode(record.task_creation_mode).name,
             mapping_types=(
-                [MappingTypes(mapping_type).name for mapping_type in record.mapping_types]
+                [
+                    MappingTypes(mapping_type).name
+                    for mapping_type in record.mapping_types
+                ]
                 if record.mapping_types is not None
                 else []
             ),
             mapping_editors=(
-                [Editors(editor).name for editor in record.mapping_editors] if record.mapping_editors else []
+                [Editors(editor).name for editor in record.mapping_editors]
+                if record.mapping_editors
+                else []
             ),
             validation_editors=(
-                [Editors(editor).name for editor in record.validation_editors] if record.validation_editors else []
+                [Editors(editor).name for editor in record.validation_editors]
+                if record.validation_editors
+                else []
             ),
             percent_mapped=percent_mapped,
             percent_validated=percent_validated,
@@ -1601,7 +1760,12 @@ class Project(Base):
         """
         teams = await db.fetch_all(teams_query, {"project_id": project_id})
         project_dto.project_teams = (
-            [ProjectTeamDTO(**{**team, "role": TeamRoles(team["role"]).name}) for team in teams] if teams else []
+            [
+                ProjectTeamDTO(**{**team, "role": TeamRoles(team["role"]).name})
+                for team in teams
+            ]
+            if teams
+            else []
         )
 
         custom_editor = await db.fetch_one(
@@ -1624,8 +1788,14 @@ class Project(Base):
                 JOIN users u ON pau.user_id = u.id
                 WHERE pau.project_id = :project_id
             """
-            allowed_usernames = await db.fetch_all(allowed_users_query, {"project_id": project_id})
-            project_dto.allowed_usernames = [user.username for user in allowed_usernames] if allowed_usernames else []
+            allowed_usernames = await db.fetch_all(
+                allowed_users_query, {"project_id": project_id}
+            )
+            project_dto.allowed_usernames = (
+                [user.username for user in allowed_usernames]
+                if allowed_usernames
+                else []
+            )
 
         campaigns_query = """
             SELECT c.id, c.name
@@ -1642,9 +1812,13 @@ class Project(Base):
             JOIN project_priority_areas ppa ON pa.id = ppa.priority_area_id
             WHERE ppa.project_id = :project_id
         """
-        priority_areas = await db.fetch_all(priority_areas_query, {"project_id": project_id})
+        priority_areas = await db.fetch_all(
+            priority_areas_query, {"project_id": project_id}
+        )
         project_dto.priority_areas = (
-            [geojson.loads(area["geojson"]) for area in priority_areas] if priority_areas else None
+            [geojson.loads(area["geojson"]) for area in priority_areas]
+            if priority_areas
+            else None
         )
 
         interests_query = """
@@ -1669,9 +1843,15 @@ class Project(Base):
         project_dto = await Project.get_project_and_base_dto(project_id, db)
 
         if abbrev is False:
-            project_dto.tasks = await Task.get_tasks_as_geojson_feature_collection(db, project_id, None)
+            project_dto.tasks = await Task.get_tasks_as_geojson_feature_collection(
+                db, project_id, None
+            )
         else:
-            project_dto.tasks = await Task.get_tasks_as_geojson_feature_collection_no_geom(db, project_id)
+            project_dto.tasks = (
+                await Task.get_tasks_as_geojson_feature_collection_no_geom(
+                    db, project_id
+                )
+            )
 
         project_dto.project_info = await ProjectInfo.get_dto_for_locale(
             db, project_id, locale, project_dto.default_locale
@@ -1688,13 +1868,17 @@ class Project(Base):
                 FROM organisations
                 WHERE id = :organisation_id
             """
-            org_record = await db.fetch_one(org_query, values={"organisation_id": project_dto.organisation})
+            org_record = await db.fetch_one(
+                org_query, values={"organisation_id": project_dto.organisation}
+            )
             if org_record:
                 project_dto.organisation_name = org_record.name
                 project_dto.organisation_logo = org_record.logo
                 project_dto.organisation_slug = org_record.slug
 
-        project_dto.project_info_locales = await ProjectInfo.get_dto_for_all_locales(db, project_id)
+        project_dto.project_info_locales = await ProjectInfo.get_dto_for_all_locales(
+            db, project_id
+        )
 
         return project_dto
 
@@ -1735,7 +1919,11 @@ class Project(Base):
         """Calculates percentages of contributions based on provided statistics."""
         try:
             if target == "mapped":
-                return int((tasks_mapped + tasks_validated) / (total_tasks - tasks_bad_imagery) * 100)
+                return int(
+                    (tasks_mapped + tasks_validated)
+                    / (total_tasks - tasks_bad_imagery)
+                    * 100
+                )
             elif target == "validated":
                 return int(tasks_validated / (total_tasks - tasks_bad_imagery) * 100)
             elif target == "bad_imagery":
@@ -1743,7 +1931,11 @@ class Project(Base):
             elif target == "project_completion":
                 # To calculate project completion we assign 2 points to each task
                 # one for mapping and one for validation
-                return int((tasks_mapped + (tasks_validated * 2)) / ((total_tasks - tasks_bad_imagery) * 2) * 100)
+                return int(
+                    (tasks_mapped + (tasks_validated * 2))
+                    / ((total_tasks - tasks_bad_imagery) * 2)
+                    * 100
+                )
         except ZeroDivisionError:
             return 0
 
@@ -1752,7 +1944,9 @@ class Project(Base):
         """Creates a Project DTO suitable for transmitting to project admins"""
         project_dto = await Project.get_project_and_base_dto(project_id, db)
 
-        project_dto.project_info_locales = await ProjectInfo.get_dto_for_all_locales(db, project_id)
+        project_dto.project_info_locales = await ProjectInfo.get_dto_for_all_locales(
+            db, project_id
+        )
 
         return project_dto
 
@@ -1760,7 +1954,11 @@ class Project(Base):
         self.interests = []
         objs = [Interest.get_by_id(i, db) for i in interests_ids]
         self.interests.extend(objs)
-        query = update(Project).where(Project.id == self.id).values(interests=self.interests)
+        query = (
+            update(Project)
+            .where(Project.id == self.id)
+            .values(interests=self.interests)
+        )
 
         # Execute the update query using the async `db.execute`
         project = await db.execute(query)
@@ -1792,7 +1990,9 @@ class Project(Base):
         existing_priority_area_ids = await db.fetch_all(
             query=existing_priority_area_ids_query, values={"project_id": project_id}
         )
-        existing_ids = [record["priority_area_id"] for record in existing_priority_area_ids]
+        existing_ids = [
+            record["priority_area_id"] for record in existing_priority_area_ids
+        ]
 
         clear_links_query = """
         DELETE FROM project_priority_areas
@@ -1806,7 +2006,9 @@ class Project(Base):
             WHERE id = ANY(:ids);
             """
             # Pass the list as an array using PostgreSQL's array syntax
-            await db.execute(query=delete_priority_areas_query, values={"ids": existing_ids})
+            await db.execute(
+                query=delete_priority_areas_query, values={"ids": existing_ids}
+            )
 
     async def update_project_author(project_id: int, new_author_id: int, db: Database):
         query = """

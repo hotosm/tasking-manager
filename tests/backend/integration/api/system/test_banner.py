@@ -23,7 +23,9 @@ class TestBannerAPI(BaseTestCase):
         # Session token is required for this endpoint. So we need to create a user
         test_user = return_canned_user()
         test_user.create()
-        session_token = AuthenticationService.generate_session_token_for_user(test_user.id)
+        session_token = AuthenticationService.generate_session_token_for_user(
+            test_user.id
+        )
         session_token = base64.b64encode(session_token.encode("utf-8"))
         session_token = "Token " + session_token.decode("utf-8")
         banner_message = "### Updated message"

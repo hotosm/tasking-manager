@@ -54,9 +54,13 @@ async def get_annotations(
     """
     await ProjectService.exists(project_id, db)
     if annotation_type:
-        annotations = await TaskAnnotation.get_task_annotations_by_project_id_type(project_id, annotation_type, db)
+        annotations = await TaskAnnotation.get_task_annotations_by_project_id_type(
+            project_id, annotation_type, db
+        )
     else:
-        annotations = await TaskAnnotation.get_task_annotations_by_project_id(project_id, db)
+        annotations = await TaskAnnotation.get_task_annotations_by_project_id(
+            project_id, db
+        )
     return annotations.model_dump(by_alias=True)
 
 
@@ -148,7 +152,9 @@ async def post_annotations(
 
     for annotation in annotations["tasks"]:
         try:
-            await TaskAnnotationsService.add_or_update_annotation(annotation, project_id, annotation_type, db)
+            await TaskAnnotationsService.add_or_update_annotation(
+                annotation, project_id, annotation_type, db
+            )
         except Exception as e:
             logger.error(f"Error creating annotations: {str(e)}")
             return JSONResponse(

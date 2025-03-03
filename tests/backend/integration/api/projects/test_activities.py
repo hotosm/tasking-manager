@@ -35,7 +35,9 @@ class TestProjectsLastActivitiesAPI(BaseTestCase):
         self.assertEqual(len(response.json["activity"]), self.test_project.total_tasks)
         self.assertEqual(response.json["activity"][1]["taskId"], 2)
         self.assertEqual(response.json["activity"][1]["taskStatus"], "MAPPED")
-        self.assertEqual(response.json["activity"][1]["actionBy"], self.test_author.username)
+        self.assertEqual(
+            response.json["activity"][1]["actionBy"], self.test_author.username
+        )
 
 
 class TestProjectsActivitiesAPI(BaseTestCase):
@@ -87,9 +89,19 @@ class TestProjectsActivitiesAPI(BaseTestCase):
         # Since we performed two actions above on task 2 i.e. Locked for mapping  and Mapped
         self.assertEqual(len(response.json["activity"]), 2)
         self.assertEqual(response.json["activity"][0]["taskId"], 2)
-        self.assertEqual(response.json["activity"][0]["action"], TaskAction.STATE_CHANGE.name)
-        self.assertEqual(response.json["activity"][0]["actionText"], TaskStatus.MAPPED.name)
-        self.assertEqual(response.json["activity"][0]["actionBy"], self.test_author.username)
+        self.assertEqual(
+            response.json["activity"][0]["action"], TaskAction.STATE_CHANGE.name
+        )
+        self.assertEqual(
+            response.json["activity"][0]["actionText"], TaskStatus.MAPPED.name
+        )
+        self.assertEqual(
+            response.json["activity"][0]["actionBy"], self.test_author.username
+        )
         self.assertEqual(response.json["activity"][1]["taskId"], 2)
-        self.assertEqual(response.json["activity"][1]["action"], TaskAction.LOCKED_FOR_MAPPING.name)
-        self.assertEqual(response.json["activity"][1]["actionBy"], self.test_author.username)
+        self.assertEqual(
+            response.json["activity"][1]["action"], TaskAction.LOCKED_FOR_MAPPING.name
+        )
+        self.assertEqual(
+            response.json["activity"][1]["actionBy"], self.test_author.username
+        )

@@ -23,4 +23,6 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_constraint("campaign_organisation_key", "campaign_organisations", type_="unique")
+    op.drop_constraint(
+        "campaign_organisation_key", "campaign_organisations", type_="unique"
+    )

@@ -105,21 +105,12 @@ repos:
   #           "!backend/tests/test_data/**",
   #         ]
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        name: isort (python)
-        args: ["--profile", "black", "--line-length", "119"]
-
   - repo: https://github.com/psf/black
     rev: 23.12.1
     hooks:
       - id: black
-        args: ["--line-length", "119"]
-        files: '^(backend|tests|migrations|manage\.py)'
-        # Add this to actually format the files instead of just checking
-        verbose: true
+        language_version: python3.10
+
 
   - repo: https://github.com/PyCQA/flake8
     rev: "7.1.2"

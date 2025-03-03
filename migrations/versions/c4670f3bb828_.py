@@ -30,7 +30,9 @@ def upgrade():
         sa.ForeignKeyConstraint(["to_user_id"], ["users.id"]),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(op.f("ix_messages_to_user_id"), "messages", ["to_user_id"], unique=False)
+    op.create_index(
+        op.f("ix_messages_to_user_id"), "messages", ["to_user_id"], unique=False
+    )
     # ### end Alembic commands ###
 
 

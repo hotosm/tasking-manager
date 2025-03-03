@@ -15,7 +15,9 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("team_members", sa.Column("joined_date", sa.DateTime(), nullable=True))
+    op.add_column(
+        "team_members", sa.Column("joined_date", sa.DateTime(), nullable=True)
+    )
 
 
 def downgrade():

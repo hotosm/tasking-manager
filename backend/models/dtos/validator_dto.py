@@ -29,7 +29,9 @@ class ExtendedStringType(str):
         value = super().convert(value, context)
         for func in self.converters:
             value = func(value)
-        return value  # will have a value after going through all the conversions in order
+        return (
+            value  # will have a value after going through all the conversions in order
+        )
 
 
 def is_valid_validated_status(value):
@@ -94,7 +96,9 @@ class ValidatedTask(BaseModel):
     task_id: int = Field(None, alias="taskId")
     status: str = Field(None, validators=[is_valid_validated_status])
     comment: Optional[str] = None
-    issues: Optional[List[ValidationMappingIssue]] = Field(None, alias="validationIssues")
+    issues: Optional[List[ValidationMappingIssue]] = Field(
+        None, alias="validationIssues"
+    )
 
     class Config:
         populate_by_name = True
@@ -105,7 +109,9 @@ class ResetValidatingTask(BaseModel):
 
     task_id: int = Field(alias="taskId")
     comment: Optional[str] = None
-    issues: Optional[List[ValidationMappingIssue]] = Field(None, alias="validationIssues")
+    issues: Optional[List[ValidationMappingIssue]] = Field(
+        None, alias="validationIssues"
+    )
 
     class Config:
         populate_by_name = True
@@ -144,7 +150,9 @@ class MappedTasksByUser(BaseModel):
     last_seen: Optional[datetime] = Field(default=None, alias="lastSeen")
     mapping_level: Optional[str] = Field(default=None, alias="mappingLevel")
     date_registered: datetime = Field(alias="dateRegistered")
-    last_validation_date: Optional[datetime] = Field(default=None, alias="lastValidationDate")
+    last_validation_date: Optional[datetime] = Field(
+        default=None, alias="lastValidationDate"
+    )
 
     class Config:
         populate_by_name = True
@@ -180,7 +188,9 @@ class InvalidatedTasks(BaseModel):
 class MappedTasks(BaseModel):
     """Describes all tasks currently mapped on a project"""
 
-    mapped_tasks: List[MappedTasksByUser] = Field(default_factory=list, alias="mappedTasks")
+    mapped_tasks: List[MappedTasksByUser] = Field(
+        default_factory=list, alias="mappedTasks"
+    )
 
     class Config:
         populate_by_name = True

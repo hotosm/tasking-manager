@@ -21,7 +21,9 @@ def upgrade():
         "users",
         sa.Column("projects_comments_notifications", sa.Boolean(), nullable=True),
     )
-    op.add_column("users", sa.Column("tasks_comments_notifications", sa.Boolean(), nullable=True))
+    op.add_column(
+        "users", sa.Column("tasks_comments_notifications", sa.Boolean(), nullable=True)
+    )
     op.drop_column("users", "comments_notifications")
     op.execute("UPDATE users SET projects_comments_notifications = false")
     op.alter_column("users", "projects_comments_notifications", nullable=False)

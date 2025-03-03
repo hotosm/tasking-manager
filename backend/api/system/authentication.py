@@ -9,7 +9,10 @@ from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 from backend import osm
 from backend.config import settings
 from backend.db import get_db
-from backend.services.users.authentication_service import AuthenticationService, AuthServiceError
+from backend.services.users.authentication_service import (
+    AuthenticationService,
+    AuthServiceError,
+)
 
 router = APIRouter(
     prefix="/system",
@@ -133,7 +136,9 @@ async def callback(request: Request, db: Database = Depends(get_db)):
         )
 
     try:
-        user_params = await AuthenticationService.login_user(osm_response.json(), email, db)
+        user_params = await AuthenticationService.login_user(
+            osm_response.json(), email, db
+        )
         user_params["session"] = osm_resp
         return user_params
     except AuthServiceError:

@@ -42,7 +42,9 @@ async def get_issue(category_id: int, db: Database = Depends(get_db)):
         500:
             description: Internal Server Error
     """
-    category_dto = await MappingIssueCategoryService.get_mapping_issue_category_as_dto(category_id, db)
+    category_dto = await MappingIssueCategoryService.get_mapping_issue_category_as_dto(
+        category_id, db
+    )
     return category_dto.model_dump(by_alias=True)
 
 
@@ -109,7 +111,9 @@ async def patch_issue(
             status_code=400,
         )
 
-    updated_category = await MappingIssueCategoryService.update_mapping_issue_category(category_dto, db)
+    updated_category = await MappingIssueCategoryService.update_mapping_issue_category(
+        category_dto, db
+    )
     return updated_category.model_dump(by_alias=True)
 
 
@@ -154,7 +158,9 @@ async def delete_issue(
             description: Internal Server Error
     """
     await MappingIssueCategoryService.delete_mapping_issue_category(category_id, db)
-    return JSONResponse(content={"Success": "Mapping-issue category deleted"}, status_code=200)
+    return JSONResponse(
+        content={"Success": "Mapping-issue category deleted"}, status_code=200
+    )
 
 
 @router.get("/issues/categories/")
@@ -179,7 +185,9 @@ async def get_issues_categories(request: Request, db: Database = Depends(get_db)
             description: Internal Server Error
     """
     include_archived = request.query_params.get("includeArchived") == "true"
-    categories = await MappingIssueCategoryService.get_all_mapping_issue_categories(include_archived, db)
+    categories = await MappingIssueCategoryService.get_all_mapping_issue_categories(
+        include_archived, db
+    )
     return categories.model_dump(by_alias=True)
 
 
@@ -237,5 +245,7 @@ async def post_issues_categories(
             status_code=400,
         )
 
-    new_category_id = await MappingIssueCategoryService.create_mapping_issue_category(category_dto, db)
+    new_category_id = await MappingIssueCategoryService.create_mapping_issue_category(
+        category_dto, db
+    )
     return JSONResponse(content={"categoryId": new_category_id}, status_code=200)

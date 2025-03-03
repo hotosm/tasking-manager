@@ -22,7 +22,9 @@ class TestProjectService(BaseTestCase):
         # We need to change project status to published as it's set to draft while creating test project
         self.test_project.status = ProjectStatus.PUBLISHED.value
         # Act
-        project_dto = ProjectService.get_project_dto_for_mapper(self.test_project.id, self.test_mapper.id)
+        project_dto = ProjectService.get_project_dto_for_mapper(
+            self.test_project.id, self.test_mapper.id
+        )
         # Assert
         self.assertIsNotNone(project_dto)
 
@@ -30,7 +32,9 @@ class TestProjectService(BaseTestCase):
         # Project status is already set as draft while creating test project so no need to change it's status
         # Act/Assert
         with self.assertRaises(ProjectServiceError):
-            ProjectService.get_project_dto_for_mapper(self.test_project.id, self.test_mapper.id)
+            ProjectService.get_project_dto_for_mapper(
+                self.test_project.id, self.test_mapper.id
+            )
 
     def test_get_project_dto_for_mapper_returns_none_if_private_project(self):
         # Arrange
@@ -38,7 +42,9 @@ class TestProjectService(BaseTestCase):
         self.test_project.status = ProjectStatus.PUBLISHED.value
         self.test_project.private = True
         # Act
-        project_dto = ProjectService.get_project_dto_for_mapper(self.test_project.id, self.test_mapper.id)
+        project_dto = ProjectService.get_project_dto_for_mapper(
+            self.test_project.id, self.test_mapper.id
+        )
         # Assert
         self.assertIsNone(project_dto)
 
@@ -50,27 +56,37 @@ class TestProjectService(BaseTestCase):
         self.test_project.private = True
 
         # Act
-        project_dto = ProjectService.get_project_dto_for_mapper(self.test_project.id, self.test_mapper.id)
+        project_dto = ProjectService.get_project_dto_for_mapper(
+            self.test_project.id, self.test_mapper.id
+        )
         # Assert
         self.assertIsNotNone(project_dto)
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
-    def test_get_project_dto_for_mapper_returns_private_and_draft_project_dto_for_managers(self, mock_is_user_manager):
+    def test_get_project_dto_for_mapper_returns_private_and_draft_project_dto_for_managers(
+        self, mock_is_user_manager
+    ):
         # Arrange
         self.test_project.private = True
         mock_is_user_manager.return_value = True
         # Act
-        project_dto = ProjectService.get_project_dto_for_mapper(self.test_project.id, self.test_mapper.id)
+        project_dto = ProjectService.get_project_dto_for_mapper(
+            self.test_project.id, self.test_mapper.id
+        )
         # Assert
         self.assertIsNotNone(project_dto)
 
     @patch.object(TeamService, "check_team_membership")
-    def test_get_project_dto_for_mapper_returns_private_project_dto_for_project_team_member(self, mock_is_team_member):
+    def test_get_project_dto_for_mapper_returns_private_project_dto_for_project_team_member(
+        self, mock_is_team_member
+    ):
         # Arrange
         self.test_project.private = True
         self.test_project.status = ProjectStatus.PUBLISHED.value
         mock_is_team_member.return_value = True
         # Act
-        project_dto = ProjectService.get_project_dto_for_mapper(self.test_project.id, self.test_mapper.id)
+        project_dto = ProjectService.get_project_dto_for_mapper(
+            self.test_project.id, self.test_mapper.id
+        )
         # Assert
         self.assertIsNotNone(project_dto)

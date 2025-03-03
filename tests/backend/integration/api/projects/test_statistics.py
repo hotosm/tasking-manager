@@ -3,7 +3,10 @@ import time
 from backend.models.postgis.task import Task, TaskStatus
 from backend.services.project_admin_service import ProjectAdminService
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import create_canned_project, generate_encoded_token
+from tests.backend.helpers.test_helpers import (
+    create_canned_project,
+    generate_encoded_token,
+)
 
 
 class TestProjectStatisticsAPI(BaseTestCase):
@@ -34,12 +37,18 @@ class TestProjectStatisticsAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["totalTasks"], 4)
-        self.assertEqual(response.json["totalMappingTime"], 3.0)  # Since we slept for 3 seconds
-        self.assertEqual(response.json["totalTimeSpent"], 3.0)  # Since we slept for 3 seconds
+        self.assertEqual(
+            response.json["totalMappingTime"], 3.0
+        )  # Since we slept for 3 seconds
+        self.assertEqual(
+            response.json["totalTimeSpent"], 3.0
+        )  # Since we slept for 3 seconds
         # Since we slept for 3 seconds and only 1 task was mapped
         self.assertEqual(response.json["averageMappingTime"], 3.0)
         self.assertEqual(response.json["timeToFinishMapping"], 12.0)
-        self.assertEqual(response.json["timeToFinishValidating"], 0.0)  # No tasks were validated
+        self.assertEqual(
+            response.json["timeToFinishValidating"], 0.0
+        )  # No tasks were validated
 
 
 class TestProjectsStatisticsQueriesUsernameAPI(BaseTestCase):
@@ -52,14 +61,18 @@ class TestProjectsStatisticsQueriesUsernameAPI(BaseTestCase):
     def test_returns_404_if_project_not_found(self):
         """Test that 404 is returned if project not found"""
         # Act
-        response = self.client.get(f"/api/v2/projects/9999999999/statistics/queries/{self.test_author.username}/")
+        response = self.client.get(
+            f"/api/v2/projects/9999999999/statistics/queries/{self.test_author.username}/"
+        )
         # Assert
         self.assertEqual(response.status_code, 404)
 
     def test_returns_404_if_username_not_found(self):
         """Test that 404 is returned if username not found"""
         # Act
-        response = self.client.get(f"/api/v2/projects/{self.test_project.id}/statistics/queries/username/")
+        response = self.client.get(
+            f"/api/v2/projects/{self.test_project.id}/statistics/queries/username/"
+        )
         # Assert
         self.assertEqual(response.status_code, 404)
 
@@ -75,6 +88,12 @@ class TestProjectsStatisticsQueriesUsernameAPI(BaseTestCase):
         response = self.client.get(self.url)
         # Assert
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json["timeSpentMapping"], 3.0)  # Since we slept for 3 seconds
-        self.assertEqual(response.json["timeSpentValidating"], 0.0)  # No tasks were validated
-        self.assertEqual(response.json["totalTimeSpent"], 3.0)  # Since we slept for 3 seconds
+        self.assertEqual(
+            response.json["timeSpentMapping"], 3.0
+        )  # Since we slept for 3 seconds
+        self.assertEqual(
+            response.json["timeSpentValidating"], 0.0
+        )  # No tasks were validated
+        self.assertEqual(
+            response.json["totalTimeSpent"], 3.0
+        )  # Since we slept for 3 seconds

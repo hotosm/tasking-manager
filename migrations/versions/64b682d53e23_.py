@@ -28,7 +28,9 @@ def upgrade():
         sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(op.f("ix_project_chat_project_id"), "project_chat", ["project_id"], unique=False)
+    op.create_index(
+        op.f("ix_project_chat_project_id"), "project_chat", ["project_id"], unique=False
+    )
     # ### end Alembic commands ###
 
 

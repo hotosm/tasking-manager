@@ -19,8 +19,12 @@ class TestAuthenticationService(BaseTestCase):
         invalid_session_token = session_token + "x"
 
         # Act
-        is_valid_token, user_id = AuthenticationService.is_valid_token(session_token, 604800)
-        is_invalid_token, _user_id = AuthenticationService.is_valid_token(invalid_session_token, 604800)
+        is_valid_token, user_id = AuthenticationService.is_valid_token(
+            session_token, 604800
+        )
+        is_invalid_token, _user_id = AuthenticationService.is_valid_token(
+            invalid_session_token, 604800
+        )
 
         # Assert
         self.assertEqual(user_id, 12345678)
@@ -54,7 +58,9 @@ class TestAuthenticationService(BaseTestCase):
         query = parse_qs(parsed_url.query)
 
         # Arrange
-        is_valid, email_address = AuthenticationService.is_valid_token(query["token"][0], 86400)
+        is_valid, email_address = AuthenticationService.is_valid_token(
+            query["token"][0], 86400
+        )
 
         # Assert
         self.assertTrue(is_valid)

@@ -102,7 +102,9 @@ async def get_filtered_statistics(
             message=MAPSWIPE_GROUP_EMPTY_MESSAGE,
         )
 
-    return mapswipe.fetch_filtered_partner_stats(partner.id, partner.mapswipe_group_id, from_date, to_date)
+    return mapswipe.fetch_filtered_partner_stats(
+        partner.id, partner.mapswipe_group_id, from_date, to_date
+    )
 
 
 @router.get("/{permalink:str}/general-statistics/")

@@ -21,9 +21,15 @@ class TestTasksStatisticsAPI(BaseTestCase):
         self.user_session_token = generate_encoded_token(self.test_user.id)
         self.test_project_1, _ = create_canned_project()
         self.test_project_2, _ = create_canned_project()
-        TestTasksStatisticsAPI.create_task_history(1, self.test_project_1.id, self.test_user.id, TaskStatus.MAPPED)
-        TestTasksStatisticsAPI.create_task_history(2, self.test_project_1.id, self.test_user.id, TaskStatus.VALIDATED)
-        TestTasksStatisticsAPI.create_task_history(3, self.test_project_2.id, self.test_user.id, TaskStatus.MAPPED)
+        TestTasksStatisticsAPI.create_task_history(
+            1, self.test_project_1.id, self.test_user.id, TaskStatus.MAPPED
+        )
+        TestTasksStatisticsAPI.create_task_history(
+            2, self.test_project_1.id, self.test_user.id, TaskStatus.VALIDATED
+        )
+        TestTasksStatisticsAPI.create_task_history(
+            3, self.test_project_2.id, self.test_user.id, TaskStatus.MAPPED
+        )
 
     def test_returns_401_if_not_authenticated(self):
         # Act
@@ -33,7 +39,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
 
     def test_returns_400_if_start_date_is_not_provided(self):
         # Act
-        response = self.client.get(self.url, headers={"Authorization": self.user_session_token})
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
         # Assert
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json["SubCode"], "MissingDate")
@@ -95,7 +103,11 @@ class TestTasksStatisticsAPI(BaseTestCase):
         response = self.client.get(
             self.url,
             headers={"Authorization": self.user_session_token},
-            query_string={"startDate": (datetime.now() - timedelta(days=6 * 30)).strftime("%Y-%m-%d")},
+            query_string={
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                )
+            },
         )
         # Assert
         self.assertEqual(response.status_code, 200)
@@ -120,7 +132,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime("%Y-%m-%d"),
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "projectId": self.test_project_1.id,
             },
         )
@@ -134,13 +148,17 @@ class TestTasksStatisticsAPI(BaseTestCase):
         """Test filters by multiple projects"""
         # Arrange
         test_project_3, _ = create_canned_project()
-        TestTasksStatisticsAPI.create_task_history(4, test_project_3.id, self.test_user.id, TaskStatus.MAPPED)
+        TestTasksStatisticsAPI.create_task_history(
+            4, test_project_3.id, self.test_user.id, TaskStatus.MAPPED
+        )
         # Act
         response = self.client.get(
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime("%Y-%m-%d"),
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "projectId": f"{self.test_project_1.id}, {self.test_project_2.id}",
             },
         )
@@ -161,7 +179,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime("%Y-%m-%d"),
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "organisationId": test_organisation.id,
             },
         )
@@ -182,7 +202,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime("%Y-%m-%d"),
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "organisationName": test_organisation.name,
             },
         )
@@ -205,7 +227,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime("%Y-%m-%d"),
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "campaign": test_campaign.name,
             },
         )
@@ -227,7 +251,9 @@ class TestTasksStatisticsAPI(BaseTestCase):
             self.url,
             headers={"Authorization": self.user_session_token},
             query_string={
-                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime("%Y-%m-%d"),
+                "startDate": (datetime.now() - timedelta(days=6 * 30)).strftime(
+                    "%Y-%m-%d"
+                ),
                 "country": "Nepal",
             },
         )

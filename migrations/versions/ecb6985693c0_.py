@@ -18,7 +18,9 @@ depends_on = None
 
 def upgrade():
     # ### end Alembic commands ###
-    op.add_column("partners", sa.Column("mapswipe_group_id", sa.String(), nullable=True))
+    op.add_column(
+        "partners", sa.Column("mapswipe_group_id", sa.String(), nullable=True)
+    )
     # ### end Alembic commands ###
 
 

@@ -18,16 +18,24 @@ class Settings(BaseSettings):
         ignored_types = (type(json),)
 
     # Load configuration from file
-    load_dotenv(os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "tasking-manager.env")))
+    load_dotenv(
+        os.path.normpath(
+            os.path.join(os.path.dirname(__file__), "..", "tasking-manager.env")
+        )
+    )
     APP_NAME: str = "Tasking Manager"
     DEBUG: bool = False
     PROFILING: bool = os.getenv("PROFILING", False)
     EXTRA_CORS_ORIGINS: list = (
-        os.getenv("EXTRA_CORS_ORIGINS", "").split(",") if os.getenv("EXTRA_CORS_ORIGINS") else ["*"]
+        os.getenv("EXTRA_CORS_ORIGINS", "").split(",")
+        if os.getenv("EXTRA_CORS_ORIGINS")
+        else ["*"]
     )
 
     # The base url the application is reachable
-    APP_BASE_URL: str = os.getenv("TM_APP_BASE_URL", "http://127.0.0.1:5000/").rstrip("/")
+    APP_BASE_URL: str = os.getenv("TM_APP_BASE_URL", "http://127.0.0.1:5000/").rstrip(
+        "/"
+    )
     TM_APP_API_URL: str = os.getenv("TM_APP_API_URL", "http://127.0.0.1:3000/api")
     API_VERSION: str = os.getenv("TM_APP_API_VERSION", "v2")
     ORG_CODE: str = os.getenv("TM_ORG_CODE", "HOT")
@@ -38,20 +46,28 @@ class Settings(BaseSettings):
     )
     ENVIRONMENT: str = os.getenv("TM_ENVIRONMENT", "")
     # The default tag used in the OSM changeset comment
-    DEFAULT_CHANGESET_COMMENT: str = os.getenv("TM_DEFAULT_CHANGESET_COMMENT", "#hot-tm-stage-project")
+    DEFAULT_CHANGESET_COMMENT: str = os.getenv(
+        "TM_DEFAULT_CHANGESET_COMMENT", "#hot-tm-stage-project"
+    )
 
     # The address to use as the sender on auto generated emails
-    EMAIL_FROM_ADDRESS: str = os.getenv("TM_EMAIL_FROM_ADDRESS", "noreply@hotosmmail.org")
+    EMAIL_FROM_ADDRESS: str = os.getenv(
+        "TM_EMAIL_FROM_ADDRESS", "noreply@hotosmmail.org"
+    )
 
     # The address to use as the receiver in contact form.
-    EMAIL_CONTACT_ADDRESS: str = os.getenv("TM_EMAIL_CONTACT_ADDRESS", "sysadmin@hotosm.org")
+    EMAIL_CONTACT_ADDRESS: str = os.getenv(
+        "TM_EMAIL_CONTACT_ADDRESS", "sysadmin@hotosm.org"
+    )
 
     # A freely definable secret key for connecting the front end with the back end
     SECRET_KEY: str = os.getenv("TM_SECRET", None)
 
     # OSM API, Nomimatim URLs
     OSM_SERVER_URL: str = os.getenv("OSM_SERVER_URL", "https://www.openstreetmap.org")
-    OSM_NOMINATIM_SERVER_URL: str = os.getenv("OSM_NOMINATIM_SERVER_URL", "https://nominatim.openstreetmap.org")
+    OSM_NOMINATIM_SERVER_URL: str = os.getenv(
+        "OSM_NOMINATIM_SERVER_URL", "https://nominatim.openstreetmap.org"
+    )
 
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", None)
@@ -63,7 +79,9 @@ class Settings(BaseSettings):
 
     @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
     @classmethod
-    def assemble_db_connection(cls, v: Optional[str], info: ValidationInfo) -> Optional[str]:
+    def assemble_db_connection(
+        cls, v: Optional[str], info: ValidationInfo
+    ) -> Optional[str]:
         """Build Postgres connection from environment variables or JSON config."""
         if v:
             return v
@@ -108,7 +126,9 @@ class Settings(BaseSettings):
     MAIL_USE_SSL: bool = bool(int(os.getenv("TM_SMTP_USE_SSL", False)))
     MAIL_USERNAME: Optional[str] = os.getenv("TM_SMTP_USER", None)
     MAIL_PASSWORD: Optional[str] = os.getenv("TM_SMTP_PASSWORD", None)
-    MAIL_DEFAULT_SENDER: str = os.getenv("TM_EMAIL_FROM_ADDRESS", "noreply@hotosmmail.org")
+    MAIL_DEFAULT_SENDER: str = os.getenv(
+        "TM_EMAIL_FROM_ADDRESS", "noreply@hotosmmail.org"
+    )
     MAIL_DEBUG: bool = True if LOG_LEVEL == "DEBUG" else False
 
     if os.getenv("SMTP_CREDENTIALS", False):
@@ -126,7 +146,9 @@ class Settings(BaseSettings):
         MAIL_PASSWORD: str = _params.get("SMTP_PASSWORD", None)
 
     # If disabled project update emails will not be sent.
-    SEND_PROJECT_EMAIL_UPDATES: bool = bool(os.getenv("TM_SEND_PROJECT_EMAIL_UPDATES", True))
+    SEND_PROJECT_EMAIL_UPDATES: bool = bool(
+        os.getenv("TM_SEND_PROJECT_EMAIL_UPDATES", True)
+    )
 
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.

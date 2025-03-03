@@ -9,7 +9,9 @@
 
 def get_validation_errors(e):
     """Returns a list of validation errors from a schematics DataError"""
-    return [{"field": field, "message": str(error[0])} for field, error in e.errors.items()]
+    return [
+        {"field": field, "message": str(error[0])} for field, error in e.errors.items()
+    ]
 
 
 # def validate_request(dto_class):

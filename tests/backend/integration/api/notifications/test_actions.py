@@ -1,5 +1,9 @@
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import create_canned_message, create_canned_user, generate_encoded_token
+from tests.backend.helpers.test_helpers import (
+    create_canned_message,
+    create_canned_user,
+    generate_encoded_token,
+)
 
 TEST_SUBJECT = "Test subject"
 TEST_MESSAGE = "This is a test message"
@@ -9,8 +13,12 @@ class TestNotificationsActionsDeleteMultipleAPI(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.test_user = create_canned_user()
-        self.test_message_one = create_canned_message(subject=TEST_SUBJECT, message=TEST_MESSAGE)
-        self.test_message_two = create_canned_message(subject=TEST_SUBJECT, message=TEST_MESSAGE)
+        self.test_message_one = create_canned_message(
+            subject=TEST_SUBJECT, message=TEST_MESSAGE
+        )
+        self.test_message_two = create_canned_message(
+            subject=TEST_SUBJECT, message=TEST_MESSAGE
+        )
         self.test_message_one.from_user_id = self.test_user.id
         self.test_message_two.from_user_id = self.test_user.id
         self.test_user_token = generate_encoded_token(self.test_user.id)

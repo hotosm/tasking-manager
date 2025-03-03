@@ -90,9 +90,13 @@ class MessageService:
         )
         user = await UserService.get_user_by_id(mapped_by, db)
         text_template = get_txt_template(
-            "invalidation_message_en.txt" if status == TaskStatus.INVALIDATED else "validation_message_en.txt"
+            "invalidation_message_en.txt"
+            if status == TaskStatus.INVALIDATED
+            else "validation_message_en.txt"
         )
-        status_text = "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
+        status_text = (
+            "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
+        )
         task_link = MessageService.get_task_link(project_id, task_id, highlight=True)
         project_link = MessageService.get_project_link(project_id, project_name)
 
@@ -115,23 +119,32 @@ class MessageService:
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
         validation_message.subject = (
-            f"{task_link} mapped by you in Project " + f"{project_link} has been {status_text}"
+            f"{task_link} mapped by you in Project "
+            + f"{project_link} has been {status_text}"
         )
         validation_message.message = text_template
-        messages.append(dict(message=validation_message, user=user, project_name=project_name))
+        messages.append(
+            dict(message=validation_message, user=user, project_name=project_name)
+        )
         await MessageService._push_messages(messages, db)
 
     @staticmethod
-    async def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
+    async def send_message_to_all_contributors(
+        project_id: int, message_dto: MessageDTO
+    ):
         """Sends supplied message to all contributors on specified project.  Message all contributors can take
         over a minute to run, so this method is expected to be called on its own thread
         """
         async with db_connection.database.connection() as conn:
             contributors = await Message.get_all_contributors(project_id, conn)
             project = await Project.get(project_id, conn)
-            project_info = await ProjectInfo.get_dto_for_locale(conn, project_id, project.default_locale)
+            project_info = await ProjectInfo.get_dto_for_locale(
+                conn, project_id, project.default_locale
+            )
             message_dto.message = "A message from {} managers:<br/><br/>{}".format(
-                MessageService.get_project_link(project_id, project_info.name, highlight=True),
+                MessageService.get_project_link(
+                    project_id, project_info.name, highlight=True
+                ),
                 markdown(message_dto.message, output_format="html"),
             )
             messages = []
@@ -140,7 +153,9 @@ class MessageService:
                 message.message_type = MessageType.BROADCAST.value
                 message.project_id = project_id
                 user = await UserService.get_user_by_id(contributor, conn)
-                messages.append(dict(message=message, user=user, project_name=project_info.name))
+                messages.append(
+                    dict(message=message, user=user, project_name=project_info.name)
+                )
             await MessageService._push_messages(messages, conn)
 
     @staticmethod
@@ -154,7 +169,10 @@ class MessageService:
             project_name = message.get("project_name")
 
             # Skipping message if certain notifications are disabled
-            if user.mentions_notifications is False and obj.message_type == MessageType.MENTION_NOTIFICATION.value:
+            if (
+                user.mentions_notifications is False
+                and obj.message_type == MessageType.MENTION_NOTIFICATION.value
+            ):
                 messages_objs.append(obj)
                 continue
 
@@ -164,10 +182,16 @@ class MessageService:
             ):
                 continue
 
-            if user.projects_notifications is False and obj.message_type == MessageType.BROADCAST.value:
+            if (
+                user.projects_notifications is False
+                and obj.message_type == MessageType.BROADCAST.value
+            ):
                 continue
 
-            if user.teams_announcement_notifications is False and obj.message_type == MessageType.TEAM_BROADCAST.value:
+            if (
+                user.teams_announcement_notifications is False
+                and obj.message_type == MessageType.TEAM_BROADCAST.value
+            ):
                 messages_objs.append(obj)
                 continue
 
@@ -196,7 +220,11 @@ class MessageService:
                 user.username,
                 user.is_email_verified,
                 message["message"].id,
-                (await UserService.get_user_by_id(message["message"].from_user_id, db)).username,
+                (
+                    await UserService.get_user_by_id(
+                        message["message"].from_user_id, db
+                    )
+                ).username,
                 message["message"].project_id,
                 message["message"].task_id,
                 clean_html(message["message"].subject),
@@ -229,21 +257,29 @@ class MessageService:
             await db.execute(query)
 
     @staticmethod
-    async def send_message_after_comment(comment_from: int, comment: str, task_id: int, project_id: int, db: Database):
+    async def send_message_after_comment(
+        comment_from: int, comment: str, task_id: int, project_id: int, db: Database
+    ):
         """Will send a canned message to anyone @'d in a comment"""
         # Fetch the user who made the comment
         comment_from_user = await UserService.get_user_by_id(comment_from, db)
         # Parse the comment for mentions
-        usernames = await MessageService._parse_message_for_username(comment, project_id, task_id, db)
+        usernames = await MessageService._parse_message_for_username(
+            comment, project_id, task_id, db
+        )
         if comment_from_user.username in usernames:
             usernames.remove(comment_from_user.username)
 
         # Fetch project details
-        project = await db.fetch_one("SELECT * FROM projects WHERE id = :project_id", {"project_id": project_id})
+        project = await db.fetch_one(
+            "SELECT * FROM projects WHERE id = :project_id", {"project_id": project_id}
+        )
         default_locale = project["default_locale"] if project else "en"
 
         # Get the project info DTO using the get_dto_for_locale function
-        project_info_dto = await ProjectInfo.get_dto_for_locale(db, project_id, default_locale)
+        project_info_dto = await ProjectInfo.get_dto_for_locale(
+            db, project_id, default_locale
+        )
         project_name = project_info_dto.name  # Use the `name` field from the DTO
 
         if usernames:
@@ -297,7 +333,9 @@ class MessageService:
                 message.message = clean_comment
                 message.date = timestamp()
                 message.read = False
-                messages.append(dict(message=message, user=user, project_name=project_name))
+                messages.append(
+                    dict(message=message, user=user, project_name=project_name)
+                )
 
             await MessageService._push_messages(messages, db)
 
@@ -345,7 +383,9 @@ class MessageService:
                 message.message = comment
                 message.date = timestamp()
                 message.read = False
-                messages.append(dict(message=message, user=user, project_name=project_name))
+                messages.append(
+                    dict(message=message, user=user, project_name=project_name)
+                )
             await MessageService._push_messages(messages, db)
 
     @staticmethod
@@ -357,7 +397,9 @@ class MessageService:
         """Will send a message to the manager of the organization after a project is transferred"""
         async with db_connection.database.connection() as db:
             project = await Project.get(project_id, db)
-            project_name = await project.get_project_title(db, project.id, project.default_locale)
+            project_name = await project.get_project_title(
+                db, project.id, project.default_locale
+            )
             from_user = await User.get_by_username(transferred_by, db)
             organisation = await OrganisationService.get_organisation_by_id_as_dto(
                 project.organisation_id, from_user.id, False, db
@@ -446,7 +488,9 @@ class MessageService:
         team_link = MessageService.get_team_link(team_name, team_id, False)
         user_link = MessageService.get_user_link(from_username)
         message.subject = f"Your request to join team {team_link} has been {response}ed"
-        message.message = f"{user_link} has {response}ed your request to join the {team_link} team."
+        message.message = (
+            f"{user_link} has {response}ed your request to join the {team_link} team."
+        )
         user = await UserService.get_user_by_id(to_user, db)
         await MessageService._push_messages([dict(message=message, user=user)], db)
 
@@ -513,9 +557,13 @@ class MessageService:
         project_name: str,
     ):
         async with db_connection.database.connection() as db:
-            usernames = await MessageService._parse_message_for_username(message=chat, project_id=project_id, db=db)
+            usernames = await MessageService._parse_message_for_username(
+                message=chat, project_id=project_id, db=db
+            )
             if len(usernames) != 0:
-                link = MessageService.get_project_link(project_id, project_name, include_chat_section=True)
+                link = MessageService.get_project_link(
+                    project_id, project_name, include_chat_section=True
+                )
                 messages = []
                 for username in usernames:
                     logger.debug(f"Searching for {username}")
@@ -534,14 +582,18 @@ class MessageService:
                     message.read = False
                     message.subject = f"You were mentioned in Project {link} chat"
                     message.message = chat
-                    messages.append(dict(message=message, user=user, project_name=project_name))
+                    messages.append(
+                        dict(message=message, user=user, project_name=project_name)
+                    )
 
                 await MessageService._push_messages(messages, db)
             favorited_users_query = """ select user_id from project_favorites where project_id = :project_id"""
             favorited_users_values = {
                 "project_id": project_id,
             }
-            favorited_users_results = await db.fetch_all(query=favorited_users_query, values=favorited_users_values)
+            favorited_users_results = await db.fetch_all(
+                query=favorited_users_query, values=favorited_users_values
+            )
             favorited_users = [r.user_id for r in favorited_users_results]
             # Notify all contributors except the user that created the comment.
             contributed_users_query = """
@@ -557,14 +609,18 @@ class MessageService:
                 "chat_from": chat_from,
                 "state_change_action": TaskAction.STATE_CHANGE.name,
             }
-            contributed_users_results = await db.fetch_all(query=contributed_users_query, values=values)
+            contributed_users_results = await db.fetch_all(
+                query=contributed_users_query, values=values
+            )
             contributed_users = [r.user_id for r in contributed_users_results]
             users_to_notify = list(set(contributed_users + favorited_users))
 
             if len(users_to_notify) != 0:
                 from_user = await UserService.get_user_by_id(chat_from, db)
                 from_user_link = MessageService.get_user_link(from_user.username)
-                project_link = MessageService.get_project_link(project_id, project_name, include_chat_section=True)
+                project_link = MessageService.get_project_link(
+                    project_id, project_name, include_chat_section=True
+                )
                 messages = []
                 for user_id in users_to_notify:
                     try:
@@ -578,9 +634,13 @@ class MessageService:
                     message.to_user_id = user.id
                     message.date = timestamp()
                     message.read = False
-                    message.subject = f"{from_user_link} left a comment in project {project_link}"
+                    message.subject = (
+                        f"{from_user_link} left a comment in project {project_link}"
+                    )
                     message.message = chat
-                    messages.append(dict(message=message, user=user, project_name=project_name))
+                    messages.append(
+                        dict(message=message, user=user, project_name=project_name)
+                    )
 
                 await MessageService._push_messages(messages, db)
 
@@ -591,7 +651,9 @@ class MessageService:
         favorited_projects = await UserService.get_projects_favorited(user_id, db)
         contributed_projects = await UserService.get_projects_mapped(user_id, db) or []
 
-        contributed_projects.extend([fp.project_id for fp in favorited_projects.favorited_projects])
+        contributed_projects.extend(
+            [fp.project_id for fp in favorited_projects.favorited_projects]
+        )
 
         # Fetch recently updated projects
         recently_updated_query = """
@@ -605,7 +667,8 @@ class MessageService:
             recently_updated_query,
             values={
                 "contributed_projects": contributed_projects,
-                "date_threshold": datetime.utcnow().date() - datetime.timedelta(days=300),
+                "date_threshold": datetime.utcnow().date()
+                - datetime.timedelta(days=300),
             },
         )
 
@@ -625,11 +688,17 @@ class MessageService:
                 ) t
             """
 
-            last_active_users = await db.fetch_all(query_last_active_users, values={"project_id": project["id"]})
+            last_active_users = await db.fetch_all(
+                query_last_active_users, values={"project_id": project["id"]}
+            )
 
             for recent_user in last_active_users:
-                recent_user_details = await UserService.get_user_by_id(recent_user["user_id"], db)
-                user_profile_link = MessageService.get_user_profile_link(recent_user_details.username)
+                recent_user_details = await UserService.get_user_by_id(
+                    recent_user["user_id"], db
+                )
+                user_profile_link = MessageService.get_user_profile_link(
+                    recent_user_details.username
+                )
                 activity_message.append(user_profile_link)
 
             activity_message = ", ".join(activity_message)
@@ -707,7 +776,9 @@ class MessageService:
 
         # Add contributors if task_id is provided and contributors are mentioned
         if task_id and "contributors" in parsed:
-            contributors = await Message.get_all_tasks_contributors(project_id, task_id, db)
+            contributors = await Message.get_all_tasks_contributors(
+                project_id, task_id, db
+            )
             usernames.extend(contributors)
 
         return usernames
@@ -719,9 +790,14 @@ class MessageService:
         """Extracts all usernames from a comment looking for format @[user name]"""
         parser = re.compile(r"((?<=@)\w+|\[.+?\])")
         usernames = [
-            username.replace("[", "", 1).replace("]", "", username.rfind("]")) for username in parser.findall(message)
+            username.replace("[", "", 1).replace("]", "", username.rfind("]"))
+            for username in parser.findall(message)
         ]
-        usernames.extend(await MessageService._parse_message_for_bulk_mentions(message, project_id, task_id, db))
+        usernames.extend(
+            await MessageService._parse_message_for_bulk_mentions(
+                message, project_id, task_id, db
+            )
+        )
         return list(set(usernames))
 
     # @cached(message_cache)
@@ -753,8 +829,14 @@ class MessageService:
     ):
         """Get all messages for user"""
 
-        sort_column = sort_by if sort_by in ["date", "message_type", "from_user_id", "project_id", "read"] else "date"
-        sort_direction = "ASC" if sort_direction and sort_direction.lower() == "asc" else "DESC"
+        sort_column = (
+            sort_by
+            if sort_by in ["date", "message_type", "from_user_id", "project_id", "read"]
+            else "date"
+        )
+        sort_direction = (
+            "ASC" if sort_direction and sort_direction.lower() == "asc" else "DESC"
+        )
 
         query = """
             SELECT
@@ -814,11 +896,16 @@ class MessageService:
         for msg in messages:
             message_dict = dict(msg)
             if message_dict["message_type"]:
-                message_dict["message_type"] = MessageType(message_dict["message_type"]).name
+                message_dict["message_type"] = MessageType(
+                    message_dict["message_type"]
+                ).name
                 if message_dict["project_id"]:
                     try:
                         message_dict["project_title"] = (
-                            await Project.get_project_title(db, message_dict["project_id"], locale) or ""
+                            await Project.get_project_title(
+                                db, message_dict["project_id"], locale
+                            )
+                            or ""
                         )
                     except Exception:
                         raise MessageServiceError("Unable to fetch project name.")
@@ -871,7 +958,9 @@ class MessageService:
         return message
 
     @staticmethod
-    async def mark_all_messages_read(user_id: int, db: Database, message_type: str = None):
+    async def mark_all_messages_read(
+        user_id: int, db: Database, message_type: str = None
+    ):
         """Marks all messages as read for the user
         -----------------------------------------
         :param user_id: The user id
@@ -884,7 +973,9 @@ class MessageService:
         await Message.mark_all_messages_read(user_id, db, message_type)
 
     @staticmethod
-    async def mark_multiple_messages_read(message_ids: list, user_id: int, db: Database):
+    async def mark_multiple_messages_read(
+        message_ids: list, user_id: int, db: Database
+    ):
         """Marks the specified messages as read for the user
         ---------------------------------------------------
         :param message_ids: List of message ids to mark as read
@@ -928,7 +1019,8 @@ class MessageService:
 
         if message["to_user_id"] != user_id:
             raise MessageServiceError(
-                "AccessOtherUserMessage- " + f"User {user_id} attempting to access another user's message {message_id}"
+                "AccessOtherUserMessage- "
+                + f"User {user_id} attempting to access another user's message {message_id}"
             )
 
         update_query = """
@@ -968,7 +1060,9 @@ class MessageService:
         await Message.delete_all_messages(user_id, db, message_type)
 
     @staticmethod
-    def get_task_link(project_id: int, task_id: int, base_url=None, highlight=False) -> str:
+    def get_task_link(
+        project_id: int, task_id: int, base_url=None, highlight=False
+    ) -> str:
         """Helper method that generates a link to the task"""
         if not base_url:
             base_url = settings.APP_BASE_URL
@@ -1015,7 +1109,9 @@ class MessageService:
         return f'<a href="{base_url}/settings#{section}">User Settings</a>'
 
     @staticmethod
-    def get_organisation_link(organisation_id: int, organisation_name: str, base_url=None) -> str:
+    def get_organisation_link(
+        organisation_id: int, organisation_name: str, base_url=None
+    ) -> str:
         """Helper method to generate a link to a user profile"""
         if not base_url:
             base_url = settings.APP_BASE_URL

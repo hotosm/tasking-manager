@@ -1,7 +1,14 @@
 from datetime import datetime, timedelta
 
 from databases import Database
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, ForeignKeyConstraint, Integer
+from sqlalchemy import (
+    BigInteger,
+    Column,
+    DateTime,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Integer,
+)
 from sqlalchemy.orm import relationship
 
 from backend.db import Base
@@ -64,6 +71,8 @@ class Notification(Base):
             FROM messages
             WHERE to_user_id = :user_id AND read = False AND date > :date_value
         """
-        count = await db.fetch_val(message_query, {"user_id": user_id, "date_value": date_value})
+        count = await db.fetch_val(
+            message_query, {"user_id": user_id, "date_value": date_value}
+        )
 
         return count

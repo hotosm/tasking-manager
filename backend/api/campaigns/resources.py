@@ -3,7 +3,11 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
 from backend.db import get_db
-from backend.models.dtos.campaign_dto import CampaignDTO, CampaignListDTO, NewCampaignDTO
+from backend.models.dtos.campaign_dto import (
+    CampaignDTO,
+    CampaignListDTO,
+    NewCampaignDTO,
+)
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
@@ -17,7 +21,9 @@ router = APIRouter(
 
 
 @router.get("/{campaign_id}/", response_model=CampaignDTO)
-async def retrieve_campaign(request: Request, campaign_id: int, db: Database = Depends(get_db)):
+async def retrieve_campaign(
+    request: Request, campaign_id: int, db: Database = Depends(get_db)
+):
     """
     Get an active campaign's information
     ---
@@ -126,12 +132,16 @@ async def update_campaign(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(user.id, db)
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            user.id, db
+        )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"CampaignsRestAPI PATCH: {str(e)}"
-        return JSONResponse(content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403)
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
     try:
         campaign = await CampaignService.update_campaign(campaign_dto, campaign_id, db)
         return JSONResponse(
@@ -140,7 +150,9 @@ async def update_campaign(
         )
     except ValueError:
         error_msg = "Campaign PATCH - name already exists"
-        return JSONResponse(content={"Error": error_msg, "SubCode": "NameExists"}, status_code=400)
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "NameExists"}, status_code=400
+        )
 
 
 @router.delete("/{campaign_id}/")
@@ -189,12 +201,16 @@ async def delete_campaign(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(request.user.display_name, db)
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            request.user.display_name, db
+        )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"CampaignsRestAPI DELETE: {str(e)}"
-        return JSONResponse(content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403)
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     campaign = await CampaignService.get_campaign(campaign_id, db)
     await CampaignService.delete_campaign(campaign.id, db)
@@ -285,12 +301,16 @@ async def create_campaign(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(request.user.display_name, db)
+        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+            request.user.display_name, db
+        )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
     except ValueError as e:
         error_msg = f"CampaignsAllAPI POST: {str(e)}"
-        return JSONResponse(content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403)
+        return JSONResponse(
+            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
+        )
 
     try:
         campaign_id = await CampaignService.create_campaign(campaign_dto, db)

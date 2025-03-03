@@ -6,7 +6,9 @@ class TMAPIDecorators:
     """Class for Tasking Manager custom API decorators"""
 
     is_pm_only_resource = None
-    authenticated_user_id = None  # Set by AuthenticationService when user has successfully authenticated
+    authenticated_user_id = (
+        None  # Set by AuthenticationService when user has successfully authenticated
+    )
 
     def pm_only(self, pm_only_resource=True):
         """

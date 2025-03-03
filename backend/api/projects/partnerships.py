@@ -3,7 +3,10 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
 from backend.db import get_db
-from backend.models.dtos.project_partner_dto import ProjectPartnershipDTO, ProjectPartnershipUpdateDTO
+from backend.models.dtos.project_partner_dto import (
+    ProjectPartnershipDTO,
+    ProjectPartnershipUpdateDTO,
+)
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.postgis.utils import timestamp
 from backend.services.project_admin_service import ProjectAdminService
@@ -18,8 +21,12 @@ router = APIRouter(
 
 
 @staticmethod
-async def check_if_manager(partnership_dto: ProjectPartnershipDTO, user_id: int, db: Database):
-    if not await ProjectAdminService.is_user_action_permitted_on_project(user_id, partnership_dto.project_id, db):
+async def check_if_manager(
+    partnership_dto: ProjectPartnershipDTO, user_id: int, db: Database
+):
+    if not await ProjectAdminService.is_user_action_permitted_on_project(
+        user_id, partnership_dto.project_id, db
+    ):
         return JSONResponse(
             content={
                 "Error": "User is not a manager of the project",
@@ -60,7 +67,9 @@ async def retrieve_partnership(
             description: Internal Server Error
     """
 
-    partnership_dto = await ProjectPartnershipService.get_partnership_as_dto(partnership_id, db)
+    partnership_dto = await ProjectPartnershipService.get_partnership_as_dto(
+        partnership_id, db
+    )
     return partnership_dto
 
 
@@ -212,7 +221,9 @@ async def patch_partnership(
     """
     request_data = await request.json()
     partnership_updates = ProjectPartnershipUpdateDTO(**request_data)
-    partnership_dto = await ProjectPartnershipService.get_partnership_as_dto(partnership_id, db)
+    partnership_dto = await ProjectPartnershipService.get_partnership_as_dto(
+        partnership_id, db
+    )
 
     is_not_manager_error = await check_if_manager(partnership_dto, user.id, db)
     if is_not_manager_error is not None:
@@ -279,7 +290,9 @@ async def delete_partnership(
         500:
             description: Internal Server Error
     """
-    partnership_dto = await ProjectPartnershipService.get_partnership_as_dto(partnership_id, db)
+    partnership_dto = await ProjectPartnershipService.get_partnership_as_dto(
+        partnership_id, db
+    )
     is_not_manager_error = await check_if_manager(partnership_dto, user.id, db)
     if is_not_manager_error is not None:
         return is_not_manager_error
@@ -323,5 +336,7 @@ async def get_partners(
         500:
             description: Internal Server Error
     """
-    partnerships = await ProjectPartnershipService.get_partnerships_by_project(project_id, db)
+    partnerships = await ProjectPartnershipService.get_partnerships_by_project(
+        project_id, db
+    )
     return {"partnerships": partnerships}

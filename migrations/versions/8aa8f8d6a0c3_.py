@@ -87,9 +87,15 @@ def upgrade():
         sa.ForeignKeyConstraint(["author_id"], ["users.id"], name="fk_users"),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(op.f("ix_projects_campaign_tag"), "projects", ["campaign_tag"], unique=False)
-    op.create_index(op.f("ix_projects_mapper_level"), "projects", ["mapper_level"], unique=False)
-    op.create_index(op.f("ix_projects_mapping_types"), "projects", ["mapping_types"], unique=False)
+    op.create_index(
+        op.f("ix_projects_campaign_tag"), "projects", ["campaign_tag"], unique=False
+    )
+    op.create_index(
+        op.f("ix_projects_mapper_level"), "projects", ["mapper_level"], unique=False
+    )
+    op.create_index(
+        op.f("ix_projects_mapping_types"), "projects", ["mapping_types"], unique=False
+    )
     op.create_index(
         op.f("ix_projects_organisation_tag"),
         "projects",
@@ -132,7 +138,9 @@ def upgrade():
         sa.ForeignKeyConstraint(["locked_by"], ["users.id"], name="fk_users_locked"),
         sa.ForeignKeyConstraint(["mapped_by"], ["users.id"], name="fk_users_mapper"),
         sa.ForeignKeyConstraint(["project_id"], ["projects.id"]),
-        sa.ForeignKeyConstraint(["validated_by"], ["users.id"], name="fk_users_validator"),
+        sa.ForeignKeyConstraint(
+            ["validated_by"], ["users.id"], name="fk_users_validator"
+        ),
         sa.PrimaryKeyConstraint("id", "project_id"),
     )
     op.create_index(op.f("ix_tasks_project_id"), "tasks", ["project_id"], unique=False)
@@ -146,7 +154,9 @@ def upgrade():
         sa.Column("action_date", sa.DateTime(), nullable=False),
         sa.Column("user_id", sa.BigInteger(), nullable=False),
         sa.ForeignKeyConstraint(["project_id"], ["projects.id"]),
-        sa.ForeignKeyConstraint(["task_id", "project_id"], ["tasks.id", "tasks.project_id"], name="fk_tasks"),
+        sa.ForeignKeyConstraint(
+            ["task_id", "project_id"], ["tasks.id", "tasks.project_id"], name="fk_tasks"
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], name="fk_users"),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -156,7 +166,9 @@ def upgrade():
         ["task_id", "project_id"],
         unique=False,
     )
-    op.create_index(op.f("ix_task_history_project_id"), "task_history", ["project_id"], unique=False)
+    op.create_index(
+        op.f("ix_task_history_project_id"), "task_history", ["project_id"], unique=False
+    )
     # ### end Alembic commands ###
 
 

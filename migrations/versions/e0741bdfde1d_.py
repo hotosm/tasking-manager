@@ -47,5 +47,7 @@ def downgrade():
         ),
         sa.PrimaryKeyConstraint("id", name="areas_of_interest_pkey"),
     )
-    op.create_foreign_key("projects_aoi_id_fkey", "projects", "areas_of_interest", ["aoi_id"], ["id"])
+    op.create_foreign_key(
+        "projects_aoi_id_fkey", "projects", "areas_of_interest", ["aoi_id"], ["id"]
+    )
     # ### end Alembic commands ###

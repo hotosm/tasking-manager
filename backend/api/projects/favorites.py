@@ -50,7 +50,11 @@ async def get_favorite(
         500:
             description: Internal Server Error
     """
-    user_id = request.user.display_name if request.user and request.user.display_name else None
+    user_id = (
+        request.user.display_name
+        if request.user and request.user.display_name
+        else None
+    )
 
     favorited = await ProjectService.is_favorited(project_id, user_id, db)
     if favorited is True:

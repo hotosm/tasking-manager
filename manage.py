@@ -57,7 +57,10 @@ def auto_unlock_tasks():
         # Identify distinct project IDs that were touched in the last 2 hours
         query = (
             TaskHistory.query.with_entities(TaskHistory.project_id)
-            .filter(func.DATE(TaskHistory.action_date) > datetime.datetime.utcnow() - datetime.timedelta(minutes=130))
+            .filter(
+                func.DATE(TaskHistory.action_date)
+                > datetime.datetime.utcnow() - datetime.timedelta(minutes=130)
+            )
             .distinct()
         )
         projects = query.all()
@@ -122,7 +125,9 @@ def update_project_categories(filename):
                 interest_ids.append(interest.id)
 
             try:
-                InterestService.create_or_update_project_interests(project_id, interest_ids)
+                InterestService.create_or_update_project_interests(
+                    project_id, interest_ids
+                )
             except Exception as e:
                 print(f"Problem updating {project_id}: {type(e)}")
 

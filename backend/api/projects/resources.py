@@ -10,7 +10,12 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from loguru import logger
 
 from backend.db import get_db
-from backend.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectSearchBBoxDTO, ProjectSearchDTO
+from backend.models.dtos.project_dto import (
+    DraftProjectDTO,
+    ProjectDTO,
+    ProjectSearchBBoxDTO,
+    ProjectSearchDTO,
+)
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.postgis.statuses import UserRole
 from backend.services.organisation_service import OrganisationService
@@ -20,10 +25,21 @@ from backend.services.project_admin_service import (
     ProjectAdminService,
     ProjectAdminServiceError,
 )
-from backend.services.project_search_service import BBoxTooBigError, ProjectSearchService, ProjectSearchServiceError
-from backend.services.project_service import NotFound, ProjectService, ProjectServiceError
+from backend.services.project_search_service import (
+    BBoxTooBigError,
+    ProjectSearchService,
+    ProjectSearchServiceError,
+)
+from backend.services.project_service import (
+    NotFound,
+    ProjectService,
+    ProjectServiceError,
+)
 from backend.services.recommendation_service import ProjectRecommendationService
-from backend.services.users.authentication_service import login_required, login_required_optional
+from backend.services.users.authentication_service import (
+    login_required,
+    login_required_optional,
+)
 from backend.services.users.user_service import UserService
 
 router = APIRouter(
@@ -214,8 +230,12 @@ async def create_project(
 
     try:
         async with db.transaction():
-            draft_project_id = await ProjectAdminService.create_draft_project(draft_project_dto, db)
-            return JSONResponse(content={"projectId": draft_project_id}, status_code=201)
+            draft_project_id = await ProjectAdminService.create_draft_project(
+                draft_project_dto, db
+            )
+            return JSONResponse(
+                content={"projectId": draft_project_id}, status_code=201
+            )
     except ProjectAdminServiceError as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
@@ -269,7 +289,9 @@ def head(request: Request, project_id):
             description: Internal Server Error
     """
     try:
-        ProjectAdminService.is_user_action_permitted_on_project(request.user.display_name, project_id)
+        ProjectAdminService.is_user_action_permitted_on_project(
+            request.user.display_name, project_id
+        )
     except ValueError:
         return JSONResponse(
             content={
@@ -412,7 +434,9 @@ async def patch_project(
         500:
             description: Internal Server Error
     """
-    if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
+    if not await ProjectAdminService.is_user_action_permitted_on_project(
+        user.id, project_id, db
+    ):
         return JSONResponse(
             content={
                 "Error": "User is not a manager of the project",
@@ -476,7 +500,9 @@ async def delete_project(
             description: Internal Server Error
     """
     try:
-        if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(
+            user.id, project_id, db
+        ):
             raise ValueError()
     except ValueError:
         return JSONResponse(
@@ -509,9 +535,13 @@ def setup_search_dto(request) -> ProjectSearchDTO:
     search_dto.order_by = request.query_params.get("orderBy", "priority")
     search_dto.country = request.query_params.get("country")
     search_dto.order_by_type = request.query_params.get("orderByType", "ASC")
-    search_dto.page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
+    search_dto.page = (
+        int(request.query_params.get("page")) if request.query_params.get("page") else 1
+    )
     search_dto.text_search = request.query_params.get("textSearch")
-    search_dto.omit_map_results = strtobool(request.query_params.get("omitMapResults", "false"))
+    search_dto.omit_map_results = strtobool(
+        request.query_params.get("omitMapResults", "false")
+    )
     search_dto.last_updated_gte = request.query_params.get("lastUpdatedFrom")
     search_dto.last_updated_lte = request.query_params.get("lastUpdatedTo")
     search_dto.created_gte = request.query_params.get("createdFrom")
@@ -523,7 +553,11 @@ def setup_search_dto(request) -> ProjectSearchDTO:
 
     # See https://github.com/hotosm/tasking-manager/pull/922 for more info
     try:
-        authenticated_user_id = request.user.display_name if request.user and request.user.display_name else None
+        authenticated_user_id = (
+            request.user.display_name
+            if request.user and request.user.display_name
+            else None
+        )
 
         if request.query_params.get("createdByMe") == "true":
             search_dto.created_by = authenticated_user_id
@@ -545,8 +579,12 @@ def setup_search_dto(request) -> ProjectSearchDTO:
 
     mapping_types_str = request.query_params.get("mappingTypes")
     if mapping_types_str:
-        search_dto.mapping_types = list(map(str, mapping_types_str.split(",")))  # Extract list from string
-    search_dto.mapping_types_exact = strtobool(request.query_params.get("mappingTypesExact", "false"))
+        search_dto.mapping_types = list(
+            map(str, mapping_types_str.split(","))
+        )  # Extract list from string
+    search_dto.mapping_types_exact = strtobool(
+        request.query_params.get("mappingTypesExact", "false")
+    )
     project_statuses_str = request.query_params.get("projectStatuses")
     if project_statuses_str:
         search_dto.project_statuses = list(map(str, project_statuses_str.split(",")))
@@ -710,15 +748,20 @@ async def get_projects(
         search_dto = setup_search_dto(request)
         if search_dto.omit_map_results and search_dto.download_as_csv:
             return JSONResponse(
-                content={"Error": "omitMapResults and downloadAsCSV cannot be both set to true"},
+                content={
+                    "Error": "omitMapResults and downloadAsCSV cannot be both set to true"
+                },
                 status_code=400,
             )
 
         if (
-            search_dto.partnership_from is not None or search_dto.partnership_to is not None
+            search_dto.partnership_from is not None
+            or search_dto.partnership_to is not None
         ) and search_dto.partner_id is None:
             return JSONResponse(
-                content={"Error": "partnershipFrom or partnershipTo cannot be provided without partnerId"},
+                content={
+                    "Error": "partnershipFrom or partnershipTo cannot be provided without partnerId"
+                },
                 status_code=400,
             )
 
@@ -729,7 +772,9 @@ async def get_projects(
             and search_dto.partnership_from > search_dto.partnership_to
         ):
             return JSONResponse(
-                content={"Error": "partnershipFrom cannot be greater than partnershipTo"},
+                content={
+                    "Error": "partnershipFrom cannot be greater than partnershipTo"
+                },
                 status_code=400,
             )
 
@@ -749,7 +794,9 @@ async def get_projects(
         if search_dto.download_as_csv:
             if user:
                 user = user.id
-            all_results_csv = await ProjectSearchService.search_projects_as_csv(search_dto, user, db, True)
+            all_results_csv = await ProjectSearchService.search_projects_as_csv(
+                search_dto, user, db, True
+            )
             return StreamingResponse(
                 iter([all_results_csv]),
                 media_type="text/csv",
@@ -817,8 +864,14 @@ async def get_by_bbox(
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name if request.user and request.user.display_name else None
-    orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(authenticated_user_id, db)
+    authenticated_user_id = (
+        request.user.display_name
+        if request.user and request.user.display_name
+        else None
+    )
+    orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+        authenticated_user_id, db
+    )
     if len(orgs_dto.organisations) < 1:
         return JSONResponse(
             content={
@@ -837,7 +890,9 @@ async def get_by_bbox(
             preferred_locale=request.headers.get("accept-language", "en"),
         )
         created_by_me = (
-            strtobool(request.query_params.get("createdByMe")) if request.query_params.get("createdByMe") else False
+            strtobool(request.query_params.get("createdByMe"))
+            if request.query_params.get("createdByMe")
+            else False
         )
         if created_by_me:
             search_dto.project_author = authenticated_user_id
@@ -904,8 +959,14 @@ async def get_my_projects(
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name if request.user and request.user.display_name else None
-    orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(authenticated_user_id, db)
+    authenticated_user_id = (
+        request.user.display_name
+        if request.user and request.user.display_name
+        else None
+    )
+    orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
+        authenticated_user_id, db
+    )
     if len(orgs_dto.organisations) < 1:
         return JSONResponse(
             content={
@@ -924,7 +985,9 @@ async def get_my_projects(
 
 
 @router.get("/queries/{username}/touched/")
-async def get_mapped_projects(request: Request, username, db: Database = Depends(get_db)):
+async def get_mapped_projects(
+    request: Request, username, db: Database = Depends(get_db)
+):
     """
     Gets projects user has mapped
     ---
@@ -953,13 +1016,19 @@ async def get_mapped_projects(request: Request, username, db: Database = Depends
         500:
             description: Internal Server Error
     """
-    locale = request.headers.get("accept-language") if request.headers.get("accept-language") else "en"
+    locale = (
+        request.headers.get("accept-language")
+        if request.headers.get("accept-language")
+        else "en"
+    )
     user_dto = await UserService.get_mapped_projects(username, locale, db)
     return user_dto
 
 
 @router.get("/{project_id}/queries/summary/")
-async def get_project_summary(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def get_project_summary(
+    request: Request, project_id: int, db: Database = Depends(get_db)
+):
     """
     Gets project summary
     ---
@@ -994,7 +1063,9 @@ async def get_project_summary(request: Request, project_id: int, db: Database = 
 
 
 @router.get("/{project_id}/queries/nogeometries/")
-async def get_no_geometries(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def get_no_geometries(
+    request: Request, project_id: int, db: Database = Depends(get_db)
+):
     """
     Get HOT Project for mapping
     ---
@@ -1031,19 +1102,29 @@ async def get_no_geometries(request: Request, project_id: int, db: Database = De
             description: Internal Server Error
     """
     try:
-        as_file = strtobool(request.query_params.get("as_file")) if request.query_params.get("as_file") else False
+        as_file = (
+            strtobool(request.query_params.get("as_file"))
+            if request.query_params.get("as_file")
+            else False
+        )
         locale = request.headers.get("accept-language")
-        project_dto = await ProjectService.get_project_dto_for_mapper(project_id, None, db, locale, True)
+        project_dto = await ProjectService.get_project_dto_for_mapper(
+            project_id, None, db, locale, True
+        )
         # Handle file download if requested
         if as_file:
-            project_dto_str = geojson.dumps(project_dto, indent=4)  # Convert to GeoJSON string
+            project_dto_str = geojson.dumps(
+                project_dto, indent=4
+            )  # Convert to GeoJSON string
             file_bytes = io.BytesIO(project_dto_str.encode("utf-8"))
             file_bytes.seek(0)  # Reset stream position
 
             return StreamingResponse(
                 file_bytes,
                 media_type="application/geo+json",
-                headers={"Content-Disposition": f'attachment; filename="project_{project_id}.geojson"'},
+                headers={
+                    "Content-Disposition": f'attachment; filename="project_{project_id}.geojson"'
+                },
             )
 
         return project_dto
@@ -1099,7 +1180,9 @@ async def get_notasks(
         500:
             description: Internal Server Error
     """
-    if not await ProjectAdminService.is_user_action_permitted_on_project(request.user.display_name, project_id, db):
+    if not await ProjectAdminService.is_user_action_permitted_on_project(
+        request.user.display_name, project_id, db
+    ):
         return JSONResponse(
             content={
                 "Error": "User is not a manager of the project",
@@ -1143,7 +1226,11 @@ async def get_aoi(request: Request, project_id: int, db: Database = Depends(get_
         500:
             description: Internal Server Error
     """
-    as_file = strtobool(request.query_params.get("as_file")) if request.query_params.get("as_file") else False
+    as_file = (
+        strtobool(request.query_params.get("as_file"))
+        if request.query_params.get("as_file")
+        else False
+    )
 
     project_aoi = await ProjectService.get_project_aoi(project_id, db)
 
@@ -1155,7 +1242,9 @@ async def get_aoi(request: Request, project_id: int, db: Database = Depends(get_
         return StreamingResponse(
             file_bytes,
             media_type="application/geo+json",
-            headers={"Content-Disposition": f'attachment; filename="{project_id}.geojson"'},
+            headers={
+                "Content-Disposition": f'attachment; filename="{project_id}.geojson"'
+            },
         )
     return project_aoi
 
@@ -1190,7 +1279,9 @@ async def get_priority_areas(project_id: int, db: Database = Depends(get_db)):
         priority_areas = await ProjectService.get_project_priority_areas(project_id, db)
         return priority_areas
     except ProjectServiceError:
-        return JSONResponse(content={"Error": "Unable to fetch project"}, status_code=403)
+        return JSONResponse(
+            content={"Error": "Unable to fetch project"}, status_code=403
+        )
 
 
 @router.get("/queries/featured/")
@@ -1221,7 +1312,9 @@ async def get_featured(request: Request, db: Database = Depends(get_db)):
 
 
 @router.get("/queries/{project_id}/similar-projects/")
-async def get_similar_projects(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def get_similar_projects(
+    request: Request, project_id: int, db: Database = Depends(get_db)
+):
     """
     Get similar projects
     ---
@@ -1255,7 +1348,11 @@ async def get_similar_projects(request: Request, project_id: int, db: Database =
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = request.user.display_name if request.user and request.user.display_name else None
+    authenticated_user_id = (
+        request.user.display_name
+        if request.user and request.user.display_name
+        else None
+    )
     limit = int(request.query_params.get("limit", 4))
     preferred_locale = request.headers.get("accept-language", "en")
     projects_dto = await ProjectRecommendationService.get_similar_projects(
@@ -1297,13 +1394,17 @@ async def get_active(request: Request, db: Database = Depends(get_db)):
     interval = request.query_params.get("interval", "24")
     if not interval.isdigit():
         return JSONResponse(
-            content={"Error": "Interval must be a number greater than 0 and less than or equal to 24"},
+            content={
+                "Error": "Interval must be a number greater than 0 and less than or equal to 24"
+            },
             status_code=400,
         )
     interval = int(interval)
     if interval <= 0 or interval > 24:
         return JSONResponse(
-            content={"Error": "Interval must be a number greater than 0 and less than or equal to 24"},
+            content={
+                "Error": "Interval must be a number greater than 0 and less than or equal to 24"
+            },
             status_code=400,
         )
     projects_dto = await ProjectService.get_active_projects(interval, db)

@@ -89,7 +89,9 @@ async def post_image(
             "x-api-key": settings.IMAGE_UPLOAD_API_KEY,
             "Content-Type": "application/json",
         }
-        url = "{}?filename={}".format(settings.IMAGE_UPLOAD_API_URL, data.get("filename"))
+        url = "{}?filename={}".format(
+            settings.IMAGE_UPLOAD_API_URL, data.get("filename")
+        )
         result = requests.post(url, headers=headers, data=json.dumps({"image": data}))
         if result.ok:
             return JSONResponse(content=result.json(), status_code=201)

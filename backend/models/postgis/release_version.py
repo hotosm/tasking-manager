@@ -12,7 +12,9 @@ class ReleaseVersion(Base):
     published_at = Column(DateTime, nullable=False)
 
     async def save(self, db: Database):
-        query = insert(ReleaseVersion.__table__).values(tag_name=self.tag_name, published_at=self.published_at)
+        query = insert(ReleaseVersion.__table__).values(
+            tag_name=self.tag_name, published_at=self.published_at
+        )
         await db.execute(query)
 
     @staticmethod

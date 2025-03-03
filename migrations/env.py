@@ -31,7 +31,9 @@ logger = logging.getLogger("alembic.env")
 # from myapp import mymodel
 target_metadata = Base.metadata
 
-config.set_main_option("sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI.unicode_string())
+config.set_main_option(
+    "sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI.unicode_string()
+)
 
 
 # target_metadata = current_app.extensions["migrate"].db.metadata
@@ -56,7 +58,9 @@ def include_object(object, name, type_, reflected, compare_to):
     elif type_ == "index" and name in exclude_index:
         return False
     else:
-        return alembic_helpers.include_object(object, name, type_, reflected, compare_to)
+        return alembic_helpers.include_object(
+            object, name, type_, reflected, compare_to
+        )
 
 
 def run_migrations_offline():

@@ -105,7 +105,9 @@ def get_application() -> FastAPI:
         expose_headers=["Content-Disposition"],
     )
 
-    _app.add_middleware(AuthenticationMiddleware, backend=TokenAuthBackend(), on_error=None)
+    _app.add_middleware(
+        AuthenticationMiddleware, backend=TokenAuthBackend(), on_error=None
+    )
     add_api_end_points(_app)
     return _app
 
@@ -139,7 +141,10 @@ def get_logger():
     log.add(
         sys.stderr,
         level=settings.LOG_LEVEL,
-        format=("{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} " "| {name}:{function}:{line} | {message}"),
+        format=(
+            "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} "
+            "| {name}:{function}:{line} | {message}"
+        ),
         enqueue=True,  # Run async / non-blocking
         colorize=True,
         backtrace=True,  # More detailed tracebacks

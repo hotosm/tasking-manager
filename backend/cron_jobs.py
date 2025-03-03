@@ -18,7 +18,9 @@ async def auto_unlock_tasks():
         FROM task_history
         WHERE action_date > :two_hours_ago
         """
-        projects = await conn.fetch_all(query=projects_query, values={"two_hours_ago": two_hours_ago})
+        projects = await conn.fetch_all(
+            query=projects_query, values={"two_hours_ago": two_hours_ago}
+        )
         for project in projects:
             project_id = project["project_id"]
             logger.info(f"Processing project_id: {project_id}")
@@ -69,7 +71,9 @@ async def update_recent_updated_project_stats():
         FROM projects
         WHERE last_updated > :one_week_ago;
         """
-        projects = await conn.fetch_all(query=projects_query, values={"one_week_ago": one_week_ago})
+        projects = await conn.fetch_all(
+            query=projects_query, values={"one_week_ago": one_week_ago}
+        )
         for project in projects:
             project_id = project["id"]
             logger.info(f"Processing project ID: {project_id}")

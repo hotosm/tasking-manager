@@ -14,9 +14,18 @@ from backend.models.dtos.organisation_dto import (
     OrganisationTeamsDTO,
     UpdateOrganisationDTO,
 )
-from backend.models.dtos.stats_dto import OrganizationProjectsStatsDTO, OrganizationStatsDTO, OrganizationTasksStatsDTO
+from backend.models.dtos.stats_dto import (
+    OrganizationProjectsStatsDTO,
+    OrganizationStatsDTO,
+    OrganizationTasksStatsDTO,
+)
 from backend.models.postgis.organisation import Organisation
-from backend.models.postgis.statuses import ProjectStatus, TaskStatus, TeamJoinMethod, TeamMemberFunctions
+from backend.models.postgis.statuses import (
+    ProjectStatus,
+    TaskStatus,
+    TeamJoinMethod,
+    TeamMemberFunctions,
+)
 from backend.models.postgis.team import TeamVisibility
 from backend.services.users.user_service import UserService
 
@@ -50,9 +59,13 @@ class OrganisationService:
             FROM organisations
             WHERE id = :organisation_id
         """
-        org_record = await db.fetch_one(org_query, values={"organisation_id": organisation_id})
+        org_record = await db.fetch_one(
+            org_query, values={"organisation_id": organisation_id}
+        )
         if not org_record:
-            raise NotFound(sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id)
+            raise NotFound(
+                sub_code="ORGANISATION_NOT_FOUND", organisation_id=organisation_id
+            )
 
         # Fetch organisation managers
         managers_query = """
@@ -64,7 +77,9 @@ class OrganisationService:
             JOIN organisation_managers om ON u.id = om.user_id
             WHERE om.organisation_id = :organisation_id
         """
-        managers_records = await db.fetch_all(managers_query, values={"organisation_id": organisation_id})
+        managers_records = await db.fetch_all(
+            managers_query, values={"organisation_id": organisation_id}
+        )
         # Assign manager records initially
         org_record.managers = managers_records
         return org_record
@@ -74,10 +89,14 @@ class OrganisationService:
         organisation_id: int, user_id: int, abbreviated: bool, db: Database
     ) -> OrganisationDTO:
         org = await OrganisationService.get_organisation_by_id(organisation_id, db)
-        return await OrganisationService.get_organisation_dto(org, user_id, abbreviated, db)
+        return await OrganisationService.get_organisation_dto(
+            org, user_id, abbreviated, db
+        )
 
     @staticmethod
-    async def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool, db: Database):
+    async def get_organisation_by_slug_as_dto(
+        slug: str, user_id: int, abbreviated: bool, db: Database
+    ):
         org_query = """
             SELECT
                 id AS "organisation_id",
@@ -112,10 +131,14 @@ class OrganisationService:
             JOIN organisation_managers om ON u.id = om.user_id
             WHERE om.organisation_id = :organisation_id
         """
-        managers_records = await db.fetch_all(managers_query, values={"organisation_id": organisation_id})
+        managers_records = await db.fetch_all(
+            managers_query, values={"organisation_id": organisation_id}
+        )
 
         org_record.managers = managers_records
-        return await OrganisationService.get_organisation_dto(org_record, user_id, abbreviated, db)
+        return await OrganisationService.get_organisation_dto(
+            org_record, user_id, abbreviated, db
+        )
 
     @staticmethod
     def organisation_as_dto(org) -> OrganisationDTO:
@@ -159,8 +182,10 @@ class OrganisationService:
 
         organisation_dto = Organisation.as_dto(org, abbreviated)
         if user_id != 0:
-            organisation_dto.is_manager = await OrganisationService.can_user_manage_organisation(
-                organisation_dto.organisation_id, user_id, db
+            organisation_dto.is_manager = (
+                await OrganisationService.can_user_manage_organisation(
+                    organisation_dto.organisation_id, user_id, db
+                )
             )
         else:
             organisation_dto.is_manager = False
@@ -187,25 +212,40 @@ class OrganisationService:
             WHERE t.organisation_id = :org_id
             GROUP BY t.id
         """
-        teams_records = await db.fetch_all(teams_query, values={"org_id": org.organisation_id})
-        teams = [OrganisationService.team_as_dto_inside_org(record) for record in teams_records]
+        teams_records = await db.fetch_all(
+            teams_query, values={"org_id": org.organisation_id}
+        )
+        teams = [
+            OrganisationService.team_as_dto_inside_org(record)
+            for record in teams_records
+        ]
         if organisation_dto.is_manager:
             organisation_dto.teams = teams
         else:
-            organisation_dto.teams = [team for team in teams if team.visibility == "PUBLIC"]
+            organisation_dto.teams = [
+                team for team in teams if team.visibility == "PUBLIC"
+            ]
         return organisation_dto
 
     @staticmethod
-    async def get_organisation_by_name(organisation_name: str, db: Database) -> Organisation:
-        organisation = await Organisation.get_organisation_by_name(organisation_name, db)
+    async def get_organisation_by_name(
+        organisation_name: str, db: Database
+    ) -> Organisation:
+        organisation = await Organisation.get_organisation_by_name(
+            organisation_name, db
+        )
 
         if organisation is None:
-            raise NotFound(sub_code="ORGANISATION_NOT_FOUND", organisation_name=organisation_name)
+            raise NotFound(
+                sub_code="ORGANISATION_NOT_FOUND", organisation_name=organisation_name
+            )
 
         return organisation
 
     @staticmethod
-    async def create_organisation(new_organisation_dto: NewOrganisationDTO, db: Database) -> int:
+    async def create_organisation(
+        new_organisation_dto: NewOrganisationDTO, db: Database
+    ) -> int:
         """
         Creates a new organisation using an organisation dto
         :param new_organisation_dto: Organisation DTO
@@ -220,13 +260,17 @@ class OrganisationService:
             )
 
     @staticmethod
-    async def update_organisation(organisation_dto: UpdateOrganisationDTO, db: Database) -> int:
+    async def update_organisation(
+        organisation_dto: UpdateOrganisationDTO, db: Database
+    ) -> int:
         """
         Updates an organisation
         :param organisation_dto: DTO with updated info
         :returns updated Organisation
         """
-        org = await OrganisationService.get_organisation_by_id(organisation_dto.organisation_id, db)
+        org = await OrganisationService.get_organisation_by_id(
+            organisation_dto.organisation_id, db
+        )
         await OrganisationService.assert_validate_name(org, organisation_dto.name, db)
         await OrganisationService.assert_validate_users(organisation_dto, db)
         await Organisation.update(organisation_dto, db)
@@ -257,7 +301,9 @@ class OrganisationService:
             except Exception as e:
                 raise HTTPException(status_code=500, detail="Deletion failed") from e
         else:
-            raise OrganisationServiceError("Organisation has projects, cannot be deleted")
+            raise OrganisationServiceError(
+                "Organisation has projects, cannot be deleted"
+            )
 
     @staticmethod
     async def get_organisations(manager_user_id: int, db: Database):
@@ -265,7 +311,9 @@ class OrganisationService:
             """Get all organisations"""
             return await Organisation.get_all_organisations(db)
         else:
-            return await Organisation.get_organisations_managed_by_user(manager_user_id, db)
+            return await Organisation.get_organisations_managed_by_user(
+                manager_user_id, db
+            )
 
     @staticmethod
     async def get_organisations_as_dto(
@@ -281,7 +329,9 @@ class OrganisationService:
             org_dto = OrganisationService.organisation_as_dto(org)
             if not omit_stats:
                 year = datetime.today().strftime("%Y")
-                stats = await OrganisationService.get_organisation_stats(org_dto.organisation_id, db, year)
+                stats = await OrganisationService.get_organisation_stats(
+                    org_dto.organisation_id, db, year
+                )
                 org_dto.stats = stats
 
             if omit_managers or not authenticated_user_id:
@@ -299,7 +349,9 @@ class OrganisationService:
         return await Organisation.get_organisations_managed_by_user(user_id, db)
 
     @staticmethod
-    async def get_organisations_managed_by_user_as_dto(user_id: int, db: Database) -> ListOrganisationsDTO:
+    async def get_organisations_managed_by_user_as_dto(
+        user_id: int, db: Database
+    ) -> ListOrganisationsDTO:
         orgs = await OrganisationService.get_organisations_managed_by_user(user_id, db)
         orgs_dto = ListOrganisationsDTO()
 
@@ -309,7 +361,9 @@ class OrganisationService:
         return orgs_dto
 
     @staticmethod
-    async def get_organisation_stats(organisation_id: int, db: Database, year: int = None) -> OrganizationStatsDTO:
+    async def get_organisation_stats(
+        organisation_id: int, db: Database, year: int = None
+    ) -> OrganizationStatsDTO:
         # Prepare the base projects query
         projects_query = f"""
                 SELECT
@@ -389,14 +443,21 @@ class OrganisationService:
     @staticmethod
     async def assert_validate_name(org: Organisation, name: str, db):
         """Validates that the organisation name doesn't exist"""
-        if org.name != name and await Organisation.get_organisation_by_name(name, db) is not None:
-            raise OrganisationServiceError(f"NameExists- Organisation name already exists: {name}")
+        if (
+            org.name != name
+            and await Organisation.get_organisation_by_name(name, db) is not None
+        ):
+            raise OrganisationServiceError(
+                f"NameExists- Organisation name already exists: {name}"
+            )
 
     @staticmethod
     async def assert_validate_users(organisation_dto: OrganisationDTO, db):
         """Validates that the users exist"""
         if organisation_dto.managers and len(organisation_dto.managers) == 0:
-            raise OrganisationServiceError("MustHaveAdmin- Must have at least one admin")
+            raise OrganisationServiceError(
+                "MustHaveAdmin- Must have at least one admin"
+            )
 
         if organisation_dto.managers and len(organisation_dto.managers) > 0:
             managers = []
@@ -410,12 +471,16 @@ class OrganisationService:
             organisation_dto.managers = managers
 
     @staticmethod
-    async def can_user_manage_organisation(organisation_id: int, user_id: int, db: Database):
+    async def can_user_manage_organisation(
+        organisation_id: int, user_id: int, db: Database
+    ):
         """Check that the user is an admin for the org or a global admin"""
         if await UserService.is_user_an_admin(user_id, db):
             return True
         else:
-            return await OrganisationService.is_user_an_org_manager(organisation_id, user_id, db)
+            return await OrganisationService.is_user_an_org_manager(
+                organisation_id, user_id, db
+            )
 
     @staticmethod
     async def is_user_an_org_manager(organisation_id: int, user_id: int, db: Database):
@@ -428,14 +493,18 @@ class OrganisationService:
             JOIN organisation_managers om ON u.id = om.user_id
             WHERE om.organisation_id = :organisation_id
         """
-        managers_records = await db.fetch_all(managers_query, values={"organisation_id": organisation_id})
+        managers_records = await db.fetch_all(
+            managers_query, values={"organisation_id": organisation_id}
+        )
         # Extract the list of IDs from the records
         managers_ids = [record.id for record in managers_records]
         user = await UserService.get_user_by_id(user_id, db)
         return user.id in managers_ids
 
     @staticmethod
-    async def get_campaign_organisations_as_dto(campaign_id: int, user_id: int, db: Database):
+    async def get_campaign_organisations_as_dto(
+        campaign_id: int, user_id: int, db: Database
+    ):
         """
         Returns organisations under a particular campaign.
         """
@@ -452,7 +521,9 @@ class OrganisationService:
         for org in orgs:
             logged_in = False
             if user_id != 0:
-                logged_in = await OrganisationService.can_user_manage_organisation(org["id"], user_id)
+                logged_in = await OrganisationService.can_user_manage_organisation(
+                    org["id"], user_id
+                )
 
             organisation_dto = OrganisationDTO(
                 organisation_id=org["id"],

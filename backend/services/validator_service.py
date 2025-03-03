@@ -21,7 +21,13 @@ from backend.models.dtos.validator_dto import (
 )
 from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.statuses import ValidatingNotAllowed
-from backend.models.postgis.task import Task, TaskHistory, TaskInvalidationHistory, TaskMappingIssue, TaskStatus
+from backend.models.postgis.task import (
+    Task,
+    TaskHistory,
+    TaskInvalidationHistory,
+    TaskMappingIssue,
+    TaskStatus,
+)
 from backend.models.postgis.utils import UserLicenseError
 from backend.services.mapping_service import MappingService
 from backend.services.messaging.message_service import MessageService
@@ -39,7 +45,9 @@ class ValidatorServiceError(Exception):
 
 class ValidatorService:
     @staticmethod
-    async def lock_tasks_for_validation(validation_dto: LockForValidationDTO, db: Database) -> TaskDTOs:
+    async def lock_tasks_for_validation(
+        validation_dto: LockForValidationDTO, db: Database
+    ) -> TaskDTOs:
         """
         Lock supplied tasks for validation
         :raises ValidatorServiceError
@@ -81,28 +89,40 @@ class ValidatorService:
         (
             user_can_validate,
             error_reason,
-        ) = await ProjectService.is_user_permitted_to_validate(validation_dto.project_id, validation_dto.user_id, db)
+        ) = await ProjectService.is_user_permitted_to_validate(
+            validation_dto.project_id, validation_dto.user_id, db
+        )
 
         if not user_can_validate:
             if error_reason == ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError("User must accept license to map this task")
             elif error_reason == ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
-                raise ValidatorServiceError("UserNotAllowed- Validation not allowed because: User not on allowed list")
+                raise ValidatorServiceError(
+                    "UserNotAllowed- Validation not allowed because: User not on allowed list"
+                )
             elif error_reason == ValidatingNotAllowed.PROJECT_NOT_PUBLISHED:
                 raise ValidatorServiceError(
                     "ProjectNotPublished- Validation not allowed because: Project not published"
                 )
             elif error_reason == ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
-                user_tasks = await Task.get_locked_tasks_for_user(validation_dto.user_id, db)
+                user_tasks = await Task.get_locked_tasks_for_user(
+                    validation_dto.user_id, db
+                )
                 if set(user_tasks.locked_tasks) != set(validation_dto.task_ids):
-                    raise ValidatorServiceError("UserAlreadyHasTaskLocked- User already has a task locked")
+                    raise ValidatorServiceError(
+                        "UserAlreadyHasTaskLocked- User already has a task locked"
+                    )
             else:
-                raise ValidatorServiceError(f"ValidtionNotAllowed- Validation not allowed because: {error_reason}")
+                raise ValidatorServiceError(
+                    f"ValidtionNotAllowed- Validation not allowed because: {error_reason}"
+                )
 
         # Lock all tasks for validation
         dtos = []
         for task in tasks_to_lock:
-            await Task.lock_task_for_validating(task.id, validation_dto.project_id, validation_dto.user_id, db)
+            await Task.lock_task_for_validating(
+                task.id, validation_dto.project_id, validation_dto.user_id, db
+            )
             dtos.append(
                 await Task.as_dto_with_instructions(
                     task.id,
@@ -117,7 +137,9 @@ class ValidatorService:
         return task_dtos
 
     @staticmethod
-    async def _user_can_validate_task(user_id: int, mapped_by: int, db: Database) -> bool:
+    async def _user_can_validate_task(
+        user_id: int, mapped_by: int, db: Database
+    ) -> bool:
         """
         check whether a user is able to validate a task.  Users cannot validate their own tasks unless they are a PM
         (admin counts as project manager too)
@@ -187,7 +209,9 @@ class ValidatorService:
                     task_to_unlock["new_state"],
                     db,
                 )
-            task_mapping_issues = await ValidatorService.get_task_mapping_issues(task_to_unlock)
+            task_mapping_issues = await ValidatorService.get_task_mapping_issues(
+                task_to_unlock
+            )
             await Task.unlock_task(
                 task_id=task.id,
                 project_id=project_id,
@@ -198,7 +222,9 @@ class ValidatorService:
                 issues=task_mapping_issues,
             )
 
-            return await Task.as_dto_with_instructions(task.id, project_id, db, validated_dto.preferred_locale)
+            return await Task.as_dto_with_instructions(
+                task.id, project_id, db, validated_dto.preferred_locale
+            )
 
     async def process_tasks_concurrently(project_id, tasks_to_unlock, validated_dto):
         """
@@ -223,8 +249,12 @@ class ValidatorService:
         validated_tasks = validated_dto.validated_tasks
         project_id = validated_dto.project_id
         user_id = validated_dto.user_id
-        tasks_to_unlock = await ValidatorService.get_tasks_locked_by_user(project_id, validated_tasks, user_id, db)
-        results = await ValidatorService.process_tasks_concurrently(project_id, tasks_to_unlock, validated_dto)
+        tasks_to_unlock = await ValidatorService.get_tasks_locked_by_user(
+            project_id, validated_tasks, user_id, db
+        )
+        results = await ValidatorService.process_tasks_concurrently(
+            project_id, tasks_to_unlock, validated_dto
+        )
         background_tasks.add_task(
             ProjectService.send_email_on_project_progress,
             validated_dto.project_id,
@@ -234,7 +264,9 @@ class ValidatorService:
         return task_dtos
 
     @staticmethod
-    async def stop_validating_tasks(stop_validating_dto: StopValidationDTO, db: Database) -> TaskDTOs:
+    async def stop_validating_tasks(
+        stop_validating_dto: StopValidationDTO, db: Database
+    ) -> TaskDTOs:
         """
         Unlocks supplied tasks after validation
         :raises ValidatorServiceError
@@ -242,7 +274,9 @@ class ValidatorService:
         reset_tasks = stop_validating_dto.reset_tasks
         project_id = stop_validating_dto.project_id
         user_id = stop_validating_dto.user_id
-        tasks_to_unlock = await ValidatorService.get_tasks_locked_by_user(project_id, reset_tasks, user_id, db)
+        tasks_to_unlock = await ValidatorService.get_tasks_locked_by_user(
+            project_id, reset_tasks, user_id, db
+        )
         dtos = []
         for task_to_unlock in tasks_to_unlock:
             task = task_to_unlock["task"]
@@ -260,14 +294,18 @@ class ValidatorService:
                 db,
             )
             dtos.append(
-                await Task.as_dto_with_instructions(task.id, project_id, db, stop_validating_dto.preferred_locale)
+                await Task.as_dto_with_instructions(
+                    task.id, project_id, db, stop_validating_dto.preferred_locale
+                )
             )
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
         return task_dtos
 
     @staticmethod
-    async def get_tasks_locked_by_user(project_id: int, unlock_tasks: list, user_id: int, db: Database):
+    async def get_tasks_locked_by_user(
+        project_id: int, unlock_tasks: list, user_id: int, db: Database
+    ):
         """
         Returns tasks specified by project id and unlock_tasks list if found and locked for validation by user,
         otherwise raises ValidatorServiceError, NotFound.
@@ -297,9 +335,15 @@ class ValidatorService:
                     f"NotLockedForValidation - Task {unlock_task.task_id} is not LOCKED_FOR_VALIDATION"
                 )
             if task.locked_by != user_id:
-                raise ValidatorServiceError("TaskNotOwned - Attempting to unlock a task owned by another user")
+                raise ValidatorServiceError(
+                    "TaskNotOwned - Attempting to unlock a task owned by another user"
+                )
 
-            new_status = TaskStatus[unlock_task.status] if hasattr(unlock_task, "status") else None
+            new_status = (
+                TaskStatus[unlock_task.status]
+                if hasattr(unlock_task, "status")
+                else None
+            )
 
             tasks_to_unlock.append(
                 dict(
@@ -358,7 +402,9 @@ class ValidatorService:
             dto.updated_date = entry.updated_date
 
             if dto.project_id not in project_names:
-                project_names[dto.project_id] = ProjectInfo.get_dto_for_locale(dto.project_id, preferred_locale).name
+                project_names[dto.project_id] = ProjectInfo.get_dto_for_locale(
+                    dto.project_id, preferred_locale
+                ).name
             dto.project_name = project_names[dto.project_id]
 
             invalidated_tasks_dto.invalidated_tasks.append(dto)
@@ -383,7 +429,9 @@ class ValidatorService:
         )
         for task in validated_tasks:
             await Task.lock_task_for_validating(task["id"], project_id, user_id, db)
-            await Task.unlock_task(task["id"], project_id, user_id, TaskStatus.INVALIDATED, db)
+            await Task.unlock_task(
+                task["id"], project_id, user_id, TaskStatus.INVALIDATED, db
+            )
 
         # Reset counters for the project
         project_query = """
@@ -414,7 +462,9 @@ class ValidatorService:
 
         for task in tasks_to_validate:
             task_id = task["id"]
-            mapped_by = task["mapped_by"] or user_id  # Ensure we set the 'mapped_by' value
+            mapped_by = (
+                task["mapped_by"] or user_id
+            )  # Ensure we set the 'mapped_by' value
 
             # Lock the task for validation if it's not already locked
             current_status = TaskStatus(task["task_status"])
@@ -510,4 +560,6 @@ class ValidatorService:
                     revert_dto.preferred_locale,
                 )
         else:
-            raise ValidatorServiceError("UserActionNotPermitted- User not permitted to revert tasks")
+            raise ValidatorServiceError(
+                "UserActionNotPermitted- User not permitted to revert tasks"
+            )

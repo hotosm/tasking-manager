@@ -27,7 +27,9 @@ router = APIRouter(
 
 
 @router.get("/{project_id}/tasks/{task_id}/")
-async def retrieve_task(request: Request, project_id: int, task_id: int, db: Database = Depends(get_db)):
+async def retrieve_task(
+    request: Request, project_id: int, task_id: int, db: Database = Depends(get_db)
+):
     """
     Get a task's metadata
     ---
@@ -63,7 +65,9 @@ async def retrieve_task(request: Request, project_id: int, task_id: int, db: Dat
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
-    task = await MappingService.get_task_as_dto(task_id, project_id, db, preferred_locale)
+    task = await MappingService.get_task_as_dto(
+        task_id, project_id, db, preferred_locale
+    )
     return task
 
 
@@ -104,8 +108,16 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             description: Internal Server Error
     """
     try:
-        tasks = request.query_params.get("tasks") if request.query_params.get("tasks") else None
-        as_file = strtobool(request.query_params.get("as_file")) if request.query_params.get("as_file") else False
+        tasks = (
+            request.query_params.get("tasks")
+            if request.query_params.get("tasks")
+            else None
+        )
+        as_file = (
+            strtobool(request.query_params.get("as_file"))
+            if request.query_params.get("as_file")
+            else False
+        )
 
         tasks_json = await ProjectService.get_project_tasks(db, int(project_id), tasks)
         if as_file:
@@ -117,7 +129,9 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             return StreamingResponse(
                 file_bytes,
                 media_type="application/geo+json",
-                headers={"Content-Disposition": f'attachment; filename="{project_id}-tasks.geojson"'},
+                headers={
+                    "Content-Disposition": f'attachment; filename="{project_id}-tasks.geojson"'
+                },
             )
 
         return tasks_json
@@ -196,7 +210,9 @@ async def delete(request: Request, project_id):
 
 
 @router.get("/{project_id}/tasks/queries/xml/")
-async def get_tasks_xml(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def get_tasks_xml(
+    request: Request, project_id: int, db: Database = Depends(get_db)
+):
     """
     Get all tasks for a project as OSM XML
     ---
@@ -232,7 +248,11 @@ async def get_tasks_xml(request: Request, project_id: int, db: Database = Depend
             description: Internal Server Error
     """
     tasks = request.query_params.get("tasks")
-    as_file = strtobool(request.query_params.get("as_file")) if request.query_params.get("as_file") else False
+    as_file = (
+        strtobool(request.query_params.get("as_file"))
+        if request.query_params.get("as_file")
+        else False
+    )
 
     xml = await MappingService.generate_osm_xml(project_id, tasks, db)
 
@@ -240,14 +260,18 @@ async def get_tasks_xml(request: Request, project_id: int, db: Database = Depend
         return StreamingResponse(
             io.BytesIO(xml),
             media_type="text/xml",
-            headers={"Content-Disposition": f"attachment; filename=HOT-project-{project_id}.osm"},
+            headers={
+                "Content-Disposition": f"attachment; filename=HOT-project-{project_id}.osm"
+            },
         )
 
     return Response(content=xml, media_type="text/xml", status_code=200)
 
 
 @router.get("/{project_id}/tasks/queries/gpx/")
-async def get_tasks_gpx(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def get_tasks_gpx(
+    request: Request, project_id: int, db: Database = Depends(get_db)
+):
     """
     Get all tasks for a project as GPX
     ---
@@ -283,7 +307,11 @@ async def get_tasks_gpx(request: Request, project_id: int, db: Database = Depend
             description: Internal Server Error
     """
     tasks = request.query_params.get("tasks")
-    as_file = strtobool(request.query_params.get("as_file")) if request.query_params.get("as_file") else False
+    as_file = (
+        strtobool(request.query_params.get("as_file"))
+        if request.query_params.get("as_file")
+        else False
+    )
 
     xml = await MappingService.generate_gpx(project_id, tasks, db)
 
@@ -291,7 +319,9 @@ async def get_tasks_gpx(request: Request, project_id: int, db: Database = Depend
         return StreamingResponse(
             io.BytesIO(xml),
             media_type="text/xml",
-            headers={"Content-Disposition": f"attachment; filename=HOT-project-{project_id}.gpx"},
+            headers={
+                "Content-Disposition": f"attachment; filename=HOT-project-{project_id}.gpx"
+            },
         )
 
     return Response(content=xml, media_type="text/xml", status_code=200)

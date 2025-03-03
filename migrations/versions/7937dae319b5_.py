@@ -21,7 +21,9 @@ nominatim_data_format = "&format=jsonv2&accept-language=en&namedetails=1"
 def upgrade():
     conn = op.get_bind()
     # fetch existing country names
-    fetch_countries = "select distinct(unnest(country)) from projects where country is not null;"
+    fetch_countries = (
+        "select distinct(unnest(country)) from projects where country is not null;"
+    )
     countries = conn.execute(sa.text(fetch_countries))
     for country in countries:
         country = country[0]

@@ -10,7 +10,12 @@ from fastapi.responses import JSONResponse
 from fastapi.security.api_key import APIKeyHeader
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from loguru import logger
-from starlette.authentication import AuthCredentials, AuthenticationBackend, AuthenticationError, SimpleUser
+from starlette.authentication import (
+    AuthCredentials,
+    AuthenticationBackend,
+    AuthenticationError,
+    SimpleUser,
+)
 
 from backend.api.utils import TMAPIDecorators
 from backend.config import settings
@@ -24,7 +29,9 @@ from backend.services.users.user_service import NotFound, UserService
 # token_auth = HTTPTokenAuth(scheme="Token")
 tm = TMAPIDecorators()
 
-UNICODE_ASCII_CHARACTER_SET = "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "0123456789" "-_"
+UNICODE_ASCII_CHARACTER_SET = (
+    "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "0123456789" "-_"
+)
 
 
 # @token_auth.error_handler
@@ -54,7 +61,9 @@ def verify_token(token):
         logger.debug("Token not valid")
         return False
 
-    tm.authenticated_user_id = user_id  # Set the user ID on the decorator as a convenience
+    tm.authenticated_user_id = (
+        user_id  # Set the user ID on the decorator as a convenience
+    )
     return user_id  # All tests passed token is good for the requested resource
 
 
@@ -76,7 +85,9 @@ class TokenAuthBackend(AuthenticationBackend):
         except (ValueError, UnicodeDecodeError, binascii.Error):
             raise AuthenticationError("Invalid auth credentials")
 
-        valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
+        valid_token, user_id = AuthenticationService.is_valid_token(
+            decoded_token, 604800
+        )
         if not valid_token:
             logger.debug("Token not valid.")
             return
@@ -124,7 +135,9 @@ class AuthenticationService:
             changesets = osm_user.get("changesets")
             changeset_count = int(changesets.get("count"))
             async with db.transaction():
-                new_user = await UserService.register_user(osm_id, username, changeset_count, user_picture, email, db)
+                new_user = await UserService.register_user(
+                    osm_id, username, changeset_count, user_picture, email, db
+                )
             await MessageService.send_welcome_message(new_user, db)
 
         session_token = AuthenticationService.generate_session_token_for_user(osm_id)
@@ -142,7 +155,9 @@ class AuthenticationService:
         is_valid, tokenised_email = AuthenticationService.is_valid_token(token, 86400)
 
         if not is_valid:
-            raise AuthServiceError(tokenised_email)  # Since token is invalid, tokenised_email is the error message
+            raise AuthServiceError(
+                tokenised_email
+            )  # Since token is invalid, tokenised_email is the error message
 
         if user.email_address != tokenised_email:
             raise AuthServiceError("InvalidEmail- Email address does not match token")
@@ -157,7 +172,9 @@ class AuthenticationService:
         base_url = settings.APP_BASE_URL
 
         verification_params = {"is_valid": is_valid}
-        verification_url = "{0}/validate-email?{1}".format(base_url, urllib.parse.urlencode(verification_params))
+        verification_url = "{0}/validate-email?{1}".format(
+            base_url, urllib.parse.urlencode(verification_params)
+        )
         return verification_url
 
     @staticmethod
@@ -242,7 +259,9 @@ async def login_required(
 
 
 async def login_required_optional(
-    Authorization: Optional[str] = Security(APIKeyHeader(name="Authorization", auto_error=False)),
+    Authorization: Optional[str] = Security(
+        APIKeyHeader(name="Authorization", auto_error=False)
+    ),
 ):
     if not Authorization:
         return None

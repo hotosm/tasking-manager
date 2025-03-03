@@ -2,7 +2,10 @@ from databases import Database
 from sqlalchemy import Boolean, Column, Integer, String, delete, insert, select, update
 
 from backend.db import Base
-from backend.models.dtos.mapping_issues_dto import MappingIssueCategoriesDTO, MappingIssueCategoryDTO
+from backend.models.dtos.mapping_issues_dto import (
+    MappingIssueCategoriesDTO,
+    MappingIssueCategoryDTO,
+)
 
 
 class MappingIssueCategory(Base):
@@ -20,7 +23,9 @@ class MappingIssueCategory(Base):
     @staticmethod
     async def get_by_id(category_id: int, db: Database):
         """Get category by id"""
-        query = select(MappingIssueCategory).where(MappingIssueCategory.id == category_id)
+        query = select(MappingIssueCategory).where(
+            MappingIssueCategory.id == category_id
+        )
         return await db.fetch_one(query)
 
     @classmethod
@@ -48,13 +53,17 @@ class MappingIssueCategory(Base):
             .where(
                 MappingIssueCategory.id == self.id,
             )
-            .values(name=self.name, description=self.description, archived=self.archived)
+            .values(
+                name=self.name, description=self.description, archived=self.archived
+            )
         )
         await db.execute(query)
 
     async def delete(self, db: Database):
         """Deletes the current model from the DB"""
-        query = delete(MappingIssueCategory.__table__).where(MappingIssueCategory.id == self.id)
+        query = delete(MappingIssueCategory.__table__).where(
+            MappingIssueCategory.id == self.id
+        )
         await db.execute(query)
 
     @staticmethod

@@ -38,7 +38,9 @@ class TestProject(BaseTestCase):
         # Arrange
         draft_project_dto = DraftProjectDTO(return_canned_draft_project_json())
         test_user = create_canned_user()  # Create user to assign as author of project
-        test_org = create_canned_organisation()  # Create org with id "23" which is specified on draft project dto
+        test_org = (
+            create_canned_organisation()
+        )  # Create org with id "23" which is specified on draft project dto
         draft_project_dto.user_id = test_user.id
         draft_project_dto.organisation = test_org
         draft_project = Project()
@@ -61,5 +63,7 @@ class TestProject(BaseTestCase):
         # Act
         test_project.set_country_info()
         # Assert
-        self.assertNotEqual(0, len(test_project.country), "Nominatim may have given a bad response")
+        self.assertNotEqual(
+            0, len(test_project.country), "Nominatim may have given a bad response"
+        )
         self.assertEqual(["United Kingdom"], test_project.country)
