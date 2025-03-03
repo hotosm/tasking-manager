@@ -1,17 +1,11 @@
 from unittest.mock import patch
 
-from tests.backend.base import BaseTestCase
 from backend.models.postgis.message import Message
-from backend.services.users.user_service import (
-    UserService,
-    MappingLevel,
-    User,
-    OSMService,
-    UserOSMDTO,
-)
+from backend.services.users.user_service import MappingLevel, OSMService, User, UserOSMDTO, UserService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    create_canned_user,
     create_canned_project,
+    create_canned_user,
     get_canned_user,
     return_canned_user,
 )
@@ -38,9 +32,7 @@ class TestUserService(BaseTestCase):
             self.test_user = create_canned_user()
 
         # Act
-        user = UserService.set_user_mapping_level(
-            self.test_user.username, MappingLevel.ADVANCED.name
-        )
+        user = UserService.set_user_mapping_level(self.test_user.username, MappingLevel.ADVANCED.name)
 
         # Assert
         self.assertEqual(MappingLevel(user.mapping_level), MappingLevel.ADVANCED)
@@ -48,9 +40,7 @@ class TestUserService(BaseTestCase):
     @patch.object(User, "create")
     def test_user_can_register_with_correct_mapping_level(self, mock_user):
         # Act
-        test_user = UserService().register_user(
-            12, "Thinkwhere", 300, "some_picture_url", None
-        )
+        test_user = UserService().register_user(12, "Thinkwhere", 300, "some_picture_url", None)
 
         # Assert
         self.assertEqual(test_user.mapping_level, MappingLevel.INTERMEDIATE.value)
@@ -59,9 +49,7 @@ class TestUserService(BaseTestCase):
     @patch.object(User, "save")
     @patch.object(OSMService, "get_osm_details_for_user")
     @patch.object(UserService, "get_user_by_id")
-    def test_mapper_level_updates_correctly(
-        self, mock_user, mock_osm, mock_save, mock_message
-    ):
+    def test_mapper_level_updates_correctly(self, mock_user, mock_osm, mock_save, mock_message):
         # Arrange
         test_user = User()
         test_user.username = "Test User"

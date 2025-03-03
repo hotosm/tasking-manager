@@ -1,12 +1,6 @@
-from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import (
-    create_canned_user,
-    generate_encoded_token,
-    create_canned_license,
-)
-
 from backend.exceptions import get_message_from_sub_code
-
+from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import create_canned_license, create_canned_user, generate_encoded_token
 
 LICENSE_NOT_FOUND_SUB_CODE = "LICENSE_NOT_FOUND"
 LICENSE_NOT_FOUND_MESSAGE = get_message_from_sub_code(LICENSE_NOT_FOUND_SUB_CODE)
@@ -18,9 +12,7 @@ class TestLicensesActionsAcceptAPI(BaseTestCase):
         self.test_user = create_canned_user()
         self.test_user_token = generate_encoded_token(self.test_user.id)
         self.test_license_id = create_canned_license()
-        self.endpoint_url = (
-            f"/api/v2/licenses/{self.test_license_id}/actions/accept-for-me/"
-        )
+        self.endpoint_url = f"/api/v2/licenses/{self.test_license_id}/actions/accept-for-me/"
 
     def test_accept_license_terms_by_unauthenticated_user_fails(self):
         """
@@ -49,9 +41,7 @@ class TestLicensesActionsAcceptAPI(BaseTestCase):
         """
         Test that endpoint returns 200 when authenticated user accepts existing license terms
         """
-        response = self.client.post(
-            self.endpoint_url, headers={"Authorization": self.test_user_token}
-        )
+        response = self.client.post(self.endpoint_url, headers={"Authorization": self.test_user_token})
         response_body = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_body["Success"], "Terms Accepted")

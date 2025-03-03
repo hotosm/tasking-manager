@@ -1,7 +1,9 @@
-from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
-from backend.models.postgis.licenses import License
 from databases import Database
 from fastapi import HTTPException
+
+from backend.exceptions import NotFound
+from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
+from backend.models.postgis.licenses import License
 
 
 class LicenseService:
@@ -23,6 +25,9 @@ class LicenseService:
             WHERE id = :license_id
         """
         license_dto = await db.fetch_one(query, {"license_id": license_id})
+
+        if license_dto is None:
+            raise NotFound(sub_code="LICENSE_NOT_FOUND", license_id=license_id)
         return LicenseDTO(**license_dto)
 
     @staticmethod
@@ -32,9 +37,7 @@ class LicenseService:
         return new_license_id
 
     @staticmethod
-    async def update_license(
-        license_dto: LicenseDTO, license_id: int, db: Database
-    ) -> LicenseDTO:
+    async def update_license(license_dto: LicenseDTO, license_id: int, db: Database) -> LicenseDTO:
         """Create License in DB"""
 
         query = """

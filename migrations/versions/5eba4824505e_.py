@@ -5,9 +5,8 @@ Revises: f86698c827cc
 Create Date: 2019-10-22 14:17:35.925047
 
 """
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "5eba4824505e"
@@ -25,9 +24,7 @@ def upgrade():
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("email"),
     )
-    op.create_index(
-        op.f("ix_users_with_email_id"), "users_with_email", ["id"], unique=False
-    )
+    op.create_index(op.f("ix_users_with_email_id"), "users_with_email", ["id"], unique=False)
     # ### end Alembic commands ###
 
 

@@ -1,16 +1,11 @@
 from unittest.mock import patch
 
-from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import (
-    create_canned_project,
-    generate_encoded_token,
-    return_canned_user,
-)
 from backend.exceptions import NotFound, get_message_from_sub_code
 from backend.models.postgis.statuses import UserRole
-from backend.services.messaging.chat_service import ChatService, ChatMessageDTO
+from backend.services.messaging.chat_service import ChatMessageDTO, ChatService
 from backend.services.messaging.message_service import MessageService
-
+from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import create_canned_project, generate_encoded_token, return_canned_user
 
 TEST_MESSAGE = "Test comment"
 PROJECT_NOT_FOUND_SUB_CODE = "PROJECT_NOT_FOUND"
@@ -135,9 +130,7 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
         self.test_user.create()
         self.test_user_token = generate_encoded_token(self.test_user.id)
         self.test_comment = self.create_project_chat(self.test_author)
-        self.endpoint_url = (
-            f"/api/v2/projects/{self.test_project.id}/comments/{self.test_comment.id}/"
-        )
+        self.endpoint_url = f"/api/v2/projects/{self.test_project.id}/comments/{self.test_comment.id}/"
         self.non_existent_url = f"/api/v2/projects/{self.test_project.id}/comments/100/"
 
     def create_project_chat(self, user):
@@ -153,9 +146,7 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
         chat_dto.project_id = self.test_project.id
         chat_dto.timestamp = "2022-06-30T05:45:06.198755Z"
         chat_dto.username = user.username
-        comments = ChatService.post_message(
-            chat_dto, self.test_project.id, self.test_author.id
-        )
+        comments = ChatService.post_message(chat_dto, self.test_project.id, self.test_author.id)
         return comments.chat[0]
 
     # delete
@@ -171,9 +162,7 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
     def test_delete_non_existent_comment_fails(self):
         """Test that endpoint returns 404 when deleting a non-existent comment"""
         # Act
-        response = self.client.delete(
-            self.non_existent_url, headers={"Authorization": self.test_author_token}
-        )
+        response = self.client.delete(self.non_existent_url, headers={"Authorization": self.test_author_token})
         response_body = response.get_json()
         error_details = response_body["error"]
         # Assert
@@ -187,9 +176,7 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
         by a user who is not allowed i.e. not the comment author or PM.
         """
         # Act
-        response = self.client.delete(
-            self.endpoint_url, headers={"Authorization": self.test_user_token}
-        )
+        response = self.client.delete(self.endpoint_url, headers={"Authorization": self.test_user_token})
         # Assert
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
@@ -201,13 +188,9 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
         # Arrange
         # Let's create a comment by the test user and delete it using the test user
         test_comment = self.create_project_chat(self.test_user)
-        endpoint_url = (
-            f"/api/v2/projects/{self.test_project.id}/comments/{test_comment.id}/"
-        )
+        endpoint_url = f"/api/v2/projects/{self.test_project.id}/comments/{test_comment.id}/"
         # Act
-        response = self.client.delete(
-            endpoint_url, headers={"Authorization": self.test_user_token}
-        )
+        response = self.client.delete(endpoint_url, headers={"Authorization": self.test_user_token})
         response_body = response.get_json()
         # Assert
         self.assertEqual(response.status_code, 200)
@@ -220,13 +203,9 @@ class TestCommentsProjectsRestAPI(BaseTestCase):
         # Arrange
         # Let's create a comment by the test user and delete it using the test author
         test_comment = self.create_project_chat(self.test_user)
-        endpoint_url = (
-            f"/api/v2/projects/{self.test_project.id}/comments/{test_comment.id}/"
-        )
+        endpoint_url = f"/api/v2/projects/{self.test_project.id}/comments/{test_comment.id}/"
         # Act
-        response = self.client.delete(
-            endpoint_url, headers={"Authorization": self.test_author_token}
-        )
+        response = self.client.delete(endpoint_url, headers={"Authorization": self.test_author_token})
         response_body = response.get_json()
         # Assert
         self.assertEqual(response.status_code, 200)

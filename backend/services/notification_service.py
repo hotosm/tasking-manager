@@ -1,7 +1,8 @@
+from databases import Database
+
+from backend.exceptions import NotFound
 from backend.models.postgis.notification import Notification
 from backend.models.postgis.utils import timestamp
-from backend.exceptions import NotFound
-from databases import Database
 
 
 class NotificationService:
@@ -22,9 +23,7 @@ class NotificationService:
                 SET date = :timestamp
                 WHERE user_id = :user_id
             """
-            await db.execute(
-                update_query, {"user_id": user_id, "timestamp": timestamp()}
-            )
+            await db.execute(update_query, {"user_id": user_id, "timestamp": timestamp()})
 
             return notifications["unread_count"]
 

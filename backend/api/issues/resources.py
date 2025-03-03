@@ -18,9 +18,8 @@ router = APIRouter(
 ISSUE_NOT_FOUND = "Mapping-issue category not found"
 
 
-# class IssuesRestAPI(Resource):
 @router.get("/issues/categories/{category_id}/")
-async def get(category_id: int, db: Database = Depends(get_db)):
+async def get_issue(category_id: int, db: Database = Depends(get_db)):
     """
     Get specified mapping-issue category
     ---
@@ -43,14 +42,12 @@ async def get(category_id: int, db: Database = Depends(get_db)):
         500:
             description: Internal Server Error
     """
-    category_dto = await MappingIssueCategoryService.get_mapping_issue_category_as_dto(
-        category_id, db
-    )
+    category_dto = await MappingIssueCategoryService.get_mapping_issue_category_as_dto(category_id, db)
     return category_dto.model_dump(by_alias=True)
 
 
 @router.patch("/issues/categories/{category_id}/")
-async def patch(
+async def patch_issue(
     request: Request,
     category_id: int,
     user: AuthUserDTO = Depends(pm_only),
@@ -112,14 +109,12 @@ async def patch(
             status_code=400,
         )
 
-    updated_category = await MappingIssueCategoryService.update_mapping_issue_category(
-        category_dto, db
-    )
+    updated_category = await MappingIssueCategoryService.update_mapping_issue_category(category_dto, db)
     return updated_category.model_dump(by_alias=True)
 
 
 @router.delete("/issues/categories/{category_id}/")
-async def delete(
+async def delete_issue(
     request: Request,
     category_id: int,
     user: AuthUserDTO = Depends(pm_only),
@@ -159,13 +154,11 @@ async def delete(
             description: Internal Server Error
     """
     await MappingIssueCategoryService.delete_mapping_issue_category(category_id, db)
-    return JSONResponse(
-        content={"Success": "Mapping-issue category deleted"}, status_code=200
-    )
+    return JSONResponse(content={"Success": "Mapping-issue category deleted"}, status_code=200)
 
 
 @router.get("/issues/categories/")
-async def get(request: Request, db: Database = Depends(get_db)):
+async def get_issues_categories(request: Request, db: Database = Depends(get_db)):
     """
     Gets all mapping issue categories
     ---
@@ -186,14 +179,12 @@ async def get(request: Request, db: Database = Depends(get_db)):
             description: Internal Server Error
     """
     include_archived = request.query_params.get("includeArchived") == "true"
-    categories = await MappingIssueCategoryService.get_all_mapping_issue_categories(
-        include_archived, db
-    )
+    categories = await MappingIssueCategoryService.get_all_mapping_issue_categories(include_archived, db)
     return categories.model_dump(by_alias=True)
 
 
 @router.post("/issues/categories/", response_model=MappingIssueCategoryDTO)
-async def post(
+async def post_issues_categories(
     request: Request,
     user: AuthUserDTO = Depends(pm_only),
     db: Database = Depends(get_db),
@@ -246,7 +237,5 @@ async def post(
             status_code=400,
         )
 
-    new_category_id = await MappingIssueCategoryService.create_mapping_issue_category(
-        category_dto, db
-    )
+    new_category_id = await MappingIssueCategoryService.create_mapping_issue_category(category_dto, db)
     return JSONResponse(content={"categoryId": new_category_id}, status_code=200)

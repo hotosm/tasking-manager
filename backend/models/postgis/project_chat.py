@@ -6,12 +6,7 @@ from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from backend.db import Base
-from backend.models.dtos.message_dto import (
-    ChatMessageDTO,
-    ListChatMessageDTO,
-    Pagination,
-    ProjectChatDTO,
-)
+from backend.models.dtos.message_dto import ChatMessageDTO, ListChatMessageDTO, Pagination, ProjectChatDTO
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import timestamp
 
@@ -94,9 +89,7 @@ class ProjectChat(Base):
         )
 
     @staticmethod
-    async def get_messages(
-        project_id: int, db: Database, page: int, per_page: int = 20
-    ) -> ProjectChatDTO:
+    async def get_messages(project_id: int, db: Database, page: int, per_page: int = 20) -> ProjectChatDTO:
         """Get all messages on the project"""
 
         offset = (page - 1) * per_page
@@ -136,8 +129,6 @@ class ProjectChat(Base):
             )
             dto.chat.append(chat_dto)
 
-        dto.pagination = Pagination.from_total_count(
-            page=page, per_page=per_page, total=total_count
-        )
+        dto.pagination = Pagination.from_total_count(page=page, per_page=per_page, total=total_count)
 
         return dto

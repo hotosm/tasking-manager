@@ -1,14 +1,5 @@
 from databases import Database
-from sqlalchemy import (
-    BigInteger,
-    Column,
-    DateTime,
-    ForeignKey,
-    String,
-    delete,
-    insert,
-    select,
-)
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, delete, insert, select
 
 from backend.db import Base
 from backend.models.dtos.application_dto import ApplicationDTO, ApplicationsDTO
@@ -37,9 +28,7 @@ class Application(Base):
         application = Application()
         application.app_key = self.generate_application_key(user_id)
         application.user = user_id
-        query = insert(Application.__table__).values(
-            app_key=application.app_key, user=application.user
-        )
+        query = insert(Application.__table__).values(app_key=application.app_key, user=application.user)
         await db.execute(query)
         return application
 

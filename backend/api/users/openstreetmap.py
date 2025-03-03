@@ -15,7 +15,7 @@ router = APIRouter(
 
 
 @router.get("/{username}/openstreetmap/")
-async def get(
+async def get_osm_details(
     request: Request,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),

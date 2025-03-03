@@ -1,9 +1,10 @@
 import io
+import json
 from distutils.util import strtobool
 
 from databases import Database
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import Response, JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 from loguru import logger
 from starlette.authentication import requires
 
@@ -17,7 +18,6 @@ from backend.services.project_service import ProjectService, ProjectServiceError
 from backend.services.users.authentication_service import tm
 from backend.services.users.user_service import UserService
 from backend.services.validator_service import ValidatorService
-import json
 
 router = APIRouter(
     prefix="/projects",
@@ -27,9 +27,7 @@ router = APIRouter(
 
 
 @router.get("/{project_id}/tasks/{task_id}/")
-async def get(
-    request: Request, project_id: int, task_id: int, db: Database = Depends(get_db)
-):
+async def retrieve_task(request: Request, project_id: int, task_id: int, db: Database = Depends(get_db)):
     """
     Get a task's metadata
     ---
@@ -65,9 +63,7 @@ async def get(
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
-    task = await MappingService.get_task_as_dto(
-        task_id, project_id, db, preferred_locale
-    )
+    task = await MappingService.get_task_as_dto(task_id, project_id, db, preferred_locale)
     return task
 
 
@@ -108,16 +104,8 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             description: Internal Server Error
     """
     try:
-        tasks = (
-            request.query_params.get("tasks")
-            if request.query_params.get("tasks")
-            else None
-        )
-        as_file = (
-            strtobool(request.query_params.get("as_file"))
-            if request.query_params.get("as_file")
-            else False
-        )
+        tasks = request.query_params.get("tasks") if request.query_params.get("tasks") else None
+        as_file = strtobool(request.query_params.get("as_file")) if request.query_params.get("as_file") else False
 
         tasks_json = await ProjectService.get_project_tasks(db, int(project_id), tasks)
         if as_file:
@@ -129,9 +117,7 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             return StreamingResponse(
                 file_bytes,
                 media_type="application/geo+json",
-                headers={
-                    "Content-Disposition": f'attachment; filename="{project_id}-tasks.geojson"'
-                },
+                headers={"Content-Disposition": f'attachment; filename="{project_id}-tasks.geojson"'},
             )
 
         return tasks_json
@@ -210,7 +196,7 @@ async def delete(request: Request, project_id):
 
 
 @router.get("/{project_id}/tasks/queries/xml/")
-async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def get_tasks_xml(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get all tasks for a project as OSM XML
     ---
@@ -246,11 +232,7 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             description: Internal Server Error
     """
     tasks = request.query_params.get("tasks")
-    as_file = (
-        strtobool(request.query_params.get("as_file"))
-        if request.query_params.get("as_file")
-        else False
-    )
+    as_file = strtobool(request.query_params.get("as_file")) if request.query_params.get("as_file") else False
 
     xml = await MappingService.generate_osm_xml(project_id, tasks, db)
 
@@ -258,16 +240,14 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
         return StreamingResponse(
             io.BytesIO(xml),
             media_type="text/xml",
-            headers={
-                "Content-Disposition": f"attachment; filename=HOT-project-{project_id}.osm"
-            },
+            headers={"Content-Disposition": f"attachment; filename=HOT-project-{project_id}.osm"},
         )
 
     return Response(content=xml, media_type="text/xml", status_code=200)
 
 
 @router.get("/{project_id}/tasks/queries/gpx/")
-async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def get_tasks_gpx(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get all tasks for a project as GPX
     ---
@@ -303,11 +283,7 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             description: Internal Server Error
     """
     tasks = request.query_params.get("tasks")
-    as_file = (
-        strtobool(request.query_params.get("as_file"))
-        if request.query_params.get("as_file")
-        else False
-    )
+    as_file = strtobool(request.query_params.get("as_file")) if request.query_params.get("as_file") else False
 
     xml = await MappingService.generate_gpx(project_id, tasks, db)
 
@@ -315,9 +291,7 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
         return StreamingResponse(
             io.BytesIO(xml),
             media_type="text/xml",
-            headers={
-                "Content-Disposition": f"attachment; filename=HOT-project-{project_id}.gpx"
-            },
+            headers={"Content-Disposition": f"attachment; filename=HOT-project-{project_id}.gpx"},
         )
 
     return Response(content=xml, media_type="text/xml", status_code=200)
@@ -326,7 +300,7 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
 @router.put("/{project_id}/tasks/queries/aoi/")
 @requires("authenticated")
 @tm.pm_only()
-async def put(request: Request, project_id: int):
+async def tasks_aoi(request: Request, project_id: int):
     """
     Get task tiles intersecting with the aoi provided
     ---
@@ -398,7 +372,7 @@ async def put(request: Request, project_id: int):
 
 
 @router.get("/{project_id}/tasks/queries/mapped/")
-async def get(project_id: int):
+async def get_mapped_tasks(project_id: int, db: Database = Depends(get_db)):
     """
     Get all mapped tasks for a project grouped by username
     ---
@@ -419,14 +393,14 @@ async def get(project_id: int):
         500:
             description: Internal Server Error
     """
-    ProjectService.get_project_by_id(project_id)
-    mapped_tasks = ValidatorService.get_mapped_tasks_by_user(project_id)
-    return mapped_tasks.model_dump(by_alias=True), 200
+    await ProjectService.get_project_by_id(project_id, db)
+    mapped_tasks = await ValidatorService.get_mapped_tasks_by_user(project_id, db)
+    return mapped_tasks.model_dump(by_alias=True)
 
 
 @router.get("/{username}/tasks/queries/own/invalidated/")
 @requires("authenticated")
-async def get(request: Request, username: str):
+async def get_invalidated_tasks(request: Request, username: str):
     """
     Get invalidated tasks either mapped by user or invalidated by user
     ---

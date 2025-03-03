@@ -1,17 +1,7 @@
 from enum import Enum
 
 from databases import Database
-from loguru import logger
-from sqlalchemy import (
-    BigInteger,
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    ForeignKeyConstraint,
-    Integer,
-    String,
-)
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, ForeignKeyConstraint, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import false
 
@@ -31,9 +21,7 @@ class MessageType(Enum):
     BROADCAST = 2  # Broadcast message from a project manager
     MENTION_NOTIFICATION = 3  # Notification that user was mentioned in a comment/chat
     VALIDATION_NOTIFICATION = 4  # Notification that user's mapped task was validated
-    INVALIDATION_NOTIFICATION = (
-        5  # Notification that user's mapped task was invalidated
-    )
+    INVALIDATION_NOTIFICATION = 5  # Notification that user's mapped task was invalidated
     REQUEST_TEAM_NOTIFICATION = 6
     INVITATION_NOTIFICATION = 7
     TASK_COMMENT_NOTIFICATION = 8
@@ -47,11 +35,7 @@ class Message(Base):
 
     __tablename__ = "messages"
 
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["task_id", "project_id"], ["tasks.id", "tasks.project_id"]
-        ),
-    )
+    __table_args__ = (ForeignKeyConstraint(["task_id", "project_id"], ["tasks.id", "tasks.project_id"]),)
 
     id = Column(Integer, primary_key=True)
     message = Column(String)
@@ -111,11 +95,6 @@ class Message(Base):
             dto.display_picture_url = self.from_user.picture_url
 
         return dto
-
-    async def add_message(self, db: Database):
-        """Add message into current transaction - DO NOT COMMIT HERE AS MESSAGES ARE PART OF LARGER TRANSACTIONS"""
-        logger.debug("Adding message to session")
-        session.add(self)
 
     async def save(self, db: Database):
         """Save"""
@@ -182,9 +161,7 @@ class Message(Base):
     @staticmethod
     def get_unread_message_count(user_id: int):
         """Get count of unread messages for user"""
-        return Message.query.filter(
-            Message.to_user_id == user_id, Message.read == false()
-        ).count()
+        return Message.query.filter(Message.to_user_id == user_id, Message.read == false()).count()
 
     @staticmethod
     def get_all_messages(user_id: int) -> MessagesDTO:
@@ -213,9 +190,7 @@ class Message(Base):
         await db.execute(delete_query, {"user_id": user_id, "message_ids": message_ids})
 
     @staticmethod
-    async def delete_all_messages(
-        user_id: int, db: Database, message_type_filters: list = None
-    ):
+    async def delete_all_messages(user_id: int, db: Database, message_type_filters: list = None):
         """Deletes all messages to the user
         -----------------------------------
         :param user_id: user id of the user whose messages are to be deleted
@@ -234,9 +209,7 @@ class Message(Base):
         await db.execute(delete_query, params)
 
     @staticmethod
-    async def mark_multiple_messages_read(
-        message_ids: list, user_id: int, db: Database
-    ):
+    async def mark_multiple_messages_read(message_ids: list, user_id: int, db: Database):
         """Marks the specified messages as read
         ----------------------------------------
         :param message_ids: list of message ids to mark as read
@@ -252,9 +225,7 @@ class Message(Base):
             await db.execute(query, {"user_id": user_id, "message_ids": message_ids})
 
     @staticmethod
-    async def mark_all_messages_read(
-        user_id: int, db: Database, message_type_filters: list = None
-    ):
+    async def mark_all_messages_read(user_id: int, db: Database, message_type_filters: list = None):
         """Marks all messages as read
         ----------------------------------------
         :param user_id: user id of the user who is marking the messages as read

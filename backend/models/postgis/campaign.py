@@ -3,7 +3,6 @@ from sqlalchemy import Column, ForeignKey, Integer, String, Table, UniqueConstra
 from backend.db import Base
 from backend.models.dtos.campaign_dto import CampaignDTO, CampaignListDTO
 
-
 campaign_projects = Table(
     "campaign_projects",
     Base.metadata,
@@ -16,9 +15,7 @@ campaign_organisations = Table(
     Base.metadata,
     Column("campaign_id", Integer, ForeignKey("campaigns.id")),
     Column("organisation_id", Integer, ForeignKey("organisations.id")),
-    UniqueConstraint(
-        "campaign_id", "organisation_id", name="campaign_organisation_key"
-    ),
+    UniqueConstraint("campaign_id", "organisation_id", name="campaign_organisation_key"),
 )
 
 

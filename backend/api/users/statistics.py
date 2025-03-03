@@ -22,7 +22,7 @@ router = APIRouter(
 
 
 @router.get("/{username}/statistics/")
-async def get(
+async def get_user_stats(
     request: Request,
     username: str,
     user: AuthUserDTO = Depends(login_required),
@@ -63,7 +63,7 @@ async def get(
 
 
 @router.get("/{user_id}/statistics/interests/")
-async def get(
+async def get_user_interests_statistics(
     user_id: int,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
@@ -100,7 +100,7 @@ async def get(
 
 
 @router.get("/statistics/")
-async def get(
+async def get_period_user_stats(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -156,13 +156,9 @@ async def get(
         else:
             end_date: str = date.today()
         if end_date < start_date:
-            raise ValueError(
-                "InvalidDateRange- Start date must be earlier than end date"
-            )
+            raise ValueError("InvalidDateRange- Start date must be earlier than end date")
         if (end_date - start_date) > timedelta(days=366 * 3):
-            raise ValueError(
-                "InvalidDateRange- Date range can not be bigger than 1 year"
-            )
+            raise ValueError("InvalidDateRange- Date range can not be bigger than 1 year")
 
         stats = await StatsService.get_all_users_statistics(start_date, end_date, db)
         return stats.model_dump(by_alias=True)
@@ -174,7 +170,7 @@ async def get(
 
 
 @router.get("/statistics/ohsome/")
-async def get(request: Request, user: AuthUserDTO = Depends(login_required)):
+async def get_ohsome_stats(request: Request, user: AuthUserDTO = Depends(login_required)):
     """
     Get HomePage Stats
     ---
@@ -212,6 +208,4 @@ async def get(request: Request, user: AuthUserDTO = Depends(login_required)):
         response = requests.get(url, headers=headers)
         return response.json()
     except Exception as e:
-        return JSONResponse(
-            content={"Error": str(e), "SubCode": "Error fetching data"}, status_code=400
-        )
+        return JSONResponse(content={"Error": str(e), "SubCode": "Error fetching data"}, status_code=400)

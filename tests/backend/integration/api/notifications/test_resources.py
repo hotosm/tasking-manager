@@ -1,17 +1,16 @@
 from datetime import datetime, timedelta
 
-from tests.backend.base import BaseTestCase
+from backend.exceptions import get_message_from_sub_code
 from backend.models.postgis.message import MessageType
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    create_canned_user,
-    generate_encoded_token,
-    return_canned_user,
     create_canned_message,
     create_canned_notification,
     create_canned_project,
+    create_canned_user,
+    generate_encoded_token,
+    return_canned_user,
 )
-
-from backend.exceptions import get_message_from_sub_code
 
 TEST_SUBJECT = "Test subject"
 TEST_MESSAGE = "This is a test message"
@@ -24,9 +23,7 @@ OLDER_TEST_MESSAGE = "This is an older test message"
 class TestNotificationsRestAPI(BaseTestCase):
     def setUp(self):
         super().setUp()
-        self.test_message = create_canned_message(
-            subject=TEST_SUBJECT, message=TEST_MESSAGE
-        )
+        self.test_message = create_canned_message(subject=TEST_SUBJECT, message=TEST_MESSAGE)
         self.test_sender = create_canned_user()
         self.test_receiver = return_canned_user("Test user", 11111)
         self.test_receiver.create()
@@ -364,9 +361,7 @@ class TestNotificationsAllAPI(BaseTestCase):
         # 2nd message
         self.assertEqual(user_messages[1]["subject"], OLDER_TEST_SUBJECT)
         self.assertEqual(user_messages[1]["message"], OLDER_TEST_MESSAGE)
-        self.assertEqual(
-            user_messages[1]["messageType"], MessageType.MENTION_NOTIFICATION.name
-        )
+        self.assertEqual(user_messages[1]["messageType"], MessageType.MENTION_NOTIFICATION.name)
 
         # ?sortDirection
         # ?sortDirection=desc - Descending order
@@ -387,9 +382,7 @@ class TestNotificationsAllAPI(BaseTestCase):
         # 2nd message
         self.assertEqual(user_messages[1]["subject"], OLDER_TEST_SUBJECT)
         self.assertEqual(user_messages[1]["message"], OLDER_TEST_MESSAGE)
-        self.assertEqual(
-            user_messages[1]["messageType"], MessageType.MENTION_NOTIFICATION.name
-        )
+        self.assertEqual(user_messages[1]["messageType"], MessageType.MENTION_NOTIFICATION.name)
 
         # ?sortDirection=asc - Ascending order
         # ACT
@@ -405,9 +398,7 @@ class TestNotificationsAllAPI(BaseTestCase):
         # 1st message
         self.assertEqual(user_messages[0]["subject"], OLDER_TEST_SUBJECT)
         self.assertEqual(user_messages[0]["message"], OLDER_TEST_MESSAGE)
-        self.assertEqual(
-            user_messages[0]["messageType"], MessageType.MENTION_NOTIFICATION.name
-        )
+        self.assertEqual(user_messages[0]["messageType"], MessageType.MENTION_NOTIFICATION.name)
         # 2nd message
         self.assertEqual(user_messages[1]["subject"], TEST_SUBJECT)
         self.assertEqual(user_messages[1]["message"], TEST_MESSAGE)
@@ -420,9 +411,7 @@ class TestNotificationsQueriesCountUnreadAPI(BaseTestCase):
         self.test_user = create_canned_user()
         self.test_user_token = generate_encoded_token(self.test_user.id)
         self.url = "/api/v2/notifications/queries/own/count-unread/"
-        self.test_message = create_canned_message(
-            subject=TEST_SUBJECT, message=TEST_MESSAGE
-        )
+        self.test_message = create_canned_message(subject=TEST_SUBJECT, message=TEST_MESSAGE)
         self.test_message.to_user_id = self.test_user.id
 
     def test_get_unread_count_returns_401(self):
@@ -470,9 +459,7 @@ class TestNotificationsQueriesPostUnreadAPI(BaseTestCase):
         """
         Test that endpoint returns 200 after updating an authenticated user's unread count
         """
-        response = self.client.post(
-            self.url, headers={"Authorization": self.test_user_token}
-        )
+        response = self.client.post(self.url, headers={"Authorization": self.test_user_token})
         response_body = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_body, 1)

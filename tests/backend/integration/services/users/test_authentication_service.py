@@ -1,24 +1,21 @@
-from unittest.mock import patch
 import base64
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
-from itsdangerous import URLSafeTimedSerializer
-from flask import current_app
 
-from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import (
-    get_canned_osm_user_details,
-    return_canned_user,
-    TEST_USERNAME,
-)
+from flask import current_app
+from itsdangerous import URLSafeTimedSerializer
+
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.users.authentication_service import (
     AuthenticationService,
-    UserService,
+    AuthServiceError,
     MessageService,
     NotFound,
+    UserService,
     verify_token,
-    AuthServiceError,
 )
+from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import TEST_USERNAME, get_canned_osm_user_details, return_canned_user
 
 TEST_USER_EMAIL = "thinkwheretest@test.com"
 
@@ -45,9 +42,7 @@ class TestAuthenticationService(BaseTestCase):
     @patch.object(MessageService, "send_welcome_message")
     @patch.object(UserService, "register_user")
     @patch.object(UserService, "get_user_by_id")
-    def test_if_login_user_calls_user_create_if_user_not_found(
-        self, mock_user_get, mock_user_register, mock_message
-    ):
+    def test_if_login_user_calls_user_create_if_user_not_found(self, mock_user_get, mock_user_register, mock_message):
         # Arrange
         osm_response = get_canned_osm_user_details()
         mock_user_get.side_effect = NotFound()
@@ -61,9 +56,7 @@ class TestAuthenticationService(BaseTestCase):
     @patch.object(MessageService, "send_welcome_message")
     @patch.object(UserService, "register_user")
     @patch.object(UserService, "get_user_by_id")
-    def test_if_login_user_calls_send_welcome_if_user_not_found(
-        self, mock_user_get, mock_user_register, mock_message
-    ):
+    def test_if_login_user_calls_send_welcome_if_user_not_found(self, mock_user_get, mock_user_register, mock_message):
         # Arrange
         osm_response = get_canned_osm_user_details()
         mock_user_get.side_effect = NotFound()
@@ -78,9 +71,7 @@ class TestAuthenticationService(BaseTestCase):
 
     @patch.object(UserService, "update_user")
     @patch.object(UserService, "get_user_by_id")
-    def test_if_login_user_calls_user_update_if_user_found(
-        self, mock_user_get, mock_user_update
-    ):
+    def test_if_login_user_calls_user_update_if_user_found(self, mock_user_get, mock_user_update):
         # Arrange
         osm_response = get_canned_osm_user_details()
         osm_response["user"]["id"] = 12345678
@@ -106,14 +97,10 @@ class TestAuthenticationService(BaseTestCase):
         self.assertIn("picture", user_params)
 
     @patch.object(UserService, "get_user_by_username")
-    def test_authenticate_email_token_raises_error_when_unable_to_find_user(
-        self, mock_user_get
-    ):
+    def test_authenticate_email_token_raises_error_when_unable_to_find_user(self, mock_user_get):
         # Arrange
         mock_user_get.side_effect = NotFound
-        email_auth_url = SMTPService._generate_email_verification_url(
-            TEST_USER_EMAIL, TEST_USERNAME
-        )
+        email_auth_url = SMTPService._generate_email_verification_url(TEST_USER_EMAIL, TEST_USERNAME)
         parsed_url = urlparse(email_auth_url)
         token = parse_qs(parsed_url.query)["token"][0]
         # Act/Assert
@@ -153,9 +140,7 @@ class TestAuthenticationService(BaseTestCase):
         )
 
     @patch.object(UserService, "get_user_by_username")
-    def test_authenticate_email_token_raises_error_if_email_not_matched(
-        self, mock_user_get
-    ):
+    def test_authenticate_email_token_raises_error_if_email_not_matched(self, mock_user_get):
         # Arrange
         mock_user_get.return_value = return_canned_user()
         mock_user_get.return_value.email_address = "thinkwheretest2@test.com"

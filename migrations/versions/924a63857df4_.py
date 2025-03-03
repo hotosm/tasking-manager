@@ -5,9 +5,8 @@ Revises: 8a6419f289aa
 Create Date: 2022-04-28 13:32:15.595148
 
 """
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "924a63857df4"
@@ -22,9 +21,7 @@ def upgrade():
         "users",
         sa.Column("projects_comments_notifications", sa.Boolean(), nullable=True),
     )
-    op.add_column(
-        "users", sa.Column("tasks_comments_notifications", sa.Boolean(), nullable=True)
-    )
+    op.add_column("users", sa.Column("tasks_comments_notifications", sa.Boolean(), nullable=True))
     op.drop_column("users", "comments_notifications")
     op.execute("UPDATE users SET projects_comments_notifications = false")
     op.alter_column("users", "projects_comments_notifications", nullable=False)

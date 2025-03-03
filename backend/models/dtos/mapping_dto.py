@@ -91,20 +91,12 @@ class TaskDTO(BaseModel):
     task_id: Optional[int] = Field(None, alias="taskId")
     project_id: Optional[int] = Field(None, alias="projectId")
     task_status: Optional[str] = Field(None, alias="taskStatus")
-    lock_holder: Optional[str] = Field(
-        None, alias="lockHolder", serialize_when_none=False
-    )
+    lock_holder: Optional[str] = Field(None, alias="lockHolder", serialize_when_none=False)
     task_history: Optional[List[TaskHistoryDTO]] = Field(None, alias="taskHistory")
-    task_annotations: Optional[List[TaskAnnotationDTO]] = Field(
-        None, alias="taskAnnotation"
-    )
-    per_task_instructions: Optional[str] = Field(
-        None, alias="perTaskInstructions", serialize_when_none=False
-    )
+    task_annotations: Optional[List[TaskAnnotationDTO]] = Field(None, alias="taskAnnotation")
+    per_task_instructions: Optional[str] = Field(None, alias="perTaskInstructions", serialize_when_none=False)
     auto_unlock_seconds: Optional[int] = Field(None, alias="autoUnlockSeconds")
-    last_updated: Optional[datetime] = Field(
-        None, alias="lastUpdated", serialize_when_none=False
-    )
+    last_updated: Optional[datetime] = Field(None, alias="lastUpdated", serialize_when_none=False)
     comments_number: Optional[int] = Field(None, alias="numberOfComments")
 
     class Config:

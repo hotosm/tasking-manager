@@ -4,7 +4,7 @@ from typing import List
 
 import geojson
 import pandas as pd
-from aiocache import cached, Cache
+from aiocache import Cache, cached
 from databases import Database
 from fastapi import HTTPException
 from geoalchemy2 import shape
@@ -138,9 +138,7 @@ class ProjectSearchService:
                 JOIN team_members tm ON tm.team_id = t.id
                 WHERE tm.user_id = :user_id
                 """
-                team_projects = await db.fetch_all(
-                    team_projects_query, {"user_id": user.id}
-                )
+                team_projects = await db.fetch_all(team_projects_query, {"user_id": user.id})
                 # Fetch project_ids for user's organisations
                 org_projects_query = """
                 SELECT p.id
@@ -149,17 +147,10 @@ class ProjectSearchService:
                 JOIN organisation_managers om ON om.organisation_id = o.id
                 WHERE om.user_id = :user_id
                 """
-                org_projects = await db.fetch_all(
-                    org_projects_query, {"user_id": user.id}
-                )
+                org_projects = await db.fetch_all(org_projects_query, {"user_id": user.id})
 
                 # Combine and deduplicate project IDs
-                project_ids = tuple(
-                    set(
-                        [row["id"] for row in team_projects]
-                        + [row["id"] for row in org_projects]
-                    )
-                )
+                project_ids = tuple(set([row["id"] for row in team_projects] + [row["id"] for row in org_projects]))
                 if project_ids:
                     filters.append("p.private = :private OR p.id = ANY(:project_ids)")
                     params["private"] = False
@@ -173,9 +164,7 @@ class ProjectSearchService:
         return query, params
 
     @staticmethod
-    async def create_result_dto(
-        project, preferred_locale, total_contributors, db: Database
-    ):
+    async def create_result_dto(project, preferred_locale, total_contributors, db: Database):
         project_info_dto = await ProjectInfo.get_dto_for_locale(
             db, project.id, preferred_locale, project.default_locale
         )
@@ -214,9 +203,7 @@ class ProjectSearchService:
         return list_dto
 
     @staticmethod
-    async def get_total_contributions(
-        project_ids: List[int], db: Database
-    ) -> List[int]:
+    async def get_total_contributions(project_ids: List[int], db: Database) -> List[int]:
         """Fetch total contributions for given project IDs."""
         if not project_ids:
             return []
@@ -244,14 +231,10 @@ class ProjectSearchService:
 
     @staticmethod
     @cached(cache=Cache.MEMORY, key_builder=csv_cache_key_builder, ttl=3600)
-    async def search_projects_as_csv(
-        search_dto: ProjectSearchDTO, user, db: Database, as_csv: bool = False
-    ) -> str:
+    async def search_projects_as_csv(search_dto: ProjectSearchDTO, user, db: Database, as_csv: bool = False) -> str:
         if user:
             user = await UserService.get_user_by_id(user, db)
-        all_results = await ProjectSearchService._filter_projects(
-            search_dto, user, db, as_csv
-        )
+        all_results = await ProjectSearchService._filter_projects(search_dto, user, db, as_csv)
         rows = [dict(row) for row in all_results]
         is_user_admin = user is not None and user.role == UserRole.ADMIN.value
         for row in rows:
@@ -259,9 +242,7 @@ class ProjectSearchService:
             row["difficulty"] = ProjectDifficulty(row["difficulty"]).name
             row["status"] = ProjectStatus(row["status"]).name
             row["total_area"] = round(row["total_area"], 3)
-            row["total_contributors"] = await Project.get_project_total_contributions(
-                row["id"], db
-            )
+            row["total_contributors"] = await Project.get_project_total_contributions(row["id"], db)
             row["author"] = row["author_name"] or row["author_username"]
 
             project_name_query = """
@@ -289,9 +270,7 @@ class ProjectSearchService:
                 WHERE pp.project_id = :project_id
                 GROUP BY pp.project_id, p.name
                 """
-                partners_names = await db.fetch_all(
-                    query=query, values={"project_id": row["id"]}
-                )
+                partners_names = await db.fetch_all(query=query, values={"project_id": row["id"]})
                 row["partner_names"] = [record["name"] for record in partners_names]
 
         df = pd.json_normalize(rows)
@@ -325,17 +304,13 @@ class ProjectSearchService:
             axis=1,
         )
         df.rename(columns=colummns_to_rename, inplace=True)
-        cols_order = ["projectId", "name"] + [
-            col for col in df.columns if col not in ["projectId", "name"]
-        ]
+        cols_order = ["projectId", "name"] + [col for col in df.columns if col not in ["projectId", "name"]]
         df = df[cols_order]
         return df.to_csv(index=False)
 
     @staticmethod
     # @cached(cache=Cache.MEMORY, key_builder=cache_key_builder, ttl=300)
-    async def search_projects(
-        search_dto: ProjectSearchDTO, user, db
-    ) -> ProjectSearchResultsDTO:
+    async def search_projects(search_dto: ProjectSearchDTO, user, db) -> ProjectSearchResultsDTO:
         """Searches all projects for matches to the criteria provided by the user"""
         (
             all_results,
@@ -368,20 +343,14 @@ class ProjectSearchService:
                 "priority": ProjectPriority(project.priority).name,
             }
             # centroid = project.centroid
-            feature = geojson.Feature(
-                geometry=geojson.loads(project.centroid), properties=properties
-            )
+            feature = geojson.Feature(geometry=geojson.loads(project.centroid), properties=properties)
             features.append(feature)
         feature_collection = geojson.FeatureCollection(features)
         dto.map_results = feature_collection
         return dto
 
-    async def _filter_projects(
-        search_dto: ProjectSearchDTO, user, db: Database, as_csv: bool = False
-    ):
-        base_query, params = await ProjectSearchService.create_search_query(
-            db, user, as_csv
-        )
+    async def _filter_projects(search_dto: ProjectSearchDTO, user, db: Database, as_csv: bool = False):
+        base_query, params = await ProjectSearchService.create_search_query(db, user, as_csv)
         # Initialize filter list and parameters dictionary
         filters = []
         if search_dto.preferred_locale or search_dto.text_search:
@@ -391,9 +360,7 @@ class ProjectSearchService:
                 params["preferred_locale"] = search_dto.preferred_locale
 
             if search_dto.text_search:
-                search_text = "".join(
-                    char for char in search_dto.text_search if char not in "@|&!><\\():"
-                )
+                search_text = "".join(char for char in search_dto.text_search if char not in "@|&!><\\():")
                 tsquery_search = " & ".join([x for x in search_text.split(" ") if x])
                 ilike_search = f"%{search_text}%"
 
@@ -413,13 +380,13 @@ class ProjectSearchService:
                     FROM project_info
                     WHERE {}
                 )
-                """.format(" AND ".join(subquery_filters))
+                """.format(
+                    " AND ".join(subquery_filters)
+                )
             )
 
         if search_dto.project_statuses:
-            statuses = [
-                ProjectStatus[status].value for status in search_dto.project_statuses
-            ]
+            statuses = [ProjectStatus[status].value for status in search_dto.project_statuses]
             filters.append("p.status = ANY(:statuses)")
             params["statuses"] = tuple(statuses)
         else:
@@ -439,12 +406,8 @@ class ProjectSearchService:
                     FROM user_interests
                     WHERE user_id = :user_id
                 """
-            results = await db.fetch_all(
-                query=user_interest_query, values={"user_id": user.id}
-            )
-            user_interests = (
-                [record["interest_id"] for record in results] if results else []
-            )
+            results = await db.fetch_all(query=user_interest_query, values={"user_id": user.id})
+            user_interests = [record["interest_id"] for record in results] if results else []
             filters.append(
                 "p.id IN (SELECT project_id FROM project_interests WHERE interest_id = ANY(:user_interests))"
             )
@@ -455,9 +418,7 @@ class ProjectSearchService:
             params["created_by"] = search_dto.created_by
 
         if search_dto.mapped_by:
-            mapped_projects = await UserService.get_projects_mapped(
-                search_dto.mapped_by, db
-            )
+            mapped_projects = await UserService.get_projects_mapped(search_dto.mapped_by, db)
             filters.append("p.id = ANY(:mapped_projects)")
             params["mapped_projects"] = tuple(mapped_projects)
 
@@ -480,16 +441,12 @@ class ProjectSearchService:
 
         if search_dto.action and search_dto.action != "any":
             if search_dto.action == "map":
-                mapping_project_ids = await ProjectSearchService.filter_projects_to_map(
-                    user, db
-                )
+                mapping_project_ids = await ProjectSearchService.filter_projects_to_map(user, db)
                 filters.append("p.id = ANY(:mapping_project_ids)")
                 params["mapping_project_ids"] = tuple(mapping_project_ids)
 
             elif search_dto.action == "validate":
-                validation_project_ids = (
-                    await ProjectSearchService.filter_projects_to_validate(user, db)
-                )
+                validation_project_ids = await ProjectSearchService.filter_projects_to_validate(user, db)
                 filters.append("p.id = ANY(:validation_project_ids)")
                 params["validation_project_ids"] = tuple(validation_project_ids)
 
@@ -502,9 +459,7 @@ class ProjectSearchService:
             params["organisation_id"] = int(search_dto.organisation_id)
 
         if search_dto.team_id:
-            filters.append(
-                "p.id IN (SELECT project_id FROM project_teams WHERE team_id = :team_id)"
-            )
+            filters.append("p.id IN (SELECT project_id FROM project_teams WHERE team_id = :team_id)")
             params["team_id"] = int(search_dto.team_id)
 
         if search_dto.campaign:
@@ -520,34 +475,26 @@ class ProjectSearchService:
                     "p.mapping_types @> :mapping_types AND array_length(p.mapping_types, 1) = :mapping_length"
                 )
                 params["mapping_types"] = tuple(
-                    MappingTypes[mapping_type].value
-                    for mapping_type in search_dto.mapping_types
+                    MappingTypes[mapping_type].value for mapping_type in search_dto.mapping_types
                 )
                 params["mapping_length"] = len(search_dto.mapping_types)
             else:
                 filters.append("p.mapping_types && :mapping_types")
                 params["mapping_types"] = tuple(
-                    MappingTypes[mapping_type].value
-                    for mapping_type in search_dto.mapping_types
+                    MappingTypes[mapping_type].value for mapping_type in search_dto.mapping_types
                 )
 
         if search_dto.country:
-            filters.append(
-                "LOWER(:country) = ANY(ARRAY(SELECT LOWER(c) FROM unnest(p.country) AS c))"
-            )
+            filters.append("LOWER(:country) = ANY(ARRAY(SELECT LOWER(c) FROM unnest(p.country) AS c))")
             params["country"] = search_dto.country.lower()
 
         if search_dto.last_updated_gte:
             filters.append("p.last_updated >= :last_updated_gte")
-            params["last_updated_gte"] = validate_date_input(
-                search_dto.last_updated_gte
-            )
+            params["last_updated_gte"] = validate_date_input(search_dto.last_updated_gte)
 
         if search_dto.last_updated_lte:
             filters.append("p.last_updated <= :last_updated_lte")
-            params["last_updated_lte"] = validate_date_input(
-                search_dto.last_updated_lte
-            )
+            params["last_updated_lte"] = validate_date_input(search_dto.last_updated_lte)
 
         if search_dto.created_gte:
             filters.append("p.created >= :created_gte")
@@ -568,9 +515,7 @@ class ProjectSearchService:
 
             if search_dto.partnership_to:
                 partnership_to = validate_date_input(search_dto.partnership_to)
-                partner_conditions.append(
-                    "(pp.ended_on IS NULL OR pp.ended_on >= :partnership_to)"
-                )
+                partner_conditions.append("(pp.ended_on IS NULL OR pp.ended_on >= :partnership_to)")
                 params["partnership_to"] = partnership_to
 
             filters.append(
@@ -580,7 +525,9 @@ class ProjectSearchService:
                     FROM project_partnerships pp
                     WHERE {}
                 )
-                """.format(" AND ".join(partner_conditions))
+                """.format(
+                    " AND ".join(partner_conditions)
+                )
             )
 
         if search_dto.managed_by and user.role != UserRole.ADMIN.value:
@@ -592,9 +539,7 @@ class ProjectSearchService:
             JOIN organisation_managers om ON om.organisation_id = o.id
             WHERE om.user_id = :user_id
             """
-            orgs_projects_ids = await db.fetch_all(
-                org_projects_query, {"user_id": user.id}
-            )
+            orgs_projects_ids = await db.fetch_all(org_projects_query, {"user_id": user.id})
 
             # Fetch project IDs for user's teams
             team_projects_query = """
@@ -614,10 +559,7 @@ class ProjectSearchService:
             )
             # Combine and flatten the project IDs from both queries
             project_ids = tuple(
-                set(
-                    [row["id"] for row in orgs_projects_ids]
-                    + [row["id"] for row in team_project_ids]
-                )
+                set([row["id"] for row in orgs_projects_ids] + [row["id"] for row in team_project_ids])
             )
             if project_ids:
                 filters.append("p.id = ANY(:managed_projects)")
@@ -728,9 +670,7 @@ class ProjectSearchService:
             (
                 perm_condition,
                 perm_params,
-            ) = await ProjectSearchService.filter_by_user_permission(
-                user, "mapping_permission"
-            )
+            ) = await ProjectSearchService.filter_by_user_permission(user, "mapping_permission")
             base_query += f" AND ({perm_condition})"
             params.update(perm_params)
 
@@ -750,9 +690,7 @@ class ProjectSearchService:
             (
                 perm_condition,
                 perm_params,
-            ) = await ProjectSearchService.filter_by_user_permission(
-                user, "validation_permission"
-            )
+            ) = await ProjectSearchService.filter_by_user_permission(user, "validation_permission")
             base_query += f" AND ({perm_condition})"
             params.update(perm_params)
 
@@ -760,9 +698,7 @@ class ProjectSearchService:
         return [r["id"] for r in records] if records else []
 
     @staticmethod
-    async def get_projects_geojson(
-        search_bbox_dto: ProjectSearchBBoxDTO, db: Database
-    ) -> geojson.FeatureCollection:
+    async def get_projects_geojson(search_bbox_dto: ProjectSearchBBoxDTO, db: Database) -> geojson.FeatureCollection:
         """Search for projects meeting the provided criteria. Returns a GeoJSON feature collection."""
         # make a polygon from provided bounding box
         polygon = await ProjectSearchService._make_4326_polygon_from_bbox(
@@ -798,17 +734,13 @@ class ProjectSearchService:
                 "projectStatus": ProjectStatus(project.status).name,
                 "projectName": localDTO.name,
             }
-            feature = geojson.Feature(
-                geometry=geojson.loads(project.geometry), properties=properties
-            )
+            feature = geojson.Feature(geometry=geojson.loads(project.geometry), properties=properties)
             features.append(feature)
 
         return geojson.FeatureCollection(features)
 
     @staticmethod
-    async def _get_intersecting_projects(
-        search_polygon: Polygon, author_id: int, db: Database
-    ):
+    async def _get_intersecting_projects(search_polygon: Polygon, author_id: int, db: Database):
         """Executes a database query to get the intersecting projects created by the author if provided"""
         try:
             # Convert the search_polygon bounds to a bounding box (WKT)
@@ -840,14 +772,10 @@ class ProjectSearchService:
 
         except Exception as e:
             logger.error(f"Error fetching intersecting projects: {e}")
-            raise ProjectSearchServiceError(
-                f"Error fetching intersecting projects: {e}"
-            )
+            raise ProjectSearchServiceError(f"Error fetching intersecting projects: {e}")
 
     @staticmethod
-    async def _make_4326_polygon_from_bbox(
-        bbox: list, srid: int, db: Database
-    ) -> Polygon:
+    async def _make_4326_polygon_from_bbox(bbox: list, srid: int, db: Database) -> Polygon:
         """Make a shapely Polygon in SRID 4326 from bbox and srid"""
         try:
             polygon = box(bbox[0], bbox[1], bbox[2], bbox[3])

@@ -1,18 +1,19 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+from backend.models.dtos.mapping_dto import LockTaskDTO, MappedTaskDTO
+from backend.models.postgis.project_info import ProjectInfo
+from backend.models.postgis.task import TaskAction, TaskHistory, User
 from backend.services.mapping_service import (
-    MappingService,
-    Task,
-    MappingServiceError,
-    TaskStatus,
-    ProjectService,
-    NotFound,
-    StatsService,
     MappingNotAllowed,
+    MappingService,
+    MappingServiceError,
+    NotFound,
+    ProjectService,
+    StatsService,
+    Task,
+    TaskStatus,
     UserLicenseError,
 )
-from backend.models.postgis.project_info import ProjectInfo
-from backend.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
-from backend.models.postgis.task import TaskHistory, TaskAction, User
 from backend.services.messaging.message_service import MessageService
 from tests.backend.base import BaseTestCase
 
@@ -52,9 +53,7 @@ class TestMappingService(BaseTestCase):
             MappingService.get_task(12, 12)
 
     @patch.object(MappingService, "get_task")
-    def test_lock_task_for_mapping_raises_error_if_task_in_invalid_state(
-        self, mock_task
-    ):
+    def test_lock_task_for_mapping_raises_error_if_task_in_invalid_state(self, mock_task):
         # Arrange
         self.task_stub.task_status = TaskStatus.MAPPED.value
         self.task_stub.locked_by = None
@@ -66,9 +65,7 @@ class TestMappingService(BaseTestCase):
 
     @patch.object(ProjectService, "is_user_permitted_to_map")
     @patch.object(MappingService, "get_task")
-    def test_lock_task_for_mapping_raises_error_if_user_already_has_locked_task(
-        self, mock_task, mock_project
-    ):
+    def test_lock_task_for_mapping_raises_error_if_user_already_has_locked_task(self, mock_task, mock_project):
         # Arrange
         self.task_stub.locked_by = None
         mock_task.return_value = self.task_stub
@@ -83,9 +80,7 @@ class TestMappingService(BaseTestCase):
 
     @patch.object(ProjectService, "is_user_permitted_to_map")
     @patch.object(MappingService, "get_task")
-    def test_lock_task_for_mapping_raises_error_if_user_has_not_accepted_license(
-        self, mock_task, mock_project
-    ):
+    def test_lock_task_for_mapping_raises_error_if_user_has_not_accepted_license(self, mock_task, mock_project):
         # Arrange
         self.task_stub.locked_by = None
         mock_task.return_value = self.task_stub
@@ -196,9 +191,7 @@ class TestMappingService(BaseTestCase):
 
     @patch.object(ProjectService, "is_user_permitted_to_validate")
     @patch.object(TaskHistory, "get_last_action")
-    def test_task_is_undoable_if_last_change_made_by_you(
-        self, last_action, mock_project
-    ):
+    def test_task_is_undoable_if_last_change_made_by_you(self, last_action, mock_project):
         # Arrange
         task_history = TaskHistory(1, 1, 1)
         task_history.user_id = 1
@@ -217,9 +210,7 @@ class TestMappingService(BaseTestCase):
 
     @patch.object(ProjectService, "is_user_permitted_to_validate")
     @patch.object(TaskHistory, "get_last_action")
-    def test_task_is_not_undoable_if_last_change_not_made_by_you(
-        self, last_action, mock_project
-    ):
+    def test_task_is_not_undoable_if_last_change_not_made_by_you(self, last_action, mock_project):
         # Arrange
         task_history = TaskHistory(1, 1, 1)
         task_history.user_id = 2

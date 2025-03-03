@@ -22,7 +22,7 @@ router = APIRouter(
 
 
 @router.post("/{project_id}/comments/")
-async def post(
+async def post_comment(
     project_id: int,
     request: Request,
     background_tasks: BackgroundTasks,
@@ -83,9 +83,7 @@ async def post(
     )
     try:
         async with db.transaction():
-            project_messages = await ChatService.post_message(
-                chat_dto, project_id, user.id, db, background_tasks
-            )
+            project_messages = await ChatService.post_message(chat_dto, project_id, user.id, db, background_tasks)
             return project_messages
     except ValueError as e:
         return JSONResponse(
@@ -95,7 +93,7 @@ async def post(
 
 
 @router.get("/{project_id}/comments/")
-async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def ge_comments(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get all chat messages for a project
     ---
@@ -129,16 +127,14 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             description: Internal Server Error
     """
     await ProjectService.exists(project_id, db)
-    page = (
-        int(request.query_params.get("page")) if request.query_params.get("page") else 1
-    )
+    page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
     per_page = int(request.query_params.get("perPage", 20))
     project_messages = await ChatService.get_messages(project_id, db, page, per_page)
     return project_messages
 
 
 @router.delete("/{project_id}/comments/{comment_id}/")
-async def delete(
+async def delete_comment(
     project_id: int,
     comment_id: int,
     user: AuthUserDTO = Depends(login_required),
@@ -183,9 +179,7 @@ async def delete(
     authenticated_user_id = user.id
     try:
         async with db.transaction():
-            await ChatService.delete_project_chat_by_id(
-                project_id, comment_id, authenticated_user_id, db
-            )
+            await ChatService.delete_project_chat_by_id(project_id, comment_id, authenticated_user_id, db)
             return JSONResponse(content={"Success": "Comment deleted"}, status_code=200)
     except ValueError as e:
         return JSONResponse(
@@ -195,7 +189,7 @@ async def delete(
 
 
 @router.post("/{project_id}/comments/tasks/{task_id}/")
-async def post(
+async def post_task_comment(
     request: Request,
     project_id: int,
     task_id: int,
@@ -264,9 +258,7 @@ async def post(
     try:
         request_json = await request.json()
         comment = request_json.get("comment")
-        task_comment = TaskCommentDTO(
-            user_id=user.id, task_id=task_id, project_id=project_id, comment=comment
-        )
+        task_comment = TaskCommentDTO(user_id=user.id, task_id=task_id, project_id=project_id, comment=comment)
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return JSONResponse(
@@ -281,7 +273,7 @@ async def post(
 
 
 @router.get("/{project_id}/comments/tasks/{task_id}/")
-async def get(request: Request, project_id, task_id):
+async def get_task_comments(request: Request, project_id, task_id):
     """
     Get comments for a task
     ---

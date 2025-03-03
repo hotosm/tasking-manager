@@ -42,9 +42,7 @@ class MappingService:
         """
         task = await Task.get(task_id, project_id, db)
         if not task:
-            raise NotFound(
-                sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
-            )
+            raise NotFound(sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id)
         return task
 
     @staticmethod
@@ -57,27 +55,19 @@ class MappingService:
         """Get task as DTO for transmission over API"""
         task = await Task.exists(task_id, project_id, db)
         if not task:
-            raise NotFound(
-                sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
-            )
-        task_dto = await Task.as_dto_with_instructions(
-            task_id, project_id, db, preferred_local
-        )
+            raise NotFound(sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id)
+        task_dto = await Task.as_dto_with_instructions(task_id, project_id, db, preferred_local)
         return task_dto
 
     @staticmethod
-    async def _is_task_undoable(
-        logged_in_user_id: int, task: dict, db: Database
-    ) -> bool:
+    async def _is_task_undoable(logged_in_user_id: int, task: dict, db: Database) -> bool:
         """Determines if the current task status can be undone by the logged in user"""
         if logged_in_user_id and TaskStatus(task["task_status"]) not in [
             TaskStatus.LOCKED_FOR_MAPPING,
             TaskStatus.LOCKED_FOR_VALIDATION,
             TaskStatus.READY,
         ]:
-            last_action = await TaskHistory.get_last_action(
-                task["project_id"], task["id"], db
-            )
+            last_action = await TaskHistory.get_last_action(task["project_id"], task["id"], db)
             # User requesting task made the last change, so they are allowed to undo it.
             is_user_permitted, _ = await ProjectService.is_user_permitted_to_validate(
                 task["project_id"], logged_in_user_id, db
@@ -87,23 +77,17 @@ class MappingService:
         return False
 
     @staticmethod
-    async def lock_task_for_mapping(
-        lock_task_dto: LockTaskDTO, db: Database
-    ) -> TaskDTO:
+    async def lock_task_for_mapping(lock_task_dto: LockTaskDTO, db: Database) -> TaskDTO:
         """
         Sets the task_locked status to locked so no other user can work on it
         :param lock_task_dto: DTO with data needed to lock the task
         :raises TaskServiceError
         :return: Updated task, or None if not found
         """
-        task = await MappingService.get_task(
-            lock_task_dto.task_id, lock_task_dto.project_id, db
-        )
+        task = await MappingService.get_task(lock_task_dto.task_id, lock_task_dto.project_id, db)
         if task.locked_by != lock_task_dto.user_id:
             if not Task.is_mappable(task):
-                raise MappingServiceError(
-                    "InvalidTaskState- Task in invalid state for mapping"
-                )
+                raise MappingServiceError("InvalidTaskState- Task in invalid state for mapping")
 
             user_can_map, error_reason = await ProjectService.is_user_permitted_to_map(
                 lock_task_dto.project_id, lock_task_dto.user_id, db
@@ -113,25 +97,15 @@ class MappingService:
                 if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                     raise UserLicenseError("User must accept license to map this task")
                 elif error_reason == MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
-                    raise MappingServiceError(
-                        "UserNotAllowed- User not on allowed list"
-                    )
+                    raise MappingServiceError("UserNotAllowed- User not on allowed list")
                 elif error_reason == MappingNotAllowed.PROJECT_NOT_PUBLISHED:
-                    raise MappingServiceError(
-                        "ProjectNotPublished- Project is not published"
-                    )
+                    raise MappingServiceError("ProjectNotPublished- Project is not published")
                 elif error_reason == MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
-                    raise MappingServiceError(
-                        "UserAlreadyHasTaskLocked- User already has task locked"
-                    )
+                    raise MappingServiceError("UserAlreadyHasTaskLocked- User already has task locked")
                 else:
-                    raise MappingServiceError(
-                        f"{error_reason}- Mapping not allowed because: {error_reason}"
-                    )
+                    raise MappingServiceError(f"{error_reason}- Mapping not allowed because: {error_reason}")
 
-        await Task.lock_task_for_mapping(
-            lock_task_dto.task_id, lock_task_dto.project_id, lock_task_dto.user_id, db
-        )
+        await Task.lock_task_for_mapping(lock_task_dto.task_id, lock_task_dto.project_id, lock_task_dto.user_id, db)
         return await Task.as_dto_with_instructions(
             lock_task_dto.task_id,
             lock_task_dto.project_id,
@@ -160,9 +134,7 @@ class MappingService:
             raise MappingServiceError(
                 "InvalidUnlockState - Can only set status to MAPPED, BADIMAGERY, READY after mapping"
             )
-        last_state = await TaskHistory.get_last_status(
-            mapped_task.project_id, mapped_task.task_id, db
-        )
+        last_state = await TaskHistory.get_last_status(mapped_task.project_id, mapped_task.task_id, db)
         await StatsService.update_stats_after_task_state_change(
             mapped_task.project_id, mapped_task.user_id, last_state, new_state, db
         )
@@ -186,9 +158,7 @@ class MappingService:
             comment=mapped_task.comment,
         )
         # Send email on project progress
-        background_tasks.add_task(
-            ProjectService.send_email_on_project_progress, mapped_task.project_id
-        )
+        background_tasks.add_task(ProjectService.send_email_on_project_progress, mapped_task.project_id)
 
         return await Task.as_dto_with_instructions(
             task_id=mapped_task.task_id,
@@ -217,22 +187,16 @@ class MappingService:
             stop_task.comment,
             db,
         )
-        return await Task.as_dto_with_instructions(
-            task.id, stop_task.project_id, db, stop_task.preferred_locale
-        )
+        return await Task.as_dto_with_instructions(task.id, stop_task.project_id, db, stop_task.preferred_locale)
 
     @staticmethod
-    async def get_task_locked_by_user(
-        project_id: int, task_id: int, user_id: int, db: Database
-    ):
+    async def get_task_locked_by_user(project_id: int, task_id: int, user_id: int, db: Database):
         """Returns task specified by project id and task id if found and locked for mapping by user"""
         query = """
             SELECT * FROM tasks
             WHERE id = :task_id AND project_id = :project_id
         """
-        task = await db.fetch_one(
-            query, values={"task_id": task_id, "project_id": project_id}
-        )
+        task = await db.fetch_one(query, values={"task_id": task_id, "project_id": project_id})
 
         if task is None:
             raise NotFound(
@@ -243,14 +207,10 @@ class MappingService:
             )
 
         if task["task_status"] != TaskStatus.LOCKED_FOR_MAPPING.value:
-            raise MappingServiceError(
-                "LockBeforeUnlocking- Status must be LOCKED_FOR_MAPPING to unlock"
-            )
+            raise MappingServiceError("LockBeforeUnlocking- Status must be LOCKED_FOR_MAPPING to unlock")
 
         if task["locked_by"] != user_id:
-            raise MappingServiceError(
-                "TaskNotOwned- Attempting to unlock a task owned by another user"
-            )
+            raise MappingServiceError("TaskNotOwned- Attempting to unlock a task owned by another user")
 
         return task
 
@@ -292,9 +252,7 @@ class MappingService:
         )
 
     @staticmethod
-    async def generate_gpx(
-        project_id: int, task_ids_str: str, db: Database, timestamp=None
-    ):
+    async def generate_gpx(project_id: int, task_ids_str: str, db: Database, timestamp=None):
         """
         Creates a GPX file for supplied tasks.  Timestamp is for unit testing only.
         You can use the following URL to test locally:
@@ -327,18 +285,14 @@ class MappingService:
         # Create trk element
         trk = ET.Element("trk")
         root.append(trk)
-        ET.SubElement(
-            trk, "name"
-        ).text = f"Task for project {project_id}. Do not edit outside of this area!"
+        ET.SubElement(trk, "name").text = f"Task for project {project_id}. Do not edit outside of this area!"
 
         # Construct trkseg elements
         if task_ids_str is not None:
             task_ids = list(map(int, task_ids_str.split(",")))
             tasks = await Task.get_tasks(project_id, task_ids, db)
             if not tasks or len(tasks) == 0:
-                raise NotFound(
-                    sub_code="TASKS_NOT_FOUND", project_id=project_id, task_ids=task_ids
-                )
+                raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id, task_ids=task_ids)
         else:
             tasks = await Task.get_all_tasks(project_id, db)
             if not tasks or len(tasks) == 0:
@@ -358,9 +312,7 @@ class MappingService:
                         "trkpt",
                         attrib=dict(lon=str(point[0]), lat=str(point[1])),
                     )
-                    wpt = ET.Element(
-                        "wpt", attrib=dict(lon=str(point[0]), lat=str(point[1]))
-                    )
+                    wpt = ET.Element("wpt", attrib=dict(lon=str(point[0]), lat=str(point[1])))
                     root.append(wpt)
 
         xml_gpx = ET.tostring(root, encoding="utf8")
@@ -379,9 +331,7 @@ class MappingService:
             task_ids = list(map(int, task_ids_str.split(",")))
             tasks = await Task.get_tasks(project_id, task_ids, db)
             if not tasks or len(tasks) == 0:
-                raise NotFound(
-                    sub_code="TASKS_NOT_FOUND", project_id=project_id, task_ids=task_ids
-                )
+                raise NotFound(sub_code="TASKS_NOT_FOUND", project_id=project_id, task_ids=task_ids)
         else:
             tasks = await Task.get_all_tasks(project_id, db)
             if not tasks or len(tasks) == 0:
@@ -428,9 +378,7 @@ class MappingService:
         """Allows a user to Undo the task state they updated"""
         task = await MappingService.get_task(task_id, project_id, db)
         if not await MappingService._is_task_undoable(user_id, task, db):
-            raise MappingServiceError(
-                "UndoPermissionError- Undo not allowed for this user"
-            )
+            raise MappingServiceError("UndoPermissionError- Undo not allowed for this user")
         current_state = TaskStatus(task.task_status)
         # Set the state to the previous state in the workflow
         if current_state == TaskStatus.VALIDATED:
@@ -440,9 +388,7 @@ class MappingService:
         elif current_state == TaskStatus.MAPPED:
             undo_state = TaskStatus.READY
         else:
-            undo_state = await TaskHistory.get_last_status(
-                project_id, task_id, db, True
-            )
+            undo_state = await TaskHistory.get_last_status(project_id, task_id, db, True)
 
         # Refer to last action for user of it.
         last_action = await TaskHistory.get_last_action(project_id, task_id, db)
@@ -459,9 +405,7 @@ class MappingService:
             comment=f"Undo state from {current_state.name} to {undo_state.name}",
             undo=True,
         )
-        return await Task.as_dto_with_instructions(
-            task_id, project_id, db, preferred_locale
-        )
+        return await Task.as_dto_with_instructions(task_id, project_id, db, preferred_locale)
 
     @staticmethod
     async def map_all_tasks(project_id: int, user_id: int, db: Database):
@@ -540,14 +484,10 @@ class MappingService:
         await db.execute(query=reset_query, values={"project_id": project_id})
 
     @staticmethod
-    async def lock_time_can_be_extended(
-        project_id: int, task_id: int, user_id: int, db: Database
-    ):
+    async def lock_time_can_be_extended(project_id: int, task_id: int, user_id: int, db: Database):
         task = await Task.get(task_id, project_id, db)
         if task is None:
-            raise NotFound(
-                sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
-            )
+            raise NotFound(sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id)
 
         if TaskStatus(task.task_status) not in [
             TaskStatus.LOCKED_FOR_MAPPING,
@@ -557,37 +497,7 @@ class MappingService:
                 f"TaskStatusNotLocked- Task {task_id} status is not LOCKED_FOR_MAPPING or LOCKED_FOR_VALIDATION."
             )
         if task.locked_by != user_id:
-            raise MappingServiceError(
-                "LockedByAnotherUser- Task is locked by another user."
-            )
-
-    # @staticmethod
-    # async def extend_task_lock_time(extend_dto: ExtendLockTimeDTO, db: Database):
-    #     """
-    #     Extends expiry time of locked tasks
-    #     :raises ValidatorServiceError
-    #     """
-    #     # Loop supplied tasks to check they can all be locked for validation
-    #     tasks_to_extend = []
-    #     for task_id in extend_dto.task_ids:
-    #         await MappingService.lock_time_can_be_extended(
-    #             extend_dto.project_id, task_id, extend_dto.user_id, db
-    #         )
-    #         tasks_to_extend.append(task_id)
-
-    #     for task_id in tasks_to_extend:
-    #         task = await Task.get(task_id, extend_dto.project_id, db)
-    #         action = TaskAction.EXTENDED_FOR_MAPPING
-    #         if task.task_status == TaskStatus.LOCKED_FOR_VALIDATION:
-    #             action = TaskAction.EXTENDED_FOR_VALIDATION
-
-    #         await TaskHistory.update_task_locked_with_duration(
-    #             task_id,
-    #             extend_dto.project_id,
-    #             TaskStatus(task.task_status),
-    #             extend_dto.user_id,
-    #         )
-    #         await Task.set_task_history(action, extend_dto.user_id)
+            raise MappingServiceError("LockedByAnotherUser- Task is locked by another user.")
 
     @staticmethod
     async def extend_task_lock_time(extend_dto: ExtendLockTimeDTO, db: Database):
@@ -597,9 +507,7 @@ class MappingService:
         """
         # Validate each task before extending lock time
         for task_id in extend_dto.task_ids:
-            await MappingService.lock_time_can_be_extended(
-                extend_dto.project_id, task_id, extend_dto.user_id, db
-            )
+            await MappingService.lock_time_can_be_extended(extend_dto.project_id, task_id, extend_dto.user_id, db)
 
         # Extend lock time for validated tasks
         for task_id in extend_dto.task_ids:
@@ -617,6 +525,4 @@ class MappingService:
                 extend_dto.user_id,
                 db,
             )
-            await Task.set_task_history(
-                task_id, extend_dto.project_id, extend_dto.user_id, action, db
-            )
+            await Task.set_task_history(task_id, extend_dto.project_id, extend_dto.user_id, action, db)

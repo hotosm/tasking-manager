@@ -5,8 +5,9 @@ Revises: 05f1b650ddbc
 Create Date: 2022-09-20 13:11:54.721669
 
 """
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
+
 from backend.models.postgis.statuses import TeamJoinMethod, TeamVisibility
 
 # revision identifiers, used by Alembic.
@@ -27,9 +28,7 @@ def upgrade():
         f"UPDATE teams SET join_method = {TeamJoinMethod.BY_INVITE.value} "
         f"WHERE visibility = {TeamVisibility.PRIVATE.value} AND invite_only = false;"
     )
-    op.execute(
-        f"UPDATE teams SET join_method = {TeamJoinMethod.BY_REQUEST.value} WHERE invite_only = true;"
-    )
+    op.execute(f"UPDATE teams SET join_method = {TeamJoinMethod.BY_REQUEST.value} WHERE invite_only = true;")
     op.alter_column("teams", "join_method", nullable=False)
     op.drop_column("teams", "invite_only")
     # ### end Alembic commands ###

@@ -1,6 +1,6 @@
-from backend.services.stats_service import StatsService, TaskStatus
 from backend.models.postgis.project import Project
 from backend.models.postgis.user import User
+from backend.services.stats_service import StatsService, TaskStatus
 from tests.backend.base import BaseTestCase
 
 

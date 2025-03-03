@@ -1,11 +1,11 @@
 import datetime
 import xml.etree.ElementTree as ET
 from unittest.mock import patch
-from backend.services.mapping_service import MappingService, Task
+
 from backend.models.postgis.task import TaskStatus
+from backend.services.mapping_service import MappingService, Task
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
-
 
 ORG_NAME = "HOT Tasking Manager"
 
@@ -46,9 +46,7 @@ class TestMappingService(BaseTestCase):
 
         link = metadata.find("{http://www.topografix.com/GPX/1/1}link")
         self.assertIsNotNone(link)
-        self.assertEqual(
-            link.attrib["href"], "https://github.com/hotosm/tasking-manager"
-        )
+        self.assertEqual(link.attrib["href"], "https://github.com/hotosm/tasking-manager")
         text = link.find("{http://www.topografix.com/GPX/1/1}text")
         self.assertIsNotNone(text)
         self.assertEqual(text.text.strip(), ORG_NAME)
@@ -137,9 +135,7 @@ class TestMappingService(BaseTestCase):
         # Assert
         self.assertEqual(
             self.test_project.tasks_mapped,
-            self.test_project.total_tasks
-            - self.test_project.tasks_validated
-            - self.test_project.tasks_bad_imagery,
+            self.test_project.total_tasks - self.test_project.tasks_validated - self.test_project.tasks_bad_imagery,
         )
 
     def test_mapped_by_is_set_after_mapping_all(self):

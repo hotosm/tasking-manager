@@ -1,14 +1,13 @@
 import os
 import re
+
 from jinja2 import Environment, FileSystemLoader
 from loguru import logger
 
 from backend.config import settings
 
 # Set up Jinja2 environment
-env = Environment(
-    loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates"))
-)
+env = Environment(loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
 
 
 def get_txt_template(template_name: str):
@@ -18,9 +17,7 @@ def get_txt_template(template_name: str):
     :return: Template as a string
     """
     try:
-        template_location = os.path.join(
-            os.path.dirname(__file__), "templates/{0}".format(template_name)
-        )
+        template_location = os.path.join(os.path.dirname(__file__), "templates/{0}".format(template_name))
         with open(template_location, mode="r", encoding="utf-8") as template:
             return template.read()
     except FileNotFoundError:

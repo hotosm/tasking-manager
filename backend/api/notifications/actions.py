@@ -15,7 +15,7 @@ router = APIRouter(
 
 
 @router.delete("/delete-multiple/")
-async def delete(
+async def delete_multiple_notifications(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -59,7 +59,7 @@ async def delete(
 
 
 @router.delete("/delete-all/")
-async def delete(
+async def delete_all_notifications(
     request: Request,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
@@ -95,7 +95,7 @@ async def delete(
 
 
 @router.post("/mark-as-read-all/")
-async def post(
+async def mark_all_as_read(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -130,7 +130,7 @@ async def post(
 
 
 @router.post("/mark-as-read-multiple/")
-async def post(
+async def mark_multiple_as_read(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),

@@ -15,24 +15,16 @@ class TestInterestService(BaseTestCase):
     @staticmethod
     def relationship_user(interests, user_id, ids):
         interest_ids = [interests[c]["id"] for c in ids]
-        user_interests = InterestService.create_or_update_user_interests(
-            user_id, interest_ids
-        )
-        user_interests_ids = [
-            i["id"] for i in user_interests.to_primitive()["interests"]
-        ]
+        user_interests = InterestService.create_or_update_user_interests(user_id, interest_ids)
+        user_interests_ids = [i["id"] for i in user_interests.to_primitive()["interests"]]
 
         return interest_ids, user_interests_ids
 
     @staticmethod
     def relationship_project(interests, project_id, ids):
         interest_ids = [interests[c]["id"] for c in ids]
-        project_interests = InterestService.create_or_update_project_interests(
-            project_id, interest_ids
-        )
-        project_interests_ids = [
-            i["id"] for i in project_interests.to_primitive()["interests"]
-        ]
+        project_interests = InterestService.create_or_update_project_interests(project_id, interest_ids)
+        project_interests_ids = [i["id"] for i in project_interests.to_primitive()["interests"]]
 
         return interest_ids, project_interests_ids
 
@@ -56,15 +48,11 @@ class TestInterestService(BaseTestCase):
         self.assertEqual(new_interest.name, updated_interest.name)
 
         # Associate users with interest.
-        iids, uids = TestInterestService.relationship_user(
-            interests, self.test_user.id, [1, 4, 5]
-        )
+        iids, uids = TestInterestService.relationship_user(interests, self.test_user.id, [1, 4, 5])
         self.assertEqual(uids, iids)
 
         # Try again.
-        iids, uids = TestInterestService.relationship_user(
-            interests, self.test_user.id, [1, 2]
-        )
+        iids, uids = TestInterestService.relationship_user(interests, self.test_user.id, [1, 2])
         self.assertEqual(uids, iids)
 
         # Validate unexistent interest.
@@ -72,16 +60,12 @@ class TestInterestService(BaseTestCase):
             InterestService.create_or_update_user_interests(self.test_user.id, [0])
 
         # Associate projects with interest.
-        iids, pids = TestInterestService.relationship_project(
-            interests, self.test_project.id, [1, 2]
-        )
+        iids, pids = TestInterestService.relationship_project(interests, self.test_project.id, [1, 2])
         self.assertEqual(pids, iids)
 
         # Validate unexistent interest.
         with self.assertRaises(NotFound):
-            InterestService.create_or_update_project_interests(
-                self.test_project.id, [0]
-            )
+            InterestService.create_or_update_project_interests(self.test_project.id, [0])
 
         # Delete one by one.
         for interest in interests:

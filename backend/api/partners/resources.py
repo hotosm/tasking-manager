@@ -1,5 +1,6 @@
 # from flask_restful import Resource, request
 import json
+
 from databases import Database
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
@@ -399,9 +400,7 @@ async def create_partner(
         data = await request.json()
         if data:
             if data.get("name") is None:
-                return JSONResponse(
-                    content={"message": "Partner name is not provided"}, status_code=400
-                )
+                return JSONResponse(content={"message": "Partner name is not provided"}, status_code=400)
 
             if data.get("primary_hashtag") is None:
                 return JSONResponse(
@@ -414,9 +413,7 @@ async def create_partner(
             return partner_data
 
         else:
-            return JSONResponse(
-                content={"message": "Data not provided"}, status_code=400
-            )
+            return JSONResponse(content={"message": "Data not provided"}, status_code=400)
     except PartnerServiceError as e:
         return JSONResponse(content={"message": str(e)}, status_code=500)
 
@@ -459,9 +456,7 @@ async def get_partner(
     try:
         partner_record = await PartnerService.get_partner_by_permalink(permalink, db)
         if not partner_record:
-            return JSONResponse(
-                content={"message": "Partner not found"}, status_code=404
-            )
+            return JSONResponse(content={"message": "Partner not found"}, status_code=404)
 
         partner = dict(partner_record)
         website_links = json.loads(partner.get("website_links", "[]"))

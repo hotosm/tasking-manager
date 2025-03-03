@@ -5,10 +5,9 @@ Revises: 14842761654b
 Create Date: 2020-09-21 17:17:10.542429
 
 """
-from alembic import op
-import sqlalchemy as sa
 import requests
-
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "7937dae319b5"
@@ -22,9 +21,7 @@ nominatim_data_format = "&format=jsonv2&accept-language=en&namedetails=1"
 def upgrade():
     conn = op.get_bind()
     # fetch existing country names
-    fetch_countries = (
-        "select distinct(unnest(country)) from projects where country is not null;"
-    )
+    fetch_countries = "select distinct(unnest(country)) from projects where country is not null;"
     countries = conn.execute(sa.text(fetch_countries))
     for country in countries:
         country = country[0]

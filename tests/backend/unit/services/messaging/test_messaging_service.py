@@ -42,9 +42,7 @@ class TestMessagingService(BaseTestCase):
 
     def test_message_service_generates_correct_chat_link(self):
         # Act
-        link = MessageService.get_project_link(
-            1, "TEST_PROJECT", "http://test.com", include_chat_section=True
-        )
+        link = MessageService.get_project_link(1, "TEST_PROJECT", "http://test.com", include_chat_section=True)
 
         self.assertEqual(
             link,

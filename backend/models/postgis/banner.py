@@ -19,20 +19,14 @@ class Banner(Base):
 
     async def create(self, db: Database):
         """Creates and saves the current model to the DB"""
-        query = insert(Banner.__table__).values(
-            message=self.message, visible=self.visible
-        )
+        query = insert(Banner.__table__).values(message=self.message, visible=self.visible)
         await db.execute(query)
 
     async def update_from_dto(self, db: Database, dto: BannerDTO):
         """Updates the current model in the DB"""
         self.message = dto.message
         self.visible = dto.visible
-        query = (
-            update(Banner.__table__)
-            .where(Banner.id == self.id)
-            .values(message=self.message, visible=self.visible)
-        )
+        query = update(Banner.__table__).where(Banner.id == self.id).values(message=self.message, visible=self.visible)
         await db.execute(query)
         return self
 

@@ -1,13 +1,5 @@
-from sqlalchemy import (
-    JSON,
-    Column,
-    DateTime,
-    ForeignKey,
-    ForeignKeyConstraint,
-    Index,
-    Integer,
-    String,
-)
+from databases import Database
+from sqlalchemy import JSON, Column, DateTime, ForeignKey, ForeignKeyConstraint, Index, Integer, String
 
 from backend.db import Base
 from backend.models.dtos.project_dto import ProjectTaskAnnotationsDTO
@@ -56,14 +48,19 @@ class TaskAnnotation(Base):
         self.properties = properties
 
     @staticmethod
-    def get_task_annotation(task_id, project_id, annotation_type):
-        """Get annotations for a task with supplied type"""
-        return (
-            session.query(TaskAnnotation)
-            .filter_by(
-                project_id=project_id, task_id=task_id, annotation_type=annotation_type
-            )
-            .one_or_none()
+    async def get_task_annotation(task_id, project_id, annotation_type, db: Database):
+        """Get annotations for a task with the supplied type."""
+        query = """
+            SELECT * FROM task_annotations
+            WHERE task_id = :task_id AND project_id = :project_id AND annotation_type = :annotation_type
+        """
+        return await db.fetch_one(
+            query,
+            values={
+                "task_id": task_id,
+                "project_id": project_id,
+                "annotation_type": annotation_type,
+            },
         )
 
     def get_dto(self):
@@ -76,46 +73,71 @@ class TaskAnnotation(Base):
         return task_annotation_dto
 
     @staticmethod
-    def get_task_annotations_by_project_id_type(project_id, annotation_type):
-        """Get annotatiols for a project with the supplied type"""
-        project_task_annotations = (
-            session.query(TaskAnnotation)
-            .filter_by(project_id=project_id, annotation_type=annotation_type)
-            .all()
+    async def get_task_annotations_by_project_id_type(
+        project_id: int, annotation_type: str, db: Database
+    ) -> ProjectTaskAnnotationsDTO:
+        """Get annotations for a project with the supplied type"""
+        query = """
+        SELECT
+            task_id,
+            properties,
+            annotation_type,
+            annotation_source,
+            annotation_markdown
+        FROM
+            task_annotations
+        WHERE
+            project_id = :project_id
+            AND annotation_type = :annotation_type
+        """
+
+        results = await db.fetch_all(
+            query=query,
+            values={"project_id": project_id, "annotation_type": annotation_type},
         )
 
-        project_task_annotations_dto = ProjectTaskAnnotationsDTO()
-        project_task_annotations_dto.project_id = project_id
-        if project_task_annotations:
-            project_task_annotations_dto = ProjectTaskAnnotationsDTO()
-            project_task_annotations_dto.project_id = project_id
-            for row in project_task_annotations:
-                task_annotation_dto = TaskAnnotationDTO()
-                task_annotation_dto.task_id = row.task_id
-                task_annotation_dto.properties = row.properties
-                task_annotation_dto.annotation_type = row.annotation_type
-                task_annotation_dto.annotation_source = row.annotation_source
-                task_annotation_dto.annotation_markdown = row.annotation_markdown
-                project_task_annotations_dto.tasks.append(task_annotation_dto)
+        project_task_annotations_dto = ProjectTaskAnnotationsDTO(project_id=project_id)
+
+        for row in results:
+            task_annotation_dto = TaskAnnotationDTO(
+                task_id=row["task_id"],
+                properties=row["properties"],
+                annotation_type=row["annotation_type"],
+                annotation_source=row["annotation_source"],
+                annotation_markdown=row["annotation_markdown"],
+            )
+            project_task_annotations_dto.tasks.append(task_annotation_dto)
 
         return project_task_annotations_dto
 
     @staticmethod
-    def get_task_annotations_by_project_id(project_id):
-        """Get annotatiols for a project with the supplied type"""
-        project_task_annotations = (
-            session.query(TaskAnnotation).filter_by(project_id=project_id).all()
-        )
+    async def get_task_annotations_by_project_id(project_id: int, db: Database) -> ProjectTaskAnnotationsDTO:
+        """Get all annotations for a project"""
+        query = """
+        SELECT
+            task_id,
+            properties,
+            annotation_type,
+            annotation_source,
+            annotation_markdown
+        FROM
+            task_annotations
+        WHERE
+            project_id = :project_id
+        """
 
-        project_task_annotations_dto = ProjectTaskAnnotationsDTO()
-        project_task_annotations_dto.project_id = project_id
-        if project_task_annotations:
-            for row in project_task_annotations:
-                task_annotation_dto = TaskAnnotationDTO()
-                task_annotation_dto.task_id = row.task_id
-                task_annotation_dto.properties = row.properties
-                task_annotation_dto.annotation_type = row.annotation_type
-                task_annotation_dto.annotation_source = row.annotation_source
-                project_task_annotations_dto.tasks.append(task_annotation_dto)
+        results = await db.fetch_all(query=query, values={"project_id": project_id})
+
+        project_task_annotations_dto = ProjectTaskAnnotationsDTO(project_id=project_id)
+
+        for row in results:
+            task_annotation_dto = TaskAnnotationDTO(
+                task_id=row["task_id"],
+                properties=row["properties"],
+                annotation_type=row["annotation_type"],
+                annotation_source=row["annotation_source"],
+                annotation_markdown=row.get("annotation_markdown"),
+            )
+            project_task_annotations_dto.tasks.append(task_annotation_dto)
 
         return project_task_annotations_dto

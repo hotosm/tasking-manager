@@ -15,7 +15,7 @@ router = APIRouter(
 
 
 @router.get("/authentication/applications/")
-async def get(
+async def get_application_keys(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -47,7 +47,7 @@ async def get(
 
 
 @router.post("/authentication/applications/")
-async def post(
+async def post_application_key(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -79,7 +79,7 @@ async def post(
 
 
 @router.patch("/authentication/applications/{application_key}/")
-async def patch(request: Request, application_key: str, db: Database = Depends(get_db)):
+async def patch_application_key(request: Request, application_key: str, db: Database = Depends(get_db)):
     """
     Checks the validity of an application key
     ---
@@ -110,7 +110,7 @@ async def patch(request: Request, application_key: str, db: Database = Depends(g
 
 
 @router.delete("/authentication/applications/{application_key}/")
-async def delete(
+async def delete_application_key(
     request: Request,
     application_key: str,
     user: AuthUserDTO = Depends(login_required),

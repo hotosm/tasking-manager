@@ -1,13 +1,9 @@
 from unittest.mock import patch
 
-from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import (
-    return_canned_user,
-    generate_encoded_token,
-    create_canned_interest,
-)
-from backend.services.messaging.smtp_service import SMTPService
 from backend.models.postgis.statuses import UserRole
+from backend.services.messaging.smtp_service import SMTPService
+from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import create_canned_interest, generate_encoded_token, return_canned_user
 
 TEST_EMAIL = "test@test.com"
 

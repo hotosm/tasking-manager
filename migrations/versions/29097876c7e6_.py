@@ -7,7 +7,6 @@ Create Date: 2019-12-04 11:21:42.622908
 """
 from alembic import op
 
-
 # revision identifiers, used by Alembic.
 revision = "29097876c7e6"
 down_revision = "f26a7c36eb65"
@@ -24,6 +23,4 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_constraint(
-        "campaign_organisation_key", "campaign_organisations", type_="unique"
-    )
+    op.drop_constraint("campaign_organisation_key", "campaign_organisations", type_="unique")

@@ -1,18 +1,19 @@
 from datetime import datetime
+
 from schematics.exceptions import UndefinedValueError
 
-from tests.backend.base import BaseTestCase
 from backend.models.postgis.statuses import ProjectStatus, TeamVisibility
+from backend.services.organisation_service import NotFound, OrganisationService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    add_manager_to_organisation,
-    create_canned_organisation,
     TEST_ORGANISATION_ID,
     TEST_USER_ID,
+    add_manager_to_organisation,
+    create_canned_organisation,
     create_canned_project,
     create_canned_user,
     return_canned_team,
 )
-from backend.services.organisation_service import OrganisationService, NotFound
 
 
 class TestOrgansitaionService(BaseTestCase):
@@ -23,18 +24,14 @@ class TestOrgansitaionService(BaseTestCase):
     def test_is_user_an_org_manager_raises_error_if_organistion_not_found(self):
         # Assert/Act
         with self.assertRaises(NotFound):
-            OrganisationService.is_user_an_org_manager(
-                TEST_ORGANISATION_ID, TEST_USER_ID
-            )
+            OrganisationService.is_user_an_org_manager(TEST_ORGANISATION_ID, TEST_USER_ID)
 
     def test_is_user_an_org_manager_returns_false_if_user_not_manager_of_organisation(
         self,
     ):
         test_user = create_canned_user()
         # Act
-        is_org_manager = OrganisationService.is_user_an_org_manager(
-            self.test_org.id, test_user.id
-        )
+        is_org_manager = OrganisationService.is_user_an_org_manager(self.test_org.id, test_user.id)
         # Assert
         self.assertFalse(is_org_manager)
 
@@ -45,9 +42,7 @@ class TestOrgansitaionService(BaseTestCase):
         test_user = create_canned_user()
         self.test_org.managers = [test_user]
         # Act
-        is_org_manager = OrganisationService.is_user_an_org_manager(
-            self.test_org.id, test_user.id
-        )
+        is_org_manager = OrganisationService.is_user_an_org_manager(self.test_org.id, test_user.id)
         # Assert
         self.assertTrue(is_org_manager)
 
@@ -98,9 +93,7 @@ class TestOrgansitaionService(BaseTestCase):
         )
         # Assert
         self.assertEqual(len(orgs_dto.organisations[0].managers), 1)
-        self.assertEqual(
-            orgs_dto.organisations[0].managers[0].username, test_author.username
-        )
+        self.assertEqual(orgs_dto.organisations[0].managers[0].username, test_author.username)
 
     def test_get_organisation_stats(self):
         # Test returns all time stats if year is None
@@ -126,9 +119,7 @@ class TestOrgansitaionService(BaseTestCase):
         test_project.created = datetime.strptime("2018/07/06", "%Y/%m/%d")
         test_project.save()
         # Act
-        org_stats = OrganisationService.get_organisation_stats(
-            self.test_org.id, datetime.today().strftime("%Y")
-        )
+        org_stats = OrganisationService.get_organisation_stats(self.test_org.id, datetime.today().strftime("%Y"))
         # Assert
         self.assertEqual(org_stats.projects.published, 0)
         self.assertEqual(org_stats.projects.draft, 0)
@@ -158,18 +149,14 @@ class TestOrgansitaionService(BaseTestCase):
         test_team_2.create()
 
         # Test with valid org and user id as non manager
-        org_dto = OrganisationService.get_organisation_dto(
-            self.test_org, test_user.id, abbreviated=False
-        )
+        org_dto = OrganisationService.get_organisation_dto(self.test_org, test_user.id, abbreviated=False)
         self.assert_org_dto(org_dto)
         self.assertFalse(org_dto.is_manager)
         self.assertEqual(len(org_dto.teams), 1)
         self.assertEqual(org_dto.teams[0].team_id, test_team_1.id)
 
         # Test with valid org with abbreviated=True
-        org_dto = OrganisationService.get_organisation_dto(
-            self.test_org, test_user.id, abbreviated=True
-        )
+        org_dto = OrganisationService.get_organisation_dto(self.test_org, test_user.id, abbreviated=True)
         self.assertEqual(org_dto.organisation_id, self.test_org.id)
         self.assertEqual(org_dto.name, self.test_org.name)
         self.assertEqual(org_dto.description, None)
@@ -179,9 +166,7 @@ class TestOrgansitaionService(BaseTestCase):
 
         # Test with valid org and user id as manager
         add_manager_to_organisation(self.test_org, test_user)
-        org_dto = OrganisationService.get_organisation_dto(
-            self.test_org, test_user.id, abbreviated=False
-        )
+        org_dto = OrganisationService.get_organisation_dto(self.test_org, test_user.id, abbreviated=False)
         self.assert_org_dto(org_dto)
         self.assertTrue(org_dto.is_manager)
         self.assertEqual(len(org_dto.teams), 2)
@@ -189,9 +174,7 @@ class TestOrgansitaionService(BaseTestCase):
         self.assertEqual(org_dto.teams[1].team_id, test_team_2.id)
 
         # Test with valid org and user id as 0
-        org_dto = OrganisationService.get_organisation_dto(
-            self.test_org, 0, abbreviated=False
-        )
+        org_dto = OrganisationService.get_organisation_dto(self.test_org, 0, abbreviated=False)
         self.assert_org_dto(org_dto)
         self.assertFalse(org_dto.is_manager)
         self.assertEqual(len(org_dto.teams), 1)
@@ -199,6 +182,4 @@ class TestOrgansitaionService(BaseTestCase):
 
         # Test with invalid org
         with self.assertRaises(NotFound):
-            OrganisationService.get_organisation_dto(
-                None, test_user.id, abbreviated=False
-            )
+            OrganisationService.get_organisation_dto(None, test_user.id, abbreviated=False)

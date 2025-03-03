@@ -5,9 +5,8 @@ Revises: 567b75e74955
 Create Date: 2017-06-06 16:53:47.604019
 
 """
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "64b682d53e23"
@@ -29,9 +28,7 @@ def upgrade():
         sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        op.f("ix_project_chat_project_id"), "project_chat", ["project_id"], unique=False
-    )
+    op.create_index(op.f("ix_project_chat_project_id"), "project_chat", ["project_id"], unique=False)
     # ### end Alembic commands ###
 
 

@@ -1,10 +1,11 @@
+from flask import current_app
+
 from backend.services.messaging.template_service import (
-    template_var_replacing,
-    get_template,
     clean_html,
     format_username_link,
+    get_template,
+    template_var_replacing,
 )
-from flask import current_app
 from tests.backend.base import BaseTestCase
 
 
@@ -33,9 +34,7 @@ class TestTemplateService(BaseTestCase):
 
     def test_clean_html(self):
         self.assertEqual(
-            clean_html(
-                'Welcome to <a href="https://tasks.hotosm.org">Tasking Manager</a>!'
-            ),
+            clean_html('Welcome to <a href="https://tasks.hotosm.org">Tasking Manager</a>!'),
             "Welcome to Tasking Manager!",
         )
 
@@ -49,8 +48,6 @@ class TestTemplateService(BaseTestCase):
             ),
         )
         self.assertEqual(
-            format_username_link(
-                "testing @user! Write me at i@we.com [test](http://link.com)"
-            ),
+            format_username_link("testing @user! Write me at i@we.com [test](http://link.com)"),
             "testing @user! Write me at i@we.com [test](http://link.com)",
         )

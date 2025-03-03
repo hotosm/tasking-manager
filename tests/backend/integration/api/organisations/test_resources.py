@@ -1,18 +1,16 @@
 import base64
 
+from backend.exceptions import get_message_from_sub_code
+from backend.services.users.authentication_service import AuthenticationService
 from tests.backend.base import BaseTestCase, db
 from tests.backend.helpers.test_helpers import (
+    add_manager_to_organisation,
     create_canned_organisation,
     create_canned_project,
     create_canned_user,
-    add_manager_to_organisation,
     generate_encoded_token,
     return_canned_user,
 )
-
-from backend.exceptions import get_message_from_sub_code
-from backend.services.users.authentication_service import AuthenticationService
-
 
 TEST_USER_ID = 777777
 TEST_USERNAME = "Thinkwhere Test"
@@ -60,19 +58,13 @@ class TestOrganisationAllAPI(BaseTestCase):
     def test_get_all_org_includes_managers_if_user_is_authenticated(self):
         """Test managers are included if user is authenticated"""
 
-        session_token = AuthenticationService.generate_session_token_for_user(
-            self.test_author.id
-        )
+        session_token = AuthenticationService.generate_session_token_for_user(self.test_author.id)
         session_token = base64.b64encode(session_token.encode("utf-8"))
         session_token = "Token " + session_token.decode("utf-8")
-        response = self.client.get(
-            self.endpoint_url, headers={"Authorization": session_token}
-        )
+        response = self.client.get(self.endpoint_url, headers={"Authorization": session_token})
 
         response_body = response.json["organisations"]
-        self.assertEqual(
-            response_body[0]["managers"][0]["username"], self.test_author.username
-        )
+        self.assertEqual(response_body[0]["managers"][0]["username"], self.test_author.username)
 
     def test_get_all_org_raises_error_if_filter_by_manager_id__on_unauthenticated_request(
         self,
@@ -210,9 +202,7 @@ class TestOrganisationsRestAPI(BaseTestCase):
         )
         response_body = response.get_json()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response_body["Error"], "Only admin users can create organisations."
-        )
+        self.assertEqual(response_body["Error"], "Only admin users can create organisations.")
         self.assertEqual(response_body["SubCode"], "OnlyAdminAccess")
 
     # get organisation

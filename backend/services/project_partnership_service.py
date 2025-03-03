@@ -8,11 +8,7 @@ from loguru import logger
 from backend.exceptions import BadRequest, NotFound
 from backend.models.dtos.project_partner_dto import ProjectPartnershipDTO
 from backend.models.postgis.partner import Partner
-from backend.models.postgis.project_partner import (
-    ProjectPartnerAction,
-    ProjectPartnership,
-    ProjectPartnershipHistory,
-)
+from backend.models.postgis.project_partner import ProjectPartnerAction, ProjectPartnership, ProjectPartnershipHistory
 
 
 class ProjectPartnershipServiceError(Exception):
@@ -24,14 +20,10 @@ class ProjectPartnershipServiceError(Exception):
 
 class ProjectPartnershipService:
     @staticmethod
-    async def get_partnership_as_dto(
-        partnership_id: int, db: Database
-    ) -> ProjectPartnershipDTO:
+    async def get_partnership_as_dto(partnership_id: int, db: Database) -> ProjectPartnershipDTO:
         partnership = await ProjectPartnership.get_by_id(partnership_id, db)
         if partnership is None:
-            raise NotFound(
-                sub_code="PARTNERSHIP_NOT_FOUND", partnership_id=partnership_id
-            )
+            raise NotFound(sub_code="PARTNERSHIP_NOT_FOUND", partnership_id=partnership_id)
 
         partnership_dto = ProjectPartnershipDTO(
             id=partnership.id,
@@ -40,27 +32,10 @@ class ProjectPartnershipService:
             started_on=partnership.started_on,
             ended_on=partnership.ended_on,
         )
-        # partnership_dto.id = partnership.id
-        # partnership_dto.project_id = partnership.project_id
-        # partnership_dto.partner_id = partnership.partner_id
-        # partnership_dto.started_on = partnership.started_on
-        # partnership_dto.ended_on = partnership.ended_on
         return partnership_dto
 
-    # @staticmethod
-    # def get_partnerships_by_project(project_id: int) -> List[ProjectPartnershipDTO]:
-    #     partnerships = ProjectPartnership.query.filter(
-    #         ProjectPartnership.project_id == project_id
-    #     ).all()
-
-    #     return list(
-    #         map(lambda partnership: partnership.as_dto().to_primitive(), partnerships)
-    #     )
-
     @staticmethod
-    async def get_partnerships_by_project(
-        project_id: int, db: Database
-    ) -> List[ProjectPartnershipDTO]:
+    async def get_partnerships_by_project(project_id: int, db: Database) -> List[ProjectPartnershipDTO]:
         """
         Retrieves all partnerships for a specific project ID.
         """
@@ -86,10 +61,7 @@ class ProjectPartnershipService:
         partnership.started_on = started_on
         partnership.ended_on = ended_on
 
-        if (
-            partnership.ended_on is not None
-            and partnership.started_on > partnership.ended_on
-        ):
+        if partnership.ended_on is not None and partnership.started_on > partnership.ended_on:
             raise BadRequest(
                 sub_code="INVALID_TIME_RANGE",
                 message="Partnership cannot end before it started.",
@@ -119,9 +91,7 @@ class ProjectPartnershipService:
         partnership_record = await ProjectPartnership.get_by_id(partnership_id, db)
         partnership = ProjectPartnership(**partnership_record)
         if partnership is None:
-            raise NotFound(
-                sub_code="PARTNERSHIP_NOT_FOUND", partnership_id=partnership_id
-            )
+            raise NotFound(sub_code="PARTNERSHIP_NOT_FOUND", partnership_id=partnership_id)
 
         if (started_on is not None or ended_on is not None) and (
             started_on != partnership.started_on or ended_on != partnership.ended_on
@@ -142,10 +112,7 @@ class ProjectPartnershipService:
                 partnership_history.ended_on_new = ended_on
                 partnership.ended_on = ended_on
 
-            if (
-                partnership.ended_on is not None
-                and partnership.started_on > partnership.ended_on
-            ):
+            if partnership.ended_on is not None and partnership.started_on > partnership.ended_on:
                 raise BadRequest(
                     sub_code="INVALID_TIME_RANGE",
                     message="Partnership cannot end before it started.",
@@ -163,9 +130,7 @@ class ProjectPartnershipService:
         partnership_record = await ProjectPartnership.get_by_id(partnership_id, db)
         partnership = ProjectPartnership(**partnership_record)
         if partnership is None:
-            raise NotFound(
-                sub_code="PARTNERSHIP_NOT_FOUND", partnership_id=partnership_id
-            )
+            raise NotFound(sub_code="PARTNERSHIP_NOT_FOUND", partnership_id=partnership_id)
 
         partnership_history = ProjectPartnershipHistory()
         partnership_history.partnership_id = partnership_id

@@ -1,14 +1,9 @@
-import geojson
-from backend.models.postgis.task import (
-    InvalidGeoJson,
-    InvalidData,
-    Task,
-    TaskAction,
-    TaskHistory,
-)
-from backend.models.postgis.statuses import TaskStatus
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
+import geojson
+
+from backend.models.postgis.statuses import TaskStatus
+from backend.models.postgis.task import InvalidData, InvalidGeoJson, Task, TaskAction, TaskHistory
 from tests.backend.base import BaseTestCase
 
 
@@ -22,18 +17,14 @@ class TestTask(BaseTestCase):
         test_task.task_status = TaskStatus.MAPPED
         test_task.reset_task(user_id)
 
-        mock_set_task_history.assert_called_with(
-            TaskAction.STATE_CHANGE, user_id, None, TaskStatus.READY
-        )
+        mock_set_task_history.assert_called_with(TaskAction.STATE_CHANGE, user_id, None, TaskStatus.READY)
         mock_update.assert_called()
         self.assertEqual(test_task.task_status, TaskStatus.READY.value)
 
     @patch.object(Task, "update")
     @patch.object(Task, "record_auto_unlock")
     @patch.object(Task, "set_task_history")
-    def test_reset_task_clears_any_existing_locks(
-        self, mock_set_task_history, mock_record_auto_unlock, mock_update
-    ):
+    def test_reset_task_clears_any_existing_locks(self, mock_set_task_history, mock_record_auto_unlock, mock_update):
         user_id = 123
 
         test_task = Task()
@@ -82,9 +73,7 @@ class TestTask(BaseTestCase):
 
     def test_cant_add_task_if_not_supplied_feature_type(self):
         # Arrange
-        invalid_feature = geojson.MultiPolygon(
-            [[(2.38, 57.322), (23.194, -20.28), (-120.43, 19.15), (2.38, 10.33)]]
-        )
+        invalid_feature = geojson.MultiPolygon([[(2.38, 57.322), (23.194, -20.28), (-120.43, 19.15), (2.38, 10.33)]])
         # Act/Assert
         with self.assertRaises(InvalidGeoJson):
             Task.from_geojson_feature(1, invalid_feature)
@@ -97,9 +86,7 @@ class TestTask(BaseTestCase):
         test_task.set_task_history(action=TaskAction.LOCKED_FOR_MAPPING, user_id=123454)
 
         # Assert
-        self.assertEqual(
-            TaskAction.LOCKED_FOR_MAPPING.name, test_task.task_history[0].action
-        )
+        self.assertEqual(TaskAction.LOCKED_FOR_MAPPING.name, test_task.task_history[0].action)
 
     def test_per_task_instructions_formatted_correctly(self):
         # Arrange
@@ -110,9 +97,7 @@ class TestTask(BaseTestCase):
         test_task.is_square = True
 
         # Act
-        instructions = test_task.format_per_task_instructions(
-            "Test Url is http://test.com/{x}/{y}/{z}"
-        )
+        instructions = test_task.format_per_task_instructions("Test Url is http://test.com/{x}/{y}/{z}")
 
         # Assert
         self.assertEqual(instructions, "Test Url is http://test.com/1/2/3")
@@ -125,9 +110,7 @@ class TestTask(BaseTestCase):
         test_task.is_square = True
 
         # Act
-        instructions = test_task.format_per_task_instructions(
-            "Test Url is http://test.com/{x}_{y}_{z}"
-        )
+        instructions = test_task.format_per_task_instructions("Test Url is http://test.com/{x}_{y}_{z}")
 
         # Assert
         self.assertEqual(instructions, "Test Url is http://test.com/1_2_3")
@@ -158,9 +141,7 @@ class TestTask(BaseTestCase):
         test_task.is_square = True
 
         # Act
-        instructions = test_task.format_per_task_instructions(
-            "Foo is replaced by {foo}"
-        )
+        instructions = test_task.format_per_task_instructions("Foo is replaced by {foo}")
 
         # Assert
         self.assertEqual(instructions, "Foo is replaced by bar")
@@ -188,9 +169,7 @@ class TestTask(BaseTestCase):
         lock_duration = "02:00"
         test_task.record_auto_unlock(lock_duration)
 
-        mock_set_task_history.assert_called_with(
-            action=TaskAction.AUTO_UNLOCKED_FOR_MAPPING, user_id="testuser"
-        )
+        mock_set_task_history.assert_called_with(action=TaskAction.AUTO_UNLOCKED_FOR_MAPPING, user_id="testuser")
         self.assertEqual(mock_history.action_text, lock_duration)
         self.assertEqual(test_task.locked_by, None)
         mock_last_action.delete.assert_called()

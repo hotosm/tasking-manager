@@ -15,7 +15,7 @@ router = APIRouter(
 
 
 @router.post("/{license_id}/actions/accept-for-me/")
-async def post(
+async def accept_license(
     request: Request,
     license_id: int,
     user: AuthUserDTO = Depends(login_required),

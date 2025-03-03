@@ -26,7 +26,7 @@ router = APIRouter(
 
 
 @router.get("/{permalink:str}/filtered-statistics/")
-async def get_statistics(
+async def get_filtered_statistics(
     request: Request,
     permalink: str,
     db: Database = Depends(get_db),
@@ -102,13 +102,11 @@ async def get_statistics(
             message=MAPSWIPE_GROUP_EMPTY_MESSAGE,
         )
 
-    return mapswipe.fetch_filtered_partner_stats(
-        partner.id, partner.mapswipe_group_id, from_date, to_date
-    )
+    return mapswipe.fetch_filtered_partner_stats(partner.id, partner.mapswipe_group_id, from_date, to_date)
 
 
 @router.get("/{permalink:str}/general-statistics/")
-async def get_statistics(
+async def get_general_statistics(
     request: Request,
     permalink: str,
     db: Database = Depends(get_db),

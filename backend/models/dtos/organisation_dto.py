@@ -1,9 +1,11 @@
+from typing import Dict, List, Optional
+
+from fastapi import HTTPException
+from pydantic import BaseModel, Field
+from pydantic.functional_validators import field_validator
+
 from backend.models.dtos.stats_dto import OrganizationStatsDTO
 from backend.models.postgis.statuses import OrganisationType
-from pydantic import BaseModel, Field
-from typing import List, Dict, Optional
-from fastapi import HTTPException
-from pydantic.functional_validators import field_validator
 
 
 def is_known_organisation_type(value):

@@ -18,8 +18,7 @@ router = APIRouter(
 
 
 @router.patch("/me/actions/set-user/")
-# @tm.pm_only(False)
-async def patch(
+async def update_user(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -88,9 +87,7 @@ async def patch(
     try:
         user_dto = UserDTO(**data)
         if user_dto.email_address == "":
-            user_dto.email_address = (
-                None  # Replace empty string with None so validation doesn't break
-            )
+            user_dto.email_address = None  # Replace empty string with None so validation doesn't break
         if user.id != user_dto.id:
             return JSONResponse(
                 content={
@@ -116,7 +113,7 @@ async def patch(
 
 
 @router.patch("/{username}/actions/set-level/{level}/")
-async def patch(
+async def set_mapping_level(
     request: Request,
     username,
     level,
@@ -172,7 +169,7 @@ async def patch(
 
 
 @router.patch("/{username}/actions/set-role/{role}/")
-async def patch(
+async def set_user_role(
     request: Request,
     username: str,
     role: str,
@@ -228,8 +225,7 @@ async def patch(
 
 
 @router.patch("/{user_name}/actions/set-expert-mode/{is_expert}/")
-# @tm.
-async def patch(
+async def set_user_is_expert(
     request: Request,
     user_name,
     is_expert,
@@ -275,7 +271,7 @@ async def patch(
 
 
 @router.patch("/me/actions/verify-email/")
-async def patch(
+async def send_verification_email(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -302,17 +298,13 @@ async def patch(
     """
     try:
         await MessageService.resend_email_validation(user.id, db)
-        return JSONResponse(
-            content={"Success": "Verification email resent"}, status_code=200
-        )
+        return JSONResponse(content={"Success": "Verification email resent"}, status_code=200)
     except ValueError as e:
-        return JSONResponse(
-            content={"Error": str(e), "SubCode": str(e).split("-")[0]}, status_code=400
-        )
+        return JSONResponse(content={"Error": str(e), "SubCode": str(e).split("-")[0]}, status_code=400)
 
 
 @router.post("/actions/register/")
-async def post(
+async def register_user_with_email(
     request: Request,
     db: Database = Depends(get_db),
     user_dto: UserRegisterEmailDTO = Body(...),
@@ -357,7 +349,7 @@ async def post(
 
 
 @router.post("/me/actions/set-interests/")
-async def post(
+async def set_user_interests(
     request: Request,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
@@ -398,9 +390,7 @@ async def post(
             description: Internal Server Error
     """
     try:
-        user_interests = await InterestService.create_or_update_user_interests(
-            user.id, data["interests"], db
-        )
+        user_interests = await InterestService.create_or_update_user_interests(user.id, data["interests"], db)
         return user_interests
     except (ValueError, KeyError) as e:
         return JSONResponse(content={"Error": str(e)}, status_code=400)

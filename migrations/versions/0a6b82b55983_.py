@@ -5,11 +5,12 @@ Revises: 3ee58dee57c9
 Create Date: 2018-09-04 19:09:45.866336
 
 """
-from alembic import op
-import sqlalchemy as sa
 import re
-from backend.models.postgis.message import MessageType
 
+import sqlalchemy as sa
+from alembic import op
+
+from backend.models.postgis.message import MessageType
 
 # revision identifiers, used by Alembic.
 revision = "0a6b82b55983"
@@ -25,15 +26,9 @@ def upgrade():
     op.add_column("messages", sa.Column("message_type", sa.Integer(), nullable=True))
     op.add_column("messages", sa.Column("project_id", sa.Integer(), nullable=True))
     op.add_column("messages", sa.Column("task_id", sa.Integer(), nullable=True))
-    op.create_foreign_key(
-        "fk_message_projects", "messages", "projects", ["project_id"], ["id"]
-    )
-    op.create_index(
-        op.f("ix_messages_message_type"), "messages", ["message_type"], unique=False
-    )
-    op.create_index(
-        op.f("ix_messages_project_id"), "messages", ["project_id"], unique=False
-    )
+    op.create_foreign_key("fk_message_projects", "messages", "projects", ["project_id"], ["id"])
+    op.create_index(op.f("ix_messages_message_type"), "messages", ["message_type"], unique=False)
+    op.create_index(op.f("ix_messages_project_id"), "messages", ["project_id"], unique=False)
     op.create_index(op.f("ix_messages_task_id"), "messages", ["task_id"], unique=False)
     # ### end Alembic commands ###
 
@@ -84,9 +79,7 @@ def upgrade():
                 message_type = "null"
             # If we haven't checked yet if this project exists, check now and cache result
             if project_id not in project_existence:
-                project = conn.execute(
-                    sa.text("select * from projects where id = " + str(project_id))
-                ).first()
+                project = conn.execute(sa.text("select * from projects where id = " + str(project_id))).first()
                 project_existence[project_id] = project is not None
 
             # Only process messages from projects that still exist

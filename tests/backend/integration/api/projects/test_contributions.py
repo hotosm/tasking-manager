@@ -1,8 +1,8 @@
 from datetime import datetime
 
+from backend.models.postgis.task import Task, TaskStatus
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project, return_canned_user
-from backend.models.postgis.task import Task, TaskStatus
 
 
 class TestProjectsContributionsAPI(BaseTestCase):
@@ -103,9 +103,7 @@ class TestProjectsContributionsAPI(BaseTestCase):
         self.assertEqual(len(user_contributions_response), 2)
         # 1st contributor
         # Tasks 3,4 are mapped and task 4 validated by test_author during project creation
-        self.assertEqual(
-            user_contributions_response[0]["username"], self.test_author.username
-        )
+        self.assertEqual(user_contributions_response[0]["username"], self.test_author.username)
         self.assertEqual(user_contributions_response[0]["mapped"], 1)
         self.assertEqual(user_contributions_response[0]["validated"], 1)
         self.assertEqual(user_contributions_response[0]["badImagery"], 1)
@@ -166,9 +164,7 @@ class TestProjectsContributionsQueriesDayAPI(BaseTestCase):
                 ]
             ),
         )
-        self.assertEqual(
-            response.json["stats"][0]["date"], datetime.today().strftime("%Y-%m-%d")
-        )
+        self.assertEqual(response.json["stats"][0]["date"], datetime.today().strftime("%Y-%m-%d"))
         self.assertEqual(response.json["stats"][0]["mapped"], 1)
         self.assertEqual(response.json["stats"][0]["validated"], 1)
         self.assertEqual(response.json["stats"][0]["cumulative_mapped"], 1)

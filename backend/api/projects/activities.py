@@ -13,7 +13,7 @@ router = APIRouter(
 
 
 @router.get("/{project_id}/activities/")
-async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def get_activities(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get all user activity on a project
     ---
@@ -41,15 +41,13 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             description: Internal Server Error
     """
     await ProjectService.exists(project_id, db)
-    page = (
-        int(request.query_params.get("page")) if request.query_params.get("page") else 1
-    )
+    page = int(request.query_params.get("page")) if request.query_params.get("page") else 1
     activity = await StatsService.get_latest_activity(project_id, page, db)
     return activity
 
 
 @router.get("/{project_id}/activities/latest/")
-async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def get_latest_activities(request: Request, project_id: int, db: Database = Depends(get_db)):
     """
     Get latest user activity on all of project task
     ---

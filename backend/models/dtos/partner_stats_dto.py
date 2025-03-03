@@ -93,9 +93,7 @@ class GroupedPartnerStatsDTO(BaseModel):
     provider: str
     id_inside_provider: Optional[str] = Field(None, alias="idInsideProvider")
     name_inside_provider: Optional[str] = Field(None, alias="nameInsideProvider")
-    description_inside_provider: Optional[str] = Field(
-        None, alias="descriptionInsideProvider"
-    )
+    description_inside_provider: Optional[str] = Field(None, alias="descriptionInsideProvider")
     members_count: Optional[int] = Field(None, alias="membersCount")
     members: List[UserGroupMemberDTO] = None
 
@@ -105,15 +103,9 @@ class GroupedPartnerStatsDTO(BaseModel):
     total_contribution_time: Optional[int] = Field(None, alias="totalcontributionTime")
 
     # Recent contributions during the last 1 month
-    total_recent_contributors: Optional[int] = Field(
-        None, alias="totalRecentContributors"
-    )
-    total_recent_contributions: Optional[int] = Field(
-        None, alias="totalRecentcontributions"
-    )
-    total_recent_contribution_time: Optional[int] = Field(
-        None, alias="totalRecentcontributionTime"
-    )
+    total_recent_contributors: Optional[int] = Field(None, alias="totalRecentContributors")
+    total_recent_contributions: Optional[int] = Field(None, alias="totalRecentcontributions")
+    total_recent_contribution_time: Optional[int] = Field(None, alias="totalRecentcontributionTime")
 
     def to_csv(self):
         df = pd.json_normalize(self.dict(by_alias=True)["members"])
@@ -146,27 +138,15 @@ class FilteredPartnerStatsDTO(BaseModel):
 
     from_date: Optional[str] = Field(None, alias="fromDate")
     to_date: Optional[str] = Field(None, alias="toDate")
-    contributions_by_user: List[UserContributionsDTO] = Field(
-        [], alias="contributionsByUser"
-    )
-    contributions_by_geo: List[GeoContributionsDTO] = Field(
-        [], alias="contributionsByGeo"
-    )
-    area_swiped_by_project_type: List[AreaSwipedByProjectTypeDTO] = Field(
-        [], alias="areaSwipedByProjectType"
-    )
-    contributions_by_project_type: List[ContributionsByProjectTypeDTO] = Field(
-        [], alias="contributionsByProjectType"
-    )
-    contributions_by_date: List[ContributionsByDateDTO] = Field(
-        [], alias="contributionsByDate"
-    )
+    contributions_by_user: List[UserContributionsDTO] = Field([], alias="contributionsByUser")
+    contributions_by_geo: List[GeoContributionsDTO] = Field([], alias="contributionsByGeo")
+    area_swiped_by_project_type: List[AreaSwipedByProjectTypeDTO] = Field([], alias="areaSwipedByProjectType")
+    contributions_by_project_type: List[ContributionsByProjectTypeDTO] = Field([], alias="contributionsByProjectType")
+    contributions_by_date: List[ContributionsByDateDTO] = Field([], alias="contributionsByDate")
     contributions_by_organization_name: List[OrganizationContributionsDTO] = Field(
         [], alias="contributionsByorganizationName"
     )
-    contribution_time_by_date: List[ContributionTimeByDateDTO] = Field(
-        [], alias="contributionTimeByDate"
-    )
+    contribution_time_by_date: List[ContributionTimeByDateDTO] = Field([], alias="contributionTimeByDate")
 
     class Config:
         populate_by_name = True

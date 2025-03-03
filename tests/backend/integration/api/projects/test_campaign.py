@@ -1,12 +1,12 @@
-from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import (
-    return_canned_campaign,
-    create_canned_project,
-    return_canned_user,
-    generate_encoded_token,
-)
 from backend.models.dtos.campaign_dto import CampaignProjectDTO
 from backend.services.campaign_service import CampaignService
+from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import (
+    create_canned_project,
+    generate_encoded_token,
+    return_canned_campaign,
+    return_canned_user,
+)
 
 
 class TestGetProjectsCampaignsAPI(BaseTestCase):
@@ -60,9 +60,7 @@ class TestCAddCampaignProjectAPI(BaseTestCase):
     def test_403_if_not_project_manager(self):
         """Test that a user who is not a project manager cannot assign a campaign to a project"""
         # Act
-        response = self.client.post(
-            self.url, headers={"Authorization": self.test_user_session_token}
-        )
+        response = self.client.post(self.url, headers={"Authorization": self.test_user_session_token})
         # Assert
         self.assertEqual(response.status_code, 403)
 
@@ -94,9 +92,7 @@ class TestCAddCampaignProjectAPI(BaseTestCase):
             headers={"Authorization": self.test_author_session_token},
         )
         # Assert
-        project_campaigns = CampaignService.get_project_campaigns_as_dto(
-            self.test_project.id
-        )["campaigns"]
+        project_campaigns = CampaignService.get_project_campaigns_as_dto(self.test_project.id)["campaigns"]
         self.assertEqual(response.status_code, 200)
         self.assertEqual(project_campaigns[0]["id"], self.test_campaign.id)
         self.assertEqual(project_campaigns[0]["name"], self.test_campaign.name)
@@ -155,9 +151,7 @@ class TestDeleteCampaignProjectAPI(BaseTestCase):
     def test_403_if_not_project_manager(self):
         """Test that a user who is not a project manager cannot remove a campaign from a project"""
         # Act
-        response = self.client.delete(
-            self.url, headers={"Authorization": self.test_user_session_token}
-        )
+        response = self.client.delete(self.url, headers={"Authorization": self.test_user_session_token})
         # Assert
         self.assertEqual(response.status_code, 403)
 
@@ -204,8 +198,6 @@ class TestDeleteCampaignProjectAPI(BaseTestCase):
             headers={"Authorization": self.test_author_session_token},
         )
         # Assert
-        project_campaigns = CampaignService.get_project_campaigns_as_dto(
-            self.test_project.id
-        )["campaigns"]
+        project_campaigns = CampaignService.get_project_campaigns_as_dto(self.test_project.id)["campaigns"]
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(project_campaigns), 0)

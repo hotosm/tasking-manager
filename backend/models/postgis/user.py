@@ -1,17 +1,6 @@
 import geojson
 from databases import Database
-from sqlalchemy import (
-    ARRAY,
-    BigInteger,
-    Boolean,
-    Column,
-    DateTime,
-    Integer,
-    String,
-    delete,
-    insert,
-    update,
-)
+from sqlalchemy import ARRAY, BigInteger, Boolean, Column, DateTime, Integer, String, delete, insert, update
 from sqlalchemy.orm import relationship
 
 from backend.db import Base
@@ -30,12 +19,7 @@ from backend.models.dtos.user_dto import (
 from backend.models.postgis.interests import Interest, user_interests
 from backend.models.postgis.licenses import License, user_licenses_table
 from backend.models.postgis.project_info import ProjectInfo
-from backend.models.postgis.statuses import (
-    MappingLevel,
-    ProjectStatus,
-    UserGender,
-    UserRole,
-)
+from backend.models.postgis.statuses import MappingLevel, ProjectStatus, UserGender, UserRole
 from backend.models.postgis.utils import timestamp
 
 
@@ -79,9 +63,7 @@ class User(Base):
     last_validation_date = Column(DateTime, default=timestamp)
 
     # Relationships
-    accepted_licenses = relationship(
-        "License", secondary=user_licenses_table, overlaps="users"
-    )
+    accepted_licenses = relationship("License", secondary=user_licenses_table, overlaps="users")
     interests = relationship(Interest, secondary=user_interests, backref="users")
 
     @staticmethod
@@ -144,11 +126,7 @@ class User(Base):
             self.self_description_gender = None
 
         # Create a dictionary for updating fields in the database
-        update_fields = {
-            attr: getattr(self, attr)
-            for attr in self.__dict__
-            if attr in self.__table__.columns
-        }
+        update_fields = {attr: getattr(self, attr) for attr in self.__dict__ if attr in self.__table__.columns}
 
         await db.execute(update(User).where(User.id == self.id).values(**update_fields))
 
@@ -156,9 +134,7 @@ class User(Base):
         """Updates email verfied flag on successfully verified emails"""
         self.is_email_verified = is_verified
         query = "UPDATE users SET is_email_verified = :is_email_verified WHERE id = :user_id"
-        await db.execute(
-            query, values={"is_email_verified": is_verified, "user_id": self.id}
-        )
+        await db.execute(query, values={"is_email_verified": is_verified, "user_id": self.id})
 
     async def set_is_expert(self, is_expert: bool, db: Database):
         """Enables or disables expert mode on the user"""
@@ -178,9 +154,7 @@ class User(Base):
 
         if query.mapping_level:
             mapping_levels = query.mapping_level.split(",")
-            mapping_level_array = [
-                MappingLevel[mapping_level].value for mapping_level in mapping_levels
-            ]
+            mapping_level_array = [MappingLevel[mapping_level].value for mapping_level in mapping_levels]
             filters.append("mapping_level = ANY(:mapping_levels)")
             params["mapping_levels"] = tuple(mapping_level_array)
 
@@ -224,21 +198,20 @@ class User(Base):
             count_query = "SELECT COUNT(*) FROM users"
             count_query += " WHERE " + " AND ".join(filters) if filters else ""
             total_count = await db.fetch_val(count_query, params)
-            dto.pagination = Pagination.from_total_count(
-                query.page, query.per_page, total_count
-            )
+            dto.pagination = Pagination.from_total_count(query.page, query.per_page, total_count)
 
         return dto
 
     @staticmethod
-    def get_all_users_not_paginated():
-        """Get all users in DB"""
-        return session.query(User.id).all()
+    async def get_all_users_not_paginated(db: Database):
+        """Get all users in the database."""
+        query = """
+            SELECT id FROM users
+        """
+        return await db.fetch_all(query)
 
     @staticmethod
-    async def filter_users(
-        username: str, project_id: int, page: int, db: Database
-    ) -> UserFilterDTO:
+    async def filter_users(username: str, project_id: int, page: int, db: Database) -> UserFilterDTO:
         """Finds users that match the first characters, for auto-complete.
 
         Users who have participated (mapped or validated) in the project, if given, will be
@@ -279,9 +252,7 @@ class User(Base):
             SELECT COUNT(*) FROM users u WHERE u.username ILIKE :username || '%'
         """
         total = await db.fetch_val(total_query, values={"username": username.lower()})
-        dto.pagination = Pagination.from_total_count(
-            page=page, per_page=20, total=total
-        )
+        dto.pagination = Pagination.from_total_count(page=page, per_page=20, total=total)
 
         return dto
 
@@ -294,9 +265,7 @@ class User(Base):
             WHERE id = :user_id
               AND projects_mapped @> ARRAY[:project_id]::integer[]
         """
-        result = await db.fetch_val(
-            query, values={"user_id": user_id, "project_id": project_id}
-        )
+        result = await db.fetch_val(query, values={"user_id": user_id, "project_id": project_id})
 
         if result > 0:
             return  # Project already exists in mapped projects
@@ -310,9 +279,7 @@ class User(Base):
         await db.execute(query, values={"user_id": user_id, "project_id": project_id})
 
     @staticmethod
-    async def get_mapped_projects(
-        user_id: int, preferred_locale: str, db: Database
-    ) -> UserMappedProjectsDTO:
+    async def get_mapped_projects(user_id: int, preferred_locale: str, db: Database) -> UserMappedProjectsDTO:
         """Get all projects a user has mapped on"""
 
         # Subquery for validated tasks
@@ -363,9 +330,7 @@ class User(Base):
             mapped_project.tasks_mapped = row["mapped"]
             mapped_project.tasks_validated = row["validated"]
             mapped_project.centroid = geojson.loads(row["centroid"])
-            project_info = await ProjectInfo.get_dto_for_locale(
-                db, row["id"], preferred_locale, row["default_locale"]
-            )
+            project_info = await ProjectInfo.get_dto_for_locale(db, row["id"], preferred_locale, row["default_locale"])
             mapped_project.name = project_info.name
             mapped_projects_dto.mapped_projects.append(mapped_project)
         return mapped_projects_dto
@@ -390,9 +355,7 @@ class User(Base):
             SET mapping_level = :mapping_level
             WHERE id = :user_id
         """
-        await db.execute(
-            query, values={"user_id": self.id, "mapping_level": level.value}
-        )
+        await db.execute(query, values={"user_id": self.id, "mapping_level": level.value})
 
     async def accept_license_terms(self, user_id, license_id: int, db: Database):
         """Associate the user in scope with the supplied license"""
@@ -401,18 +364,14 @@ class User(Base):
         query_check = """
             SELECT 1 FROM user_licenses WHERE "user" = :user_id AND "license" = :license_id
         """
-        record = await db.fetch_one(
-            query_check, values={"user_id": user_id, "license_id": license_id}
-        )
+        record = await db.fetch_one(query_check, values={"user_id": user_id, "license_id": license_id})
 
         if not record:
             query = """
                 INSERT INTO user_licenses ("user", "license")
                 VALUES (:user_id, :license_id)
             """
-            await db.execute(
-                query, values={"user_id": user_id, "license_id": license_id}
-            )
+            await db.execute(query, values={"user_id": user_id, "license_id": license_id})
 
     def has_user_accepted_licence(self, license_id: int):
         """Test to see if the user has accepted the terms of the specified license"""
@@ -430,9 +389,7 @@ class User(Base):
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
-        user_dto.projects_mapped = (
-            len(self.projects_mapped) if self.projects_mapped else None
-        )
+        user_dto.projects_mapped = len(self.projects_mapped) if self.projects_mapped else None
         user_dto.is_expert = self.is_expert or False
         # user_dto.date_registered = self.date_registered
         user_dto.twitter_id = self.twitter_id
@@ -451,9 +408,7 @@ class User(Base):
         user_dto.projects_comments_notifications = self.projects_comments_notifications
         user_dto.tasks_notifications = self.tasks_notifications
         user_dto.tasks_comments_notifications = self.tasks_comments_notifications
-        user_dto.teams_announcement_notifications = (
-            self.teams_announcement_notifications
-        )
+        user_dto.teams_announcement_notifications = self.teams_announcement_notifications
 
         if self.username == logged_in_username:
             # Only return email address and gender information when logged in user is looking at their own profile

@@ -1,7 +1,6 @@
 import json
 
 import requests
-# from cachetools import TTLCache, cached
 
 from backend.exceptions import Conflict
 from backend.models.dtos.partner_stats_dto import (
@@ -17,6 +16,9 @@ from backend.models.dtos.partner_stats_dto import (
     UserContributionsDTO,
     UserGroupMemberDTO,
 )
+
+# from cachetools import TTLCache, cached
+
 
 # grouped_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
 # filtered_partner_stats_cache = TTLCache(maxsize=128, ttl=60 * 60 * 24)
@@ -73,9 +75,7 @@ class MapswipeService:
         variables = {"limit": limit, "offset": offset, "pk": group_id}
         return {"operationName": operation_name, "query": query, "variables": variables}
 
-    def __build_query_filtered_user_group_stats(
-        self, group_id: str, from_date: str, to_date: str
-    ):
+    def __build_query_filtered_user_group_stats(self, group_id: str, from_date: str, to_date: str):
         """A private method to build a graphQl query to fetch a mapswipe group's stats within a timerange."""
 
         operation_name = "FilteredUserGroupStats"
@@ -136,9 +136,7 @@ class MapswipeService:
         variables = {"fromDate": from_date, "toDate": to_date, "pk": group_id}
         return {"operationName": operation_name, "query": query, "variables": variables}
 
-    def setup_group_dto(
-        self, partner_id: str, group_id: str, resp_body: str
-    ) -> GroupedPartnerStatsDTO:
+    def setup_group_dto(self, partner_id: str, group_id: str, resp_body: str) -> GroupedPartnerStatsDTO:
         group_stats = json.loads(resp_body)["data"]
         group_dto = GroupedPartnerStatsDTO(provider="mapswipe")
         group_dto.id = partner_id
@@ -166,24 +164,12 @@ class MapswipeService:
             user.total_mapping_projects = user_resp["totalMappingProjects"]
             group_dto.members.append(user)
 
-        group_dto.total_contributors = group_stats["userGroupStats"]["stats"][
-            "totalContributors"
-        ]
-        group_dto.total_contributions = group_stats["userGroupStats"]["stats"][
-            "totalSwipes"
-        ]
-        group_dto.total_contribution_time = group_stats["userGroupStats"]["stats"][
-            "totalSwipeTime"
-        ]
-        group_dto.total_recent_contributors = group_stats["userGroupStats"][
-            "statsLatest"
-        ]["totalContributors"]
-        group_dto.total_recent_contributions = group_stats["userGroupStats"][
-            "statsLatest"
-        ]["totalSwipes"]
-        group_dto.total_recent_contribution_time = group_stats["userGroupStats"][
-            "statsLatest"
-        ]["totalSwipeTime"]
+        group_dto.total_contributors = group_stats["userGroupStats"]["stats"]["totalContributors"]
+        group_dto.total_contributions = group_stats["userGroupStats"]["stats"]["totalSwipes"]
+        group_dto.total_contribution_time = group_stats["userGroupStats"]["stats"]["totalSwipeTime"]
+        group_dto.total_recent_contributors = group_stats["userGroupStats"]["statsLatest"]["totalContributors"]
+        group_dto.total_recent_contributions = group_stats["userGroupStats"]["statsLatest"]["totalSwipes"]
+        group_dto.total_recent_contribution_time = group_stats["userGroupStats"]["statsLatest"]["totalSwipeTime"]
 
         return group_dto
 
@@ -218,9 +204,7 @@ class MapswipeService:
             user_contributions.username = user_stats["username"]
             user_contributions.total_contributions = user_stats["totalSwipes"]
             user_contributions.total_contribution_time = user_stats["totalSwipeTime"]
-            user_contributions.total_mapping_projects = user_stats[
-                "totalMappingProjects"
-            ]
+            user_contributions.total_mapping_projects = user_stats["totalMappingProjects"]
             stats_by_user.append(user_contributions)
         filtered_stats_dto.contributions_by_user = stats_by_user
 
@@ -239,9 +223,7 @@ class MapswipeService:
         for area_swiped in filtered_stats["areaSwipedByProjectType"]:
             area_swiped_by_project_type = AreaSwipedByProjectTypeDTO()
             area_swiped_by_project_type.project_type = area_swiped["projectType"]
-            area_swiped_by_project_type.project_type_display = area_swiped[
-                "projectTypeDisplay"
-            ]
+            area_swiped_by_project_type.project_type_display = area_swiped["projectTypeDisplay"]
             area_swiped_by_project_type.total_area = area_swiped["totalArea"]
             areas_swiped.append(area_swiped_by_project_type)
         filtered_stats_dto.area_swiped_by_project_type = areas_swiped
@@ -258,9 +240,7 @@ class MapswipeService:
         for by_date in filtered_stats["swipeTimeByDate"]:
             contribution_time_by_date = ContributionTimeByDateDTO()
             contribution_time_by_date.date = by_date["date"]
-            contribution_time_by_date.total_contribution_time = by_date[
-                "totalSwipeTime"
-            ]
+            contribution_time_by_date.total_contribution_time = by_date["totalSwipeTime"]
             dates.append(contribution_time_by_date)
         filtered_stats_dto.contribution_time_by_date = dates
 
@@ -268,24 +248,16 @@ class MapswipeService:
         for project_type in filtered_stats["swipeByProjectType"]:
             contributions_by_project_type = ContributionsByProjectTypeDTO()
             contributions_by_project_type.project_type = project_type["projectType"]
-            contributions_by_project_type.project_type_display = project_type[
-                "projectTypeDisplay"
-            ]
-            contributions_by_project_type.total_contributions = project_type[
-                "totalSwipes"
-            ]
+            contributions_by_project_type.project_type_display = project_type["projectTypeDisplay"]
+            contributions_by_project_type.total_contributions = project_type["totalSwipes"]
             project_types.append(contributions_by_project_type)
         filtered_stats_dto.contributions_by_project_type = project_types
 
         organizations = []
         for organization in filtered_stats["swipeByOrganizationName"]:
             contributions_by_organization_name = OrganizationContributionsDTO()
-            contributions_by_organization_name.organization_name = organization[
-                "organizationName"
-            ]
-            contributions_by_organization_name.total_contributions = organization[
-                "totalSwipes"
-            ]
+            contributions_by_organization_name.organization_name = organization["organizationName"]
+            contributions_by_organization_name.total_contributions = organization["totalSwipes"]
             organizations.append(contributions_by_organization_name)
         filtered_stats_dto.contributions_by_organization_name = organizations
         return filtered_stats_dto
@@ -308,9 +280,7 @@ class MapswipeService:
         resp_body = requests.post(
             MAPSWIPE_API_URL,
             headers={"Content-Type": "application/json"},
-            data=json.dumps(
-                self.__build_query_user_group_stats(group_id, limit, offset)
-            ),
+            data=json.dumps(self.__build_query_user_group_stats(group_id, limit, offset)),
         ).text
 
         group_dto = self.setup_group_dto(partner_id, group_id, resp_body)
@@ -327,14 +297,8 @@ class MapswipeService:
         resp = requests.post(
             MAPSWIPE_API_URL,
             headers={"Content-Type": "application/json"},
-            data=json.dumps(
-                self.__build_query_filtered_user_group_stats(
-                    group_id, from_date, to_date
-                )
-            ),
+            data=json.dumps(self.__build_query_filtered_user_group_stats(group_id, from_date, to_date)),
         )
 
-        filtered_dto = self.setup_filtered_dto(
-            partner_id, group_id, from_date, to_date, resp.text
-        )
+        filtered_dto = self.setup_filtered_dto(partner_id, group_id, from_date, to_date, resp.text)
         return filtered_dto

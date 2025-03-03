@@ -1,10 +1,10 @@
 import csv
 import io
-from distutils.util import strtobool
 from datetime import datetime
+from distutils.util import strtobool
 
 from databases import Database
-from fastapi import APIRouter, Body, Depends, Request, Response, Query
+from fastapi import APIRouter, Body, Depends, Query, Request, Response
 from fastapi.responses import JSONResponse
 from loguru import logger
 
@@ -25,7 +25,7 @@ router = APIRouter(
 
 
 @router.patch("/{team_id}/")
-async def patch(
+async def update_team(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -96,9 +96,7 @@ async def patch(
         data = await request.json()
         if not await TeamService.is_user_team_manager(
             team_id, user.id, db
-        ) and not await OrganisationService.can_user_manage_organisation(
-            team.organisation_id, user.id, db
-        ):
+        ) and not await OrganisationService.can_user_manage_organisation(team.organisation_id, user.id, db):
             return JSONResponse(
                 content={
                     "Error": "User is not a admin or a manager for the team",
@@ -108,9 +106,7 @@ async def patch(
             )
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
-        return JSONResponse(
-            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
-        )
+        return JSONResponse(content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400)
     try:
         if ("joinMethod" or "organisations_id") not in data.keys():
             await Team.update_team_members(team, team_dto, db)
@@ -308,21 +304,13 @@ async def list_teams(
     """
     search_dto = TeamSearchDTO()
     search_dto.team_name = request.query_params.get("team_name", None)
-    search_dto.member = (
-        int(request.query_params.get("member"))
-        if request.query_params.get("member")
-        else None
-    )
+    search_dto.member = int(request.query_params.get("member")) if request.query_params.get("member") else None
     search_dto.manager = request.query_params.get("manager", None)
     search_dto.member_request = request.query_params.get("member_request", None)
     search_dto.team_role = request.query_params.get("team_role", None)
     search_dto.organisation = request.query_params.get("organisation", None)
-    search_dto.omit_members = strtobool(
-        request.query_params.get("omitMemberList", "false")
-    )
-    search_dto.full_members_list = strtobool(
-        request.query_params.get("fullMemberList", "true")
-    )
+    search_dto.omit_members = strtobool(request.query_params.get("omitMemberList", "false"))
+    search_dto.full_members_list = strtobool(request.query_params.get("fullMemberList", "true"))
     search_dto.paginate = strtobool(request.query_params.get("paginate", "false"))
     search_dto.page = int(request.query_params.get("page", 1))
     search_dto.per_page = int(request.query_params.get("perPage", 10))
@@ -332,7 +320,7 @@ async def list_teams(
 
 
 @router.post("/")
-async def post(
+async def create_team(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -394,16 +382,12 @@ async def post(
         team_dto.creator = user.id
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
-        return JSONResponse(
-            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
-        )
+        return JSONResponse(content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400)
 
     try:
         organisation_id = team_dto.organisation_id
 
-        is_org_manager = await OrganisationService.is_user_an_org_manager(
-            organisation_id, user.id, db
-        )
+        is_org_manager = await OrganisationService.is_user_an_org_manager(organisation_id, user.id, db)
         is_admin = await UserService.is_user_an_admin(user.id, db)
         if is_admin or is_org_manager:
             team_id = await TeamService.create_team(team_dto, db)
@@ -419,7 +403,7 @@ async def post(
 
 
 @router.get("/join_requests/")
-async def get(
+async def get_join_requests(
     request: Request,
     team_id: int = Query(..., description="ID of the team to filter by"),
     db: Database = Depends(get_db),
@@ -478,9 +462,7 @@ async def get(
 
         for member in team_members:
             joined_date = getattr(member, "joined_date")
-            joined_date_str = (
-                joined_date.strftime("%Y-%m-%dT%H:%M:%S") if joined_date else "N/A"
-            )
+            joined_date_str = joined_date.strftime("%Y-%m-%dT%H:%M:%S") if joined_date else "N/A"
             writer.writerow(
                 [
                     getattr(member, "username"),
@@ -495,12 +477,9 @@ async def get(
             media_type="text/csv",
             headers={
                 "Content-Disposition": (
-                    f"attachment; filename=join_requests_{team_id}_"
-                    f"{datetime.now().strftime('%Y%m%d')}.csv"
+                    f"attachment; filename=join_requests_{team_id}_" f"{datetime.now().strftime('%Y%m%d')}.csv"
                 )
             },
         )
     except Exception as e:
-        return JSONResponse(
-            content={"message": f"Error occurred: {str(e)}"}, status_code=500
-        )
+        return JSONResponse(content={"message": f"Error occurred: {str(e)}"}, status_code=500)

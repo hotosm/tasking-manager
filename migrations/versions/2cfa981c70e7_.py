@@ -5,8 +5,8 @@ Revises: 5053c01cb170
 Create Date: 2020-07-16 10:30:59.885956
 
 """
-from alembic import op
 import geoalchemy2
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "2cfa981c70e7"

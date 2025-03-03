@@ -1,6 +1,6 @@
 from databases import Database
+from fastapi import APIRouter, Body, Depends, Request
 from fastapi.responses import JSONResponse
-from fastapi import APIRouter, Depends, Request, Body
 from loguru import logger
 
 from backend.db import get_db
@@ -18,7 +18,7 @@ router = APIRouter(
 
 
 @router.get("/{project_id}/teams/")
-async def get(
+async def get_project_teams(
     request: Request,
     project_id: int,
     db: Database = Depends(get_db),
@@ -60,7 +60,7 @@ async def get(
 
 
 @router.post("/{project_id}/teams/{team_id}/")
-async def post(
+async def assign_team(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -126,22 +126,14 @@ async def post(
         role = data["role"]
     except ValueError as e:
         logger.error(f"Error validating request: {str(e)}")
-        return JSONResponse(
-            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
-        )
+        return JSONResponse(content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400)
 
     try:
-        if not await ProjectAdminService.is_user_action_permitted_on_project(
-            user.id, project_id, db
-        ):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
             raise ValueError()
         await TeamService.add_team_project(team_id, project_id, role, db)
         return JSONResponse(
-            content={
-                "Success": "Team {} assigned to project {} with role {}".format(
-                    team_id, project_id, role
-                )
-            },
+            content={"Success": "Team {} assigned to project {} with role {}".format(team_id, project_id, role)},
             status_code=201,
         )
     except ValueError:
@@ -155,7 +147,7 @@ async def post(
 
 
 @router.patch("/{team_id}/projects/{project_id}/")
-async def patch(
+async def patch_project_team(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -212,19 +204,13 @@ async def patch(
         role = data["role"]
     except ValueError as e:
         logger.error(f"Error validating request: {str(e)}")
-        return JSONResponse(
-            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
-        )
+        return JSONResponse(content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400)
 
     try:
-        if not await ProjectAdminService.is_user_action_permitted_on_project(
-            user.id, project_id, db
-        ):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
             raise ValueError()
         await TeamService.change_team_role(team_id, project_id, role, db)
-        return JSONResponse(
-            content={"Status": "Team role updated successfully."}, status_code=201
-        )
+        return JSONResponse(content={"Status": "Team role updated successfully."}, status_code=201)
     except ValueError:
         return JSONResponse(
             content={
@@ -238,7 +224,7 @@ async def patch(
 
 
 @router.delete("/{team_id}/projects/{project_id}/")
-async def delete(
+async def remove_team(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -278,9 +264,7 @@ async def delete(
             description: Internal Server Error
     """
     try:
-        if not await ProjectAdminService.is_user_action_permitted_on_project(
-            user.id, project_id, db
-        ):
+        if not await ProjectAdminService.is_user_action_permitted_on_project(user.id, project_id, db):
             raise ValueError()
         await TeamService.delete_team_project(team_id, project_id, db)
         return JSONResponse(content={"Success": True}, status_code=200)

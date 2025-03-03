@@ -4,10 +4,7 @@ from databases import Database
 from sqlalchemy import Column, DateTime, ForeignKey, Integer
 
 from backend.db import Base
-from backend.models.dtos.project_partner_dto import (
-    ProjectPartnerAction,
-    ProjectPartnershipDTO,
-)
+from backend.models.dtos.project_partner_dto import ProjectPartnerAction, ProjectPartnershipDTO
 from backend.models.postgis.utils import timestamp
 
 
@@ -111,12 +108,8 @@ class ProjectPartnership(Base):
     __tablename__ = "project_partnerships"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    project_id = Column(
-        Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
-    )
-    partner_id = Column(
-        Integer, ForeignKey("partners.id", ondelete="CASCADE"), nullable=False
-    )
+    project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    partner_id = Column(Integer, ForeignKey("partners.id", ondelete="CASCADE"), nullable=False)
     started_on = Column(DateTime, nullable=False, default=timestamp)
     ended_on = Column(DateTime, nullable=True)
 
@@ -143,9 +136,7 @@ class ProjectPartnership(Base):
         """
 
         self.started_on = self.convert_to_utc_naive(self.started_on)
-        self.ended_on = (
-            self.convert_to_utc_naive(self.ended_on) if self.ended_on else None
-        )
+        self.ended_on = self.convert_to_utc_naive(self.ended_on) if self.ended_on else None
 
         query = """
             INSERT INTO project_partnerships (project_id, partner_id, started_on, ended_on)
@@ -166,9 +157,7 @@ class ProjectPartnership(Base):
         Updates the current object in the database.
         """
         self.started_on = self.convert_to_utc_naive(self.started_on)
-        self.ended_on = (
-            self.convert_to_utc_naive(self.ended_on) if self.ended_on else None
-        )
+        self.ended_on = self.convert_to_utc_naive(self.ended_on) if self.ended_on else None
 
         query = """
             UPDATE project_partnerships

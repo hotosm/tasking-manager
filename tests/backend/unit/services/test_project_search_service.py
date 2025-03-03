@@ -1,8 +1,5 @@
 from backend.models.dtos.project_dto import ProjectSearchDTO
-from backend.models.postgis.statuses import (
-    ProjectStatus,
-    ProjectDifficulty,
-)
+from backend.models.postgis.statuses import ProjectDifficulty, ProjectStatus
 from backend.services.project_search_service import ProjectSearchService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
@@ -37,6 +34,4 @@ class TestProjectService(BaseTestCase):
 
         search_dto.validate()
         # Act/Assert
-        self.assertIsNotNone(
-            ProjectSearchService.search_projects(search_dto, test_user)
-        )
+        self.assertIsNotNone(ProjectSearchService.search_projects(search_dto, test_user))

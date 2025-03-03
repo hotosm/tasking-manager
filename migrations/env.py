@@ -1,21 +1,21 @@
+import asyncio
+import logging
 import os
 import sys
+from logging.config import fileConfig
+
+from alembic import context
+from asyncpg import Connection
+from geoalchemy2 import alembic_helpers
+from sqlalchemy import pool
+from sqlalchemy.ext.asyncio import async_engine_from_config
+
+from backend.config import settings
+from backend.db import Base
 
 project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_dir)
 
-from geoalchemy2 import alembic_helpers
-import logging
-
-import asyncio
-from logging.config import fileConfig
-
-from alembic import context
-from backend.db import Base
-from backend.config import settings
-from asyncpg import Connection
-from sqlalchemy import pool
-from sqlalchemy.ext.asyncio import async_engine_from_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -31,9 +31,7 @@ logger = logging.getLogger("alembic.env")
 # from myapp import mymodel
 target_metadata = Base.metadata
 
-config.set_main_option(
-    "sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI.unicode_string()
-)
+config.set_main_option("sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI.unicode_string())
 
 
 # target_metadata = current_app.extensions["migrate"].db.metadata
@@ -58,9 +56,7 @@ def include_object(object, name, type_, reflected, compare_to):
     elif type_ == "index" and name in exclude_index:
         return False
     else:
-        return alembic_helpers.include_object(
-            object, name, type_, reflected, compare_to
-        )
+        return alembic_helpers.include_object(object, name, type_, reflected, compare_to)
 
 
 def run_migrations_offline():

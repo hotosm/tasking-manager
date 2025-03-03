@@ -1,30 +1,29 @@
 from unittest.mock import patch
+
 from flask import current_app
 
-from backend.services.messaging.smtp_service import SMTPService
-from backend.services.project_service import (
-    ProjectService,
-    Project,
-    NotFound,
-    ProjectStatus,
-    MappingLevel,
-    UserService,
-    MappingNotAllowed,
-    ValidatingNotAllowed,
-    ProjectInfo,
-)
-from backend.services.project_service import ProjectAdminService
 from backend.models.dtos.project_dto import LockedTasksForUser
 from backend.models.postgis.task import Task
+from backend.services.messaging.smtp_service import SMTPService
+from backend.services.project_service import (
+    MappingLevel,
+    MappingNotAllowed,
+    NotFound,
+    Project,
+    ProjectAdminService,
+    ProjectInfo,
+    ProjectService,
+    ProjectStatus,
+    UserService,
+    ValidatingNotAllowed,
+)
 from tests.backend.base import BaseTestCase
 
 
 class TestProjectService(BaseTestCase):
     def setUp(self):
         super().setUp()
-        current_app.config[
-            "SEND_PROJECT_EMAIL_UPDATES"
-        ] = True  # Set to true to test email sending
+        current_app.config["SEND_PROJECT_EMAIL_UPDATES"] = True  # Set to true to test email sending
 
     @patch.object(Project, "get")
     def test_project_service_raises_error_if_project_not_found(self, mock_project):
@@ -272,7 +271,5 @@ class TestProjectService(BaseTestCase):
         # Act
         ProjectService.send_email_on_project_progress(1)
         # Assert
-        current_app.config[
-            "SEND_PROJECT_EMAIL_UPDATES"
-        ] = True  # Set to true for other tests
+        current_app.config["SEND_PROJECT_EMAIL_UPDATES"] = True  # Set to true for other tests
         self.assertFalse(mock_send_email.called)

@@ -1,26 +1,22 @@
 import json
-import geojson
 from unittest.mock import patch
 
+import geojson
+
+from backend.models.postgis.statuses import TaskStatus, TeamMemberFunctions, TeamRoles, UserRole
+from backend.models.postgis.task import Task
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
+    add_manager_to_organisation,
+    add_user_to_team,
+    assign_team_to_project,
+    create_canned_organisation,
+    create_canned_project,
+    create_canned_team,
     create_canned_user,
     generate_encoded_token,
     get_canned_json,
-    create_canned_project,
     return_canned_user,
-    create_canned_organisation,
-    add_manager_to_organisation,
-    create_canned_team,
-    assign_team_to_project,
-    add_user_to_team,
-)
-from backend.models.postgis.task import Task
-from backend.models.postgis.statuses import (
-    UserRole,
-    TaskStatus,
-    TeamMemberFunctions,
-    TeamRoles,
 )
 
 
@@ -54,9 +50,7 @@ class TestProjectActionsIntersectingTilesAPI(BaseTestCase):
         # Arrange
         payload = get_canned_json("test_grid.json")
         payload["clipToAoi"] = True
-        expected_response = geojson.loads(
-            json.dumps(get_canned_json("clipped_feature_collection.json"))
-        )
+        expected_response = geojson.loads(json.dumps(get_canned_json("clipped_feature_collection.json")))
         # Act
         response = self.client.post(
             self.url,
@@ -72,9 +66,7 @@ class TestProjectActionsIntersectingTilesAPI(BaseTestCase):
         # Arrange
         payload = get_canned_json("test_grid.json")
         payload["clipToAoi"] = False
-        expected_response = geojson.loads(
-            json.dumps(get_canned_json("feature_collection.json"))
-        )
+        expected_response = geojson.loads(json.dumps(get_canned_json("feature_collection.json")))
         # Act
         response = self.client.post(
             self.url,
@@ -119,9 +111,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.test_project, self.test_author = create_canned_project()
-        self.url = (
-            f"/api/v2/projects/{self.test_project.id}/actions/message-contributors/"
-        )
+        self.url = f"/api/v2/projects/{self.test_project.id}/actions/message-contributors/"
         self.test_message = "Test message"
         self.test_subject = "Test subject"
         self.test_user = return_canned_user("Test User", 1111111)
@@ -170,9 +160,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         self.assertEqual(response.status_code, 400)
 
     @patch("threading.Thread.start")
-    def test_sends_message_to_contributors_is_allowed_to_project_author(
-        self, mock_thread
-    ):
+    def test_sends_message_to_contributors_is_allowed_to_project_author(self, mock_thread):
         """Test that the endpoint sends a message to the project contributors"""
         # Arrange
         # Add a contributor to the project
@@ -192,9 +180,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         self.assertEqual(mock_thread.call_count, 1)
 
     @patch("threading.Thread.start")
-    def test_sends_message_to_contributors_is_allowed_to_organisation_manager(
-        self, mock_thread
-    ):
+    def test_sends_message_to_contributors_is_allowed_to_organisation_manager(self, mock_thread):
         """Test that the endpoint sends a message to the project contributors"""
         # Arrange
         test_organisation = create_canned_organisation()
@@ -238,20 +224,14 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         self.assertEqual(mock_thread.call_count, 1)
 
     @patch("threading.Thread.start")
-    def test_sends_message_to_contributors_is_allowed_to_project_team_members_with_PM_permission(
-        self, mock_thread
-    ):
+    def test_sends_message_to_contributors_is_allowed_to_project_team_members_with_PM_permission(self, mock_thread):
         """Test that the endpoint sends a message to the project contributors"""
         # Arrange
         test_organisation = create_canned_organisation()
         self.test_project.organisation = test_organisation
         test_team = create_canned_team()
-        add_user_to_team(
-            test_team, self.test_user, TeamMemberFunctions.MEMBER.value, True
-        )
-        assign_team_to_project(
-            self.test_project, test_team, TeamRoles.PROJECT_MANAGER.value
-        )
+        add_user_to_team(test_team, self.test_user, TeamMemberFunctions.MEMBER.value, True)
+        assign_team_to_project(self.test_project, test_team, TeamRoles.PROJECT_MANAGER.value)
         # Add a contributor to the project
         task = Task.get(2, self.test_project.id)
         task.lock_task_for_mapping(self.test_user.id)
@@ -279,9 +259,7 @@ class TestProjectsActionsTransferAPI(BaseTestCase):
         self.test_user_access_token = generate_encoded_token(self.test_user.id)
         self.test_project, self.test_author = create_canned_project()
         self.test_author_access_token = generate_encoded_token(self.test_author.id)
-        self.url = (
-            f"/api/v2/projects/{self.test_project.id}/actions/transfer-ownership/"
-        )
+        self.url = f"/api/v2/projects/{self.test_project.id}/actions/transfer-ownership/"
         self.test_organisation = create_canned_organisation()
         self.test_project.organisation = self.test_organisation
         self.test_project.save()
@@ -344,9 +322,7 @@ class TestProjectsActionsTransferAPI(BaseTestCase):
 
     # Patch the thread start method to avoid application context issues
     @patch("threading.Thread.start")
-    def test_returns_200_if_new_owner_is_admin_or_manager_of_org_project_is_in(
-        self, mock_thread
-    ):
+    def test_returns_200_if_new_owner_is_admin_or_manager_of_org_project_is_in(self, mock_thread):
         """Test that the endpoint returns 200 if the new owner is an admin of the organisation the project is in"""
         # Test new owner is admin
         # Arrange

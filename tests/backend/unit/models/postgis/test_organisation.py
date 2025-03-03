@@ -1,9 +1,6 @@
 from backend.models.postgis.organisation import Organisation, OrganisationType
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import (
-    create_canned_organisation,
-    create_canned_user,
-)
+from tests.backend.helpers.test_helpers import create_canned_organisation, create_canned_user
 
 
 class TestOrganisation(BaseTestCase):
@@ -19,9 +16,7 @@ class TestOrganisation(BaseTestCase):
         # Arrange
         self.test_org.managers = [self.test_user]
         # Act
-        organisations = Organisation.get_organisations_managed_by_user(
-            self.test_user.id
-        )
+        organisations = Organisation.get_organisations_managed_by_user(self.test_user.id)
         # Assert
         self.assertEqual(self.test_org.name, organisations[0].name)
 

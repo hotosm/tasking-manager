@@ -1,6 +1,5 @@
 from backend.models.postgis.message import Message, MessageType, NotFound
 from backend.services.messaging.message_service import MessageService
-
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import return_canned_user
 

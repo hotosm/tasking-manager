@@ -13,10 +13,7 @@ from backend.models.dtos.organisation_dto import (
 from backend.models.dtos.stats_dto import OrganizationStatsDTO
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.postgis.user import User
-from backend.services.organisation_service import (
-    OrganisationService,
-    OrganisationServiceError,
-)
+from backend.services.organisation_service import OrganisationService, OrganisationServiceError
 from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
@@ -71,11 +68,7 @@ async def retrieve_organisation(
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = (
-        request.user.display_name
-        if request.user and request.user.display_name
-        else None
-    )
+    authenticated_user_id = request.user.display_name if request.user and request.user.display_name else None
     if authenticated_user_id is None:
         user_id = 0
     else:
@@ -130,18 +123,12 @@ async def retrieve_organisation_by_slug(
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = (
-        request.user.display_name
-        if request.user and request.user.display_name
-        else None
-    )
+    authenticated_user_id = request.user.display_name if request.user and request.user.display_name else None
     if authenticated_user_id is None:
         user_id = 0
     else:
         user_id = authenticated_user_id
-    organisation_dto = await OrganisationService.get_organisation_by_slug_as_dto(
-        slug, user_id, omit_managers, db
-    )
+    organisation_dto = await OrganisationService.get_organisation_by_slug_as_dto(slug, user_id, omit_managers, db)
     return organisation_dto
 
 
@@ -220,9 +207,7 @@ async def create_organisation(
 
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
-        return JSONResponse(
-            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
-        )
+        return JSONResponse(content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400)
 
     try:
         async with db.transaction():
@@ -274,9 +259,7 @@ async def delete_organisation(
         500:
             description: Internal Server Error
     """
-    if not await OrganisationService.can_user_manage_organisation(
-        organisation_id, user.id, db
-    ):
+    if not await OrganisationService.can_user_manage_organisation(organisation_id, user.id, db):
         return JSONResponse(
             content={
                 "Error": "User is not an admin for the org",
@@ -287,9 +270,7 @@ async def delete_organisation(
     try:
         async with db.transaction():
             await OrganisationService.delete_organisation(organisation_id, db)
-            return JSONResponse(
-                content={"Success": "Organisation deleted"}, status_code=200
-            )
+            return JSONResponse(content={"Success": "Organisation deleted"}, status_code=200)
 
     except OrganisationServiceError:
         return JSONResponse(
@@ -367,9 +348,7 @@ async def update_organisation(
         500:
             description: Internal Server Error
     """
-    if not await OrganisationService.can_user_manage_organisation(
-        organisation_id, user.id, db
-    ):
+    if not await OrganisationService.can_user_manage_organisation(organisation_id, user.id, db):
         return JSONResponse(
             content={
                 "Error": "User is not an admin for the org",
@@ -387,9 +366,7 @@ async def update_organisation(
             organisation_dto.subscription_tier = org.subscription_tier
     except Exception as e:
         logger.error(f"error validating request: {str(e)}")
-        return JSONResponse(
-            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
-        )
+        return JSONResponse(content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400)
     try:
         async with db.transaction():
             await OrganisationService.update_organisation(organisation_dto, db)
@@ -430,9 +407,7 @@ async def get_organisation_with_statistics(
             description: Internal Server Error
     """
     await OrganisationService.get_organisation_by_id(organisation_id, db)
-    organisation_dto = await OrganisationService.get_organisation_stats(
-        organisation_id, db, None
-    )
+    organisation_dto = await OrganisationService.get_organisation_stats(organisation_id, db, None)
     return organisation_dto
 
 
@@ -450,9 +425,7 @@ async def list_organisation(
         alias="omitManagerList",
         description="Omit organization managers list from the response.",
     ),
-    manager_user_id: int = Query(
-        None, alias="manager_user_id", description="ID of the manager user."
-    ),
+    manager_user_id: int = Query(None, alias="manager_user_id", description="ID of the manager user."),
 ):
     """
     List all organisations
@@ -499,11 +472,7 @@ async def list_organisation(
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = (
-        request.user.display_name
-        if request.user and request.user.display_name
-        else None
-    )
+    authenticated_user_id = request.user.display_name if request.user and request.user.display_name else None
 
     if manager_user_id is not None and not authenticated_user_id:
         return Response(

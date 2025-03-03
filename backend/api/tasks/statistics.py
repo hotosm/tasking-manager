@@ -10,7 +10,6 @@ from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.stats_service import StatsService
 from backend.services.users.authentication_service import login_required
 
-
 router = APIRouter(
     prefix="/tasks",
     tags=["tasks"],
@@ -19,7 +18,7 @@ router = APIRouter(
 
 
 @router.get("/statistics/")
-async def get(
+async def get_task_stats(
     request: Request,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
@@ -89,17 +88,11 @@ async def get(
                 },
                 status_code=400,
             )
-        end_date = validate_date_input(
-            request.query_params.get("endDate", date.today())
-        )
+        end_date = validate_date_input(request.query_params.get("endDate", date.today()))
         if end_date < start_date:
-            raise ValueError(
-                "InvalidDateRange- Start date must be earlier than end date"
-            )
+            raise ValueError("InvalidDateRange- Start date must be earlier than end date")
         if (end_date - start_date) > timedelta(days=366):
-            raise ValueError(
-                "InvalidDateRange- Date range can not be bigger than 1 year"
-            )
+            raise ValueError("InvalidDateRange- Date range can not be bigger than 1 year")
         organisation_id = request.query_params.get("organisationId", None)
         organisation_name = request.query_params.get("organisationName", None)
         campaign = request.query_params.get("campaign", None)

@@ -2,15 +2,18 @@ import logging
 import sys
 from contextlib import asynccontextmanager
 
+import sentry_sdk
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from loguru import logger as log
 from pyinstrument import Profiler
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 
 from backend.config import settings
 from backend.db import db_connection
+from backend.exceptions import BadRequest, Conflict, Forbidden, NotFound, Unauthorized
 from backend.routes import add_api_end_points
 from backend.services.users.authentication_service import TokenAuthBackend
 
@@ -23,6 +26,13 @@ def get_application() -> FastAPI:
         await db_connection.connect()
         yield
         await db_connection.disconnect()
+
+    sentry_sdk.init(
+        dsn=settings.SENTRY_BACKEND_DSN,
+        environment=settings.ENVIRONMENT,
+        traces_sample_rate=0.1,
+        ignore_errors=[BadRequest, NotFound, Unauthorized, Forbidden, Conflict],
+    )
 
     _app = FastAPI(
         lifespan=lifespan,
@@ -38,6 +48,8 @@ def get_application() -> FastAPI:
         openapi_url="/api/openapi.json",
         docs_url="/api/docs",
     )
+
+    _app.add_middleware(SentryAsgiMiddleware)
 
     # Custom exception handler for invalid token and logout.
     @_app.exception_handler(HTTPException)
@@ -93,9 +105,7 @@ def get_application() -> FastAPI:
         expose_headers=["Content-Disposition"],
     )
 
-    _app.add_middleware(
-        AuthenticationMiddleware, backend=TokenAuthBackend(), on_error=None
-    )
+    _app.add_middleware(AuthenticationMiddleware, backend=TokenAuthBackend(), on_error=None)
     add_api_end_points(_app)
     return _app
 
@@ -129,10 +139,7 @@ def get_logger():
     log.add(
         sys.stderr,
         level=settings.LOG_LEVEL,
-        format=(
-            "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} "
-            "| {name}:{function}:{line} | {message}"
-        ),
+        format=("{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} " "| {name}:{function}:{line} | {message}"),
         enqueue=True,  # Run async / non-blocking
         colorize=True,
         backtrace=True,  # More detailed tracebacks

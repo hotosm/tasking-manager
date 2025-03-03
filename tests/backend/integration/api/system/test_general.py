@@ -16,9 +16,7 @@ class TestSystemReleaseAPI(BaseTestCase):
     def test_post_banner(self):
         url = "/api/v2/system/release/"
         response = self.client.post(url)
-        release = requests.get(
-            "https://api.github.com/repos/hotosm/tasking-manager/releases/latest"
-        ).json()
+        release = requests.get("https://api.github.com/repos/hotosm/tasking-manager/releases/latest").json()
         # Assert
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json["release_version"], release["tag_name"])

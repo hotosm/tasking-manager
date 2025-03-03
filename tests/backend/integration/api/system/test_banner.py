@@ -1,7 +1,7 @@
 import base64
 
-from tests.backend.base import BaseTestCase
 from backend.services.users.authentication_service import AuthenticationService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import return_canned_user
 
 
@@ -23,9 +23,7 @@ class TestBannerAPI(BaseTestCase):
         # Session token is required for this endpoint. So we need to create a user
         test_user = return_canned_user()
         test_user.create()
-        session_token = AuthenticationService.generate_session_token_for_user(
-            test_user.id
-        )
+        session_token = AuthenticationService.generate_session_token_for_user(test_user.id)
         session_token = base64.b64encode(session_token.encode("utf-8"))
         session_token = "Token " + session_token.decode("utf-8")
         banner_message = "### Updated message"

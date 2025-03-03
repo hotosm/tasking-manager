@@ -37,9 +37,7 @@ class PriorityArea(Base):
             raise InvalidGeoJson("Priority Areas must be supplied as Polygons")
 
         if not pa_geojson.is_valid:
-            raise InvalidGeoJson(
-                "Priority Area: Invalid Polygon - " + ", ".join(pa_geojson.errors())
-            )
+            raise InvalidGeoJson("Priority Area: Invalid Polygon - " + ", ".join(pa_geojson.errors()))
 
         # Convert the GeoJSON into WKT format using a raw SQL query
         valid_geojson = geojson.dumps(pa_geojson)
@@ -62,9 +60,7 @@ class PriorityArea(Base):
         VALUES (ST_GeomFromText(:geometry, 4326))
         RETURNING id;
         """
-        insert_result = await db.fetch_one(
-            query=insert_query, values={"geometry": geometry_wkt}
-        )
+        insert_result = await db.fetch_one(query=insert_query, values={"geometry": geometry_wkt})
 
         if insert_result:
             # Assign the ID and geometry to the PriorityArea object

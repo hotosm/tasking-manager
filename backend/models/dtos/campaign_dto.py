@@ -1,9 +1,9 @@
-from backend.models.dtos.organisation_dto import OrganisationDTO
-
-# from schematics.exceptions import ValidationError
-from pydantic import BaseModel, Field
 from typing import List, Optional
+
+from pydantic import BaseModel, Field
 from pydantic.functional_validators import field_validator
+
+from backend.models.dtos.organisation_dto import OrganisationDTO
 
 
 def is_existent(value):

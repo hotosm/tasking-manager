@@ -16,7 +16,7 @@ router = APIRouter(
 
 
 @router.get("/{project_id}/contributions/")
-async def get(project_id: int, db: Database = Depends(get_db)):
+async def get_project_contributions(project_id: int, db: Database = Depends(get_db)):
     """
     Get all user contributions on a project
     ---
@@ -45,7 +45,7 @@ async def get(project_id: int, db: Database = Depends(get_db)):
 
 
 @router.get("/{project_id}/contributions/queries/day/")
-async def get(project_id: int, db: Database = Depends(get_db)):
+async def get_contributions_by_day(project_id: int, db: Database = Depends(get_db)):
     """
     Get contributions by day for a project
     ---

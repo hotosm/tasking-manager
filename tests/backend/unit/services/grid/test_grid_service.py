@@ -1,4 +1,5 @@
 import json
+
 import geojson
 
 from backend.models.dtos.grid_dto import GridDTO
@@ -15,9 +16,7 @@ class TestGridService(BaseTestCase):
         grid_json = get_canned_json("test_grid.json")
         grid_dto = GridDTO(grid_json)
         aoi_geojson = geojson.loads(json.dumps(grid_dto.area_of_interest))
-        expected = geojson.loads(
-            json.dumps(get_canned_json("multi_polygon_dissolved.json"))
-        )
+        expected = geojson.loads(json.dumps(get_canned_json("multi_polygon_dissolved.json")))
 
         # act
         result = GridService.merge_to_multi_polygon(aoi_geojson, True)
@@ -43,9 +42,7 @@ class TestGridService(BaseTestCase):
         grid_json = get_canned_json("test_grid.json")
 
         grid_dto = GridDTO(grid_json)
-        expected = geojson.loads(
-            json.dumps(get_canned_json("clipped_feature_collection.json"))
-        )
+        expected = geojson.loads(json.dumps(get_canned_json("clipped_feature_collection.json")))
         grid_dto.clip_to_aoi = True
 
         # act
@@ -73,9 +70,7 @@ class TestGridService(BaseTestCase):
         # arrange
         grid_json = get_canned_json("test_arbitrary.json")
         grid_dto = GridDTO(grid_json)
-        expected = geojson.loads(
-            json.dumps(get_canned_json("tasks_from_aoi_features.json"))
-        )
+        expected = geojson.loads(json.dumps(get_canned_json("tasks_from_aoi_features.json")))
 
         # act
         result = GridService.tasks_from_aoi_features(grid_dto.area_of_interest)
@@ -120,32 +115,24 @@ class TestGridService(BaseTestCase):
 
     def test_cant_create_aoi_with_non_multipolygon_type(self):
         # Arrange
-        bad_geom = geojson.Polygon(
-            [[(2.38, 57.322), (23.194, -20.28), (-120.43, 19.15), (2.38, 57.322)]]
-        )
+        bad_geom = geojson.Polygon([[(2.38, 57.322), (23.194, -20.28), (-120.43, 19.15), (2.38, 57.322)]])
         bad_feature = geojson.Feature(geometry=bad_geom)
         # bad_feature_collection = geojson.FeatureCollection([bad_feature])
 
         # Act / Assert
         with self.assertRaises(InvalidGeoJson):
             # Only geometries of type MultiPolygon are valid
-            GridService.merge_to_multi_polygon(
-                geojson.dumps(bad_feature), dissolve=True
-            )
+            GridService.merge_to_multi_polygon(geojson.dumps(bad_feature), dissolve=True)
 
     def test_cant_create_aoi_with_invalid_multipolygon(self):
-        bad_multipolygon = geojson.MultiPolygon(
-            [[(2.38, 57.322), (23.194, -20.28), (-120.43, 19.15), (2.38)]]
-        )
+        bad_multipolygon = geojson.MultiPolygon([[(2.38, 57.322), (23.194, -20.28), (-120.43, 19.15), (2.38)]])
         bad_feature = geojson.Feature(geometry=bad_multipolygon)
         bad_feature_collection = geojson.FeatureCollection([bad_feature])
 
         # Act / Assert
         with self.assertRaises(InvalidGeoJson):
             # Only geometries of type MultiPolygon are valid
-            GridService.merge_to_multi_polygon(
-                geojson.dumps(bad_feature_collection), dissolve=True
-            )
+            GridService.merge_to_multi_polygon(geojson.dumps(bad_feature_collection), dissolve=True)
 
     def test_to_shapely_geometries(self):
         # Arrange
