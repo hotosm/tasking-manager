@@ -694,7 +694,7 @@ class TeamService:
             return JSONResponse(
                 content={
                     "Error": "Team has projects, cannot be deleted",
-                    "SubCode": "This team has projects associated. Before deleting team, unlink any associated projects.",
+                    "SubCode": "This team has projects associated. Before deleting, unlink any associated projects.",
                 },
                 status_code=400,
             )

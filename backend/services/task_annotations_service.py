@@ -44,7 +44,9 @@ class TaskAnnotationsService:
             )
         else:
             insert_query = """
-                INSERT INTO task_annotations (task_id, project_id, annotation_type, properties, annotation_source, annotation_markdown, updated_timestamp)
+                INSERT INTO task_annotations
+                (task_id, project_id, annotation_type, properties, annotation_source,
+                annotation_markdown, updated_timestamp)
                 VALUES (:task_id, :project_id, :annotation_type, :properties, :source, :markdown, :updated_timestamp)
             """
             await db.execute(

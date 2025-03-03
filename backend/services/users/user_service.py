@@ -407,11 +407,16 @@ class UserService:
                 GROUP BY action_text
             )
             SELECT
-                CAST(COALESCE((SELECT SUM(action_count) FROM user_actions WHERE action_text = 'VALIDATED'), 0) AS INTEGER) AS tasks_validated,
-                CAST(COALESCE((SELECT SUM(action_count) FROM user_actions WHERE action_text = 'INVALIDATED'), 0) AS INTEGER) AS tasks_invalidated,
-                CAST(COALESCE((SELECT SUM(action_count) FROM user_actions WHERE action_text = 'MAPPED'), 0) AS INTEGER) AS tasks_mapped,
-                CAST(COALESCE((SELECT SUM(action_count) FROM others_actions WHERE action_text = 'VALIDATED'), 0) AS INTEGER) AS tasks_validated_by_others,
-                CAST(COALESCE((SELECT SUM(action_count) FROM others_actions WHERE action_text = 'INVALIDATED'), 0) AS INTEGER) AS tasks_invalidated_by_others;
+                CAST(COALESCE((SELECT SUM(action_count) FROM user_actions WHERE action_text = 'VALIDATED'), 0)
+                    AS INTEGER) AS tasks_validated,
+                CAST(COALESCE((SELECT SUM(action_count) FROM user_actions WHERE action_text = 'INVALIDATED'), 0)
+                    AS INTEGER) AS tasks_invalidated,
+                CAST(COALESCE((SELECT SUM(action_count) FROM user_actions WHERE action_text = 'MAPPED'), 0)
+                    AS INTEGER) AS tasks_mapped,
+                CAST(COALESCE((SELECT SUM(action_count) FROM others_actions WHERE action_text = 'VALIDATED'), 0)
+                    AS INTEGER) AS tasks_validated_by_others,
+                CAST(COALESCE((SELECT SUM(action_count) FROM others_actions WHERE action_text = 'INVALIDATED'), 0)
+                    AS INTEGER) AS tasks_invalidated_by_others;
         """
         stats_result = await db.fetch_one(query=stats_query, values={"user_id": user_id})
         stats_dto.tasks_mapped = stats_result["tasks_mapped"]
@@ -435,7 +440,6 @@ class UserService:
         stats_dto.total_time_spent = 0
         stats_dto.time_spent_mapping = 0
         stats_dto.time_spent_validating = 0
-
         # Total validation time
         total_validation_time_query = """
             WITH max_action_text_per_minute AS (
@@ -448,7 +452,8 @@ class UserService:
                 GROUP BY date_trunc('minute', action_date)
             )
             SELECT
-                SUM(EXTRACT(EPOCH FROM to_timestamp(tm, 'HH24:MI:SS') - to_timestamp('00:00:00', 'HH24:MI:SS'))) AS total_time
+                SUM(EXTRACT(EPOCH FROM to_timestamp(tm, 'HH24:MI:SS') - to_timestamp('00:00:00', 'HH24:MI:SS')))
+                AS total_time
             FROM max_action_text_per_minute
         """
         result = await db.fetch_one(total_validation_time_query, values={"user_id": user.id})
@@ -458,8 +463,12 @@ class UserService:
 
         # Total mapping time
         total_mapping_time_query = """
-            SELECT
-                SUM(EXTRACT(EPOCH FROM to_timestamp(action_text, 'HH24:MI:SS') - to_timestamp('00:00:00', 'HH24:MI:SS'))) AS total_mapping_time_seconds
+            SELECT SUM(
+                EXTRACT(
+                    EPOCH FROM to_timestamp(action_text, 'HH24:MI:SS') -
+                    to_timestamp('00:00:00', 'HH24:MI:SS')
+                )
+            ) AS total_mapping_time_seconds
             FROM task_history
             WHERE user_id = :user_id
             AND action IN ('LOCKED_FOR_MAPPING', 'AUTO_UNLOCKED_FOR_MAPPING')
@@ -673,7 +682,8 @@ class UserService:
         len_projs = len(recommended_projects)
         if len_projs < limit:
             remaining_projects_query = """
-                SELECT DISTINCT p.*, o.name AS organisation_name, o.logo AS organisation_logo, u.name AS author_name,u.username AS author_username
+                SELECT DISTINCT p.*, o.name AS organisation_name, o.logo AS organisation_logo,
+                    u.name AS author_name, u.username AS author_username
                 FROM projects p
                 LEFT JOIN organisations o ON p.organisation_id = o.id
                 LEFT JOIN users u ON u.id = p.author_id

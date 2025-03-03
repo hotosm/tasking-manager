@@ -291,7 +291,6 @@ class Team(Base):
     async def _get_team_members(self, db: Database):
         """Helper to get JSON serialized members using raw SQL queries"""
 
-        # SQL query to fetch all members of the team, including their username, picture_url, function, and active status
         query = """
             SELECT u.username, u.picture_url, tm.function, tm.active, tm.joined_date
             FROM team_members tm
@@ -480,10 +479,13 @@ class Team(Base):
                 "SELECT * FROM team_members WHERE team_id = :team_id AND user_id = :user_id",
                 {"team_id": team.id, "user_id": user["id"]},
             )
-
             if team_member:
                 await db.execute(
-                    "UPDATE team_members SET join_request_notifications = :join_request_notifications WHERE team_id = :team_id AND user_id = :user_id",
+                    """
+                    UPDATE team_members
+                    SET join_request_notifications = :join_request_notifications
+                    WHERE team_id = :team_id AND user_id = :user_id
+                    """,
                     {
                         "join_request_notifications": member.join_request_notifications,
                         "team_id": team.id,
@@ -492,7 +494,10 @@ class Team(Base):
                 )
             else:
                 await db.execute(
-                    "INSERT INTO team_members (team_id, user_id, function, join_request_notifications) VALUES (:team_id, :user_id, :function, :join_request_notifications)",
+                    """
+                    INSERT INTO team_members (team_id, user_id, function, join_request_notifications)
+                    VALUES (:team_id, :user_id, :function, :join_request_notifications)
+                    """,
                     {
                         "team_id": team.id,
                         "user_id": user["id"],

@@ -336,19 +336,36 @@ class OrganisationService:
 
         active_tasks_query = f"""
             SELECT
-                COUNT(CASE WHEN t.task_status = {TaskStatus.READY.value} THEN 1 END) AS ready,
-                COUNT(CASE WHEN t.task_status = {TaskStatus.LOCKED_FOR_MAPPING.value} THEN 1 END) AS locked_for_mapping,
-                COUNT(CASE WHEN t.task_status = {TaskStatus.MAPPED.value} THEN 1 END) AS mapped,
-                COUNT(CASE WHEN t.task_status = {TaskStatus.LOCKED_FOR_VALIDATION.value} THEN 1 END) AS locked_for_validation,
-                COUNT(CASE WHEN t.task_status = {TaskStatus.VALIDATED.value} THEN 1 END) AS validated,
-                COUNT(CASE WHEN t.task_status = {TaskStatus.INVALIDATED.value} THEN 1 END) AS invalidated,
-                COUNT(CASE WHEN t.task_status = {TaskStatus.BADIMAGERY.value} THEN 1 END) AS badimagery
+                COUNT(
+                    CASE WHEN t.task_status = {TaskStatus.READY.value} THEN 1 END
+                ) AS ready,
+                COUNT(
+                    CASE WHEN t.task_status = {TaskStatus.LOCKED_FOR_MAPPING.value}
+                    THEN 1 END
+                ) AS locked_for_mapping,
+                COUNT(
+                    CASE WHEN t.task_status = {TaskStatus.MAPPED.value} THEN 1 END
+                ) AS mapped,
+                COUNT(
+                    CASE WHEN t.task_status = {TaskStatus.LOCKED_FOR_VALIDATION.value}
+                    THEN 1 END
+                ) AS locked_for_validation,
+                COUNT(
+                    CASE WHEN t.task_status = {TaskStatus.VALIDATED.value} THEN 1 END
+                ) AS validated,
+                COUNT(
+                    CASE WHEN t.task_status = {TaskStatus.INVALIDATED.value} THEN 1 END
+                ) AS invalidated,
+                COUNT(
+                    CASE WHEN t.task_status = {TaskStatus.BADIMAGERY.value} THEN 1 END
+                ) AS badimagery
             FROM tasks t
             WHERE t.project_id IN (
                 SELECT p.id
                 FROM projects p
                 WHERE p.organisation_id = :organisation_id
                 AND p.status = {ProjectStatus.PUBLISHED.value}
+            )
         """
 
         task_values = {"organisation_id": organisation_id}

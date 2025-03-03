@@ -1203,7 +1203,8 @@ class Project(Base):
         #     """
         #     mapping_avg_result = await database.fetch_all(mapping_avg_query)
         #     if mapping_avg_result:
-        #         mapping_time = sum(row['avg'].total_seconds() for row in mapping_avg_result) / len(mapping_avg_result)
+        # total_mapping_time = sum(row['avg'].total_seconds() for row in mapping_avg_result)
+        # mapping_time = total_mapping_time / len(mapping_avg_result)
         #         project_stats.average_mapping_time = mapping_time
 
         # # Query for average validation time
@@ -1219,7 +1220,8 @@ class Project(Base):
         #     """
         #     validation_avg_result = await database.fetch_all(validation_avg_query)
         #     if validation_avg_result:
-        #         validation_time = sum(row['avg'].total_seconds() for row in validation_avg_result) / len(validation_avg_result)
+        # total_validation_time = sum(row['avg'].total_seconds() for row in validation_avg_result)
+        # validation_time = total_validation_time / len(validation_avg_result)
         #         project_stats.average_validation_time = validation_time
 
         # Calculate time to finish mapping and validation
@@ -1504,7 +1506,8 @@ class Project(Base):
                 TO_CHAR(p.created, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as created,
                 TO_CHAR(p.last_updated, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as last_updated,
                 u.username as author,
-                p.total_tasks, p.tasks_mapped, p.tasks_validated, p.tasks_bad_imagery, p.task_creation_mode, p.mapping_types, p.mapping_editors, p.validation_editors, p.organisation_id
+                p.total_tasks, p.tasks_mapped, p.tasks_validated, p.tasks_bad_imagery, p.task_creation_mode,
+                p.mapping_types, p.mapping_editors, p.validation_editors, p.organisation_id
             FROM projects p
             LEFT JOIN users u ON p.author_id = u.id
             WHERE p.id = :project_id
