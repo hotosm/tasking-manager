@@ -227,6 +227,7 @@ class Settings(BaseSettings):
     OAUTH_CLIENT_SECRET: str = os.getenv("TM_CLIENT_SECRET", None)
     OAUTH_SCOPE: str = os.getenv("TM_SCOPE", "read_prefs write_api")
     OAUTH_REDIRECT_URI: str = os.getenv("TM_REDIRECT_URI", None)
+    DB_NAME: str = os.getenv("TM_DB", "tasking-manager")
 
     if os.getenv("OAUTH2_APP_CREDENTIALS", False):
         """
@@ -269,28 +270,31 @@ class Settings(BaseSettings):
     OHSOME_STATS_TOKEN: str = os.getenv("OHSOME_STATS_TOKEN", None)
 
 
-@lru_cache
-def get_settings():
-    """Cache settings when accessed throughout app."""
-    _settings = Settings()
-    if _settings.DEBUG:
-        print(f"Loaded settings: {_settings.model_dump()}")
-    return _settings
-
-
-settings = get_settings()
-
-
 class TestEnvironmentConfig(Settings):
     POSTGRES_TEST_DB: str = os.getenv("POSTGRES_TEST_DB", None)
 
     ENVIRONMENT: str = "test"
 
-    SQLALCHEMY_DATABASE_URI: str = (
-        f"postgresql://{settings.POSTGRES_USER}"
-        + f":{settings.POSTGRES_PASSWORD}"
-        + f"@{settings.POSTGRES_ENDPOINT}:"
-        + f"{settings.POSTGRES_PORT}"
-        + f"/{POSTGRES_TEST_DB}"
+    SQLALCHEMY_DATABASE_URI: PostgresDsn = PostgresDsn.build(
+        scheme="postgresql+asyncpg",
+        username=Settings().POSTGRES_USER,
+        password=Settings().POSTGRES_PASSWORD,
+        host=Settings().POSTGRES_ENDPOINT,
+        port=int(Settings().POSTGRES_PORT),
+        path=f"{POSTGRES_TEST_DB}",
     )
+
     LOG_LEVEL: str = "DEBUG"
+
+
+@lru_cache
+def get_settings(env_type: str = "default"):
+    """Cache settings when accessed throughout app."""
+    _settings = Settings()
+    if env_type == "test":
+        _settings = TestEnvironmentConfig()
+    return _settings
+
+
+settings = get_settings(env_type="default")
+test_settings = get_settings(env_type="test")

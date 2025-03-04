@@ -117,13 +117,13 @@ async def setup_cron_jobs():
     )
     scheduler.add_job(
         update_all_project_stats,
-        CronTrigger(hour=0, minute=0),
+        CronTrigger(hour=0, minute=0, misfire_grace_time=300),
         id="update_project_stats",
         replace_existing=True,
     )
     scheduler.add_job(
         update_recent_updated_project_stats,
-        CronTrigger(minute=0),
+        IntervalTrigger(minutes=60),
         id="update_recent_updated_project_stats",
         replace_existing=True,
     )
