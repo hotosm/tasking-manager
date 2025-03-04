@@ -44,6 +44,8 @@ dependencies = [
     "databases>=0.9.0",
     "fastapi-mail==1.4.1",
     "aiocache>=0.12.3",
+    "httpx>=0.28.1",
+    "pytest>=7.4.0",
 ]
 requires-python = ">=3.9,<=3.11"
 readme = "README.md"
