@@ -111,7 +111,8 @@ class Settings(BaseSettings):
     # Logging settings
     LOG_LEVEL: int = os.getenv("TM_LOG_LEVEL", logging.DEBUG)
     LOG_DIR: str = os.getenv("TM_LOG_DIR", "/home/appuser/logs")
-    USE_SENTRY: bool = os.getenv("USE_SENTRY", True)
+    USE_SENTRY: bool = os.getenv("USE_SENTRY", "false").lower() == "true"
+
     # Mapper Level values represent number of OSM changesets
     MAPPER_LEVEL_INTERMEDIATE: int = int(os.getenv("TM_MAPPER_LEVEL_INTERMEDIATE", 250))
     MAPPER_LEVEL_ADVANCED: int = int(os.getenv("TM_MAPPER_LEVEL_ADVANCED", 500))
