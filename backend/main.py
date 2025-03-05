@@ -27,13 +27,6 @@ def get_application() -> FastAPI:
         yield
         await db_connection.disconnect()
 
-    sentry_sdk.init(
-        dsn=settings.SENTRY_BACKEND_DSN,
-        environment=settings.ENVIRONMENT,
-        traces_sample_rate=0.1,
-        ignore_errors=[BadRequest, NotFound, Unauthorized, Forbidden, Conflict],
-    )
-
     _app = FastAPI(
         lifespan=lifespan,
         title=settings.APP_NAME,
@@ -49,7 +42,16 @@ def get_application() -> FastAPI:
         docs_url="/api/docs",
     )
 
-    _app.add_middleware(SentryAsgiMiddleware)
+    # Initialize Sentry only if USE_SENTRY is enabled
+    if settings.USE_SENTRY:
+        sentry_sdk.init(
+            dsn=settings.SENTRY_BACKEND_DSN,
+            environment=settings.ENVIRONMENT,
+            traces_sample_rate=0.1,
+            ignore_errors=[BadRequest, NotFound, Unauthorized, Forbidden, Conflict],
+        )
+
+        _app.add_middleware(SentryAsgiMiddleware)
 
     # Custom exception handler for invalid token and logout.
     @_app.exception_handler(HTTPException)
