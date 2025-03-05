@@ -539,8 +539,8 @@ class ProjectSummary(BaseModel):
     percent_bad_imagery: Optional[int] = Field(None, alias="percentBadImagery")
     aoi_centroid: Optional[Union[dict, None]] = Field(None, alias="aoiCentroid")
     difficulty: Optional[str] = Field(None, alias="difficulty")
-    mapping_permission: Optional[int] = Field(None, alias="mappingPermission")
-    validation_permission: Optional[int] = Field(None, alias="validationPermission")
+    mapping_permission: Optional[str] = Field(None, alias="mappingPermission")
+    validation_permission: Optional[str] = Field(None, alias="validationPermission")
     allowed_usernames: List[str] = Field(default_factory=list, alias="allowedUsernames")
     random_task_selection_enforced: bool = Field(
         default=False, alias="enforceRandomTaskSelection"

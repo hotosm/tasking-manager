@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
@@ -37,7 +37,7 @@ class UserContribution(BaseModel):
         alias="badImageryTasks", default=None
     )
     name: Optional[str] = None
-    date_registered: Optional[datetime] = Field(alias="dateRegistered", default=None)
+    date_registered: Optional[date] = Field(alias="dateRegistered", default=None)
 
 
 class ProjectContributionsDTO(BaseModel):
