@@ -10,7 +10,6 @@ from databases import Database
 from geoalchemy2 import Geometry
 from shapely.geometry import shape
 
-# # from flask import current_app
 from sqlalchemy import (
     BigInteger,
     Boolean,

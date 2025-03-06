@@ -1,5 +1,3 @@
-# from flask_restful import Resource
-
 from databases import Database
 from fastapi import APIRouter, Depends
 

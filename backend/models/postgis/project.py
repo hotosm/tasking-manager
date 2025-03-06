@@ -131,11 +131,7 @@ class Project(Base):
         for column in self.__table__.columns:
             if getattr(self, column.name) is None and column.default is not None:
                 # Retrieve the default value from the column
-                default_value = (
-                    column.default.arg
-                    if callable(column.default.arg)
-                    else column.default.arg
-                )
+                default_value = column.default.arg
                 setattr(self, column.name, default_value)
 
     # Columns

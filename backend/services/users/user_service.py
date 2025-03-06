@@ -1,6 +1,5 @@
 import datetime
 
-# from cachetools import TTLCache, cached
 from databases import Database
 from loguru import logger
 from sqlalchemy import and_, desc, distinct, func, insert, select
@@ -38,8 +37,6 @@ from backend.services.messaging.template_service import (
 from backend.services.users.osm_service import OSMService, OSMServiceError
 
 settings = Settings()
-
-# user_filter_cache = TTLCache(maxsize=1024, ttl=600)
 
 
 class UserServiceError(Exception):

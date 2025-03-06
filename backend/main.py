@@ -37,7 +37,6 @@ def get_application() -> FastAPI:
             "url": "https://raw.githubusercontent.com/hotosm/tasking-manager/develop/LICENSE.md",
         },
         debug=settings.DEBUG,
-        root_path=settings.TM_APP_API_URL,
         openapi_url="/api/openapi.json",
         docs_url="/api/docs",
     )
@@ -162,7 +161,6 @@ def get_logger():
             serialize=True,  # JSON format
             rotation="00:00",  # New file at midnight
             retention="10 days",
-            # format=log_json_format, # JSON format func
         )
 
     log.add(

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from databases import Database
 from dateutil.parser import parse as date_parse
 from fastapi import APIRouter, Depends, Request
@@ -21,14 +19,8 @@ router = APIRouter(
 async def get_user_tasks(
     request: Request,
     user_id: int,
-    user: AuthUserDTO = Depends(login_required),
+    request_user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
-    status: str = None,
-    project_status: str = None,
-    project_id: int = None,
-    start_date: datetime = None,
-    end_date: datetime = None,
-    sort_by: str = "-action_date",
 ):
     """
     Get a list of tasks a user has interacted with
@@ -104,8 +96,8 @@ async def get_user_tasks(
     """
     try:
         user = await UserService.get_user_by_id(user_id, db)
-        status = request.query_params.get("status")
-        project_status = request.query_params.get("project_status")
+        status = request.query_params.get("status", None)
+        project_status = request.query_params.get("project_status", None)
         project_id = int(request.query_params.get("project_id", 0))
         start_date = (
             date_parse(request.query_params.get("start_date"))

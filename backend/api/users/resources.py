@@ -345,7 +345,7 @@ async def get_user_interests(
     request: Request,
     username: str,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(login_required),
+    request_user: AuthUserDTO = Depends(login_required),
 ):
     """
     Get interests by username

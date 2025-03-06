@@ -1,4 +1,3 @@
-# from werkzeug.exceptions import HTTPException
 from fastapi import HTTPException
 
 from backend import ERROR_MESSAGES

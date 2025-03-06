@@ -1,4 +1,3 @@
-# # from flask import current_app
 import math
 from typing import List
 

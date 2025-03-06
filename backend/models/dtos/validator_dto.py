@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.statuses import TaskStatus
@@ -205,10 +205,28 @@ class RevertUserTasksDTO(BaseModel):
     action_by: int
     action: str
 
-    # TODO: Incorporate this validator.
-    # action: ExtendedStringType = Field(
-    #     validators=[is_valid_revert_status], converters=[str.upper]
-    # )
-
     class Config:
         populate_by_name = True
+
+    @field_validator("action", mode="before")
+    @classmethod
+    def validate_action(cls, value: str) -> str:
+        """Validates that Task Status is in the correct range for reverting"""
+        valid_values = f"{TaskStatus.BADIMAGERY.name}, {TaskStatus.VALIDATED.name}"
+
+        if not isinstance(value, str):
+            raise ValidationError("Action must be a string.")
+
+        value = value.upper()
+
+        try:
+            validated_status = TaskStatus[value]
+        except KeyError:
+            raise ValidationError(
+                f"Unknown task status. Valid values are {valid_values}"
+            )
+
+        if validated_status not in [TaskStatus.VALIDATED, TaskStatus.BADIMAGERY]:
+            raise ValidationError(f"Invalid status. Valid values are {valid_values}")
+
+        return value  # Convert to uppercase, similar to converters=[str.upper]

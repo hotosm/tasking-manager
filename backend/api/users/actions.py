@@ -99,8 +99,6 @@ async def update_user(
                 status_code=401,
             )
     except ValueError as e:
-        return JSONResponse(content={"Error": str(e)}, status_code=400)
-    except ValueError as e:
         logger.error(f"error validating request: {str(e)}")
         return JSONResponse(
             content={

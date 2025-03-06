@@ -4,12 +4,10 @@ from datetime import datetime, timedelta, timezone
 import geojson
 from aiocache import Cache, cached
 
-# from cachetools import TTLCache, cached
 from databases import Database
 from fastapi import HTTPException
 from loguru import logger
 
-# # from flask import current_app
 from backend.config import get_settings
 from backend.db import db_connection
 from backend.exceptions import NotFound
@@ -40,8 +38,6 @@ from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.team_service import TeamService
 from backend.services.users.user_service import UserService
-
-# summary_cache = TTLCache(maxsize=1024, ttl=600)
 
 
 class ProjectServiceError(Exception):

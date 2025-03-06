@@ -1,9 +1,5 @@
 import logging
 
-# import sentry_sdk
-# from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
-# from fastapi import FastAPI
-
 # gevent.monkey.patch_ssl is required. gevent message as follows:
 # MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may
 # lead to errors, including RecursionError on Python 3.6. It may also silently

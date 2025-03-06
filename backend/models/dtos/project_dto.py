@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Union
 
 from fastapi import HTTPException
-from pydantic import BaseModel, Field, root_validator
+from pydantic import BaseModel, Field, root_validator, field_validator
 
 from backend.models.dtos.campaign_dto import CampaignDTO
 from backend.models.dtos.interests_dto import InterestDTO
@@ -268,54 +268,61 @@ class ProjectDTO(BaseModel):
     class Config:
         populate_by_name = True
 
-    # TODO CHeck validators.
-    # @validator('project_status')
-    # def validate_project_status(cls, value):
-    #     if not is_known_project_status(value):
-    #         raise ValueError('Invalid project status')
-    #     return value
+    @field_validator("project_status")
+    @classmethod
+    def validate_project_status(cls, value: str) -> str:
+        if not is_known_project_status(value):
+            raise ValueError("Invalid project status")
+        return value
 
-    # @validator('project_priority')
-    # def validate_project_priority(cls, value):
-    #     if not is_known_project_priority(value):
-    #         raise ValueError('Invalid project priority')
-    #     return value
+    @field_validator("project_priority")
+    @classmethod
+    def validate_project_priority(cls, value: str) -> str:
+        if not is_known_project_priority(value):
+            raise ValueError("Invalid project priority")
+        return value
 
-    # @validator('difficulty')
-    # def validate_difficulty(cls, value):
-    #     if not is_known_project_difficulty(value):
-    #         raise ValueError('Invalid project difficulty')
-    #     return value
+    @field_validator("difficulty")
+    @classmethod
+    def validate_difficulty(cls, value: str) -> str:
+        if not is_known_project_difficulty(value):
+            raise ValueError("Invalid project difficulty")
+        return value
 
-    # @validator('mapping_permission')
-    # def validate_mapping_permission(cls, value):
-    #     if not is_known_mapping_permission(value):
-    #         raise ValueError('Invalid mapping permission')
-    #     return value
+    @field_validator("mapping_permission")
+    @classmethod
+    def validate_mapping_permission(cls, value: str) -> str:
+        if not is_known_mapping_permission(value):
+            raise ValueError("Invalid mapping permission")
+        return value
 
-    # @validator('validation_permission')
-    # def validate_validation_permission(cls, value):
-    #     if not is_known_validation_permission(value):
-    #         raise ValueError('Invalid validation permission')
-    #     return value
+    @field_validator("validation_permission")
+    @classmethod
+    def validate_validation_permission(cls, value: str) -> str:
+        if not is_known_validation_permission(value):
+            raise ValueError("Invalid validation permission")
+        return value
 
-    # @validator('mapping_types', each_item=True)
-    # def validate_mapping_types(cls, value):
-    #     if not is_known_mapping_type(value):
-    #         raise ValueError('Invalid mapping type')
-    #     return value
+    @field_validator("mapping_types", mode="before")
+    @classmethod
+    def validate_mapping_types(cls, values: List[str]) -> List[str]:
+        if not all(is_known_mapping_type(v) for v in values):
+            raise ValueError("Invalid mapping type")
+        return values
 
-    # @validator('task_creation_mode')
-    # def validate_task_creation_mode(cls, value):
-    #     if not is_known_task_creation_mode(value):
-    #         raise ValueError('Invalid task creation mode')
-    #     return value
+    @field_validator("task_creation_mode")
+    @classmethod
+    def validate_task_creation_mode(cls, value: str) -> str:
+        if not is_known_task_creation_mode(value):
+            raise ValueError("Invalid task creation mode")
+        return value
 
-    # @validator('mapping_editors', 'validation_editors', each_item=True)
-    # def validate_editors(cls, value):
-    #     if not is_known_editor(value):
-    #         raise ValueError('Invalid editor')
-    #     return value
+    @field_validator("mapping_editors", "validation_editors", mode="before")
+    @classmethod
+    def validate_editors(cls, values: List[str]) -> List[str]:
+        if not all(is_known_editor(v) for v in values):
+            raise ValueError("Invalid editor")
+        return values
 
 
 class ProjectFavoriteDTO(BaseModel):
@@ -562,24 +569,6 @@ class ProjectSummary(BaseModel):
 
     class Config:
         populate_by_name = True
-
-    # @field_validator('mapping_types', 'mapping_editors', 'validation_editors', mode='plain')
-    # def validate_list_fields(cls, v, field):
-    #     print(field,'-----')
-    #     field_name = field.field_name
-    #     if field_name == 'mapping_types' and not is_known_mapping_type(v):
-    #         raise ValueError(f"Invalid value in {field_name}")
-    #     if field_name in ['mapping_editors', 'validation_editors'] and not is_known_editor(v):
-    #         raise ValueError(f"Invalid value in {field_name}")
-    #     return v
-
-    # @field_validator('mapping_permission', 'validation_permission', mode='plain')
-    # def validate_permissions(cls, v, field):
-    #     if field.name == 'mapping_permission' and not is_known_mapping_permission(v):
-    #         raise ValueError(f"Invalid value in {field.name}")
-    #     if field.name == 'validation_permission' and not is_known_validation_permission(v):
-    #         raise ValueError(f"Invalid value in {field.name}")
-    #     return v
 
 
 class PMDashboardDTO(BaseModel):

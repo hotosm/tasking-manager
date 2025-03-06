@@ -177,6 +177,7 @@ class Team(Base):
         team = await Team.create(new_team, db)
         return team
 
+    @staticmethod
     async def update(team, team_dto: TeamDTO, db: Database):
         """Updates Team from DTO"""
         if team_dto.organisation:
@@ -423,6 +424,7 @@ class Team(Base):
         results = await db.fetch_all(query=query, values=values)
         return [TeamMembersDTO(**result) for result in results]
 
+    @staticmethod
     async def get_team_members(db: Database, team_id: int, count: int = None):
         """
         Returns users with member role in the team.

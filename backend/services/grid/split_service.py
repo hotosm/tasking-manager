@@ -1,7 +1,6 @@
 import geojson
 from databases import Database
 
-# from flask import current_app
 from geoalchemy2 import shape
 from geoalchemy2.elements import WKBElement
 from loguru import logger

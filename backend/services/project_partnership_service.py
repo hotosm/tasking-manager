@@ -1,4 +1,3 @@
-# from flask import current_app
 import datetime
 from typing import List, Optional
 

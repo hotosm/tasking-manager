@@ -73,7 +73,6 @@ async def join_team(
 
 
 @router.patch("/{team_id}/actions/join/")
-# @tm.pm_only(False)
 async def action_team_invite(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
@@ -230,7 +229,6 @@ async def add_team_member(
             },
             status_code=400,
         )
-
     try:
         await TeamService.add_user_to_team(team_id, user.id, username, role, db)
         return JSONResponse(
@@ -378,6 +376,14 @@ async def message_team(
             raise Exception(
                 {"Error": "Empty message not allowed", "SubCode": "EmptyMessage"}
             )
+    except ValueError:
+        return JSONResponse(
+            content={
+                "Error": "Unauthorised to send message to team members",
+                "SubCode": "UserNotPermitted",
+            },
+            status_code=403,
+        )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return JSONResponse(
@@ -386,14 +392,6 @@ async def message_team(
                 "SubCode": "InvalidData",
             },
             status_code=400,
-        )
-    except ValueError:
-        return JSONResponse(
-            content={
-                "Error": "Unauthorised to send message to team members",
-                "SubCode": "UserNotPermitted",
-            },
-            status_code=403,
         )
 
     try:

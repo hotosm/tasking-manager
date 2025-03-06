@@ -104,8 +104,6 @@ async def get_period_user_stats(
     request: Request,
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
-    start_date: str = None,
-    end_date: str = date.today(),
 ):
     """
     Get stats about users registered within a period of time

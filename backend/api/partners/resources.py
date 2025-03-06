@@ -1,4 +1,3 @@
-# from flask_restful import Resource, request
 import json
 
 from databases import Database

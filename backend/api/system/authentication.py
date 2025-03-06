@@ -1,5 +1,3 @@
-# from flask import current_app, request
-# from flask_restful import
 from databases import Database
 from fastapi import APIRouter, Depends, Request
 from fastapi.logger import logger

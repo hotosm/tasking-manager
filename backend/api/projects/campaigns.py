@@ -1,6 +1,3 @@
-# from flask_restful import Resource, current_app
-# from schematics.exceptions import DataError
-
 from databases import Database
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -10,8 +7,6 @@ from backend.models.dtos.campaign_dto import CampaignProjectDTO
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.project_admin_service import ProjectAdminService
-
-# from backend.services.users.authentication_service import token_auth
 from backend.services.users.authentication_service import login_required
 
 router = APIRouter(
