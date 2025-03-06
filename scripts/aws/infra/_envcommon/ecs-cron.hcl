@@ -43,18 +43,10 @@ inputs = {
   log_configuration = {
     logdriver = "awslogs"
     options = {
-      awslogs-group         = format("%s-%s-%s-%s", local.application, local.team, local.environment, "fastapi")
+      awslogs-group         = format("%s-%s-%s-%s", local.application, local.team, local.environment, "cron")
       awslogs-region        = local.environment_vars.locals.aws_region
-      awslogs-stream-prefix = "api"
+      awslogs-stream-prefix = "cron"
     }
-  }
-
-  efs_settings = {
-    file_system_id     = ""
-    access_point_id    = ""
-    root_directory     = "/"
-    transit_encryption = "ENABLED"
-    iam_authz          = "DISABLED"
   }
 
   container_settings = {
@@ -62,10 +54,9 @@ inputs = {
     cpu_architecture = "X86_64"
     image_url        = "ghcr.io/hotosm/tasking-manager-backend"
     image_tag        = "fastapi"
-    service_name     = format("%s-%s-%s-%s", local.application, local.team, local.environment, "fastapi")
+    service_name     = format("%s-%s-%s-%s", local.application, local.team, local.environment, "cron")
   }
 
-  ## Default tested resources needed for fastapi container. Override using ../<environment>/purgeable/ecs/terragrunt.hcl
   container_capacity = {
     cpu       = 2048
     memory_mb = 4096

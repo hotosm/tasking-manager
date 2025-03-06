@@ -10,6 +10,7 @@ on:
         default: purgeable/ecs/
         options:
           - purgeable/ecs/
+          - purgeable/ecs-cron/
           - non-purgeable/extras/
 
 jobs:
@@ -30,7 +31,7 @@ jobs:
             export INFRA_BRANCH_NAME=staging
             export INFRA_BRANCH_URL=https://tasks-stage.hotosm.org
             ;;
-          refs/heads/ci/feat/terragrunt-multi-module)
+          refs/heads/tasking-manager-fastapi)
             export INFRA_BRANCH_NAME=staging
             export INFRA_BRANCH_URL=https://tasks-stage.hotosm.org
             ;;
