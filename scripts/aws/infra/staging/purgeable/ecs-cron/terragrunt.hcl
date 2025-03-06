@@ -59,7 +59,7 @@ inputs = {
   deployment_environment = local.environment_vars.locals.environment
 
   task_role_arn = dependency.extras.outputs.ecs_task_role_arn
-  
+
   service_security_groups = [
     dependency.alb.outputs.load_balancer_app_security_group
   ]
