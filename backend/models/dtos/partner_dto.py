@@ -1,7 +1,7 @@
 import json
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 
 
 class PartnerDTO(BaseModel):
@@ -14,7 +14,7 @@ class PartnerDTO(BaseModel):
     link_x: Optional[str] = None
     link_meta: Optional[str] = None
     link_instagram: Optional[str] = None
-    logo_url: Optional[HttpUrl] = None  # Ensures it's a valid URL
+    logo_url: Optional[str] = None
     current_projects: Optional[str] = None
     permalink: Optional[str] = None
     website_links: Optional[List[Dict]] = None
