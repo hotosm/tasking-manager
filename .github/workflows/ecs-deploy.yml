@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - tasking-manager-fastapi
+    paths:
+      - "backend/**"
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
