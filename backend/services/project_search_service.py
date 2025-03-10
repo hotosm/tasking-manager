@@ -715,6 +715,18 @@ class ProjectSearchService:
                 TeamRoles.PROJECT_MANAGER.value,
             ]
 
+        if user.mapping_level == MappingLevel.BEGINNER.value:
+            permission_condition = (
+                f"AND p.{permission} = {permission_class.TEAMS.value}"
+            )
+        else:
+            permission_condition = ""
+
+        if user.mapping_level != MappingLevel.BEGINNER.value:
+            level_condition = f", {permission_class.LEVEL.value}"
+        else:
+            level_condition = ""
+
         condition = f"""
             (
                 p.id IN (
@@ -725,19 +737,10 @@ class ProjectSearchService:
                     AND tm.active = True
                     AND pt.role = ANY(:team_roles)
                 )
-                {
-                    "AND p." + permission + f" = {permission_class.TEAMS.value}"
-                    if user.mapping_level == MappingLevel.BEGINNER.value
-                    else ""
-                }
+                {permission_condition}
             )
             OR p.{permission} IN (
-                {permission_class.ANY.value}
-                {
-                    ", " + str(permission_class.LEVEL.value)
-                    if user.mapping_level != MappingLevel.BEGINNER.value
-                    else ""
-                }
+                {permission_class.ANY.value}{level_condition}
             )
         """
 
