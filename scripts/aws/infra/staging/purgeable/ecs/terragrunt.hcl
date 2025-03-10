@@ -21,13 +21,13 @@ include "envcommon" {
 # Configure the version of the module to use in this environment. This allows you to promote new versions one
 # environment at a time (e.g., qa -> stage -> prod).
 terraform {
-  source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
+  source = "${include.envcommon.locals.base_source_url}?ref=v1.0"
 }
 
 locals {
   # Automatically load environment-level variables
   environment_vars = read_terragrunt_config(find_in_parent_folders("deployment_env.hcl"))
-  common_ecs_envs = read_terragrunt_config(find_in_parent_folders("common-ecs-env.hcl"))
+  common_ecs_envs  = read_terragrunt_config(find_in_parent_folders("common-ecs-env.hcl"))
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -53,10 +53,10 @@ dependency "extras" {
 ## Add in any new inputs that you want to overide.
 inputs = {
   # Inputs from dependencies (Rarely changed)
-  service_subnets = dependency.vpc.outputs.private_subnets
-  aws_vpc_id = dependency.vpc.outputs.vpc_id
-  service_security_groups = [ dependency.alb.outputs.load_balancer_app_security_group ]
-  deployment_environment = local.environment_vars.locals.environment
+  service_subnets         = dependency.vpc.outputs.private_subnets
+  aws_vpc_id              = dependency.vpc.outputs.vpc_id
+  service_security_groups = [dependency.alb.outputs.load_balancer_app_security_group]
+  deployment_environment  = local.environment_vars.locals.environment
   load_balancer_settings = {
     enabled                 = true
     target_group_arn        = dependency.alb.outputs.target_group_arn
@@ -71,71 +71,80 @@ inputs = {
 
   # Merge secrets with: key:ValueFrom together
   container_secrets = concat(dependency.extras.outputs.container_secrets,
-      dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
+  dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
 
   container_commands = [
-      "sh",
-      "-c",
-      "alembic -c migrations/alembic.ini upgrade head && uvicorn backend.main:api --host 0.0.0.0 --port 5000 --log-level error --workers 8"
+    "sh",
+    "-c",
+    "alembic -c migrations/alembic.ini upgrade head && uvicorn backend.main:api --host 0.0.0.0 --port 5000 --workers 8  --log-level critical --no-access-log"
   ]
 
   ## Task count for ECS services.
   tasks_count = {
-      desired_count   = 1
-      min_healthy_pct = 25
-      max_pct         = 400
-    }
+    desired_count   = 1
+    min_healthy_pct = 25
+    max_pct         = 200
+  }
 
   ## Scaling Policy Target Values
   scaling_target_values = {
-    container_min_count = 2
-    container_max_count = 16
+    container_min_count = 1
+    container_max_count = 3
   }
 
   # Merge non-sensetive together
   container_envvars = merge(
     dependency.rds.outputs.database_config_as_ecs_inputs,
     local.common_ecs_envs.locals.envs
-    )
+  )
 
   # terraform.tfvars
 
-cpu_scaling_config = {
-  enabled             = true
-  threshold           = 70
-  evaluation_periods  = 1
-  period              = 60
-  cooldown            = 180
-  scale_up_adjustment = 1
-  scale_down_adjustment = -1
-}
+  cpu_scaling_config = {
+    enabled             = true
+    threshold           = 60
+    evaluation_periods  = 1
+    period              = 30
+    scale_up_cooldown   = 60
+    scale_down_cooldown = 180
+    scale_up_steps = [
+      { lower_bound = 0, upper_bound = 10, adjustment = 1 },
+      { lower_bound = 10, upper_bound = null, adjustment = 2 }
+    ]
+    scale_down_steps = [
+      { lower_bound = null, upper_bound = 0, adjustment = -1 }
+    ]
+  }
 
-memory_scaling_config = {
-  enabled             = true
-  threshold           = 75
-  evaluation_periods  = 1
-  period              = 60
-  scale_up_cooldown   = 30
-  scale_down_cooldown = 180
-  scale_up_adjustment = 1
-  scale_down_adjustment = -1
-}
+  memory_scaling_config = {
+    enabled             = true
+    threshold           = 70
+    evaluation_periods  = 1
+    period              = 30
+    scale_up_cooldown   = 60
+    scale_down_cooldown = 180
+    scale_up_steps = [
+      { lower_bound = 0, upper_bound = 10, adjustment = 1 },
+      { lower_bound = 10, upper_bound = null, adjustment = 2 },
+    ]
+    scale_down_steps = [
+      { lower_bound = null, upper_bound = 0, adjustment = -1 }
+    ]
+  }
 
-request_scaling_config = {
-  enabled             = true
-  scale_up_threshold  = 100
-  scale_down_threshold = 100
-  evaluation_periods  = 1
-  period              = 30
-  scale_up_cooldown   = 60
-  scale_down_cooldown = 180
-  scale_up_steps = [
-    { lower_bound = 0, upper_bound = 200, adjustment = 1 },
-    { lower_bound = 200, upper_bound = null, adjustment = 3 }
-  ]
-  scale_down_steps = [
-    { lower_bound = null, upper_bound = -50, adjustment = -2 },
-    { lower_bound = -50, upper_bound = 0, adjustment = -1 }
-  ]
-}
+  request_scaling_config = {
+    enabled             = true
+    threshold           = 100
+    evaluation_periods  = 1
+    period              = 30
+    scale_up_cooldown   = 60
+    scale_down_cooldown = 180
+    scale_up_steps = [
+      { lower_bound = 0, upper_bound = 100, adjustment = 1 },
+      { lower_bound = 100, upper_bound = null, adjustment = 2 },
+    ]
+    scale_down_steps = [
+      { lower_bound = null, upper_bound = 0, adjustment = -1 }
+    ]
+  }
 }
