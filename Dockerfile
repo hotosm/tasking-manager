@@ -8,11 +8,11 @@ ARG ALPINE_IMG_TAG
 ARG PYTHON_IMG_TAG
 ARG MAINTAINER=sysadmin@hotosm.org
 LABEL org.hotosm.tasks.app-version="${APP_VERSION}" \
-      org.hotosm.tasks.debian-img-tag="${DEBIAN_IMG_TAG}" \
-      org.hotosm.tasks.python-img-tag="${PYTHON_IMG_TAG}" \
-      org.hotosm.tasks.dockerfile-version="${DOCKERFILE_VERSION}" \
-      org.hotosm.tasks.maintainer="${MAINTAINER}" \
-      org.hotosm.tasks.api-port="5000"
+    org.hotosm.tasks.debian-img-tag="${DEBIAN_IMG_TAG}" \
+    org.hotosm.tasks.python-img-tag="${PYTHON_IMG_TAG}" \
+    org.hotosm.tasks.dockerfile-version="${DOCKERFILE_VERSION}" \
+    org.hotosm.tasks.maintainer="${MAINTAINER}" \
+    org.hotosm.tasks.api-port="5000"
 # Fix timezone (do not change - see issue #3638)
 ENV TZ UTC
 # Add non-root user, permissions, init log dir
@@ -37,11 +37,11 @@ WORKDIR /opt/python
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive \
     apt-get -q install --no-install-recommends -y \
-      build-essential \
-      postgresql-server-dev-15 \
-      python3-dev \
-      libffi-dev \
-      libgeos-dev
+    build-essential \
+    postgresql-server-dev-15 \
+    python3-dev \
+    libffi-dev \
+    libgeos-dev
 # Setup backend Python dependencies
 COPY --from=extract-deps \
     /opt/python/requirements.txt /opt/python/
@@ -66,7 +66,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive \
     apt-get -q install --no-install-recommends -y \
-        postgresql-client libgeos3.11.1 proj-bin curl && \
+    postgresql-client libgeos3.11.1 proj-bin curl && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY --from=build \
     /home/appuser/.local \
@@ -96,5 +96,4 @@ RUN python -c "import compileall; compileall.compile_path(maxlevels=10, quiet=1)
 RUN python -m compileall .
 EXPOSE 5000/tcp
 USER appuser:appuser
-CMD ["uvicorn", "backend.main:api", "--host", "0.0.0.0", "--port", "5000", \
-     "--log-level", "error","--reload"]
+CMD [ "gunicorn", "backend.main:api", "-c", "backend/gunicorn.py" ]
