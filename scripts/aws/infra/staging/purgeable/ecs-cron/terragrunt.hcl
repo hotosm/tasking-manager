@@ -21,13 +21,13 @@ include "envcommon" {
 # Configure the version of the module to use in this environment. This allows you to promote new versions one
 # environment at a time (e.g., qa -> stage -> prod).
 terraform {
-  source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
+  source = "${include.envcommon.locals.base_source_url}?ref=v1.0"
 }
 
 locals {
   # Automatically load environment-level variables
   environment_vars = read_terragrunt_config(find_in_parent_folders("deployment_env.hcl"))
-  common_ecs_envs = read_terragrunt_config(find_in_parent_folders("common-ecs-env.hcl"))
+  common_ecs_envs  = read_terragrunt_config(find_in_parent_folders("common-ecs-env.hcl"))
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -53,10 +53,10 @@ dependency "extras" {
 ## Add in any new inputs that you want to overide.
 inputs = {
   # Inputs from dependencies (Rarely changed)
-  service_subnets = dependency.vpc.outputs.private_subnets
-  aws_vpc_id = dependency.vpc.outputs.vpc_id
-  service_security_groups = [ dependency.alb.outputs.load_balancer_app_security_group ]
-  deployment_environment = local.environment_vars.locals.environment
+  service_subnets         = dependency.vpc.outputs.private_subnets
+  aws_vpc_id              = dependency.vpc.outputs.vpc_id
+  service_security_groups = [dependency.alb.outputs.load_balancer_app_security_group]
+  deployment_environment  = local.environment_vars.locals.environment
 
   task_role_arn = dependency.extras.outputs.ecs_task_role_arn
 
@@ -66,20 +66,20 @@ inputs = {
 
   # Merge secrets with: key:ValueFrom together
   container_secrets = concat(dependency.extras.outputs.container_secrets,
-      dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
+  dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
 
   container_commands = [
-      "sh",
-      "-c",
-      "python3 backend/cron_jobs.py"
+    "sh",
+    "-c",
+    "python3 backend/cron_jobs.py"
   ]
 
   ## Task count for ECS services.
   tasks_count = {
-      desired_count   = 1
-      min_healthy_pct = 100
-      max_pct         = 200
-    }
+    desired_count   = 1
+    min_healthy_pct = 100
+    max_pct         = 200
+  }
 
   ## Scaling Policy Target Values
   scaling_target_values = {
@@ -91,5 +91,5 @@ inputs = {
   container_envvars = merge(
     dependency.rds.outputs.database_config_as_ecs_inputs,
     local.common_ecs_envs.locals.envs
-    )
+  )
 }
