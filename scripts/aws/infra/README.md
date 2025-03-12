@@ -98,6 +98,16 @@ TM_SMTP_USE_SSL               = get_env("TM_SMTP_USE_SSL" ,"1")
 TM_APP_BASE_URL               = get_env("TM_APP_BASE_URL" ,"https://tasks-stage.hotosm.org")
 ```
 
+A. Overriding the hardcoded environment.
+
+> The env exported here is for application. It is exported as secrets in secret manager or hardcoded environment into task definition.
+
+```bash
+$ cp example.env tasking-manager.env
+$ nano tasking-manager.env
+$ export $(grep -v '#' tasking-manager.env | xargs)
+```
+
 #### 2. Container Secrets
 
 These can be configured to automatically be stored within AWS Secrets Manager.
@@ -119,7 +129,7 @@ B. Edit the file to configure your environment variables:
 $ nano infra.env  # or use vi, vim, etc.
 ```
 
-C. Export the variables for the deployment:
+C. Export the variables for the infra:
 
 ```bash
 $ export $(grep -v '#' infra.env | xargs)
