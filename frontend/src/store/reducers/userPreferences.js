@@ -3,8 +3,6 @@ import { types } from '../actions/userPreferences';
 const initialState = {
   locale: null,
   mapShown: false,
-  projectListView: false,
-  isExploreProjectsTableView: false,
   action: 'any',
 };
 
@@ -26,30 +24,6 @@ export function preferencesReducer(state = initialState, action) {
       return {
         ...state,
         mapShown: !state.mapShown,
-      };
-    }
-    case types.TOGGLE_LIST_VIEW: {
-      return {
-        ...state,
-        projectListView: true,
-      };
-    }
-    case types.TOGGLE_CARD_VIEW: {
-      return {
-        ...state,
-        projectListView: false,
-      };
-    }
-    case types.SET_EXPLORE_PROJECTS_TABLE_VIEW: {
-      return {
-        ...state,
-        isExploreProjectsTableView: true,
-      };
-    }
-    case types.SET_EXPLORE_PROJECTS_CARD_VIEW: {
-      return {
-        ...state,
-        isExploreProjectsTableView: false,
       };
     }
     default:
