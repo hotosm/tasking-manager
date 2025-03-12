@@ -1,14 +1,15 @@
 from unittest.mock import patch
 from urllib import parse
+
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
 from backend import osm
-from tests.backend.base import BaseTestCase
 from backend.config import EnvironmentConfig
-from backend.services.users.user_service import UserService, NotFound
 from backend.services.messaging.message_service import MessageService
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.users.authentication_service import AuthenticationService
+from backend.services.users.user_service import NotFound, UserService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import return_canned_user
 from tests.backend.integration.api.users.test_resources import (
     USER_NOT_FOUND_MESSAGE,

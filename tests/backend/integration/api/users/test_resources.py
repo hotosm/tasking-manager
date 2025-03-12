@@ -1,16 +1,13 @@
-from backend.models.postgis.task import Task, TaskStatus
-from backend.models.postgis.statuses import UserGender, UserRole, MappingLevel
 from backend.exceptions import get_message_from_sub_code
-
-
+from backend.models.postgis.statuses import MappingLevel, UserGender, UserRole
+from backend.models.postgis.task import Task, TaskStatus
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    return_canned_user,
-    generate_encoded_token,
-    create_canned_project,
     create_canned_interest,
+    create_canned_project,
+    generate_encoded_token,
+    return_canned_user,
 )
-
 
 TEST_USERNAME = "test_user"
 TEST_USER_ID = 1111111

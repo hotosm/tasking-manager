@@ -1,11 +1,10 @@
+from backend.exceptions import get_message_from_sub_code
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
+    create_canned_license,
     create_canned_user,
     generate_encoded_token,
-    create_canned_license,
 )
-
-from backend.exceptions import get_message_from_sub_code
 
 TEST_LICENSE_NAME = "test_license"
 TEST_LICENSE_DESCRIPTION = "test license"

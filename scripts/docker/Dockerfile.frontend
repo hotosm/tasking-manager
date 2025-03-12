@@ -9,7 +9,7 @@ RUN git config --global url.https://github.com/.insteadOf git@github.com: \
 
 # SERVE
 COPY tasking-manager.env ..
-RUN npm run build
+RUN yarn run build
 
 FROM nginx:stable-alpine
 COPY --from=build /usr/src/app/frontend/build /usr/share/nginx/html

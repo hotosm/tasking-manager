@@ -1,0 +1,74 @@
+name: Terragrunt Plan
+
+on:
+  workflow_dispatch:
+    inputs:
+      module_path:
+        description: "Select Terragrunt Module to run"
+        required: true
+        type: choice
+        default: purgeable/ecs/
+        options:
+          - purgeable/ecs/
+          - purgeable/ecs-cron/
+          - non-purgeable/extras/
+
+jobs:
+  # workaround for using GHActions environment variables feature. In future we can use ${{ github.ref_name }} directly in the workflow as INFRA_BRANCH
+  get_deployment_meta:
+    name: Get Deployment Meta
+    runs-on: ubuntu-latest
+    outputs:
+      INFRA_BRANCH_NAME: ${{ steps.export_meta.outputs.INFRA_BRANCH_NAME }}
+      INFRA_BRANCH_URL: ${{ steps.export_meta.outputs.INFRA_BRANCH_URL }}
+    steps:
+      - name: Export Deployment Meta
+        id: export_meta
+        shell: bash
+        run: |
+          case "${{ github.ref }}" in
+          refs/heads/develop)
+            export INFRA_BRANCH_NAME=staging
+            export INFRA_BRANCH_URL=https://tasks-stage.hotosm.org
+            ;;
+          refs/heads/tasking-manager-fastapi)
+            export INFRA_BRANCH_NAME=staging
+            export INFRA_BRANCH_URL=https://tasks-stage.hotosm.org
+            ;;
+          esac
+          echo "INFRA_BRANCH_NAME=${INFRA_BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "INFRA_BRANCH_URL=${INFRA_BRANCH_URL}" >> $GITHUB_OUTPUT
+
+      - name: Write Inputs as Artifacts
+        shell: bash
+        run: |
+          set -e
+          echo INFRA_BRANCH_NAME=${{ steps.export_meta.outputs.INFRA_BRANCH_NAME }} >> PLAN_WORKFLOW_META
+          echo INFRA_BRANCH_URL=${{ steps.export_meta.outputs.INFRA_BRANCH_URL }} >> PLAN_WORKFLOW_META
+          echo INFRA_MODULE_PATH=${{ inputs.module_path }} >> PLAN_WORKFLOW_META
+
+      - name: Upload Inputs as Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PLAN_WORKFLOW_META.info
+          path: ./PLAN_WORKFLOW_META
+          retention-days: 1
+
+  plan:
+    name: Terragrunt Plan
+    uses: hotosm/gh-workflows/.github/workflows/terragrunt-plan.yml@3.1.0
+    permissions:
+      id-token: write
+      contents: read
+    needs:
+      - get_deployment_meta
+    with:
+      working_dir: ./scripts/aws/infra/${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}/${{ github.event.inputs.module_path }}
+      terraform_version: "1.9.5"
+      terragrunt_version: "0.67.15"
+      aws_region: us-east-1
+      load_env: true
+      environment_name: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}
+      environment_url: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_URL }}
+      encrypt_plan_file: true
+    secrets: inherit

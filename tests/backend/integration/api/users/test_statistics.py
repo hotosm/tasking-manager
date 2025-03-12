@@ -1,5 +1,5 @@
-import time
 import random
+import time
 from datetime import datetime, timedelta
 
 from backend.models.postgis.task import Task, TaskStatus

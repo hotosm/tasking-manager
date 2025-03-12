@@ -1,13 +1,13 @@
+from backend.exceptions import get_message_from_sub_code
+from backend.models.postgis.statuses import UserRole
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_organisation,
-    generate_encoded_token,
     create_canned_user,
-    return_canned_user,
+    generate_encoded_token,
     return_canned_campaign,
+    return_canned_user,
 )
-from backend.models.postgis.statuses import UserRole
-from backend.exceptions import get_message_from_sub_code
 
 CAMPAIGN_NAME = "Test Campaign"
 CAMPAIGN_ID = 1

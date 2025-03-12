@@ -1,33 +1,34 @@
-from unittest.mock import patch, MagicMock
 import json
+from unittest.mock import MagicMock, patch
+
 from flask import current_app
 
-from backend.models.postgis.project import Project, User, NotFound, ProjectPriority
-from backend.models.postgis.statuses import UserRole, ProjectDifficulty
-from backend.services.messaging.message_service import MessageService
-from backend.services.team_service import TeamService
-from tests.backend.base import BaseTestCase
 from backend.models.dtos.organisation_dto import ListOrganisationsDTO
-from backend.services.project_admin_service import (
-    ProjectAdminService,
-    ProjectAdminServiceError,
-    InvalidGeoJson,
-)
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
     ProjectInfoDTO,
     ProjectStatus,
 )
+from backend.models.postgis.project import NotFound, Project, ProjectPriority, User
+from backend.models.postgis.statuses import ProjectDifficulty, UserRole
+from backend.services.messaging.message_service import MessageService
 from backend.services.organisation_service import OrganisationService
+from backend.services.project_admin_service import (
+    InvalidGeoJson,
+    ProjectAdminService,
+    ProjectAdminServiceError,
+)
+from backend.services.team_service import TeamService
 from backend.services.users.user_service import UserService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     add_manager_to_organisation,
+    create_canned_organisation,
     create_canned_project,
+    create_canned_user,
     return_canned_draft_project_json,
     return_canned_user,
-    create_canned_organisation,
-    create_canned_user,
 )
 
 

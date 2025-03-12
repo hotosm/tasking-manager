@@ -5,10 +5,10 @@ Revises: 0eeaa5aed53b
 Create Date: 2019-06-12 12:50:15.809839
 
 """
-from alembic import op
 import sqlalchemy as sa
-from backend.models.postgis.statuses import TaskStatus
+from alembic import op
 
+from backend.models.postgis.statuses import TaskStatus
 
 # revision identifiers, used by Alembic.
 revision = "a43b9748ceee"

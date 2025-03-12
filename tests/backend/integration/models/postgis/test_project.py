@@ -1,15 +1,15 @@
 import geojson
-from backend.models.dtos.project_dto import DraftProjectDTO
 
-from tests.backend.base import BaseTestCase
+from backend.models.dtos.project_dto import DraftProjectDTO
 from backend.models.postgis.project import (
-    Task,
-    ProjectDTO,
-    ProjectStatus,
-    ProjectPriority,
     Project,
+    ProjectDTO,
+    ProjectPriority,
+    ProjectStatus,
+    Task,
 )
 from backend.models.postgis.project_info import ProjectInfoDTO
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_project,
     return_canned_draft_project_json,

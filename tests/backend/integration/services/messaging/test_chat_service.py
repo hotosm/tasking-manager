@@ -2,17 +2,17 @@ import threading
 from unittest.mock import patch
 
 from backend.exceptions import NotFound
-from backend.models.postgis.statuses import ProjectStatus
-from backend.models.postgis.team import TeamRoles, TeamMemberFunctions
-from tests.backend.base import BaseTestCase
 from backend.models.dtos.message_dto import ChatMessageDTO
+from backend.models.postgis.statuses import ProjectStatus
+from backend.models.postgis.team import TeamMemberFunctions, TeamRoles
 from backend.services.messaging.chat_service import ChatService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    create_canned_project,
-    return_canned_user,
-    create_canned_team,
-    assign_team_to_project,
     add_user_to_team,
+    assign_team_to_project,
+    create_canned_project,
+    create_canned_team,
+    return_canned_user,
 )
 
 

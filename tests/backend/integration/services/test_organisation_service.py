@@ -1,18 +1,19 @@
 from datetime import datetime
+
 from schematics.exceptions import UndefinedValueError
 
-from tests.backend.base import BaseTestCase
 from backend.models.postgis.statuses import ProjectStatus, TeamVisibility
+from backend.services.organisation_service import NotFound, OrganisationService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    add_manager_to_organisation,
-    create_canned_organisation,
     TEST_ORGANISATION_ID,
     TEST_USER_ID,
+    add_manager_to_organisation,
+    create_canned_organisation,
     create_canned_project,
     create_canned_user,
     return_canned_team,
 )
-from backend.services.organisation_service import OrganisationService, NotFound
 
 
 class TestOrgansitaionService(BaseTestCase):

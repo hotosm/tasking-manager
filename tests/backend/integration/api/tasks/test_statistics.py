@@ -1,16 +1,14 @@
 from datetime import datetime, timedelta
 
 from backend.models.postgis.task import Task, TaskStatus
-from backend.services.campaign_service import CampaignService, CampaignProjectDTO
-
-
+from backend.services.campaign_service import CampaignProjectDTO, CampaignService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    return_canned_user,
-    generate_encoded_token,
     create_canned_campaign,
-    create_canned_project,
     create_canned_organisation,
+    create_canned_project,
+    generate_encoded_token,
+    return_canned_user,
 )
 
 

@@ -1,7 +1,6 @@
 from backend.models.postgis.task import Task
-
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import return_canned_user, create_canned_project
+from tests.backend.helpers.test_helpers import create_canned_project, return_canned_user
 
 
 class TestSystemStatisticsAPI(BaseTestCase):

@@ -1,58 +1,57 @@
-from backend import db
 import json
+from typing import Optional
+
+from databases import Database
+from sqlalchemy import Column, Integer, String
+
+from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.partner_dto import PartnerDTO
 
 
-class Partner(db.Model):
-    """Model for Partners"""
+class Partner(Base):
+    """Describes a Partner"""
 
     __tablename__ = "partners"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(150), nullable=False, unique=True)
-    primary_hashtag = db.Column(db.String(200), nullable=False)
-    secondary_hashtag = db.Column(db.String(200))
-    logo_url = db.Column(db.String(500))
-    link_meta = db.Column(db.String(300))
-    link_x = db.Column(db.String(300))
-    link_instagram = db.Column(db.String(300))
-    current_projects = db.Column(db.String)
-    permalink = db.Column(db.String(500), unique=True)
-    website_links = db.Column(db.String)
-    mapswipe_group_id = db.Column(db.String, nullable=True)
-
-    def create(self):
-        """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
-
-    def save(self):
-        """Save changes to DB"""
-        db.session.commit()
-
-    def delete(self):
-        """Deletes from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(150), nullable=False, unique=True)
+    primary_hashtag = Column(String(200), nullable=False)
+    secondary_hashtag = Column(String(200), nullable=True)
+    logo_url = Column(String(500), nullable=True)
+    link_meta = Column(String(300), nullable=True)
+    link_x = Column(String(300), nullable=True)  # Formerly link_twitter
+    link_instagram = Column(String(300), nullable=True)
+    current_projects = Column(String, nullable=True)
+    permalink = Column(String(500), unique=True, nullable=True)
+    website_links = Column(String, nullable=True)
+    mapswipe_group_id = Column(String, nullable=True)
 
     @staticmethod
-    def get_all_partners():
-        """Get all partners in DB"""
-        return db.session.query(Partner.id).all()
+    async def get_all_partners(db: Database):
+        """
+        Retrieve all partner IDs
+        """
+        query = "SELECT id FROM partners"
+        results = await db.fetch_all(query)
+        return [row["id"] for row in results]
 
     @staticmethod
-    def get_by_permalink(permalink: str):
-        """Get partner by permalink"""
-        return Partner.query.filter_by(permalink=permalink).one_or_none()
+    async def get_by_permalink(permalink: str, db: Database) -> Optional[PartnerDTO]:
+        """Get partner by permalink using raw SQL."""
+        query = "SELECT * FROM partners WHERE permalink = :permalink"
+        result = await db.fetch_one(query, values={"permalink": permalink})
+        if result is None:
+            raise NotFound(sub_code="PARTNER_NOT_FOUND", permalink=permalink)
+        return result
 
     @staticmethod
-    def get_by_id(partner_id: int):
-        """Get partner by id"""
-        partner = db.session.get(Partner, partner_id)
-        if partner is None:
+    async def get_by_id(partner_id: int, db: Database) -> PartnerDTO:
+        query = "SELECT * FROM partners WHERE id = :partner_id"
+        result = await db.fetch_one(query, values={"partner_id": partner_id})
+        if result is None:
             raise NotFound(sub_code="PARTNER_NOT_FOUND", partner_id=partner_id)
-        return partner
+        return result
 
     def as_dto(self) -> PartnerDTO:
         """Creates partner from DTO"""
