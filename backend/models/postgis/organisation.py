@@ -233,6 +233,7 @@ class Organisation(Base):
             LEFT JOIN organisation_managers om ON o.id = om.organisation_id
             LEFT JOIN users u ON om.user_id = u.id
             GROUP BY o.id
+            ORDER BY o.name
         """
         result = await db.fetch_all(query)
         return result

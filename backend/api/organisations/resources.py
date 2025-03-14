@@ -93,7 +93,7 @@ async def retrieve_organisation_by_slug(
     slug: str,
     db: Database = Depends(get_db),
     omit_managers: bool = Query(
-        True,
+        False,
         alias="omitManagerList",
         description="Omit organization managers list from the response.",
     ),

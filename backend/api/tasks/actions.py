@@ -1216,9 +1216,12 @@ async def reset_by_user(
             )
 
         if username:
-            user = await UserService.get_user_by_username(username, db)
+            revert_user = await UserService.get_user_by_username(username, db)
         revert_dto = RevertUserTasksDTO(
-            project_id=project_id, user_id=user.id, action_by=user.id, action=action
+            project_id=project_id,
+            user_id=revert_user.id,
+            action_by=user.id,
+            action=action,
         )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
