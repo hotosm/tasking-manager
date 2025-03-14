@@ -17,6 +17,7 @@ locals {
   team         = local.deployment_vars.locals.team
   owner        = local.deployment_vars.locals.owner
   url          = local.deployment_vars.locals.url
+  short_name   = local.deployment_vars.locals.short_name
 
   # Default tags
   default_tags = {
@@ -76,7 +77,7 @@ remote_state {
     bucket         = "${local.application}-${local.team}"
     key            = "${local.environment}/${path_relative_to_include()}/terraform.tfstate"
     region         = local.aws_region
-    dynamodb_table = "tm-locks"
+    dynamodb_table = "${local.short_name}-locks"
     profile        = "${local.aws_profile}"
   }
   generate = {

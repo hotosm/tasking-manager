@@ -28,12 +28,16 @@ jobs:
         run: |
           case "${{ github.ref }}" in
           refs/heads/develop)
+            export INFRA_BRANCH_NAME=develop
+            export INFRA_BRANCH_URL=https://tasks-dev.hotosm.org
+            ;;
+          refs/heads/staging)
             export INFRA_BRANCH_NAME=staging
             export INFRA_BRANCH_URL=https://tasks-stage.hotosm.org
             ;;
-          refs/heads/tasking-manager-fastapi)
-            export INFRA_BRANCH_NAME=staging
-            export INFRA_BRANCH_URL=https://tasks-stage.hotosm.org
+          refs/heads/main)
+            export INFRA_BRANCH_NAME=main
+            export INFRA_BRANCH_URL=https://tasks.hotosm.org
             ;;
           esac
           echo "INFRA_BRANCH_NAME=${INFRA_BRANCH_NAME}" >> $GITHUB_OUTPUT
