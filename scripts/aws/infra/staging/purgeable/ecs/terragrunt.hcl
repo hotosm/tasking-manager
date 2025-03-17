@@ -21,7 +21,7 @@ include "envcommon" {
 # Configure the version of the module to use in this environment. This allows you to promote new versions one
 # environment at a time (e.g., qa -> stage -> prod).
 terraform {
-  source = "${include.envcommon.locals.base_source_url}?ref=v1.0"
+  source = "${include.envcommon.locals.base_source_url}?ref=v1.1.0"
 }
 
 locals {
@@ -68,6 +68,9 @@ inputs = {
   service_security_groups = [
     dependency.alb.outputs.load_balancer_app_security_group
   ]
+
+  #Enable Execute Command
+  enable_execute_command = false
 
   # Merge secrets with: key:ValueFrom together
   container_secrets = concat(dependency.extras.outputs.container_secrets,
