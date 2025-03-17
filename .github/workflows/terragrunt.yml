@@ -1,4 +1,4 @@
-name: Terragrunt Plan
+name: Terragrunt Plan and Apply
 
 on:
   workflow_dispatch:
@@ -14,13 +14,13 @@ on:
           - non-purgeable/extras/
 
 jobs:
-  # workaround for using GHActions environment variables feature. In future we can use ${{ github.ref_name }} directly in the workflow as INFRA_BRANCH
   get_deployment_meta:
     name: Get Deployment Meta
     runs-on: ubuntu-latest
     outputs:
       INFRA_BRANCH_NAME: ${{ steps.export_meta.outputs.INFRA_BRANCH_NAME }}
       INFRA_BRANCH_URL: ${{ steps.export_meta.outputs.INFRA_BRANCH_URL }}
+      PLAN_ID: ${{ steps.export_meta.outputs.PLAN_ID }}
     steps:
       - name: Export Deployment Meta
         id: export_meta
@@ -43,24 +43,9 @@ jobs:
           echo "INFRA_BRANCH_NAME=${INFRA_BRANCH_NAME}" >> $GITHUB_OUTPUT
           echo "INFRA_BRANCH_URL=${INFRA_BRANCH_URL}" >> $GITHUB_OUTPUT
 
-      - name: Write Inputs as Artifacts
-        shell: bash
-        run: |
-          set -e
-          echo INFRA_BRANCH_NAME=${{ steps.export_meta.outputs.INFRA_BRANCH_NAME }} >> PLAN_WORKFLOW_META
-          echo INFRA_BRANCH_URL=${{ steps.export_meta.outputs.INFRA_BRANCH_URL }} >> PLAN_WORKFLOW_META
-          echo INFRA_MODULE_PATH=${{ inputs.module_path }} >> PLAN_WORKFLOW_META
-
-      - name: Upload Inputs as Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: PLAN_WORKFLOW_META.info
-          path: ./PLAN_WORKFLOW_META
-          retention-days: 1
-
   plan:
     name: Terragrunt Plan
-    uses: hotosm/gh-workflows/.github/workflows/terragrunt-plan.yml@3.1.0
+    uses: hotosm/gh-workflows/.github/workflows/terragrunt-plan.yml@3.1.2
     permissions:
       id-token: write
       contents: read
@@ -75,4 +60,40 @@ jobs:
       environment_name: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}
       environment_url: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_URL }}
       encrypt_plan_file: true
+    secrets: inherit
+
+  manual_apply_approval:
+    name: Manual Approval for Apply
+    runs-on: ubuntu-latest
+    needs:
+      - plan
+      - get_deployment_meta
+    if: ${{ success() }}
+    environment:
+      name: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}-approval
+      url: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_URL }}
+    steps:
+      - name: Manual approval step
+        run: echo "Plan approved manually, proceeding to apply"
+
+  manual_apply:
+    name: Terragrunt Apply After Manual Approval
+    uses: hotosm/gh-workflows/.github/workflows/terragrunt-apply.yml@3.1.2
+    permissions:
+      id-token: write
+      contents: read
+    needs:
+      - get_deployment_meta
+      - manual_apply_approval
+    with:
+      working_dir: ./scripts/aws/infra/${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}/${{ github.event.inputs.module_path }}
+      terraform_version: "1.9.5"
+      terragrunt_version: "0.67.15"
+      aws_region: us-east-1
+      load_env: true
+      plan_file_name: ${{ github.event.repository.name }}-${{ github.run_id }}-${{github.run_attempt}}
+      use_gh_artifacts: true
+      environment_name: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}
+      environment_url: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_URL }}
+      decrypt_plan_file: true
     secrets: inherit
