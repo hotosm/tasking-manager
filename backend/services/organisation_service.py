@@ -419,7 +419,6 @@ class OrganisationService:
                 FROM projects p
                 WHERE p.organisation_id = :organisation_id
                 AND p.status = {ProjectStatus.PUBLISHED.value}
-            )
         """
 
         task_values = {"organisation_id": organisation_id}
