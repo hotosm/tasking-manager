@@ -4,7 +4,7 @@ ARG PYTHON_IMG_TAG=3.10
 FROM docker.io/python:${PYTHON_IMG_TAG}-${DEBIAN_IMG_TAG} AS base
 ARG APP_VERSION=0.1.0
 ARG DOCKERFILE_VERSION=0.5.0
-ARG ALPINE_IMG_TAG
+ARG DEBIAN_IMG_TAG
 ARG PYTHON_IMG_TAG
 ARG MAINTAINER=sysadmin@hotosm.org
 LABEL org.hotosm.tasks.app-version="${APP_VERSION}" \
@@ -59,7 +59,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONFAULTHANDLER=1 \
     PATH="/home/appuser/.local/bin:$PATH" \
     PYTHONPATH="/usr/src/app:$PYTHONPATH" \
-    PYTHON_LIB="/home/appuser/.local/lib/python$PYTHON_IMG_TAG/site-packages" \
+    PYTHON_LIB="/home/appuser/.local/lib/python${PYTHON_IMG_TAG}/site-packages" \
     SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
     REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 # Setup backend runtime dependencies
