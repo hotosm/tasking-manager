@@ -3,31 +3,34 @@ name: Deploy to Amazon ECS
 on:
   push:
     branches:
-      - tasking-manager-fastapi
+      - main
+      - staging
+      - develop
     paths:
       - "backend/**"
   workflow_dispatch:
 
 env:
+  # NOTE: You can override these variables in the workflow file with GitHub Variables
+  # vars.TEAM is team name here in case you want to deploy for different team. Default is hotosm
+  # vars.INFRA_ENVIRONMENT is environment name here in case you have applied infrastructue with different environment name. Default is github.ref_name
+
   REGISTRY: ghcr.io
-  AWS_REGION: us-east-1
-  IMAGE_NAME: hotosm/tasking-manager-backend
-  TASK_DEFINITION: tasking-manager-hotosm-staging-fastapi
-  ECS_CLUSTER: tasking-manager-staging-cluster
-  ECS_SERVICE: tasking-manager-hotosm-staging-fastapi
-  CONTAINER_NAME: tasking-manager-hotosm-staging-fastapi
-  OIDC_ROLE_ARN: arn:aws:iam::670261699094:role/Github-AWS-OIDC
+  IMAGE_NAME: ${{ vars.IMAGE_NAME || 'hotosm/tasking-manager-backend' }}
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  OIDC_ROLE_ARN: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+  ECS_CLUSTER: tasking-manager-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}-cluster
+  TASK_DEFINITION_PREFIX: tasking-manager-${{ vars.TEAM || 'hotosm' }}-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}
+  ECS_SERVICE_PREFIX: tasking-manager-${{ vars.TEAM || 'hotosm' }}-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}
+  CONTAINER_NAME_PREFIX: tasking-manager-${{ vars.TEAM || 'hotosm' }}-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}
 
 jobs:
   image-build-and-push:
     name: Build Container Images
     runs-on: ubuntu-latest
-    environment: production
-
     permissions:
       contents: read
       packages: write
-
     outputs:
       image_tags: ${{ steps.meta.outputs.tags }}
 
@@ -48,7 +51,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=fastapi
+            type=raw,value=${{ github.ref_name }}
+            type=raw,value=${{ github.sha }}
 
       - name: Build and push container image
         id: build-push-image
@@ -60,17 +64,26 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: |
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ github.ref_name }}
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-main
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-staging
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-develop
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ github.ref_name }},mode=max
 
-  deploy:
-    name: Deploy to ECS
+  deploy-service:
+    name: Deploy ${{ matrix.service }} to ECS
     runs-on: ubuntu-latest
-    environment: production
-
+    environment: ${{ github.ref_name }}
     needs: image-build-and-push
-
     permissions:
       contents: read
       id-token: write
+
+    strategy:
+      matrix:
+        service: [fastapi, cron]
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v4
@@ -80,24 +93,26 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ env.OIDC_ROLE_ARN }}
-          role-session-name: gh-ci-ecs-deploy
+          role-session-name: gh-ci-ecs-deploy-${{ github.ref_name }}-${{ matrix.service }}
 
       - name: Download task definition
         run: |
-          aws ecs describe-task-definition --task-definition ${{ env.TASK_DEFINITION }} --query taskDefinition > task-definition.json
+          aws ecs describe-task-definition --region ${{ env.AWS_REGION }} \
+            --task-definition ${{ env.TASK_DEFINITION_PREFIX }}-${{ matrix.service }} \
+            --query taskDefinition > task-definition.json
 
       - name: Task definition rendition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ needs.image-build-and-push.outputs.image_tags }}
+          container-name: ${{ env.CONTAINER_NAME_PREFIX }}-${{ matrix.service }}
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-      - name: Deploy task definition
+      - name: Deploy task definition for ${{ matrix.service }}
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
+          service: ${{ env.ECS_SERVICE_PREFIX }}-${{ matrix.service }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
