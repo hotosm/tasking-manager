@@ -8,25 +8,24 @@ include "envcommon" {
 }
 
 terraform {
-  source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
+  source = "${include.envcommon.locals.base_source_url}?ref=v1.0"
 }
 
-# dependency "vpc" {
-#   config_path = "../vpc"
-# }
+dependency "vpc" {
+  config_path = "../vpc"
+}
 
 # Add in any new inputs that you want to overide.
 inputs = {
   ## VPC Inputs for RDS Instance
-  vpc_id     = "vpc-08ecfc1c7844c7c5a"
-  subnet_ids = ["subnet-05aa252699783b4cf","subnet-0a75cddfef3213c51","subnet-0a8b06831b3de5f66","subnet-0f76ca222b0544a40",
-  "subnet-03919b5e26cba5733","subnet-0b91332acbe8b1a4c"]
+  vpc_id     = dependency.vpc.outputs.vpc_id
+  subnet_ids = dependency.vpc.outputs.private_subnets
 
   ## RDS Module inputs
   serverless_capacity = {
-      minimum = 1   # Lowest possible APU for Aurora Serverless
-      maximum = 4   # Max APU to keep cost low for Stag
-    }
+    minimum = 1 # Lowest possible APU for Aurora Serverless
+    maximum = 4 # Max APU to keep cost low for Stag
+  }
 
   ## RDS Backup/Snapshot Config
   backup = {
@@ -36,6 +35,6 @@ inputs = {
   }
 
   # RDS Dev Deployment only.
-  public_access     = true
-  deletion_protection     = true
+  public_access       = true
+  deletion_protection = true
 }
