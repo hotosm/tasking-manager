@@ -1,6 +1,6 @@
 locals {
   account_name   = get_env("AWS_ACCOUNT_NAME", "hotosm")
-  aws_profile    = get_env("AWS_PROFILE", "admin")
+  aws_profile    = get_env("AWS_PROFILE", "default")
   aws_region     = get_env("AWS_REGION", "us-east-1")
   team           = get_env("INFRA_TEAM", "hotosm")
   owner          = get_env("INFRA_OWNER", "HOTOSM")
