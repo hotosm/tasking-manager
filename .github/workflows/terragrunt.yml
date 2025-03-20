@@ -11,6 +11,7 @@ on:
         options:
           - purgeable/ecs/
           - purgeable/ecs-cron/
+          - non-purgeable/vpc/
           - non-purgeable/extras/
 
 jobs:
