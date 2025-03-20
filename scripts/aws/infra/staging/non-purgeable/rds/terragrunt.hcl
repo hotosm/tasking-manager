@@ -8,7 +8,7 @@ include "envcommon" {
 }
 
 terraform {
-  source = "${include.envcommon.locals.base_source_url}?ref=tasking-manager-infra"
+  source = "${include.envcommon.locals.base_source_url}?ref=v1.0"
 }
 
 dependency "vpc" {
@@ -23,9 +23,9 @@ inputs = {
 
   ## RDS Module inputs
   serverless_capacity = {
-      minimum = 4   # Lowest possible APU for Aurora Serverless
-      maximum = 8   # Max APU to keep cost low for Stag
-    }
+    minimum = 4 # Lowest possible APU for Aurora Serverless
+    maximum = 8 # Max APU to keep cost low for Stag
+  }
 
   ## RDS Backup/Snapshot Config
   backup = {
@@ -35,6 +35,6 @@ inputs = {
   }
 
   # RDS Dev Deployment only.
-  public_access     = true
-  deletion_protection     = true
+  public_access       = true
+  deletion_protection = true
 }

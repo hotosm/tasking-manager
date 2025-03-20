@@ -21,7 +21,7 @@ include "envcommon" {
 # Configure the version of the module to use in this environment. This allows you to promote new versions one
 # environment at a time (e.g., qa -> stage -> prod).
 terraform {
-  source = "${include.envcommon.locals.base_source_url}?ref=v1.0"
+  source = "${include.envcommon.locals.base_source_url}?ref=v1.2.0"
 }
 
 locals {
@@ -34,9 +34,9 @@ locals {
 # We don't need to override any of the common parameters for this environment, so we don't specify any other parameters.
 # ---------------------------------------------------------------------------------------------------------------------
 
-# dependency "vpc" {
-#   config_path = "../../non-purgeable/vpc"
-# }
+dependency "vpc" {
+  config_path = "../../non-purgeable/vpc"
+}
 
 dependency "alb" {
   config_path = "../../non-purgeable/alb"
@@ -53,9 +53,8 @@ dependency "extras" {
 ## Add in any new inputs that you want to overide.
 inputs = {
   # Inputs from dependencies (Rarely changed)
-  service_subnets         = ["subnet-05aa252699783b4cf","subnet-0a75cddfef3213c51","subnet-0a8b06831b3de5f66","subnet-0f76ca222b0544a40",
-  "subnet-03919b5e26cba5733","subnet-0b91332acbe8b1a4c"]
-  aws_vpc_id              = "vpc-08ecfc1c7844c7c5a"
+  service_subnets         = dependency.vpc.outputs.private_subnets
+  aws_vpc_id              = dependency.vpc.outputs.vpc_id
   service_security_groups = [dependency.alb.outputs.load_balancer_app_security_group]
   deployment_environment  = local.environment_vars.locals.environment
   load_balancer_settings = {
@@ -86,6 +85,8 @@ inputs = {
     min_healthy_pct = 25
     max_pct         = 200
   }
+
+  health_check_grace_period_seconds = 60
 
   ## Scaling Policy Target Values
   scaling_target_values = {

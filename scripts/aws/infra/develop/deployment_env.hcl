@@ -1,17 +1,17 @@
 locals {
-  account_name    = "hotosm"
-  aws_profile     = "admin"
-  aws_region      = "us-east-1"
-  team            = get_env("TEAM", "hotosm")
-  owner           = "HOTOSM"
-  environment     = "develop"
-  project         = "tasking-manager"
-  application     = "tasking-manager"
-  short_name      = "tm"
-  maintainer      = "dev@hotosm.org"
-  url             = "https://tasks-dev.hotosm.org"
-  documentation   = "https://hotosm.github.io"
-  IaC_Management  = "Terraform/Terragrunt"
-  cost_center     = "False"
-  version         = "4.8.2"
+  account_name   = get_env("AWS_ACCOUNT_NAME", "hotosm")
+  aws_profile    = get_env("AWS_PROFILE", "admin")
+  aws_region     = get_env("AWS_REGION", "us-east-1")
+  team           = get_env("INFRA_TEAM", "hotosm")
+  owner          = get_env("INFRA_OWNER", "HOTOSM")
+  environment    = get_env("INFRA_ENVIRONMENT", "develop")
+  project        = get_env("INFRA_PROJECT", "tasking-manager")
+  application    = get_env("INFRA_APPLICATION", "tasking-manager")
+  short_name     = get_env("INFRA_PROJECT_SHORT_NAME", "tm")
+  maintainer     = get_env("INFRA_MAINTAINER", "dev@hotosm.org")
+  url            = get_env("INFRA_URL", "https://tasks-dev.hotosm.org")
+  documentation  = get_env("INFRA_DOCS_URL", "https://hotosm.github.io")
+  IaC_Management = get_env("INFRA_IAC_MANAGER", "Terraform/Terragrunt")
+  cost_center    = get_env("INFRA_ENABLE_COST_CENTER", "False")
+  version        = get_env("INFRA_APP_VERSION", "4.8.2")
 }
