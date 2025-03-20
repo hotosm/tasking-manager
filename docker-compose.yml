@@ -117,3 +117,16 @@ services:
       - --providers.docker=true
     networks:
       - tm-net
+
+  tm-frontend:
+    image: ghcr.io/hotosm/tasking-manager/frontend:main
+    build:
+      context: .
+      dockerfile: "./scripts/docker/Dockerfile.frontend_development"
+    env_file:
+      - tasking-manager.env
+    labels:
+      - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
+      - traefik.http.services.frontend.loadbalancer.server.port=3000
+    networks:
+      - tm-net
