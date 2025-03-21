@@ -37,7 +37,7 @@ locals {
     TM_ENVIRONMENT                = get_env("TM_ENVIRONMENT", "tasking-manager-staging")
     NEW_RELIC_ENVIRONMENT         = get_env("NEW_RELIC_ENVIRONMENT", "tasking-manager-staging")
     NEW_RELIC_CONFIG_FILE         = get_env("NEW_RELIC_CONFIG_FILE", "./scripts/aws/cloudformation/newrelic.ini")
-    USE_SENTRY                    = get_env("USE_SENTRY", "false")
+    USE_SENTRY                    = get_env("USE_SENTRY", "true")
     # Uncomment the following as needed.
     # TM_TASK_AUTOUNLOCK_AFTER    = get_env("TM_TASK_AUTOUNLOCK_AFTER", "2h")
     # TM_MAPPER_LEVEL_INTERMEDIATE = get_env("TM_MAPPER_LEVEL_INTERMEDIATE", "250")
