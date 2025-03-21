@@ -1,15 +1,16 @@
 import json
 from unittest.mock import MagicMock, patch
-from backend.services.project_admin_service import (
-    ProjectAdminService,
-    InvalidGeoJson,
-    Project,
-    ProjectAdminServiceError,
-    NotFound,
-    LicenseService,
-)
+
 from backend.models.dtos.project_dto import ProjectInfoDTO
 from backend.models.postgis.task import Task
+from backend.services.project_admin_service import (
+    InvalidGeoJson,
+    LicenseService,
+    NotFound,
+    Project,
+    ProjectAdminService,
+    ProjectAdminServiceError,
+)
 from tests.backend.base import BaseTestCase
 
 

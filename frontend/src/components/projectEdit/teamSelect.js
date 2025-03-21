@@ -1,13 +1,14 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import Select from 'react-select';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import commonMessages from '../messages';
-import { Button } from '../../components/button';
+import { Button } from '../button';
 import { StateContext } from '../../views/projectEdit';
 import { PencilIcon, WasteIcon, ExternalLinkIcon } from '../svgIcons';
 import { useFetchWithAbort } from '../../hooks/UseFetch';
+import { useTeamsQuery } from '../../api/teams';
 
 export const TeamSelect = () => {
   const intl = useIntl();
@@ -24,7 +25,7 @@ export const TeamSelect = () => {
   const [, isOrganisationsLoading, organisationsData] = useFetchWithAbort(
     'organisations/?omitManagerList=true',
   );
-  const [, isTeamsLoading, teamsData] = useFetchWithAbort('teams/?omitMemberList=true');
+  const { data: teamsData, isFetching: isTeamsLoading } = useTeamsQuery({ omitMemberList: true });
 
   const teamRoles = [
     { value: 'MAPPER', label: 'Mapper' },

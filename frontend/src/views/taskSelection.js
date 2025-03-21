@@ -1,36 +1,63 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 import { TaskSelection } from '../components/taskSelection';
 import { NotFound } from './notFound';
-import { useProjectSummaryQuery } from '../api/projects';
+import { useProjectSummaryQuery, useProjectQuery } from '../api/projects';
 import { Preloader } from '../components/preloader';
+import PrivateProjectError from '../components/projectDetail/privateProjectError';
+
+const publicRoutes = ['/instructions'];
 
 export function SelectTask() {
   const { id } = useParams();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
-  const { data, status, error } = useProjectSummaryQuery(id, {
+  const {
+    data: projectSummaryData,
+    error: projectSummaryError,
+    status: projectSummaryStatus,
+  } = useProjectSummaryQuery(id, {
     useErrorBoundary: (error) => error.response.status !== 404,
+    enabled: !!token,
+  });
+  const {
+    data: projectData,
+    error: projectError,
+    status: projectStatus,
+  } = useProjectQuery(id, {
+    enabled: !token,
   });
 
-
   useEffect(() => {
-    if (!token) {
+    const isPublicRoute = publicRoutes.some((url) => pathname.includes(url));
+    if (!isPublicRoute && !token) {
       navigate('/login');
     }
-  }, [navigate, token]);
+  }, [navigate, token, pathname]);
+
+  const status = token ? projectSummaryStatus : projectStatus;
+  const error = token ? projectSummaryError : projectError;
 
   if (status === 'loading') {
     return <Preloader />;
   }
 
   if (status === 'error') {
-    if (error.response.status === 404) {
-      return <NotFound projectId={id} />;
-    }
+    return (
+      <>
+        {error.response.data.SubCode === 'PrivateProject' ? (
+          <PrivateProjectError />
+        ) : (
+          <NotFound projectId={id} />
+        )}
+      </>
+    );
   }
 
-  return <TaskSelection project={data} />;
+  const project = token ? projectSummaryData : projectData?.data;
+
+  return <TaskSelection project={project} />;
 }

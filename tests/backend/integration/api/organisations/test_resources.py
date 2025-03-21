@@ -1,18 +1,16 @@
 import base64
 
+from backend.exceptions import get_message_from_sub_code
+from backend.services.users.authentication_service import AuthenticationService
 from tests.backend.base import BaseTestCase, db
 from tests.backend.helpers.test_helpers import (
+    add_manager_to_organisation,
     create_canned_organisation,
     create_canned_project,
     create_canned_user,
-    add_manager_to_organisation,
     generate_encoded_token,
     return_canned_user,
 )
-
-from backend.exceptions import get_message_from_sub_code
-from backend.services.users.authentication_service import AuthenticationService
-
 
 TEST_USER_ID = 777777
 TEST_USERNAME = "Thinkwhere Test"

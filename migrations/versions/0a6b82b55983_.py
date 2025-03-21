@@ -5,11 +5,12 @@ Revises: 3ee58dee57c9
 Create Date: 2018-09-04 19:09:45.866336
 
 """
-from alembic import op
-import sqlalchemy as sa
 import re
-from backend.models.postgis.message import MessageType
 
+import sqlalchemy as sa
+from alembic import op
+
+from backend.models.postgis.message import MessageType
 
 # revision identifiers, used by Alembic.
 revision = "0a6b82b55983"

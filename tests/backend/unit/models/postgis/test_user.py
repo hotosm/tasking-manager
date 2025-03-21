@@ -1,5 +1,5 @@
+from backend.models.postgis.user import MappingLevel, User, UserRole
 from tests.backend.base import BaseTestCase
-from backend.models.postgis.user import User, UserRole, MappingLevel
 
 
 class TestUser(BaseTestCase):

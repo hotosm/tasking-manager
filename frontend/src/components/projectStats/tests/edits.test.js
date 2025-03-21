@@ -1,10 +1,10 @@
-import React from 'react';
 import { Provider } from 'react-redux';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { EditsStats } from '../edits';
 import { ConnectedIntl } from '../../../utils/internationalization';
+import { QueryClientProviders } from '../../../utils/testWithIntl';
 import { store } from '../../../store';
 
 describe('EditsStats component', () => {
@@ -15,15 +15,18 @@ describe('EditsStats component', () => {
     edits: 310483,
   };
 
-  it('render contents', () => {
+  it('render contents', async () => {
     const { getByText } = render(
-      <Provider store={store}>
-        <ConnectedIntl>
-          <EditsStats data={data} />
-        </ConnectedIntl>
-      </Provider>,
+      <QueryClientProviders>
+        <Provider store={store}>
+          <ConnectedIntl>
+            <EditsStats data={data} />
+          </ConnectedIntl>
+        </Provider>
+      </QueryClientProviders>,
     );
 
+    await waitFor(() => expect(getByText('Changesets')).toBeInTheDocument());
     expect(getByText('Changesets')).toBeInTheDocument();
     expect(getByText('Buildings mapped')).toBeInTheDocument();
     expect(getByText('Km road mapped')).toBeInTheDocument();

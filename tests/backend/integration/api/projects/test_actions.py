@@ -1,26 +1,27 @@
 import json
-import geojson
 from unittest.mock import patch
 
-from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import (
-    create_canned_user,
-    generate_encoded_token,
-    get_canned_json,
-    create_canned_project,
-    return_canned_user,
-    create_canned_organisation,
-    add_manager_to_organisation,
-    create_canned_team,
-    assign_team_to_project,
-    add_user_to_team,
-)
-from backend.models.postgis.task import Task
+import geojson
+
 from backend.models.postgis.statuses import (
-    UserRole,
     TaskStatus,
     TeamMemberFunctions,
     TeamRoles,
+    UserRole,
+)
+from backend.models.postgis.task import Task
+from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import (
+    add_manager_to_organisation,
+    add_user_to_team,
+    assign_team_to_project,
+    create_canned_organisation,
+    create_canned_project,
+    create_canned_team,
+    create_canned_user,
+    generate_encoded_token,
+    get_canned_json,
+    return_canned_user,
 )
 
 

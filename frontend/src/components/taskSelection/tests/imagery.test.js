@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
@@ -125,16 +124,6 @@ describe('Imagery', () => {
       </IntlProviders>,
     );
     expect(screen.getByText('ESRI World Imagery (Clarity) Beta')).toBeInTheDocument();
-    expect(screen.queryByRole('img')).not.toBeInTheDocument();
-  });
-
-  it('with a Maxar-Premium layer', () => {
-    render(
-      <IntlProviders>
-        <Imagery value={'Maxar-Premium'} />
-      </IntlProviders>,
-    );
-    expect(screen.getByText('Maxar Premium')).toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 

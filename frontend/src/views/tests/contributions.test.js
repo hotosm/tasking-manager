@@ -69,16 +69,19 @@ describe('Contributions Page Index', () => {
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
-    expect(screen.getAllByRole('link', { name: 'test_user' }).length).toBe(4);
+    expect(screen.getAllByRole('link', { name: 'test_user' }).length).toBe(3);
   });
 });
 
 describe('User Stats Page', () => {
   it('should render the child component', async () => {
     renderWithRouter(
-      <ReduxIntlProviders>
-        <UserStats />
-      </ReduxIntlProviders>,
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <UserStats />
+        </ReduxIntlProviders>
+        ,
+      </QueryClientProviders>,
     );
     expect(screen.getByRole('heading', { name: 'Contribution Timeline' })).toBeInTheDocument();
   });

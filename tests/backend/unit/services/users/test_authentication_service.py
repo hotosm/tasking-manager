@@ -1,7 +1,7 @@
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs, urlparse
 
-from backend.services.users.authentication_service import AuthenticationService
 from backend.services.messaging.smtp_service import SMTPService
+from backend.services.users.authentication_service import AuthenticationService
 from tests.backend.base import BaseTestCase
 
 

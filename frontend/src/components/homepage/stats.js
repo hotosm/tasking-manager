@@ -3,6 +3,7 @@ import shortNumber from 'short-number';
 
 import messages from './messages';
 import { useOsmStatsQuery, useSystemStatisticsQuery } from '../../api/stats';
+import StatsInfoFooter from '../statsInfoFooter';
 
 export const StatsNumber = (props) => {
   const value = shortNumber(props.value);
@@ -38,19 +39,21 @@ export const StatsSection = () => {
   const hasStatsLoaded = hasTmStatsLoaded && hasOsmStatsLoaded;
 
   return (
-    <>
-      <div className="pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container">
+    <div className="pt5 pb2 ph6-l ph4 ">
+      <StatsInfoFooter className="mb4" />
+
+      <div className="flex justify-around flex-wrap flex-nowrap-ns stats-container">
         <StatsColumn
           label={messages.buildingsStats}
-          value={hasStatsLoaded ? osmStatsData?.data.building_count_add : undefined}
+          value={hasStatsLoaded ? osmStatsData?.buildings : undefined}
         />
         <StatsColumn
           label={messages.roadsStats}
-          value={hasStatsLoaded ? osmStatsData?.data.road_km_add : undefined}
+          value={hasStatsLoaded ? osmStatsData?.roads : undefined}
         />
         <StatsColumn
           label={messages.editsStats}
-          value={hasStatsLoaded ? osmStatsData?.data.edits : undefined}
+          value={hasStatsLoaded ? osmStatsData?.edits : undefined}
         />
         <StatsColumn
           label={messages.communityStats}
@@ -61,6 +64,6 @@ export const StatsSection = () => {
           value={hasStatsLoaded ? tmStatsData.data.mappersOnline : undefined}
         />
       </div>
-    </>
+    </div>
   );
 };

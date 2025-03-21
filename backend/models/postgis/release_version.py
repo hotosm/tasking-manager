@@ -1,20 +1,24 @@
-from backend import db
+from databases import Database
+from sqlalchemy import Column, DateTime, String, insert
+
+from backend.db import Base
 
 
-class ReleaseVersion(db.Model):
+class ReleaseVersion(Base):
     """Describes an current release version of TM (i.e. github.com/hotosm/tasking-manager)"""
 
     __tablename__ = "release_version"
-    tag_name = db.Column(db.String(64), nullable=False, primary_key=True)
-    published_at = db.Column(db.DateTime, nullable=False)
+    tag_name = Column(String(64), nullable=False, primary_key=True)
+    published_at = Column(DateTime, nullable=False)
 
-    def update(self):
-        db.session.commit()
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
+    async def save(self, db: Database):
+        query = insert(ReleaseVersion.__table__).values(
+            tag_name=self.tag_name, published_at=self.published_at
+        )
+        await db.execute(query)
 
     @staticmethod
-    def get():
-        return ReleaseVersion.query.first()
+    async def get(db: Database):
+        """Get the latest release version"""
+        query = """SELECT * FROM release_version LIMIT 1"""
+        return await db.fetch_one(query=query)

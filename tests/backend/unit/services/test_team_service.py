@@ -1,6 +1,6 @@
 from backend.exceptions import NotFound
-from backend.services.team_service import TeamService
 from backend.models.dtos.team_dto import TeamSearchDTO
+from backend.services.team_service import TeamService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_team, create_canned_user
 

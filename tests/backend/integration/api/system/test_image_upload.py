@@ -1,12 +1,10 @@
 from unittest.mock import patch
 
-
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_user,
     generate_encoded_token,
 )
-
 
 IMAGE_UPLOAD_API_URL = "http://localhost:5000"
 IMAGE_UPLOAD_API_KEY = "test"

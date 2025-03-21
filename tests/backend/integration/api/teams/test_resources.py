@@ -1,23 +1,21 @@
+from backend.models.postgis.statuses import UserRole
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_organisation,
-    generate_encoded_token,
-    create_canned_user,
-    return_canned_user,
-    return_canned_team,
     create_canned_team,
-)
-from tests.backend.integration.api.teams.test_actions import (
-    TEAM_NOT_FOUND_SUB_CODE,
-    TEAM_NOT_FOUND_MESSAGE,
+    create_canned_user,
+    generate_encoded_token,
+    return_canned_team,
+    return_canned_user,
 )
 from tests.backend.integration.api.organisations.test_resources import (
     ORG_NOT_FOUND_MESSAGE,
     ORG_NOT_FOUND_SUB_CODE,
 )
-
-
-from backend.models.postgis.statuses import UserRole
+from tests.backend.integration.api.teams.test_actions import (
+    TEAM_NOT_FOUND_MESSAGE,
+    TEAM_NOT_FOUND_SUB_CODE,
+)
 
 TEST_ORGANISATION_NAME = "Kathmandu Living Labs"
 TEST_ORGANISATION_SLUG = "KLL"

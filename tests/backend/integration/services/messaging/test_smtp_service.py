@@ -1,6 +1,7 @@
 import os
-from urllib.parse import urlparse, parse_qs
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+from urllib.parse import parse_qs, urlparse
+
 from flask import current_app
 
 from backend.models.postgis.message import Message

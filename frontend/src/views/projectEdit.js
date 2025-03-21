@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import { createContext, useState, useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
@@ -15,6 +15,8 @@ import { PermissionsForm } from '../components/projectEdit/permissionsForm';
 import { SettingsForm } from '../components/projectEdit/settingsForm';
 import { ActionsForm } from '../components/projectEdit/actionsForm';
 import { CustomEditorForm } from '../components/projectEdit/customEditorForm';
+import { PartnersForm } from '../components/projectEdit/partnersForm';
+
 import { Button } from '../components/button';
 import { Dropdown } from '../components/dropdown';
 import { Alert } from '../components/alert';
@@ -24,7 +26,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { useAsync } from '../hooks/UseAsync';
 import { useEditProjectAllowed } from '../hooks/UsePermissions';
 
-export const StateContext = React.createContext();
+export const StateContext = createContext();
 
 export const styleClasses = {
   divClass: 'w-70-l w-100 pb4 mb3',
@@ -68,6 +70,7 @@ export function ProjectEdit() {
   const [errorLanguages, loadingLanguages, languages] = useFetch('system/languages/');
   const mandatoryFields = ['name', 'shortDescription', 'description', 'instructions'];
   const token = useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [option, setOption] = useState('description');
@@ -121,7 +124,9 @@ export function ProjectEdit() {
       });
     } else {
       const mandatoryFieldsMissing = mandatoryFields.filter(
-        (m) => Object.keys(defaultLocaleInfo).includes(m) === false || defaultLocaleInfo[m] === '',
+        (m) =>
+          Object.keys(defaultLocaleInfo).includes(m) === false ||
+          defaultLocaleInfo[m].trim() === '',
       );
       if (mandatoryFieldsMissing.length) {
         missingFields.push({
@@ -130,7 +135,6 @@ export function ProjectEdit() {
         });
       }
     }
-
     const nonLocaleMissingFields = [];
     if (projectInfo.mappingTypes.length === 0) nonLocaleMissingFields.push('mappingTypes');
     const { mappingEditors, validationEditors, customEditor } = projectInfo;
@@ -160,7 +164,17 @@ export function ProjectEdit() {
     ) {
       missingFields.push({ type: 'noTeamsAssigned' });
     }
-
+    // validate name
+    if (!missingFields?.[0]?.fields?.includes('name')) {
+      const projectName = defaultLocaleInfo.name;
+      if (!/^[a-zA-Z]/.test(projectName)) {
+        missingFields.push({
+          locale: projectInfo.defaultLocale,
+          fields: ['projectNameValidationError'],
+          type: 'nameValidationError',
+        });
+      }
+    }
     if (missingFields.length > 0) {
       setError(missingFields);
       return new Promise((resolve, reject) => reject());
@@ -208,6 +222,8 @@ export function ProjectEdit() {
       { value: 'custom_editor' },
     ];
 
+    if (userDetails.role === 'ADMIN') elements.splice(3, 0, { value: 'partners' });
+
     return (
       <div>
         <ul className="list pl0 mt0 ttu">
@@ -230,6 +246,8 @@ export function ProjectEdit() {
         return <InstructionsForm languages={supportedLanguages} />;
       case 'metadata':
         return <MetadataForm />;
+      case 'partners':
+        return <PartnersForm />;
       case 'imagery':
         return <ImageryForm />;
       case 'permissions':
@@ -347,6 +365,14 @@ const ErrorTitle = ({ locale, numberOfMissingFields, type, projectInfo }) => {
           mapping: doesMappingTeamNotExist(teams, mappingPermission),
           validation: doesValidationTeamNotExist(teams, validationPermission),
         }}
+      />
+    );
+  }
+  if (type === 'nameValidationError') {
+    return (
+      <FormattedMessage
+        id="management.projects.create.errors.project_name_validation_error"
+        defaultMessage="Project Name Validation Error"
       />
     );
   }

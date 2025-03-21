@@ -1,10 +1,11 @@
+from flask import current_app
+
 from backend.services.messaging.template_service import (
-    template_var_replacing,
-    get_template,
     clean_html,
     format_username_link,
+    get_template,
+    template_var_replacing,
 )
-from flask import current_app
 from tests.backend.base import BaseTestCase
 
 

@@ -121,11 +121,6 @@ export default defineMessages({
     id: 'users.detail.heatmapLegendLess',
     defaultMessage: 'less',
   },
-  delayPopup: {
-    id: 'users.detail.delay_popup',
-    defaultMessage:
-      'These statistics need heavy calculations and changes are showing up with a delay of around one hour.',
-  },
   teams: {
     id: 'users.detail.teams',
     defaultMessage: 'Teams',

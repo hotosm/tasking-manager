@@ -1,12 +1,12 @@
+from backend.exceptions import get_message_from_sub_code
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     add_manager_to_organisation,
-    create_canned_organisation,
     create_canned_interest,
-    generate_encoded_token,
+    create_canned_organisation,
     create_canned_user,
+    generate_encoded_token,
 )
-from backend.exceptions import get_message_from_sub_code
 
 TEST_INTEREST_NAME = "test_interest"
 NEW_INTEREST_NAME = "New Interest"

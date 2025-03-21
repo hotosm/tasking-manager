@@ -1,46 +1,47 @@
 ARG DEBIAN_IMG_TAG=slim-bookworm
 ARG PYTHON_IMG_TAG=3.10
 
-FROM docker.io/python:${PYTHON_IMG_TAG}-${DEBIAN_IMG_TAG} as base
+FROM docker.io/python:${PYTHON_IMG_TAG}-${DEBIAN_IMG_TAG} AS base
 ARG APP_VERSION=0.1.0
 ARG DOCKERFILE_VERSION=0.5.0
-ARG ALPINE_IMG_TAG
+ARG DEBIAN_IMG_TAG
 ARG PYTHON_IMG_TAG
 ARG MAINTAINER=sysadmin@hotosm.org
 LABEL org.hotosm.tasks.app-version="${APP_VERSION}" \
-      org.hotosm.tasks.debian-img-tag="${DEBIAN_IMG_TAG}" \
-      org.hotosm.tasks.python-img-tag="${PYTHON_IMG_TAG}" \
-      org.hotosm.tasks.dockerfile-version="${DOCKERFILE_VERSION}" \
-      org.hotosm.tasks.maintainer="${MAINTAINER}" \
-      org.hotosm.tasks.api-port="5000"
+    org.hotosm.tasks.debian-img-tag="${DEBIAN_IMG_TAG}" \
+    org.hotosm.tasks.python-img-tag="${PYTHON_IMG_TAG}" \
+    org.hotosm.tasks.dockerfile-version="${DOCKERFILE_VERSION}" \
+    org.hotosm.tasks.maintainer="${MAINTAINER}" \
+    org.hotosm.tasks.api-port="5000"
 # Fix timezone (do not change - see issue #3638)
-ENV TZ UTC
+ENV TZ=UTC
 # Add non-root user, permissions, init log dir
 RUN useradd --uid 9000 --create-home --home /home/appuser --shell /bin/false appuser
 
 
 
 
-FROM base as extract-deps
+FROM base AS extract-deps
 RUN pip install --no-cache-dir --upgrade pip
 WORKDIR /opt/python
 COPY pyproject.toml pdm.lock README.md /opt/python/
-RUN pip install --no-cache-dir pdm==2.7.4
+RUN pip install --no-cache-dir pdm==2.8.0
 RUN pdm export --prod --without-hashes > requirements.txt
 
 
 
-FROM base as build
+FROM base AS build
 RUN pip install --no-cache-dir --upgrade pip
 WORKDIR /opt/python
 # Setup backend build-time dependencies
-RUN apt-get update
-RUN apt-get install --no-install-recommends -y build-essential
-RUN apt-get install --no-install-recommends -y \
-        postgresql-server-dev-15 \
-        python3-dev \
-        libffi-dev \
-        libgeos-dev
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get -q install --no-install-recommends -y \
+    build-essential \
+    postgresql-server-dev-15 \
+    python3-dev \
+    libffi-dev \
+    libgeos-dev
 # Setup backend Python dependencies
 COPY --from=extract-deps \
     /opt/python/requirements.txt /opt/python/
@@ -50,20 +51,22 @@ RUN pip install --user --no-warn-script-location \
 
 
 
-FROM base as runtime
+FROM base AS runtime
 ARG PYTHON_IMG_TAG
 WORKDIR /usr/src/app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1 \
     PATH="/home/appuser/.local/bin:$PATH" \
-    PYTHON_LIB="/home/appuser/.local/lib/python$PYTHON_IMG_TAG/site-packages" \
+    PYTHONPATH="/usr/src/app:$PYTHONPATH" \
+    PYTHON_LIB="/home/appuser/.local/lib/python${PYTHON_IMG_TAG}/site-packages" \
     SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
     REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 # Setup backend runtime dependencies
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y \
-        postgresql-client libgeos3.11.1 proj-bin && \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get -q install --no-install-recommends -y \
+    postgresql-client libgeos3.11.1 proj-bin curl && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY --from=build \
     /home/appuser/.local \
@@ -77,28 +80,21 @@ COPY manage.py .
 
 
 
-FROM runtime as debug
+FROM runtime AS debug
 RUN pip install --user --no-warn-script-location \
-    --no-cache-dir debugpy==1.6.7
+    --no-cache-dir debugpy==1.8.1
 EXPOSE 5678/tcp
 CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678", \
-    "-m", "gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
+    "-m", "uvicorn", "backend.main:api", "--host", "0.0.0.0", "--port", "5000", \
     "--reload", "--log-level", "error"]
 
 
-
-FROM runtime as prod
+FROM runtime AS prod
 USER root
-# Get the necessary bits for the health check
-RUN apt-get update && \
-	apt-get install -y curl && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
 # Pre-compile packages to .pyc (init speed gains)
 RUN python -c "import compileall; compileall.compile_path(maxlevels=10, quiet=1)"
 RUN python -m compileall .
-EXPOSE 8000/tcp
-HEALTHCHECK --interval=60s --start-period=15s CMD ["curl", "-f", "http://localhost:8000/api/v2/system/heartbeat/", "||", "exit", "1"]
+EXPOSE 5000/tcp
 USER appuser:appuser
-CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application", \
-    "--workers", "1", "--log-level", "error"]
+CMD ["uvicorn", "backend.main:api", "--host", "0.0.0.0", "--port", "5000", \
+    "--workers", "8", "--log-level", "critical","--no-access-log"]

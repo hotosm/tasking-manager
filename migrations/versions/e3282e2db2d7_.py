@@ -5,10 +5,10 @@ Revises: 068674f06b0f
 Create Date: 2019-06-17 18:34:11.058440
 
 """
-from alembic import op
 import sqlalchemy as sa
-from backend.models.postgis.statuses import TeamVisibility
+from alembic import op
 
+from backend.models.postgis.statuses import TeamVisibility
 
 # revision identifiers, used by Alembic.
 revision = "e3282e2db2d7"

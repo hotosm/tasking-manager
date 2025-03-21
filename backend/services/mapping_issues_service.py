@@ -1,16 +1,20 @@
+from databases import Database
+
 from backend.exceptions import NotFound
-from backend.models.postgis.mapping_issues import MappingIssueCategory
 from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
+from backend.models.postgis.mapping_issues import MappingIssueCategory
 
 
 class MappingIssueCategoryService:
     @staticmethod
-    def get_mapping_issue_category(category_id: int) -> MappingIssueCategory:
+    async def get_mapping_issue_category(
+        category_id: int, db: Database
+    ) -> MappingIssueCategory:
         """
         Get MappingIssueCategory from DB
         :raises: NotFound
         """
-        category = MappingIssueCategory.get_by_id(category_id)
+        category = await MappingIssueCategory.get_by_id(category_id, db)
 
         if category is None:
             raise NotFound(sub_code="ISSUE_CATEGORY_NOT_FOUND", category_id=category_id)
@@ -18,37 +22,45 @@ class MappingIssueCategoryService:
         return category
 
     @staticmethod
-    def get_mapping_issue_category_as_dto(category_id: int) -> MappingIssueCategoryDTO:
+    async def get_mapping_issue_category_as_dto(
+        category_id: int, db: Database
+    ) -> MappingIssueCategoryDTO:
         """Get MappingIssueCategory from DB"""
-        category = MappingIssueCategoryService.get_mapping_issue_category(category_id)
-        return category.as_dto()
+        category = await MappingIssueCategoryService.get_mapping_issue_category(
+            category_id, db
+        )
+        return MappingIssueCategory.as_dto(category)
 
     @staticmethod
-    def create_mapping_issue_category(category_dto: MappingIssueCategoryDTO) -> int:
+    async def create_mapping_issue_category(
+        category_dto: MappingIssueCategoryDTO, db: Database
+    ) -> int:
         """Create MappingIssueCategory in DB"""
-        new_mapping_issue_category_id = MappingIssueCategory.create_from_dto(
-            category_dto
+        new_mapping_issue_category_id = await MappingIssueCategory.create_from_dto(
+            category_dto, db
         )
         return new_mapping_issue_category_id
 
     @staticmethod
-    def update_mapping_issue_category(
-        category_dto: MappingIssueCategoryDTO,
+    async def update_mapping_issue_category(
+        category_dto: MappingIssueCategoryDTO, db: Database
     ) -> MappingIssueCategoryDTO:
         """Create MappingIssueCategory in DB"""
-        category = MappingIssueCategoryService.get_mapping_issue_category(
-            category_dto.category_id
+        category = await MappingIssueCategoryService.get_mapping_issue_category(
+            category_dto.category_id, db
         )
-        category.update_category(category_dto)
-        return category.as_dto()
+        await MappingIssueCategory.update_category(category, category_dto, db)
+        return MappingIssueCategory.as_dto(category)
 
     @staticmethod
-    def delete_mapping_issue_category(category_id: int):
+    async def delete_mapping_issue_category(category_id: int, db: Database):
         """Delete specified license"""
-        category = MappingIssueCategoryService.get_mapping_issue_category(category_id)
-        category.delete()
+        category = await MappingIssueCategoryService.get_mapping_issue_category(
+            category_id, db
+        )
+        await MappingIssueCategory.delete(category, db)
 
     @staticmethod
-    def get_all_mapping_issue_categories(include_archived):
+    async def get_all_mapping_issue_categories(include_archived, db):
         """Get all mapping issue categories"""
-        return MappingIssueCategory.get_all_categories(include_archived)
+        return await MappingIssueCategory.get_all_categories(include_archived, db)

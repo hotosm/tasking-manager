@@ -1,5 +1,5 @@
-import React, { useState, useEffect, Suspense } from 'react';
-import { useLocation } from 'react-router-dom';
+import { lazy, useState, useEffect, useCallback, Suspense, useRef } from 'react';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useQueryParam, StringParam } from 'use-query-params';
 import Popup from 'reactjs-popup';
@@ -19,6 +19,7 @@ import { TasksMapLegend } from './legend';
 import { ProjectInstructions } from './instructions';
 import { ChangesetCommentTags } from './changesetComment';
 import { ProjectHeader } from '../projectDetail/header';
+import { ProjectDetailMap } from '../projectDetail';
 import Contributions from './contributions';
 import { UserPermissionErrorContent } from './permissionErrorModal';
 import { Alert } from '../alert';
@@ -31,7 +32,8 @@ import {
   useTasksQuery,
 } from '../../api/projects';
 import { useTeamsQuery } from '../../api/teams';
-const TaskSelectionFooter = React.lazy(() => import('./footer'));
+
+const TaskSelectionFooter = lazy(() => import('./footer'));
 
 const getRandomTaskByAction = (activities, taskAction) => {
   if (['validateATask', 'validateAnotherTask'].includes(taskAction)) {
@@ -53,19 +55,22 @@ const getRandomTaskByAction = (activities, taskAction) => {
 export function TaskSelection({ project }: Object) {
   useSetProjectPageTitleTag(project);
   const { projectId } = project;
+  const { tabname: activeSection } = useParams();
+  const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const userOrgs = useSelector((state) => state.auth.organisations);
   const lockedTasks = useGetLockedTasks();
   const [zoomedTaskId, setZoomedTaskId] = useState(null);
-  const [activeSection, setActiveSection] = useState(null);
   const [selected, setSelectedTasks] = useState([]);
   const [mapInit, setMapInit] = useState(false);
   const [taskAction, setTaskAction] = useState('mapATask');
   const [activeStatus, setActiveStatus] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
+  const isFirstRender = useRef(true); // to check if component is rendered first time
 
   const { data: userTeams, isLoading: isUserTeamsLoading } = useTeamsQuery(
     {
@@ -74,6 +79,7 @@ export function TaskSelection({ project }: Object) {
     },
     {
       useErrorBoundary: true,
+      enabled: !!token,
     },
   );
   const { data: activities, refetch: getActivities } = useActivitiesQuery(projectId);
@@ -87,6 +93,7 @@ export function TaskSelection({ project }: Object) {
     // Task status on the map were not being updated when coming from the action page,
     // so added this as a workaround.
     cacheTime: 0,
+    enabled: false,
   });
   const {
     data: priorityAreas,
@@ -114,23 +121,46 @@ export function TaskSelection({ project }: Object) {
   // update tasks geometry if there are new tasks (caused by task splits)
   // update tasks state (when activities have changed)
   useEffect(() => {
-    if (tasksData?.features.length !== activities?.activity.length) {
+    if (tasksData?.features.length !== activities?.activity.length && token) {
       refetchTasks();
     }
-  }, [tasksData, activities, refetchTasks]);
+  }, [tasksData, activities, refetchTasks, token]);
+
+  // use route instead of local state for active tab states
+  const setActiveSection = useCallback(
+    (section) => {
+      if (!!textSearch) return; // if search param not present, do not set active section
+      navigate(`/projects/${projectId}/${section}`);
+    },
+    [navigate, projectId, textSearch],
+  );
+
+  // remove history location state since react-router-dom persists state on reload
+  useEffect(() => {
+    function onBeforeUnload() {
+      window.history.replaceState({}, '');
+    }
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, []);
 
   // show the tasks tab when the page loads if the user has already contributed
   // to the project. If no, show the instructions tab.
   useEffect(() => {
-    if (contributions && activeSection === null) {
+    // do not redirect if user is not from project detail page
+    if (location?.state?.from !== `/projects/${projectId}`) return;
+    if (contributions && isFirstRender.current) {
       const currentUserContributions = contributions.filter((u) => u.username === user.username);
       if (textSearch || (user.isExpert && currentUserContributions.length > 0)) {
         setActiveSection('tasks');
       } else {
         setActiveSection('instructions');
       }
+      isFirstRender.current = false;
     }
-  }, [contributions, user.username, user, activeSection, textSearch]);
+  }, [contributions, user.username, user, textSearch, setActiveSection, location, projectId]);
 
   useEffect(() => {
     // run it only when the component is initialized
@@ -168,7 +198,6 @@ export function TaskSelection({ project }: Object) {
       setMapInit(true);
     }
   }, [
-    lockedTasks,
     dispatch,
     activities,
     mapInit,
@@ -260,7 +289,7 @@ export function TaskSelection({ project }: Object) {
           )}
         <div className="w-100 w-50-ns fl pt3 overflow-y-auto-ns vh-minus-200-ns h-100">
           <div className="pl4-l pl2 pr4">
-            <ProjectHeader project={project} />
+            <ProjectHeader project={project} showEditLink />
             <div className="mt3">
               <TabSelector activeSection={activeSection} setActiveSection={setActiveSection} />
               <div className="pt3">
@@ -292,6 +321,7 @@ export function TaskSelection({ project }: Object) {
                     <ChangesetCommentTags tags={project.changesetComment} />
                   </>
                 ) : null}
+
                 {activeSection === 'contributions' ? (
                   <Contributions
                     project={project}
@@ -307,28 +337,40 @@ export function TaskSelection({ project }: Object) {
           </div>
         </div>
         <div className="w-100 w-50-ns fl h-100 relative">
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            type={'media'}
-            rows={26}
-            delay={200}
-            ready={typeof tasks === 'object' && mapInit && !isPriorityAreasLoading}
-          >
-            <TasksMap
-              mapResults={tasks}
-              projectId={project.projectId}
-              error={typeof project !== 'object'}
-              loading={typeof project !== 'object'}
-              className="dib w-100 fl h-100-ns vh-75"
-              zoomedTaskId={zoomedTaskId}
-              selectTask={selectTask}
-              selected={selected}
+          {!token ? (
+            <ProjectDetailMap
+              project={project}
+              projectLoading={false}
+              tasksError={false}
+              tasks={project.tasks}
+              navigate={navigate}
+              type="detail"
               taskBordersOnly={false}
-              priorityAreas={priorityAreas}
-              animateZoom={false}
             />
-            <TasksMapLegend />
-          </ReactPlaceholder>
+          ) : (
+            <ReactPlaceholder
+              showLoadingAnimation={true}
+              type={'media'}
+              rows={26}
+              delay={200}
+              ready={typeof tasks === 'object' && mapInit && !isPriorityAreasLoading}
+            >
+              <TasksMap
+                mapResults={tasks}
+                projectId={project.projectId}
+                error={typeof project !== 'object'}
+                loading={typeof project !== 'object'}
+                className="dib w-100 fl h-100-ns vh-75"
+                zoomedTaskId={zoomedTaskId}
+                selectTask={selectTask}
+                selected={selected}
+                taskBordersOnly={false}
+                priorityAreas={priorityAreas}
+                animateZoom={false}
+              />
+              <TasksMapLegend />
+            </ReactPlaceholder>
+          )}
         </div>
       </div>
       <div className="cf w-100 bt b--grey-light fixed bottom-0 left-0 z-4">

@@ -1,4 +1,3 @@
-
 # Configuration files #
 tasking-manager*.env
 
@@ -35,6 +34,7 @@ __pypackages__/
 # Editor generated files #
 .idea/
 .vscode/
+.trunk/
 [._]*.s[a-v][a-z]
 [._]*.sw[a-p]
 [._]s[a-rt-v][a-z]
@@ -55,3 +55,25 @@ venv_aws/
 # Backend coverage generated files
 htmlcov/
 .coverage
+
+# Terraform
+.terraform
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Terragrunt
+.terragrunt-cache
+**/.terragrunt-cache/
+**/.terragrunt-cache
+**/infra.env
+
+# Docker & Docker compose
+docker-compose.override.yml
+postgres_data/
+
+# Variables
+scripts/aws/infra/staging/variables.py
+
+# Files
+tests/test_db_dump/tm_sample_db.sql

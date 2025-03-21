@@ -1,29 +1,28 @@
 from unittest.mock import patch
+
 from backend.models.postgis.statuses import (
-    TaskStatus,
+    MappingLevel,
     MappingNotAllowed,
     ProjectStatus,
+    TaskStatus,
     ValidatingNotAllowed,
     ValidationPermission,
-    MappingLevel,
 )
-
+from backend.models.postgis.task import Task, TaskAction
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
 from backend.services.users.user_service import UserService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    create_canned_project,
-    return_canned_user,
-    generate_encoded_token,
     create_canned_license,
+    create_canned_project,
+    generate_encoded_token,
+    return_canned_user,
 )
 from tests.backend.integration.api.users.test_resources import (
-    USER_NOT_FOUND_SUB_CODE,
     USER_NOT_FOUND_MESSAGE,
+    USER_NOT_FOUND_SUB_CODE,
 )
-from backend.models.postgis.task import Task, TaskAction
-
 
 PROJECT_NOT_FOUND_SUB_CODE = "PROJECT_NOT_FOUND"
 TASK_NOT_FOUND_SUB_CODE = "TASK_NOT_FOUND"
@@ -1068,10 +1067,20 @@ class TestTasksActionsValidationUnlockAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         TestTasksActionsValidationUnlockAPI.assert_validated_task_response(
-            response.json["tasks"][0], 1, "VALIDATED", self.test_user.username
+            next(
+                (task for task in response.json["tasks"] if task["taskId"] == 1), None
+            ),
+            1,
+            "VALIDATED",
+            self.test_user.username,
         )
         TestTasksActionsValidationUnlockAPI.assert_validated_task_response(
-            response.json["tasks"][1], 2, "INVALIDATED", self.test_user.username
+            next(
+                (task for task in response.json["tasks"] if task["taskId"] == 2), None
+            ),
+            2,
+            "INVALIDATED",
+            self.test_user.username,
         )
 
     def test_validation_unlock_returns_200_if_validated_with_comment(self):

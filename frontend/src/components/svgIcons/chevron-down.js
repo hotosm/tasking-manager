@@ -1,6 +1,6 @@
-import React from 'react';
+import { PureComponent } from 'react';
 
-export class ChevronDownIcon extends React.PureComponent {
+export class ChevronDownIcon extends PureComponent {
   render() {
     return (
       <svg width="15px" height="15px" viewBox="0 0 15 15" {...this.props}>

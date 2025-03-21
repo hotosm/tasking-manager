@@ -24,6 +24,15 @@ import { setupFaultyHandlers } from '../../network/tests/server';
 import { projects } from '../../network/tests/mockData/projects';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
+// This is a late import in a React.lazy call; it takes awhile for these to resolve, so we import them here manually.
+// In the event you remove them, please measure test times before ''and'' after removal.
+import '../../utils/chart';
+import '../../components/projectCreate';
+import '../../components/projectCreate/projectCreationMap';
+
+// scrollTo is not implemented by jsdom; mock to avoid warnings.
+window.scrollTo = jest.fn();
+
 test('CreateProject renders ProjectCreate', async () => {
   renderWithRouter(
     <QueryParamProvider adapter={ReactRouter6Adapter}>
@@ -33,6 +42,13 @@ test('CreateProject renders ProjectCreate', async () => {
     </QueryParamProvider>,
   );
   expect(screen.getByText('Loading...')).toBeInTheDocument();
+  await waitFor(() => expect(screen.queryByText('Loading...')).not.toBeInTheDocument());
+  // Since WebGL is not supported by Node, we'll assume that the map context will be loaded
+  // If WebGL was supported by Node, we could look for `Step 1: define area` instead.
+  expect(
+    await screen.findByRole('heading', { name: 'WebGL Context Not Found' }),
+  ).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'WebGL is enabled' })).toBeInTheDocument();
 });
 
 describe('UserProjectsPage Component', () => {
@@ -106,6 +122,16 @@ describe('UserProjectsPage Component', () => {
 });
 
 test('More Filters should close the more filters container when clicked outside the container', async () => {
+  jest.spyOn(document, 'getElementById').mockReturnValue({
+    offsetHeight: 100,
+    getBoundingClientRect: () => ({
+      top: 0,
+      left: 0,
+      height: 100,
+      width: 100,
+    }),
+  });
+
   const { user, router } = createComponentWithMemoryRouter(
     <QueryParamProvider adapter={ReactRouter6Adapter}>
       <ReduxIntlProviders>
@@ -221,27 +247,13 @@ describe('Project Detail Page', () => {
     Line: () => null,
   }));
 
-  it('should render component details', async () => {
-    act(() => {
-      store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
-    });
-    renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <ProjectDetailPage />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    await waitFor(() => {
-      expect(screen.getByText(/sample project/i)).toBeInTheDocument();
-      expect(screen.getByText(/hello world/i)).toBeInTheDocument();
-    });
-  });
-
-  it('should display private project error message', async () => {
-    setupFaultyHandlers();
+  /**
+   * Set up a ProjectDetailPage given an initial entry; this avoids issues where there is no project id.
+   * @param {Array<string>} initialEntries The initial entries. This should be in the form of `[projects/:id]`.
+   */
+  function setup(initialEntries) {
     render(
-      <MemoryRouter initialEntries={['/projects/123']}>
+      <MemoryRouter initialEntries={initialEntries}>
         <Routes>
           <Route
             path="projects/:id"
@@ -256,6 +268,22 @@ describe('Project Detail Page', () => {
         </Routes>
       </MemoryRouter>,
     );
+  }
+
+  it('should render component details', async () => {
+    act(() => {
+      store.dispatch({ type: 'SET_LOCALE', locale: 'es-AR' });
+    });
+    setup(['/projects/123']);
+    await waitFor(() => {
+      expect(screen.getByText(/sample project/i)).toBeInTheDocument();
+      expect(screen.getByText(/hello world/i)).toBeInTheDocument();
+    });
+  });
+
+  it('should display private project error message', async () => {
+    setupFaultyHandlers();
+    setup(['/projects/123']);
 
     await waitFor(() =>
       expect(

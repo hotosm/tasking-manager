@@ -1,10 +1,11 @@
-from schematics import Model
-from schematics.types import IntType, UTCDateTimeType
+from datetime import datetime
+
+from pydantic import BaseModel, Field
 
 
-class NotificationDTO(Model):
+class NotificationDTO(BaseModel):
     """DTO used to define a notification count that will be sent to a user"""
 
-    user_id = IntType(serialized_name="userId")
-    date = UTCDateTimeType(serialized_name="date")
-    unread_count = IntType(serialized_name="unreadCount")
+    user_id: int = Field(alias="userId")
+    date: datetime = Field(alias="date")
+    unread_count: int = Field(alias="unreadCount")

@@ -1,19 +1,19 @@
 from unittest.mock import patch
 
 from backend.models.dtos.message_dto import MessageDTO
-from backend.services.messaging.message_service import MessageService
+from backend.models.postgis.message import Message, MessageType, NotFound
 from backend.models.postgis.statuses import TaskStatus
-from backend.models.postgis.message import MessageType, Message, NotFound
 from backend.models.postgis.task import Task
+from backend.services.messaging.message_service import MessageService
 from backend.services.messaging.smtp_service import SMTPService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     add_manager_to_organisation,
     create_canned_organisation,
-    return_canned_user,
     create_canned_project,
+    return_canned_user,
     update_project_with_info,
 )
-from tests.backend.base import BaseTestCase
 
 
 class TestMessageService(BaseTestCase):

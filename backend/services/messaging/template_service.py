@@ -1,7 +1,15 @@
 import os
 import re
 
-from flask import current_app, render_template
+from jinja2 import Environment, FileSystemLoader
+from loguru import logger
+
+from backend.config import settings
+
+# Set up Jinja2 environment
+env = Environment(
+    loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")),
+)
 
 
 def get_txt_template(template_name: str):
@@ -17,7 +25,7 @@ def get_txt_template(template_name: str):
         with open(template_location, mode="r", encoding="utf-8") as template:
             return template.read()
     except FileNotFoundError:
-        current_app.logger.error("Unable open file {0}".format(template_location))
+        logger.error("Unable open file {0}".format(template_location))
         raise ValueError("Unable open file {0}".format(template_location))
 
 
@@ -29,13 +37,19 @@ def get_template(template_name: str, values: dict) -> str:
     :return: Template as a string
     """
     try:
-        values["ORG_CODE"] = current_app.config["ORG_CODE"]
-        values["ORG_NAME"] = current_app.config["ORG_NAME"]
-        values["ORG_LOGO"] = current_app.config["ORG_LOGO"]
-        values["APP_BASE_URL"] = current_app.config["APP_BASE_URL"]
-        return render_template(template_name, values=values)
+        values["ORG_CODE"] = settings.ORG_CODE
+        values["ORG_NAME"] = settings.ORG_NAME
+        values["ORG_LOGO"] = settings.ORG_LOGO
+        values["APP_BASE_URL"] = settings.APP_BASE_URL
+
+        # Load the template
+        template = env.get_template(template_name)
+
+        # Render the template as a string
+        rendered_template = template.render({"values": values})
+        return rendered_template
     except (FileNotFoundError, TypeError):
-        current_app.logger.error("Unable open file {0}".format(template_name))
+        logger.error("Unable open file {0}".format(template_name))
         raise ValueError("Unable open file {0}".format(template_name))
 
 
@@ -59,6 +73,6 @@ def format_username_link(content):
         username = name[2:-1]
         content = content.replace(
             name,
-            f'<a style="color: #d73f3f" href="{current_app.config["APP_BASE_URL"]}/users/{username}/">@{username}</a>',
+            f'<a style="color: #d73f3f" href="{settings.APP_BASE_URL}/users/{username}/">@{username}</a>',
         )
     return content

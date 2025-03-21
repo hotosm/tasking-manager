@@ -1,0 +1,143 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+    - id: trailing-whitespace
+      name: trim trailing whitespace
+      description: trims trailing whitespace.
+      entry: trailing-whitespace-fixer
+      language: python
+      types: [text]
+      stages: [pre-commit, pre-push, manual]
+
+    - id: end-of-file-fixer
+      name: fix end of files
+      description: ensures that a file is either empty, or ends with one newline.
+      entry: end-of-file-fixer
+      language: python
+      types: [text]
+      stages: [pre-commit, pre-push, manual]
+
+    - id: detect-aws-credentials
+      name: detect aws credentials
+      description: detects *your* aws credentials from the aws cli credentials file.
+      entry: detect-aws-credentials
+      language: python
+      types: [text]
+      args:
+        - "--allow-missing-credentials"
+
+    - id: detect-private-key
+      name: detect private key
+      description: detects the presence of private keys.
+      entry: detect-private-key
+      language: python
+      types: [text]
+
+    # - id: pretty-format-json
+    #   name: pretty format json
+    #   description: sets a standard for formatting json files.
+    #   entry: pretty-format-json
+    #   language: python
+    #   types: [text]
+    #   files: \.(json)$
+    #   args:
+    #     - "--autofix"
+
+    - id: check-merge-conflict
+      name: check for merge conflicts
+      description: checks for files that contain merge conflict strings.
+      entry: check-merge-conflict
+      language: python
+      types: [text]
+
+    - id: check-yaml
+      name: YAML File check
+      description: Checks if YAML File is valid and there are not any indention errors.
+
+    - id: check-added-large-files
+      name: check for added large files
+      description: prevents giant files from being committed.
+      entry: check-added-large-files
+      language: python
+      stages: [pre-commit, pre-push, manual]
+      args: ['--maxkb=10240']
+
+  # Versioning: Commit messages & changelog
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.29.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+
+  # # Lint / autoformat: Python code
+  # - repo: https://github.com/astral-sh/ruff-pre-commit
+  #   # Ruff version.
+  #   rev: "v0.6.4"
+  #   hooks:
+  #     # Run the linter
+  #     - id: ruff
+  #       files: ^backend/(?:.*/)*.*$
+  #       args: [--fix, --exit-non-zero-on-fix]
+  #     # Run the formatter
+  #     - id: ruff-format
+  #       files: ^backend/(?:.*/)*.*$
+
+  # INFO: Searches for code that is used or lingering around. (Disabled since there were a lot of work from dev end to remove stuff)
+  # - repo: https://github.com/asottile/dead
+  #   rev: v1.5.2
+  #   hooks:
+  #   - id: dead
+
+  # Autoformat: YAML, JSON, Markdown, etc. (Disabled since pre-commit wasn't able to fix and needs dev input)
+  # - repo: https://github.com/pre-commit/mirrors-prettier
+  #   rev: v3.1.0
+  #   hooks:
+  #     - id: prettier
+  #       args:
+  #         [
+  #           --ignore-unknown,
+  #           --no-error-on-unmatched-pattern,
+  #           "!chart/**",
+  #           "!CHANGELOG.md",
+  #           "!CONTRIBUTING.md",
+  #           "!frontend/pnpm-lock.yaml",
+  #           "!backend/tests/test_data/**",
+  #         ]
+
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        language_version: python3.10
+
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: "7.1.2"
+    hooks:
+      - id: flake8
+        name: flake8
+        additional_dependencies: [mccabe>=0.7.0]
+        args:
+          [
+            "--max-line-length=119",
+            "--max-complexity=150",
+            "--ignore=E203,W503",
+            "--extend-exclude=migrations/*",
+          ]
+        files: '^(backend|tests|manage\.py)'
+
+  # - repo: https://github.com/psf/black
+  #   rev: "23.12.1" # Please keep this version updated, should be same as your black version
+  #   hooks:
+  #     - id: black
+  #       name: black tests
+  #       entry: black
+  #       args:
+  #         [
+  #           "--line-length=88",
+  #           "manage.py",
+  #           "backend",
+  #           "tests",
+  #           "migrations",
+  #         ]

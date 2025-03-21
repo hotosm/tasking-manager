@@ -1,4 +1,5 @@
 import json
+
 import geojson
 
 from backend.models.dtos.grid_dto import GridDTO
