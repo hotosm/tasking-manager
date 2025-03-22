@@ -832,7 +832,7 @@ class TestProjectsAllAPI(BaseTestCase):
     def test_returns_moderate_projects_if_difficulty_set_to_moderate(self):
         """
         Test returns only projects with difficulty set to MODERATE if difficulty set to MODERATE.
-        Since we have set difficulty of proects to MODERATE during setup, we should get all user permitted projects.
+        Since we have set difficulty of projects to MODERATE during setup, we should get all user permitted projects.
         """
         # Arrange
         self.test_project_2.private = False
