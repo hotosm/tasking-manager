@@ -147,7 +147,7 @@ export function Footer() {
                   </a>
                 ))}
             </p>
-            <a href="https://osm.org/about" className="link white">
+            <a href="https://www.openhistoricalmap.org/about" className="link white">
               <FormattedMessage {...messages.learn} />
             </a>
           </div>
