@@ -4,7 +4,6 @@ import shortNumber from 'short-number';
 import messages from './messages';
 import { StatsCard } from '../statsCard';
 import { MappingIcon, EditIcon, RoadIcon, HomeIcon } from '../svgIcons';
-import StatsInfoFooter from '../statsInfoFooter';
 
 const iconClass = 'h-50 w-50';
 const iconStyle = { height: '45px' };
@@ -71,7 +70,6 @@ export const StatsSection = ({ partner }) => {
           className={'w-25-l w-50-m w-100 mv1'}
         />
       </div>
-      <StatsInfoFooter />
     </div>
   );
 };

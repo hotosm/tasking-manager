@@ -206,13 +206,13 @@ class Project(db.Model):
     def percent_mapped(self):
         return (
             (self.tasks_mapped + self.tasks_validated)
-            / (self.total_tasks - self.tasks_bad_imagery)
             * 100
+            // (self.total_tasks - self.tasks_bad_imagery)
         )
 
     @hybrid_property
     def percent_validated(self):
-        return self.tasks_validated / (self.total_tasks - self.tasks_bad_imagery) * 100
+        return self.tasks_validated * 100 // (self.total_tasks - self.tasks_bad_imagery)
 
     # Mapped Objects
     tasks = db.relationship(

@@ -19,7 +19,7 @@ const ProgressBar = ({ className, firstBarValue, secondBarValue = 0, children, d
             target={'_blank'}
             rel="noreferrer"
             className="white no-underline"
-            href={OHSOME_STATS_BASE_URL + '/dashboard#hashtags=' + data.primary}
+            href={OHSOME_STATS_BASE_URL + '/dashboard#hashtag=' + data.primary}
           >
             {'#' + data.primary}{' '}
           </a>

@@ -1,16 +1,18 @@
-from flask_restful import Resource, request, current_app
+import csv
+import io
+from distutils.util import strtobool
+from datetime import datetime
+from flask_restful import Resource, current_app, request
+from flask import Response
 from schematics.exceptions import DataError
 
-from backend.models.dtos.team_dto import (
-    NewTeamDTO,
-    UpdateTeamDTO,
-    TeamSearchDTO,
-)
+from backend.models.dtos.team_dto import NewTeamDTO, TeamSearchDTO, UpdateTeamDTO
+from backend.models.postgis.team import Team, TeamMembers
+from backend.models.postgis.user import User
+from backend.services.organisation_service import OrganisationService
 from backend.services.team_service import TeamService, TeamServiceError
 from backend.services.users.authentication_service import token_auth
-from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
-from distutils.util import strtobool
 
 
 class TeamsRestAPI(Resource):
@@ -368,3 +370,89 @@ class TeamsAllAPI(Resource):
                 return {"Error": error_msg, "SubCode": "CreateTeamNotPermitted"}, 403
         except TeamServiceError as e:
             return str(e), 400
+
+
+class TeamsJoinRequestAPI(Resource):
+    # @tm.pm_only()
+    @token_auth.login_required
+    def get(self):
+        """
+        Downloads join requests for a specific team as a CSV.
+        ---
+        tags:
+          - teams
+        produces:
+          - text/csv
+        parameters:
+            - in: query
+              name: team_id
+              description: ID of the team to filter by
+              required: true
+              type: integer
+              default: null
+        responses:
+            200:
+                description: CSV file with inactive team members
+            400:
+                description: Missing or invalid parameters
+            401:
+                description: Unauthorized access
+            500:
+                description: Internal server error
+        """
+        # Parse the team_id from query parameters
+        team_id = request.args.get("team_id", type=int)
+        if not team_id:
+            return {"message": "team_id is required"}, 400
+
+        # Query the database
+        try:
+            team_members = (
+                TeamMembers.query.join(User, TeamMembers.user_id == User.id)
+                .join(Team, TeamMembers.team_id == Team.id)
+                .filter(TeamMembers.team_id == team_id, ~TeamMembers.active)
+                .with_entities(
+                    User.username.label("username"),
+                    TeamMembers.joined_date.label("joined_date"),
+                    Team.name.label("team_name"),
+                )
+                .all()
+            )
+
+            if not team_members:
+                return {
+                    "message": "No inactive members found for the specified team"
+                }, 200
+
+            # Generate CSV in memory
+            csv_output = io.StringIO()
+            writer = csv.writer(csv_output)
+            writer.writerow(
+                ["Username", "Application Date (UTC)", "Team Name"]
+            )  # CSV header
+
+            for member in team_members:
+                writer.writerow(
+                    [
+                        member.username,
+                        member.joined_date.strftime("%Y-%m-%dT%H:%M:%S")
+                        if member.joined_date
+                        else "N/A",
+                        member.team_name,
+                    ]
+                )
+
+            # Prepare response
+            csv_output.seek(0)
+            return Response(
+                csv_output.getvalue(),
+                mimetype="text/csv",
+                headers={
+                    "Content-Disposition": (
+                        "attachment; filename=join_requests_"
+                        f"{team_id}_{datetime.now().strftime('%Y%m%d')}.csv"
+                    )
+                },
+            )
+        except Exception as e:
+            return {"message": f"Error occurred: {str(e)}"}, 500

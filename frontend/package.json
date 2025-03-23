@@ -4,7 +4,7 @@
   "license": "BSD-2-Clause",
   "private": false,
   "dependencies": {
-    "@hotosm/id": "^2.21.1",
+    "@hotosm/id": "^2.30.2",
     "@hotosm/iso-countries-languages": "^1.1.2",
     "@hotosm/underpass-ui": "^0.0.4",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
@@ -12,7 +12,7 @@
     "@mapbox/mapbox-gl-language": "^0.10.1",
     "@openhistoricalmap/id": "^2.29.0-dev",
     "@placemarkio/geo-viewport": "^1.0.2",
-    "@rapideditor/rapid": "^2.3.1",
+    "@rapideditor/rapid": "^2.4.2",
     "@sentry/react": "^7.102.0",
     "@tanstack/react-query": "^4.29.7",
     "@tanstack/react-query-devtools": "^4.29.7",
@@ -28,7 +28,6 @@
     "@turf/transform-scale": "^6.5.0",
     "@turf/truncate": "^6.5.0",
     "@uiw/react-md-editor": "^3.22.0",
-    "RapiD": "facebookincubator/rapid#rapid-v1.1.9-tm.1",
     "axios": "^1.6.7",
     "chart.js": "^4.4.1",
     "chartjs-adapter-date-fns": "^3.0.0",
@@ -37,6 +36,7 @@
     "downshift-hooks": "^0.8.1",
     "final-form": "^4.20.10",
     "fromentries": "^1.3.2",
+    "h3-js": "^4.1.0",
     "humanize-duration": "^3.31.0",
     "mapbox-gl": "^1.13.3",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
@@ -83,14 +83,14 @@
   },
   "scripts": {
     "build-locales": "combine-messages -i './src/**/messages.js' -o './src/locales/en.json'",
-    "copy-static": "bash -c \"mkdir -p public/static/id; mkdir -p public/static/rapid; if ! (test -a public/static/id/index.js); then cp -R node_modules/@openhistoricalmap/id/dist/* public/static/id; fi; if ! (test -a public/static/rapid/rapid.js); then cp -R node_modules/@rapideditor/rapid/dist/* public/static/rapid; fi\"",
-    "update-static": "bash -c \"mkdir -p public/static/id; mkdir -p public/static/rapid; cp -R node_modules/@openhistoricalmap/id/dist/* public/static/id; cp -R node_modules/@rapideditor/rapid/dist/* public/static/rapid;\"",
-    "patch-id": "bash -c \"cp patch/imagery.min.json public/static/id/data\"",
+    "copy-static": "bash -c \"mkdir -p public/static/rapid; if ! (test -a public/static/rapid/rapid.js); then cp -R node_modules/@rapideditor/rapid/dist/* public/static/rapid; fi\"",
+    "copy-id-static": "bash -c \"mkdir -p public/static/id; if ! (test -a public/static/id/data); then cp -R node_modules/@openhistoricalmap/id/dist/data public/static/id && cp -R node_modules/@openhistoricalmap/id/dist/img public/static/id && cp -R node_modules/@openhistoricalmap/id/dist/locales public/static/id; fi;\"",
+    "update-static": "bash -c \"mkdir -p public/static/rapid; cp -R node_modules/@rapideditor/rapid/dist/* public/static/rapid;\"",
+    "update-id-static": "bash -c \"mkdir -p public/static/id; cp -R node_modules/@openhistoricalmap/id/dist/data public/static/id && cp -R node_modules/@openhistoricalmap/id/dist/img public/static/id && cp -R node_modules/@openhistoricalmap/id/dist/locales public/static/id;\"",
     "patch-rapid": "bash -c \"cp patch/rapid-imagery.min.json public/static/rapid/data/imagery.min.json\"",
     "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
-    "start": "npm run preparation && npm run copy-static && npm run patch-id && npm run patch-rapid && craco start",
-    "build": "npm run preparation && npm run update-static && npm run patch-id && npm run patch-rapid && craco build && npm run sentry:sourcemaps",
-    "prettier": "prettier --write 'src/**/*.js'",
+    "start": "npm run preparation && npm run copy-static && npm run copy-id-static && npm run patch-rapid && craco start",
+    "build": "npm run preparation && npm run update-static && npm run update-id-static && npm run patch-rapid && craco build && npm run sentry:sourcemaps",    "prettier": "prettier --write 'src/**/*.js'",
     "lint": "eslint src",
     "test": "npm run lint && craco test --env=jsdom",
     "coverage": "npm run test -- --coverage --watchAll=false",
@@ -145,6 +145,5 @@
   },
   "volta": {
     "node": "18.19.1"
-  },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  }
 }

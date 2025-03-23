@@ -248,6 +248,12 @@ def add_api_endpoints(app):
         PartnersByProjectAPI,
     )
 
+    # Partner statistics API
+    from backend.api.partners.statistics import (
+        GroupPartnerStatisticsAPI,
+        FilteredPartnerStatisticsAPI,
+    )
+
     # Tasks API import
     from backend.api.tasks.resources import (
         TasksRestAPI,
@@ -322,7 +328,11 @@ def add_api_endpoints(app):
     from backend.api.countries.resources import CountriesRestAPI
 
     # Teams API endpoint
-    from backend.api.teams.resources import TeamsRestAPI, TeamsAllAPI
+    from backend.api.teams.resources import (
+        TeamsRestAPI,
+        TeamsAllAPI,
+        TeamsJoinRequestAPI,
+    )
     from backend.api.teams.actions import (
         TeamsActionsJoinAPI,
         TeamsActionsAddAPI,
@@ -591,6 +601,16 @@ def add_api_endpoints(app):
         methods=["GET", "DELETE", "PUT"],
     )
     api.add_resource(
+        GroupPartnerStatisticsAPI,
+        format_url("/partners/<string:permalink>/general-statistics"),
+        methods=["GET"],
+    )
+    api.add_resource(
+        FilteredPartnerStatisticsAPI,
+        format_url("/partners/<string:permalink>/filtered-statistics"),
+        methods=["GET"],
+    )
+    api.add_resource(
         PartnerPermalinkRestAPI,
         format_url("partners/<string:permalink>/"),
         methods=["GET"],
@@ -815,6 +835,9 @@ def add_api_endpoints(app):
         TeamsRestAPI,
         format_url("teams/<int:team_id>/"),
         methods=["GET", "DELETE", "PATCH"],
+    )
+    api.add_resource(
+        TeamsJoinRequestAPI, format_url("teams/join_requests/"), methods=["GET"]
     )
 
     # Teams actions endpoints

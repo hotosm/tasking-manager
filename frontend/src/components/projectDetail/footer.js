@@ -1,5 +1,5 @@
 import { useRef, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
@@ -58,6 +58,7 @@ const menuItems = [
 export const ProjectDetailFooter = ({ className, projectId }) => {
   const userIsloggedIn = useSelector((state) => state.auth.token);
   const menuItemsContainerRef = useRef(null);
+  const { pathname } = useLocation();
 
   return (
     <div
@@ -92,7 +93,12 @@ export const ProjectDetailFooter = ({ className, projectId }) => {
       <div className="flex items-center ml-auto gap-1">
         <ShareButton projectId={projectId} />
         {userIsloggedIn && <AddToFavorites projectId={projectId} />}
-        <Link to={`./tasks`} className="">
+        <Link
+          to={`./tasks`}
+          // add previous path to history location to track
+          // if the user is from project detail page
+          state={{ from: pathname }}
+        >
           <Button className="white bg-red h3 w5">
             <FormattedMessage {...messages.contribute} />
           </Button>

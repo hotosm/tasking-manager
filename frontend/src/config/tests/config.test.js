@@ -7,8 +7,8 @@ it('exports API_URL', () => {
 it('exports API_VERSION', () => {
   expect(['object', 'string']).toContain(typeof config.API_VERSION);
 });
-it('exports OHSOME_STATS_BASE_URL', () => {
-  expect(typeof config.OHSOME_STATS_BASE_URL).toBe('string');
+it('exports OHSOME_STATS_API_URL', () => {
+  expect(typeof config.OHSOME_STATS_API_URL).toBe('string');
 });
 it('exports ORG_URL', () => {
   expect(typeof config.ORG_URL).toBe('string');

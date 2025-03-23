@@ -132,13 +132,9 @@ export default defineMessages({
     id: 'management.partner.currentProjects',
     defaultMessage: 'Current Projects',
   },
-  newToMapping: {
-    id: 'management.partner.newToMapping',
-    defaultMessage: '¿New to Mapping?',
-  },
-  activity: {
-    id: 'management.partner.activity',
-    defaultMessage: 'Activity',
+  contributions: {
+    id: 'management.partner.contributions',
+    defaultMessage: 'Contributions',
   },
   resources: {
     id: 'management.partner.resources',
@@ -813,5 +809,21 @@ export default defineMessages({
   campaignError: {
     id: 'pages.create_campaign.error',
     defaultMessage: 'There was an error saving this campaign.',
+  },
+  mapswipeInfo: {
+    id: 'management.partner.stats.mapswipe.info',
+    defaultMessage: 'It may take up to 48 hours for updates',
+  },
+  swipes: {
+    id: 'management.partners.stats.mapswipe.swipes',
+    defaultMessage: 'Swipes',
+  },
+  timeSpentContributing: {
+    id: 'management.partners.stats.mapswipe.timeSpentContributing',
+    defaultMessage: 'Time Spent Contributing',
+  },
+  partnersMapswipeStatsError: {
+    id: 'management.partners.stats.mapswipe.page.error',
+    defaultMessage: 'Something went wrong! Could not load data.',
   },
 });

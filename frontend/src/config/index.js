@@ -4,7 +4,9 @@ export const API_URL = process.env.REACT_APP_API_URL
   ? new URL('/api/' + API_VERSION + '/', process.env.REACT_APP_API_URL)
   : 'http://127.0.0.1:5000/api/' + API_VERSION + '/';
 export const OHSOME_STATS_BASE_URL =
-  process.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org/api';
+  process.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org';
+export const OHSOME_STATS_API_URL =
+  process.env.REACT_APP_OHSOME_STATS_API_URL || 'https://stats.now.ohsome.org/api';
 
 // OHM HOMEPAGE STATS ENDPOINT
 export const HOMEPAGE_STATS_API_URL =
@@ -84,6 +86,7 @@ export const CHART_COLOURS = {
   blue: '#3389D6',
   orange: '#f09733',
   white: '#fff',
+  gray: '#C9C9C9',
 };
 
 const fallbackRasterStyle = {

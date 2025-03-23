@@ -1,4 +1,5 @@
 import pandas as pd
+from backend.models.postgis.user import User
 from flask import current_app
 import math
 import geojson
@@ -69,30 +70,71 @@ class BBoxTooBigError(Exception):
 
 class ProjectSearchService:
     @staticmethod
-    def create_search_query(user=None):
-        query = (
-            db.session.query(
-                Project.id.label("id"),
-                Project.difficulty,
-                Project.priority,
-                Project.default_locale,
-                Project.centroid.ST_AsGeoJSON().label("centroid"),
-                Project.organisation_id,
-                Project.tasks_bad_imagery,
-                Project.tasks_mapped,
-                Project.tasks_validated,
-                Project.status,
-                Project.total_tasks,
-                Project.last_updated,
-                Project.due_date,
-                Project.country,
-                Organisation.name.label("organisation_name"),
-                Organisation.logo.label("organisation_logo"),
+    def create_search_query(user=None, as_csv: bool = False):
+        if as_csv:
+            query = (
+                db.session.query(
+                    Project.id.label("id"),
+                    ProjectInfo.name.label("project_name"),
+                    Project.difficulty,
+                    Project.priority,
+                    Project.default_locale,
+                    Project.centroid.ST_AsGeoJSON().label("centroid"),
+                    Project.organisation_id,
+                    Project.tasks_bad_imagery,
+                    Project.tasks_mapped,
+                    Project.tasks_validated,
+                    Project.percent_mapped,
+                    Project.percent_validated,
+                    Project.status,
+                    Project.total_tasks,
+                    Project.last_updated,
+                    Project.due_date,
+                    Project.country,
+                    Organisation.name.label("organisation_name"),
+                    Organisation.logo.label("organisation_logo"),
+                    User.name.label("author_name"),
+                    User.username.label("author_username"),
+                    Project.created.label("creation_date"),
+                    func.coalesce(
+                        func.sum(func.ST_Area(Project.geometry, True) / 1000000)
+                    ).label("total_area"),
+                )
+                .filter(Project.geometry is not None)
+                .outerjoin(Organisation, Organisation.id == Project.organisation_id)
+                .outerjoin(User, User.id == Project.author_id)
+                .group_by(
+                    Organisation.id,
+                    Project.id,
+                    ProjectInfo.name,
+                    User.username,
+                    User.name,
+                )
             )
-            .filter(Project.geometry is not None)
-            .outerjoin(Organisation, Organisation.id == Project.organisation_id)
-            .group_by(Organisation.id, Project.id)
-        )
+        else:
+            query = (
+                db.session.query(
+                    Project.id.label("id"),
+                    Project.difficulty,
+                    Project.priority,
+                    Project.default_locale,
+                    Project.centroid.ST_AsGeoJSON().label("centroid"),
+                    Project.organisation_id,
+                    Project.tasks_bad_imagery,
+                    Project.tasks_mapped,
+                    Project.tasks_validated,
+                    Project.status,
+                    Project.total_tasks,
+                    Project.last_updated,
+                    Project.due_date,
+                    Project.country,
+                    Organisation.name.label("organisation_name"),
+                    Organisation.logo.label("organisation_logo"),
+                )
+                .filter(Project.geometry is not None)
+                .outerjoin(Organisation, Organisation.id == Project.organisation_id)
+                .group_by(Organisation.id, Project.id)
+            )
 
         # Get public projects only for anonymous user.
         if user is None:
@@ -202,35 +244,65 @@ class ProjectSearchService:
     @staticmethod
     @cached(csv_download_cache)
     def search_projects_as_csv(search_dto: ProjectSearchDTO, user) -> str:
-        all_results, _ = ProjectSearchService._filter_projects(search_dto, user)
+        all_results, _ = ProjectSearchService._filter_projects(search_dto, user, True)
+        rows = [row._asdict() for row in all_results]
         is_user_admin = user is not None and user.role == UserRole.ADMIN.value
-        results_as_dto = [
-            ProjectSearchService.create_result_dto(
-                p,
-                search_dto.preferred_locale,
-                Project.get_project_total_contributions(p[0]),
-                with_partner_names=is_user_admin,
-                with_author_name=False,
-            ).to_primitive()
-            for p in all_results
+
+        for row in rows:
+            row["priority"] = ProjectPriority(row["priority"]).name
+            row["difficulty"] = ProjectDifficulty(row["difficulty"]).name
+            row["status"] = ProjectStatus(row["status"]).name
+            row["total_area"] = round(row["total_area"], 3)
+            row["total_contributors"] = Project.get_project_total_contributions(
+                row["id"]
+            )
+            row["author"] = row["author_name"] or row["author_username"]
+
+            if is_user_admin:
+                partners_names = (
+                    ProjectPartnership.query.with_entities(
+                        ProjectPartnership.project_id, Partner.name
+                    )
+                    .join(Partner, ProjectPartnership.partner_id == Partner.id)
+                    .filter(ProjectPartnership.project_id == row["id"])
+                    .group_by(ProjectPartnership.project_id, Partner.name)
+                    .all()
+                )
+                row["partner_names"] = [pn for (_, pn) in partners_names]
+
+        df = pd.json_normalize(rows)
+        columns_to_drop = [
+            "default_locale",
+            "organisation_id",
+            "organisation_logo",
+            "tasks_bad_imagery",
+            "tasks_mapped",
+            "tasks_validated",
+            "total_tasks",
+            "centroid",
+            "author_name",
+            "author_username",
         ]
 
-        df = pd.json_normalize(results_as_dto)
-        columns_to_drop = [
-            "locale",
-            "shortDescription",
-            "organisationLogo",
-            "campaigns",
-        ]
-        if not is_user_admin:
-            columns_to_drop.append("partnerNames")
+        colummns_to_rename = {
+            "id": "projectId",
+            "organisation_name": "organisationName",
+            "last_updated": "lastUpdated",
+            "due_date": "dueDate",
+            "percent_mapped": "percentMapped",
+            "percent_validated": "percentValidated",
+            "total_area": "totalArea",
+            "total_contributors": "totalContributors",
+            "partner_names": "partnerNames",
+            "project_name": "name",
+        }
 
         df.drop(
             columns=columns_to_drop,
             inplace=True,
             axis=1,
         )
-
+        df.rename(columns=colummns_to_rename, inplace=True)
         return df.to_csv(index=False)
 
     @staticmethod
@@ -278,10 +350,10 @@ class ProjectSearchService:
         return dto
 
     @staticmethod
-    def _filter_projects(search_dto: ProjectSearchDTO, user):
+    def _filter_projects(search_dto: ProjectSearchDTO, user, as_csv=False):
         """Filters all projects based on criteria provided by user"""
 
-        query = ProjectSearchService.create_search_query(user)
+        query = ProjectSearchService.create_search_query(user, as_csv)
 
         query = query.join(ProjectInfo).filter(
             ProjectInfo.locale.in_([search_dto.preferred_locale, "en"])

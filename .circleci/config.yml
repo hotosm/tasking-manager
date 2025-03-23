@@ -10,7 +10,7 @@ jobs:
   frontend-code-test:
     resource_class: large
     docker:
-      - image: cimg/node:18.19.1
+      - image: cimg/node:22.13.0
     working_directory: /home/circleci/tasking-manager
     steps:
       - checkout
@@ -30,9 +30,10 @@ jobs:
             - env
       - run:
           name: Run yarn test
+          no_output_timeout: 20m
           command: |
             cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
-            CI=true yarn test -w 3 --silent
+            CI=true yarn test -w 1 --silent
             CI=true GENERATE_SOURCEMAP=false yarn build
 
   backend-code-check-PEP8:
@@ -133,7 +134,6 @@ jobs:
               --output text)
       - run:
           name: Make Database Backup
-          no_output_timeout: 15m
           command: |
             aws rds wait db-instance-available \
                 --db-instance-identifier ${RDS_ID}
@@ -184,7 +184,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: medium
     docker:
-      - image: cimg/node:18.19.1
+      - image: cimg/node:22.13.0
     steps:
       - checkout
       - aws-cli/setup:
@@ -211,7 +211,6 @@ jobs:
               /tmp/tasking-manager.cfn.json > "$tmpfile" && mv "$tmpfile" $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
       - run:
           name: Deploy to << parameters.stack_name >>
-          no_output_timeout: 15m
           command: |
             export NODE_PATH=/usr/local/share/.config/yarn/global/node_modules/
             validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
@@ -237,7 +236,7 @@ jobs:
     working_directory: /home/circleci/tasking-manager
     resource_class: large
     docker:
-      - image: cimg/node:18.19.1
+      - image: cimg/node:22.13.0
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"
@@ -294,7 +293,7 @@ workflows:
           name: Deploy backend production
           gitsha: $CIRCLE_SHA1
           stack_name: "tm4-production"
-          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
+          host_ami: "/aws/service/debian/release/11/20240813-1838/amd64"
           backend_instance_type: c6a.large
           pg_version: "13.10"
           pg_param_group: "default.postgres13"
@@ -357,7 +356,7 @@ workflows:
           name: Deploy backend production
           gitsha: $CIRCLE_SHA1
           stack_name: "tm4-production"
-          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
+          host_ami: "/aws/service/debian/release/11/20240813-1838/amd64"
           backend_instance_type: c6a.large
           pg_version: "13.10"
           pg_param_group: "default.postgres13"
@@ -384,7 +383,7 @@ workflows:
           name: Deploy TeachOSM Backend
           gitsha: $CIRCLECI_SHA1
           stack_name: "teachosm"
-          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
+          host_ami: "/aws/service/debian/release/11/20240813-1838/amd64"
           requires:
             - backend-functional-tests
           context: tasking-manager-teachosm
@@ -422,7 +421,7 @@ workflows:
           name: Deploy staging backend
           gitsha: $CIRCLE_SHA1
           stack_name: "staging"
-          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
+          host_ami: "/aws/service/debian/release/11/20240813-1838/amd64"
           pg_version: "14.8"
           pg_param_group: "default.postgres14"
           db_instance_type: "db.t4g.small"
@@ -473,7 +472,7 @@ workflows:
           name: Deploy development backend
           gitsha: $CIRCLE_SHA1
           stack_name: "dev"
-          host_ami: "/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
+          host_ami: "/aws/service/debian/release/11/20240813-1838/amd64"
           pg_version: "14.10"
           pg_param_group: "default.postgres14"
           db_instance_type: "db.t4g.small"

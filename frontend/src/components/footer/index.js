@@ -36,6 +36,8 @@ export function Footer() {
 
   const footerDisabledPaths = [
     'projects/:id/tasks',
+    'projects/:id/instructions',
+    'projects/:id/contributions',
     'projects/:id/map',
     'projects/:id/validate',
     'projects/:id/live',

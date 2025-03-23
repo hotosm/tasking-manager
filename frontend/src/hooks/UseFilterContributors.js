@@ -6,7 +6,7 @@ export function useFilterContributors(contributors, level, username) {
   const [filteredContributors, setFilter] = useState([]);
 
   useEffect(() => {
-    let users = contributors;
+    let users = contributors || [];
     if (['ADVANCED', 'INTERMEDIATE', 'BEGINNER'].includes(level)) {
       users = users.filter((user) => user.mappingLevel === level);
     }
