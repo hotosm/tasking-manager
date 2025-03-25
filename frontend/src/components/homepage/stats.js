@@ -2,7 +2,7 @@ import { FormattedMessage, FormattedNumber } from 'react-intl';
 import shortNumber from 'short-number';
 
 import messages from './messages';
-import { useOsmStatsQuery, useSystemStatisticsQuery } from '../../api/stats';
+import { useSystemStatisticsQuery } from '../../api/stats';
 import StatsInfoFooter from '../statsInfoFooter';
 
 export const StatsNumber = (props) => {
