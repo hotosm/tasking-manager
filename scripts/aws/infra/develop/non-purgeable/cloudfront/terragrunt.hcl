@@ -21,7 +21,7 @@ inputs = {
   s3_bucket_name          = dependency.s3.outputs.bucket_name
   create_s3_bucket_policy = true
 
-  aliases = split(" ", get_env("CLOUDFRONT_DIST_ALIASES", "tm-ecs-frontend.naxa.com.np"))
+  aliases = split(" ", get_env("CLOUDFRONT_DIST_ALIASES", "tasks-dev.hotosm.org"))
 
   # CloudFront configuration
   enabled             = true
@@ -68,5 +68,5 @@ inputs = {
   # SSL/TLS configuration
   use_default_certificate = false
   # If use_default_certificate is false, provide these:
-  acm_certificate_arn = get_env("ACM_TLS_CERT_FRONTEND_ARN", "arn:aws:acm:us-east-1:685797548389:certificate/586132c9-5170-4cf9-85a0-68168e1387c4")
+  acm_certificate_arn = get_env("ACM_TLS_CERT_FRONTEND_ARN", "arn:aws:acm:us-east-1:670261699094:certificate/1d74321b-1e5b-4e31-b97a-580deb39c539")
 }
