@@ -22,6 +22,7 @@ module.exports = {
           });
         }
       }
+      webpackConfig.module.noParse = /\/node_modules\/@openhistoricalmap\/id\/dist\/iD.min.js/;
       return webpackConfig;
     },
   },

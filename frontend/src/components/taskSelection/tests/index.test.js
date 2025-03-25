@@ -1,21 +1,45 @@
 import '@testing-library/jest-dom';
-import { screen, act, waitFor } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import { QueryParamProvider } from 'use-query-params';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import userEvent from '@testing-library/user-event';
 
 import { TaskSelection } from '..';
 import { getProjectSummary } from '../../../network/tests/mockData/projects';
-import {
-  QueryClientProviders,
-  ReduxIntlProviders,
-  renderWithRouter,
-} from '../../../utils/testWithIntl';
+import { QueryClientProviders, ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { store } from '../../../store';
 
 describe('Contributions', () => {
+  const setup = () => {
+    return {
+      user: userEvent.setup(),
+      ...render(
+        <MemoryRouter
+          initialEntries={[{ pathname: '/projects/123/tasks', state: { from: '/projects/123' } }]}
+        >
+          <Routes>
+            <Route
+              path="projects/:id/:tabname"
+              element={
+                <QueryClientProviders>
+                  <QueryParamProvider adapter={ReactRouter6Adapter}>
+                    <ReduxIntlProviders>
+                      <TaskSelection project={getProjectSummary(123)} />
+                    </ReduxIntlProviders>
+                  </QueryParamProvider>
+                </QueryClientProviders>
+              }
+            />
+          </Routes>
+        </MemoryRouter>,
+      ),
+    };
+  };
+
   it('should select tasks mapped by the selected user', async () => {
     act(() => {
-      store.dispatch({ type: 'SET_TOKEN', token: null });
+      store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
       store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
       store.dispatch({
         type: 'SET_USER_DETAILS',
@@ -23,16 +47,7 @@ describe('Contributions', () => {
       });
     });
 
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <QueryParamProvider adapter={ReactRouter6Adapter}>
-          <ReduxIntlProviders>
-            <TaskSelection project={getProjectSummary(123)} />
-          </ReduxIntlProviders>
-        </QueryParamProvider>
-      </QueryClientProviders>,
-    );
-
+    const { user } = setup();
     await waitFor(() =>
       expect(screen.getByText(/Project Specific Mapping Notes/i)).toBeInTheDocument(),
     );
@@ -54,16 +69,7 @@ describe('Contributions', () => {
   });
 
   it('should select tasks validated by the selected user', async () => {
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <QueryParamProvider adapter={ReactRouter6Adapter}>
-          <ReduxIntlProviders>
-            <TaskSelection project={getProjectSummary(123)} />
-          </ReduxIntlProviders>
-        </QueryParamProvider>
-      </QueryClientProviders>,
-    );
-
+    const { user } = setup();
     await waitFor(() =>
       expect(screen.getByText(/Project Specific Mapping Notes/i)).toBeInTheDocument(),
     );
@@ -85,16 +91,7 @@ describe('Contributions', () => {
   });
 
   it('should sort tasks by their task number', async () => {
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <QueryParamProvider adapter={ReactRouter6Adapter}>
-          <ReduxIntlProviders>
-            <TaskSelection project={getProjectSummary(123)} />
-          </ReduxIntlProviders>
-        </QueryParamProvider>
-      </QueryClientProviders>,
-    );
-
+    const { user } = setup();
     await waitFor(() =>
       expect(screen.getByText(/Project Specific Mapping Notes/i)).toBeInTheDocument(),
     );
@@ -120,16 +117,7 @@ describe('Contributions', () => {
   });
 
   it('should clear text when close icon is clicked', async () => {
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <QueryParamProvider adapter={ReactRouter6Adapter}>
-          <ReduxIntlProviders>
-            <TaskSelection project={getProjectSummary(123)} />
-          </ReduxIntlProviders>
-        </QueryParamProvider>
-      </QueryClientProviders>,
-    );
-
+    const { user } = setup();
     await waitFor(() =>
       expect(screen.getByText(/Project Specific Mapping Notes/i)).toBeInTheDocument(),
     );

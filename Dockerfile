@@ -60,6 +60,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1 \
     PATH="/home/appuser/.local/bin:$PATH" \
+    PYTHONPATH="/usr/src/app:$PYTHONPATH" \
     PYTHON_LIB="/home/appuser/.local/lib/python$PYTHON_IMG_TAG/site-packages" \
     SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
     REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt

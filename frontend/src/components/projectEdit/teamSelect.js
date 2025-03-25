@@ -8,6 +8,7 @@ import { Button } from '../button';
 import { StateContext } from '../../views/projectEdit';
 import { PencilIcon, WasteIcon, ExternalLinkIcon } from '../svgIcons';
 import { useFetchWithAbort } from '../../hooks/UseFetch';
+import { useTeamsQuery } from '../../api/teams';
 
 export const TeamSelect = () => {
   const intl = useIntl();
@@ -24,7 +25,7 @@ export const TeamSelect = () => {
   const [, isOrganisationsLoading, organisationsData] = useFetchWithAbort(
     'organisations/?omitManagerList=true',
   );
-  const [, isTeamsLoading, teamsData] = useFetchWithAbort('teams/?omitMemberList=true');
+  const { data: teamsData, isFetching: isTeamsLoading } = useTeamsQuery({ omitMemberList: true });
 
   const teamRoles = [
     { value: 'MAPPER', label: 'Mapper' },

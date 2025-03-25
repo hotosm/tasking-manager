@@ -402,11 +402,11 @@ export default defineMessages({
   },
   rapidPowerUser: {
     id: 'projects.formInputs.rapid_power_user',
-    defaultMessage: 'Enable RapiD Power User Features',
+    defaultMessage: 'Enable Rapid Power User Features',
   },
   rapidPowerUserDescription: {
     id: 'projects.formInputs.rapid_power_user.description',
-    defaultMessage: 'If checked, RapiD will load with the power user dialog enabled.',
+    defaultMessage: 'If checked, Rapid will load with the power user dialog enabled.',
   },
   imagery: {
     id: 'projects.formInputs.imagery',

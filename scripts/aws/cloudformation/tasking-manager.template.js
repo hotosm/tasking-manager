@@ -803,6 +803,7 @@ const Resources = {
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresPassword')),
         AllocatedStorage: cf.ref('DatabaseDiskSize'),
         BackupRetentionPeriod: cf.ref('DatabaseSnapshotRetentionPeriod'),
+        CopyTagsToSnapshot: true,
         StorageType: 'gp2',
         DBParameterGroupName: cf.ref('DatabaseParameterGroupName'),
         EnableCloudwatchLogsExports: ['postgresql'],
