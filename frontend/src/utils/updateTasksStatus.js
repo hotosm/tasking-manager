@@ -14,7 +14,7 @@ export function updateTasksStatus(tasks, activities) {
 export function getActivityForTask(activities, id) {
   try {
     return activities.activity.filter((task) => task.taskId === id)[0];
-  } catch (e) {
+  } catch {
     return null;
   }
 }

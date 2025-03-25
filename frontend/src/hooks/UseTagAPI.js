@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from 'react';
-import { useSelector } from 'react-redux';
+import { useTypedSelector } from '@Store/hooks';
 import axios from 'axios';
 
 import { API_URL } from '../config';
@@ -32,8 +32,8 @@ const dataFetchReducer = (state, action) => {
 };
 
 export const useTagAPI = (initialData, tagType, processDataFn) => {
-  const token = useSelector((state) => state.auth.token);
-  const locale = useSelector((state) => state.preferences.locale);
+  const token = useTypedSelector((state) => state.auth.token);
+  const locale = useTypedSelector((state) => state.preferences.locale);
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
     isError: false,
@@ -73,7 +73,7 @@ export const useTagAPI = (initialData, tagType, processDataFn) => {
             dispatch({ type: 'FETCH_FAILURE' });
           }
         }
-      } catch (error) {
+      } catch {
         /* if cancelled, this setting state of unmounted
          * component would be a memory leak */
         if (!didCancel) {

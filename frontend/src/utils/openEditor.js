@@ -225,7 +225,7 @@ const callJosmRemoteControl = function (uri) {
   // requests via the opening of a separate window instead of AJAX.
   // Source: https://github.com/osmlab/maproulette3
   if (window.safari) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (safariWindowReference && !safariWindowReference.closed) {
         safariWindowReference.close();
       }

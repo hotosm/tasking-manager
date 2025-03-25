@@ -23,11 +23,11 @@ export default function useCloseOnDocumentClick() {
   const [closeOnDocumentClick, setCloseOnDocumentClick] = useState(true);
 
   useEffect(() => {
-    function insidePopupContents(target: any): boolean {
+    function insidePopupContents(target) {
       return target.querySelector('.popup-content') == null;
     }
 
-    function handleMouseDown(event: MouseEvent) {
+    function handleMouseDown(event) {
       if (insidePopupContents(event.target)) {
         setCloseOnDocumentClick(false);
       }
