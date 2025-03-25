@@ -1,4 +1,4 @@
-name: Build and Deploy Frontend
+name: Build and Deploy Frontend to Cloudfront
 
 on:
   push:
