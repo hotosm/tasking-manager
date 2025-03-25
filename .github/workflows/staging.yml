@@ -9,10 +9,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Use Node.js 18.19.1
+    - name: Use Node.js 20.19.0
       uses: actions/setup-node@v4
       with:
-        node-version: '18.19.1'
+        node-version: '20.19.0'
     - name: Yarn Install
       run: |
         cd frontend && yarn cache clean && yarn install
