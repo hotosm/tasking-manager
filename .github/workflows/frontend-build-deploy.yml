@@ -66,6 +66,7 @@ jobs:
         with:
           name: tm-fe-${{ github.sha }}
           path: ./frontend/build
+          retention-days: 90
 
   deploy:
     name: Deploy static files
