@@ -719,18 +719,15 @@ class Project(Base):
                     )
 
         if project_dto.custom_editor:
-            if not self.custom_editor:
-                new_editor = await CustomEditor.create_from_dto(
+            custom_editor = await CustomEditor.get_by_project_id(self.id, db)
+            if not custom_editor:
+                await CustomEditor.create_from_dto(
                     self.id, project_dto.custom_editor, db
                 )
-                self.custom_editor = new_editor
             else:
-                await CustomEditor.update_editor(
-                    self.custom_editor, project_dto.custom_editor, db
-                )
+                await CustomEditor.update_editor(self.id, project_dto.custom_editor, db)
         else:
-            if self.custom_editor:
-                await CustomEditor.delete(self.custom_editor, db)
+            await CustomEditor.delete(self.id, db)
 
         # handle campaign update
         try:

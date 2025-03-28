@@ -84,8 +84,7 @@ FROM runtime AS debug
 RUN pip install --user --no-warn-script-location \
     --no-cache-dir debugpy==1.8.1
 EXPOSE 5678/tcp
-CMD ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678", \
-    "-m", "uvicorn", "backend.main:api", "--host", "0.0.0.0", "--port", "5000", \
+CMD ["uvicorn", "backend.main:api", "--host", "0.0.0.0", "--port", "5000", \
     "--reload", "--log-level", "error"]
 
 
