@@ -2,6 +2,8 @@ from databases import Database
 from fastapi import APIRouter, Body, Depends, Request
 from fastapi.logger import logger
 from pydantic import ValidationError
+from fastapi.responses import JSONResponse
+
 
 from backend.db import get_db
 from backend.models.dtos.banner_dto import BannerDTO
@@ -91,15 +93,20 @@ async def patch_banner(
         banner_dto = banner
     except ValidationError as e:
         logger.error(f"error validating request: {str(e)}")
-        return {"Error": "Unable to create project", "SubCode": "InvalidData"}, 400
-
+        return JSONResponse(
+            content={"Error": "Unable to create project", "SubCode": "InvalidData"},
+            status_code=400,
+        )
     # Check user permission for this action
     authenticated_user = await UserService.get_user_by_id(user.id, db)
     if authenticated_user.role != UserRole.ADMIN.value:
-        return {
-            "Error": "Banner can only be updated by system admins",
-            "SubCode": "OnlyAdminAccess",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "Banner can only be updated by system admins",
+                "SubCode": "OnlyAdminAccess",
+            },
+            status_code=403,
+        )
 
     banner_dto.message = Banner.to_html(
         banner_dto.message if banner_dto.message is not None else ""

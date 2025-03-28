@@ -17,7 +17,7 @@ services:
       - tasking-manager.env
     restart: unless-stopped
     healthcheck:
-      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      test: pg_isready -U ${POSTGRES_USER:-tm} -d ${POSTGRES_DB:-test_db}
       start_period: 35s
       interval: 10s
       timeout: 5s
@@ -29,7 +29,7 @@ services:
     image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
-      target: ${TARGET_TAG:-prod}
+      target: ${TARGET_TAG:-debug}
     depends_on:
       tm-db:
         condition: service_healthy
@@ -37,6 +37,11 @@ services:
         condition: service_completed_successfully
     env_file:
       - tasking-manager.env
+    volumes:
+      - ./pyproject.toml:/usr/src/app/pyproject.toml
+      - ./backend:/usr/src/app/backend
+      - ./tests:/usr/src/app/tests
+      - ./migrations:/usr/src/app/migrations/
     restart: unless-stopped
     healthcheck:
       test: curl --fail http://localhost:5000 || exit 1
@@ -69,6 +74,9 @@ services:
         condition: service_healthy
     env_file:
       - tasking-manager.env
+    volumes:
+      - .:/usr/src/app/
+      - ./migrations:/usr/src/app/migrations/
     deploy:
       replicas: ${API_REPLICAS:-1}
       resources:
