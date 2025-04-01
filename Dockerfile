@@ -71,6 +71,7 @@ RUN apt-get update && \
 COPY --from=build \
     /home/appuser/.local \
     /home/appuser/.local
+RUN chown -R appuser:appuser /home/appuser/.local
 USER appuser:appuser
 COPY backend backend/
 COPY migrations migrations/
