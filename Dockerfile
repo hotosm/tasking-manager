@@ -68,9 +68,10 @@ RUN apt-get update && \
     apt-get -q install --no-install-recommends -y \
     postgresql-client libgeos3.11.1 proj-bin curl && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
-COPY --from=build --chown=appuser:appuser \
+COPY --from=build \
     /home/appuser/.local \
     /home/appuser/.local
+RUN chown -R appuser:appuser /home/appuser/.local
 USER appuser:appuser
 COPY backend backend/
 COPY migrations migrations/
