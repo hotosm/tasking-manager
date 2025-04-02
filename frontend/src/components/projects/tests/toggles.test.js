@@ -1,12 +1,20 @@
 import { act } from 'react-test-renderer';
+import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 
 import { store } from '../../../store';
-import { createComponentWithReduxAndIntl } from '../../../utils/testWithIntl';
+import { createComponentWithIntl } from '../../../utils/testWithIntl';
 import { ShowMapToggle, ProjectListViewToggle } from '../projectNav';
 import { GripIcon, ListIcon } from '../../svgIcons';
 
 describe('test if ShowMapToggle component', () => {
-  const element = createComponentWithReduxAndIntl(<ShowMapToggle />);
+  const element = createComponentWithIntl(
+    <MemoryRouter>
+      <Provider store={store}>
+        <ShowMapToggle />
+      </Provider>
+    </MemoryRouter>,
+  );
   const instance = element.root;
   it('has the correct CSS classes', () => {
     expect(instance.findByProps({ className: 'fr pv2 dib-ns dn blue-dark' }).type).toBe('div');
@@ -27,7 +35,11 @@ describe('test if ShowMapToggle component', () => {
 });
 
 describe('test if ProjectListViewToggle', () => {
-  const element = createComponentWithReduxAndIntl(<ProjectListViewToggle />);
+  const element = createComponentWithIntl(
+    <MemoryRouter>
+      <ProjectListViewToggle />
+    </MemoryRouter>,
+  );
   const instance = element.root;
   it('has the correct CSS classes', () => {
     expect(() => instance.findByType('div')).not.toThrow(
@@ -36,13 +48,11 @@ describe('test if ProjectListViewToggle', () => {
     expect(instance.findByType(GripIcon).props.className).toBe('dib pointer v-mid ph1 blue-grey');
     expect(instance.findByType(ListIcon).props.className).toBe('dib pointer v-mid ph1 blue-light');
   });
-  it('updates the redux state and css classes when clicked', () => {
-    expect(store.getState().preferences['projectListView']).toBeFalsy();
+  it('updates css classes when clicked', () => {
     act(() => {
       instance.findByType(ListIcon).props.onClick();
       return undefined;
     });
-    expect(store.getState().preferences['projectListView']).toBeTruthy();
     expect(instance.findByType(GripIcon).props.className).toBe('dib pointer v-mid ph1 blue-light');
     expect(instance.findByType(ListIcon).props.className).toBe('dib pointer v-mid ph1 blue-grey');
     // click on GripIcon
@@ -50,7 +60,6 @@ describe('test if ProjectListViewToggle', () => {
       instance.findByType(GripIcon).props.onClick();
       return undefined;
     });
-    expect(store.getState().preferences['projectListView']).toBeFalsy();
     expect(instance.findByType(GripIcon).props.className).toBe('dib pointer v-mid ph1 blue-grey');
     expect(instance.findByType(ListIcon).props.className).toBe('dib pointer v-mid ph1 blue-light');
   });

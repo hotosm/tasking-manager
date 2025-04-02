@@ -1,5 +1,7 @@
 import '@testing-library/jest-dom';
-import { screen, act } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { IntlProvider } from 'react-intl';
 
 import { ReduxIntlProviders, IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
 import {
@@ -8,7 +10,6 @@ import {
   ProjectSearchResults,
 } from '../projectSearchResults';
 import { projects } from '../../../network/tests/mockData/projects';
-import { store } from '../../../store';
 
 describe('Project Search Results', () => {
   it('should display project cards', () => {
@@ -31,16 +32,19 @@ describe('Project Search Results', () => {
   });
 
   it('should not display card views when toggled to list view', () => {
-    act(() => {
-      store.dispatch({
-        type: 'TOGGLE_LIST_VIEW',
-      });
-    });
-
-    renderWithRouter(
-      <ReduxIntlProviders>
-        <ProjectSearchResults management status="success" projects={projects.results} />
-      </ReduxIntlProviders>,
+    render(
+      <MemoryRouter initialEntries={['/manage/projects/?view=list']}>
+        <IntlProvider>
+          <Routes>
+            <Route
+              path="/manage/projects"
+              element={
+                <ProjectSearchResults management status="success" projects={projects.results} />
+              }
+            />
+          </Routes>
+        </IntlProvider>
+      </MemoryRouter>,
     );
 
     expect(screen.queryAllByRole('article').length).toBe(0);
