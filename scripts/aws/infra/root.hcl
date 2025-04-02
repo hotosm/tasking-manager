@@ -21,16 +21,16 @@ locals {
 
   # Default tags
   default_tags = {
-    Environment    = local.environment
-    Project        = local.deployment_vars.locals.project
-    Maintainer     = local.deployment_vars.locals.maintainer
-    Documentation  = local.deployment_vars.locals.documentation
-    CostCenter     = local.deployment_vars.locals.cost_center != null ? local.deployment_vars.locals.cost_center : ""
-    IaC_Management = local.deployment_vars.locals.IaC_Management
-    Team           = local.team
-    Creator        = local.account_name # Assuming account_name is used as Creator
-    Owner          = local.owner
-    Url            = local.url
+    environment    = local.environment
+    project        = local.deployment_vars.locals.project
+    maintainer     = local.deployment_vars.locals.maintainer
+    documentation  = local.deployment_vars.locals.documentation
+    costcenter     = local.deployment_vars.locals.cost_center != null ? local.deployment_vars.locals.cost_center : ""
+    iac_management = local.deployment_vars.locals.IaC_Management
+    team           = local.team
+    creator        = local.account_name # Assuming account_name is used as Creator
+    owner          = local.owner
+    url            = local.url
   }
 }
 
