@@ -179,7 +179,7 @@ const ProjectCreate = () => {
       };
     }
     setErr(err);
-  }, [metadata]);
+  }, [metadata.area]);
 
   const drawOptions = {
     displayControlsDefault: false,
