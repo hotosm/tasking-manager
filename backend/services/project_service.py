@@ -467,7 +467,7 @@ class ProjectService:
 
         project = await ProjectService.get_project_by_id(project_id, db)
         if project.license_id:
-            if not UserService.has_user_accepted_license(
+            if not await UserService.has_user_accepted_license(
                 user_id, project.license_id, db
             ):
                 return False, ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE
