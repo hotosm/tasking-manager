@@ -21,9 +21,9 @@ class CustomEditor(Base):
             WHERE project_id = :project_id
         """
         values = {"project_id": project_id}
-        result = await db.fetch_all(query, values=values)
-        if result:
-            return [CustomEditor(**row) for row in result]
+        row = await db.fetch_one(query, values=values)
+        if row:
+            return CustomEditor(**row)
         else:
             return None
 
