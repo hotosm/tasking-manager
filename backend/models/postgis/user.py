@@ -7,6 +7,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     Integer,
+    JSON,
     String,
     delete,
     insert,
@@ -489,3 +490,12 @@ class UserEmail(Base):
     def get_by_email(email_address: str):
         """Return the user for the specified username, or None if not found"""
         return UserEmail.query.filter_by(email_address=email_address).one_or_none()
+
+
+class UserStats(Base):
+    __tablename__ = "user_stats"
+
+    id = Column(BigInteger, primary_key=True)
+    user_id = Column(BigInteger, nullable=False)
+    stats = Column(JSON, nullable=False)
+    date_obtained = Column(DateTime, nullable=False, default=timestamp)
