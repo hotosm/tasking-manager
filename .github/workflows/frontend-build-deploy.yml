@@ -3,7 +3,9 @@ name: Build and Deploy Frontend to Cloudfront
 on:
   push:
     branches:
-      - "*"
+      - main
+      - staging
+      - develop
     paths:
       - "frontend/**"
   workflow_dispatch:
@@ -64,13 +66,13 @@ jobs:
         with:
           name: tm-fe-${{ github.sha }}
           path: ./frontend/build
+          retention-days: 90
 
   deploy:
     name: Deploy static files
     needs:
       - build
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name == 'develop' ||  github.ref_name == 'staging' ||  github.ref_name == 'main' }}
 
     environment:
       name: ${{ github.ref_name == 'develop' && 'develop' || github.ref_name == 'staging' && 'staging' || github.ref_name == 'main' && 'main' || 'develop' }}

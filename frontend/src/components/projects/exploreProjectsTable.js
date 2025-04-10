@@ -162,7 +162,7 @@ const COLUMNS = [
       </span>
     ),
     cell: ({ row }) => {
-      if (!row.original?.country[0]) return null;
+      if (!row.original?.country?.[0]) return null;
       return <span title={row.original.country[0]}>{row.original.country[0]}</span>;
     },
   },

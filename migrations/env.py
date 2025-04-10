@@ -16,7 +16,6 @@ from backend.db import Base
 project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_dir)
 
-
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -26,14 +25,11 @@ config = context.config
 fileConfig(config.config_file_name)
 logger = logging.getLogger("alembic.env")
 
-# add your model's MetaData object here
+# add your model's MetaData object here or
+# import models to backend models init
 # for 'autogenerate' support
 # from myapp import mymodel
 target_metadata = Base.metadata
-
-config.set_main_option(
-    "sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI.unicode_string()
-)
 
 
 # target_metadata = current_app.extensions["migrate"].db.metadata
@@ -89,7 +85,11 @@ def run_migrations_offline():
 
 
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection,
+        include_object=include_object,
+        target_metadata=target_metadata,
+    )
 
     with context.begin_transaction():
         context.run_migrations()

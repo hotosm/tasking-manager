@@ -80,18 +80,17 @@ class StatsService:
         db: Database,
         action="change",
     ):
-        project_stats = dict(project)  # Mutable copy of the project dictionary
         if new_state == last_state:
-            return project_stats, user
+            return project, user
 
         # Increment counters for the new state
         if new_state == TaskStatus.MAPPED:
-            project_stats["tasks_mapped"] += 1
+            project.tasks_mapped += 1
 
         elif new_state == TaskStatus.VALIDATED:
-            project_stats["tasks_validated"] += 1
+            project.tasks_validated += 1
         elif new_state == TaskStatus.BADIMAGERY:
-            project_stats["tasks_bad_imagery"] += 1
+            project.tasks_bad_imagery += 1
 
         # Increment user stats if action is "change"
         if action == "change":
@@ -104,12 +103,12 @@ class StatsService:
 
         # Decrement counters for the old state
         if last_state == TaskStatus.MAPPED:
-            project_stats["tasks_mapped"] -= 1
+            project.tasks_mapped -= 1
         elif last_state == TaskStatus.VALIDATED:
-            project_stats["tasks_validated"] -= 1
+            project.tasks_validated -= 1
 
         elif last_state == TaskStatus.BADIMAGERY:
-            project_stats["tasks_bad_imagery"] -= 1
+            project.tasks_bad_imagery -= 1
 
         # Undo user stats if action is "undo"
         if action == "undo":
@@ -130,10 +129,10 @@ class StatsService:
             WHERE id = :project_id
         """,
             values={
-                "tasks_mapped": project_stats["tasks_mapped"],
-                "tasks_validated": project_stats["tasks_validated"],
-                "tasks_bad_imagery": project_stats["tasks_bad_imagery"],
-                "project_id": project_stats["id"],
+                "tasks_mapped": project.tasks_mapped,
+                "tasks_validated": project.tasks_validated,
+                "tasks_bad_imagery": project.tasks_bad_imagery,
+                "project_id": project.id,
             },
         )
 
@@ -152,7 +151,7 @@ class StatsService:
                 "user_id": user.id,
             },
         )
-        return project_stats, user
+        return project, user
 
     @staticmethod
     async def get_latest_activity(

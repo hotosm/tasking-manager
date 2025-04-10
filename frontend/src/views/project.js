@@ -19,6 +19,7 @@ import { ProjectDetailPlaceholder } from '../components/projectDetail/projectDet
 import { useProjectsQuery, useProjectQuery } from '../api/projects';
 import { useWindowSize } from '../hooks/UseWindowSize';
 import { useOnClickOutside } from '../hooks/UseOnClickOutside';
+import getURLSearchParamsObject from '../utils/getURLSearchParamsObject';
 
 const smallScreenSize = 960;
 
@@ -45,9 +46,9 @@ export const ProjectsPage = () => {
   const action = useSelector((state) => state.preferences['action']);
   const [fullProjectsQuery, setProjectQuery] = useExploreProjectsQueryParams();
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
-  const isExploreProjectsTableView = useSelector(
-    (state) => state.preferences['isExploreProjectsTableView'],
-  );
+  const { search } = useLocation();
+  const searchParams = getURLSearchParamsObject(search);
+  const isExploreProjectsTableView = searchParams?.view === 'list';
   const searchResultWidth = isMapShown ? 'two-column' : 'one-column';
 
   const {
