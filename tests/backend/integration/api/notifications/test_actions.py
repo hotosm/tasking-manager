@@ -1,8 +1,8 @@
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
+    create_canned_message,
     create_canned_user,
     generate_encoded_token,
-    create_canned_message,
 )
 
 TEST_SUBJECT = "Test subject"

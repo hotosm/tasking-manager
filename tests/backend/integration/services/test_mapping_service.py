@@ -1,11 +1,11 @@
 import datetime
 import xml.etree.ElementTree as ET
 from unittest.mock import patch
-from backend.services.mapping_service import MappingService, Task
+
 from backend.models.postgis.task import TaskStatus
+from backend.services.mapping_service import MappingService, Task
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
-
 
 ORG_NAME = "HOT Tasking Manager"
 

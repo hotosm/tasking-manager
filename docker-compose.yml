@@ -17,8 +17,8 @@ services:
       - tasking-manager.env
     restart: unless-stopped
     healthcheck:
-      test: psql -h 0.0.0.0 -U ${POSTGRES_USER:-tm} -d ${POSTGRES_DB:-tasking-manager} -c 'SELECT 1;'
-      start_period: 5s
+      test: pg_isready -U ${POSTGRES_USER:-tm} -d ${POSTGRES_DB:-test_db}
+      start_period: 35s
       interval: 10s
       timeout: 5s
       retries: 3
@@ -29,6 +29,7 @@ services:
     image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
+      target: ${TARGET_TAG:-debug}
     depends_on:
       tm-db:
         condition: service_healthy
@@ -37,15 +38,17 @@ services:
     env_file:
       - tasking-manager.env
     volumes:
-      - ./pyproject.toml:/usr/src/app/pyproject.toml:ro
-      - ./backend:/usr/src/app/backend:ro
-      - ./tests:/usr/src/app/tests:ro
-      - ./migrations:/src/migrations
+      - ./pyproject.toml:/usr/src/app/pyproject.toml
+      - ./pdm.lock:/usr/src/app/pdm.lock
+      - ./backend:/usr/src/app/backend
+      - ./tests:/usr/src/app/tests
+      - ./migrations:/usr/src/app/migrations/
     restart: unless-stopped
     healthcheck:
       test: curl --fail http://localhost:5000 || exit 1
       interval: 10s
       retries: 5
+      start_period: 10s
       timeout: 3s
     deploy:
       replicas: ${API_REPLICAS:-1}
@@ -66,18 +69,17 @@ services:
     image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
-    entrypoint: ["python", "manage.py", "db"]
-    command: "upgrade"
+    entrypoint: ["alembic", "-c", "migrations/alembic.ini", "upgrade", "head"]
     depends_on:
       tm-db:
         condition: service_healthy
     env_file:
       - tasking-manager.env
     volumes:
-      - ./pyproject.toml:/usr/src/app/pyproject.toml:ro
-      - ./backend:/usr/src/app/backend:ro
-      - ./migrations:/usr/src/app/migrations:ro
+      - .:/usr/src/app/
+      - ./migrations:/usr/src/app/migrations/
     deploy:
+      replicas: ${API_REPLICAS:-1}
       resources:
         limits:
           cpus: "1"
@@ -88,15 +90,27 @@ services:
     networks:
       - tm-net
 
-  swagger:
-    image: swaggerapi/swagger-ui:v5.11.10
-    restart: always
+  tm-cron-jobs:
+    image: ghcr.io/hotosm/tasking-manager/backend:main
+    build:
+      context: .
+    command: ["python", "backend/cron_jobs.py"]
+    depends_on:
+      tm-db:
+        condition: service_healthy
+    env_file:
+      - tasking-manager.env
     environment:
-      - BASE_URL=/docs
-      - SWAGGER_JSON_URL=http://127.0.0.1:${TM_DEV_PORT:-3000}/api/v2/system/docs/json/
-    labels:
-      - traefik.http.routers.swagger.rule=(Host(`127.0.0.1`) || Host(`localhost`)) && PathPrefix(`/docs/`)
-      - traefik.http.services.swagger.loadbalancer.server.port=8080
+      - PYTHONPATH=/usr/src/app
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.2"
+          memory: 128M
     networks:
       - tm-net
 

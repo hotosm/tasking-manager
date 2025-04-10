@@ -5,8 +5,9 @@ Revises: 05f1b650ddbc
 Create Date: 2022-09-20 13:11:54.721669
 
 """
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
+
 from backend.models.postgis.statuses import TeamJoinMethod, TeamVisibility
 
 # revision identifiers, used by Alembic.

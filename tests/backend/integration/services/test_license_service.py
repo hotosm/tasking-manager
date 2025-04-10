@@ -1,5 +1,5 @@
 from backend.exceptions import NotFound
-from backend.services.license_service import LicenseService, LicenseDTO
+from backend.services.license_service import LicenseDTO, LicenseService
 from tests.backend.base import BaseTestCase
 
 

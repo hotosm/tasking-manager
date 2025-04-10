@@ -1,23 +1,24 @@
-from unittest.mock import patch
 import base64
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
-from itsdangerous import URLSafeTimedSerializer
-from flask import current_app
 
-from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import (
-    get_canned_osm_user_details,
-    return_canned_user,
-    TEST_USERNAME,
-)
+from flask import current_app
+from itsdangerous import URLSafeTimedSerializer
+
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.users.authentication_service import (
     AuthenticationService,
-    UserService,
+    AuthServiceError,
     MessageService,
     NotFound,
+    UserService,
     verify_token,
-    AuthServiceError,
+)
+from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import (
+    TEST_USERNAME,
+    get_canned_osm_user_details,
+    return_canned_user,
 )
 
 TEST_USER_EMAIL = "thinkwheretest@test.com"

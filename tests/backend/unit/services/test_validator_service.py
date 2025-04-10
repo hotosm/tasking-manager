@@ -3,16 +3,16 @@ from unittest.mock import patch
 from backend.models.dtos.validator_dto import ValidatedTask
 from backend.services.users.user_service import UserService
 from backend.services.validator_service import (
-    ValidatorService,
-    Task,
-    NotFound,
     LockForValidationDTO,
-    TaskStatus,
-    ValidatorServiceError,
-    UnlockAfterValidationDTO,
+    NotFound,
     ProjectService,
-    ValidatingNotAllowed,
+    Task,
+    TaskStatus,
+    UnlockAfterValidationDTO,
     UserLicenseError,
+    ValidatingNotAllowed,
+    ValidatorService,
+    ValidatorServiceError,
 )
 from tests.backend.base import BaseTestCase
 

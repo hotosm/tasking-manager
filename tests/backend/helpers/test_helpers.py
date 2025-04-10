@@ -1,36 +1,35 @@
-import geojson
 import base64
 import json
 import os
-from typing import Tuple
 import xml.etree.ElementTree as ET
-from backend.models.dtos.organisation_dto import (
-    UpdateOrganisationDTO,
-)
+from typing import Tuple
+
+import geojson
+
+from backend.models.dtos.organisation_dto import UpdateOrganisationDTO
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
     ProjectInfoDTO,
-    ProjectStatus,
     ProjectPriority,
+    ProjectStatus,
 )
-from backend.models.postgis.project import Project, ProjectTeams
 from backend.models.postgis.campaign import Campaign
-from backend.models.postgis.statuses import MappingLevel, TaskStatus
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.notification import Notification
+from backend.models.postgis.organisation import Organisation
+from backend.models.postgis.project import Project, ProjectTeams
+from backend.models.postgis.statuses import MappingLevel, TaskStatus
 from backend.models.postgis.task import Task
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.user import User
-from backend.models.postgis.organisation import Organisation
-from backend.services.users.authentication_service import AuthenticationService
 from backend.services.interests_service import Interest
-from backend.services.license_service import LicenseService, LicenseDTO
+from backend.services.license_service import LicenseDTO, LicenseService
 from backend.services.mapping_issues_service import (
-    MappingIssueCategoryService,
     MappingIssueCategoryDTO,
+    MappingIssueCategoryService,
 )
-
+from backend.services.users.authentication_service import AuthenticationService
 
 TEST_USER_ID = 777777
 TEST_USERNAME = "Thinkwhere Test"

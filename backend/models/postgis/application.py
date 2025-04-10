@@ -1,20 +1,30 @@
-from backend import db
+from databases import Database
+from sqlalchemy import (
+    BigInteger,
+    Column,
+    DateTime,
+    ForeignKey,
+    String,
+    delete,
+    insert,
+    select,
+)
+
+from backend.db import Base
 from backend.models.dtos.application_dto import ApplicationDTO, ApplicationsDTO
 from backend.models.postgis.utils import timestamp
 from backend.services.users.authentication_service import AuthenticationService
 
 
-class Application(db.Model):
+class Application(Base):
     """Describes an application that is authorized to access the TM"""
 
     __tablename__ = "application_keys"
 
-    id = db.Column(db.BigInteger, primary_key=True)
-    user = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", name="fk_users"), nullable=False
-    )
-    app_key = db.Column(db.String, nullable=False)
-    created = db.Column(db.DateTime, default=timestamp)
+    id = Column(BigInteger, primary_key=True)
+    user = Column(BigInteger, ForeignKey("users.id", name="fk_users"), nullable=False)
+    app_key = Column(String, nullable=False)
+    created = Column(DateTime, default=timestamp)
 
     def generate_application_key(self, user_id):
         """
@@ -23,33 +33,31 @@ class Application(db.Model):
         token = AuthenticationService.generate_session_token_for_user(user_id)
         return token
 
-    def create(self, user_id):
+    async def create(self, user_id, db: Database):
         application = Application()
         application.app_key = self.generate_application_key(user_id)
         application.user = user_id
-        db.session.add(application)
-        db.session.commit()
-
+        query = insert(Application.__table__).values(
+            app_key=application.app_key, user=application.user
+        )
+        await db.execute(query)
         return application
 
-    def save(self):
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+    async def delete(self, db: Database):
+        query = delete(Application).where(Application.id == self.id)
+        await db.execute(query)
 
     @staticmethod
-    def get_token(appkey: str):
-        return (
-            db.session.query(Application)
-            .filter(Application.app_key == appkey)
-            .one_or_none()
-        )
+    async def get_token(appkey: str, db: Database):
+        query = select(Application).where(Application.app_key == appkey)
+        result = await db.fetch_one(query)
+        return result
 
     @staticmethod
-    def get_all_for_user(user: int):
-        query = db.session.query(Application).filter(Application.user == user)
+    async def get_all_for_user(user: int, db: Database):
+        # query = session.query(Application).filter(Application.user == user)
+        query = select(Application).where(Application.user == user)
+        query = await db.fetch_all(query=query)
         applications_dto = ApplicationsDTO()
         for r in query:
             application_dto = ApplicationDTO()

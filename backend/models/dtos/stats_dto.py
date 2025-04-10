@@ -1,129 +1,148 @@
-from schematics import Model
-from schematics.types import StringType, IntType, FloatType, BooleanType, DateType
-from schematics.types.compound import ListType, ModelType
+from datetime import date
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
+
 from backend.models.dtos.mapping_dto import TaskHistoryDTO, TaskStatusDTO
 
 
-class UserContribution(Model):
+class UserContribution(BaseModel):
     """User contribution for a project"""
 
-    username = StringType()
-    mapping_level = StringType(serialized_name="mappingLevel")
-    picture_url = StringType(serialized_name="pictureUrl")
-    mapped = IntType()
-    validated = IntType()
-    bad_imagery = IntType(serialized_name="badImagery")
-    total = IntType()
-    mapped_tasks = ListType(IntType, serialized_name="mappedTasks")
-    validated_tasks = ListType(IntType, serialized_name="validatedTasks")
-    bad_imagery_tasks = ListType(IntType, serialized_name="badImageryTasks")
-    name = StringType()
-    date_registered = DateType(serialized_name="dateRegistered")
+    def __init__(self, UserContribution):
+        super().__init__()
+        self.username = UserContribution["username"]
+        self.mapping_level = UserContribution["mapping_level"]
+        self.picture_url = UserContribution["picture_url"]
+        self.mapped = UserContribution["mapped"]
+        self.validated = UserContribution["validated"]
+        self.bad_imagery = UserContribution["bad_imagery"]
+        self.total = UserContribution["total"]
+        self.mapped_tasks = UserContribution["mapped_tasks"]
+        self.validated_tasks = UserContribution["validated_tasks"]
+        self.bad_imagery_tasks = UserContribution["bad_imagery_tasks"]
+        self.name = UserContribution["name"]
+        self.date_registered = UserContribution["date_registered"]
+
+    username: Optional[str] = None
+    mapping_level: Optional[str] = Field(alias="mappingLevel", default=None)
+    picture_url: Optional[str] = Field(alias="pictureUrl", default=None)
+    mapped: Optional[int] = None
+    validated: Optional[int] = None
+    bad_imagery: Optional[int] = Field(alias="badImagery", default=None)
+    total: Optional[int] = None
+    mapped_tasks: Optional[List[int]] = Field(alias="mappedTasks", default=None)
+    validated_tasks: Optional[List[int]] = Field(alias="validatedTasks", default=None)
+    bad_imagery_tasks: Optional[List[int]] = Field(
+        alias="badImageryTasks", default=None
+    )
+    name: Optional[str] = None
+    date_registered: Optional[date] = Field(alias="dateRegistered", default=None)
 
 
-class ProjectContributionsDTO(Model):
+class ProjectContributionsDTO(BaseModel):
     """DTO for all user contributions on a project"""
 
     def __init__(self):
         super().__init__()
         self.user_contributions = []
 
-    user_contributions = ListType(
-        ModelType(UserContribution), serialized_name="userContributions"
+    user_contributions: Optional[List[UserContribution]] = Field(
+        alias="userContributions", default=None
     )
 
 
-class Pagination(Model):
-    """Properties for paginating results"""
+class Pagination(BaseModel):
+    has_next: Optional[bool] = Field(serialization_alias="hasNext", default=False)
+    has_prev: Optional[bool] = Field(serialization_alias="hasPrev", default=False)
+    next_num: Optional[int] = Field(serialization_alias="nextNum", default=None)
+    page: Optional[int] = None
+    pages: Optional[int] = None
+    prev_num: Optional[int] = Field(serialization_alias="prevNum", default=None)
+    per_page: Optional[int] = Field(serialization_alias="perPage", default=None)
+    total: Optional[int] = None
 
-    def __init__(self, paginated_result):
-        """Instantiate from a Flask-SQLAlchemy paginated result"""
-        super().__init__()
+    @staticmethod
+    def from_total_count(page: int, per_page: int, total: int) -> "Pagination":
+        pages = (total + per_page - 1) // per_page
+        has_next = page < pages
+        has_prev = page > 1
+        next_num = page + 1 if has_next else None
+        prev_num = page - 1 if has_prev else None
 
-        self.has_next = paginated_result.has_next
-        self.has_prev = paginated_result.has_prev
-        self.next_num = paginated_result.next_num
-        self.page = paginated_result.page
-        self.pages = paginated_result.pages
-        self.prev_num = paginated_result.prev_num
-        self.per_page = paginated_result.per_page
-        self.total = paginated_result.total
-
-    has_next = BooleanType(serialized_name="hasNext")
-    has_prev = BooleanType(serialized_name="hasPrev")
-    next_num = IntType(serialized_name="nextNum")
-    page = IntType()
-    pages = IntType()
-    prev_num = IntType(serialized_name="prevNum")
-    per_page = IntType(serialized_name="perPage")
-    total = IntType()
+        return Pagination(
+            has_next=has_next,
+            has_prev=has_prev,
+            next_num=next_num,
+            page=page,
+            pages=pages,
+            prev_num=prev_num,
+            per_page=per_page,
+            total=total,
+        )
 
 
-class ProjectActivityDTO(Model):
+class ProjectActivityDTO(BaseModel):
     """DTO to hold all project activity"""
 
-    def __init__(self):
-        super().__init__()
-        self.activity = []
-
-    pagination = ModelType(Pagination)
-    activity = ListType(ModelType(TaskHistoryDTO))
+    pagination: Optional[Pagination] = None
+    activity: Optional[List[TaskHistoryDTO]] = None
 
 
-class ProjectLastActivityDTO(Model):
+class ProjectLastActivityDTO(BaseModel):
     """DTO to hold latest status from project activity"""
 
-    def __init__(self):
-        super().__init__()
-        self.activity = []
-
-    activity = ListType(ModelType(TaskStatusDTO))
+    activity: Optional[List[TaskStatusDTO]] = Field(default_factory=list)
 
 
-class OrganizationProjectsStatsDTO(Model):
-    draft = IntType()
-    published = IntType()
-    archived = IntType()
-    recent = IntType()  # projects created in the current year
-    stale = IntType()  # project without any activity in the last 6 months
+class OrganizationProjectsStatsDTO(BaseModel):
+    draft: Optional[int] = None
+    published: Optional[int] = None
+    archived: Optional[int] = None
+    recent: Optional[int] = None
+    stale: Optional[int] = None
 
 
-class OrganizationTasksStatsDTO(Model):
-    ready = IntType()
-    locked_for_mapping = IntType(serialized_name="lockedForMapping")
-    locked_for_validation = IntType(serialized_name="lockedForValidation")
-    mapped = IntType()
-    validated = IntType()
-    invalidated = IntType()
-    badimagery = IntType(serialized_name="badImagery")
+class OrganizationTasksStatsDTO(BaseModel):
+    ready: Optional[int] = 0
+    locked_for_mapping: Optional[int] = Field(0, serialization_alias="lockedForMapping")
+    locked_for_validation: Optional[int] = Field(
+        0, serialization_alias="lockedForValidation"
+    )
+    mapped: Optional[int] = 0
+    validated: Optional[int] = 0
+    invalidated: Optional[int] = 0
+    badimagery: Optional[int] = Field(0, serialization_alias="badImagery")
 
 
-class OrganizationStatsDTO(Model):
-    projects = ModelType(OrganizationProjectsStatsDTO)
-    active_tasks = ModelType(OrganizationTasksStatsDTO, serialized_name="activeTasks")
+class OrganizationStatsDTO(BaseModel):
+    projects: Optional[OrganizationProjectsStatsDTO] = None
+    active_tasks: Optional[OrganizationTasksStatsDTO] = Field(
+        None, serialization_alias="activeTasks"
+    )
 
 
-class OrganizationListStatsDTO(Model):
+class OrganizationListStatsDTO(BaseModel):
     def __init__(self, row):
         super().__init__()
         self.organisation = row[0]
         self.projects_created = row[1]
 
-    organisation = StringType()
-    projects_created = IntType(serialized_name="projectsCreated")
+    organisation: str
+    projects_created: int = Field(alias="projectsCreated")
 
 
-class CampaignStatsDTO(Model):
+class CampaignStatsDTO(BaseModel):
     def __init__(self, row):
         super().__init__()
         self.campaign = row[0]
         self.projects_created = row[1]
 
-    campaign = StringType()
-    projects_created = IntType(serialized_name="projectsCreated")
+    campaign: str
+    projects_created: int = Field(alias="projectsCreated")
 
 
-class HomePageStatsDTO(Model):
+class HomePageStatsDTO(BaseModel):
     """DTO for stats we want to display on the homepage"""
 
     def __init__(self):
@@ -131,57 +150,62 @@ class HomePageStatsDTO(Model):
         self.organisations = []
         self.campaigns = []
 
-    mappers_online = IntType(serialized_name="mappersOnline")
-    total_area = IntType(serialized_name="totalArea")
-    tasks_mapped = IntType(serialized_name="tasksMapped")
-    tasks_validated = IntType(serialized_name="tasksValidated")
-    total_mappers = IntType(serialized_name="totalMappers")
-    total_validators = IntType(serialized_name="totalValidators")
-    total_projects = IntType(serialized_name="totalProjects")
-    total_mapped_area = FloatType(serialized_name="totalMappedArea")
-    total_validated_area = FloatType(serialized_name="totalValidatedArea")
-    total_organisations = IntType(serialized_name="totalOrganisations")
-    total_campaigns = IntType(serialized_name="totalCampaigns")
-    # avg_completion_time = IntType(serialized_name='averageCompletionTime')
-    organisations = ListType(ModelType(OrganizationListStatsDTO))
-    campaigns = ListType(ModelType(CampaignStatsDTO))
+    mappers_online: Optional[int] = Field(None, alias="mappersOnline")
+    total_area: Optional[int] = Field(None, alias="totalArea")
+    tasks_mapped: Optional[int] = Field(None, alias="tasksMapped")
+    tasks_validated: Optional[int] = Field(None, alias="tasksValidated")
+    total_mappers: Optional[int] = Field(None, alias="totalMappers")
+    total_validators: Optional[int] = Field(None, alias="totalValidators")
+    total_projects: Optional[int] = Field(None, alias="totalProjects")
+    total_mapped_area: Optional[float] = Field(None, alias="totalMappedArea")
+    total_validated_area: Optional[float] = Field(None, alias="totalValidatedArea")
+    total_organisations: Optional[int] = Field(None, alias="totalOrganisations")
+    total_campaigns: Optional[int] = Field(None, alias="totalCampaigns")
+    avg_completion_time: Optional[int] = Field(None, alias="averageCompletionTime")
+    organisations: Optional[List[OrganizationListStatsDTO]] = None
+    campaigns: Optional[List[CampaignStatsDTO]] = None
+
+    class Config:
+        populate_by_name = True
 
 
-class TaskStats(Model):
+class TaskStats(BaseModel):
     """DTO for tasks stats for a single day"""
 
-    date = DateType(required=True)
-    mapped = IntType(serialized_name="mapped")
-    validated = IntType(serialized_name="validated")
-    bad_imagery = IntType(serialized_name="badImagery")
+    date: str
+    mapped: int = Field(alias="mapped")
+    validated: int = Field(alias="validated")
+    bad_imagery: int = Field(alias="badImagery")
+
+    class Config:
+        populate_by_name = True
 
 
-class GenderStatsDTO(Model):
+class GenderStatsDTO(BaseModel):
     """DTO for genre stats of users."""
 
-    male = IntType()
-    female = IntType()
-    prefer_not = IntType(serialized_name="preferNotIdentify")
-    self_describe = IntType(serialized_name="selfDescribe")
+    male: int = Field(None, alias="male")
+    female: int = Field(None, alias="female")
+    prefer_not: int = Field(None, alias="preferNotIdentify")
+    self_describe: int = Field(None, alias="selfDescribe")
 
 
-class UserStatsDTO(Model):
+class UserStatsDTO(BaseModel):
     """DTO for user stats."""
 
-    total = IntType()
-    beginner = IntType()
-    intermediate = IntType()
-    advanced = IntType()
-    contributed = IntType()
-    email_verified = IntType(serialized_name="emailVerified")
-    genders = ModelType(GenderStatsDTO)
+    total: int = Field(None, alias="total")
+    beginner: int = Field(None, alias="beginner")
+    intermediate: int = Field(None, alias="intermediate")
+    advanced: int = Field(None, alias="advanced")
+    contributed: int = Field(None, alias="contributed")
+    email_verified: int = Field(None, alias="emailVerified")
+    genders: GenderStatsDTO = Field(None, alias="genders")
 
 
-class TaskStatsDTO(Model):
+class TaskStatsDTO(BaseModel):
     """Contains all tasks stats broken down by day"""
 
-    def __init__(self):
-        super().__init__()
-        self.stats = []
+    stats: List[TaskStats] = Field([], alias="taskStats")
 
-    stats = ListType(ModelType(TaskStats), serialized_name="taskStats")
+    class Config:
+        populate_by_name = True

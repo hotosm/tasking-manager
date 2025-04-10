@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock
+
 from flask import current_app
 
 from backend.exceptions import NotFound
@@ -6,10 +7,10 @@ from backend.models.dtos.project_dto import DraftProjectDTO
 from backend.models.postgis.project import Project
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    create_canned_project,
-    return_canned_draft_project_json,
-    create_canned_user,
     create_canned_organisation,
+    create_canned_project,
+    create_canned_user,
+    return_canned_draft_project_json,
 )
 
 

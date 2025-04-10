@@ -1,7 +1,8 @@
 from unittest.mock import patch
+
 from backend.models.postgis.statuses import UserRole
+from backend.services.organisation_service import NotFound, OrganisationService
 from tests.backend.base import BaseTestCase
-from backend.services.organisation_service import OrganisationService, NotFound
 from tests.backend.helpers.test_helpers import (
     create_canned_organisation,
     create_canned_user,

@@ -1,11 +1,10 @@
+from backend.exceptions import get_message_from_sub_code
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
+    create_canned_mapping_issue,
     create_canned_user,
     generate_encoded_token,
-    create_canned_mapping_issue,
 )
-
-from backend.exceptions import get_message_from_sub_code
 
 TEST_ISSUE_NAME = "Test Issue"
 TEST_ISSUE_DESCRIPTION = "Test issue description"

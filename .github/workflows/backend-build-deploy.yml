@@ -1,0 +1,118 @@
+name: Build and Deploy Backend to ECS
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - develop
+    paths:
+      - "backend/**"
+  workflow_dispatch:
+
+env:
+  # NOTE: You can override these variables in the workflow file with GitHub Variables
+  # vars.TEAM is team name here in case you want to deploy for different team. Default is hotosm
+  # vars.INFRA_ENVIRONMENT is environment name here in case you have applied infrastructue with different environment name. Default is github.ref_name
+
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ vars.IMAGE_NAME || 'hotosm/tasking-manager-backend' }}
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  OIDC_ROLE_ARN: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+  ECS_CLUSTER: tasking-manager-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}-cluster
+  TASK_DEFINITION_PREFIX: tasking-manager-${{ vars.TEAM || 'hotosm' }}-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}
+  ECS_SERVICE_PREFIX: tasking-manager-${{ vars.TEAM || 'hotosm' }}-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}
+  CONTAINER_NAME_PREFIX: tasking-manager-${{ vars.TEAM || 'hotosm' }}-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}
+
+jobs:
+  image-build-and-push:
+    name: Build Container Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tags: ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set container image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ github.ref_name }}
+            type=raw,value=${{ github.sha }}
+
+      - name: Build and push container image
+        id: build-push-image
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}"
+          target: prod
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: |
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ github.ref_name }}
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-main
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-staging
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-develop
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ github.ref_name }},mode=max
+
+  deploy-service:
+    name: Deploy ${{ matrix.service }} to ECS
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    needs: image-build-and-push
+    permissions:
+      contents: read
+      id-token: write
+
+    strategy:
+      matrix:
+        service: [fastapi, cron]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.OIDC_ROLE_ARN }}
+          role-session-name: gh-ci-ecs-deploy-${{ github.ref_name }}-${{ matrix.service }}
+
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --region ${{ env.AWS_REGION }} \
+            --task-definition ${{ env.TASK_DEFINITION_PREFIX }}-${{ matrix.service }} \
+            --query taskDefinition > task-definition.json
+
+      - name: Task definition rendition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME_PREFIX }}-${{ matrix.service }}
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Deploy task definition for ${{ matrix.service }}
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_PREFIX }}-${{ matrix.service }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

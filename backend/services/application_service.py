@@ -1,3 +1,5 @@
+from databases import Database
+
 from backend.exceptions import NotFound
 from backend.models.postgis.application import Application
 from backend.services.users.authentication_service import AuthenticationService
@@ -5,14 +7,14 @@ from backend.services.users.authentication_service import AuthenticationService
 
 class ApplicationService:
     @staticmethod
-    def create_token(user_id: int) -> Application:
-        application = Application().create(user_id)
+    async def create_token(user_id: int, db: Database) -> Application:
+        application = await Application().create(user_id, db)
 
         return application.as_dto()
 
     @staticmethod
-    def get_token(token: str):
-        application = Application.get_token(token)
+    async def get_token(token: str, db: Database):
+        application = await Application.get_token(token, db)
 
         if application is None:
             raise NotFound(sub_code="APPLICATION_NOT_FOUND")
@@ -20,14 +22,14 @@ class ApplicationService:
         return application
 
     @staticmethod
-    def get_all_tokens_for_logged_in_user(user_id: int):
-        tokens = Application.get_all_for_user(user_id)
+    async def get_all_tokens_for_logged_in_user(user_id: int, db: Database):
+        tokens = await Application.get_all_for_user(user_id, db)
 
         return tokens
 
     @staticmethod
-    def check_token(token: str):
-        valid_token = ApplicationService.get_token(token)
+    async def check_token(token: str, db: Database):
+        valid_token = await ApplicationService.get_token(token, db)
         if not valid_token:
             return False
 

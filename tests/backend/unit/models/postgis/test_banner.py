@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
-from tests.backend.base import BaseTestCase
-from backend.models.postgis.banner import Banner
 from backend.models.dtos.banner_dto import BannerDTO
+from backend.models.postgis.banner import Banner
+from tests.backend.base import BaseTestCase
 
 
 class TestBanner(BaseTestCase):

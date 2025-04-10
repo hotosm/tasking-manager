@@ -1,9 +1,9 @@
-from schematics import Model
-from schematics.types import StringType
-from schematics.types.compound import ListType
+from typing import List, Optional
+
+from pydantic import BaseModel
 
 
-class TagsDTO(Model):
+class TagsDTO(BaseModel):
     """DTO used to define available tags"""
 
-    tags = ListType(StringType)
+    tags: Optional[List[str]] = None

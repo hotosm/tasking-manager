@@ -1,21 +1,22 @@
 from unittest.mock import patch
+
 from flask import current_app
 
-from backend.services.messaging.smtp_service import SMTPService
-from backend.services.project_service import (
-    ProjectService,
-    Project,
-    NotFound,
-    ProjectStatus,
-    MappingLevel,
-    UserService,
-    MappingNotAllowed,
-    ValidatingNotAllowed,
-    ProjectInfo,
-)
-from backend.services.project_service import ProjectAdminService
 from backend.models.dtos.project_dto import LockedTasksForUser
 from backend.models.postgis.task import Task
+from backend.services.messaging.smtp_service import SMTPService
+from backend.services.project_service import (
+    MappingLevel,
+    MappingNotAllowed,
+    NotFound,
+    Project,
+    ProjectAdminService,
+    ProjectInfo,
+    ProjectService,
+    ProjectStatus,
+    UserService,
+    ValidatingNotAllowed,
+)
 from tests.backend.base import BaseTestCase
 
 

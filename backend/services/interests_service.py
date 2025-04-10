@@ -1,26 +1,27 @@
-from backend import db
-
-from sqlalchemy import func
+from databases import Database
+from fastapi import HTTPException
 
 from backend.models.dtos.interests_dto import (
+    InterestDTO,
     InterestRateDTO,
     InterestRateListDTO,
     InterestsListDTO,
 )
-from backend.models.postgis.task import TaskHistory
-from backend.models.postgis.interests import (
-    Interest,
-    project_interests,
-)
+from backend.models.postgis.interests import Interest
+from backend.models.postgis.project import Project
 from backend.services.project_service import ProjectService
-from backend.services.users.user_service import UserService
 
 
 class InterestService:
     @staticmethod
-    def get(interest_id):
-        interest = InterestService.get_by_id(interest_id)
-        return interest.as_dto()
+    async def get(interest_id: int, db: Database) -> InterestDTO:
+        query = """
+            SELECT id, name
+            FROM interests
+            WHERE id = :interest_id
+        """
+        interest_dto = await db.fetch_one(query, {"interest_id": interest_id})
+        return interest_dto
 
     @staticmethod
     def get_by_id(interest_id):
@@ -28,35 +29,102 @@ class InterestService:
         return interest
 
     @staticmethod
-    def get_by_name(name):
-        interest = Interest.get_by_name(name)
-        return interest
+    async def create(interest_name: str, db: Database) -> InterestDTO:
+        query = """
+            INSERT INTO interests (name)
+            VALUES (:name)
+            RETURNING id;
+        """
+        values = {"name": interest_name}
+        interest_id = await db.execute(query, values)
+
+        query_select = """
+            SELECT id, name
+            FROM interests
+            WHERE id = :id
+        """
+        interest_dto = await db.fetch_one(query_select, {"id": interest_id})
+        return interest_dto
 
     @staticmethod
-    def create(interest_name):
-        interest_model = Interest(name=interest_name)
-        interest_model.create()
-        return interest_model.as_dto()
+    async def update(interest_id: int, interest_dto: InterestDTO, db: Database):
+        query = """
+            UPDATE interests
+            SET name = :name
+            WHERE id = :interest_id
+        """
+        values = {"name": interest_dto.name}
+        await db.execute(query, {**values, "interest_id": interest_id})
+
+        query_select = """
+            SELECT id, name
+            FROM interests
+            WHERE id = :id
+        """
+        updated_interest_dto = await db.fetch_one(query_select, {"id": interest_id})
+        return updated_interest_dto
 
     @staticmethod
-    def update(interest_id, new_interest_dto):
-        interest = InterestService.get_by_id(interest_id)
-        interest.update(new_interest_dto)
-        return interest.as_dto()
+    async def get_all_interests(db: Database) -> InterestsListDTO:
+        query = """
+            SELECT id, name
+            FROM interests
+        """
+        results = await db.fetch_all(query)
+
+        interest_list_dto = InterestsListDTO()
+        for record in results:
+            interest_dto = InterestDTO(**record)
+            interest_list_dto.interests.append(interest_dto)
+        return interest_list_dto
 
     @staticmethod
-    def get_all_interests() -> InterestsListDTO:
-        return Interest.get_all_interests()
+    async def delete(interest_id: int, db: Database):
+        check_user_association_query = """
+            SELECT 1
+            FROM user_interests
+            WHERE interest_id = :interest_id
+            LIMIT 1;
+        """
+
+        user_associated = await db.fetch_one(
+            check_user_association_query, {"interest_id": interest_id}
+        )
+        if user_associated:
+            raise HTTPException(
+                status_code=500,
+                detail="Interest is associated with a user and cannot be deleted.",
+            )
+
+        check_project_association_query = """
+            SELECT 1
+            FROM project_interests
+            WHERE interest_id = :interest_id
+            LIMIT 1;
+        """
+        project_associated = await db.fetch_one(
+            check_project_association_query, {"interest_id": interest_id}
+        )
+        if project_associated:
+            raise HTTPException(
+                status_code=500,
+                detail="Interest is associated with a project and cannot be deleted.",
+            )
+
+        query = """
+            DELETE FROM interests
+            WHERE id = :interest_id;
+        """
+        try:
+            async with db.transaction():
+                await db.execute(query, {"interest_id": interest_id})
+        except Exception as e:
+            raise HTTPException(status_code=500, detail="Deletion failed") from e
 
     @staticmethod
-    def delete(interest_id):
-        interest = InterestService.get_by_id(interest_id)
-        interest.delete()
-
-    @staticmethod
-    def create_or_update_project_interests(project_id, interests):
-        project = ProjectService.get_project_by_id(project_id)
-        project.create_or_update_interests(interests)
+    async def create_or_update_project_interests(project_id, interests, db: Database):
+        project = await ProjectService.get_project_by_id(project_id, db)
+        project = await Project.create_or_update_interests(project, interests, db)
 
         # Return DTO.
         dto = InterestsListDTO()
@@ -65,39 +133,68 @@ class InterestService:
         return dto
 
     @staticmethod
-    def create_or_update_user_interests(user_id, interests):
-        user = UserService.get_user_by_id(user_id)
-        user.create_or_update_interests(interests)
+    async def create_or_update_user_interests(user_id, interests_ids, db: Database):
+        """
+        Create or update the user's interests by directly interacting with the database.
+        """
+        async with db.transaction():
+            delete_query = """
+                DELETE FROM user_interests WHERE user_id = :user_id
+            """
+            await db.execute(delete_query, {"user_id": user_id})
+            insert_query = """
+                INSERT INTO user_interests (user_id, interest_id)
+                VALUES (:user_id, :interest_id)
+            """
+            values = [
+                {"user_id": user_id, "interest_id": interest_id}
+                for interest_id in interests_ids
+            ]
+            await db.execute_many(insert_query, values)
+            return await InterestService.get_user_interests(user_id, db)
 
-        # Return DTO.
+    @staticmethod
+    async def get_user_interests(user_id, db: Database) -> InterestsListDTO:
+        """
+        Fetch the updated interests for the user and return the DTO.
+        """
+        query = """
+            SELECT i.id, i.name
+            FROM interests i
+            JOIN user_interests ui ON i.id = ui.interest_id
+            WHERE ui.user_id = :user_id
+        """
+        rows = await db.fetch_all(query, {"user_id": user_id})
         dto = InterestsListDTO()
-        dto.interests = [i.as_dto() for i in user.interests]
-
+        dto.interests = [InterestDTO(id=row["id"], name=row["name"]) for row in rows]
         return dto
 
     @staticmethod
-    def compute_contributions_rate(user_id):
-        # 1. Get all projects that user has contributed.
-        stmt = (
-            TaskHistory.query.with_entities(TaskHistory.project_id)
-            .distinct()
-            .filter(TaskHistory.user_id == user_id)
-            .subquery()
-        )
+    async def compute_contributions_rate(user_id: int, db: Database):
+        stmt = """
+            SELECT DISTINCT project_id
+            FROM task_history
+            WHERE user_id = :user_id
+        """
+        project_ids = await db.fetch_all(stmt, values={"user_id": user_id})
 
-        res = (
-            db.session.query(
-                Interest.name,
-                func.count(project_interests.c.interest_id)
-                / func.sum(func.count(project_interests.c.interest_id)).over(),
-            )
-            .group_by(project_interests.c.interest_id, Interest.name)
-            .filter(project_interests.c.project_id.in_(stmt))
-            .join(Interest, Interest.id == project_interests.c.interest_id)
-        )
+        if not project_ids:
+            return InterestRateListDTO()
 
-        rates = [InterestRateDTO({"name": r[0], "rate": r[1]}) for r in res.all()]
+        project_ids_list = [row["project_id"] for row in project_ids]
+
+        query = """
+            SELECT i.name, COUNT(pi.interest_id) / SUM(COUNT(pi.interest_id)) OVER() as rate
+            FROM project_interests pi
+            JOIN interests i ON i.id = pi.interest_id
+            WHERE pi.project_id = ANY(:project_ids)
+            GROUP BY pi.interest_id, i.name
+        """
+        res = await db.fetch_all(query, values={"project_ids": project_ids_list})
+
         results = InterestRateListDTO()
-        results.rates = rates
+
+        for r in res:
+            results.rates.append(InterestRateDTO(name=r["name"], rate=r["rate"]))
 
         return results

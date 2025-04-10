@@ -1,11 +1,13 @@
 import json
+from unittest.mock import patch
+
+from shapely.geometry import Polygon
+
+from backend.models.dtos.project_dto import ProjectSearchBBoxDTO
+from backend.models.postgis.project import Project, ProjectInfo
+from backend.models.postgis.user import User
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
-from backend.models.postgis.project import ProjectInfo, Project
-from shapely.geometry import Polygon
-from unittest.mock import patch
-from backend.models.dtos.project_dto import ProjectSearchBBoxDTO
-from backend.models.postgis.user import User
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import get_canned_json
 

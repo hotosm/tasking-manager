@@ -1,18 +1,17 @@
 import xml.etree.ElementTree as ET
 
+from backend.models.postgis.statuses import TaskStatus, UserRole
+from backend.models.postgis.task import Task
+from backend.services.project_admin_service import ProjectAdminService
+from backend.services.project_service import ProjectService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    create_canned_project,
-    return_canned_user,
-    create_canned_organisation,
-    generate_encoded_token,
     add_manager_to_organisation,
+    create_canned_organisation,
+    create_canned_project,
+    generate_encoded_token,
+    return_canned_user,
 )
-
-from backend.models.postgis.statuses import UserRole, TaskStatus
-from backend.services.project_service import ProjectService
-from backend.services.project_admin_service import ProjectAdminService
-from backend.models.postgis.task import Task
 
 
 class TestGetTasksQueriesJsonAPI(BaseTestCase):

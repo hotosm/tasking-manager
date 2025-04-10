@@ -1,7 +1,7 @@
 import base64
 
-from tests.backend.base import BaseTestCase
 from backend.services.users.authentication_service import AuthenticationService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import return_canned_user
 
 

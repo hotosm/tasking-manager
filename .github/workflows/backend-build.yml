@@ -3,8 +3,6 @@ name: Build & publish TM backend container image
 on:
   push:
     branches:
-      - main
-      - develop
       - deployment/hot-tasking-manager
       - deployment/demo-tasking-manager
       - deployment/container-tasking-manager
@@ -12,10 +10,11 @@ on:
   pull_request:
     branches:
       - main
+      - staging
+      - develop
       - deployment/hot-tasking-manager
       - deployment/demo-tasking-manager
       - deployment/container-tasking-manager
-
 
 jobs:
   backend-build:
@@ -23,9 +22,3 @@ jobs:
     with:
       image_name: ghcr.io/${{ github.repository }}/backend
       build_target: prod
-
-  # frontend-build:
-  #   uses: hotosm/gh-workflows/.github/workflows/image_build.yml@1.5.1
-  #   with:
-  #     image_name: ghcr.io/${{ github.repository }}/backend
-  #     dockerfile: scripts/docker/Dockerfile.frontend

@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
@@ -8,6 +8,7 @@ import { ProjectCard } from '../projectCard/projectCard';
 import messages from './messages';
 import { ProjectListItem } from './list';
 import { ExploreProjectsTable } from './exploreProjectsTable';
+import getURLSearchParamsObject from '../../utils/getURLSearchParamsObject';
 
 export const ProjectSearchResults = ({
   className,
@@ -19,14 +20,11 @@ export const ProjectSearchResults = ({
   showBottomButtons,
   isExploreProjectsPage = false,
 }) => {
-  const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
-  const isExploreProjectsTableView = useSelector(
-    (state) => state.preferences['isExploreProjectsTableView'],
-  );
+  const { search } = useLocation();
+  const searchParams = getURLSearchParamsObject(search);
+  const isListViewToggled = searchParams?.view === 'list';
 
   const cardWidthClass = 'w-100';
-  const isShowListView =
-    (management && listViewIsActive) || (isExploreProjectsPage && isExploreProjectsTableView);
 
   return (
     <div className={`${className}`}>
@@ -59,8 +57,8 @@ export const ProjectSearchResults = ({
         </div>
       )}
       {status !== 'error' && (
-        <div className={`${!isShowListView ? 'cards-container' : ''}`}>
-          {isShowListView ? (
+        <div className={`${!isListViewToggled ? 'cards-container' : ''}`}>
+          {isListViewToggled ? (
             <ReactPlaceholder
               showLoadingAnimation={true}
               rows={15}
