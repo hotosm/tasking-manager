@@ -743,7 +743,7 @@ class ProjectService:
                     project_title_query,
                     values={
                         "project_id": project_id,
-                        "locale": project["default_locale"],
+                        "locale": project.default_locale,
                     },
                 )
 

@@ -146,6 +146,8 @@ async def main():
             await asyncio.sleep(3600)
     except (KeyboardInterrupt, SystemExit):
         logger.info("Shutting down...")
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
     finally:
         # Close the connection pool
         logger.info("Disconnecting from the database...")
