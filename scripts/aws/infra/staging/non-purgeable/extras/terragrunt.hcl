@@ -56,6 +56,10 @@ inputs = {
     {
       name      = "NEW_RELIC_LICENSE_KEY"
       valueFrom = get_env("NEW_RELIC_LICENSE_KEY", "newrelicliscencekey")
+    },
+    {
+      name      = "JUMPCLOUD_CONNECT_KEY"
+      valueFrom = get_env("JUMPCLOUD_CONNECT_KEY", "example-jumptocloudconnectkey")
     }
   ]
 }

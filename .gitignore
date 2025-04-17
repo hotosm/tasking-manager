@@ -67,6 +67,7 @@ htmlcov/
 **/.terragrunt-cache/
 **/.terragrunt-cache
 **/infra.env
+temporary-dep-hack.hcl
 
 # Docker & Docker compose
 docker-compose.override.yml
