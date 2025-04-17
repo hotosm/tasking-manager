@@ -915,7 +915,7 @@ class Task(Base):
     @staticmethod
     def is_mappable(task: dict) -> bool:
         """Determines if task in scope is in a suitable state for mapping."""
-        if TaskStatus(task["task_status"]) not in [
+        if TaskStatus(task.task_status) not in [
             TaskStatus.READY,
             TaskStatus.INVALIDATED,
         ]:

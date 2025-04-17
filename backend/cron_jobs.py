@@ -11,20 +11,26 @@ from backend.models.postgis.task import Task
 
 
 async def auto_unlock_tasks():
-    async with db_connection.database.connection() as conn:
-        two_hours_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=120)
-        projects_query = """
-        SELECT DISTINCT project_id
-        FROM task_history
-        WHERE action_date > :two_hours_ago
-        """
-        projects = await conn.fetch_all(
-            query=projects_query, values={"two_hours_ago": two_hours_ago}
-        )
-        for project in projects:
-            project_id = project["project_id"]
-            logger.info(f"Processing project_id: {project_id}")
-            await Task.auto_unlock_tasks(project_id, conn)
+    logger.info("Started auto-unlock_tasks")
+    try:
+        async with db_connection.database.connection() as conn:
+            two_hours_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=120)
+            projects_query = """
+            SELECT DISTINCT project_id
+            FROM task_history
+            WHERE action_date > :two_hours_ago
+            """
+            projects = await conn.fetch_all(
+                query=projects_query, values={"two_hours_ago": two_hours_ago}
+            )
+            for project in projects:
+                project_id = project["project_id"]
+                logger.info(f"Processing project_id: {project_id}")
+                await Task.auto_unlock_tasks(project_id, conn)
+    except Exception as e:
+        logger.error(f"Error in auto_unlock_tasks: {e}")
+    finally:
+        logger.info("Finished auto-unlock_tasks")
 
 
 async def update_all_project_stats():
@@ -112,12 +118,14 @@ async def setup_cron_jobs():
     scheduler.add_job(
         auto_unlock_tasks,
         IntervalTrigger(minutes=120),
+        misfire_grace_time=3600,
         id="auto_unlock_tasks",
         replace_existing=True,
     )
     scheduler.add_job(
         update_all_project_stats,
         CronTrigger(hour=0, minute=0),
+        misfire_grace_time=3600,
         id="update_project_stats",
         replace_existing=True,
     )
@@ -125,6 +133,7 @@ async def setup_cron_jobs():
         update_recent_updated_project_stats,
         IntervalTrigger(minutes=60),
         id="update_recent_updated_project_stats",
+        misfire_grace_time=3600,
         replace_existing=True,
     )
     scheduler.start()
@@ -146,6 +155,8 @@ async def main():
             await asyncio.sleep(3600)
     except (KeyboardInterrupt, SystemExit):
         logger.info("Shutting down...")
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
     finally:
         # Close the connection pool
         logger.info("Disconnecting from the database...")

@@ -69,19 +69,19 @@ class MappingService:
         logged_in_user_id: int, task: dict, db: Database
     ) -> bool:
         """Determines if the current task status can be undone by the logged in user"""
-        if logged_in_user_id and TaskStatus(task["task_status"]) not in [
+        if logged_in_user_id and TaskStatus(task.task_status) not in [
             TaskStatus.LOCKED_FOR_MAPPING,
             TaskStatus.LOCKED_FOR_VALIDATION,
             TaskStatus.READY,
         ]:
             last_action = await TaskHistory.get_last_action(
-                task["project_id"], task["id"], db
+                task.project_id, task.id, db
             )
             # User requesting task made the last change, so they are allowed to undo it.
             is_user_permitted, _ = await ProjectService.is_user_permitted_to_validate(
-                task["project_id"], logged_in_user_id, db
+                task.project_id, logged_in_user_id, db
             )
-            if last_action["user_id"] == logged_in_user_id or is_user_permitted:
+            if last_action.user_id == logged_in_user_id or is_user_permitted:
                 return True
         return False
 
@@ -95,15 +95,16 @@ class MappingService:
         :raises TaskServiceError
         :return: Updated task, or None if not found
         """
+
         task = await MappingService.get_task(
             lock_task_dto.task_id, lock_task_dto.project_id, db
         )
+
         if task.locked_by != lock_task_dto.user_id:
             if not Task.is_mappable(task):
                 raise MappingServiceError(
                     "InvalidTaskState- Task in invalid state for mapping"
                 )
-
             user_can_map, error_reason = await ProjectService.is_user_permitted_to_map(
                 lock_task_dto.project_id, lock_task_dto.user_id, db
             )
@@ -164,16 +165,14 @@ class MappingService:
         await StatsService.update_stats_after_task_state_change(
             mapped_task.project_id, mapped_task.user_id, last_state, new_state, db
         )
-
         if mapped_task.comment:
             await MessageService.send_message_after_comment(
                 mapped_task.user_id,
                 mapped_task.comment,
-                task["id"],
+                task.id,
                 mapped_task.project_id,
                 db,
             )
-
         # Unlock the task and change its state
         await Task.unlock_task(
             task_id=mapped_task.task_id,
@@ -231,7 +230,6 @@ class MappingService:
         task = await db.fetch_one(
             query, values={"task_id": task_id, "project_id": project_id}
         )
-
         if task is None:
             raise NotFound(
                 status_code=404,
@@ -240,12 +238,12 @@ class MappingService:
                 task_id=task_id,
             )
 
-        if task["task_status"] != TaskStatus.LOCKED_FOR_MAPPING.value:
+        if task.task_status != TaskStatus.LOCKED_FOR_MAPPING.value:
             raise MappingServiceError(
                 "LockBeforeUnlocking- Status must be LOCKED_FOR_MAPPING to unlock"
             )
 
-        if task["locked_by"] != user_id:
+        if task.locked_by != user_id:
             raise MappingServiceError(
                 "TaskNotOwned- Attempting to unlock a task owned by another user"
             )

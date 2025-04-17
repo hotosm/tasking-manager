@@ -84,6 +84,17 @@ async def app(create_test_database):
 
 
 @pytest.fixture
+async def db_connection_fixture(app):
+    """Provides a test database connection for each test."""
+    test_db = Database(ASYNC_TEST_DB_URL, min_size=4, max_size=8, force_rollback=True)
+    await test_db.connect()
+    try:
+        yield test_db
+    finally:
+        await test_db.disconnect()
+
+
+@pytest.fixture
 async def client(app):
     logger.info("Creating test client for FastAPI app.")
     async with AsyncClient(
