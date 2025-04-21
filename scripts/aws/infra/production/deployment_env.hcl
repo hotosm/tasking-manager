@@ -1,0 +1,17 @@
+locals {
+  account_name   = get_env("AWS_ACCOUNT_NAME", "hotosm")
+  aws_profile    = get_env("AWS_PROFILE", "default")
+  aws_region     = get_env("AWS_REGION", "us-east-1")
+  team           = get_env("INFRA_TEAM", "hotosm")
+  owner          = get_env("INFRA_OWNER", "HOTOSM")
+  environment    = get_env("INFRA_ENVIRONMENT", "production")
+  project        = get_env("INFRA_PROJECT", "tasking-manager")
+  application    = get_env("INFRA_APPLICATION", "tasking-manager")
+  short_name     = get_env("INFRA_PROJECT_SHORT_NAME", "tm")
+  maintainer     = get_env("INFRA_MAINTAINER", "sysadmin@hotosm.org")
+  url            = get_env("INFRA_URL", "https://tasks.hotosm.org")
+  documentation  = get_env("INFRA_DOCS_URL", "https://hotosm.github.io")
+  IaC_Management = get_env("INFRA_IAC_MANAGER", "Terraform/Terragrunt")
+  cost_center    = get_env("INFRA_ENABLE_COST_CENTER", "False")
+  version        = get_env("INFRA_APP_VERSION", "4.8.2")
+}
