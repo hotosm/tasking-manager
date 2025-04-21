@@ -264,16 +264,22 @@ async def release(db: Database = Depends(get_db)):
             published_date, "%Y-%m-%dT%H:%M:%SZ"
         ).replace(tzinfo=None)
         release = await ReleaseVersion.get(db)
-        if release is None:
+        if release:
+            release = ReleaseVersion(**release)
+        else:
             release = ReleaseVersion()
         if tag_name != release.tag_name:
             release.tag_name = tag_name
             release.published_at = published_date
+            await db.execute("""DELETE FROM release_version""")
             await release.save(db)
-        return {
-            "release_version": release.tag_name,
-            "published_at": str(release.published_at),
-        }
+        return JSONResponse(
+            content={
+                "release_version": release.tag_name,
+                "published_at": str(release.published_at),
+            },
+            status_code=200,
+        )
     except KeyError:
         return JSONResponse(
             content={

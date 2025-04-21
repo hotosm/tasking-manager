@@ -95,8 +95,10 @@ class TestMessage(BaseTestCase):
         """Test that all message of a certain type can be marked as read"""
         # Arrange
         self.send_multiple_welcome_messages(3)
+
         test_user_2 = return_canned_user("test_user_2", 222222222)
         test_user_2.create()
+
         MessageService.send_team_join_notification(
             test_user_2.id,
             test_user_2.username,
@@ -108,6 +110,7 @@ class TestMessage(BaseTestCase):
         # Act
         Message.mark_all_messages_read(self.test_user.id, [MessageType.SYSTEM.value])
         # Assert
+
         messages = MessageService.get_all_messages(
             user_id=self.test_user.id,
             locale="en",
