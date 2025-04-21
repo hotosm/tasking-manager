@@ -14,10 +14,11 @@ from backend.main import api as fastapi_app
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Construct database URLs
-ASYNC_TEST_DB_URL = settings.SQLALCHEMY_DATABASE_URI.unicode_string().replace(
-    settings.POSTGRES_TEST_DB, f"{settings.POSTGRES_TEST_DB}_test"
-)
+db_url = settings.SQLALCHEMY_DATABASE_URI.unicode_string()
+pfx, name = db_url.rsplit("/", 1)
+
+ASYNC_TEST_DB_URL = f"{pfx}/{name}_test"
+
 SYNCPG_DB_URL = str(settings.SQLALCHEMY_DATABASE_URI).replace(
     "postgresql+asyncpg://", "postgresql://"
 )
