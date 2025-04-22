@@ -140,7 +140,7 @@ async def get_or_create_beginner_level(db) -> MappingLevel:
             "name": "BEGINNER",
             "approvals_required": 0,
             "ordering": 1,
-        }
+        },
     )
 
     return 1

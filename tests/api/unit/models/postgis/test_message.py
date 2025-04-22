@@ -14,7 +14,9 @@ class TestMessage:
     async def setup_test_data(self, db_connection_fixture, request):
         """Setup test user before each test."""
         assert db_connection_fixture is not None, "Database connection is not available"
-        test_user = await return_canned_user(db_connection_fixture, TEST_USERNAME, TEST_USER_ID)
+        test_user = await return_canned_user(
+            db_connection_fixture, TEST_USERNAME, TEST_USER_ID
+        )
         await create_canned_user(db_connection_fixture, test_user)
 
         request.cls.db = db_connection_fixture
