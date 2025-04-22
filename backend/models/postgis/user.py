@@ -6,6 +6,7 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
+    ForeignKey,
     Integer,
     JSON,
     String,
@@ -31,8 +32,8 @@ from backend.models.dtos.user_dto import (
 from backend.models.postgis.interests import Interest, user_interests
 from backend.models.postgis.licenses import License, user_licenses_table
 from backend.models.postgis.project_info import ProjectInfo
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.statuses import (
-    MappingLevel,
     ProjectStatus,
     UserGender,
     UserRole,
@@ -48,7 +49,7 @@ class User(Base):
     id = Column(BigInteger, primary_key=True, index=True)
     username = Column(String, unique=True)
     role = Column(Integer, default=0, nullable=False)
-    mapping_level = Column(Integer, default=1, nullable=False)
+    mapping_level = Column(ForeignKey("mapping_levels.id"), default=1, nullable=False)
     tasks_mapped = Column(Integer, default=0, nullable=False)
     tasks_validated = Column(Integer, default=0, nullable=False)
     tasks_invalidated = Column(Integer, default=0, nullable=False)
@@ -80,6 +81,7 @@ class User(Base):
     last_validation_date = Column(DateTime, default=timestamp)
 
     # Relationships
+    level = relationship(MappingLevel, backref="users")
     accepted_licenses = relationship(
         "License", secondary=user_licenses_table, overlaps="users"
     )

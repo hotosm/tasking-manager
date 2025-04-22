@@ -577,7 +577,7 @@ class UserService:
     async def get_mapping_level(user_id: int, db: Database):
         """Gets mapping level user is at"""
         user = await UserService.get_user_by_id(user_id, db)
-        return MappingLevel(user.mapping_level)
+        return user.level
 
     @staticmethod
     def is_user_validator(user_id: int) -> bool:
