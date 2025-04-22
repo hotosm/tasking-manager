@@ -870,15 +870,15 @@ class UserService:
         if user_level == MappingLevel.ADVANCED:
             return  # User has achieved the highest level, no need to proceed
 
-        intermediate_level = MappingLevel.INTERMEDIATE
-        advanced_level = MappingLevel.ADVANCED
+        intermediate_level = settings.MAPPER_LEVEL_INTERMEDIATE
+        advanced_level = settings.MAPPER_LEVEL_ADVANCED
 
         try:
             osm_details = OSMService.get_osm_details_for_user(user_id)
 
             if (
-                osm_details.changeset_count > advanced_level.value
-                and user_level != MappingLevel.ADVANCED.value
+                osm_details.changeset_count > advanced_level
+                and user.mapping_level != MappingLevel.ADVANCED.value
             ):
                 update_query = """
                     UPDATE users
@@ -894,11 +894,14 @@ class UserService:
                 )
 
             elif (
-                intermediate_level.value
-                < osm_details.changeset_count
-                < advanced_level.value
-                and user_level != MappingLevel.INTERMEDIATE.value
+                intermediate_level < osm_details.changeset_count < advanced_level
+                and user.mapping_level != MappingLevel.INTERMEDIATE.value
             ):
+                update_query = """
+                    UPDATE users
+                    SET mapping_level = :new_level
+                    WHERE id = :user_id
+                """
                 await db.execute(
                     update_query,
                     {"new_level": MappingLevel.INTERMEDIATE.value, "user_id": user_id},
