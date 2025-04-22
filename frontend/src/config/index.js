@@ -62,6 +62,7 @@ export const RAPID_EDITOR_URL =
   process.env.REACT_APP_RAPID_EDITOR_URL || 'https://mapwith.ai/rapid';
 export const EXPORT_TOOL_S3_URL = process.env.REACT_APP_EXPORT_TOOL_S3_URL || '';
 export const ENABLE_EXPORT_TOOL = process.env.REACT_APP_ENABLE_EXPORT_TOOL || '';
+export const DEFAULT_VALIDATOR_TEAM_ID = process.env.REACT_APP_DEFAULT_VALIDATOR_TEAM_ID || null;
 
 export const TASK_COLOURS = {
   READY: '#fff',
