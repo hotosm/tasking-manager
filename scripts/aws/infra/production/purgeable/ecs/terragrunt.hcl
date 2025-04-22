@@ -121,10 +121,12 @@ inputs = {
     scale_down_cooldown = 180
     scale_up_steps = [
       { lower_bound = 0, upper_bound = 10, adjustment = 1 },
-      { lower_bound = 10, upper_bound = null, adjustment = 2 }
+      { lower_bound = 10, upper_bound = 20, adjustment = 2 },
+      { lower_bound = 20, upper_bound = null, adjustment = 3 }
     ]
     scale_down_steps = [
-      { lower_bound = null, upper_bound = 0, adjustment = -1 }
+      { lower_bound = null, upper_bound = -10, adjustment = -2 },
+      { lower_bound = -10, upper_bound = 0, adjustment = -1 }
     ]
   }
 
@@ -137,10 +139,12 @@ inputs = {
     scale_down_cooldown = 180
     scale_up_steps = [
       { lower_bound = 0, upper_bound = 10, adjustment = 1 },
-      { lower_bound = 10, upper_bound = null, adjustment = 2 },
+      { lower_bound = 10, upper_bound = 20, adjustment = 2 },
+      { lower_bound = 20, upper_bound = null, adjustment = 3 }
     ]
     scale_down_steps = [
-      { lower_bound = null, upper_bound = 0, adjustment = -1 }
+      { lower_bound = null, upper_bound = -10, adjustment = -2 },
+      { lower_bound = -10, upper_bound = 0, adjustment = -1 }
     ]
   }
 
@@ -153,10 +157,12 @@ inputs = {
     scale_down_cooldown = 180
     scale_up_steps = [
       { lower_bound = 0, upper_bound = 100, adjustment = 1 },
-      { lower_bound = 100, upper_bound = null, adjustment = 2 },
+      { lower_bound = 100, upper_bound = 300, adjustment = 2 },
+      { lower_bound = 300, upper_bound = null, adjustment = 3 }
     ]
     scale_down_steps = [
-      { lower_bound = null, upper_bound = 0, adjustment = -1 }
+      { lower_bound = null, upper_bound = -20, adjustment = -2 },
+      { lower_bound = -20, upper_bound = 0, adjustment = -1 }
     ]
   }
 }
