@@ -360,11 +360,11 @@ class ProjectService:
                 return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
 
         elif mapping_permission == MappingPermission.LEVEL.value:
-            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
+            if await ProjectService._is_user_beginner(user_id, db):
                 return False, MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
 
         elif mapping_permission == MappingPermission.TEAMS_LEVEL.value:
-            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
+            if await ProjectService._is_user_beginner(user_id, db):
                 return False, MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
             if not is_team_member:
                 return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
@@ -426,13 +426,11 @@ class ProjectService:
         return True, "User allowed to map"
 
     @staticmethod
-    async def _is_user_intermediate_or_advanced(user_id, db: Database):
+    async def _is_user_beginner(user_id, db: Database):
         """Helper method to determine if user level is not beginner"""
         user_mapping_level = await UserService.get_mapping_level(user_id, db)
-        if user_mapping_level not in [MappingLevel.INTERMEDIATE, MappingLevel.ADVANCED]:
-            return False
 
-        return True
+        return user_mapping_level.is_beginner
 
     @staticmethod
     async def evaluate_validation_permission(
@@ -448,11 +446,11 @@ class ProjectService:
                 return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
         elif validation_permission == ValidationPermission.LEVEL.value:
-            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
+            if await ProjectService._is_user_beginner(user_id, db):
                 return False, ValidatingNotAllowed.USER_IS_BEGINNER
 
         elif validation_permission == ValidationPermission.TEAMS_LEVEL.value:
-            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
+            if await ProjectService._is_user_beginner(user_id, db):
                 return False, ValidatingNotAllowed.USER_IS_BEGINNER
             if not is_team_member:
                 return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER

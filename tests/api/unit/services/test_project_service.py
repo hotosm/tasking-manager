@@ -41,10 +41,10 @@ class TestProjectService:
         mock_level.return_value = MappingLevel.BEGINNER
 
         # Act
-        allowed = await ProjectService._is_user_intermediate_or_advanced(1, self.db)
+        allowed = await ProjectService._is_user_beginner(1, self.db)
 
         # Assert
-        assert not allowed
+        assert allowed
 
     @patch.object(UserService, "get_mapping_level")
     async def test_user_is_allowed_to_map_if_level_enforced(self, mock_level):
@@ -52,10 +52,10 @@ class TestProjectService:
         mock_level.return_value = MappingLevel.ADVANCED
 
         # Act
-        allowed = await ProjectService._is_user_intermediate_or_advanced(1, self.db)
+        allowed = await ProjectService._is_user_beginner(1, self.db)
 
         # Assert
-        assert allowed
+        assert not allowed
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     @patch.object(UserService, "is_user_blocked")

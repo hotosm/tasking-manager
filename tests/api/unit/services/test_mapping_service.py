@@ -119,7 +119,7 @@ class TestMappingService:
     async def test_cant_unlock_a_task_you_dont_own(self, mock_mapping_permitted):
         # Arrange
         project, user, project_id = await create_canned_project(self.db)
-        test_user = return_canned_user("TEST", 12)
+        test_user = await return_canned_user(self.db, "TEST", 12)
         test_user = await create_canned_user(self.db, test_user)
         query = """
             SELECT * FROM tasks

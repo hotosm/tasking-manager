@@ -7,6 +7,7 @@ from typing import Tuple
 
 from backend.exceptions import NotFound
 import geojson
+from sqlalchemy import select
 
 from backend.models.dtos.organisation_dto import UpdateOrganisationDTO
 from backend.models.dtos.project_dto import (
@@ -28,6 +29,7 @@ from backend.models.postgis.statuses import (
     TeamJoinMethod,
     TeamVisibility,
 )
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.task import Task
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.user import User
@@ -124,12 +126,32 @@ def get_canned_simplified_osm_user_details():
     return data
 
 
-def return_canned_user(username=TEST_USERNAME, id=TEST_USER_ID) -> User:
+async def get_or_create_beginner_level(db) -> MappingLevel:
+    await db.execute(
+        """
+        INSERT INTO mapping_levels (
+            id, name, approvals_required, ordering
+        )
+        VALUES (:id, :name, :approvals_required, :ordering)
+        ON CONFLICT (id) DO NOTHING
+        """,
+        {
+            "id": 1,
+            "name": "BEGINNER",
+            "approvals_required": 0,
+            "ordering": 1,
+        }
+    )
+
+    return 1
+
+
+async def return_canned_user(db, username=TEST_USERNAME, id=TEST_USER_ID) -> User:
     """Returns a canned user"""
     test_user = User()
     test_user.username = username
     test_user.id = id
-    test_user.mapping_level = MappingLevel.BEGINNER.value
+    test_user.mapping_level = await get_or_create_beginner_level(db)
     test_user.email_address = None
     test_user.role = 0
     test_user.tasks_mapped = 0
@@ -144,6 +166,7 @@ def return_canned_user(username=TEST_USERNAME, id=TEST_USER_ID) -> User:
     test_user.tasks_notifications = True
     test_user.tasks_comments_notifications = False
     test_user.teams_announcement_notifications = True
+
     return test_user
 
 
@@ -158,7 +181,7 @@ def generate_encoded_token(user_id: int):
 async def create_canned_user(db, test_user=None):
     """Generate a canned user in the DB"""
     if test_user is None:
-        test_user = return_canned_user()
+        test_user = await return_canned_user(db)
 
     # Make sure all required values are passed to the INSERT query (including non-nullable defaults)
     await db.execute(
@@ -200,6 +223,7 @@ async def create_canned_user(db, test_user=None):
             "last_validation_date": test_user.last_validation_date,
         },
     )
+
     return test_user
 
 
