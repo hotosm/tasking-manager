@@ -77,6 +77,7 @@ COPY backend backend/
 COPY migrations migrations/
 COPY scripts/world scripts/world/
 COPY scripts/database scripts/database/
+COPY scripts/commands scripts/commands/
 COPY manage.py .
 
 
