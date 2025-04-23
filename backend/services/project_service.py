@@ -411,7 +411,7 @@ class ProjectService:
         if project.private and not is_manager_permission:
             # Check if user is in allowed user list
             is_allowed_user = await ProjectService.is_user_in_the_allowed_list(
-                project.id, user_id
+                project.id, user_id, db
             )
             if is_allowed_user:
                 return True, "User allowed to map"
