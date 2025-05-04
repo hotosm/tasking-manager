@@ -41,6 +41,8 @@ dependencies = [
     "gevent==23.9.0",
     "greenlet==2.0.2",
     "gunicorn[gevent]==20.1.0",
+    "httptools>=0.6.4",
+    "uvloop>=0.21.0",
     # For importlib-metadata, see https://github.com/hotosm/tasking-manager/issues/5395
     "importlib-metadata==6.8.0",
     # Dependencies used by hotosm.org for production deployments
@@ -49,7 +51,7 @@ dependencies = [
     "fastapi-mail==1.4.1",
     "aiocache>=0.12.3",
     "httpx>=0.28.1",
-    "pytest>=7.4.0",
+    "pytest>=8.3.5",
 ]
 [dependency-groups]
 dev = [
