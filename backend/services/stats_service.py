@@ -409,7 +409,7 @@ class StatsService:
                 dict(
                     username=row["username"],
                     name=row["name"],
-                    mapping_level=await MappingLevel.get_by_id(row["mapping_level"], db).name,
+                    mapping_level=(await MappingLevel.get_by_id(row["mapping_level"], db)).name,
                     picture_url=row["picture_url"],
                     mapped=row["mapped"],
                     bad_imagery=row["bad_imagery"],
