@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Column, ForeignKey
+from sqlalchemy import Integer, String, Column, ForeignKey, Boolean
 
 from backend.db import Base
 
@@ -14,3 +14,4 @@ class MappingLevel(Base):
     approvals_required = Column(Integer, nullable=False, default=0)
     color = Column(String, nullable=True)
     ordering = Column(Integer, nullable=False)
+    is_beginner = Column(Boolean, nullable=False, default=False)

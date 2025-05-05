@@ -1,5 +1,5 @@
 """Add mapping_levels table and foreign key
-Revision ID: e723689de0f4_
+Revision ID: e723689de0f4
 Revises: 9fc540fc84f8
 Create Date: 2025-04-14 20:28:00.000000
 
@@ -8,7 +8,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "e723689de0f4_"
+revision = "e723689de0f4"
 down_revision = "9fc540fc84f8"
 branch_labels = None
 depends_on = None
@@ -26,6 +26,7 @@ def upgrade():
         ),
         sa.Column("color", sa.String(), nullable=True),
         sa.Column("ordering", sa.Integer(), nullable=False),
+        sa.Column("is_beginner", sa.Boolean(), nullable=False, default=False, server_default="false"),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("ordering"),
     )
@@ -33,7 +34,7 @@ def upgrade():
     # Create objects for the existing mapping levels
     conn = op.get_bind()
     conn.execute(
-        sa.text("insert into mapping_levels (name, ordering) values('BEGINNER', 1);")
+        sa.text("insert into mapping_levels (name, ordering, is_beginner) values('BEGINNER', 1, true);")
     )
     conn.execute(
         sa.text(
