@@ -20,6 +20,7 @@ from backend.models.dtos.project_dto import (
     ProjectSearchResultsDTO,
 )
 from backend.models.postgis.project import Project, ProjectInfo
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.statuses import (
     MappingPermission,
     MappingTypes,
@@ -698,7 +699,7 @@ class ProjectSearchService:
         return all_results, paginated_results, pagination_dto
 
     @staticmethod
-    async def filter_by_user_permission(user, permission: str):
+    async def filter_by_user_permission(user, permission: str, db: Database):
         if not user or user.role == UserRole.ADMIN.value:
             return "TRUE", {}  # Admin can access all projects
 
@@ -714,14 +715,16 @@ class ProjectSearchService:
                 TeamRoles.PROJECT_MANAGER.value,
             ]
 
-        if user.mapping_level == MappingLevel.BEGINNER.value:
+        level = await MappingLevel.get_by_id(user.mapping_level, db)
+
+        if level.is_beginner:
             permission_condition = (
                 f"AND p.{permission} = {permission_class.TEAMS.value}"
             )
         else:
             permission_condition = ""
 
-        if user.mapping_level != MappingLevel.BEGINNER.value:
+        if not level.is_beginner:
             level_condition = f", {permission_class.LEVEL.value}"
         else:
             level_condition = ""
@@ -760,7 +763,7 @@ class ProjectSearchService:
                 perm_condition,
                 perm_params,
             ) = await ProjectSearchService.filter_by_user_permission(
-                user, "mapping_permission"
+                user, "mapping_permission", db,
             )
             base_query += f" AND ({perm_condition})"
             params.update(perm_params)
@@ -782,7 +785,7 @@ class ProjectSearchService:
                 perm_condition,
                 perm_params,
             ) = await ProjectSearchService.filter_by_user_permission(
-                user, "validation_permission"
+                user, "validation_permission", db,
             )
             base_query += f" AND ({perm_condition})"
             params.update(perm_params)
