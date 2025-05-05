@@ -82,8 +82,8 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get -y install libgeos-dev # Required for shapely
       - run: sudo apt-get -y install proj-bin libproj-dev
-      - run: pip install --upgrade pip pdm==2.18.1
-      - run: pdm export --dev --without-hashes > requirements.txt
+      - run: pip install --upgrade pip uv==0.7.2
+      - run: uv export --all-groups > requirements.txt
       - run: pip install -r requirements.txt
       - run: mkdir --mode 766 -p /tmp/logs
       - run: mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results

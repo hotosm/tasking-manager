@@ -109,14 +109,14 @@ Before sending a PR, make sure you run the following commands and
 include the changes in your commit.
 
 * Code formatting:
-  * Format all backend code by running [Black](https://pypi.org/project/black/): `black manage.py backend tests migrations` or `pdm run lint`
+  * Format all backend code by running [Black](https://pypi.org/project/black/): `black manage.py backend tests migrations` or `uv run lint`
   * Format all frontend code with [prettier](https://prettier.io/)
     either by [configuring your
     editor](https://prettier.io/docs/en/editors.html) or by running
     `yarn prettier` inside the `frontend` directory.
 * Coding standards: Make sure you adhere to the coding standards
   eventually risen by [Flake8](http://flake8.pycqa.org/en/latest/):
-  `flake8 manage.py backend tests migrations` or `pdm run flake8`
+  `flake8 manage.py backend tests migrations` or `uv run flake8`
 * Prepare for translations: In case you have introduced new strings on
   the frontend, the translation source file must be updated this can
   be done via `make refresh-translatables` or `yarn build-locales`

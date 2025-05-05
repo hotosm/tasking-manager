@@ -17,7 +17,7 @@ $ `psql -d myDataBase -a -f scripts/database/duplicate-priority-area-cleanup.sql
 Now, migrating from version 3 to version 4 can be done through the
 build in alembic migrations by simply running:
 
-$ `flask db upgrade` or `pdm run upgrade`
+$ `flask db upgrade` or `uv run upgrade`
 
 Depending on the size of your database this might take a good while.
 
