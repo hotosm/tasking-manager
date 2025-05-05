@@ -25,7 +25,6 @@ from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectStatus
 from backend.models.postgis.statuses import (
     EncouragingEmailType,
-    MappingLevel,
     MappingNotAllowed,
     MappingPermission,
     TeamRoles,
