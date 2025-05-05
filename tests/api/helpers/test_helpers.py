@@ -130,9 +130,9 @@ async def get_or_create_beginner_level(db) -> MappingLevel:
     await db.execute(
         """
         INSERT INTO mapping_levels (
-            id, name, approvals_required, ordering
+            id, name, approvals_required, ordering, is_beginner
         )
-        VALUES (:id, :name, :approvals_required, :ordering)
+        VALUES (:id, :name, :approvals_required, :ordering, :is_beginner)
         ON CONFLICT (id) DO NOTHING
         """,
         {
@@ -140,6 +140,7 @@ async def get_or_create_beginner_level(db) -> MappingLevel:
             "name": "BEGINNER",
             "approvals_required": 0,
             "ordering": 1,
+            "is_beginner": True,
         },
     )
 
