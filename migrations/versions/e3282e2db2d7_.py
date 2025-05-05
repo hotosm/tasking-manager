@@ -5,6 +5,7 @@ Revises: 068674f06b0f
 Create Date: 2019-06-17 18:34:11.058440
 
 """
+
 import sqlalchemy as sa
 from alembic import op
 
@@ -25,7 +26,7 @@ def upgrade():
         sa.Column("name", sa.String(length=512), nullable=False),
         sa.Column("logo", sa.String(), nullable=True),
         sa.Column("url", sa.String(), nullable=True),
-        sa.PrimaryKeyConstraint("id")
+        sa.PrimaryKeyConstraint("id"),
         # ,
         # sa.UniqueConstraint("name"),
     )
