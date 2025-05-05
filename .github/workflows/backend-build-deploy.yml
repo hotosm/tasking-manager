@@ -16,7 +16,7 @@ env:
   # vars.INFRA_ENVIRONMENT is environment name here in case you have applied infrastructue with different environment name. Default is github.ref_name
 
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ vars.IMAGE_NAME || 'hotosm/tasking-manager-backend' }}
+  IMAGE_NAME: ${{ vars.IMAGE_NAME || 'hotosm/tasking-manager/backend' }}
   AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
   OIDC_ROLE_ARN: ${{ secrets.AWS_OIDC_ROLE_ARN }}
   ECS_CLUSTER: tasking-manager-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}-cluster
