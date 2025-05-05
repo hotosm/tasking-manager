@@ -1,4 +1,4 @@
-""" Add mapswipe group ID to partners table
+"""Add mapswipe group ID to partners table
 
 Revision ID: ecb6985693c0_
 Revises: 749a9ae35ce5
