@@ -70,12 +70,13 @@ class TestUserService:
 
     async def test_set_user_mapping_level(self):
         # Act
-        UserService.set_user_mapping_level("test", "ADVANCED", self.db)
+        await UserService.set_user_mapping_level(self.test_user.username, "ADVANCED", self.db)
 
         # Assert
-        user = await UserService.get_user_by_username(self.test_user.username, self.db)
-        assert user.level == "ADVANCED"
-        assert not user.level.is_beginner
+        level = await UserService.get_mapping_level(self.test_user.id, self.db)
+
+        assert level.name == "ADVANCED"
+        assert not level.is_beginner
 
     async def test_unknown_level_raise_error_when_setting_level(self):
         with pytest.raises(UserServiceError):

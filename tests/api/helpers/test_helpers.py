@@ -126,33 +126,45 @@ def get_canned_simplified_osm_user_details():
     return data
 
 
-async def get_or_create_beginner_level(db) -> MappingLevel:
-    await db.execute(
-        """
+async def get_or_create_levels(db) -> MappingLevel:
+    stmt = """
         INSERT INTO mapping_levels (
             id, name, approvals_required, ordering, is_beginner
         )
         VALUES (:id, :name, :approvals_required, :ordering, :is_beginner)
         ON CONFLICT (id) DO NOTHING
-        """,
-        {
-            "id": 1,
-            "name": "BEGINNER",
-            "approvals_required": 0,
-            "ordering": 1,
-            "is_beginner": True,
-        },
-    )
-
-    return 1
+    """
+    await db.execute(stmt, {
+        "id": 1,
+        "name": "BEGINNER",
+        "approvals_required": 0,
+        "ordering": 1,
+        "is_beginner": True,
+    })
+    await db.execute(stmt, {
+        "id": 2,
+        "name": "INTERMEDIATE",
+        "approvals_required": 0,
+        "ordering": 2,
+        "is_beginner": False,
+    })
+    await db.execute(stmt, {
+        "id": 3,
+        "name": "ADVANCED",
+        "approvals_required": 0,
+        "ordering": 3,
+        "is_beginner": False,
+    })
 
 
 async def return_canned_user(db, username=TEST_USERNAME, id=TEST_USER_ID) -> User:
     """Returns a canned user"""
+    await get_or_create_levels(db)
+
     test_user = User()
     test_user.username = username
     test_user.id = id
-    test_user.mapping_level = await get_or_create_beginner_level(db)
+    test_user.mapping_level = 1
     test_user.email_address = None
     test_user.role = 0
     test_user.tasks_mapped = 0

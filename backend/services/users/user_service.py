@@ -23,11 +23,12 @@ from backend.models.dtos.user_dto import (
     UserTaskDTOs,
 )
 from backend.models.postgis.interests import Interest, project_interests
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.message import MessageType
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.models.postgis.task import Task, TaskHistory
-from backend.models.postgis.user import MappingLevel, User, UserEmail, UserRole
+from backend.models.postgis.user import User, UserEmail, UserRole
 from backend.models.postgis.utils import timestamp
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
@@ -808,12 +809,9 @@ class UserService:
         :raises: UserServiceError
         """
         try:
-            requested_level = MappingLevel[level.upper()]
-        except KeyError:
-            raise UserServiceError(
-                "UnknownUserRole- "
-                + f"Unknown role {level} accepted values are BEGINNER, INTERMEDIATE, ADVANCED"
-            )
+            requested_level = await MappingLevelService.get_by_name(level, db)
+        except NotFound:
+            raise UserServiceError(f"UnknownUserRole- Unknown role {level}")
 
         user = await UserService.get_user_by_username(username, db)
         await User.set_mapping_level(user, requested_level, db)

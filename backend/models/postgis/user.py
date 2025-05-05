@@ -389,7 +389,7 @@ class User(Base):
 
     async def set_mapping_level(self, level: MappingLevel, db: Database):
         """Sets the supplied level on the user"""
-        self.mapping_level = level.value
+        self.mapping_level = level.id
 
         query = """
             UPDATE users
@@ -397,7 +397,7 @@ class User(Base):
             WHERE id = :user_id
         """
         await db.execute(
-            query, values={"user_id": self.id, "mapping_level": level.value}
+            query, values={"user_id": self.id, "mapping_level": level.id}
         )
 
     async def accept_license_terms(self, user_id, license_id: int, db: Database):

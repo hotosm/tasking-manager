@@ -3,7 +3,7 @@ import pytest
 from backend.models.postgis.user import UserRole
 from backend.services.users.user_service import UserService
 
-from tests.api.helpers.test_helpers import get_or_create_beginner_level
+from tests.api.helpers.test_helpers import get_or_create_levels
 
 
 @pytest.mark.anyio
@@ -12,11 +12,12 @@ class TestUser:
     async def setup_test_data(self, db_connection_fixture, request):
         """Setup test user asynchronously before each test."""
         assert db_connection_fixture is not None, "Database connection is not available"
+        await get_or_create_levels(db_connection_fixture)
 
         test_user_data = {
             "id": 12,
             "role": UserRole.MAPPER.value,
-            "mapping_level": await get_or_create_beginner_level(db_connection_fixture),
+            "mapping_level": 1,
             "username": "Thinkwhere Test",
             "email_address": "thinkwheretest@test.com",
             "tasks_mapped": 0,
