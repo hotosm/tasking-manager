@@ -272,8 +272,8 @@ In order to send email correctly, set these variables as well:
 
 * Install project dependencies:
   * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
-  * ```pip install --upgrade pdm```
-  * ```pdm install```
+  * ```pip install --upgrade uv```
+  * ```uv sync```
 
 #### Tests
 
@@ -285,7 +285,7 @@ python3 -m unittest discover tests/backend
 ```
 or
 ```
-pdm run test
+uv run test
 ```
 
 #### Export translatable strings to en.json source file
@@ -329,7 +329,7 @@ flask db upgrade
 ```
 or
 ```
-pdm run upgrade
+uv run upgrade
 ```
 
 #### Set permissions to create projects
@@ -348,13 +348,13 @@ architecture. Install the backend dependencies, and run the server:
 
 ```bash
 # Install dependencies
-pdm install
+uv sync
 
 # Run (Option 1)
-pdm run start
+uv run start
 
 # Run (Option 2)
-pdm run flask run --debug --reload
+uv run flask run --debug --reload
 ```
 
 You can access the API documentation on

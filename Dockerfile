@@ -24,9 +24,9 @@ RUN useradd --uid 9000 --create-home --home /home/appuser --shell /bin/false app
 FROM base AS extract-deps
 RUN pip install --no-cache-dir --upgrade pip
 WORKDIR /opt/python
-COPY pyproject.toml pdm.lock README.md /opt/python/
-RUN pip install --no-cache-dir pdm==2.8.0
-RUN pdm export --prod --without-hashes > requirements.txt
+COPY pyproject.toml uv.lock README.md /opt/python/
+RUN pip install --no-cache-dir uv==0.7.2
+RUN uv export --no-dev > requirements.txt
 
 
 
