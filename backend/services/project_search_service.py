@@ -763,7 +763,9 @@ class ProjectSearchService:
                 perm_condition,
                 perm_params,
             ) = await ProjectSearchService.filter_by_user_permission(
-                user, "mapping_permission", db,
+                user,
+                "mapping_permission",
+                db,
             )
             base_query += f" AND ({perm_condition})"
             params.update(perm_params)
@@ -785,7 +787,9 @@ class ProjectSearchService:
                 perm_condition,
                 perm_params,
             ) = await ProjectSearchService.filter_by_user_permission(
-                user, "validation_permission", db,
+                user,
+                "validation_permission",
+                db,
             )
             base_query += f" AND ({perm_condition})"
             params.update(perm_params)

@@ -396,9 +396,7 @@ class User(Base):
             SET mapping_level = :mapping_level
             WHERE id = :user_id
         """
-        await db.execute(
-            query, values={"user_id": self.id, "mapping_level": level.id}
-        )
+        await db.execute(query, values={"user_id": self.id, "mapping_level": level.id})
 
     async def accept_license_terms(self, user_id, license_id: int, db: Database):
         """Associate the user in scope with the supplied license"""

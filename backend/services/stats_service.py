@@ -409,7 +409,9 @@ class StatsService:
                 dict(
                     username=row["username"],
                     name=row["name"],
-                    mapping_level=(await MappingLevel.get_by_id(row["mapping_level"], db)).name,
+                    mapping_level=(
+                        await MappingLevel.get_by_id(row["mapping_level"], db)
+                    ).name,
                     picture_url=row["picture_url"],
                     mapped=row["mapped"],
                     bad_imagery=row["bad_imagery"],
@@ -619,27 +621,21 @@ class StatsService:
 
         # Beginner count
         beginner_count_query = select(func.count()).select_from(
-            base_query.filter(
-                User.mapping_level == 1
-            ).subquery()
+            base_query.filter(User.mapping_level == 1).subquery()
         )
         result = await db.execute(beginner_count_query)
         stats_dto.beginner = result
 
         # Intermediate count
         intermediate_count_query = select(func.count()).select_from(
-            base_query.filter(
-                User.mapping_level == 2
-            ).subquery()
+            base_query.filter(User.mapping_level == 2).subquery()
         )
         result = await db.execute(intermediate_count_query)
         stats_dto.intermediate = result
 
         # Advanced count
         advanced_count_query = select(func.count()).select_from(
-            base_query.filter(
-                User.mapping_level == 3
-            ).subquery()
+            base_query.filter(User.mapping_level == 3).subquery()
         )
         result = await db.execute(advanced_count_query)
         stats_dto.advanced = result

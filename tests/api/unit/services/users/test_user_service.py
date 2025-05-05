@@ -70,7 +70,9 @@ class TestUserService:
 
     async def test_set_user_mapping_level(self):
         # Act
-        await UserService.set_user_mapping_level(self.test_user.username, "ADVANCED", self.db)
+        await UserService.set_user_mapping_level(
+            self.test_user.username, "ADVANCED", self.db
+        )
 
         # Assert
         level = await UserService.get_mapping_level(self.test_user.id, self.db)

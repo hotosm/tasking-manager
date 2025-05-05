@@ -4,6 +4,7 @@ Revises: 9fc540fc84f8
 Create Date: 2025-04-14 20:28:00.000000
 
 """
+
 import sqlalchemy as sa
 from alembic import op
 
@@ -26,7 +27,13 @@ def upgrade():
         ),
         sa.Column("color", sa.String(), nullable=True),
         sa.Column("ordering", sa.Integer(), nullable=False),
-        sa.Column("is_beginner", sa.Boolean(), nullable=False, default=False, server_default="false"),
+        sa.Column(
+            "is_beginner",
+            sa.Boolean(),
+            nullable=False,
+            default=False,
+            server_default="false",
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("ordering"),
     )
@@ -34,7 +41,9 @@ def upgrade():
     # Create objects for the existing mapping levels
     conn = op.get_bind()
     conn.execute(
-        sa.text("insert into mapping_levels (name, ordering, is_beginner) values('BEGINNER', 1, true);")
+        sa.text(
+            "insert into mapping_levels (name, ordering, is_beginner) values('BEGINNER', 1, true);"
+        )
     )
     conn.execute(
         sa.text(

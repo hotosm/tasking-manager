@@ -254,19 +254,22 @@ class TestStatsService:
         # Arrange
         project, user, project_id = await create_canned_project(self.db, "test project")
 
-        await self.db.execute("""
+        await self.db.execute(
+            """
         INSERT INTO task_history (project_id, task_id, action, action_text, action_date, user_id)
         VALUES (:project_id, :task_id, :action, :action_text, current_timestamp, :user_id)
-        """, {
-            "project_id": project_id,
-            "task_id": 1,
-            "action": "STATE_CHANGE",
-            "action_text": "state change",
-            "user_id": user.id,
-        })
+        """,
+            {
+                "project_id": project_id,
+                "task_id": 1,
+                "action": "STATE_CHANGE",
+                "action_text": "state change",
+                "user_id": user.id,
+            },
+        )
 
         # Act
         contributions = await StatsService.get_user_contributions(project_id, self.db)
 
         # Assert
-        assert contributions.user_contributions[0].mapping_level == 'BEGINNER'
+        assert contributions.user_contributions[0].mapping_level == "BEGINNER"
