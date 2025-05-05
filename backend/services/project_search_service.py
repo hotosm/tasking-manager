@@ -21,7 +21,6 @@ from backend.models.dtos.project_dto import (
 )
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.statuses import (
-    MappingLevel,
     MappingPermission,
     MappingTypes,
     ProjectDifficulty,

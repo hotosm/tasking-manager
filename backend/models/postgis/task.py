@@ -39,7 +39,8 @@ from backend.models.dtos.project_dto import (
 )
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from backend.models.dtos.validator_dto import MappedTasks, MappedTasksByUser
-from backend.models.postgis.statuses import MappingLevel, TaskStatus
+from backend.models.postgis.mapping_level import MappingLevel
+from backend.models.postgis.statuses import TaskStatus
 from backend.models.postgis.task_annotation import TaskAnnotation
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import (
@@ -1533,11 +1534,7 @@ class Task(Base):
             tasks_mapped = json.loads(tasks_mapped_str) if tasks_mapped_str else []
 
             mapping_level_value = row["mapping_level"]
-            mapping_level_name = (
-                MappingLevel(mapping_level_value).name
-                if mapping_level_value is not None
-                else None
-            )
+            mapping_level_name = await MappingLevel.get_by_name(row["mapping_level"], db).name
 
             user_mapped = MappedTasksByUser(
                 username=row["username"],

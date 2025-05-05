@@ -22,9 +22,10 @@ from backend.models.dtos.stats_dto import (
     UserStatsDTO,
 )
 from backend.models.postgis.campaign import Campaign, campaign_projects
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project
-from backend.models.postgis.statuses import MappingLevel, TaskStatus, UserGender
+from backend.models.postgis.statuses import TaskStatus, UserGender
 from backend.models.postgis.task import Task, TaskAction, User
 from backend.models.postgis.utils import timestamp  # noqa: F401
 from backend.services.project_search_service import ProjectSearchService
@@ -408,7 +409,7 @@ class StatsService:
                 dict(
                     username=row["username"],
                     name=row["name"],
-                    mapping_level=MappingLevel(row["mapping_level"]).name,
+                    mapping_level=await MappingLevel.get_by_id(row["mapping_level"], db).name,
                     picture_url=row["picture_url"],
                     mapped=row["mapped"],
                     bad_imagery=row["bad_imagery"],
@@ -619,7 +620,7 @@ class StatsService:
         # Beginner count
         beginner_count_query = select(func.count()).select_from(
             base_query.filter(
-                User.mapping_level == MappingLevel.BEGINNER.value
+                User.mapping_level == 1
             ).subquery()
         )
         result = await db.execute(beginner_count_query)
@@ -628,7 +629,7 @@ class StatsService:
         # Intermediate count
         intermediate_count_query = select(func.count()).select_from(
             base_query.filter(
-                User.mapping_level == MappingLevel.INTERMEDIATE.value
+                User.mapping_level == 2
             ).subquery()
         )
         result = await db.execute(intermediate_count_query)
@@ -637,7 +638,7 @@ class StatsService:
         # Advanced count
         advanced_count_query = select(func.count()).select_from(
             base_query.filter(
-                User.mapping_level == MappingLevel.ADVANCED.value
+                User.mapping_level == 3
             ).subquery()
         )
         result = await db.execute(advanced_count_query)

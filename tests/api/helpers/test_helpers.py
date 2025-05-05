@@ -23,7 +23,6 @@ from backend.models.postgis.notification import Notification
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectTeams
 from backend.models.postgis.statuses import (
-    MappingLevel,
     OrganisationType,
     TaskStatus,
     TeamJoinMethod,

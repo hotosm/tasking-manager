@@ -38,14 +38,6 @@ class TaskStatus(Enum):
     SPLIT = 7  # Task has been split
 
 
-class MappingLevel(Enum):
-    """The mapping level the mapper has achieved"""
-
-    BEGINNER = 1
-    INTERMEDIATE = 2
-    ADVANCED = 3
-
-
 class ProjectDifficulty(Enum):
     EASY = 1
     MODERATE = 2

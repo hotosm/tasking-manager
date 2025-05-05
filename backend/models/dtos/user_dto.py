@@ -7,7 +7,7 @@ from pydantic.functional_validators import field_validator
 from backend.models.dtos.interests_dto import InterestDTO
 from backend.models.dtos.mapping_dto import TaskDTO
 from backend.models.dtos.stats_dto import Pagination
-from backend.models.postgis.statuses import MappingLevel, UserRole
+from backend.models.postgis.statuses import UserRole
 
 
 def is_known_role(value):
@@ -29,7 +29,7 @@ class UserDTO(BaseModel):
     id: Optional[int] = None
     username: Optional[str] = None
     role: Optional[str] = None
-    mapping_level: Optional[str] = Field(None, alias="mappingLevel")
+    mapping_level: Optional[int] = Field(None, alias="mappingLevel")
     projects_mapped: Optional[int] = Field(None, alias="projectsMapped")
     email_address: Optional[str] = Field(None, alias="emailAddress")
     is_email_verified: Optional[bool] = Field(
