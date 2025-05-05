@@ -35,6 +35,7 @@ from backend.services.messaging.template_service import (
     template_var_replacing,
 )
 from backend.services.users.osm_service import OSMService, OSMServiceError
+from backend.services.mapping_levels import MappingLevelService
 
 settings = Settings()
 
@@ -50,8 +51,10 @@ class UserService:
     @staticmethod
     async def get_user_by_id(user_id: int, db: Database) -> User:
         user = await User.get_by_id(user_id, db)
+
         if user is None:
             raise NotFound(sub_code="USER_NOT_FOUND", user_id=user_id)
+
         return user
 
     @staticmethod
@@ -578,7 +581,7 @@ class UserService:
         """Gets mapping level user is at"""
         user = await UserService.get_user_by_id(user_id, db)
 
-        return user.level
+        return await MappingLevelService.get_by_id(user.mapping_level, db)
 
     @staticmethod
     def is_user_validator(user_id: int) -> bool:
