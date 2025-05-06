@@ -92,7 +92,10 @@ class TestUserService:
         )
 
         # Assert
-        assert registered_user.mapping_level == (await MappingLevel.get_by_name("INTERMEDIATE", self.db)).id
+        assert (
+            registered_user.mapping_level
+            == (await MappingLevel.get_by_name("INTERMEDIATE", self.db)).id
+        )
 
     async def test_register_user_beginner(self):
         # Act
@@ -101,7 +104,10 @@ class TestUserService:
         )
 
         # Assert
-        assert registered_user.mapping_level == (await MappingLevel.get_by_name("BEGINNER", self.db)).id
+        assert (
+            registered_user.mapping_level
+            == (await MappingLevel.get_by_name("BEGINNER", self.db)).id
+        )
 
     async def test_check_and_update_mapper_level(self):
         # Act

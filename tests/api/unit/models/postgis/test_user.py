@@ -101,7 +101,7 @@ class TestUser:
         query = UserSearchQuery(page=1, mappingLevel="BEGINNER")
         users = await UserService.get_all_users(query, self.db)
 
-        assert users.users[0].mapping_level == 'BEGINNER'
+        assert users.users[0].mapping_level == "BEGINNER"
 
         query = UserSearchQuery(page=1, mappingLevel="ADVANCED")
         users = await UserService.get_all_users(query, self.db)

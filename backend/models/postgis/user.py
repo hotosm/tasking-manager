@@ -217,7 +217,9 @@ class User(Base):
         for result in results:
             listed_user = ListedUser()
             listed_user.id = result["id"]
-            listed_user.mapping_level = (await MappingLevel.get_by_id(result["mapping_level"], db)).name
+            listed_user.mapping_level = (
+                await MappingLevel.get_by_id(result["mapping_level"], db)
+            ).name
             listed_user.username = result["username"]
             listed_user.picture_url = result["picture_url"]
             listed_user.role = UserRole(result["role"]).name
