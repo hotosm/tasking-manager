@@ -29,7 +29,7 @@ class UserDTO(BaseModel):
     id: Optional[int] = None
     username: Optional[str] = None
     role: Optional[str] = None
-    mapping_level: Optional[int] = Field(None, alias="mappingLevel")
+    mapping_level: Optional[str] = Field(None, alias="mappingLevel")
     projects_mapped: Optional[int] = Field(None, alias="projectsMapped")
     email_address: Optional[str] = Field(None, alias="emailAddress")
     is_email_verified: Optional[bool] = Field(
@@ -65,22 +65,6 @@ class UserDTO(BaseModel):
         choices=("MALE", "FEMALE", "SELF_DESCRIBE", "PREFER_NOT"),
     )
     self_description_gender: Optional[str] = Field(None, alias="selfDescriptionGender")
-
-    @field_validator("mapping_level", mode="before")
-    def is_known_mapping_level(value):
-        """Validates that supplied mapping level is known value"""
-        if value.upper() == "ALL":
-            return True
-
-        try:
-            value = value.split(",")
-            for level in value:
-                MappingLevel[level.upper()]
-        except KeyError:
-            raise ValueError(
-                f"Unknown mappingLevel: {value} Valid values are {MappingLevel.BEGINNER.name}, "
-                f"{MappingLevel.INTERMEDIATE.name}, {MappingLevel.ADVANCED.name}, ALL"
-            )
 
     def validate_self_description(self, data, value):
         if (
