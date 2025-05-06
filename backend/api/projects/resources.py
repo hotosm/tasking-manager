@@ -6,7 +6,7 @@ from typing import Optional
 import geojson
 from databases import Database
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from loguru import logger
 
 from backend.db import get_db
@@ -54,7 +54,7 @@ async def get_project(
     request: Request,
     project_id: int,
     as_file: str = "False",
-    abbreviated: bool = False,
+    abbreviated: str = "False",
     db: Database = Depends(get_db),
     user: Optional[AuthUserDTO] = Depends(login_required_optional),
 ):
@@ -118,11 +118,14 @@ async def get_project(
         if project_dto:
             if as_file:
                 project_dto = json.dumps(project_dto, default=str)
-                return FileResponse(
-                    geojson.dumps(project_dto).encode("utf-8"),
+                geojson_str = geojson.dumps(project_dto)
+                buffer = io.BytesIO(geojson_str.encode("utf-8"))
+                return StreamingResponse(
+                    buffer,
                     media_type="application/json",
-                    content_disposition_type="attachment",
-                    filename=f"project_{str(project_id)}.json",
+                    headers={
+                        "Content-Disposition": "attachment; filename=project.json"
+                    },
                 )
             return project_dto
 

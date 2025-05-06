@@ -199,8 +199,7 @@ class MapswipeService:
         filtered_stats_dto.to_date = to_date
 
         filtered_stats = json.loads(resp_body)["data"]
-
-        if filtered_stats["userGroup"] is None:
+        if filtered_stats is None or filtered_stats["userGroup"] is None:
             raise Conflict(
                 "INVALID_MAPSWIPE_GROUP_ID",
                 "The mapswipe group ID linked to this partner is invalid. Please contact an admin.",
