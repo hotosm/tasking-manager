@@ -182,7 +182,8 @@ class User(Base):
         if query.mapping_level:
             mapping_levels = query.mapping_level.split(",")
             mapping_level_array = [
-                MappingLevel[mapping_level].value for mapping_level in mapping_levels
+                (await MappingLevel.get_by_name(mapping_level, db)).id
+                for mapping_level in mapping_levels
             ]
             filters.append("mapping_level = ANY(:mapping_levels)")
             params["mapping_levels"] = tuple(mapping_level_array)
@@ -209,7 +210,6 @@ class User(Base):
             base_params["offset"] = (query.page - 1) * query.per_page
 
             results = await db.fetch_all(base_query, base_params)
-
         else:
             results = await db.fetch_all(base_query, params)
 
@@ -217,7 +217,7 @@ class User(Base):
         for result in results:
             listed_user = ListedUser()
             listed_user.id = result["id"]
-            listed_user.mapping_level = MappingLevel(result["mapping_level"]).name
+            listed_user.mapping_level = (await MappingLevel.get_by_id(result["mapping_level"], db)).name
             listed_user.username = result["username"]
             listed_user.picture_url = result["picture_url"]
             listed_user.role = UserRole(result["role"]).name

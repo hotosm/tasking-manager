@@ -2,6 +2,7 @@ import pytest
 
 from backend.models.postgis.user import UserRole
 from backend.services.users.user_service import UserService
+from backend.models.dtos.user_dto import UserSearchQuery
 
 from tests.api.helpers.test_helpers import get_or_create_levels
 
@@ -95,3 +96,14 @@ class TestUser:
         result = await self.db.fetch_one(select_query, {"id": self.test_user_id})
 
         assert result["picture_url"] == test_picture_url
+
+    async def test_get_all_users(self):
+        query = UserSearchQuery(page=1, mappingLevel="BEGINNER")
+        users = await UserService.get_all_users(query, self.db)
+
+        assert users.users[0].mapping_level == 'BEGINNER'
+
+        query = UserSearchQuery(page=1, mappingLevel="ADVANCED")
+        users = await UserService.get_all_users(query, self.db)
+
+        assert len(users.users) == 0
