@@ -28,17 +28,25 @@ class MappingLevel(Base):
         query = "SELECT * FROM mapping_levels WHERE id = :id"
         result = await db.fetch_one(query, values={"id": id})
 
-        if result is None:
-            return None
-
-        return MappingLevel(**result)
+        return MappingLevel(**result) if result is not None else None
 
     @staticmethod
     async def get_by_name(name: str, db: Database):
         query = "SELECT * FROM mapping_levels WHERE name = :name"
         result = await db.fetch_one(query, values={"name": name})
 
-        if result is None:
-            return None
+        return MappingLevel(**result) if result is not None else None
 
-        return MappingLevel(**result)
+    @staticmethod
+    async def get_beginner_level(db: Database):
+        query = "SELECT * FROM mapping_levels WHERE is_beginner"
+        result = await db.fetch_one(query)
+
+        return MappingLevel(**result) if result is not None else None
+
+    @staticmethod
+    async def get_max_level(db: Database):
+        query = "SELECT * FROM mapping_levels ORDER BY ordering DESC LIMIT 1"
+        result = await db.fetch_one(query)
+
+        return MappingLevel(**result) if result is not None else None

@@ -6,6 +6,7 @@ from backend.services.users.user_service import (
     UserServiceError,
 )
 from tests.api.helpers.test_helpers import create_canned_user
+from backend.models.postgis.mapping_level import MappingLevel
 
 
 @pytest.mark.anyio
@@ -83,3 +84,25 @@ class TestUserService:
     async def test_unknown_level_raise_error_when_setting_level(self):
         with pytest.raises(UserServiceError):
             await UserService.set_user_mapping_level("test", "TEST", self.db)
+
+    async def test_register_user_intermediate(self):
+        # Act
+        registered_user = await UserService.register_user(
+            1, "foo", 500, None, "foo@example.com", self.db
+        )
+
+        # Assert
+        assert registered_user.mapping_level == (await MappingLevel.get_by_name("INTERMEDIATE", self.db)).id
+
+    async def test_register_user_beginner(self):
+        # Act
+        registered_user = await UserService.register_user(
+            1, "foo", 0, None, "foo@example.com", self.db
+        )
+
+        # Assert
+        assert registered_user.mapping_level == (await MappingLevel.get_by_name("BEGINNER", self.db)).id
+
+    async def test_check_and_update_mapper_level(self):
+        # Act
+        await UserService.check_and_update_mapper_level(self.test_user.id, self.db)
