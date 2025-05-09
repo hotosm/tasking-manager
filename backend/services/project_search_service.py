@@ -242,6 +242,40 @@ class ProjectSearchService:
 
         return [row["total"] for row in result]
 
+    @staticmethod
+    async def get_managed_projects(user_id, db):
+        org_projects_query = """
+        SELECT p.id AS id
+        FROM projects p
+        JOIN organisations o ON o.id = p.organisation_id
+        JOIN organisation_managers om ON om.organisation_id = o.id
+        WHERE om.user_id = :user_id
+        """
+        orgs_projects_ids = await db.fetch_all(org_projects_query, {"user_id": user_id})
+
+        team_projects_query = """
+        SELECT pt.project_id AS id
+        FROM project_teams pt
+        JOIN team_members tm ON tm.team_id = pt.team_id
+        WHERE tm.user_id = :user_id
+        AND pt.role = :project_manager_role
+        AND tm.active = TRUE
+        """
+        team_project_ids = await db.fetch_all(
+            team_projects_query,
+            {
+                "user_id": user_id,
+                "project_manager_role": TeamRoles.PROJECT_MANAGER.value,
+            },
+        )
+        project_ids = tuple(
+            set(
+                [row["id"] for row in orgs_projects_ids]
+                + [row["id"] for row in team_project_ids]
+            )
+        )
+        return project_ids
+
     def csv_cache_key_builder(func, *args, **kwargs):
         args_without_db = args[:-2]
         return f"{func.__name__}:{args_without_db}:{kwargs}"
@@ -434,9 +468,54 @@ class ProjectSearchService:
             statuses = [
                 ProjectStatus[status].value for status in search_dto.project_statuses
             ]
-            filters.append("p.status = ANY(:statuses)")
-            params["statuses"] = tuple(statuses)
+            if not user:
+                # Remove DRAFT for non-logged-in users
+                statuses_without_draft = [
+                    s for s in statuses if s != ProjectStatus.DRAFT.value
+                ]
+                if statuses_without_draft:
+                    filters.append("p.status = ANY(:statuses_without_draft)")
+                    params["statuses_without_draft"] = tuple(statuses_without_draft)
+                else:
+                    # If only DRAFT was specified, show no projects
+                    filters.append("FALSE")
+            elif user.role == UserRole.ADMIN.value:
+                # Admins see all projects with specified statuses
+                filters.append("p.status = ANY(:statuses)")
+                params["statuses"] = tuple(statuses)
+            else:
+                draft_status = ProjectStatus.DRAFT.value
+                if draft_status in statuses:
+                    managed_projects = await ProjectSearchService.get_managed_projects(
+                        user.id, db
+                    )
+                    if managed_projects:
+                        # Allow all statuses, but restrict DRAFT to managed projects only.
+                        filters.append(
+                            (
+                                "p.status = ANY(:statuses) "
+                                "AND (p.status != :draft_status "
+                                "OR p.id = ANY(:managed_projects) "
+                                "OR p.author_id = :author_id)"
+                            )
+                        )
+                        params["statuses"] = tuple(statuses)
+                        params["draft_status"] = draft_status
+                        params["managed_projects"] = managed_projects
+                        params["author_id"] = user.id
+                    else:
+                        # If no managed projects, exclude DRAFT
+                        filters.append(
+                            "p.status = ANY(:statuses) AND p.status != :draft_status"
+                        )
+                        params["statuses"] = tuple(statuses)
+                        params["draft_status"] = draft_status
+                else:
+                    # If DRAFT not in statuses, apply filter normally
+                    filters.append("p.status = ANY(:statuses)")
+                    params["statuses"] = tuple(statuses)
         else:
+            # Default to published if no statuses and no created_by
             if not search_dto.created_by:
                 filters.append("p.status = :published_status")
                 params["published_status"] = ProjectStatus.PUBLISHED.value
@@ -600,41 +679,7 @@ class ProjectSearchService:
             )
 
         if search_dto.managed_by and user.role != UserRole.ADMIN.value:
-            # Fetch project IDs for user's organisations
-            org_projects_query = """
-            SELECT p.id AS id
-            FROM projects p
-            JOIN organisations o ON o.id = p.organisation_id
-            JOIN organisation_managers om ON om.organisation_id = o.id
-            WHERE om.user_id = :user_id
-            """
-            orgs_projects_ids = await db.fetch_all(
-                org_projects_query, {"user_id": user.id}
-            )
-
-            # Fetch project IDs for user's teams
-            team_projects_query = """
-            SELECT pt.project_id AS id
-            FROM project_teams pt
-            JOIN team_members tm ON tm.team_id = pt.team_id
-            WHERE tm.user_id = :user_id
-            AND pt.role = :project_manager_role
-            AND tm.active = TRUE
-            """
-            team_project_ids = await db.fetch_all(
-                team_projects_query,
-                {
-                    "user_id": user.id,
-                    "project_manager_role": TeamRoles.PROJECT_MANAGER.value,
-                },
-            )
-            # Combine and flatten the project IDs from both queries
-            project_ids = tuple(
-                set(
-                    [row["id"] for row in orgs_projects_ids]
-                    + [row["id"] for row in team_project_ids]
-                )
-            )
+            project_ids = await ProjectSearchService.get_managed_projects(user.id, db)
             if project_ids:
                 filters.append("p.id = ANY(:managed_projects)")
                 params["managed_projects"] = project_ids
@@ -680,13 +725,10 @@ class ProjectSearchService:
             sql_query = base_query + " AND " + " AND ".join(filters)
         else:
             sql_query = base_query
-
         sql_query += order_by_clause
-
         all_results = await db.fetch_all(sql_query, values=params)
         if as_csv:
             return all_results
-
         page = search_dto.page
         per_page = 14
         offset = (page - 1) * per_page
