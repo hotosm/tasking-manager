@@ -43,9 +43,11 @@ services:
       - ./backend:/usr/src/app/backend
       - ./tests:/usr/src/app/tests
       - ./migrations:/usr/src/app/migrations/
+    ports:
+      - 5678:5678 #DebugPy
     restart: unless-stopped
     healthcheck:
-      test: curl --fail http://localhost:5000 || exit 1
+      test: curl --fail http://localhost:5000/api/docs
       interval: 10s
       retries: 5
       start_period: 10s
@@ -76,7 +78,10 @@ services:
     env_file:
       - tasking-manager.env
     volumes:
-      - .:/usr/src/app/
+      - ./pyproject.toml:/usr/src/app/pyproject.toml
+      - ./uv.lock:/usr/src/app/uv.lock
+      - ./backend:/usr/src/app/backend
+      - ./tests:/usr/src/app/tests
       - ./migrations:/usr/src/app/migrations/
     deploy:
       replicas: ${API_REPLICAS:-1}

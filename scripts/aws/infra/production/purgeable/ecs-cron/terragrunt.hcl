@@ -96,11 +96,11 @@ inputs = {
     local.common_ecs_envs.locals.envs
   )
 
-    # Override image to use "main" image tag (default is environment variable eg. develop)
+  # Override image to use "main" image tag (default is environment variable eg. develop)
   container_settings = {
     app_port         = 80
     cpu_architecture = "X86_64"
-    image_url        = "ghcr.io/hotosm/tasking-manager-backend"
+    image_url        = "ghcr.io/hotosm/tasking-manager/backend"
     image_tag        = "main"
     service_name     = format("%s-%s-%s-%s", local.environment_vars.locals.application, local.environment_vars.locals.team, local.environment_vars.locals.environment, "cron")
   }
