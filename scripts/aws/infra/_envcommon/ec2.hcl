@@ -27,7 +27,7 @@ locals {
 
   # Expose the base source URL so different versions of the module can be deployed in different environments. This will
   # be used to construct the terraform block in the child terragrunt configurations.
-  base_source_url = "git::https://github.com/hotosm/terraform-aws-ecs/"
+  base_source_url = "git::https://github.com/hotosm/terraform-aws-ec2/"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -38,36 +38,9 @@ locals {
 # Defaults,  overridden by env.hcl
 
 inputs = {
-  service_name = format("%s-%s-%s-%s", local.application, local.team, local.environment, "backend")
-
-  log_configuration = {
-    logdriver = "awslogs"
-    options = {
-      awslogs-group         = format("%s-%s-%s-%s", local.application, local.team, local.environment, "fastapi")
-      awslogs-region        = local.environment_vars.locals.aws_region
-      awslogs-stream-prefix = "api"
-    }
-  }
-
-  efs_settings = {
-    file_system_id     = ""
-    access_point_id    = ""
-    root_directory     = "/"
-    transit_encryption = "ENABLED"
-    iam_authz          = "DISABLED"
-  }
-
-  container_settings = {
-    app_port         = 80
-    cpu_architecture = "X86_64"
-    image_url        = "ghcr.io/hotosm/tasking-manager/backend"
-    image_tag        = local.environment
-    service_name     = format("%s-%s-%s-%s", local.application, local.team, local.environment, "fastapi")
-  }
-
-  ## Default tested resources needed for fastapi container. Override using ../<environment>/purgeable/ecs/terragrunt.hcl
-  container_capacity = {
-    cpu       = 2048
-    memory_mb = 4096
+  project_meta = {
+    name        = local.environment_vars.locals.project
+    environment = local.environment_vars.locals.environment
+    team        = local.environment_vars.locals.team
   }
 }

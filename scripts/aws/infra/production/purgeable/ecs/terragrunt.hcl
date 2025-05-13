@@ -105,7 +105,7 @@ inputs = {
   container_settings = {
     app_port         = 80
     cpu_architecture = "X86_64"
-    image_url        = "ghcr.io/hotosm/tasking-manager-backend"
+    image_url        = "ghcr.io/hotosm/tasking-manager/backend"
     image_tag        = "main"
     service_name     = format("%s-%s-%s-%s", local.environment_vars.locals.application, local.environment_vars.locals.team, local.environment_vars.locals.environment, "fastapi")
   }
@@ -156,13 +156,13 @@ inputs = {
     scale_up_cooldown   = 60
     scale_down_cooldown = 180
     scale_up_steps = [
-      { lower_bound = 0, upper_bound = 100, adjustment = 1 },
-      { lower_bound = 100, upper_bound = 300, adjustment = 2 },
-      { lower_bound = 300, upper_bound = null, adjustment = 3 }
+      { lower_bound = 0, upper_bound = 300, adjustment = 1 },
+      { lower_bound = 300, upper_bound = 900, adjustment = 2 },
+      { lower_bound = 900, upper_bound = null, adjustment = 3 }
     ]
     scale_down_steps = [
-      { lower_bound = null, upper_bound = -20, adjustment = -2 },
-      { lower_bound = -20, upper_bound = 0, adjustment = -1 }
+      { lower_bound = null, upper_bound = -200, adjustment = -2 },
+      { lower_bound = -200, upper_bound = -100, adjustment = -1 }
     ]
   }
 }
