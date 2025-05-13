@@ -31,6 +31,20 @@ class MappingLevel(Base):
         return MappingLevel(**result) if result is not None else None
 
     @staticmethod
+    async def get_all(db: Database):
+        """
+        Returns all mapping levels ordered.
+        :param db: Database connection
+        :return: Array of MappingLevel
+        """
+        query = "SELECT * FROM mapping_levels ORDER BY ordering ASC"
+        result = await db.fetch_all(query)
+
+        return [
+            MappingLevel(**row) for row in result
+        ]
+
+    @staticmethod
     async def get_by_name(name: str, db: Database):
         query = "SELECT * FROM mapping_levels WHERE name = :name"
         result = await db.fetch_one(query, values={"name": name})

@@ -20,6 +20,7 @@ from backend.models.dtos.stats_dto import (
     TaskStatusDTO,
     UserContribution,
     UserStatsDTO,
+    LevelStats,
 )
 from backend.models.postgis.campaign import Campaign, campaign_projects
 from backend.models.postgis.mapping_level import MappingLevel
@@ -619,26 +620,16 @@ class StatsService:
         result = await db.execute(total_count_query)
         stats_dto.total = result
 
-        # Beginner count
-        beginner_count_query = select(func.count()).select_from(
-            base_query.filter(User.mapping_level == 1).subquery()
-        )
-        result = await db.execute(beginner_count_query)
-        stats_dto.beginner = result
+        by_level = []
 
-        # Intermediate count
-        intermediate_count_query = select(func.count()).select_from(
-            base_query.filter(User.mapping_level == 2).subquery()
-        )
-        result = await db.execute(intermediate_count_query)
-        stats_dto.intermediate = result
+        for level in await MappingLevel.get_all(db):
+            query = select(func.count()).select_from(
+                base_query.filter(User.mapping_level == level.id).subquery()
+            )
+            result = await db.execute(query)
+            by_level.append(LevelStats(name=level.name, count=result))
 
-        # Advanced count
-        advanced_count_query = select(func.count()).select_from(
-            base_query.filter(User.mapping_level == 3).subquery()
-        )
-        result = await db.execute(advanced_count_query)
-        stats_dto.advanced = result
+        stats_dto.by_level = by_level
 
         # Contributed count (those with projects mapped)
         contributed_count_query = select(func.count()).select_from(
