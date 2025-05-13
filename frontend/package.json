@@ -4,7 +4,7 @@
   "license": "BSD-2-Clause",
   "private": false,
   "dependencies": {
-    "@hotosm/id": "^2.30.2",
+    "@hotosm/id": "^2.33.0",
     "@hotosm/iso-countries-languages": "^1.1.2",
     "@hotosm/underpass-ui": "^0.0.4",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
@@ -83,9 +83,9 @@
   "scripts": {
     "build-locales": "combine-messages -i './src/**/messages.js' -o './src/locales/en.json'",
     "copy-static": "bash -c \"mkdir -p public/static/rapid; if ! (test -a public/static/rapid/rapid.js); then cp -R node_modules/@rapideditor/rapid/dist/* public/static/rapid; fi\"",
-    "copy-id-static": "bash -c \"mkdir -p public/static/id; if ! (test -a public/static/id/data); then cp -R node_modules/@hotosm/id/dist/data public/static/id && cp -R node_modules/@hotosm/id/dist/img public/static/id && cp -R node_modules/@hotosm/id/dist/locales public/static/id; fi;\"",
+    "copy-id-static": "bash -c \"mkdir -p public/static/id; if ! (test -a public/static/id/data); then cp -R node_modules/@hotosm/id/dist/* public/static/id; fi;\"",
     "update-static": "bash -c \"mkdir -p public/static/rapid; cp -R node_modules/@rapideditor/rapid/dist/* public/static/rapid;\"",
-    "update-id-static": "bash -c \"mkdir -p public/static/id; cp -R node_modules/@hotosm/id/dist/data public/static/id && cp -R node_modules/@hotosm/id/dist/img public/static/id && cp -R node_modules/@hotosm/id/dist/locales public/static/id;\"",
+    "update-id-static": "bash -c \"mkdir -p public/static/id; cp -R node_modules/@hotosm/id/dist/* public/static/id;\"",
     "patch-rapid": "bash -c \"cp patch/rapid-imagery.min.json public/static/rapid/data/imagery.min.json\"",
     "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
     "start": "npm run preparation && npm run copy-static && npm run copy-id-static && npm run patch-rapid && craco start",

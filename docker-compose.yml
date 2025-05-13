@@ -39,7 +39,7 @@ services:
       - tasking-manager.env
     volumes:
       - ./pyproject.toml:/usr/src/app/pyproject.toml
-      - ./pdm.lock:/usr/src/app/pdm.lock
+      - ./uv.lock:/usr/src/app/uv.lock
       - ./backend:/usr/src/app/backend
       - ./tests:/usr/src/app/tests
       - ./migrations:/usr/src/app/migrations/
