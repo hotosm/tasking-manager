@@ -1,5 +1,4 @@
 import io
-import json
 from distutils.util import strtobool
 from typing import Optional
 
@@ -117,9 +116,8 @@ async def get_project(
         )
         if project_dto:
             if as_file:
-                project_dto = json.dumps(project_dto, default=str)
-                geojson_str = geojson.dumps(project_dto)
-                buffer = io.BytesIO(geojson_str.encode("utf-8"))
+                json_str = project_dto.json()
+                buffer = io.BytesIO(json_str.encode("utf-8"))
                 return StreamingResponse(
                     buffer,
                     media_type="application/json",
