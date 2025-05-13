@@ -32,7 +32,12 @@ def upgrade():
         "user_mapping_badge",
         sa.Column("user_id", sa.BigInteger(), nullable=False, primary_key=True),
         sa.Column("badge_id", sa.Integer(), nullable=False, primary_key=True),
-        sa.Column("date_assigned", sa.DateTime(), nullable=False, server_default=sa.text("current_timestamp")),
+        sa.Column(
+            "date_assigned",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("current_timestamp"),
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
         sa.ForeignKeyConstraint(["badge_id"], ["mapping_badges.id"]),
     )
