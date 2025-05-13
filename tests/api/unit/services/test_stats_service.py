@@ -284,12 +284,14 @@ class TestStatsService:
         # Act
         start_date = date(2025, 1, 12)
         end_date = date(2025, 1, 13)
-        stats = await StatsService.get_all_users_statistics(start_date, end_date, self.db)
+        stats = await StatsService.get_all_users_statistics(
+            start_date, end_date, self.db
+        )
 
         # Assert
-        assert stats.by_level[0].name == 'BEGINNER'
+        assert stats.by_level[0].name == "BEGINNER"
         assert stats.by_level[0].count == 0
-        assert stats.by_level[1].name == 'INTERMEDIATE'
+        assert stats.by_level[1].name == "INTERMEDIATE"
         assert stats.by_level[1].count == 0
-        assert stats.by_level[2].name == 'ADVANCED'
+        assert stats.by_level[2].name == "ADVANCED"
         assert stats.by_level[2].count == 0

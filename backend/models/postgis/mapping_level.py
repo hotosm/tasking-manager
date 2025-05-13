@@ -40,9 +40,7 @@ class MappingLevel(Base):
         query = "SELECT * FROM mapping_levels ORDER BY ordering ASC"
         result = await db.fetch_all(query)
 
-        return [
-            MappingLevel(**row) for row in result
-        ]
+        return [MappingLevel(**row) for row in result]
 
     @staticmethod
     async def get_by_name(name: str, db: Database):
