@@ -1,6 +1,6 @@
 locals {
   envs = {
-    EXTRA_CORS_ORIGINS            = get_env("EXTRA_CORS_ORIGINS", "[\"https://tasks.hotosm.org\", \"https://hotosm.github.io\"]")
+    EXTRA_CORS_ORIGINS            = get_env("EXTRA_CORS_ORIGINS", "[\"https://tasks.hotosm.org\", \"https://hotosm.github.io\", \"https://mapathon.cartong.org\", \"https://jarmokivekas.github.io\", \"https://dev-managers.mapswipe.org\"]")
     TM_SMTP_HOST                  = get_env("TM_SMTP_HOST", "email-smtp.us-east-1.amazonaws.com")
     TM_SMTP_PORT                  = get_env("TM_SMTP_PORT", "587")
     TM_SMTP_USE_TLS               = get_env("TM_SMTP_USE_TLS", "1")
