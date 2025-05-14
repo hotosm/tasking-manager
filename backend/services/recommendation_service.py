@@ -127,7 +127,7 @@ class ProjectRecommendationService:
     # as it is expensive and not changing often
     @staticmethod
     @cached(cache=Cache.MEMORY, key_builder=matrix_cache_key_builder, ttl=3600)
-    async def create_project_matrix(db: Database) -> pd.DataFrame:
+    async def create_project_matrix(db: Database, target_project=None) -> pd.DataFrame:
         """Creates project matrix required to calculate similarity."""
         # Query to fetch all published projects with their related data
         query = """
