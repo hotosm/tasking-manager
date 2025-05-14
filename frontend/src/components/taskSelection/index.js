@@ -169,8 +169,8 @@ export function TaskSelection({ project }: Object) {
       const lockedByCurrentUser = activities.activity
         .filter((i) => i.taskStatus.startsWith('LOCKED_FOR_'))
         .filter((i) => i.actionBy === user.username);
+      const userLockedTasks = lockedByCurrentUser.map((i) => i.taskId);
       if (lockedByCurrentUser.length) {
-        const userLockedTasks = lockedByCurrentUser.map((i) => i.taskId);
         setSelectedTasks(userLockedTasks);
         setTaskAction(
           lockedByCurrentUser[0].taskStatus === 'LOCKED_FOR_MAPPING'
@@ -195,6 +195,7 @@ export function TaskSelection({ project }: Object) {
           setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
         }
       }
+      dispatch({ type: 'SET_LOCKED_TASKS', tasks: userLockedTasks });
       setMapInit(true);
     }
   }, [
