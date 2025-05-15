@@ -1,6 +1,6 @@
 from databases import Database
 from fastapi import APIRouter, Depends, Query, Request
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse
 from loguru import logger
 
 from backend.db import get_db
@@ -506,7 +506,7 @@ async def list_organisation(
     )
 
     if manager_user_id is not None and not authenticated_user_id:
-        return Response(
+        return JSONResponse(
             content={
                 "Error": "Unauthorized - Filter by manager_user_id is not allowed to unauthenticated requests",
                 "SubCode": "LoginToFilterManager",

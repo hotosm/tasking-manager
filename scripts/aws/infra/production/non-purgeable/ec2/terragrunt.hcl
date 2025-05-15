@@ -38,7 +38,7 @@ inputs = {
   vpc_id              = dependency.vpc.outputs.vpc_id
   ec2_subnet_id       = dependency.vpc.outputs.public_subnets[0]
   ec2_instance_ami    = "ami-084568db4383264d4"
-  create_ssh_key_pair = true
+  create_ssh_key_pair = false
   ec2_root_vol_size   = 50
   ec2_ebs_volumes     = []
 

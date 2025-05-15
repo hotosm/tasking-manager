@@ -36,7 +36,7 @@ async def auto_unlock_tasks():
 async def update_all_project_stats():
     async with db_connection.database.connection() as conn:
         logger.info("Started updating project stats.")
-        await conn.execute("UPDATE users SET projects_mapped = NULL;")
+        # await conn.execute("UPDATE users SET projects_mapped = NULL;")
         projects_query = "SELECT DISTINCT id FROM projects;"
         projects = await conn.fetch_all(query=projects_query)
         for project in projects:
@@ -56,7 +56,11 @@ async def update_all_project_stats():
             await conn.execute(
                 """
                 UPDATE users
-                SET projects_mapped = array_append(projects_mapped, :project_id)
+                SET projects_mapped =
+                    CASE
+                        WHEN :project_id = ANY(projects_mapped) THEN projects_mapped
+                        ELSE array_append(projects_mapped, :project_id)
+                    END
                 WHERE id IN (
                     SELECT DISTINCT user_id
                     FROM task_history
