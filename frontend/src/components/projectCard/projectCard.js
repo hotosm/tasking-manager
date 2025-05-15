@@ -1,3 +1,4 @@
+import ReactMarkdown from 'react-markdown';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -126,7 +127,8 @@ export function ProjectCard({
               </h3>
               <div className="tc f6">
                 <div className="w-100 tl pr2 f7 blue-grey dib mb2 project-desc">
-                  {shortDescription} {campaignTag ? ' · ' + campaignTag : ''}
+                  <ReactMarkdown>{shortDescription}</ReactMarkdown>
+                   {campaignTag ? ' · ' + campaignTag : ''}
                 </div>
               </div>
             </div>
