@@ -19,7 +19,7 @@ from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.notification import Notification
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectTeams
-from backend.models.postgis.statuses import MappingLevel, TaskStatus
+from backend.models.postgis.statuses import TaskStatus
 from backend.models.postgis.task import Task
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.user import User
@@ -115,7 +115,7 @@ def return_canned_user(username=TEST_USERNAME, id=TEST_USER_ID) -> User:
     test_user = User()
     test_user.username = username
     test_user.id = id
-    test_user.mapping_level = MappingLevel.BEGINNER.value
+    test_user.mapping_level = 1
     test_user.email_address = None
 
     return test_user

@@ -190,13 +190,16 @@ class GenderStatsDTO(BaseModel):
     self_describe: int = Field(None, alias="selfDescribe")
 
 
+class LevelStats(BaseModel):
+    name: str = Field(None, alias="name")
+    count: int = Field(None, alias="count")
+
+
 class UserStatsDTO(BaseModel):
     """DTO for user stats."""
 
     total: int = Field(None, alias="total")
-    beginner: int = Field(None, alias="beginner")
-    intermediate: int = Field(None, alias="intermediate")
-    advanced: int = Field(None, alias="advanced")
+    by_level: List[LevelStats] = Field([], alias="byLevel")
     contributed: int = Field(None, alias="contributed")
     email_verified: int = Field(None, alias="emailVerified")
     genders: GenderStatsDTO = Field(None, alias="genders")
