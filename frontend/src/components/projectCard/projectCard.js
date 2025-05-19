@@ -10,6 +10,7 @@ import { ProjectStatusBox } from '../projectDetail/statusBox';
 import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
 import { PriorityBox } from './priorityBox';
 import { DueDateBox } from './dueDateBox';
+import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import './styles.scss';
 
 export function ProjectTeaser({
@@ -126,7 +127,10 @@ export function ProjectCard({
               </h3>
               <div className="tc f6">
                 <div className="w-100 tl pr2 f7 blue-grey dib mb2 project-desc">
-                  {shortDescription} {campaignTag ? ' · ' + campaignTag : ''}
+                  {shortDescription?.trim() && (
+                    <div dangerouslySetInnerHTML={htmlFromMarkdown(shortDescription)} />
+                  )}
+                  {campaignTag ? ' · ' + campaignTag : ''}
                 </div>
               </div>
             </div>
