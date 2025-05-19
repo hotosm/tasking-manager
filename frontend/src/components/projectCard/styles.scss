@@ -24,3 +24,8 @@
   -webkit-box-orient: vertical;
   line-height: 1.4;
 }
+
+.project-desc * {
+  font-size: inherit !important;
+  font-weight: inherit;
+}
