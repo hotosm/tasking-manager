@@ -121,19 +121,14 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
 
         tasks_json = await ProjectService.get_project_tasks(db, int(project_id), tasks)
         if as_file:
-            tasks_str = json.dumps(tasks_json, indent=4)  # Pretty-printed GeoJSON
-            file_bytes = io.BytesIO(tasks_str.encode("utf-8"))
-            file_bytes.seek(0)  # Reset stream position
-
-            # Return the GeoJSON file response for download
-            return StreamingResponse(
-                file_bytes,
+            tasks_str = json.dumps(tasks_json, indent=4)
+            return Response(
+                content=tasks_str,
                 media_type="application/geo+json",
                 headers={
                     "Content-Disposition": f'attachment; filename="{project_id}-tasks.geojson"'
                 },
             )
-
         return tasks_json
     except ProjectServiceError as e:
         return JSONResponse(content={"Error": str(e)}, status_code=403)
