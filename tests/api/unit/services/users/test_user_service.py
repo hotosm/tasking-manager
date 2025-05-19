@@ -112,3 +112,10 @@ class TestUserService:
     async def test_check_and_update_mapper_level(self):
         # Act
         await UserService.check_and_update_mapper_level(self.test_user.id, self.db)
+
+    async def test_get_user_dto_by_username(self):
+        # Act
+        dto = await UserService.get_user_dto_by_username(self.test_user.username, self.test_user.id, self.db)
+
+        # Assert
+        assert dto.mapping_level == 'BEGINNER'

@@ -226,7 +226,7 @@ class UserService:
         requested_user = User(**result)
         logged_in_user = await UserService.get_user_by_id(logged_in_user_id, db)
         await UserService.check_and_update_mapper_level(requested_user.id, db)
-        return requested_user.as_dto(logged_in_user.username)
+        return await requested_user.as_dto(logged_in_user.username, db)
 
     @staticmethod
     async def get_user_dto_by_id(
@@ -234,10 +234,9 @@ class UserService:
     ) -> UserDTO:
         """Gets user DTO for supplied user id"""
         user = await UserService.get_user_by_id(user_id, db)
-        if request_user:
-            request_user = await UserService.get_user_by_id(request_user, db)
-            return user.as_dto(request_user.username)
-        return user.as_dto()
+        request_user = await UserService.get_user_by_id(request_user, db)
+
+        return await user.as_dto(request_user.username, db)
 
     @staticmethod
     async def get_interests_stats(user_id: int, db: Database):

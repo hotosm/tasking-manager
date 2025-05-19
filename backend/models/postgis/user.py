@@ -429,13 +429,13 @@ class User(Base):
 
         return False
 
-    def as_dto(self, logged_in_username: str) -> UserDTO:
+    async def as_dto(self, logged_in_username: str, db: Database) -> UserDTO:
         """Create DTO object from user in scope"""
         user_dto = UserDTO()
         user_dto.id = self.id
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
-        user_dto.mapping_level = MappingLevel(self.mapping_level).name
+        user_dto.mapping_level = (await MappingLevel.get_by_id(self.mapping_level, db)).name
         user_dto.projects_mapped = (
             len(self.projects_mapped) if self.projects_mapped else None
         )
