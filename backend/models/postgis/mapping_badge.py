@@ -35,13 +35,16 @@ class MappingBadge(Base):
             VALUES (:name, :description, :image_path, :requirements, :is_enabled)
             RETURNING id;
         """
-        badge_id = await db.execute(query, {
-            "name": data.name,
-            "description": data.description,
-            "image_path": data.image_path,
-            "requirements": data.requirements,
-            "is_enabled": data.is_enabled,
-        })
+        badge_id = await db.execute(
+            query,
+            {
+                "name": data.name,
+                "description": data.description,
+                "image_path": data.image_path,
+                "requirements": data.requirements,
+                "is_enabled": data.is_enabled,
+            },
+        )
 
         query_select = """
             SELECT *

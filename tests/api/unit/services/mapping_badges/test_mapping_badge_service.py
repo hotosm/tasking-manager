@@ -21,12 +21,15 @@ class TestMappingBadgeService:
             )
             VALUES (:name, :description, :requirements, :is_enabled)
         """
-        await self.db.execute(stmt, {
-            "name": "BEGINNER",
-            "description": "",
-            "requirements": "{}",
-            "is_enabled": True,
-        })
+        await self.db.execute(
+            stmt,
+            {
+                "name": "BEGINNER",
+                "description": "",
+                "requirements": "{}",
+                "is_enabled": True,
+            },
+        )
 
         # Act
         badges = await MappingBadgeService.get_all(self.db)
@@ -36,10 +39,10 @@ class TestMappingBadgeService:
 
     async def test_create(self):
         badge = MappingBadgeCreateDTO(
-            name='new badge',
-            description='',
-            image_path='',
-            requirements='{}',
+            name="new badge",
+            description="",
+            image_path="",
+            requirements="{}",
             is_enabled=True,
         )
         # Act
@@ -49,5 +52,5 @@ class TestMappingBadgeService:
         badges = await MappingBadgeService.get_all(self.db)
 
         assert len(badges) == 1
-        assert badges[0].name == 'new badge'
+        assert badges[0].name == "new badge"
         assert new_badge.id == badges[0].id

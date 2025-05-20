@@ -17,6 +17,6 @@ class TestMappingLevelService:
 
         # Assert
         assert len(levels) == 3
-        assert levels[0].name == 'BEGINNER'
-        assert levels[1].name == 'INTERMEDIATE'
-        assert levels[2].name == 'ADVANCED'
+        assert levels[0].name == "BEGINNER"
+        assert levels[1].name == "INTERMEDIATE"
+        assert levels[2].name == "ADVANCED"
