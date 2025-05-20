@@ -125,7 +125,7 @@ def get_canned_simplified_osm_user_details():
     return data
 
 
-async def get_or_create_levels(db) -> MappingLevel:
+async def get_or_create_levels(db):
     stmt = """
         INSERT INTO mapping_levels (
             id, name, approvals_required, ordering, is_beginner

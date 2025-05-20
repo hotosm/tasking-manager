@@ -2,6 +2,7 @@ from databases import Database
 from sqlalchemy import Integer, String, Column, Boolean
 
 from backend.db import Base
+from backend.models.dtos.mapping_level_dto import MappingLevelDTO
 
 
 class MappingLevel(Base):
@@ -16,6 +17,19 @@ class MappingLevel(Base):
     color = Column(String, nullable=True)
     ordering = Column(Integer, nullable=False)
     is_beginner = Column(Boolean, nullable=False, default=False)
+
+    def as_dto(self) -> MappingLevelDTO:
+        dto = MappingLevelDTO(
+            id=self.id,
+            name=self.name,
+            image_path=self.image_path,
+            approvals_required=self.approvals_required,
+            color=self.color,
+            ordering=self.ordering,
+            is_beginner=self.is_beginner,
+        )
+
+        return dto
 
     @staticmethod
     async def get_by_id(id: int, db: Database):
