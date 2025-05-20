@@ -7,7 +7,7 @@ from pydantic.functional_validators import field_validator
 from backend.models.dtos.interests_dto import InterestDTO
 from backend.models.dtos.mapping_dto import TaskDTO
 from backend.models.dtos.stats_dto import Pagination
-from backend.models.postgis.statuses import MappingLevel, UserRole
+from backend.models.postgis.statuses import UserRole
 
 
 def is_known_role(value):
@@ -65,22 +65,6 @@ class UserDTO(BaseModel):
         choices=("MALE", "FEMALE", "SELF_DESCRIBE", "PREFER_NOT"),
     )
     self_description_gender: Optional[str] = Field(None, alias="selfDescriptionGender")
-
-    @field_validator("mapping_level", mode="before")
-    def is_known_mapping_level(value):
-        """Validates that supplied mapping level is known value"""
-        if value.upper() == "ALL":
-            return True
-
-        try:
-            value = value.split(",")
-            for level in value:
-                MappingLevel[level.upper()]
-        except KeyError:
-            raise ValueError(
-                f"Unknown mappingLevel: {value} Valid values are {MappingLevel.BEGINNER.name}, "
-                f"{MappingLevel.INTERMEDIATE.name}, {MappingLevel.ADVANCED.name}, ALL"
-            )
 
     def validate_self_description(self, data, value):
         if (
