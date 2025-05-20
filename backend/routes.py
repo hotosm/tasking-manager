@@ -8,6 +8,7 @@ from backend.api.interests import resources as interest_resources
 from backend.api.issues import resources as issue_resources
 from backend.api.licenses import actions as license_actions
 from backend.api.licenses import resources as license_resources
+from backend.api.mapping_badges import resources as mapping_badges_resources
 from backend.api.mapping_levels import resources as mapping_levels_resources
 from backend.api.notifications import actions as notification_actions
 from backend.api.notifications import resources as notification_resources
@@ -87,6 +88,7 @@ def add_api_end_points(api):
     v2.include_router(license_actions.router)
 
     # Mapping levels REST endpoint
+    v2.include_router(mapping_badges_resources.router)
     v2.include_router(mapping_levels_resources.router)
 
     # Organisations REST endpoint
