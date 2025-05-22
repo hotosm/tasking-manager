@@ -232,15 +232,15 @@ class UpdateTeamDTO(BaseModel):
 class TeamSearchDTO(BaseModel):
     """Describes a JSON model to search for a team"""
 
-    user_id: Optional[float] = Field(None, alias="userId")
+    user_id: Optional[int] = Field(None, alias="userId")
     organisation: Optional[int] = Field(None, alias="organisation")
     team_name: Optional[str] = Field(None, alias="team_name")
     omit_members: Optional[bool] = Field(False, alias="omitMemberList")
     full_members_list: Optional[bool] = Field(True, alias="fullMemberList")
-    member: Optional[float] = Field(None, alias="member")
-    manager: Optional[float] = Field(None, alias="manager")
+    member: Optional[int] = Field(None, alias="member")
+    manager: Optional[int] = Field(None, alias="manager")
     team_role: Optional[str] = Field(None, alias="team_role")
-    member_request: Optional[float] = Field(None, alias="member_request")
+    member_request: Optional[int] = Field(None, alias="member_request")
     paginate: Optional[bool] = Field(False, alias="paginate")
     page: Optional[int] = Field(1, alias="page")
     per_page: Optional[int] = Field(10, alias="perPage")

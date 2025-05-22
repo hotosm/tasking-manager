@@ -1,5 +1,5 @@
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import JSONResponse
 
 from backend.db import get_db
@@ -117,6 +117,58 @@ async def get_notifications(
     request: Request,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
+    message_type: str
+    | None = Query(
+        default=None,
+        description=(
+            "Optional message-type filter; leave blank to retrieve all.\n"
+            "Accepted values: 1 (System), 2 (Broadcast), 3 (Mention), 4 (Validation),\n"
+            "5 (Invalidation), 6 (Request team), 7 (Invitation), 8 (Task comment),\n"
+            "9 (Project chat), 10 (Project Activity), 11 (Team broadcast)"
+        ),
+        alias="messageType",
+    ),
+    from_username: str
+    | None = Query(
+        default=None,
+        alias="from",
+        description="Optional from username filter",
+    ),
+    project: str
+    | None = Query(
+        default=None,
+        description="Optional project filter",
+    ),
+    task_id: int
+    | None = Query(
+        default=None,
+        description="Optional task filter",
+        alias="taskId",
+    ),
+    status: str
+    | None = Query(
+        default=None,
+        description="Optional status filter (read or unread)",
+    ),
+    sort_by: str = Query(
+        default="date",
+        description="Field to sort by. Options: 'date', 'read', 'project_id', 'message_type'",
+        alias="sortBy",
+    ),
+    sort_direction: str = Query(
+        default="desc",
+        description="Sorting direction: 'asc' or 'desc'",
+        alias="sortDirection",
+    ),
+    page: int = Query(
+        default=1,
+        description="Page number",
+    ),
+    page_size: int = Query(
+        default=10,
+        alias="pageSize",
+        description="Number of results per page",
+    ),
 ):
     """
     Get all messages for logged in user
@@ -182,15 +234,7 @@ async def get_notifications(
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
-    page = request.query_params.get("page", 1)
-    page_size = request.query_params.get("pageSize", 10)
-    sort_by = request.query_params.get("sortBy", "date")
-    sort_direction = request.query_params.get("sortDirection", "desc")
-    message_type = request.query_params.get("messageType", None)
-    from_username = request.query_params.get("from")
-    project = request.query_params.get("project", None)
-    task_id = request.query_params.get("taskId", None)
-    status = request.query_params.get("status", None)
+
     user_messages = await MessageService.get_all_messages(
         db,
         user.id,
