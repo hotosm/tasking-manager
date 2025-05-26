@@ -1,0 +1,36 @@
+name: 📖 Publish Docs
+
+on:
+  push:
+    paths:
+      - docs/**
+      - src/**
+      - mkdocs.yml
+    branches:
+      - develop
+  workflow_dispatch:
+
+jobs:
+  # TODO need to also publish osm-fieldwork docs somewhere...
+
+  build_doxygen:
+    uses: hotosm/gh-workflows/.github/workflows/doxygen_build.yml@3.2.0
+    with:
+      output_path: docs/apidocs
+
+  build_openapi_json:
+    uses: hotosm/gh-workflows/.github/workflows/openapi_build.yml@3.2.1
+    with:
+      image: ghcr.io/${{ github.repository }}/backend:ci-${{ github.ref_name }}
+      example_env_file_path: "example.env"
+      output_path: docs/openapi.json
+      py_backend_app_context: backend.main
+
+  publish_docs:
+    uses: hotosm/gh-workflows/.github/workflows/mkdocs_build.yml@3.2.0
+    needs:
+      - build_doxygen
+      - build_openapi_json
+    with:
+      doxygen: true
+      openapi: true

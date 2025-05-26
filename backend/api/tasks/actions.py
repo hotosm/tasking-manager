@@ -1143,10 +1143,10 @@ async def extend_duration(
 async def reset_by_user(
     request: Request,
     project_id: int,
-    username: str
-    | None = Query(None, description="Username to revert tasks for", example="test"),
-    action: str
-    | None = Query(
+    username: str | None = Query(
+        None, description="Username to revert tasks for", example="test"
+    ),
+    action: str | None = Query(
         None,
         description="Action to revert tasks for. Can be BADIMAGERY or VALIDATED",
         example="BADIMAGERY",

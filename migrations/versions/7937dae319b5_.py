@@ -1,10 +1,11 @@
-""" Ensure Project's country names are in English
+"""Ensure Project's country names are in English
 
 Revision ID: 7937dae319b5
 Revises: 14842761654b
 Create Date: 2020-09-21 17:17:10.542429
 
 """
+
 import requests
 import sqlalchemy as sa
 from alembic import op
