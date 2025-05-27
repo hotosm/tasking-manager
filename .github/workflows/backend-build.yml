@@ -13,3 +13,4 @@ jobs:
     with:
       image_name: ghcr.io/${{ github.repository }}/backend
       build_target: prod
+      dockerfile: scripts/docker/Dockerfile
