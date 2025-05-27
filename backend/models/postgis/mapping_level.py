@@ -28,11 +28,11 @@ class MappingLevel(Base):
         dto = MappingLevelDTO(
             id=self.id,
             name=self.name,
-            image_path=self.image_path,
-            approvals_required=self.approvals_required,
+            imagePath=self.image_path,
+            approvalsRequired=self.approvals_required,
             color=self.color,
             ordering=self.ordering,
-            is_beginner=self.is_beginner,
+            isBeginner=self.is_beginner,
         )
 
         return dto

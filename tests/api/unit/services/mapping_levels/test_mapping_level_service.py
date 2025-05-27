@@ -23,6 +23,30 @@ class TestMappingLevelService:
         request.cls.test_user = await create_canned_user(db_connection_fixture)
         request.cls.db = db_connection_fixture
 
+    async def test_as_dto(self):
+        orig = MappingLevelCreateDTO(
+            name="the name",
+            imagePath="the path",
+            approvalsRequired=5,
+            color="green",
+            ordering=4,
+            isBeginner=True,
+        )
+        # Arrange
+        level = await MappingLevel.create(orig, self.db)
+        dto = level.as_dto()
+
+        # Assert
+        assert dto.name == orig.name
+        assert dto.image_path == orig.image_path
+        assert dto.image_path == "the path"
+        assert dto.approvals_required == orig.approvals_required
+        assert dto.approvals_required == 5
+        assert dto.color == orig.color
+        assert dto.ordering == orig.ordering
+        assert dto.is_beginner == orig.is_beginner
+        assert dto.is_beginner == True
+
     async def test_get_all(self):
         # Act
         levels = await MappingLevelService.get_all(self.db)
@@ -54,18 +78,18 @@ class TestMappingLevelService:
         # Arrange
         old_data = MappingLevelCreateDTO(
             name="old name",
-            image_path="http://old.com/path.jpg",
+            imagePath="http://old.com/path.jpg",
             ordering=1,
         )
         level = await MappingLevel.create(old_data, self.db)
         new_data = MappingLevelUpdateDTO(
             id=level.id,
             name="new name",
-            image_path="http://new.com/path.jpg",
-            approvals_required=10,
+            imagePath="http://new.com/path.jpg",
+            approvalsRequired=10,
             color="#acabad",
             ordering=2,
-            is_beginner=True,
+            isBeginner=True,
         )
 
         # Act
@@ -76,16 +100,19 @@ class TestMappingLevelService:
 
         assert from_db.name == new_data.name
         assert from_db.image_path == new_data.image_path
+        assert from_db.image_path == "http://new.com/path.jpg"
         assert from_db.approvals_required == new_data.approvals_required
+        assert from_db.approvals_required == 10
         assert from_db.color == new_data.color
         assert from_db.ordering == new_data.ordering
         assert from_db.is_beginner == new_data.is_beginner
+        assert from_db.is_beginner
 
     async def test_delete(self):
         # Arrange
         old_data = MappingLevelCreateDTO(
             name="old name",
-            image_path="http://old.com/path.jpg",
+            imagePath="http://old.com/path.jpg",
             ordering=1,
         )
         level = await MappingLevel.create(old_data, self.db)
@@ -99,7 +126,7 @@ class TestMappingLevelService:
         # Arrange
         old_data = MappingLevelCreateDTO(
             name="old name",
-            image_path="http://old.com/path.jpg",
+            imagePath="http://old.com/path.jpg",
             ordering=1,
         )
         level = await MappingLevel.create(old_data, self.db)

@@ -57,4 +57,4 @@ async def delete_mapping_badge(
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(pm_only),
 ):
-    return await MappingBadgeService.delete(badge_id, db)
+    await MappingBadgeService.delete(badge_id, db)

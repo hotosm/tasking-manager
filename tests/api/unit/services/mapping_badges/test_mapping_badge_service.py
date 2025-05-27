@@ -46,9 +46,9 @@ class TestMappingBadgeService:
         badge = MappingBadgeCreateDTO(
             name="new badge",
             description="",
-            image_path="",
+            imagePath="",
             requirements="{}",
-            is_enabled=True,
+            isEnabled=True,
         )
         # Act
         new_badge = await MappingBadgeService.create(badge, self.db)
@@ -65,18 +65,18 @@ class TestMappingBadgeService:
         old_data = MappingBadgeCreateDTO(
             name="old name",
             description="old description",
-            image_path="http://old.com/path.jpg",
+            imagePath="http://old.com/path.jpg",
             requirements="{}",
-            is_enabled=True,
+            isEnabled=True,
         )
         badge = await MappingBadge.create(old_data, self.db)
         new_data = MappingBadgeUpdateDTO(
             id=badge.id,
             name="new name",
             description="new description",
-            image_path="http://new.com/path.jpg",
+            imagePath="http://new.com/path.jpg",
             requirements="{}",
-            is_enabled=False,
+            isEnabled=False,
         )
 
         # Act
@@ -96,9 +96,9 @@ class TestMappingBadgeService:
         old_data = MappingBadgeCreateDTO(
             name="old name",
             description="old description",
-            image_path="http://old.com/path.jpg",
+            imagePath="http://old.com/path.jpg",
             requirements="{}",
-            is_enabled=True,
+            isEnabled=True,
         )
         level = await MappingBadge.create(old_data, self.db)
 

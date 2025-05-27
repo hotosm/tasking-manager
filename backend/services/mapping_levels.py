@@ -36,15 +36,11 @@ class MappingLevelService:
 
     @staticmethod
     async def create(data: MappingLevelCreateDTO, db: Database) -> MappingLevelDTO:
-        return MappingLevelDTO(
-            **((await MappingLevel.create(data, db)).as_dto().dict())
-        )
+        return (await MappingLevel.create(data, db)).as_dto()
 
     @staticmethod
     async def update(data: MappingLevelUpdateDTO, db: Database) -> MappingLevelDTO:
-        return MappingLevelDTO(
-            **((await MappingLevel.update(data, db)).as_dto().dict())
-        )
+        return (await MappingLevel.update(data, db)).as_dto()
 
     @staticmethod
     async def delete(id: int, db: Database):

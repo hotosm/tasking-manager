@@ -27,9 +27,9 @@ class MappingBadge(Base):
             id=self.id,
             name=self.name,
             description=self.description,
-            image_path=self.image_path,
+            imagePath=self.image_path,
             requirements=self.requirements,
-            is_enabled=self.is_enabled,
+            isEnabled=self.is_enabled,
         )
 
     @staticmethod

@@ -51,4 +51,4 @@ async def delete_mapping_level(
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(pm_only),
 ):
-    return await MappingLevelService.delete(level_id, db)
+    await MappingLevelService.delete(level_id, db)
