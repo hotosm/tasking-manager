@@ -2,7 +2,10 @@ from databases import Database
 from fastapi import APIRouter, Depends
 
 from backend.db import get_db
-from backend.models.dtos.mapping_badge_dto import MappingBadgeCreateDTO
+from backend.models.dtos.mapping_badge_dto import (
+    MappingBadgeCreateDTO,
+    MappingBadgeUpdateDTO,
+)
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.mapping_badges import MappingBadgeService
 from backend.services.users.authentication_service import pm_only
@@ -34,3 +37,24 @@ async def create_mapping_badge(
     Creates a new MappingBadge
     """
     return await MappingBadgeService.create(data, db)
+
+
+@router.patch("/{badge_id}/")
+async def update_mapping_badge(
+    data: MappingBadgeUpdateDTO,
+    badge_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(pm_only),
+):
+    data.id = badge_id
+
+    return await MappingBadgeService.update(data, db)
+
+
+@router.delete("/{badge_id}/")
+async def delete_mapping_badge(
+    badge_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(pm_only),
+):
+    return await MappingBadgeService.delete(badge_id, db)
