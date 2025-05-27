@@ -1,7 +1,9 @@
 from databases import Database
 from sqlalchemy import Integer, String, Column, Boolean
+from asyncpg import ForeignKeyViolationError
 
 from backend.db import Base
+from backend.exceptions import Conflict
 from backend.models.dtos.mapping_level_dto import (
     MappingLevelDTO,
     MappingLevelCreateDTO,
@@ -75,6 +77,14 @@ class MappingLevel(Base):
             await db.execute(update_query, values={**updated_values, "id": data.id})
 
         return await MappingLevel.get_by_id(data.id, db)
+
+    @staticmethod
+    async def delete(id: int, db: Database):
+        delete_query = "DELETE FROM mapping_levels WHERE id = :id"
+        try:
+            await db.execute(delete_query, values={"id": id})
+        except ForeignKeyViolationError:
+            raise Conflict("MAPPING_LEVEL_HAS_USERS")
 
     @staticmethod
     async def get_by_id(id: int, db: Database):

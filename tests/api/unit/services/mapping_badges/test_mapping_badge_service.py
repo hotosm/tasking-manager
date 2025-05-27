@@ -89,3 +89,19 @@ class TestMappingBadgeService:
         assert from_db.image_path == new_data.image_path
         assert from_db.requirements == new_data.requirements
         assert from_db.is_enabled == new_data.is_enabled
+
+    async def test_delete(self):
+        # Arrange
+        old_data = MappingBadgeCreateDTO(
+            name="old name",
+            description="old description",
+            image_path="http://old.com/path.jpg",
+            requirements="{}",
+            is_enabled=True,
+        )
+        level = await MappingBadge.create(old_data, self.db)
+
+        # Act
+        await MappingBadgeService.delete(level.id, self.db)
+
+        assert await MappingBadge.get_by_id(level.id, self.db) is None

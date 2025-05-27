@@ -39,3 +39,7 @@ class MappingLevelService:
     @staticmethod
     async def update(data: MappingLevelUpdateDTO, db: Database) -> MappingLevelDTO:
         return MappingLevelDTO(**((await MappingLevel.update(data, db)).as_dto().dict()))
+
+    @staticmethod
+    async def delete(id: int, db: Database):
+        await MappingLevel.delete(id, db)

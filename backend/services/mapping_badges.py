@@ -20,3 +20,7 @@ class MappingBadgeService:
     @staticmethod
     async def update(data: MappingBadgeUpdateDTO, db: Database) -> MappingBadgeDTO:
         return MappingBadgeDTO(**((await MappingBadge.update(data, db)).as_dto().dict()))
+
+    @staticmethod
+    async def delete(id: int, db: Database):
+        await MappingBadge.delete(id, db)

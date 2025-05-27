@@ -71,6 +71,11 @@ class MappingBadge(Base):
         return await MappingBadge.get_by_id(data.id, db)
 
     @staticmethod
+    async def delete(id: int, db: Database):
+        delete_query = "DELETE FROM mapping_badges WHERE id = :id"
+        await db.execute(delete_query, values={"id": id})
+
+    @staticmethod
     async def get_by_id(id: int, db: Database):
         query = "SELECT * FROM mapping_badges WHERE id = :id"
         result = await db.fetch_one(query, values={"id": id})

@@ -1,12 +1,15 @@
 import pytest
 
+from backend.exceptions import Conflict
 from backend.models.dtos.mapping_level_dto import (
     MappingLevelCreateDTO, MappingLevelUpdateDTO,
 )
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.services.mapping_levels import MappingLevelService
 
-from tests.api.helpers.test_helpers import get_or_create_levels
+from tests.api.helpers.test_helpers import (
+    get_or_create_levels, create_canned_user,
+)
 
 
 @pytest.mark.anyio
@@ -15,6 +18,7 @@ class TestMappingLevelService:
     async def setup_test_data(self, db_connection_fixture, request):
         assert db_connection_fixture is not None, "Database connection is not available"
         await get_or_create_levels(db_connection_fixture)
+        request.cls.test_user = await create_canned_user(db_connection_fixture)
         request.cls.db = db_connection_fixture
 
     async def test_get_all(self):
@@ -74,3 +78,33 @@ class TestMappingLevelService:
         assert from_db.color == new_data.color
         assert from_db.ordering == new_data.ordering
         assert from_db.is_beginner == new_data.is_beginner
+
+    async def test_delete(self):
+        # Arrange
+        old_data = MappingLevelCreateDTO(
+            name="old name",
+            image_path="http://old.com/path.jpg",
+            ordering=1,
+        )
+        level = await MappingLevel.create(old_data, self.db)
+
+        # Act
+        await MappingLevelService.delete(level.id, self.db)
+
+        assert await MappingLevel.get_by_id(level.id, self.db) is None
+
+    async def test_delete_fails_if_user_is_assigneed(self):
+        # Arrange
+        old_data = MappingLevelCreateDTO(
+            name="old name",
+            image_path="http://old.com/path.jpg",
+            ordering=1,
+        )
+        level = await MappingLevel.create(old_data, self.db)
+        await self.test_user.set_mapping_level(level, self.db)
+
+        # Act
+        with pytest.raises(Conflict) as e:
+            await MappingLevelService.delete(level.id, self.db)
+
+        assert e.value.sub_code == "MAPPING_LEVEL_HAS_USERS"
