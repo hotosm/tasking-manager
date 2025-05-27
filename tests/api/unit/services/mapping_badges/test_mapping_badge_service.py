@@ -1,7 +1,11 @@
 import pytest
-from backend.services.mapping_badges import MappingBadgeService
+
+from backend.models.dtos.mapping_badge_dto import (
+    MappingBadgeCreateDTO, MappingBadgeUpdateDTO,
+)
 from backend.models.postgis.mapping_badge import MappingBadge
-from backend.models.dtos.mapping_badge_dto import MappingBadgeCreateDTO
+from backend.services.mapping_badges import MappingBadgeService
+
 from tests.api.helpers.test_helpers import get_or_create_levels
 
 
@@ -54,3 +58,34 @@ class TestMappingBadgeService:
         assert len(badges) == 1
         assert badges[0].name == "new badge"
         assert new_badge.id == badges[0].id
+
+    async def test_update(self):
+        # Arrange
+        old_data = MappingBadgeCreateDTO(
+            name="old name",
+            description="old description",
+            image_path="http://old.com/path.jpg",
+            requirements="{}",
+            is_enabled=True,
+        )
+        badge = await MappingBadge.create(old_data, self.db)
+        new_data = MappingBadgeUpdateDTO(
+            id=badge.id,
+            name="new name",
+            description="new description",
+            image_path="http://new.com/path.jpg",
+            requirements="{}",
+            is_enabled=False,
+        )
+
+        # Act
+        await MappingBadgeService.update(new_data, self.db)
+
+        # Assert
+        from_db = await MappingBadge.get_by_id(badge.id, self.db)
+
+        assert from_db.name == new_data.name
+        assert from_db.description == new_data.description
+        assert from_db.image_path == new_data.image_path
+        assert from_db.requirements == new_data.requirements
+        assert from_db.is_enabled == new_data.is_enabled

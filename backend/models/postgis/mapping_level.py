@@ -2,7 +2,11 @@ from databases import Database
 from sqlalchemy import Integer, String, Column, Boolean
 
 from backend.db import Base
-from backend.models.dtos.mapping_level_dto import MappingLevelDTO
+from backend.models.dtos.mapping_level_dto import (
+    MappingLevelDTO,
+    MappingLevelCreateDTO,
+    MappingLevelUpdateDTO,
+)
 
 
 class MappingLevel(Base):
@@ -32,13 +36,48 @@ class MappingLevel(Base):
         return dto
 
     @staticmethod
+    async def create(data: MappingLevelCreateDTO, db: Database):
+        query = """
+            INSERT INTO mapping_levels (name, image_path, approvals_required, color, ordering, is_beginner)
+            VALUES (:name, :image_path, :approvals_required, :color, :ordering, :is_beginner)
+            RETURNING id;
+        """
+        level_id = await db.execute(
+            query,
+            {
+                "name": data.name,
+                "image_path": data.image_path,
+                "approvals_required": data.approvals_required,
+                "color": data.color,
+                "ordering": data.ordering,
+                "is_beginner": data.is_beginner,
+            },
+        )
+
+        return await MappingLevel.get_by_id(level_id, db)
+
+    @staticmethod
+    async def update(data: MappingLevelUpdateDTO, db: Database):
+        level_dict = data.dict(exclude_unset=True)
+        updated_values = {
+            key: level_dict[key]
+            for key in level_dict.keys()
+            if key not in ["id"]
+        }
+        set_clause = ", ".join(f"{key} = :{key}" for key in updated_values.keys())
+
+        if set_clause:
+            update_query = f"""
+            UPDATE mapping_levels
+            SET {set_clause}
+            WHERE id = :id
+            """
+            await db.execute(update_query, values={**updated_values, "id": data.id})
+
+        return await MappingLevel.get_by_id(data.id, db)
+
+    @staticmethod
     async def get_by_id(id: int, db: Database):
-        """
-        Return the mapping level for the specified id, or None if not found.
-        :param id: ID of the mapping level to retrieve
-        :param db: Database connection
-        :return: MappingLevel object or None
-        """
         query = "SELECT * FROM mapping_levels WHERE id = :id"
         result = await db.fetch_one(query, values={"id": id})
 

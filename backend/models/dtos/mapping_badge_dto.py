@@ -17,3 +17,12 @@ class MappingBadgeCreateDTO(BaseModel):
     image_path: Optional[str]
     requirements: Optional[str]
     is_enabled: bool = Field(default=True, alias="isEnabled")
+
+
+class MappingBadgeUpdateDTO(BaseModel):
+    id: Optional[int]
+    name: Optional[str]
+    description: Optional[str]
+    image_path: Optional[str]
+    requirements: Optional[str]
+    is_enabled: Optional[bool] = Field(default=True, alias="isEnabled")

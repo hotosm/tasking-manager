@@ -164,6 +164,8 @@ async def get_or_create_levels(db):
         },
     )
 
+    await db.execute("SELECT setval('mapping_levels_id_seq', 3)")
+
 
 async def return_canned_user(db, username=TEST_USERNAME, id=TEST_USER_ID) -> User:
     """Returns a canned user"""

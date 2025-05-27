@@ -2,7 +2,9 @@ from databases import Database
 from sqlalchemy import Integer, String, Column, ForeignKey, Boolean, JSON
 
 from backend.db import Base
-from backend.models.dtos.mapping_badge_dto import MappingBadgeDTO, MappingBadgeCreateDTO
+from backend.models.dtos.mapping_badge_dto import (
+    MappingBadgeDTO, MappingBadgeCreateDTO, MappingBadgeUpdateDTO,
+)
 
 
 class MappingBadge(Base):
@@ -46,12 +48,34 @@ class MappingBadge(Base):
             },
         )
 
-        query_select = """
-            SELECT *
-            FROM mapping_badges
+        return await MappingBadge.get_by_id(badge_id, db)
+
+    @staticmethod
+    async def update(data: MappingBadgeUpdateDTO, db: Database):
+        badge_dict = data.dict(exclude_unset=True)
+        updated_values = {
+            key: badge_dict[key]
+            for key in badge_dict.keys()
+            if key not in ["id"]
+        }
+        set_clause = ", ".join(f"{key} = :{key}" for key in updated_values.keys())
+
+        if set_clause:
+            update_query = f"""
+            UPDATE mapping_badges
+            SET {set_clause}
             WHERE id = :id
-        """
-        return await db.fetch_one(query_select, {"id": badge_id})
+            """
+            await db.execute(update_query, values={**updated_values, "id": data.id})
+
+        return await MappingBadge.get_by_id(data.id, db)
+
+    @staticmethod
+    async def get_by_id(id: int, db: Database):
+        query = "SELECT * FROM mapping_badges WHERE id = :id"
+        result = await db.fetch_one(query, values={"id": id})
+
+        return MappingBadge(**result) if result is not None else None
 
     @staticmethod
     async def get_all(db: Database):

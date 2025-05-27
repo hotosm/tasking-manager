@@ -10,3 +10,22 @@ class MappingLevelDTO(BaseModel):
     color: Optional[str] = Field(default=None)
     ordering: int
     is_beginner: bool = Field(default=False, alias="isBeginner")
+
+
+class MappingLevelCreateDTO(BaseModel):
+    name: str
+    image_path: Optional[str]
+    approvals_required: int = Field(default=0, alias="approvalsRequired")
+    color: Optional[str] = Field(default=None)
+    ordering: int
+    is_beginner: bool = Field(default=False, alias="isBeginner")
+
+
+class MappingLevelUpdateDTO(BaseModel):
+    id: Optional[int]
+    name: Optional[str]
+    image_path: Optional[str]
+    approvals_required: Optional[int] = Field(default=0, alias="approvalsRequired")
+    color: Optional[str] = Field(default=None)
+    ordering: Optional[int]
+    is_beginner: Optional[bool] = Field(default=False, alias="isBeginner")
