@@ -1,7 +1,8 @@
 import pytest
 
 from backend.models.dtos.mapping_badge_dto import (
-    MappingBadgeCreateDTO, MappingBadgeUpdateDTO,
+    MappingBadgeCreateDTO,
+    MappingBadgeUpdateDTO,
 )
 from backend.models.postgis.mapping_badge import MappingBadge
 from backend.services.mapping_badges import MappingBadgeService

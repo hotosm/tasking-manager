@@ -3,7 +3,9 @@ from sqlalchemy import Integer, String, Column, ForeignKey, Boolean, JSON
 
 from backend.db import Base
 from backend.models.dtos.mapping_badge_dto import (
-    MappingBadgeDTO, MappingBadgeCreateDTO, MappingBadgeUpdateDTO,
+    MappingBadgeDTO,
+    MappingBadgeCreateDTO,
+    MappingBadgeUpdateDTO,
 )
 
 
@@ -54,9 +56,7 @@ class MappingBadge(Base):
     async def update(data: MappingBadgeUpdateDTO, db: Database):
         badge_dict = data.dict(exclude_unset=True)
         updated_values = {
-            key: badge_dict[key]
-            for key in badge_dict.keys()
-            if key not in ["id"]
+            key: badge_dict[key] for key in badge_dict.keys() if key not in ["id"]
         }
         set_clause = ", ".join(f"{key} = :{key}" for key in updated_values.keys())
 

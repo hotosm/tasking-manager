@@ -5,7 +5,9 @@ from databases import Database
 from backend.exceptions import NotFound
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.dtos.mapping_level_dto import (
-    MappingLevelDTO, MappingLevelCreateDTO, MappingLevelUpdateDTO,
+    MappingLevelDTO,
+    MappingLevelCreateDTO,
+    MappingLevelUpdateDTO,
 )
 
 
@@ -34,11 +36,15 @@ class MappingLevelService:
 
     @staticmethod
     async def create(data: MappingLevelCreateDTO, db: Database) -> MappingLevelDTO:
-        return MappingLevelDTO(**((await MappingLevel.create(data, db)).as_dto().dict()))
+        return MappingLevelDTO(
+            **((await MappingLevel.create(data, db)).as_dto().dict())
+        )
 
     @staticmethod
     async def update(data: MappingLevelUpdateDTO, db: Database) -> MappingLevelDTO:
-        return MappingLevelDTO(**((await MappingLevel.update(data, db)).as_dto().dict()))
+        return MappingLevelDTO(
+            **((await MappingLevel.update(data, db)).as_dto().dict())
+        )
 
     @staticmethod
     async def delete(id: int, db: Database):

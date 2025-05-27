@@ -2,13 +2,15 @@ import pytest
 
 from backend.exceptions import Conflict
 from backend.models.dtos.mapping_level_dto import (
-    MappingLevelCreateDTO, MappingLevelUpdateDTO,
+    MappingLevelCreateDTO,
+    MappingLevelUpdateDTO,
 )
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.services.mapping_levels import MappingLevelService
 
 from tests.api.helpers.test_helpers import (
-    get_or_create_levels, create_canned_user,
+    get_or_create_levels,
+    create_canned_user,
 )
 
 

@@ -62,9 +62,7 @@ class MappingLevel(Base):
     async def update(data: MappingLevelUpdateDTO, db: Database):
         level_dict = data.dict(exclude_unset=True)
         updated_values = {
-            key: level_dict[key]
-            for key in level_dict.keys()
-            if key not in ["id"]
+            key: level_dict[key] for key in level_dict.keys() if key not in ["id"]
         }
         set_clause = ", ".join(f"{key} = :{key}" for key in updated_values.keys())
 
