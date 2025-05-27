@@ -24,7 +24,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
     curl -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-Linux-x86_64 -o /tmp/envsubst; \
     else \
     curl -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-Linux-x86_64 -o /tmp/envsubst; \
-    fi 
+    fi
 RUN chmod +x /tmp/envsubst
 RUN /tmp/envsubst < /tmp/tasking-manager.env > ../tasking-manager.env
 RUN yarn build
