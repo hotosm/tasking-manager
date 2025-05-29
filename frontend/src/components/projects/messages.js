@@ -314,11 +314,11 @@ export default defineMessages({
   },
   percentMapped: {
     id: 'project.table.percentMapped',
-    defaultMessage: '{n}% mapped',
+    defaultMessage: 'Percent mapped',
   },
   percentValidated: {
     id: 'project.table.percentValidated',
-    defaultMessage: '{n}% validated',
+    defaultMessage: 'Percent validated',
   },
   downloadAsCSV: {
     id: 'project.table.downloadAsCSV',
