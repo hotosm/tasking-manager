@@ -1,5 +1,5 @@
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import JSONResponse
 
 from backend.db import get_db
@@ -60,7 +60,11 @@ async def delete_multiple_notifications(
 
 @router.delete("/delete-all/")
 async def delete_all_notifications(
-    request: Request,
+    message_type: str = Query(
+        None,
+        alias="messageType",
+        description="Optional message-type filter; leave blank to delete all",
+    ),
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
 ):
@@ -88,7 +92,6 @@ async def delete_all_notifications(
         500:
             description: Internal Server Error
     """
-    message_type = request.query_params.get("messageType")
     async with db.transaction():
         await MessageService.delete_all_messages(user.id, db, message_type)
         return JSONResponse(content={"Success": "Messages deleted"}, status_code=200)
@@ -96,7 +99,11 @@ async def delete_all_notifications(
 
 @router.post("/mark-as-read-all/")
 async def mark_all_as_read(
-    request: Request,
+    message_type: str = Query(
+        None,
+        alias="messageType",
+        description="Optional message-type filter; leave blank to mark all as read",
+    ),
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
 ):
@@ -124,7 +131,6 @@ async def mark_all_as_read(
         500:
             description: Internal Server Error
     """
-    message_type = request.query_params.get("messageType")
     await MessageService.mark_all_messages_read(user.id, db, message_type)
     return JSONResponse(content={"Success": "Messages marked as read"}, status_code=200)
 

@@ -1,12 +1,15 @@
 from databases import Database
 from dateutil.parser import parse as date_parse
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Query, Path
 from fastapi.responses import JSONResponse
 
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
+
+from typing import Optional
+
 
 router = APIRouter(
     prefix="/users",
@@ -18,7 +21,22 @@ router = APIRouter(
 @router.get("/{user_id}/tasks/")
 async def get_user_tasks(
     request: Request,
-    user_id: int,
+    user_id: int = Path(..., description="Mapper's OpenStreetMap ID"),
+    status: Optional[str] = Query(None, description="Task Status filter"),
+    project_status: Optional[str] = Query(None, description="Project Status filter"),
+    project_id: Optional[int] = Query(None, description="Project ID"),
+    start_date: Optional[str] = Query(
+        None, description="Date to filter as minimum (ISO format)"
+    ),
+    end_date: Optional[str] = Query(
+        None, description="Date to filter as maximum (ISO format)"
+    ),
+    sort_by: Optional[str] = Query(
+        "-action_date",
+        description="Sort criteria. Options: action_date, -action_date, project_id, -project_id",
+    ),
+    page: int = Query(1, description="Page number"),
+    page_size: int = Query(10, description="Page size"),
     request_user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
 ):
@@ -96,36 +114,26 @@ async def get_user_tasks(
     """
     try:
         user = await UserService.get_user_by_id(user_id, db)
-        status = request.query_params.get("status", None)
-        project_status = request.query_params.get("project_status", None)
-        project_id = int(request.query_params.get("project_id", 0))
-        start_date = (
-            date_parse(request.query_params.get("start_date"))
-            if request.query_params.get("start_date")
-            else None
-        )
-        end_date = (
-            date_parse(request.query_params.get("end_date"))
-            if request.query_params.get("end_date")
-            else None
-        )
-        sort_by = request.query_params.get("sort_by", "-action_date")
+
+        parsed_start_date = date_parse(start_date) if start_date else None
+        parsed_end_date = date_parse(end_date) if end_date else None
 
         tasks = await UserService.get_tasks_dto(
             user.id,
             project_id=project_id,
             project_status=project_status,
             task_status=status,
-            start_date=start_date,
-            end_date=end_date,
-            page=int(request.query_params.get("page", 1)),
-            page_size=int(request.query_params.get("page_size", 10)),
+            start_date=parsed_start_date,
+            end_date=parsed_end_date,
+            page=page,
+            page_size=page_size,
             sort_by=sort_by,
             db=db,
         )
         return tasks
+
     except ValueError:
-        print("InvalidDateRange- Date range can not be bigger than 1 year")
+        print("InvalidDateRange - Date range cannot be bigger than 1 year")
         return JSONResponse(
             content={"tasks": [], "pagination": {"total": 0}}, status_code=200
         )
