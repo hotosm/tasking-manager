@@ -166,7 +166,7 @@ export default defineMessages({
   },
   allprojects: {
     id: 'project.nav.allprojects',
-    defaultMessage: 'All',
+    defaultMessage: 'All Projects',
   },
   active: {
     id: 'project.nav.active',
@@ -191,6 +191,10 @@ export default defineMessages({
   archived: {
     id: 'project.nav.archived',
     defaultMessage: 'Archived',
+  },
+  published: {
+    id: 'project.nav.published',
+    defaultMessage: 'Published',
   },
   paginationCount: {
     id: 'project.pagination.count',

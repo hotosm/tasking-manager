@@ -37,13 +37,12 @@ export const ProjectsActionFilter = ({ setQuery, fullProjectsQuery }) => {
             'pushIn',
           );
         }
-        // 'Archived' is a special case, as it is not a valid action
-        dispatch({ type: 'SET_ACTION', action: value === 'ARCHIVED' ? 'any' : value });
+        dispatch({ type: 'SET_ACTION', action: value });
         setQuery(
           {
             ...fullProjectsQuery,
             page: undefined,
-            status: value !== 'ARCHIVED' ? undefined : 'ARCHIVED',
+            status: undefined,
           },
           'pushIn',
         );
@@ -54,7 +53,6 @@ export const ProjectsActionFilter = ({ setQuery, fullProjectsQuery }) => {
         { label: <FormattedMessage {...messages.projectsToMap} />, value: 'map' },
         { label: <FormattedMessage {...messages.projectsToValidate} />, value: 'validate' },
         { label: <FormattedMessage {...messages.anyProject} />, value: 'any' },
-        { label: <FormattedMessage {...messages.archived} />, value: 'ARCHIVED' },
       ]}
       display={'Action'}
       className={'ba b--tan bg-white mr3 f6 v-mid dn dib-ns pv2 br1 pl3 fw5 blue-dark'}

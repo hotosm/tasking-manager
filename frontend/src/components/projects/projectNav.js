@@ -12,6 +12,7 @@ import { ProjectSearchBox } from './projectSearchBox';
 import ClearFilters from './clearFilters';
 import { OrderBySelector } from './orderBy';
 import { ProjectsActionFilter } from './projectsActionFilter';
+import { ProjectsStatusFilter } from './projectsStatusFilter';
 import { SwitchToggle } from '../formInputs';
 import DownloadAsCSV from './downloadAsCSV';
 import { GripIcon, ListIcon, FilledNineCellsGridIcon, TableListIcon } from '../svgIcons';
@@ -205,7 +206,10 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
             <div className="mv2 dib">
               <DifficultyDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             </div>
+
             <ProjectsActionFilter setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
+
+            <ProjectsStatusFilter setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             <Link
               to={filterRouteToggled}
               id="more-filter-id"
