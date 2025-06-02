@@ -129,10 +129,9 @@ export function TaskSelection({ project }: Object) {
   // use route instead of local state for active tab states
   const setActiveSection = useCallback(
     (section) => {
-      if (!!textSearch) return; // if search param not present, do not set active section
       navigate(`/projects/${projectId}/${section}`);
     },
-    [navigate, projectId, textSearch],
+    [navigate, projectId],
   );
 
   // remove history location state since react-router-dom persists state on reload
