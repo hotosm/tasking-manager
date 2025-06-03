@@ -1,8 +1,10 @@
 import datetime
+import json
 
 from databases import Database
 from loguru import logger
 from sqlalchemy import and_, desc, distinct, func, insert, select
+import requests
 
 from backend.config import Settings
 from backend.exceptions import NotFound
@@ -28,7 +30,7 @@ from backend.models.postgis.message import MessageType
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.models.postgis.task import Task, TaskHistory
-from backend.models.postgis.user import User, UserEmail, UserRole
+from backend.models.postgis.user import User, UserEmail, UserRole, UserStats
 from backend.models.postgis.utils import timestamp
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
@@ -154,6 +156,18 @@ class UserService:
             return []
 
         return projects_mapped
+
+    @staticmethod
+    async def get_and_save_stats(user_id: int, db: Database) -> dict:
+        url = f"{settings.OHSOME_STATS_API_URL}/stats/user?userId={user_id}&topics={settings.OHSOME_STATS_TOPICS}"
+        headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
+        response = requests.get(url, headers=headers)
+
+        json_data = response.json()
+
+        await UserStats.update(user_id, json.dumps(json_data["result"]), db)
+
+        return json_data
 
     @staticmethod
     async def register_user(osm_id, username, changeset_count, picture_url, email, db):
