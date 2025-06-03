@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+import json
 
 import requests
 from databases import Database
@@ -13,6 +14,7 @@ from backend.services.interests_service import InterestService
 from backend.services.stats_service import StatsService
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
+from backend.models.postgis.user import UserStats
 
 router = APIRouter(
     prefix="/users",
@@ -173,7 +175,9 @@ async def get_period_user_stats(
 
 @router.get("/statistics/ohsome/")
 async def get_ohsome_stats(
-    request: Request, user: AuthUserDTO = Depends(login_required)
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
 ):
     """
     Get HomePage Stats
@@ -200,17 +204,21 @@ async def get_ohsome_stats(
             description: Internal Server Error
     """
     url = request.query_params.get("url")
+
     if not url:
         return JSONResponse(
             content={"Error": "URL is None", "SubCode": "URL not provided"},
             status_code=400,
         )
+
     try:
         headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
-
-        # Make the GET request with headers
         response = requests.get(url, headers=headers)
-        return response.json()
+        json_data = response.json()
+
+        await UserStats.update(user.id, json.dumps(json_data["result"]), db)
+
+        return json_data
     except Exception as e:
         return JSONResponse(
             content={"Error": str(e), "SubCode": "Error fetching data"}, status_code=400
