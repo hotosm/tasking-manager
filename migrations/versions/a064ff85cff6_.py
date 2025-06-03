@@ -17,7 +17,10 @@ depends_on = None
 
 def upgrade():
     op.create_index(
-        op.f("ix_user_stats_user_id"), "user_stats", ["user_id"], unique=True,
+        op.f("ix_user_stats_user_id"),
+        "user_stats",
+        ["user_id"],
+        unique=True,
     )
 
 
