@@ -159,15 +159,18 @@ class UserService:
 
     @staticmethod
     async def get_and_save_stats(user_id: int, db: Database) -> dict:
-        url = f"{settings.OHSOME_STATS_API_URL}/stats/user?userId={user_id}&topics={settings.OHSOME_STATS_TOPICS}"
-        headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
-        response = requests.get(url, headers=headers)
+        try:
+            url = f"{settings.OHSOME_STATS_API_URL}/stats/user?userId={user_id}&topics={settings.OHSOME_STATS_TOPICS}"
+            headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
+            response = requests.get(url, headers=headers)
 
-        json_data = response.json()
+            json_data = response.json()
 
-        await UserStats.update(user_id, json.dumps(json_data["result"]), db)
+            await UserStats.update(user_id, json.dumps(json_data["result"]), db)
 
-        return json_data
+            return json_data
+        except Exception as e:
+            logger.warning(f"Stats failed to update at login: {e}")
 
     @staticmethod
     async def register_user(osm_id, username, changeset_count, picture_url, email, db):
