@@ -478,6 +478,15 @@ export const router = createBrowserRouter(
             return { Component: ListBadges };
           }}
         />
+        <Route
+          path="badges/new"
+          lazy={async () => {
+            const { CreateBadge } = await import(
+              './views/badges' /* webpackChunkName: "badges" */
+            );
+            return { Component: CreateBadge };
+          }}
+        />
       </Route>
       <Route
         path="teams/:id/membership"

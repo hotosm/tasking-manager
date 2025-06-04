@@ -14,8 +14,8 @@ class MappingBadgeDTO(BaseModel):
 class MappingBadgeCreateDTO(BaseModel):
     name: str
     description: str
-    image_path: Optional[str] = Field(default=None, alias="imagePath")
-    requirements: Optional[str]
+    image_path: str = Field(alias="imagePath")
+    requirements: str
     is_enabled: bool = Field(default=True, alias="isEnabled")
 
 

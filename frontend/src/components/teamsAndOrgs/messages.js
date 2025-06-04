@@ -598,4 +598,8 @@ export default defineMessages({
     id: 'management.stats.features',
     defaultMessage: 'Total features',
   },
+  requirements: {
+    id: 'management.badges.requirements',
+    defaultMessage: 'Requirements',
+  },
 });

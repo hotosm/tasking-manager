@@ -1,5 +1,6 @@
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
+import { Field } from 'react-final-form';
 import { Link } from 'react-router-dom';
 
 import messages from '../teamsAndOrgs/messages';
@@ -41,5 +42,33 @@ export const BadgesManagement = ({badges, isFetched}) => {
         )}
       </ReactPlaceholder>
     </Management>
+  );
+};
+
+export const BadgeInformation = () => {
+  const labelClasses = 'db pt3 pb2';
+  const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
+
+  return (
+    <>
+      <div className="cf">
+        <label className={labelClasses}>
+          <FormattedMessage {...messages.name} />
+        </label>
+        <Field name="name" component="input" type="text" className={fieldClasses} required />
+        <label className={labelClasses}>
+          <FormattedMessage {...messages.description} />
+        </label>
+        <Field name="description" component="textarea" rows={7} className={fieldClasses} required />
+        <label className={labelClasses}>
+          <FormattedMessage {...messages.image} />
+        </label>
+        <Field name="imagePath" component="input" type="text" className={fieldClasses} required />
+        <label className={labelClasses}>
+          <FormattedMessage {...messages.requirements} />
+        </label>
+        <Field name="requirements" component="textarea" rows={7} className={fieldClasses} required />
+      </div>
+    </>
   );
 };
