@@ -1,5 +1,5 @@
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query
 from fastapi.logger import logger
 from fastapi.responses import JSONResponse
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
@@ -21,7 +21,12 @@ router = APIRouter(
 
 # class SystemAuthenticationLoginAPI():
 @router.get("/authentication/login/")
-async def login(request: Request):
+async def login(
+    redirect_uri: str = Query(
+        default=settings.OAUTH_REDIRECT_URI,
+        description="Route to redirect user once authenticated",
+    )
+):
     """
     Redirects user to OSM to authenticate
     ---
@@ -39,7 +44,6 @@ async def login(request: Request):
       200:
         description: oauth2 params
     """
-    redirect_uri = request.query_params.get("redirect_uri", settings.OAUTH_REDIRECT_URI)
     authorize_url = f"{settings.OSM_SERVER_URL}/oauth2/authorize"
     state = AuthenticationService.generate_random_state()
 
@@ -52,7 +56,23 @@ async def login(request: Request):
 
 # class SystemAuthenticationCallbackAPI():
 @router.get("/authentication/callback/")
-async def callback(request: Request, db: Database = Depends(get_db)):
+async def callback(
+    authorization_code: str
+    | None = Query(
+        None, alias="code", description="Code obtained after user authorization"
+    ),
+    redirect_uri: str = Query(
+        settings.OAUTH_REDIRECT_URI,
+        description="Route to redirect user once authenticated",
+    ),
+    email: str
+    | None = Query(
+        None,
+        alias="email_address",
+        description="Email address to used for email notifications from TM.",
+    ),
+    db: Database = Depends(get_db),
+):
     """
     Handles the OSM OAuth callback
     ---
@@ -89,12 +109,12 @@ async def callback(request: Request, db: Database = Depends(get_db)):
     """
 
     token_url = f"{settings.OSM_SERVER_URL}/oauth2/token"
-    authorization_code = request.query_params.get("code", None)
     if authorization_code is None:
-        return {"SubCode": "InvalidData", "Error": "Missing code parameter"}, 400
+        return JSONResponse(
+            content={"SubCode": "InvalidData", "Error": "Missing code parameter"},
+            status_code=400,
+        )
 
-    email = request.query_params.get("email_address", None)
-    redirect_uri = request.query_params.get("redirect_uri", settings.OAUTH_REDIRECT_URI)
     osm.redirect_uri = redirect_uri
     try:
         osm_resp = osm.fetch_token(
@@ -140,11 +160,18 @@ async def callback(request: Request, db: Database = Depends(get_db)):
         user_params["session"] = osm_resp
         return user_params
     except AuthServiceError:
-        return {"Error": "Unable to authenticate", "SubCode": "AuthError"}
+        return JSONResponse(
+            content={"SubCode": "AuthError", "Error": "Unable to authenticate"},
+            status_code=502,
+        )
 
 
 @router.get("/authentication/email/")
-async def authenticate_email(request: Request, db: Database = Depends(get_db)):
+async def authenticate_email(
+    username: str = Query(..., description="Username, e.g. thinkwhere"),
+    token: str = Query(..., description="Authentication token, e.g. 1234dvsdf"),
+    db: Database = Depends(get_db),
+):
     """
     Authenticates user owns email address
     ---
@@ -172,10 +199,7 @@ async def authenticate_email(request: Request, db: Database = Depends(get_db)):
             description: Internal Server Error
     """
     try:
-        username = request.query_params.get("username")
-        token = request.query_params.get("token")
         await AuthenticationService.authenticate_email_token(username, token, db)
-
         return JSONResponse(content={"Status": "OK"}, status_code=200)
 
     except AuthServiceError as e:
