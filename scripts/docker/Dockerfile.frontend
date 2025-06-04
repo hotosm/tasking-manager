@@ -2,20 +2,19 @@ FROM node:22.13.0 AS base
 WORKDIR /usr/src/app
 COPY ./frontend/package.json ./
 COPY ./frontend/yarn.lock ./
-#Only change git+ssh to https in yarn.lock to avoid error with git during yarn install
-RUN sed 's|git+ssh://git@|https://|' ./yarn.lock > ./yarn.lock
-RUN yarn install
-
+COPY ./frontend/entrypoint.sh ./
 
 FROM base AS debug
 COPY ./frontend .
 EXPOSE 3000
+ENTRYPOINT [ "/usr/src/app/entrypoint.sh" ]
 CMD ["yarn", "start"]
 
 
 FROM base AS build
 # TARGETPLATFORM is used to determine the architecture of the build environment. It is auto set by Docker's buildkit when building multi-platform images.
 ARG TARGETPLATFORM
+RUN ./entrypoint.sh
 COPY ./frontend .
 COPY tasking-manager.env /tmp/tasking-manager.env
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
