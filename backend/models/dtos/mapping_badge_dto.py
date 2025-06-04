@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 
@@ -26,3 +26,7 @@ class MappingBadgeUpdateDTO(BaseModel):
     image_path: Optional[str] = Field(default=None, alias="imagePath")
     requirements: Optional[str] = None
     is_enabled: Optional[bool] = Field(default=None, alias="isEnabled")
+
+
+class MappingBadgeListDTO(BaseModel):
+    badges: List[MappingBadgeDTO]

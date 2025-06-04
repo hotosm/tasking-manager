@@ -40,7 +40,7 @@ class TestMappingBadgeService:
         badges = await MappingBadgeService.get_all(self.db)
 
         # Assert
-        assert len(badges) == 1
+        assert len(badges.badges) == 1
 
     async def test_create(self):
         badge = MappingBadgeCreateDTO(
@@ -56,9 +56,9 @@ class TestMappingBadgeService:
         # Assert
         badges = await MappingBadgeService.get_all(self.db)
 
-        assert len(badges) == 1
-        assert badges[0].name == "new badge"
-        assert new_badge.id == badges[0].id
+        assert len(badges.badges) == 1
+        assert badges.badges[0].name == "new badge"
+        assert new_badge.id == badges.badges[0].id
 
     async def test_update(self):
         # Arrange
