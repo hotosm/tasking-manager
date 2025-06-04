@@ -9,8 +9,14 @@ import { nCardPlaceholders } from '../licenses/licensesPlaceholder';
 
 export const BadgeCard = ({ badge }) => {
   return (
-    <Link to={`${badge.badgeId}/`} className="w-50-ns w-100 fl pr3">
-      hola
+    <Link to={`${badge.id}/`} className="bg-white shadow-4 w-100 pa3 black-90 no-underline badge-item">
+      <div>
+        <img src={ badge.imagePath } className="w3" />
+      </div>
+      <div>
+        <strong className="ttu">{ badge.name }</strong>
+        <p className="mb0">{ badge.description }</p>
+      </div>
     </Link>
   );
 };
@@ -34,7 +40,9 @@ export const BadgesManagement = ({badges, isFetched}) => {
         ready={isFetched}
       >
         {badges?.length ? (
-          badges.map((i, n) => <BadgeCard key={n} badge={i} />)
+          <div className="badges-container">
+            { badges.map((i, n) => <BadgeCard key={n} badge={i} />) }
+          </div>
         ) : (
           <div className="pv3">
             <FormattedMessage {...messages.noBadges} />
