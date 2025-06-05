@@ -35,6 +35,8 @@ export default defineMessages({
     id: 'management.partners.menu',
     defaultMessage: 'Partners',
   },
+  badges: { id: 'management.badges', defaultMessage: 'Badges' },
+  levels: { id: 'management.levels', defaultMessage: 'Levels' },
   resourcesButton:{
     id: 'management.edit.resourcesButton',
     defaultMessage: 'Resources link',
@@ -500,6 +502,10 @@ export default defineMessages({
     id: 'management.no_categories',
     defaultMessage: 'There are no categories yet.',
   },
+  noBadges: {
+    id: 'management.no_badges',
+    defaultMessage: 'There are no badges yet.',
+  },
   noLicenses: {
     id: 'management.no_licenses',
     defaultMessage: 'There are no licenses yet.',
@@ -591,5 +597,9 @@ export default defineMessages({
   totalFeatures: {
     id: 'management.stats.features',
     defaultMessage: 'Total features',
+  },
+  requirements: {
+    id: 'management.badges.requirements',
+    defaultMessage: 'Requirements',
   },
 });

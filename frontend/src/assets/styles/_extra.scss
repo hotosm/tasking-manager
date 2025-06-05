@@ -464,6 +464,18 @@ a[href="https://www.mapbox.com/map-feedback/"]
   grid-auto-rows: 360px;
 }
 
+.badges-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.badge-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+}
+
 .b--card {
   border-color: #ecebed;
 }

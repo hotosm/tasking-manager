@@ -274,6 +274,10 @@ export default defineMessages({
     id: 'management.license.title',
     defaultMessage: 'License information',
   },
+  badgeInfo: {
+    id: 'management.badge.title',
+    defaultMessage: 'Badge information',
+  },
   newCategory: {
     id: 'management.category.creation',
     defaultMessage: 'Create new category',
@@ -282,9 +286,17 @@ export default defineMessages({
     id: 'management.license.creation',
     defaultMessage: 'Create new license',
   },
+  newBadge: {
+    id: 'management.badge.creation',
+    defaultMessage: 'Create new badge',
+  },
   createLicense: {
     id: 'management.license.button.create',
     defaultMessage: 'Create license',
+  },
+  createBadge: {
+    id: 'management.badge.button.create',
+    defaultMessage: 'Create badge',
   },
   createCategory: {
     id: 'management.category.button.create',
