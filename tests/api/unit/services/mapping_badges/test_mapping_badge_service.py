@@ -65,7 +65,7 @@ class TestMappingBadgeService:
         old_data = MappingBadgeCreateDTO(
             name="old name",
             description="old description",
-            imagePath="http://old.com/path.jpg",
+            imagePath="https://old.com/path.jpg",
             requirements="{}",
             isEnabled=True,
         )
@@ -74,7 +74,7 @@ class TestMappingBadgeService:
             id=badge.id,
             name="new name",
             description="new description",
-            imagePath="http://new.com/path.jpg",
+            imagePath="https://new.com/path.jpg",
             requirements="{}",
             isEnabled=False,
         )
@@ -96,7 +96,7 @@ class TestMappingBadgeService:
         old_data = MappingBadgeCreateDTO(
             name="old name",
             description="old description",
-            imagePath="http://old.com/path.jpg",
+            imagePath="https://old.com/path.jpg",
             requirements="{}",
             isEnabled=True,
         )
