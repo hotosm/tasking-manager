@@ -61,6 +61,7 @@ jobs:
           context: "{{defaultContext}}"
           target: prod
           platforms: linux/amd64,linux/arm64
+          file: scripts/docker/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
