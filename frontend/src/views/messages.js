@@ -266,6 +266,10 @@ export default defineMessages({
     id: 'management.category.manage',
     defaultMessage: 'Manage category',
   },
+  manageBadge: {
+    id: 'management.badge.manage',
+    defaultMessage: 'Manage badge',
+  },
   categoryInfo: {
     id: 'management.interest.title',
     defaultMessage: 'Category information',

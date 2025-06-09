@@ -2,21 +2,55 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 import messages from './messages';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useFetch } from '../hooks/UseFetch';
-import { BadgeInformation, BadgesManagement } from '../components/badges';
+import { BadgeInformation, BadgesManagement, BadgeForm } from '../components/badges';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { EntityError } from '../components/alert';
+import { DeleteModal } from '../components/deleteModal';
+import { updateEntity } from '../utils/management';
+
+export const EditBadge = () => {
+  const { id } = useParams();
+  const [error, loading, badge] = useFetch(`badges/${id}/`);
+  const [isError, setIsError] = useState(false);
+  const token = useSelector((state) => state.auth.token);
+
+  const onFailure = () => setIsError(true);
+  const updateBadge = (payload) => {
+    setIsError(false);
+    updateEntity(`badges/${id}/`, 'badge', payload, token, null, onFailure);
+  };
+
+  return (
+    <div className="cf pv4 bg-tan">
+      <div className="cf">
+        <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib">
+          <FormattedMessage {...messages.manageBadge} />
+        </h3>
+        <DeleteModal id={badge.id} name={badge.name} type="badges" />
+      </div>
+      <div className="w-40-l w-100 mt4 fl">
+        <BadgeForm
+          badge={badge}
+          updateBadge={updateBadge}
+          disabledForm={error || loading}
+        />
+        {isError && <EntityError entity="badge" action="updation" />}
+      </div>
+    </div>
+  );
+};
 
 export const ListBadges = () => {
   useSetTitleTag('Manage Badges');
 
-  const [error, loading, result] = useFetch('mapping_badges/');
+  const [error, loading, result] = useFetch('badges/');
   const isFetched = !loading && !error;
 
   return (
@@ -35,7 +69,7 @@ export const CreateBadge = () => {
 
   const createBadge = (payload) => {
     setIsError(false);
-    return pushToLocalJSONAPI('mapping_badges/', JSON.stringify(payload), token, 'POST')
+    return pushToLocalJSONAPI('badges/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
         toast.success(
           <FormattedMessage

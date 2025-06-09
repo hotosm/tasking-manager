@@ -44,6 +44,10 @@ export default defineMessages({
     id: 'deleteModal.status.success.campaigns',
     defaultMessage: 'Campaign deleted successfully.',
   },
+  success_badges: {
+    id: 'deleteModal.status.success.badges',
+    defaultMessage: 'Badge deleted successfully.',
+  },
   failure_projects: {
     id: 'deleteModal.status.failure.projects',
     defaultMessage: 'An error occurred when trying to delete this project.',
@@ -79,6 +83,10 @@ export default defineMessages({
   failure_comments: {
     id: 'deleteModal.status.failure.comments',
     defaultMessage: 'An error occurred when trying to delete this comment.',
+  },
+  failure_badges: {
+    id: 'deleteModal.status.failure.badges',
+    defaultMessage: 'An error occurred when trying to delete this badge.',
   },
   delete: {
     id: 'deleteModal.button.delete',
@@ -132,6 +140,10 @@ export default defineMessages({
   confirmDeleteTitle_comments: {
     id: 'deleteModal.title.comments',
     defaultMessage: 'Are you sure you want to delete this comment?',
+  },
+  confirmDeleteTitle_badges: {
+    id: 'deleteModal.title.badges',
+    defaultMessage: 'Are you sure you want to delete this badge?',
   },
   OrgHasProjectsError: {
     id: 'deleteModal.error.OrgHasProjectsError',

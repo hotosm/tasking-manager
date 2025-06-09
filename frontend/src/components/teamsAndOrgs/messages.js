@@ -434,6 +434,10 @@ export default defineMessages({
     id: 'management.titles.license_information',
     defaultMessage: 'License information',
   },
+  badgeInfo: {
+    id: 'management.titles.badge_information',
+    defaultMessage: 'Badge information',
+  },
   name: {
     id: 'management.fields.name',
     defaultMessage: 'Name',

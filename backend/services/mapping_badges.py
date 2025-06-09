@@ -13,22 +13,22 @@ from backend.models.dtos.mapping_badge_dto import (
 
 class MappingBadgeService:
     @staticmethod
-    async def get_all(db: Database) -> List[MappingBadgeDTO]:
+    async def get_by_id(id: int, db: Database) -> MappingBadgeDTO:
+        return (await MappingBadge.get_by_id(id, db)).as_dto()
+
+    @staticmethod
+    async def get_all(db: Database) -> MappingBadgeListDTO:
         return MappingBadgeListDTO(
             badges=list(map(lambda mb: mb.as_dto(), await MappingBadge.get_all(db))),
         )
 
     @staticmethod
     async def create(data: MappingBadgeCreateDTO, db: Database) -> MappingBadgeDTO:
-        return MappingBadgeDTO(
-            **((await MappingBadge.create(data, db)).as_dto().dict())
-        )
+        return (await MappingBadge.create(data, db)).as_dto()
 
     @staticmethod
     async def update(data: MappingBadgeUpdateDTO, db: Database) -> MappingBadgeDTO:
-        return MappingBadgeDTO(
-            **((await MappingBadge.update(data, db)).as_dto().dict())
-        )
+        return (await MappingBadge.update(data, db)).as_dto()
 
     @staticmethod
     async def delete(id: int, db: Database):
