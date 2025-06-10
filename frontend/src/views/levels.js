@@ -1,112 +1,107 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useFetch } from '../hooks/UseFetch';
-import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 import messages from './messages';
-import { LicenseInformation, LicensesManagement, LicenseForm } from '../components/licenses';
-import { FormSubmitButton, CustomButton } from '../components/button';
-import { DeleteModal } from '../components/deleteModal';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { useFetch } from '../hooks/UseFetch';
+import { LevelInformation, LevelsManagement, LevelForm } from '../components/levels';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
-import { updateEntity } from '../utils/management';
+import { FormSubmitButton, CustomButton } from '../components/button';
 import { EntityError } from '../components/alert';
+import { DeleteModal } from '../components/deleteModal';
+import { updateEntity } from '../utils/management';
 
-export const EditLicense = () => {
+export const EditLevel = () => {
   const { id } = useParams();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
-  const [error, loading, license] = useFetch(`licenses/${id}/`);
+  const [error, loading, level] = useFetch(`levels/${id}/`);
   const [isError, setIsError] = useState(false);
-  useSetTitleTag(`Edit ${license.name}`);
+  const token = useSelector((state) => state.auth.token);
 
   const onFailure = () => setIsError(true);
-  const updateLicense = (payload) => {
+  const updateLevel = (payload) => {
     setIsError(false);
-    updateEntity(`licenses/${id}/`, 'license', payload, token, null, onFailure);
+    updateEntity(`levels/${id}/`, 'level', payload, token, null, onFailure);
   };
 
   return (
     <div className="cf pv4 bg-tan">
       <div className="cf">
         <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib">
-          <FormattedMessage {...messages.manageLicense} />
+          <FormattedMessage {...messages.manageLevel} />
         </h3>
-        <DeleteModal id={license.licenseId} name={license.name} type="licenses" />
+        <DeleteModal id={level.id} name={level.name} type="levels" />
       </div>
-      <div className="w-40-l w-100 mt4 fl">
-        <LicenseForm
-          userDetails={userDetails}
-          license={license}
-          updateLicense={updateLicense}
+      <div className="w-50-l w-100 mt4 fl">
+        <LevelForm
+          level={level}
+          updateLevel={updateLevel}
           disabledForm={error || loading}
         />
-        {isError && <EntityError entity="license" action="updation" />}
+        {isError && <EntityError entity="level" action="updation" />}
       </div>
     </div>
   );
 };
 
-export const ListLicenses = () => {
-  useSetTitleTag('Manage licenses');
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  // TO DO: filter teams of current user
-  const [error, loading, licenses] = useFetch(`licenses/`);
-  const isLicensesFetched = !loading && !error;
+export const ListLevels = () => {
+  useSetTitleTag('Manage Levels');
+
+  const [error, loading, result] = useFetch('levels/');
+  const isFetched = !loading && !error;
 
   return (
-    <LicensesManagement
-      licenses={licenses.licenses}
-      userDetails={userDetails}
-      isLicensesFetched={isLicensesFetched}
+    <LevelsManagement
+      levels={result.levels}
+      isFetched={isFetched}
     />
   );
 };
 
-export const CreateLicense = () => {
-  useSetTitleTag('Create new license');
-  const navigate = useNavigate();
+export const CreateLevel = () => {
+  useSetTitleTag('Create new level');
   const token = useSelector((state) => state.auth.token);
   const [isError, setIsError] = useState(false);
+  const navigate = useNavigate();
 
-  const createLicense = (payload) => {
+  const createLevel = (payload) => {
     setIsError(false);
-    return pushToLocalJSONAPI('licenses/', JSON.stringify(payload), token, 'POST')
+    return pushToLocalJSONAPI('levels/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
         toast.success(
           <FormattedMessage
             {...messages.entityCreationSuccess}
             values={{
-              entity: 'license',
+              entity: 'level',
             }}
           />,
         );
-        navigate(`/manage/licenses/${result.licenseId}`);
+        navigate(`/manage/levels/`);
       })
       .catch(() => setIsError(true));
   };
 
   return (
     <Form
-      onSubmit={(values) => createLicense(values)}
+      onSubmit={(values) => createLevel(values)}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
             <div className="cf vh-100">
               <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
-                <FormattedMessage {...messages.newLicense} />
+                <FormattedMessage {...messages.newLevel} />
               </h3>
-              <div className="w-40-l w-100 fl">
+              <div className="w-50-l w-100 fl">
                 <div className="bg-white b--grey-light ba pa4 mb3">
                   <h3 className="f3 blue-dark mv0 fw6">
-                    <FormattedMessage {...messages.licenseInfo} />
+                    <FormattedMessage {...messages.levelInfo} />
                   </h3>
-                  <LicenseInformation />
+                  <LevelInformation />
                 </div>
-                {isError && <EntityError entity="license" />}
+                {isError && <EntityError entity="level" />}
               </div>
               <div className="w-40-l w-100 fl pl5-l pl0 "></div>
             </div>
@@ -125,7 +120,7 @@ export const CreateLicense = () => {
                   className="w-100 h-100 bg-red white"
                   disabledClassName="bg-red o-50 white w-100 h-100"
                 >
-                  <FormattedMessage {...messages.createLicense} />
+                  <FormattedMessage {...messages.createLevel} />
                 </FormSubmitButton>
               </div>
             </div>

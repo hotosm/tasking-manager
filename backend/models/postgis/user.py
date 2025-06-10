@@ -6,7 +6,9 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
+    ForeignKey,
     Integer,
+    JSON,
     String,
     delete,
     insert,
@@ -30,8 +32,8 @@ from backend.models.dtos.user_dto import (
 from backend.models.postgis.interests import Interest, user_interests
 from backend.models.postgis.licenses import License, user_licenses_table
 from backend.models.postgis.project_info import ProjectInfo
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.statuses import (
-    MappingLevel,
     ProjectStatus,
     UserGender,
     UserRole,
@@ -47,7 +49,7 @@ class User(Base):
     id = Column(BigInteger, primary_key=True, index=True)
     username = Column(String, unique=True)
     role = Column(Integer, default=0, nullable=False)
-    mapping_level = Column(Integer, default=1, nullable=False)
+    mapping_level = Column(ForeignKey("mapping_levels.id"), default=1, nullable=False)
     tasks_mapped = Column(Integer, default=0, nullable=False)
     tasks_validated = Column(Integer, default=0, nullable=False)
     tasks_invalidated = Column(Integer, default=0, nullable=False)
@@ -79,6 +81,7 @@ class User(Base):
     last_validation_date = Column(DateTime, default=timestamp)
 
     # Relationships
+    level = relationship(MappingLevel, backref="users")
     accepted_licenses = relationship(
         "License", secondary=user_licenses_table, overlaps="users"
     )
@@ -179,7 +182,8 @@ class User(Base):
         if query.mapping_level:
             mapping_levels = query.mapping_level.split(",")
             mapping_level_array = [
-                MappingLevel[mapping_level].value for mapping_level in mapping_levels
+                (await MappingLevel.get_by_name(mapping_level, db)).id
+                for mapping_level in mapping_levels
             ]
             filters.append("mapping_level = ANY(:mapping_levels)")
             params["mapping_levels"] = tuple(mapping_level_array)
@@ -206,7 +210,6 @@ class User(Base):
             base_params["offset"] = (query.page - 1) * query.per_page
 
             results = await db.fetch_all(base_query, base_params)
-
         else:
             results = await db.fetch_all(base_query, params)
 
@@ -214,7 +217,9 @@ class User(Base):
         for result in results:
             listed_user = ListedUser()
             listed_user.id = result["id"]
-            listed_user.mapping_level = MappingLevel(result["mapping_level"]).name
+            listed_user.mapping_level = (
+                await MappingLevel.get_by_id(result["mapping_level"], db)
+            ).name
             listed_user.username = result["username"]
             listed_user.picture_url = result["picture_url"]
             listed_user.role = UserRole(result["role"]).name
@@ -386,16 +391,14 @@ class User(Base):
 
     async def set_mapping_level(self, level: MappingLevel, db: Database):
         """Sets the supplied level on the user"""
-        self.mapping_level = level.value
+        self.mapping_level = level.id
 
         query = """
             UPDATE users
             SET mapping_level = :mapping_level
             WHERE id = :user_id
         """
-        await db.execute(
-            query, values={"user_id": self.id, "mapping_level": level.value}
-        )
+        await db.execute(query, values={"user_id": self.id, "mapping_level": level.id})
 
     async def accept_license_terms(self, user_id, license_id: int, db: Database):
         """Associate the user in scope with the supplied license"""
@@ -426,13 +429,15 @@ class User(Base):
 
         return False
 
-    def as_dto(self, logged_in_username: str) -> UserDTO:
+    async def as_dto(self, logged_in_username: str, db: Database) -> UserDTO:
         """Create DTO object from user in scope"""
         user_dto = UserDTO()
         user_dto.id = self.id
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
-        user_dto.mapping_level = MappingLevel(self.mapping_level).name
+        user_dto.mapping_level = (
+            await MappingLevel.get_by_id(self.mapping_level, db)
+        ).name
         user_dto.projects_mapped = (
             len(self.projects_mapped) if self.projects_mapped else None
         )
@@ -489,3 +494,27 @@ class UserEmail(Base):
     def get_by_email(email_address: str):
         """Return the user for the specified username, or None if not found"""
         return UserEmail.query.filter_by(email_address=email_address).one_or_none()
+
+
+class UserStats(Base):
+    __tablename__ = "user_stats"
+
+    id = Column(BigInteger, primary_key=True)
+    user_id = Column(BigInteger, nullable=False)
+    stats = Column(JSON, nullable=False)
+    date_obtained = Column(DateTime, nullable=False, default=timestamp)
+
+    @staticmethod
+    async def update(user_id: int, stats: str, db: Database):
+        await db.execute(
+            """
+            INSERT INTO user_stats (user_id, stats, date_obtained)
+            VALUES (:user_id, :stats, current_timestamp)
+            ON CONFLICT (user_id)
+            DO UPDATE SET stats=excluded.stats, date_obtained=current_timestamp
+            """,
+            values={
+                "user_id": user_id,
+                "stats": stats,
+            },
+        )

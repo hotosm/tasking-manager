@@ -1,8 +1,10 @@
 import datetime
+import json
 
 from databases import Database
 from loguru import logger
 from sqlalchemy import and_, desc, distinct, func, insert, select
+import requests
 
 from backend.config import Settings
 from backend.exceptions import NotFound
@@ -23,11 +25,12 @@ from backend.models.dtos.user_dto import (
     UserTaskDTOs,
 )
 from backend.models.postgis.interests import Interest, project_interests
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.message import MessageType
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.models.postgis.task import Task, TaskHistory
-from backend.models.postgis.user import MappingLevel, User, UserEmail, UserRole
+from backend.models.postgis.user import User, UserEmail, UserRole, UserStats
 from backend.models.postgis.utils import timestamp
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
@@ -35,6 +38,7 @@ from backend.services.messaging.template_service import (
     template_var_replacing,
 )
 from backend.services.users.osm_service import OSMService, OSMServiceError
+from backend.services.mapping_levels import MappingLevelService
 
 settings = Settings()
 
@@ -50,8 +54,10 @@ class UserService:
     @staticmethod
     async def get_user_by_id(user_id: int, db: Database) -> User:
         user = await User.get_by_id(user_id, db)
+
         if user is None:
             raise NotFound(sub_code="USER_NOT_FOUND", user_id=user_id)
+
         return user
 
     @staticmethod
@@ -152,6 +158,21 @@ class UserService:
         return projects_mapped
 
     @staticmethod
+    async def get_and_save_stats(user_id: int, db: Database) -> dict:
+        try:
+            url = f"{settings.OHSOME_STATS_API_URL}/stats/user?userId={user_id}&topics={settings.OHSOME_STATS_TOPICS}"
+            headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
+            response = requests.get(url, headers=headers)
+
+            json_data = response.json()
+
+            await UserStats.update(user_id, json.dumps(json_data["result"]), db)
+
+            return json_data
+        except Exception as e:
+            logger.warning(f"Stats failed to update at login: {e}")
+
+    @staticmethod
     async def register_user(osm_id, username, changeset_count, picture_url, email, db):
         """
         Creates user in DB
@@ -170,11 +191,11 @@ class UserService:
         advanced_level = settings.MAPPER_LEVEL_ADVANCED
 
         if changeset_count > advanced_level:
-            mapping_level = MappingLevel.ADVANCED.value
+            mapping_level = (await MappingLevel.get_by_name("ADVANCED", db)).id
         elif intermediate_level < changeset_count <= advanced_level:
-            mapping_level = MappingLevel.INTERMEDIATE.value
+            mapping_level = (await MappingLevel.get_by_name("INTERMEDIATE", db)).id
         else:
-            mapping_level = MappingLevel.BEGINNER.value
+            mapping_level = (await MappingLevel.get_beginner_level(db)).id
 
         values = {
             "id": osm_id,
@@ -222,7 +243,7 @@ class UserService:
         requested_user = User(**result)
         logged_in_user = await UserService.get_user_by_id(logged_in_user_id, db)
         await UserService.check_and_update_mapper_level(requested_user.id, db)
-        return requested_user.as_dto(logged_in_user.username)
+        return await requested_user.as_dto(logged_in_user.username, db)
 
     @staticmethod
     async def get_user_dto_by_id(
@@ -230,10 +251,9 @@ class UserService:
     ) -> UserDTO:
         """Gets user DTO for supplied user id"""
         user = await UserService.get_user_by_id(user_id, db)
-        if request_user:
-            request_user = await UserService.get_user_by_id(request_user, db)
-            return user.as_dto(request_user.username)
-        return user.as_dto()
+        request_user = await UserService.get_user_by_id(request_user, db)
+
+        return await user.as_dto(request_user.username, db)
 
     @staticmethod
     async def get_interests_stats(user_id: int, db: Database):
@@ -577,7 +597,8 @@ class UserService:
     async def get_mapping_level(user_id: int, db: Database):
         """Gets mapping level user is at"""
         user = await UserService.get_user_by_id(user_id, db)
-        return MappingLevel(user.mapping_level)
+
+        return await MappingLevelService.get_by_id(user.mapping_level, db)
 
     @staticmethod
     def is_user_validator(user_id: int) -> bool:
@@ -804,12 +825,9 @@ class UserService:
         :raises: UserServiceError
         """
         try:
-            requested_level = MappingLevel[level.upper()]
-        except KeyError:
-            raise UserServiceError(
-                "UnknownUserRole- "
-                + f"Unknown role {level} accepted values are BEGINNER, INTERMEDIATE, ADVANCED"
-            )
+            requested_level = await MappingLevelService.get_by_name(level, db)
+        except NotFound:
+            raise UserServiceError(f"UnknownUserRole- Unknown role {level}")
 
         user = await UserService.get_user_by_username(username, db)
         await User.set_mapping_level(user, requested_level, db)
@@ -865,20 +883,23 @@ class UserService:
     async def check_and_update_mapper_level(user_id: int, db: Database):
         """Check user's mapping level and update if they have crossed threshold"""
         user = await UserService.get_user_by_id(user_id, db)
-        user_level = MappingLevel(user.mapping_level)
+        user_level = await MappingLevel.get_by_id(user.mapping_level, db)
 
-        if user_level == MappingLevel.ADVANCED:
+        if user_level.id == (await MappingLevel.get_max_level(db)).id:
             return  # User has achieved the highest level, no need to proceed
 
         intermediate_level = settings.MAPPER_LEVEL_INTERMEDIATE
         advanced_level = settings.MAPPER_LEVEL_ADVANCED
+
+        intermediate = await MappingLevel.get_by_name("INTERMEDIATE", db)
+        advanced = await MappingLevel.get_by_name("ADVANCED", db)
 
         try:
             osm_details = OSMService.get_osm_details_for_user(user_id)
 
             if (
                 osm_details.changeset_count > advanced_level
-                and user.mapping_level != MappingLevel.ADVANCED.value
+                and user.mapping_level != advanced.id
             ):
                 update_query = """
                     UPDATE users
@@ -887,7 +908,7 @@ class UserService:
                 """
                 await db.execute(
                     update_query,
-                    {"new_level": MappingLevel.ADVANCED.value, "user_id": user_id},
+                    {"new_level": advanced.id, "user_id": user_id},
                 )
                 await UserService.notify_level_upgrade(
                     user_id, user.username, "ADVANCED", db
@@ -895,7 +916,7 @@ class UserService:
 
             elif (
                 intermediate_level < osm_details.changeset_count < advanced_level
-                and user.mapping_level != MappingLevel.INTERMEDIATE.value
+                and user.mapping_level != intermediate
             ):
                 update_query = """
                     UPDATE users
@@ -904,7 +925,7 @@ class UserService:
                 """
                 await db.execute(
                     update_query,
-                    {"new_level": MappingLevel.INTERMEDIATE.value, "user_id": user_id},
+                    {"new_level": intermediate.id, "user_id": user_id},
                 )
                 await UserService.notify_level_upgrade(
                     user_id, user.username, "INTERMEDIATE", db
