@@ -8,22 +8,25 @@ from backend.models.dtos.mapping_level_dto import (
     MappingLevelDTO,
     MappingLevelCreateDTO,
     MappingLevelUpdateDTO,
+    MappingLevelListDTO,
 )
 
 
 class MappingLevelService:
     @staticmethod
     async def get_all(db: Database) -> List[MappingLevelDTO]:
-        return list(map(lambda ml: ml.as_dto(), await MappingLevel.get_all(db)))
+        return MappingLevelListDTO(
+            levels=list(map(lambda ml: ml.as_dto(), await MappingLevel.get_all(db))),
+        )
 
     @staticmethod
-    async def get_by_id(id: int, db: Database) -> MappingLevel:
+    async def get_by_id(id: int, db: Database) -> MappingLevelDTO:
         mapping_level = await MappingLevel.get_by_id(id, db)
 
         if mapping_level is None:
             raise NotFound(sub_code="MAPPING_LEVEL_NOT_FOUND", mapping_level_id=id)
 
-        return mapping_level
+        return mapping_level.as_dto()
 
     @staticmethod
     async def get_by_name(name: str, db: Database) -> MappingLevel:

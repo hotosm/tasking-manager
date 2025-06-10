@@ -48,6 +48,10 @@ export default defineMessages({
     id: 'deleteModal.status.success.badges',
     defaultMessage: 'Badge deleted successfully.',
   },
+  success_levels: {
+    id: 'deleteModal.status.success.levels',
+    defaultMessage: 'Level deleted successfully.',
+  },
   failure_projects: {
     id: 'deleteModal.status.failure.projects',
     defaultMessage: 'An error occurred when trying to delete this project.',
@@ -87,6 +91,10 @@ export default defineMessages({
   failure_badges: {
     id: 'deleteModal.status.failure.badges',
     defaultMessage: 'An error occurred when trying to delete this badge.',
+  },
+  failure_levels: {
+    id: 'deleteModal.status.failure.levels',
+    defaultMessage: 'An error occurred when trying to delete this level.',
   },
   delete: {
     id: 'deleteModal.button.delete',
@@ -144,6 +152,10 @@ export default defineMessages({
   confirmDeleteTitle_badges: {
     id: 'deleteModal.title.badges',
     defaultMessage: 'Are you sure you want to delete this badge?',
+  },
+  confirmDeleteTitle_levels: {
+    id: 'deleteModal.title.levels',
+    defaultMessage: 'Are you sure you want to delete this level?',
   },
   OrgHasProjectsError: {
     id: 'deleteModal.error.OrgHasProjectsError',

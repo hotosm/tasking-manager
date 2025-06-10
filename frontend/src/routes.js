@@ -496,6 +496,33 @@ export const router = createBrowserRouter(
             return { Component: EditBadge };
           }}
         />
+        <Route
+          path="levels/"
+          lazy={async () => {
+            const { ListLevels } = await import(
+              './views/levels' /* webpackChunkName: "levels" */
+            );
+            return { Component: ListLevels };
+          }}
+        />
+        <Route
+          path="levels/new"
+          lazy={async () => {
+            const { CreateLevel } = await import(
+              './views/levels' /* webpackChunkName: "levels" */
+            );
+            return { Component: CreateLevel };
+          }}
+        />
+        <Route
+          path="levels/:id/"
+          lazy={async () => {
+            const { EditLevel } = await import(
+              './views/levels' /* webpackChunkName: "licenses" */
+            );
+            return { Component: EditLevel };
+          }}
+        />
       </Route>
       <Route
         path="teams/:id/membership"

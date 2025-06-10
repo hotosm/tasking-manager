@@ -11,7 +11,7 @@ from backend.services.mapping_levels import MappingLevelService
 from backend.services.users.authentication_service import pm_only
 
 router = APIRouter(
-    prefix="/mapping_levels",
+    prefix="/levels",
     tags=["mapping_levels"],
     responses={404: {"description": "Not found"}},
 )
@@ -31,6 +31,14 @@ async def create_mapping_level(
     user: AuthUserDTO = Depends(pm_only),
 ):
     return await MappingLevelService.create(data, db)
+
+
+@router.get("/{level_id}/")
+async def get_mapping_level(
+    level_id: int,
+    db: Database = Depends(get_db),
+):
+    return await MappingLevelService.get_by_id(level_id, db)
 
 
 @router.patch("/{level_id}/")

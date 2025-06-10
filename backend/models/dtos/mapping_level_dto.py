@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 
@@ -29,3 +29,7 @@ class MappingLevelUpdateDTO(BaseModel):
     color: Optional[str] = Field(default=None)
     ordering: Optional[int] = None
     is_beginner: Optional[bool] = Field(default=False, alias="isBeginner")
+
+
+class MappingLevelListDTO(BaseModel):
+    levels: List[MappingLevelDTO]

@@ -52,10 +52,10 @@ class TestMappingLevelService:
         levels = await MappingLevelService.get_all(self.db)
 
         # Assert
-        assert len(levels) == 3
-        assert levels[0].name == "BEGINNER"
-        assert levels[1].name == "INTERMEDIATE"
-        assert levels[2].name == "ADVANCED"
+        assert len(levels.levels) == 3
+        assert levels.levels[0].name == "BEGINNER"
+        assert levels.levels[1].name == "INTERMEDIATE"
+        assert levels.levels[2].name == "ADVANCED"
 
     async def test_create(self):
         # Arrange
