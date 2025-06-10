@@ -152,6 +152,7 @@ const DifficultyDropdown = (props) => {
 };
 
 export const ProjectNav = ({ isExploreProjectsPage, children }) => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
   const encodedParams = stringify(fullProjectsQuery)
@@ -195,6 +196,10 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
   if ((isExploreProjectsPage && isExploreProjectsTableView) || !isMapShown) {
     clearFiltersURL = './?omitMapResults=1';
   }
+  // fixes clear filter not persisting grid/list view issue
+  if (searchParams.view) {
+    clearFiltersURL = `${clearFiltersURL}&view=${searchParams.view}`;
+  }
 
   // onSelectedItemChange={(changes) => console.log(changes)}
   return (
@@ -229,7 +234,20 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
               className="f6"
             />
             {!filterIsEmpty && (
-              <ClearFilters url={clearFiltersURL} className="mv2 mh1 fr dn dib-l" />
+              <ClearFilters
+                url={clearFiltersURL}
+                className="mv2 mh1 fr dn dib-l"
+                onClick={() => {
+                  dispatch({ type: 'SET_ACTION', action: 'any' });
+                  setQuery(
+                    {
+                      ...fullProjectsQuery,
+                      action: 'any',
+                    },
+                    'pushIn',
+                  );
+                }}
+              />
             )}
 
             <ProjectSearchBox

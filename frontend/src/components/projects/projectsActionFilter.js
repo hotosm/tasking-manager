@@ -42,13 +42,13 @@ export const ProjectsActionFilter = ({ setQuery, fullProjectsQuery }) => {
           {
             ...fullProjectsQuery,
             page: undefined,
-            status: undefined,
+            action: value,
           },
           'pushIn',
         );
       }}
       // use the action query param, in case someone loads the page with /explore?action=*
-      value={fullProjectsQuery.status || fullProjectsQuery.action || action || 'any'}
+      value={fullProjectsQuery.action || action || 'any'}
       options={[
         { label: <FormattedMessage {...messages.projectsToMap} />, value: 'map' },
         { label: <FormattedMessage {...messages.projectsToValidate} />, value: 'validate' },
