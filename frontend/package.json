@@ -6,7 +6,6 @@
   "dependencies": {
     "@hotosm/id": "^2.33.0",
     "@hotosm/iso-countries-languages": "^1.1.2",
-    "@hotosm/underpass-ui": "^0.0.4",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@mapbox/mapbox-gl-geocoder": "^5.0.2",
     "@mapbox/mapbox-gl-language": "^0.10.1",

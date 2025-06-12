@@ -1,11 +1,9 @@
-import axios from 'axios';
 import { subMonths, format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import api from './apiClient';
-import { UNDERPASS_URL } from '../config';
 
 export const useProjectsQuery = (fullProjectsQuery, action, queryOptions) => {
   const token = useSelector((state) => state.auth.token);
@@ -206,18 +204,6 @@ export const downloadAsCSV = (allQueryParams, action, token) => {
   }
   return api(token).get('projects/', {
     params: paramsRemapped,
-  });
-};
-
-export const useAvailableCountriesQuery = () => {
-  const fetchGeojsonData = () => {
-    return axios.get(`${UNDERPASS_URL}/availability`);
-  };
-
-  return useQuery({
-    queryKey: ['priority-geojson'],
-    queryFn: fetchGeojsonData,
-    select: (res) => res.data,
   });
 };
 

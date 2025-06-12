@@ -34,7 +34,6 @@ Status | Feature | Release
 -------|---------|---------
 ✅ | Up-to-date OSM Statistics: Integrated with [ohsome Now](https://stats.now.ohsome.org/) for real-time data insights.| Released in [v4.6.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.6.2).
 ✅ | Downloadable OSM Exports: Export data directly from each project. | Available in[ v4.7.0](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.0).
-✅ | Live Data Quality Monitoring: Monitor project data quality in real-time. | Introduced in [v4.7.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.2).
 ✅ | Rapid Editor Upgrade: Enhanced mapping experience with the latest rapid editor updates.
 ✅ | Public-Facing Partner Pages: Create and display dedicated pages for partners running remote mapathons.
 ✅ | Downloadable Project List View: Allow users to explore projects via a downloadable list. [View issue](https://github.com/hotosm/tasking-manager/issues/3394).
