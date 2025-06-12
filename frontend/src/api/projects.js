@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { subMonths, format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
