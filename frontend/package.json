@@ -4,7 +4,7 @@
   "license": "BSD-2-Clause",
   "private": false,
   "dependencies": {
-    "@hotosm/id": "^2.33.0",
+    "@hotosm/id": "^2.34.0",
     "@hotosm/iso-countries-languages": "^1.1.2",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@mapbox/mapbox-gl-geocoder": "^5.0.2",
