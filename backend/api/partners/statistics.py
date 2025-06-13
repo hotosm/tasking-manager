@@ -28,15 +28,13 @@ router = APIRouter(
 @router.get("/{permalink:str}/filtered-statistics/")
 async def get_filtered_statistics(
     permalink: str,
-    from_date: str
-    | None = Query(
+    from_date: str | None = Query(
         default=None,
         alias="fromDate",
         description="Fetch partner statistics from date as yyyy-mm-dd",
         example="2024-01-01",
     ),
-    to_date: str
-    | None = Query(
+    to_date: str | None = Query(
         default=None,
         alias="toDate",
         description="Fetch partner statistics to date as yyyy-mm-dd",

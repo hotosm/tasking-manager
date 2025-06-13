@@ -57,16 +57,14 @@ async def login(
 # class SystemAuthenticationCallbackAPI():
 @router.get("/authentication/callback/")
 async def callback(
-    authorization_code: str
-    | None = Query(
+    authorization_code: str | None = Query(
         None, alias="code", description="Code obtained after user authorization"
     ),
     redirect_uri: str = Query(
         settings.OAUTH_REDIRECT_URI,
         description="Route to redirect user once authenticated",
     ),
-    email: str
-    | None = Query(
+    email: str | None = Query(
         None,
         alias="email_address",
         description="Email address to used for email notifications from TM.",

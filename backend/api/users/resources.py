@@ -65,8 +65,9 @@ async def list_users(
         20, alias="perPage", description="Number of results per page"
     ),
     username: str | None = Query(None, description="Full or part username"),
-    role: str
-    | None = Query(None, description="Role of User, e.g. ADMIN, PROJECT_MANAGER"),
+    role: str | None = Query(
+        None, description="Role of User, e.g. ADMIN, PROJECT_MANAGER"
+    ),
     level: str | None = Query(None, description="Level of User, e.g. BEGINNER"),
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
@@ -217,8 +218,7 @@ async def get_paginated_osm_user_info(
         ..., description="Mapper's partial or full OpenStreetMap username"
     ),
     page: int = Query(1, description="Page of results user requested"),
-    project_id: int
-    | None = Query(
+    project_id: int | None = Query(
         None,
         alias="projectId",
         description="Optional, promote project participants to head of results",

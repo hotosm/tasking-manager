@@ -221,22 +221,20 @@ async def delete(
 @router.get("/")
 async def list_teams(
     team_name: str | None = Query(None, description="Name of the team to filter by"),
-    member: int
-    | None = Query(
+    member: int | None = Query(
         None,
         description="User ID to filter teams that the user belongs to, must be active",
     ),
-    manager: int
-    | None = Query(
+    manager: int | None = Query(
         None, description="User ID to filter teams where user has MANAGER role"
     ),
-    member_request: int
-    | None = Query(
+    member_request: int | None = Query(
         None, description="User ID to filter teams the user has sent invite request to"
     ),
     team_role: str | None = Query(None, description="Team role for project"),
-    organisation: int
-    | None = Query(None, description="Organisation ID to filter teams"),
+    organisation: int | None = Query(
+        None, description="Organisation ID to filter teams"
+    ),
     omit_member_list: bool = Query(
         False,
         alias="omitMemberList",

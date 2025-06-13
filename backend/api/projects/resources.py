@@ -796,13 +796,17 @@ async def get_projects(
             partnership_from=partnership_from,
             partnership_to=partnership_to,
             download_as_csv=download_as_csv,
-            mapping_types=list(map(str, mapping_types_str.split(",")))
-            if mapping_types_str
-            else None,
+            mapping_types=(
+                list(map(str, mapping_types_str.split(",")))
+                if mapping_types_str
+                else None
+            ),
             mapping_types_exact=mapping_types_exact,
-            project_statuses=list(map(str, project_statuses_str.split(",")))
-            if project_statuses_str
-            else None,
+            project_statuses=(
+                list(map(str, project_statuses_str.split(",")))
+                if project_statuses_str
+                else None
+            ),
             interests=map(int, interests.split(",")) if interests else None,
         )
 

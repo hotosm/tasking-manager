@@ -117,8 +117,7 @@ async def get_notifications(
     request: Request,
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
-    message_type: str
-    | None = Query(
+    message_type: str | None = Query(
         default=None,
         description=(
             "Optional message-type filter; leave blank to retrieve all.\n"
@@ -128,25 +127,21 @@ async def get_notifications(
         ),
         alias="messageType",
     ),
-    from_username: str
-    | None = Query(
+    from_username: str | None = Query(
         default=None,
         alias="from",
         description="Optional from username filter",
     ),
-    project: str
-    | None = Query(
+    project: str | None = Query(
         default=None,
         description="Optional project filter",
     ),
-    task_id: int
-    | None = Query(
+    task_id: int | None = Query(
         default=None,
         description="Optional task filter",
         alias="taskId",
     ),
-    status: str
-    | None = Query(
+    status: str | None = Query(
         default=None,
         description="Optional status filter (read or unread)",
     ),
