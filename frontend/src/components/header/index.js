@@ -147,7 +147,7 @@ export const Header = () => {
                 <div>
                   <PopupItems
                     userDetails={userDetails}
-                    menuItems={getMenuItemsForUser(userDetails)}
+                    menuItems={getMenuItemsForUser(userDetails, organisations)}
                     linkCombo={linkCombo}
                     location={location}
                     close={close}
