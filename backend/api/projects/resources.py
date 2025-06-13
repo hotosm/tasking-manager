@@ -4,8 +4,8 @@ from typing import Optional
 
 import geojson
 from databases import Database
-from fastapi import APIRouter, Depends, Request
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi import APIRouter, Depends, Request, Query, Path
+from fastapi.responses import JSONResponse, StreamingResponse, Response
 from loguru import logger
 
 from backend.db import get_db
@@ -599,6 +599,35 @@ def setup_search_dto(request) -> ProjectSearchDTO:
 @router.get("/")
 async def get_projects(
     request: Request,
+    difficulty: Optional[str] = Query(None),
+    action: Optional[str] = Query(None),
+    organisation_name: Optional[str] = Query(None, alias="organisationName"),
+    organisation_id: Optional[int] = Query(None, alias="organisationId"),
+    team_id: Optional[int] = Query(None, alias="teamId"),
+    campaign: Optional[str] = Query(None),
+    order_by: Optional[str] = Query("priority", alias="orderBy"),
+    country: Optional[str] = Query(None),
+    order_by_type: Optional[str] = Query("ASC", alias="orderByType"),
+    page: Optional[int] = Query(1),
+    text_search: Optional[str] = Query(None, alias="textSearch"),
+    omit_map_results: Optional[bool] = Query(False, alias="omitMapResults"),
+    last_updated_gte: Optional[str] = Query(None, alias="lastUpdatedFrom"),
+    last_updated_lte: Optional[str] = Query(None, alias="lastUpdatedTo"),
+    created_gte: Optional[str] = Query(None, alias="createdFrom"),
+    created_lte: Optional[str] = Query(None, alias="createdTo"),
+    partner_id: Optional[int] = Query(None, alias="partnerId"),
+    partnership_from: Optional[str] = Query(None, alias="partnershipFrom"),
+    partnership_to: Optional[str] = Query(None, alias="partnershipTo"),
+    download_as_csv: Optional[bool] = Query(None, alias="downloadAsCSV"),
+    created_by_me: bool = Query(False, alias="createdByMe"),
+    mapped_by_me: bool = Query(False, alias="mappedByMe"),
+    favorited_by_me: bool = Query(False, alias="favoritedByMe"),
+    managed_by_me: bool = Query(False, alias="managedByMe"),
+    based_on_my_interests: bool = Query(False, alias="basedOnMyInterests"),
+    mapping_types_str: Optional[str] = Query(None, alias="mappingTypes"),
+    mapping_types_exact: Optional[bool] = Query(False, alias="mappingTypesExact"),
+    project_statuses_str: Optional[str] = Query(None, alias="projectStatuses"),
+    interests: Optional[str] = Query(None),
     user: Optional[AuthUserDTO] = Depends(login_required_optional),
     db: Database = Depends(get_db),
 ):
@@ -743,10 +772,57 @@ async def get_projects(
     """
     try:
         user_id = user.id if user else None
-        user = None
-        if user_id:
-            user = await UserService.get_user_by_id(user_id, db)
-        search_dto = setup_search_dto(request)
+        user = await UserService.get_user_by_id(user_id, db) if user_id else None
+
+        search_dto = ProjectSearchDTO(
+            preferred_locale=request.headers.get("accept-language"),
+            difficulty=difficulty,
+            action=action,
+            organisation_name=organisation_name,
+            organisation_id=organisation_id,
+            team_id=team_id,
+            campaign=campaign,
+            order_by=order_by,
+            country=country,
+            order_by_type=order_by_type,
+            page=page,
+            text_search=text_search,
+            omit_map_results=omit_map_results,
+            last_updated_gte=last_updated_gte,
+            last_updated_lte=last_updated_lte,
+            created_gte=created_gte,
+            created_lte=created_lte,
+            partner_id=partner_id,
+            partnership_from=partnership_from,
+            partnership_to=partnership_to,
+            download_as_csv=download_as_csv,
+            mapping_types=(
+                list(map(str, mapping_types_str.split(",")))
+                if mapping_types_str
+                else None
+            ),
+            mapping_types_exact=mapping_types_exact,
+            project_statuses=(
+                list(map(str, project_statuses_str.split(",")))
+                if project_statuses_str
+                else None
+            ),
+            interests=map(int, interests.split(",")) if interests else None,
+        )
+
+        if user:
+            authenticated_user_id = user.id
+            if created_by_me:
+                search_dto.created_by = authenticated_user_id
+            if mapped_by_me:
+                search_dto.mapped_by = authenticated_user_id
+            if favorited_by_me:
+                search_dto.favorited_by = authenticated_user_id
+            if managed_by_me:
+                search_dto.managed_by = authenticated_user_id
+            if based_on_my_interests:
+                search_dto.based_on_user_interests = authenticated_user_id
+
         if search_dto.omit_map_results and search_dto.download_as_csv:
             return JSONResponse(
                 content={
@@ -1197,7 +1273,15 @@ async def get_notasks(
 
 
 @router.get("/{project_id}/queries/aoi/")
-async def get_aoi(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def get_aoi(
+    project_id: int = Path(..., description="Unique project ID"),
+    as_file: bool = Query(
+        default=False,
+        alias="as_file",
+        description="Set to true if file download preferred",
+    ),
+    db: Database = Depends(get_db),
+):
     """
     Get AOI of Project
     ---
@@ -1207,19 +1291,19 @@ async def get_aoi(request: Request, project_id: int, db: Database = Depends(get_
         - application/json
     parameters:
         - name: project_id
-            in: path
-            description: Unique project ID
-            required: true
-            type: integer
-            default: 1
+          in: path
+          description: Unique project ID
+          required: true
+          type: integer
+          default: 1
         - in: query
-            name: as_file
-            type: boolean
-            description: Set to false if file download not preferred
-            default: True
+          name: as_file
+          type: boolean
+          description: Set to true if file download preferred
+          default: False
     responses:
         200:
-            description: Project found
+            description: Project AOI returned
         403:
             description: Forbidden
         404:
@@ -1227,27 +1311,23 @@ async def get_aoi(request: Request, project_id: int, db: Database = Depends(get_
         500:
             description: Internal Server Error
     """
-    as_file = (
-        strtobool(request.query_params.get("as_file"))
-        if request.query_params.get("as_file")
-        else False
-    )
+    try:
+        project_aoi = await ProjectService.get_project_aoi(project_id, db)
 
-    project_aoi = await ProjectService.get_project_aoi(project_id, db)
+        if as_file:
+            aoi_str = geojson.dumps(project_aoi, indent=4)
+            return Response(
+                content=aoi_str,
+                media_type="application/geo+json",
+                headers={
+                    "Content-Disposition": f'attachment; filename="{project_id}-aoi.geojson"'
+                },
+            )
 
-    if as_file:
-        aoi_str = geojson.dumps(project_aoi, indent=4)  # Convert AOI to GeoJSON string
-        file_bytes = io.BytesIO(aoi_str.encode("utf-8"))
-        file_bytes.seek(0)  # Reset stream position
+        return project_aoi
 
-        return StreamingResponse(
-            file_bytes,
-            media_type="application/geo+json",
-            headers={
-                "Content-Disposition": f'attachment; filename="{project_id}.geojson"'
-            },
-        )
-    return project_aoi
+    except ProjectServiceError as e:
+        return JSONResponse(content={"Error": str(e)}, status_code=400)
 
 
 @router.get("/{project_id}/queries/priority-areas/")

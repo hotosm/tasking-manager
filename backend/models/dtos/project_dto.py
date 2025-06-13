@@ -349,9 +349,11 @@ class ProjectSearchDTO(BaseModel):
     preferred_locale: Optional[str] = "en"
     difficulty: Optional[str] = Field(None, validators=[is_known_project_difficulty])
     action: Optional[str] = None
-    mapping_types: List[str] = Field(None, validators=[is_known_mapping_type])
+    mapping_types: Optional[List[str]] = Field(None, validators=[is_known_mapping_type])
     mapping_types_exact: Optional[bool] = None
-    project_statuses: List[str] = Field(None, validators=[is_known_project_status])
+    project_statuses: Optional[List[str]] = Field(
+        None, validators=[is_known_project_status]
+    )
     organisation_name: Optional[str] = None
     organisation_id: Optional[int] = None
     team_id: Optional[int] = None
@@ -363,8 +365,8 @@ class ProjectSearchDTO(BaseModel):
     text_search: Optional[str] = None
     mapping_editors: Optional[List] = Field(None, validators=[is_known_editor])
     validation_editors: Optional[List] = Field(None, validators=[is_known_editor])
-    teams: List[str] = None
-    interests: List[int] = None
+    teams: Optional[List[str]] = None
+    interests: Optional[List[int]] = None
     created_by: Optional[int] = None
     mapped_by: Optional[int] = None
     favorited_by: Optional[int] = None

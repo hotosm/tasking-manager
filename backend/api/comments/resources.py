@@ -1,5 +1,5 @@
 from databases import Database
-from fastapi import APIRouter, BackgroundTasks, Depends, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Request, Query
 from fastapi.responses import JSONResponse
 from loguru import logger
 
@@ -95,8 +95,13 @@ async def post_comment(
 
 
 @router.get("/{project_id}/comments/")
-async def ge_comments(
-    request: Request, project_id: int, db: Database = Depends(get_db)
+async def get_comments(
+    project_id: int,
+    page: int = Query(1, description="Page of results user requested"),
+    per_page: int = Query(
+        20, alias="perPage", description="Number of elements per page"
+    ),
+    db: Database = Depends(get_db),
 ):
     """
     Get all chat messages for a project
@@ -131,10 +136,6 @@ async def ge_comments(
             description: Internal Server Error
     """
     await ProjectService.exists(project_id, db)
-    page = (
-        int(request.query_params.get("page")) if request.query_params.get("page") else 1
-    )
-    per_page = int(request.query_params.get("perPage", 20))
     project_messages = await ChatService.get_messages(project_id, db, page, per_page)
     return project_messages
 

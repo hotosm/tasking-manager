@@ -2,7 +2,7 @@ import io
 from typing import Optional
 
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 
 from backend.db import get_db
@@ -27,8 +27,19 @@ router = APIRouter(
 
 @router.get("/{permalink:str}/filtered-statistics/")
 async def get_filtered_statistics(
-    request: Request,
     permalink: str,
+    from_date: str | None = Query(
+        default=None,
+        alias="fromDate",
+        description="Fetch partner statistics from date as yyyy-mm-dd",
+        example="2024-01-01",
+    ),
+    to_date: str | None = Query(
+        default=None,
+        alias="toDate",
+        description="Fetch partner statistics to date as yyyy-mm-dd",
+        example="2024-09-01",
+    ),
     db: Database = Depends(get_db),
 ):
     """
@@ -66,9 +77,6 @@ async def get_filtered_statistics(
         500:
             description: Internal Server Error
     """
-    mapswipe = MapswipeService()
-    from_date = request.query_params.get("fromDate")
-    to_date = request.query_params.get("toDate")
 
     if from_date is None:
         raise BadRequest(
@@ -102,6 +110,7 @@ async def get_filtered_statistics(
             message=MAPSWIPE_GROUP_EMPTY_MESSAGE,
         )
 
+    mapswipe = MapswipeService()
     return mapswipe.fetch_filtered_partner_stats(
         partner.id, partner.mapswipe_group_id, from_date, to_date
     )
@@ -109,8 +118,14 @@ async def get_filtered_statistics(
 
 @router.get("/{permalink:str}/general-statistics/")
 async def get_general_statistics(
-    request: Request,
     permalink: str,
+    limit: int = Query(10, description="The number of partner members to fetch"),
+    offset: int = Query(
+        0, description="The starting index from which to fetch partner members"
+    ),
+    download_as_csv: bool = Query(
+        False, alias="downloadAsCSV", description="Download users in this group as CSV"
+    ),
     db: Database = Depends(get_db),
 ):
     """
@@ -152,8 +167,6 @@ async def get_general_statistics(
         500:
             description: Internal Server Error
     """
-
-    mapswipe = MapswipeService()
     partner = await PartnerService.get_partner_by_permalink(permalink, db)
 
     if not is_valid_group_id(partner.mapswipe_group_id):
@@ -162,10 +175,7 @@ async def get_general_statistics(
             message=MAPSWIPE_GROUP_EMPTY_MESSAGE,
         )
 
-    limit = int(request.query_params.get("limit", 10))
-    offset = int(request.query_params.get("offset", 0))
-    download_as_csv = bool(request.query_params.get("downloadAsCSV", "false") == "true")
-
+    mapswipe = MapswipeService()
     group_dto = mapswipe.fetch_grouped_partner_stats(
         partner.id,
         partner.mapswipe_group_id,
@@ -176,9 +186,8 @@ async def get_general_statistics(
 
     if download_as_csv:
         csv_content = group_dto.to_csv()
-        csv_buffer = io.StringIO(csv_content)
         return StreamingResponse(
-            content=csv_buffer,
+            content=io.StringIO(csv_content),
             media_type="text/csv",
             headers={"Content-Disposition": "attachment; filename=partner_members.csv"},
         )

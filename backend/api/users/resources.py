@@ -1,7 +1,5 @@
-from distutils.util import strtobool
-
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Query, Path
 from fastapi.responses import JSONResponse
 from loguru import logger
 
@@ -61,7 +59,16 @@ async def get_user(
 
 @router.get("/")
 async def list_users(
-    request: Request,
+    page: int = Query(1, description="Page of results user requested"),
+    pagination: bool = Query(True, description="Whether to return paginated results"),
+    per_page: int = Query(
+        20, alias="perPage", description="Number of results per page"
+    ),
+    username: str | None = Query(None, description="Full or part username"),
+    role: str | None = Query(
+        None, description="Role of User, e.g. ADMIN, PROJECT_MANAGER"
+    ),
+    level: str | None = Query(None, description="Level of User, e.g. BEGINNER"),
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
 ):
@@ -114,18 +121,14 @@ async def list_users(
             description: Internal Server Error
     """
     try:
-        query = UserSearchQuery()
-        query.pagination = strtobool(request.query_params.get("pagination", "True"))
-        if query.pagination:
-            query.page = (
-                int(request.query_params.get("page"))
-                if request.query_params.get("page")
-                else 1
-            )
-        query.per_page = int(request.query_params.get("perPage", 20))
-        query.username = request.query_params.get("username")
-        query.mapping_level = request.query_params.get("level")
-        query.role = request.query_params.get("role")
+        query = UserSearchQuery(
+            pagination=pagination,
+            page=page if pagination else None,
+            per_page=per_page,
+            username=username,
+            mapping_level=level,
+            role=role,
+        )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
         return JSONResponse(
@@ -211,8 +214,15 @@ async def get_osm_user_info(
 
 @router.get("/queries/filter/{username}/")
 async def get_paginated_osm_user_info(
-    request: Request,
-    username,
+    username: str = Path(
+        ..., description="Mapper's partial or full OpenStreetMap username"
+    ),
+    page: int = Query(1, description="Page of results user requested"),
+    project_id: int | None = Query(
+        None,
+        alias="projectId",
+        description="Optional, promote project participants to head of results",
+    ),
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
 ):
@@ -253,12 +263,6 @@ async def get_paginated_osm_user_info(
         500:
             description: Internal Server Error
     """
-    page = (
-        int(request.query_params.get("page")) if request.query_params.get("page") else 1
-    )
-    project_id = request.query_params.get("projectId", None)
-    if project_id:
-        project_id = int(project_id)
     users_dto = await UserService.filter_users(username, project_id, page, db)
     return users_dto
 

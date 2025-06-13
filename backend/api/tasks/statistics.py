@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import JSONResponse
 
 from backend.api.utils import validate_date_input
@@ -19,7 +19,13 @@ router = APIRouter(
 
 @router.get("/statistics/")
 async def get_task_stats(
-    request: Request,
+    start_date_str: str = Query(..., alias="startDate"),
+    end_date_str: str = Query(default=str(date.today()), alias="endDate"),
+    organisation_id: str = Query(default=None, alias="organisationId"),
+    organisation_name: str = Query(default=None, alias="organisationName"),
+    campaign: str = Query(default=None),
+    project_id: str = Query(default=None, alias="projectId"),
+    country: str = Query(default=None),
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
 ):
@@ -78,34 +84,20 @@ async def get_task_stats(
             description: Internal Server Error
     """
     try:
-        if request.query_params.get("startDate"):
-            start_date = validate_date_input(request.query_params.get("startDate"))
-        else:
-            return JSONResponse(
-                content={
-                    "Error": "Start date is required",
-                    "SubCode": "MissingDate",
-                },
-                status_code=400,
-            )
-        end_date = validate_date_input(
-            request.query_params.get("endDate", date.today())
-        )
+        start_date = validate_date_input(start_date_str)
+        end_date = validate_date_input(end_date_str)
+
         if end_date < start_date:
             raise ValueError(
                 "InvalidDateRange- Start date must be earlier than end date"
             )
         if (end_date - start_date) > timedelta(days=366):
             raise ValueError(
-                "InvalidDateRange- Date range can not be bigger than 1 year"
+                "InvalidDateRange- Date range cannot be greater than 1 year"
             )
-        organisation_id = request.query_params.get("organisationId", None)
-        organisation_name = request.query_params.get("organisationName", None)
-        campaign = request.query_params.get("campaign", None)
-        project_id = request.query_params.get("projectId")
-        if project_id:
-            project_id = map(str, project_id.split(","))
-        country = request.query_params.get("country", None)
+
+        project_ids = list(map(int, project_id.split(","))) if project_id else None
+
         task_stats = await StatsService.get_task_stats(
             db,
             start_date,
@@ -113,10 +105,11 @@ async def get_task_stats(
             organisation_id,
             organisation_name,
             campaign,
-            project_id,
+            project_ids,
             country,
         )
         return task_stats
+
     except (KeyError, ValueError) as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
