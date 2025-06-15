@@ -20,6 +20,4 @@ def upgrade():
 
 
 def downgrade():
-    op.add_column(
-        "mapping_levels", sa.Column("image_path", sa.String(), nullable=True)
-    )
+    op.add_column("mapping_levels", sa.Column("image_path", sa.String(), nullable=True))
