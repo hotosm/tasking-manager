@@ -38,8 +38,6 @@ class TestMappingLevelService:
 
         # Assert
         assert dto.name == orig.name
-        assert dto.image_path == orig.image_path
-        assert dto.image_path == "the path"
         assert dto.approvals_required == orig.approvals_required
         assert dto.approvals_required == 5
         assert dto.color == orig.color
@@ -61,7 +59,6 @@ class TestMappingLevelService:
         # Arrange
         level = MappingLevelCreateDTO(
             name="new level",
-            image_path="",
             ordering=4,
         )
 
@@ -99,8 +96,6 @@ class TestMappingLevelService:
         from_db = await MappingLevel.get_by_id(level.id, self.db)
 
         assert from_db.name == new_data.name
-        assert from_db.image_path == new_data.image_path
-        assert from_db.image_path == "https://new.com/path.jpg"
         assert from_db.approvals_required == new_data.approvals_required
         assert from_db.approvals_required == 10
         assert from_db.color == new_data.color

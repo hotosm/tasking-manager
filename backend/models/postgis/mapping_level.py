@@ -18,7 +18,6 @@ class MappingLevel(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
-    image_path = Column(String, nullable=True)
     approvals_required = Column(Integer, nullable=False, default=0)
     color = Column(String, nullable=True)
     ordering = Column(Integer, nullable=False)
@@ -28,7 +27,6 @@ class MappingLevel(Base):
         dto = MappingLevelDTO(
             id=self.id,
             name=self.name,
-            imagePath=self.image_path,
             approvalsRequired=self.approvals_required,
             color=self.color,
             ordering=self.ordering,
@@ -40,15 +38,14 @@ class MappingLevel(Base):
     @staticmethod
     async def create(data: MappingLevelCreateDTO, db: Database):
         query = """
-            INSERT INTO mapping_levels (name, image_path, approvals_required, color, ordering, is_beginner)
-            VALUES (:name, :image_path, :approvals_required, :color, :ordering, :is_beginner)
+            INSERT INTO mapping_levels (name, approvals_required, color, ordering, is_beginner)
+            VALUES (:name, :approvals_required, :color, :ordering, :is_beginner)
             RETURNING id;
         """
         level_id = await db.execute(
             query,
             {
                 "name": data.name,
-                "image_path": data.image_path,
                 "approvals_required": data.approvals_required,
                 "color": data.color,
                 "ordering": data.ordering,
