@@ -1,112 +1,107 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useFetch } from '../hooks/UseFetch';
-import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 import messages from './messages';
-import { LicenseInformation, LicensesManagement, LicenseForm } from '../components/licenses';
-import { FormSubmitButton, CustomButton } from '../components/button';
-import { DeleteModal } from '../components/deleteModal';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { useFetch } from '../hooks/UseFetch';
+import { BadgeInformation, BadgesManagement, BadgeForm } from '../components/badges';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
-import { updateEntity } from '../utils/management';
+import { FormSubmitButton, CustomButton } from '../components/button';
 import { EntityError } from '../components/alert';
+import { DeleteModal } from '../components/deleteModal';
+import { updateEntity } from '../utils/management';
 
-export const EditLicense = () => {
+export const EditBadge = () => {
   const { id } = useParams();
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  const token = useSelector((state) => state.auth.token);
-  const [error, loading, license] = useFetch(`licenses/${id}/`);
+  const [error, loading, badge] = useFetch(`badges/${id}/`);
   const [isError, setIsError] = useState(false);
-  useSetTitleTag(`Edit ${license.name}`);
+  const token = useSelector((state) => state.auth.token);
 
   const onFailure = () => setIsError(true);
-  const updateLicense = (payload) => {
+  const updateBadge = (payload) => {
     setIsError(false);
-    updateEntity(`licenses/${id}/`, 'license', payload, token, null, onFailure);
+    updateEntity(`badges/${id}/`, 'badge', payload, token, null, onFailure);
   };
 
   return (
     <div className="cf pv4 bg-tan">
       <div className="cf">
         <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib">
-          <FormattedMessage {...messages.manageLicense} />
+          <FormattedMessage {...messages.manageBadge} />
         </h3>
-        <DeleteModal id={license.licenseId} name={license.name} type="licenses" />
+        <DeleteModal id={badge.id} name={badge.name} type="badges" />
       </div>
       <div className="w-40-l w-100 mt4 fl">
-        <LicenseForm
-          userDetails={userDetails}
-          license={license}
-          updateLicense={updateLicense}
+        <BadgeForm
+          badge={badge}
+          updateBadge={updateBadge}
           disabledForm={error || loading}
         />
-        {isError && <EntityError entity="license" action="updation" />}
+        {isError && <EntityError entity="badge" action="updation" />}
       </div>
     </div>
   );
 };
 
-export const ListLicenses = () => {
-  useSetTitleTag('Manage licenses');
-  const userDetails = useSelector((state) => state.auth.userDetails);
-  // TO DO: filter teams of current user
-  const [error, loading, licenses] = useFetch(`licenses/`);
-  const isLicensesFetched = !loading && !error;
+export const ListBadges = () => {
+  useSetTitleTag('Manage Badges');
+
+  const [error, loading, result] = useFetch('badges/');
+  const isFetched = !loading && !error;
 
   return (
-    <LicensesManagement
-      licenses={licenses.licenses}
-      userDetails={userDetails}
-      isLicensesFetched={isLicensesFetched}
+    <BadgesManagement
+      badges={result.badges}
+      isFetched={isFetched}
     />
   );
 };
 
-export const CreateLicense = () => {
-  useSetTitleTag('Create new license');
-  const navigate = useNavigate();
+export const CreateBadge = () => {
+  useSetTitleTag('Create new badge');
   const token = useSelector((state) => state.auth.token);
   const [isError, setIsError] = useState(false);
+  const navigate = useNavigate();
 
-  const createLicense = (payload) => {
+  const createBadge = (payload) => {
     setIsError(false);
-    return pushToLocalJSONAPI('licenses/', JSON.stringify(payload), token, 'POST')
+    return pushToLocalJSONAPI('badges/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
         toast.success(
           <FormattedMessage
             {...messages.entityCreationSuccess}
             values={{
-              entity: 'license',
+              entity: 'badge',
             }}
           />,
         );
-        navigate(`/manage/licenses/${result.licenseId}`);
+        navigate(`/manage/badges/`);
       })
       .catch(() => setIsError(true));
   };
 
   return (
     <Form
-      onSubmit={(values) => createLicense(values)}
+      onSubmit={(values) => createBadge(values)}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
             <div className="cf vh-100">
               <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
-                <FormattedMessage {...messages.newLicense} />
+                <FormattedMessage {...messages.newBadge} />
               </h3>
               <div className="w-40-l w-100 fl">
                 <div className="bg-white b--grey-light ba pa4 mb3">
                   <h3 className="f3 blue-dark mv0 fw6">
-                    <FormattedMessage {...messages.licenseInfo} />
+                    <FormattedMessage {...messages.badgeInfo} />
                   </h3>
-                  <LicenseInformation />
+                  <BadgeInformation />
                 </div>
-                {isError && <EntityError entity="license" />}
+                {isError && <EntityError entity="badge" />}
               </div>
               <div className="w-40-l w-100 fl pl5-l pl0 "></div>
             </div>
@@ -125,7 +120,7 @@ export const CreateLicense = () => {
                   className="w-100 h-100 bg-red white"
                   disabledClassName="bg-red o-50 white w-100 h-100"
                 >
-                  <FormattedMessage {...messages.createLicense} />
+                  <FormattedMessage {...messages.createBadge} />
                 </FormSubmitButton>
               </div>
             </div>
