@@ -10,7 +10,11 @@ const ALL = 'all';
 
 export const ProjectsStatusFilter = ({ setQuery, fullProjectsQuery }) => {
   const userDetails = useSelector((state) => state.auth.userDetails);
-  const isAdmin = userDetails && userDetails.role === 'ADMIN';
+  const isOrgManager = useSelector(
+    (state) => state.auth.organisations && state.auth.organisations.length > 0,
+  );
+  // allow admin features for super admin as well as organisation manager
+  const isAdmin = (userDetails && userDetails.role === 'ADMIN') || isOrgManager;
 
   const dropdownOptions = [
     { label: <FormattedMessage {...messages.allprojects} />, value: ALL },
