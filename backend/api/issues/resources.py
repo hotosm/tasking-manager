@@ -1,5 +1,5 @@
 from databases import Database
-from fastapi import APIRouter, Body, Depends, Request
+from fastapi import APIRouter, Body, Depends, Request, Query
 from fastapi.responses import JSONResponse
 from loguru import logger
 
@@ -164,7 +164,14 @@ async def delete_issue(
 
 
 @router.get("/issues/categories/")
-async def get_issues_categories(request: Request, db: Database = Depends(get_db)):
+async def get_issues_categories(
+    include_archived: bool = Query(
+        False,
+        alias="includeArchived",
+        description="Optional filter to include archived categories",
+    ),
+    db: Database = Depends(get_db),
+):
     """
     Gets all mapping issue categories
     ---
@@ -184,7 +191,6 @@ async def get_issues_categories(request: Request, db: Database = Depends(get_db)
         500:
             description: Internal Server Error
     """
-    include_archived = request.query_params.get("includeArchived") == "true"
     categories = await MappingIssueCategoryService.get_all_mapping_issue_categories(
         include_archived, db
     )
