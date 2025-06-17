@@ -1,19 +1,36 @@
-FROM node:22.13.0 as build
+FROM node:22.13.0 AS base
+WORKDIR /usr/src/app
+COPY ./frontend/package.json ./
+COPY ./frontend/yarn.lock ./
+COPY ./frontend/entrypoint.sh ./
 
-WORKDIR /usr/src/app/frontend
-COPY frontend .
+FROM base AS debug
+COPY ./frontend .
+EXPOSE 3000
+ENTRYPOINT [ "/usr/src/app/entrypoint.sh" ]
+CMD ["yarn", "start"]
 
-## SETUP
-RUN git config --global url.https://github.com/.insteadOf git@github.com: \
-    && npm install --ignore-scripts
 
-# SERVE
-COPY tasking-manager.env ..
-RUN yarn run build
+FROM base AS build
+# TARGETPLATFORM is used to determine the architecture of the build environment. It is auto set by Docker's buildkit when building multi-platform images.
+ARG TARGETPLATFORM
+RUN ./entrypoint.sh
+COPY ./frontend .
+COPY tasking-manager.env /tmp/tasking-manager.env
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+    curl -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-Linux-arm64 -o /tmp/envsubst; \
+    elif [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+    curl -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-Linux-x86_64 -o /tmp/envsubst; \
+    else \
+    curl -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-Linux-x86_64 -o /tmp/envsubst; \
+    fi
+RUN chmod +x /tmp/envsubst
+RUN /tmp/envsubst < /tmp/tasking-manager.env > ../tasking-manager.env
+RUN yarn build
 
-FROM nginx:stable-alpine
-COPY --from=build /usr/src/app/frontend/build /usr/share/nginx/html
+
+FROM nginx:alpine AS prod
+COPY --from=build /usr/src/app/build /usr/share/nginx/html
 COPY scripts/docker/nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-
+EXPOSE 3000
 CMD ["nginx", "-g", "daemon off;"]

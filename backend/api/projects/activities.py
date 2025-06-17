@@ -1,5 +1,5 @@
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Query
 
 from backend.db import get_db
 from backend.services.project_service import ProjectService
@@ -14,7 +14,9 @@ router = APIRouter(
 
 @router.get("/{project_id}/activities/")
 async def get_activities(
-    request: Request, project_id: int, db: Database = Depends(get_db)
+    project_id: int,
+    page: int = Query(1, description="Page of results user requested", ge=1),
+    db: Database = Depends(get_db),
 ):
     """
     Get all user activity on a project
@@ -43,9 +45,6 @@ async def get_activities(
             description: Internal Server Error
     """
     await ProjectService.exists(project_id, db)
-    page = (
-        int(request.query_params.get("page")) if request.query_params.get("page") else 1
-    )
     activity = await StatsService.get_latest_activity(project_id, page, db)
     return activity
 

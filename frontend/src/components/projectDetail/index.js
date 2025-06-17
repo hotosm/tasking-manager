@@ -21,9 +21,7 @@ import { PermissionBox } from './permissionBox';
 import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
-import { LiveViewButton } from './liveViewButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
-import useHasLiveMonitoringFeature from '../../hooks/UseHasLiveMonitoringFeature';
 import { useProjectContributionsQuery, useProjectTimelineQuery } from '../../api/projects';
 import { Alert } from '../alert';
 
@@ -151,8 +149,6 @@ export const ProjectDetail = (props) => {
   const { data: timelineData, status: timelineDataStatus } = useProjectTimelineQuery(
     props.project.projectId,
   );
-
-  const hasLiveMonitoringFeature = useHasLiveMonitoringFeature();
 
   const htmlDescription =
     props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
@@ -362,15 +358,6 @@ export const ProjectDetail = (props) => {
             project={props.project}
             className="bg-white blue-dark ba b--grey-light pa3"
           />
-
-          {/* show live view button only when the project has live monitoring feature */}
-          {hasLiveMonitoringFeature && (
-            <LiveViewButton
-              projectId={props.project.projectId}
-              className="bg-white blue-dark ba b--grey-light pa3"
-            />
-          )}
-
           <DownloadAOIButton
             projectId={props.project.projectId}
             className="bg-white blue-dark ba b--grey-light pa3"

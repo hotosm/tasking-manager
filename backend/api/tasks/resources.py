@@ -1,9 +1,8 @@
 import io
 import json
-from distutils.util import strtobool
 
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 from loguru import logger
 from starlette.authentication import requires
@@ -72,7 +71,12 @@ async def retrieve_task(
 
 
 @router.get("/{project_id}/tasks/")
-async def get(request: Request, project_id: int, db: Database = Depends(get_db)):
+async def get_project_tasks(
+    project_id: int,
+    tasks: str = Query(default=None),
+    as_file: bool = Query(default=False, alias="as_file"),
+    db: Database = Depends(get_db),
+):
     """
     Get all tasks for a project as JSON
     ---
@@ -108,26 +112,12 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             description: Internal Server Error
     """
     try:
-        tasks = (
-            request.query_params.get("tasks")
-            if request.query_params.get("tasks")
-            else None
-        )
-        as_file = (
-            strtobool(request.query_params.get("as_file"))
-            if request.query_params.get("as_file")
-            else False
-        )
+        tasks_json = await ProjectService.get_project_tasks(db, project_id, tasks)
 
-        tasks_json = await ProjectService.get_project_tasks(db, int(project_id), tasks)
         if as_file:
-            tasks_str = json.dumps(tasks_json, indent=4)  # Pretty-printed GeoJSON
-            file_bytes = io.BytesIO(tasks_str.encode("utf-8"))
-            file_bytes.seek(0)  # Reset stream position
-
-            # Return the GeoJSON file response for download
-            return StreamingResponse(
-                file_bytes,
+            tasks_str = json.dumps(tasks_json, indent=4)
+            return Response(
+                content=tasks_str,
                 media_type="application/geo+json",
                 headers={
                     "Content-Disposition": f'attachment; filename="{project_id}-tasks.geojson"'
@@ -135,6 +125,7 @@ async def get(request: Request, project_id: int, db: Database = Depends(get_db))
             )
 
         return tasks_json
+
     except ProjectServiceError as e:
         return JSONResponse(content={"Error": str(e)}, status_code=403)
 
@@ -211,7 +202,10 @@ async def delete(request: Request, project_id):
 
 @router.get("/{project_id}/tasks/queries/xml/")
 async def get_tasks_xml(
-    request: Request, project_id: int, db: Database = Depends(get_db)
+    project_id: int,
+    tasks: str = Query(default=None),
+    as_file: bool = Query(default=False, alias="as_file"),
+    db: Database = Depends(get_db),
 ):
     """
     Get all tasks for a project as OSM XML
@@ -247,13 +241,6 @@ async def get_tasks_xml(
         500:
             description: Internal Server Error
     """
-    tasks = request.query_params.get("tasks")
-    as_file = (
-        strtobool(request.query_params.get("as_file"))
-        if request.query_params.get("as_file")
-        else False
-    )
-
     xml = await MappingService.generate_osm_xml(project_id, tasks, db)
 
     if as_file:
@@ -270,7 +257,10 @@ async def get_tasks_xml(
 
 @router.get("/{project_id}/tasks/queries/gpx/")
 async def get_tasks_gpx(
-    request: Request, project_id: int, db: Database = Depends(get_db)
+    project_id: int,
+    tasks: str = Query(default=None),
+    as_file: bool = Query(default=False, alias="as_file"),
+    db: Database = Depends(get_db),
 ):
     """
     Get all tasks for a project as GPX
@@ -306,13 +296,6 @@ async def get_tasks_gpx(
         500:
             description: Internal Server Error
     """
-    tasks = request.query_params.get("tasks")
-    as_file = (
-        strtobool(request.query_params.get("as_file"))
-        if request.query_params.get("as_file")
-        else False
-    )
-
     xml = await MappingService.generate_gpx(project_id, tasks, db)
 
     if as_file:

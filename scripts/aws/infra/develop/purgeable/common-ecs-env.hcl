@@ -26,7 +26,6 @@ locals {
     OSM_NOMINATIM_SERVER_URL      = get_env("OSM_NOMINATIM_SERVER_URL", "https://nominatim.openstreetmap.org")
     OSM_REGISTER_URL              = get_env("OSM_REGISTER_URL", "https://www.openstreetmap.org/user/new")
     POSTGRES_TEST_DB              = get_env("POSTGRES_TEST_DB", "tasking-manager-test")
-    UNDERPASS_URL                 = get_env("UNDERPASS_URL", "https://underpass.hotosm.org")
     TM_SEND_PROJECT_EMAIL_UPDATES = get_env("TM_SEND_PROJECT_EMAIL_UPDATES", "1")
     TM_DEFAULT_LOCALE             = get_env("TM_DEFAULT_LOCALE", "en")
     TM_LOG_LEVEL                  = get_env("TM_LOG_LEVEL", "10")
