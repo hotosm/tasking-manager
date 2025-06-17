@@ -34,12 +34,12 @@ Status | Feature | Release
 -------|---------|---------
 ✅ | Up-to-date OSM Statistics: Integrated with [ohsome Now](https://stats.now.ohsome.org/) for real-time data insights.| Released in [v4.6.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.6.2).
 ✅ | Downloadable OSM Exports: Export data directly from each project. | Available in[ v4.7.0](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.0).
-✅ | Rapid Editor Upgrade: Enhanced mapping experience with the latest rapid editor updates.
-✅ | Public-Facing Partner Pages: Create and display dedicated pages for partners running remote mapathons.
-✅ | Downloadable Project List View: Allow users to explore projects via a downloadable list. [View issue](https://github.com/hotosm/tasking-manager/issues/3394).
-✅ | MapSwipe Stats Integration: Display MapSwipe statistics on Partner Pages.
-✅ | iD Editor Latest Features: Integrate the newest features of the iD editor.
-🔄 | FastAPI Migration: Improve performance and scalability of Tasking Manager to handle large scale validation and mapping efforts.
+✅ | Rapid Editor Upgrade: Enhanced mapping experience with the latest rapid editor updates.| Last updated in [v4.8.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.8.2)
+✅ | Public-Facing Partner Pages: Create and display dedicated pages for partners running remote mapathons.| [v4.8.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.8.2)
+✅ | Downloadable Project List View: Allow users to explore projects via a downloadable list. [View issue](https://github.com/hotosm/tasking-manager/issues/3394).| [v4.8.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.8.2)
+✅ | MapSwipe Stats Integration: Display MapSwipe statistics on Partner Pages.|[v4.8.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.8.2)
+✅ | iD Editor Latest Features: Integrate the newest features of the iD editor.|[v5.0.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.0.5)
+✅ | FastAPI Migration: Improve performance and scalability of Tasking Manager to handle large scale validation and mapping efforts.| [v5 launch 🎉](https://github.com/hotosm/tasking-manager/releases/tag/v5.0.0)
 🔄 | Super Mapper: Redefine Mapper Level Milestones
 🔄 | OSM Practice Projects: Enable users to engage in OSM practice projects within Tasking Manager workflow.
 📅 | Expanding Project Types beyond basemap features
