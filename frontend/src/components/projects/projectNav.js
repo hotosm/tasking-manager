@@ -12,6 +12,7 @@ import { ProjectSearchBox } from './projectSearchBox';
 import ClearFilters from './clearFilters';
 import { OrderBySelector } from './orderBy';
 import { ProjectsActionFilter } from './projectsActionFilter';
+import { ProjectsStatusFilter } from './projectsStatusFilter';
 import { SwitchToggle } from '../formInputs';
 import DownloadAsCSV from './downloadAsCSV';
 import { GripIcon, ListIcon, FilledNineCellsGridIcon, TableListIcon } from '../svgIcons';
@@ -151,6 +152,7 @@ const DifficultyDropdown = (props) => {
 };
 
 export const ProjectNav = ({ isExploreProjectsPage, children }) => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
   const encodedParams = stringify(fullProjectsQuery)
@@ -194,6 +196,10 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
   if ((isExploreProjectsPage && isExploreProjectsTableView) || !isMapShown) {
     clearFiltersURL = './?omitMapResults=1';
   }
+  // fixes clear filter not persisting grid/list view issue
+  if (searchParams.view) {
+    clearFiltersURL = `${clearFiltersURL}&view=${searchParams.view}`;
+  }
 
   // onSelectedItemChange={(changes) => console.log(changes)}
   return (
@@ -205,7 +211,10 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
             <div className="mv2 dib">
               <DifficultyDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             </div>
+
             <ProjectsActionFilter setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
+
+            <ProjectsStatusFilter setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             <Link
               to={filterRouteToggled}
               id="more-filter-id"
@@ -225,7 +234,20 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
               className="f6"
             />
             {!filterIsEmpty && (
-              <ClearFilters url={clearFiltersURL} className="mv2 mh1 fr dn dib-l" />
+              <ClearFilters
+                url={clearFiltersURL}
+                className="mv2 mh1 fr dn dib-l"
+                onClick={() => {
+                  dispatch({ type: 'SET_ACTION', action: 'any' });
+                  setQuery(
+                    {
+                      ...fullProjectsQuery,
+                      action: 'any',
+                    },
+                    'pushIn',
+                  );
+                }}
+              />
             )}
 
             <ProjectSearchBox

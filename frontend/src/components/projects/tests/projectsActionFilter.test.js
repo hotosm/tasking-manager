@@ -16,12 +16,10 @@ describe('ProjectsActionFilter', () => {
     expect(screen.queryByText('Any project')).toBeInTheDocument();
     expect(screen.queryByText('Projects to map')).not.toBeInTheDocument();
     expect(screen.queryByText('Projects to validate')).not.toBeInTheDocument();
-    expect(screen.queryByText('Archived')).not.toBeInTheDocument();
     // open dropdown
     await user.click(screen.queryByText('Any project'));
     expect(screen.queryByText('Projects to map')).toBeInTheDocument();
     expect(screen.queryByText('Projects to validate')).toBeInTheDocument();
-    expect(screen.queryByText('Archived')).toBeInTheDocument();
     // select Projects to validate
     await user.click(screen.queryByText('Projects to validate'));
     expect(store.getState()['preferences']['action']).toBe('validate');
@@ -33,10 +31,6 @@ describe('ProjectsActionFilter', () => {
     await user.click(screen.queryByText('Any project'));
     await user.click(screen.queryByText('Projects to map'));
     expect(store.getState()['preferences']['action']).toBe('map');
-    // select Projects to archived, action set to any for this special case
-    await user.click(screen.queryByText('Projects to map'));
-    await user.click(screen.queryByText(/archived/i));
-    expect(store.getState()['preferences']['action']).toBe('any');
   });
 
   it('initialize it with validate action set', async () => {
