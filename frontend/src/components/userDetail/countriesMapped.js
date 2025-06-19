@@ -1,22 +1,19 @@
 import { createRef, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import mapboxgl from 'mapbox-gl';
+import maplibregl from 'maplibre-gl';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
-import { mapboxLayerDefn } from '../projects/projectsMap';
+import { MAPBOX_TOKEN, MAP_STYLE } from '../../config';
+import { maplibreLayerDefn } from '../projects/projectsMap';
 import { BarListChart } from './barListChart';
 import WebglUnsupported from '../webglUnsupported';
+import isWebglSupported from '../../utils/isWebglSupported';
+import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
 import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
-mapboxgl.accessToken = MAPBOX_TOKEN;
-try {
-  mapboxgl.setRTLTextPlugin(MAPBOX_RTL_PLUGIN_URL);
-} catch {
-  console.log('RTLTextPlugin is loaded');
-}
+maplibregl.accessToken = MAPBOX_TOKEN;
 
 const UserCountriesMap = ({ projects }) => {
   const navigate = useNavigate();
@@ -25,17 +22,19 @@ const UserCountriesMap = ({ projects }) => {
   const [map, setMap] = useState(null);
   const mapRef = createRef();
 
+  useSetRTLTextPlugin();
+
   useLayoutEffect(() => {
-    mapboxgl.supported() &&
+    isWebglSupported() &&
       setMap(
-        new mapboxgl.Map({
+        new maplibregl.Map({
           container: mapRef.current,
           style: MAP_STYLE,
           center: [0, 0],
           zoom: 0.5,
           attributionControl: false,
         })
-          .addControl(new mapboxgl.AttributionControl({ compact: false }))
+          .addControl(new maplibregl.AttributionControl({ compact: false }))
           .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage })),
       );
 
@@ -54,11 +53,11 @@ const UserCountriesMap = ({ projects }) => {
         }),
       };
       map.resize(); //https://docs.mapbox.com/help/troubleshooting/blank-tiles/
-      map.on('load', () => mapboxLayerDefn(map, geojson, (id) => navigate(`/projects/${id}/`)));
+      map.on('load', () => maplibreLayerDefn(map, geojson, (id) => navigate(`/projects/${id}/`)));
     }
   }, [map, navigate, projects.mappedProjects]);
 
-  if (!mapboxgl.supported()) {
+  if (!isWebglSupported()) {
     return <WebglUnsupported className="w-two-thirds-l w-100 h-100 fl" />;
   } else {
     return <div id="map" className="w-two-thirds-l w-100 h-100 fl" ref={mapRef}></div>;
