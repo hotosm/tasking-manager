@@ -1,7 +1,6 @@
 import csv
 import io
 from datetime import datetime
-from distutils.util import strtobool
 
 from databases import Database
 from fastapi import APIRouter, Body, Depends, Query, Request, Response
@@ -123,8 +122,12 @@ async def update_team(
 
 @router.get("/{team_id:int}/")
 async def retrieve_team(
-    request: Request,
     team_id: int,
+    omit_member_list: bool = Query(
+        False,
+        alias="omitMemberList",
+        description=("Set to true if you don't want the members list in the response"),
+    ),
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
 ):
@@ -157,13 +160,8 @@ async def retrieve_team(
         500:
             description: Internal Server Error
     """
-    authenticated_user_id = user.id
-    omit_members = strtobool(request.query_params.get("omitMemberList", "false"))
-    if authenticated_user_id is None:
-        user_id = 0
-    else:
-        user_id = authenticated_user_id
-    team_dto = await TeamService.get_team_as_dto(team_id, user_id, omit_members, db)
+    user_id = user.id or 0
+    team_dto = await TeamService.get_team_as_dto(team_id, user_id, omit_member_list, db)
     return team_dto
 
     # TODO: Add delete API then do front end services and ui work
@@ -222,7 +220,39 @@ async def delete(
 
 @router.get("/")
 async def list_teams(
-    request: Request,
+    team_name: str | None = Query(None, description="Name of the team to filter by"),
+    member: int | None = Query(
+        None,
+        description="User ID to filter teams that the user belongs to, must be active",
+    ),
+    manager: int | None = Query(
+        None, description="User ID to filter teams where user has MANAGER role"
+    ),
+    member_request: int | None = Query(
+        None, description="User ID to filter teams the user has sent invite request to"
+    ),
+    team_role: str | None = Query(None, description="Team role for project"),
+    organisation: int | None = Query(
+        None, description="Organisation ID to filter teams"
+    ),
+    omit_member_list: bool = Query(
+        False,
+        alias="omitMemberList",
+        description="Set to true to omit members list in the response",
+    ),
+    full_member_list: bool = Query(
+        True,
+        alias="fullMemberList",
+        description="Set to true to include full members list, else 10 per role",
+    ),
+    paginate: bool = Query(
+        False,
+        description="Set to true to paginate results",
+    ),
+    page: int = Query(1, description="Page number to return"),
+    per_page: int = Query(
+        10, alias="perPage", description="Number of results per page"
+    ),
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(login_required),
 ):
@@ -306,27 +336,20 @@ async def list_teams(
         500:
             description: Internal Server Error
     """
-    search_dto = TeamSearchDTO()
-    search_dto.team_name = request.query_params.get("team_name", None)
-    search_dto.member = (
-        int(request.query_params.get("member"))
-        if request.query_params.get("member")
-        else None
+    search_dto = TeamSearchDTO(
+        team_name=team_name,
+        member=member,
+        manager=manager,
+        member_request=member_request,
+        team_role=team_role,
+        organisation=organisation,
+        omit_members=omit_member_list,
+        full_members_list=full_member_list,
+        paginate=paginate,
+        page=page,
+        per_page=per_page,
+        user_id=user.id,
     )
-    search_dto.manager = request.query_params.get("manager", None)
-    search_dto.member_request = request.query_params.get("member_request", None)
-    search_dto.team_role = request.query_params.get("team_role", None)
-    search_dto.organisation = request.query_params.get("organisation", None)
-    search_dto.omit_members = strtobool(
-        request.query_params.get("omitMemberList", "false")
-    )
-    search_dto.full_members_list = strtobool(
-        request.query_params.get("fullMemberList", "true")
-    )
-    search_dto.paginate = strtobool(request.query_params.get("paginate", "false"))
-    search_dto.page = int(request.query_params.get("page", 1))
-    search_dto.per_page = int(request.query_params.get("perPage", 10))
-    search_dto.user_id = user.id
     teams = await TeamService.get_all_teams(search_dto, db)
     return teams
 

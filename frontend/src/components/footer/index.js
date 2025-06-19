@@ -40,7 +40,6 @@ export function Footer() {
     'projects/:id/contributions',
     'projects/:id/map',
     'projects/:id/validate',
-    'projects/:id/live',
     'manage/organisations/new/',
     'manage/teams/new',
     'manage/campaigns/new',

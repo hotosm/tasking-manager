@@ -1,5 +1,6 @@
 # Configuration files #
 tasking-manager*.env
+.env
 
 # Generated frontend #
 frontend/node_modules/

@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+from typing import Set
 
 from databases import Database
 from fastapi import BackgroundTasks
@@ -156,7 +157,13 @@ class ValidatorService:
                 return True
             return False
 
-    async def process_task(project_id, task_to_unlock, validated_dto):
+    async def process_task(
+        project_id,
+        task_to_unlock,
+        validated_dto,
+        message_sent_to: Set[int],
+        message_lock: asyncio.Lock,
+    ):
         async with db_connection.database.connection() as db:
             task = task_to_unlock["task"]
             if task_to_unlock["comment"]:
@@ -171,14 +178,22 @@ class ValidatorService:
                 task_to_unlock["new_state"] == TaskStatus.VALIDATED
                 or task_to_unlock["new_state"] == TaskStatus.INVALIDATED
             ):
-                await MessageService.send_message_after_validation(
-                    task_to_unlock["new_state"],
-                    validated_dto.user_id,
-                    task.mapped_by,
-                    task.id,
-                    validated_dto.project_id,
-                    db,
-                )
+                mapped_by = task.mapped_by
+                # acquire lock so two coros can’t both think “not yet sent”
+                async with message_lock:
+                    need_to_send = mapped_by not in message_sent_to
+                    if need_to_send:
+                        message_sent_to.add(mapped_by)
+
+                if need_to_send:
+                    await MessageService.send_message_after_validation(
+                        task_to_unlock["new_state"],
+                        validated_dto.user_id,
+                        mapped_by,
+                        task.id,
+                        project_id,
+                        db,
+                    )
 
                 # Set last_validation_date for the mapper to current date
                 if task_to_unlock["new_state"] == TaskStatus.VALIDATED:
@@ -230,8 +245,12 @@ class ValidatorService:
         """
         Process tasks concurrently and ensure each task gets its own DB connection.
         """
+        message_sent_to: set[int] = set()
+        message_lock = asyncio.Lock()
         tasks = [
-            ValidatorService.process_task(project_id, task_to_unlock, validated_dto)
+            ValidatorService.process_task(
+                project_id, task_to_unlock, validated_dto, message_sent_to, message_lock
+            )
             for task_to_unlock in tasks_to_unlock
         ]
         return await asyncio.gather(*tasks)
