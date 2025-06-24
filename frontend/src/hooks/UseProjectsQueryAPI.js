@@ -43,6 +43,7 @@ const projectQueryAllSpecification = {
   partnershipFrom: StringParam,
   partnershipTo: StringParam,
   downloadAsCSV: BooleanParam,
+  view: StringParam,
 };
 
 /* This can be passed into project API or used independently */
