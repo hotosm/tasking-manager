@@ -1,4 +1,4 @@
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import { Form, Field } from 'react-final-form';
 import { Link } from 'react-router-dom';
@@ -8,6 +8,7 @@ import messages from './messages';
 import { Button } from '../button';
 import { Management } from '../teamsAndOrgs/management';
 import { nCardPlaceholders } from '../licenses/licensesPlaceholder';
+import { SwitchToggle } from '../formInputs';
 
 export const LevelCard = ({ level, number }) => {
   return (
@@ -54,6 +55,7 @@ export const LevelsManagement = ({levels, isFetched}) => {
 export const LevelInformation = () => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
+  const intl = useIntl();
 
   const badge_options = [
     { value: 1, label: 'Uno' },
@@ -67,14 +69,25 @@ export const LevelInformation = () => {
           <FormattedMessage {...messages.name} />
         </label>
         <Field name="name" component="input" type="text" className={fieldClasses} required />
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.peer_review} />
-        </label>
-        <Field name="require_peer_review" component="input" type="checkbox" required />
+
+        <div class="mt2">
+          <Field name="require_peer_review">
+            {({input}) => {
+              return <SwitchToggle
+                isChecked={!!input.value}
+                onChange={input.onChange}
+                label={intl.formatMessage(messages.peer_review)}
+                labelPosition="right"
+              />
+            }}
+          </Field>
+        </div>
+
         <label className={labelClasses}>
           <FormattedMessage {...messages.color} />
         </label>
-        <Field name="color" component="input" type="text" className={fieldClasses} required />
+        <Field name="color" component="input" type="color" className={fieldClasses} required />
+
         <label className={labelClasses}>
           <FormattedMessage {...messages.required_badges} />
         </label>
