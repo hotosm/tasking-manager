@@ -64,7 +64,6 @@ export const BadgeInformation = ({ badge }) => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
   const intl = useIntl();
-  const {getRootProps, getInputProps} = useDropzone({});
 
   return (
     <div className="cf badge-info">
@@ -94,13 +93,9 @@ export const BadgeInformation = ({ badge }) => {
       <label className={labelClasses}>
         <FormattedMessage {...messages.image} />
       </label>
-      <div className="badge-info__img-container">
-        { badge && <img src={badge.imagePath} /> }
-        <div className="badge-info__uploader" {...getRootProps()}>
-          <input {...getInputProps()} />
-          <p><FormattedMessage {...messages.uploadNew} /></p>
-        </div>
-      </div>
+      <Field name="imagePath">
+        {({input}) => BadgeImageField({ input })}
+      </Field>
 
       <label className={labelClasses}>
         <FormattedMessage {...messages.requirements} />
@@ -111,6 +106,33 @@ export const BadgeInformation = ({ badge }) => {
     </div>
   );
 };
+
+function BadgeImageField({ input }) {
+  const onDropAccepted = (event) => {
+    console.log(event);
+  };
+  const onDropRejected = (event) => {
+    console.log(event);
+  };
+
+  const {getRootProps, getInputProps} = useDropzone({
+    maxFiles: 1,
+    maxSize: 1000000,
+    multiple: false,
+    accept: '.png,.jpg',
+    onDropAccepted, onDropRejected,
+  });
+
+  return <>
+    <div className="badge-info__img-container">
+      { input.value && <img src={input.value} /> }
+      <div className="badge-info__uploader" {...getRootProps()}>
+        <input {...getInputProps()} />
+        <p><FormattedMessage {...messages.uploadNew} /></p>
+      </div>
+    </div>
+  </>;
+}
 
 function BadgeRequirementsField({ input }) {
   const intl = useIntl();
