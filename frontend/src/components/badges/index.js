@@ -225,6 +225,7 @@ function BadgeRequirementsField({ input }) {
               <td className="h2 tr">{ value }</td>
               <td className="h2 tr">
                 <button
+                  type="button"
                   className="bn pa0 bg-transparent pointer"
                   onClick={() => handleRemoveRequirement(metric)}
                 >
