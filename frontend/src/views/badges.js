@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import messages from './messages';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useFetch } from '../hooks/UseFetch';
-import { BadgeInformation, BadgesManagement, BadgeForm } from '../components/badges';
+import { BadgeInformation, BadgesManagement, BadgeUpdateForm } from '../components/badges';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { EntityError } from '../components/alert';
@@ -36,7 +36,7 @@ export const EditBadge = () => {
         <DeleteModal id={badge.id} name={badge.name} type="badges" />
       </div>
       <div className="w-40-l w-100 mt4 fl">
-        <BadgeForm
+        <BadgeUpdateForm
           badge={badge}
           updateBadge={updateBadge}
           disabledForm={error || loading}

@@ -69,6 +69,7 @@ export const BadgeInformation = ({ badge }) => {
   ];
   const [newRequirementMetric, setNewRequirementMetric] = useState();
   const [newRequirementValue, setNewRequirementValue] = useState('');
+  const [requirements, setRequirements] = useState([]);
   const {getRootProps, getInputProps} = useDropzone({});
 
   for (let topic of OHSOME_STATS_TOPICS.split(',')) {
@@ -77,9 +78,6 @@ export const BadgeInformation = ({ badge }) => {
       label: intl.formatMessage(messages[topic]),
     });
   }
-
-  const [requirements, setRequirements] = useState([]);
-  const [isInternal, setIsInternal] = useState(badge ? badge.isInternal : false);
 
   const handleAddRequirement = () => {
     setRequirements([...requirements, {
@@ -117,12 +115,16 @@ export const BadgeInformation = ({ badge }) => {
       <Field name="description" component="textarea" rows={7} className={fieldClasses} required />
 
       <div class="mt2">
-        <SwitchToggle
-          isChecked={isInternal}
-          onChange={() => { setIsInternal(!isInternal) }}
-          label={intl.formatMessage(messages.hidden)}
-          labelPosition="right"
-        />
+        <Field name="isInternal">
+          {({input}) => {
+            return <SwitchToggle
+              isChecked={!!input.value}
+              onChange={input.onChange}
+              label={intl.formatMessage(messages.hidden)}
+              labelPosition="right"
+            />
+          }}
+        </Field>
       </div>
 
       <label className={labelClasses}>
@@ -197,7 +199,7 @@ export const BadgeInformation = ({ badge }) => {
   );
 };
 
-export const BadgeForm = ({ badge, updateBadge, disabledForm }) => {
+export const BadgeUpdateForm = ({ badge, updateBadge }) => {
   return (
     <Form
       onSubmit={(values) => updateBadge(values)}
