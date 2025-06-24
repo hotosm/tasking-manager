@@ -21,6 +21,7 @@ class MappingBadge(Base):
     image_path = Column(String, nullable=True)
     requirements = Column(JSON, nullable=False)
     is_enabled = Column(Boolean, nullable=False, default=True)
+    is_internal = Column(Boolean, nullable=False, default=False)
 
     def as_dto(self) -> MappingBadgeDTO:
         return MappingBadgeDTO(
@@ -30,13 +31,14 @@ class MappingBadge(Base):
             imagePath=self.image_path,
             requirements=self.requirements,
             isEnabled=self.is_enabled,
+            isInternal=self.is_internal,
         )
 
     @staticmethod
     async def create(data: MappingBadgeCreateDTO, db: Database) -> MappingBadgeDTO:
         query = """
-            INSERT INTO mapping_badges (name, description, image_path, requirements, is_enabled)
-            VALUES (:name, :description, :image_path, :requirements, :is_enabled)
+            INSERT INTO mapping_badges (name, description, image_path, requirements, is_enabled, is_internal)
+            VALUES (:name, :description, :image_path, :requirements, :is_enabled, :is_internal)
             RETURNING id;
         """
         badge_id = await db.execute(
@@ -47,6 +49,7 @@ class MappingBadge(Base):
                 "image_path": data.image_path,
                 "requirements": data.requirements,
                 "is_enabled": data.is_enabled,
+                "is_internal": data.is_internal,
             },
         )
 

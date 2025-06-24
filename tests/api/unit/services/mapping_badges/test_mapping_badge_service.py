@@ -22,9 +22,9 @@ class TestMappingBadgeService:
         # Arrange
         stmt = """
             INSERT INTO mapping_badges (
-                name, description, requirements, is_enabled
+                name, description, requirements, is_enabled, is_internal
             )
-            VALUES (:name, :description, :requirements, :is_enabled)
+            VALUES (:name, :description, :requirements, :is_enabled, :is_internal)
         """
         await self.db.execute(
             stmt,
@@ -33,6 +33,7 @@ class TestMappingBadgeService:
                 "description": "",
                 "requirements": "{}",
                 "is_enabled": True,
+                "is_internal": False,
             },
         )
 
@@ -49,6 +50,7 @@ class TestMappingBadgeService:
             imagePath="",
             requirements="{}",
             isEnabled=True,
+            isInternal=True,
         )
         # Act
         new_badge = await MappingBadgeService.create(badge, self.db)
@@ -59,6 +61,7 @@ class TestMappingBadgeService:
         assert len(badges.badges) == 1
         assert badges.badges[0].name == "new badge"
         assert new_badge.id == badges.badges[0].id
+        assert new_badge.is_internal == badges.badges[0].is_internal
 
     async def test_update(self):
         # Arrange
@@ -68,6 +71,7 @@ class TestMappingBadgeService:
             imagePath="https://old.com/path.jpg",
             requirements="{}",
             isEnabled=True,
+            isInternal=False,
         )
         badge = await MappingBadge.create(old_data, self.db)
         new_data = MappingBadgeUpdateDTO(

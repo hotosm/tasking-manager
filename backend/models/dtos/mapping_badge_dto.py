@@ -9,6 +9,7 @@ class MappingBadgeDTO(BaseModel):
     image_path: Optional[str] = Field(default=None, alias="imagePath")
     requirements: Optional[str]
     is_enabled: bool = Field(default=True, alias="isEnabled")
+    is_internal: bool = Field(default=False, alias="isInternal")
 
 
 class MappingBadgeCreateDTO(BaseModel):
@@ -17,6 +18,7 @@ class MappingBadgeCreateDTO(BaseModel):
     image_path: str = Field(alias="imagePath")
     requirements: str
     is_enabled: bool = Field(default=True, alias="isEnabled")
+    is_internal: bool = Field(default=False, alias="isInternal")
 
 
 class MappingBadgeUpdateDTO(BaseModel):
@@ -26,6 +28,7 @@ class MappingBadgeUpdateDTO(BaseModel):
     image_path: Optional[str] = Field(default=None, alias="imagePath")
     requirements: Optional[str] = None
     is_enabled: Optional[bool] = Field(default=None, alias="isEnabled")
+    is_internal: bool = Field(default=False, alias="isInternal")
 
 
 class MappingBadgeListDTO(BaseModel):
