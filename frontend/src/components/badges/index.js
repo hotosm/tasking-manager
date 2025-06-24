@@ -64,44 +64,7 @@ export const BadgeInformation = ({ badge }) => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
   const intl = useIntl();
-  const metrics = [
-    {value: "changesets", label: intl.formatMessage(messages.changesets)},
-  ];
-  const [newRequirementMetric, setNewRequirementMetric] = useState();
-  const [newRequirementValue, setNewRequirementValue] = useState('');
-  const [requirements, setRequirements] = useState([]);
   const {getRootProps, getInputProps} = useDropzone({});
-
-  for (let topic of OHSOME_STATS_TOPICS.split(',')) {
-    metrics.push({
-      value: `topics.${topic}.added`,
-      label: intl.formatMessage(messages[topic]),
-    });
-  }
-
-  const handleAddRequirement = () => {
-    setRequirements([...requirements, {
-      metric: newRequirementMetric.value,
-      value: newRequirementValue,
-    }]);
-
-    setNewRequirementValue('');
-    setNewRequirementMetric(null);
-  };
-
-  const newRequirementFieldsComplete = newRequirementMetric && newRequirementValue;
-
-  const handleNewRequirementValueChange = (event) => {
-    const value = Number(event.target.value);
-
-    if (!isNaN(value)) {
-      setNewRequirementValue(event.target.value);
-    }
-  };
-
-  const handleRemoveRequirement = (requirement) => {
-    setRequirements(requirements.filter((r) => r.metric !== requirement.metric));
-  };
 
   return (
     <div className="cf badge-info">
@@ -109,6 +72,7 @@ export const BadgeInformation = ({ badge }) => {
         <FormattedMessage {...messages.name} />
       </label>
       <Field name="name" component="input" type="text" className={fieldClasses} required />
+
       <label className={labelClasses}>
         <FormattedMessage {...messages.description} />
       </label>
@@ -141,63 +105,117 @@ export const BadgeInformation = ({ badge }) => {
       <label className={labelClasses}>
         <FormattedMessage {...messages.requirements} />
       </label>
-      <div className="badge-info__requirements">
-        <div className="badge-info__input-container">
-          <Select
-            classNamePrefix="react-select"
-            isClearable={true}
-            options={metrics}
-            value={newRequirementMetric}
-            onChange={setNewRequirementMetric}
-            className="z-5"
-          />
-        </div>
-        <div className="badge-info__input-container">
-          <input
-            value={newRequirementValue}
-            onChange={handleNewRequirementValueChange}
-            className="input-reset ba b--grey-light bg-transparent"
-            placeholder={intl.formatMessage(messages.value)}
-          />
-        </div>
-        <Button
-          onClick={handleAddRequirement}
-          className="bg-red ba b--red white ph3 br1 f5 pointer"
-          disabled={!newRequirementFieldsComplete}
-        >
-          <FormattedMessage {...messages.add} />
-        </Button>
-      </div>
-      <div className="mt4">
-        <table className="w-100">
-          <thead className="">
-            <tr>
-              <th className="tl bb b--grey-light"><FormattedMessage {...messages.metric} /></th>
-              <th className="tl bb b--grey-light tr"><FormattedMessage {...messages.value} /></th>
-              <th className="tl bb b--grey-light tr w3"><FormattedMessage {...messages.remove} /></th>
-            </tr>
-          </thead>
-          <tbody>
-            {requirements.map((r) => (
-              <tr>
-                <td className="h2">{ r.metric }</td>
-                <td className="h2 tr">{ r.value }</td>
-                <td className="h2 tr">
-                  <button
-                    className="bn pa0 bg-transparent"
-                    onClick={() => handleRemoveRequirement(r)}
-                  >
-                    <CircleMinusIcon />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Field name="requirements">
+        {({input}) => BadgeRequirementsField({ input })}
+      </Field>
     </div>
   );
 };
+
+function BadgeRequirementsField({ input }) {
+  const intl = useIntl();
+
+  const [newRequirementMetric, setNewRequirementMetric] = useState();
+  const [newRequirementValue, setNewRequirementValue] = useState('');
+
+  const data = JSON.parse(input.value || '{}');
+  const keys = Object.keys(data);
+  const items = keys.map((k) => [k, data[k]]);
+
+  const newRequirementFieldsComplete = newRequirementMetric && newRequirementValue;
+
+  const metrics = [
+    {value: "changesets", label: intl.formatMessage(messages.changesets)},
+  ];
+
+  for (let topic of OHSOME_STATS_TOPICS.split(',')) {
+    metrics.push({
+      value: `topics.${topic}.added`,
+      label: intl.formatMessage(messages[topic]),
+    });
+  }
+
+  const handleRemoveRequirement = (metric) => {
+    data[metric] = undefined;
+
+    input.onChange(JSON.stringify(data));
+  };
+
+  const handleAddRequirement = () => {
+    data[newRequirementMetric.value] = newRequirementValue;
+
+    input.onChange(JSON.stringify(data));
+
+    setNewRequirementValue('');
+    setNewRequirementMetric(null);
+  };
+
+  const handleNewRequirementValueChange = (event) => {
+    const value = Number(event.target.value);
+
+    if (!isNaN(value)) {
+      setNewRequirementValue(event.target.value);
+    }
+  };
+
+  return <>
+    <div className="badge-info__requirements">
+      <div className="badge-info__input-container">
+        <Select
+          classNamePrefix="react-select"
+          isClearable={true}
+          options={metrics}
+          value={newRequirementMetric}
+          onChange={setNewRequirementMetric}
+          className="z-5"
+        />
+      </div>
+      <div className="badge-info__input-container">
+        <input
+          value={newRequirementValue}
+          onChange={handleNewRequirementValueChange}
+          className="input-reset ba b--grey-light bg-transparent"
+          placeholder={intl.formatMessage(messages.value)}
+        />
+      </div>
+      <Button
+        onClick={handleAddRequirement}
+        className="bg-red ba b--red white ph3 br1 f5 pointer"
+        disabled={!newRequirementFieldsComplete}
+      >
+        <FormattedMessage {...messages.add} />
+      </Button>
+    </div>
+
+    {items.length > 0 && <div className="mt4">
+      <table className="w-100">
+        <thead className="">
+          <tr>
+            <th className="tl bb b--grey-light"><FormattedMessage {...messages.metric} /></th>
+            <th className="tl bb b--grey-light tr"><FormattedMessage {...messages.value} /></th>
+            <th className="tl bb b--grey-light tr w3"><FormattedMessage {...messages.remove} /></th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map(([metric, value]) => (
+            <tr>
+              <td className="h2">{ metric }</td>
+              <td className="h2 tr">{ value }</td>
+              <td className="h2 tr">
+                <button
+                  className="bn pa0 bg-transparent pointer"
+                  onClick={() => handleRemoveRequirement(metric)}
+                >
+                  <CircleMinusIcon />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>}
+  </>
+}
 
 export const BadgeUpdateForm = ({ badge, updateBadge }) => {
   return (
