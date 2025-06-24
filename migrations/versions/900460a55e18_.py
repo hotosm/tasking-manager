@@ -16,7 +16,10 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("mapping_badges", sa.Column("is_internal", sa.Boolean(), nullable=False, server_default='false'))
+    op.add_column(
+        "mapping_badges",
+        sa.Column("is_internal", sa.Boolean(), nullable=False, server_default="false"),
+    )
 
 
 def downgrade():
