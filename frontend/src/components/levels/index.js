@@ -4,7 +4,7 @@ import { Form, Field } from 'react-final-form';
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
 
-import messages from '../teamsAndOrgs/messages';
+import messages from './messages';
 import { Button } from '../button';
 import { Management } from '../teamsAndOrgs/management';
 import { nCardPlaceholders } from '../licenses/licensesPlaceholder';
@@ -72,10 +72,6 @@ export const LevelInformation = () => {
         </label>
         <Field name="require_peer_review" component="input" type="checkbox" required />
         <label className={labelClasses}>
-          <FormattedMessage {...messages.image} />
-        </label>
-        <Field name="imagePath" component="input" type="text" className={fieldClasses} required />
-        <label className={labelClasses}>
           <FormattedMessage {...messages.color} />
         </label>
         <Field name="color" component="input" type="text" className={fieldClasses} required />
@@ -121,7 +117,7 @@ export const LevelForm = ({ level, updateLevel, disabledForm }) => {
           <div className="blue-grey mb3">
             <div className={`bg-white b--grey-light pa4 ${dirtyForm ? 'bt bl br' : 'ba'}`}>
               <h3 className="f3 fw6 dib blue-dark mv0">
-                <FormattedMessage {...messages.levelInfo} />
+                <FormattedMessage {...messages.levelInfoTitle} />
               </h3>
               <form id="level-form" onSubmit={handleSubmit}>
                 <fieldset className="bn pa0" disabled={submitting}>

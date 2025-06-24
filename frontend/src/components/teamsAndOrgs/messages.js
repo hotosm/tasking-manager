@@ -434,14 +434,6 @@ export default defineMessages({
     id: 'management.titles.license_information',
     defaultMessage: 'License information',
   },
-  badgeInfo: {
-    id: 'management.titles.badge_information',
-    defaultMessage: 'Badge information',
-  },
-  levelInfo: {
-    id: 'management.titles.level_information',
-    defaultMessage: 'Level information',
-  },
   name: {
     id: 'management.fields.name',
     defaultMessage: 'Name',
@@ -509,14 +501,6 @@ export default defineMessages({
   noCategories: {
     id: 'management.no_categories',
     defaultMessage: 'There are no categories yet.',
-  },
-  noBadges: {
-    id: 'management.no_badges',
-    defaultMessage: 'There are no badges yet.',
-  },
-  noLevels: {
-    id: 'management.no_levels',
-    defaultMessage: 'There are no levels yet.',
   },
   noLicenses: {
     id: 'management.no_licenses',
@@ -610,11 +594,4 @@ export default defineMessages({
     id: 'management.stats.features',
     defaultMessage: 'Total features',
   },
-  requirements: {
-    id: 'management.badges.requirements',
-    defaultMessage: 'Requirements',
-  },
-  color: { id: 'management.levels.color', defaultMessage: 'Color' },
-  required_badges: { id: 'management.levels.required_badges', defaultMessage: 'Required badges' },
-  peer_review: { id: 'management.levels.peer_review', defaultMessage: 'Require peer review' },
 });

@@ -7,6 +7,8 @@ export const OHSOME_STATS_BASE_URL =
   process.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org';
 export const OHSOME_STATS_API_URL =
   process.env.REACT_APP_OHSOME_STATS_API_URL || 'https://stats.now.ohsome.org/api';
+export const OHSOME_STATS_TOPICS =
+  process.env.REACT_APP_OHSOME_STATS_TOPICS || 'highway,waterway,building';
 // APPLICATION SETTINGS
 export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
 export const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT || '';
