@@ -12,6 +12,7 @@ import { Management } from '../teamsAndOrgs/management';
 import { nCardPlaceholders } from '../licenses/licensesPlaceholder';
 import { CircleMinusIcon } from '../svgIcons';
 import { OHSOME_STATS_TOPICS } from '../../config';
+import { SwitchToggle } from '../formInputs';
 
 export const BadgeCard = ({ badge }) => {
   return (
@@ -78,6 +79,7 @@ export const BadgeInformation = ({ badge }) => {
   }
 
   const [requirements, setRequirements] = useState([]);
+  const [isInternal, setIsInternal] = useState(badge ? badge.isInternal : false);
 
   const handleAddRequirement = () => {
     setRequirements([...requirements, {
@@ -113,6 +115,15 @@ export const BadgeInformation = ({ badge }) => {
         <FormattedMessage {...messages.description} />
       </label>
       <Field name="description" component="textarea" rows={7} className={fieldClasses} required />
+
+      <div class="mt2">
+        <SwitchToggle
+          isChecked={isInternal}
+          onChange={() => { setIsInternal(!isInternal) }}
+          label={intl.formatMessage(messages.hidden)}
+          labelPosition="right"
+        />
+      </div>
 
       <label className={labelClasses}>
         <FormattedMessage {...messages.image} />

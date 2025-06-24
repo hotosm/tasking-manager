@@ -20,4 +20,5 @@ export default defineMessages({
   value: { id: 'management.badges.value', defaultMessage: 'Value' },
   waterway: { id: 'management.badges.waterway', defaultMessage: 'km of rivers added' },
   uploadNew: { id: 'management.badges.uploadNew', defaultMessage: 'Upload new' },
+  hidden: { id: 'management.badges.hidden', defaultMessage: 'Hide this badge from users' },
 });
