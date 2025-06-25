@@ -76,7 +76,9 @@ export const LevelInformation = () => {
         <label className={labelClasses}>
           <FormattedMessage {...messages.color} />
         </label>
-        <Field name="color" component="input" type="color" className={fieldClasses} required />
+        <Field name="color">
+          {({input}) => ColorField({ input })}
+        </Field>
 
         <label className={labelClasses}>
           <FormattedMessage {...messages.required_badges} />
@@ -100,6 +102,19 @@ export const LevelInformation = () => {
     </>
   );
 };
+
+function ColorField({ input }) {
+  const handleInputOnChange = (event) => {
+    input.onChange(event.target.value);
+  };
+
+  return <>
+    <div className="flex ba b--grey-light pv3 ph2 justify-between items-center" style={{gap: ".5rem"}}>
+      <input type="text" value={input.value} onChange={handleInputOnChange} className="bn" />
+      <input type="color" value={input.value} onChange={handleInputOnChange} className="pointer pa0 bn w1 h1" />
+    </div>
+  </>;
+}
 
 function ApprovalsRequiredField({ input }) {
   const intl = useIntl();
