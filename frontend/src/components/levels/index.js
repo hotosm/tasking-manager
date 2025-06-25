@@ -55,7 +55,6 @@ export const LevelsManagement = ({levels, isFetched}) => {
 export const LevelInformation = () => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
-  const intl = useIntl();
 
   const badge_options = [
     { value: 1, label: 'Uno' },
@@ -70,18 +69,9 @@ export const LevelInformation = () => {
         </label>
         <Field name="name" component="input" type="text" className={fieldClasses} required />
 
-        <div class="mt2">
-          <Field name="require_peer_review">
-            {({input}) => {
-              return <SwitchToggle
-                isChecked={!!input.value}
-                onChange={input.onChange}
-                label={intl.formatMessage(messages.peer_review)}
-                labelPosition="right"
-              />
-            }}
-          </Field>
-        </div>
+        <Field name="approvalsRequired">
+          {({input}) => ApprovalsRequiredField({ input })}
+        </Field>
 
         <label className={labelClasses}>
           <FormattedMessage {...messages.color} />
@@ -111,7 +101,57 @@ export const LevelInformation = () => {
   );
 };
 
-export const LevelForm = ({ level, updateLevel, disabledForm }) => {
+function ApprovalsRequiredField({ input }) {
+  const intl = useIntl();
+  const num = Number(input.value);
+
+  const handleSwitchOnChange = (event) => {
+    if (event.target.checked) {
+      input.onChange("1");
+    } else {
+      input.onChange("0");
+    }
+  };
+
+  const handleInputOnChange = (event) => {
+    const value = event.target.value;
+    const num = Number(value);
+
+    if (!isNaN(num)) {
+      if (num <= 0) {
+        input.onChange("0");
+      } else {
+        input.onChange(value.toString());
+      }
+    } else {
+      input.onChange("1");
+    }
+  };
+
+  return <>
+    <div className="mt2">
+      <SwitchToggle
+        isChecked={num > 0}
+        onChange={handleSwitchOnChange}
+        label={intl.formatMessage(messages.peer_review)}
+        labelPosition="right"
+      />
+    </div>
+    {num > 0 && <>
+      <label className="db pt3 pb2">
+        <FormattedMessage {...messages.approvals_required} />
+      </label>
+      <input
+        type="number"
+        value={ input.value }
+        onChange={handleInputOnChange}
+        className="blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent"
+      />
+    </>}
+  </>;
+}
+
+export const LevelForm = ({ level, updateLevel }) => {
   return (
     <Form
       onSubmit={(values) => updateLevel(values)}
