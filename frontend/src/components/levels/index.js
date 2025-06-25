@@ -109,8 +109,8 @@ function ColorField({ input }) {
   };
 
   return <>
-    <div className="flex ba b--grey-light pv3 ph2 justify-between items-center" style={{gap: ".5rem"}}>
-      <input type="text" value={input.value} onChange={handleInputOnChange} className="bn" />
+    <div className="flex ba b--grey-light pr3 justify-between items-center" style={{gap: ".5rem"}}>
+      <input type="text" value={input.value} onChange={handleInputOnChange} className="bn ph2 pv3" />
       <input type="color" value={input.value} onChange={handleInputOnChange} className="pointer pa0 bn w1 h1" />
     </div>
   </>;
