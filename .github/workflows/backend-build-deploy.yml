@@ -26,51 +26,11 @@ env:
 
 jobs:
   image-build-and-push:
-    name: Build Container Images
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    outputs:
-      image_tags: ${{ steps.meta.outputs.tags }}
-
-    steps:
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set container image metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=${{ github.ref_name }}
-            type=raw,value=${{ github.sha }}
-
-      - name: Build and push container image
-        id: build-push-image
-        uses: docker/build-push-action@v5
-        with:
-          context: "{{defaultContext}}"
-          target: prod
-          platforms: linux/amd64,linux/arm64
-          file: scripts/docker/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ github.ref_name }}
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-main
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-staging
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-develop
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ github.ref_name }},mode=max
+    uses: hotosm/gh-workflows/.github/workflows/image_build.yml@1.5.1
+    with:
+      image_name: ghcr.io/${{ github.repository }}/backend
+      build_target: prod
+      dockerfile: scripts/docker/Dockerfile
 
   deploy-service:
     name: Deploy ${{ matrix.service }} to ECS
