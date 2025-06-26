@@ -18,6 +18,7 @@ import { updateEntity } from '../utils/management';
 export const EditLevel = () => {
   const { id } = useParams();
   const [error, loading, level] = useFetch(`levels/${id}/`);
+  const [badgesError, loadingBadges, badges] = useFetch('badges/');
   const [isError, setIsError] = useState(false);
   const token = useSelector((state) => state.auth.token);
 
@@ -38,8 +39,9 @@ export const EditLevel = () => {
       <div className="w-50-l w-100 mt4 fl">
         <LevelForm
           level={level}
+          badges={badges.badges}
           updateLevel={updateLevel}
-          disabledForm={error || loading}
+          disabledForm={error || badgesError || loading || loadingBadges}
         />
         {isError && <EntityError entity="level" action="updation" />}
       </div>
@@ -66,28 +68,32 @@ export const CreateLevel = () => {
   const token = useSelector((state) => state.auth.token);
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
+  const [badgesError, loadingBadges, badges] = useFetch('badges/');
 
-  const createLevel = (payload) => {
+  const createLevel = async (payload) => {
     setIsError(false);
-    return pushToLocalJSONAPI('levels/', JSON.stringify(payload), token, 'POST')
-      .then((result) => {
-        toast.success(
-          <FormattedMessage
-            {...messages.entityCreationSuccess}
-            values={{
-              entity: 'level',
-            }}
-          />,
-        );
-        navigate(`/manage/levels/`);
-      })
-      .catch(() => setIsError(true));
+
+    try {
+      await pushToLocalJSONAPI('levels/', JSON.stringify(payload), token, 'POST');
+
+      toast.success(
+        <FormattedMessage
+          {...messages.entityCreationSuccess}
+          values={{
+            entity: 'level',
+          }}
+        />,
+      );
+      navigate(`/manage/levels/`);
+    } catch (_error) {
+      setIsError(true);
+    }
   };
 
-  return (
+  return !badgesError && !loadingBadges && (
     <Form
       onSubmit={(values) => createLevel(values)}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      render={({ handleSubmit, pristine, submitting }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
             <div className="cf vh-100">
@@ -99,7 +105,7 @@ export const CreateLevel = () => {
                   <h3 className="f3 blue-dark mv0 fw6">
                     <FormattedMessage {...messages.levelInfo} />
                   </h3>
-                  <LevelInformation />
+                  <LevelInformation badges={badges} />
                 </div>
                 {isError && <EntityError entity="level" />}
               </div>

@@ -52,14 +52,10 @@ export const LevelsManagement = ({levels, isFetched}) => {
   );
 };
 
-export const LevelInformation = () => {
+export const LevelInformation = ({ badges }) => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
-
-  const badge_options = [
-    { value: 1, label: 'Uno' },
-    { value: 2, label: 'Dos' },
-  ];
+  const badge_options = (badges || []).map((b) => ({ value: b.id, label: b.name}));
 
   return (
     <>
@@ -84,17 +80,19 @@ export const LevelInformation = () => {
           <FormattedMessage {...messages.required_badges} />
         </label>
         <Field name="type" className={fieldClasses} required>
-          {(props) => (
+          {() => (
             <>
-              <Select
-                classNamePrefix="react-select"
-                isClearable={false}
-                options={badge_options}
-                className="z-5"
-              />
-              {props.meta.error && props.meta.touched && (
-                <span className="mt3 red">{props.meta.error}</span>
-              )}
+              <div className="flex" style={{gap: ".5rem"}}>
+                <Select
+                  classNamePrefix="react-select"
+                  isClearable={false}
+                  options={badge_options}
+                  className="z-5 w-100"
+                />
+                <button type="button" className="bg-red white ba b--red pointer br1">
+                  <FormattedMessage {...messages.add} />
+                </button>
+              </div>
             </>
           )}
         </Field>
@@ -166,7 +164,7 @@ function ApprovalsRequiredField({ input }) {
   </>;
 }
 
-export const LevelForm = ({ level, updateLevel }) => {
+export const LevelForm = ({ level, badges, updateLevel }) => {
   return (
     <Form
       onSubmit={(values) => updateLevel(values)}
@@ -189,7 +187,7 @@ export const LevelForm = ({ level, updateLevel }) => {
               </h3>
               <form id="level-form" onSubmit={handleSubmit}>
                 <fieldset className="bn pa0" disabled={submitting}>
-                  <LevelInformation />
+                  <LevelInformation badges={badges} />
                 </fieldset>
               </form>
             </div>

@@ -18,7 +18,7 @@ export default defineMessages({
   requirements: { id: 'management.badges.requirements', defaultMessage: 'Requirements' },
   save: { id: 'management.button.save', defaultMessage: 'Save' },
   value: { id: 'management.badges.value', defaultMessage: 'Value' },
-  waterway: { id: 'management.badges.waterway', defaultMessage: 'km of rivers added' },
+  waterway: { id: 'management.badges.waterway', defaultMessage: 'km of waterways added' },
   uploadNew: { id: 'management.badges.uploadNew', defaultMessage: 'Upload new' },
   hidden: { id: 'management.badges.hidden', defaultMessage: 'Hide this badge from users' },
 });
