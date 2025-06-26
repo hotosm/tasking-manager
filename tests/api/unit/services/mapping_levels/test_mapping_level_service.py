@@ -29,7 +29,6 @@ class TestMappingLevelService:
             imagePath="the path",
             approvalsRequired=5,
             color="green",
-            ordering=4,
             isBeginner=True,
         )
         # Arrange
@@ -41,7 +40,7 @@ class TestMappingLevelService:
         assert dto.approvals_required == orig.approvals_required
         assert dto.approvals_required == 5
         assert dto.color == orig.color
-        assert dto.ordering == orig.ordering
+        assert dto.ordering == 4
         assert dto.is_beginner == orig.is_beginner
         assert dto.is_beginner == True
 
@@ -59,7 +58,6 @@ class TestMappingLevelService:
         # Arrange
         level = MappingLevelCreateDTO(
             name="new level",
-            ordering=4,
         )
 
         # Act
@@ -69,14 +67,13 @@ class TestMappingLevelService:
         new_from_db = await MappingLevelService.get_by_id(new_level.id, self.db)
 
         assert new_from_db.name == new_level.name
-        assert new_from_db.ordering == new_level.ordering
+        assert new_from_db.ordering == 4
 
     async def test_update(self):
         # Arrange
         old_data = MappingLevelCreateDTO(
             name="old name",
             imagePath="https://old.com/path.jpg",
-            ordering=1,
         )
         level = await MappingLevel.create(old_data, self.db)
         new_data = MappingLevelUpdateDTO(
@@ -85,7 +82,6 @@ class TestMappingLevelService:
             imagePath="https://new.com/path.jpg",
             approvalsRequired=10,
             color="#acabad",
-            ordering=2,
             isBeginner=True,
         )
 
@@ -99,7 +95,7 @@ class TestMappingLevelService:
         assert from_db.approvals_required == new_data.approvals_required
         assert from_db.approvals_required == 10
         assert from_db.color == new_data.color
-        assert from_db.ordering == new_data.ordering
+        assert from_db.ordering == 4
         assert from_db.is_beginner == new_data.is_beginner
         assert from_db.is_beginner
 
@@ -108,7 +104,6 @@ class TestMappingLevelService:
         old_data = MappingLevelCreateDTO(
             name="old name",
             imagePath="https://old.com/path.jpg",
-            ordering=1,
         )
         level = await MappingLevel.create(old_data, self.db)
 
@@ -122,7 +117,6 @@ class TestMappingLevelService:
         old_data = MappingLevelCreateDTO(
             name="old name",
             imagePath="https://old.com/path.jpg",
-            ordering=1,
         )
         level = await MappingLevel.create(old_data, self.db)
         await self.test_user.set_mapping_level(level, self.db)

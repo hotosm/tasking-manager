@@ -37,23 +37,25 @@ class MappingLevel(Base):
 
     @staticmethod
     async def create(data: MappingLevelCreateDTO, db: Database):
-        query = """
-            INSERT INTO mapping_levels (name, approvals_required, color, ordering, is_beginner)
-            VALUES (:name, :approvals_required, :color, :ordering, :is_beginner)
-            RETURNING id;
-        """
-        level_id = await db.execute(
-            query,
-            {
-                "name": data.name,
-                "approvals_required": data.approvals_required,
-                "color": data.color,
-                "ordering": data.ordering,
-                "is_beginner": data.is_beginner,
-            },
-        )
+        async with db.transaction():
+            next_ordering = await db.execute("select max(ordering)+1 from mapping_levels")
+            query = """
+                INSERT INTO mapping_levels (name, approvals_required, color, ordering, is_beginner)
+                VALUES (:name, :approvals_required, :color, :ordering, :is_beginner)
+                RETURNING id;
+            """
+            level_id = await db.execute(
+                query,
+                {
+                    "name": data.name,
+                    "approvals_required": data.approvals_required,
+                    "color": data.color,
+                    "ordering": next_ordering,
+                    "is_beginner": data.is_beginner,
+                },
+            )
 
-        return await MappingLevel.get_by_id(level_id, db)
+            return await MappingLevel.get_by_id(level_id, db)
 
     @staticmethod
     async def update(data: MappingLevelUpdateDTO, db: Database):
