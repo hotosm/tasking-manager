@@ -22,36 +22,46 @@ class MappingLevelService:
         )
 
     @staticmethod
-    async def get_by_id(id: int, db: Database) -> MappingLevelDTO:
-        mapping_level = await MappingLevel.get_by_id(id, db)
-
+    async def _single_record(mapping_level: MappingLevel, db: Database) -> MappingLevelDTO:
         if mapping_level is None:
             raise NotFound(sub_code="MAPPING_LEVEL_NOT_FOUND", mapping_level_id=id)
 
-        return mapping_level.as_dto()
+        dto = mapping_level.as_dto()
+        dto.required_badges = await MappingLevelService.get_associated_badges(dto.id, db)
+
+        return dto
 
     @staticmethod
-    async def get_badges(id: int, db: Database) -> List[MappingBadgeDTO]:
+    async def get_by_id(id: int, db: Database) -> MappingLevelDTO:
+        mapping_level = await MappingLevel.get_by_id(id, db)
+
+        return await MappingLevelService._single_record(mapping_level, db)
+
+    @staticmethod
+    async def get_associated_badges(id: int, db: Database) -> List[MappingBadgeDTO]:
         badges = await MappingBadge.get_related_to_level(id, db)
 
-        return [b.as_dto() for b in badges]
+        return [b.as_associated() for b in badges]
 
     @staticmethod
     async def get_by_name(name: str, db: Database) -> MappingLevel:
         mapping_level = await MappingLevel.get_by_name(name, db)
 
-        if mapping_level is None:
-            raise NotFound(sub_code="MAPPING_LEVEL_NOT_FOUND", mapping_level_name=name)
-
-        return mapping_level
+        return await MappingLevelService._single_record(mapping_level, db)
 
     @staticmethod
     async def create(data: MappingLevelCreateDTO, db: Database) -> MappingLevelDTO:
-        return (await MappingLevel.create(data, db)).as_dto()
+        dto = (await MappingLevel.create(data, db)).as_dto()
+        dto.required_badges = await MappingLevelService.get_associated_badges(dto.id, db)
+
+        return dto
 
     @staticmethod
     async def update(data: MappingLevelUpdateDTO, db: Database) -> MappingLevelDTO:
-        return (await MappingLevel.update(data, db)).as_dto()
+        dto = (await MappingLevel.update(data, db)).as_dto()
+        dto.required_badges = await MappingLevelService.get_associated_badges(dto.id, db)
+
+        return dto
 
     @staticmethod
     async def delete(id: int, db: Database):

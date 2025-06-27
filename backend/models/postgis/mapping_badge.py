@@ -7,6 +7,7 @@ from backend.models.dtos.mapping_badge_dto import (
     MappingBadgeCreateDTO,
     MappingBadgeUpdateDTO,
 )
+from backend.models.dtos.mapping_level_dto import AssociatedBadge
 
 
 class MappingBadge(Base):
@@ -22,6 +23,11 @@ class MappingBadge(Base):
     requirements = Column(JSON, nullable=False)
     is_enabled = Column(Boolean, nullable=False, default=True)
     is_internal = Column(Boolean, nullable=False, default=False)
+
+    def as_associated(self) -> AssociatedBadge:
+        return AssociatedBadge(
+            id=self.id,
+        )
 
     def as_dto(self) -> MappingBadgeDTO:
         return MappingBadgeDTO(

@@ -13,6 +13,7 @@ class MappingLevelDTO(BaseModel):
     color: Optional[str] = Field(default=None)
     ordering: int
     is_beginner: bool = Field(default=False, alias="isBeginner")
+    required_badges: List[AssociatedBadge] = Field(default=[], alias="requiredBadges")
 
 
 class MappingLevelCreateDTO(BaseModel):
