@@ -86,6 +86,18 @@ class TestMappingLevelService:
 
     async def test_update(self):
         # Arrange
+        await MappingBadgeService.create(MappingBadgeCreateDTO(
+            name="one",
+            description="...",
+            imagePath="/",
+            requirements="{}",
+        ), self.db)
+        await MappingBadgeService.create(MappingBadgeCreateDTO(
+            name="two",
+            description="...",
+            imagePath="/",
+            requirements="{}",
+        ), self.db)
         old_data = MappingLevelCreateDTO(
             name="old name",
             imagePath="https://old.com/path.jpg",
@@ -99,7 +111,7 @@ class TestMappingLevelService:
             approvalsRequired=10,
             color="#acabad",
             isBeginner=True,
-            required_badges=[AssociatedBadge(id=2)],
+            requiredBadges=[AssociatedBadge(id=2)],
         )
 
         # Act
@@ -115,7 +127,11 @@ class TestMappingLevelService:
         assert from_db.ordering == 4
         assert from_db.is_beginner == new_data.is_beginner
         assert from_db.is_beginner
-        assert from_db.badges == [2]
+
+        badges = await MappingLevelService.get_badges(from_db.id, self.db)
+
+        assert len(badges) == 1
+        assert badges[0].id == 2
 
     async def test_delete(self):
         # Arrange

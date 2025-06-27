@@ -71,17 +71,28 @@ class MappingLevel(Base):
     async def update(data: MappingLevelUpdateDTO, db: Database):
         level_dict = data.dict(exclude_unset=True)
         updated_values = {
-            key: level_dict[key] for key in level_dict.keys() if key not in ["id"]
+            key: level_dict[key] for key in level_dict.keys() if key not in ["id", "required_badges"]
         }
         set_clause = ", ".join(f"{key} = :{key}" for key in updated_values.keys())
 
-        if set_clause:
-            update_query = f"""
-            UPDATE mapping_levels
-            SET {set_clause}
-            WHERE id = :id
-            """
-            await db.execute(update_query, values={**updated_values, "id": data.id})
+        async with db.transaction():
+            if set_clause:
+                update_query = f"""
+                UPDATE mapping_levels
+                SET {set_clause}
+                WHERE id = :id
+                """
+                await db.execute(update_query, values={**updated_values, "id": data.id})
+
+            clear_query = "DELETE FROM mapping_level_badges WHERE level_id = :level_id"
+            await db.execute(clear_query, values={"level_id": data.id})
+
+            for badge in data.required_badges:
+                query = "INSERT INTO mapping_level_badges (level_id, badge_id) VALUES (:level_id, :badge_id)"
+                await db.execute(query, values={
+                    "level_id": data.id,
+                    "badge_id": badge.id,
+                })
 
         return await MappingLevel.get_by_id(data.id, db)
 
