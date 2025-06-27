@@ -59,7 +59,7 @@ class TestMappingLevelService:
 
     async def test_create(self):
         # Arrange
-        await MappingBadgeService.create(MappingBadgeCreateDTO(
+        badge = await MappingBadgeService.create(MappingBadgeCreateDTO(
             name="a badge",
             description="...",
             imagePath="/",
@@ -67,7 +67,7 @@ class TestMappingLevelService:
         ), self.db)
         level = MappingLevelCreateDTO(
             name="new level",
-            requiredBadges=[AssociatedBadge(id=1)],
+            requiredBadges=[AssociatedBadge(id=badge.id)],
         )
 
         # Act
@@ -82,17 +82,17 @@ class TestMappingLevelService:
         badges = await MappingLevelService.get_badges(new_from_db.id, self.db)
 
         assert len(badges) == 1
-        assert badges[0].id == 1
+        assert badges[0].id == badge.id
 
     async def test_update(self):
         # Arrange
-        await MappingBadgeService.create(MappingBadgeCreateDTO(
+        badge1 = await MappingBadgeService.create(MappingBadgeCreateDTO(
             name="one",
             description="...",
             imagePath="/",
             requirements="{}",
         ), self.db)
-        await MappingBadgeService.create(MappingBadgeCreateDTO(
+        badge2 = await MappingBadgeService.create(MappingBadgeCreateDTO(
             name="two",
             description="...",
             imagePath="/",
@@ -101,7 +101,7 @@ class TestMappingLevelService:
         old_data = MappingLevelCreateDTO(
             name="old name",
             imagePath="https://old.com/path.jpg",
-            required_badges=[AssociatedBadge(id=1)],
+            required_badges=[AssociatedBadge(id=badge1.id)],
         )
         level = await MappingLevel.create(old_data, self.db)
         new_data = MappingLevelUpdateDTO(
@@ -111,7 +111,7 @@ class TestMappingLevelService:
             approvalsRequired=10,
             color="#acabad",
             isBeginner=True,
-            requiredBadges=[AssociatedBadge(id=2)],
+            requiredBadges=[AssociatedBadge(id=badge2.id)],
         )
 
         # Act
@@ -131,7 +131,7 @@ class TestMappingLevelService:
         badges = await MappingLevelService.get_badges(from_db.id, self.db)
 
         assert len(badges) == 1
-        assert badges[0].id == 2
+        assert badges[0].id == badge2.id
 
     async def test_delete(self):
         # Arrange
