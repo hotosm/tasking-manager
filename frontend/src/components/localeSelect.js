@@ -45,7 +45,10 @@ function LocaleSelect({
           control: (baseStyles, state) => ({
             ...baseStyles,
             border: removeBorder ? 'none' : 'auto',
-            width: fullWidth ? '100%' : `${8 * state.getValue()[0].language.length + 60}px`,
+            width:
+              fullWidth || !supportedLanguages.length
+                ? '100%'
+                : `${8 * state.getValue()[0].language.length + 60}px`,
             marginLeft: 'auto',
           }),
           menu: (baseStyles) => ({
