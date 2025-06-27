@@ -1,5 +1,8 @@
 from databases import Database
-from sqlalchemy import Integer, String, Column, Boolean
+from sqlalchemy import (
+    Integer, String, Column, Boolean, ForeignKey, UniqueConstraint,
+    PrimaryKeyConstraint,
+)
 from asyncpg import ForeignKeyViolationError
 
 from backend.db import Base
@@ -54,6 +57,13 @@ class MappingLevel(Base):
                     "is_beginner": data.is_beginner,
                 },
             )
+
+            for badge in data.required_badges:
+                query = "INSERT INTO mapping_level_badges (level_id, badge_id) VALUES (:level_id, :badge_id)"
+                await db.execute(query, values={
+                    "level_id": level_id,
+                    "badge_id": badge.id,
+                })
 
             return await MappingLevel.get_by_id(level_id, db)
 
@@ -122,3 +132,15 @@ class MappingLevel(Base):
         result = await db.fetch_one(query)
 
         return MappingLevel(**result) if result is not None else None
+
+
+class MappingLevelBadges(Base):
+    __tablename__ = "mapping_level_badges"
+
+    level_id = Column(Integer, ForeignKey("mapping_levels.id"))
+    badge_id = Column(Integer, ForeignKey("mapping_badges.id"))
+
+    __table_args__ = (
+        UniqueConstraint("level_id", "badge_id"),
+        PrimaryKeyConstraint("level_id", "badge_id"),
+    )

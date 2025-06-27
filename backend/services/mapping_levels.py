@@ -4,12 +4,14 @@ from databases import Database
 
 from backend.exceptions import NotFound
 from backend.models.postgis.mapping_level import MappingLevel
+from backend.models.postgis.mapping_badge import MappingBadge
 from backend.models.dtos.mapping_level_dto import (
     MappingLevelDTO,
     MappingLevelCreateDTO,
     MappingLevelUpdateDTO,
     MappingLevelListDTO,
 )
+from backend.models.dtos.mapping_badge_dto import MappingBadgeDTO
 
 
 class MappingLevelService:
@@ -27,6 +29,12 @@ class MappingLevelService:
             raise NotFound(sub_code="MAPPING_LEVEL_NOT_FOUND", mapping_level_id=id)
 
         return mapping_level.as_dto()
+
+    @staticmethod
+    async def get_badges(id: int, db: Database) -> List[MappingBadgeDTO]:
+        badges = await MappingBadge.get_related_to_level(id, db)
+
+        return [b.as_dto() for b in badges]
 
     @staticmethod
     async def get_by_name(name: str, db: Database) -> MappingLevel:

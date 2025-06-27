@@ -4,9 +4,12 @@ from backend.exceptions import Conflict
 from backend.models.dtos.mapping_level_dto import (
     MappingLevelCreateDTO,
     MappingLevelUpdateDTO,
+    AssociatedBadge,
 )
+from backend.models.dtos.mapping_badge_dto import MappingBadgeCreateDTO
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.services.mapping_levels import MappingLevelService
+from backend.services.mapping_badges import MappingBadgeService
 
 from tests.api.helpers.test_helpers import (
     get_or_create_levels,
@@ -56,8 +59,15 @@ class TestMappingLevelService:
 
     async def test_create(self):
         # Arrange
+        await MappingBadgeService.create(MappingBadgeCreateDTO(
+            name="a badge",
+            description="...",
+            imagePath="/",
+            requirements="{}",
+        ), self.db)
         level = MappingLevelCreateDTO(
             name="new level",
+            requiredBadges=[AssociatedBadge(id=1)],
         )
 
         # Act
@@ -69,11 +79,17 @@ class TestMappingLevelService:
         assert new_from_db.name == new_level.name
         assert new_from_db.ordering == 4
 
+        badges = await MappingLevelService.get_badges(new_from_db.id, self.db)
+
+        assert len(badges) == 1
+        assert badges[0].id == 1
+
     async def test_update(self):
         # Arrange
         old_data = MappingLevelCreateDTO(
             name="old name",
             imagePath="https://old.com/path.jpg",
+            required_badges=[AssociatedBadge(id=1)],
         )
         level = await MappingLevel.create(old_data, self.db)
         new_data = MappingLevelUpdateDTO(
@@ -83,6 +99,7 @@ class TestMappingLevelService:
             approvalsRequired=10,
             color="#acabad",
             isBeginner=True,
+            required_badges=[AssociatedBadge(id=2)],
         )
 
         # Act
@@ -98,6 +115,7 @@ class TestMappingLevelService:
         assert from_db.ordering == 4
         assert from_db.is_beginner == new_data.is_beginner
         assert from_db.is_beginner
+        assert from_db.badges == [2]
 
     async def test_delete(self):
         # Arrange

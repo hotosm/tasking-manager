@@ -1,4 +1,4 @@
-"""Delete column image_path for mapping_levels
+"""Add column is_internal for badges
 Revision ID: 900460a55e18
 Revises: 3542b88254c0
 Create Date: 2025-06-02 20:17
