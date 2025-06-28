@@ -22,12 +22,16 @@ class MappingLevelService:
         )
 
     @staticmethod
-    async def _single_record(mapping_level: MappingLevel, db: Database) -> MappingLevelDTO:
+    async def _single_record(
+        mapping_level: MappingLevel, db: Database
+    ) -> MappingLevelDTO:
         if mapping_level is None:
             raise NotFound(sub_code="MAPPING_LEVEL_NOT_FOUND", mapping_level_id=id)
 
         dto = mapping_level.as_dto()
-        dto.required_badges = await MappingLevelService.get_associated_badges(dto.id, db)
+        dto.required_badges = await MappingLevelService.get_associated_badges(
+            dto.id, db
+        )
 
         return dto
 
@@ -52,14 +56,18 @@ class MappingLevelService:
     @staticmethod
     async def create(data: MappingLevelCreateDTO, db: Database) -> MappingLevelDTO:
         dto = (await MappingLevel.create(data, db)).as_dto()
-        dto.required_badges = await MappingLevelService.get_associated_badges(dto.id, db)
+        dto.required_badges = await MappingLevelService.get_associated_badges(
+            dto.id, db
+        )
 
         return dto
 
     @staticmethod
     async def update(data: MappingLevelUpdateDTO, db: Database) -> MappingLevelDTO:
         dto = (await MappingLevel.update(data, db)).as_dto()
-        dto.required_badges = await MappingLevelService.get_associated_badges(dto.id, db)
+        dto.required_badges = await MappingLevelService.get_associated_badges(
+            dto.id, db
+        )
 
         return dto
 

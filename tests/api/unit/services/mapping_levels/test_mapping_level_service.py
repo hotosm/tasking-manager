@@ -27,12 +27,15 @@ class TestMappingLevelService:
         request.cls.db = db_connection_fixture
 
     async def test_as_dto(self):
-        badge = await MappingBadgeService.create(MappingBadgeCreateDTO(
-            name="a badge",
-            description="...",
-            imagePath="/",
-            requirements="{}",
-        ), self.db)
+        badge = await MappingBadgeService.create(
+            MappingBadgeCreateDTO(
+                name="a badge",
+                description="...",
+                imagePath="/",
+                requirements="{}",
+            ),
+            self.db,
+        )
         orig = MappingLevelCreateDTO(
             name="the name",
             imagePath="the path",
@@ -66,12 +69,15 @@ class TestMappingLevelService:
 
     async def test_create(self):
         # Arrange
-        badge = await MappingBadgeService.create(MappingBadgeCreateDTO(
-            name="a badge",
-            description="...",
-            imagePath="/",
-            requirements="{}",
-        ), self.db)
+        badge = await MappingBadgeService.create(
+            MappingBadgeCreateDTO(
+                name="a badge",
+                description="...",
+                imagePath="/",
+                requirements="{}",
+            ),
+            self.db,
+        )
         level = MappingLevelCreateDTO(
             name="new level",
             requiredBadges=[AssociatedBadge(id=badge.id)],
@@ -87,18 +93,24 @@ class TestMappingLevelService:
 
     async def test_update(self):
         # Arrange
-        badge1 = await MappingBadgeService.create(MappingBadgeCreateDTO(
-            name="one",
-            description="...",
-            imagePath="/",
-            requirements="{}",
-        ), self.db)
-        badge2 = await MappingBadgeService.create(MappingBadgeCreateDTO(
-            name="two",
-            description="...",
-            imagePath="/",
-            requirements="{}",
-        ), self.db)
+        badge1 = await MappingBadgeService.create(
+            MappingBadgeCreateDTO(
+                name="one",
+                description="...",
+                imagePath="/",
+                requirements="{}",
+            ),
+            self.db,
+        )
+        badge2 = await MappingBadgeService.create(
+            MappingBadgeCreateDTO(
+                name="two",
+                description="...",
+                imagePath="/",
+                requirements="{}",
+            ),
+            self.db,
+        )
         old_data = MappingLevelCreateDTO(
             name="old name",
             imagePath="https://old.com/path.jpg",

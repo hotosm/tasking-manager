@@ -1,6 +1,11 @@
 from databases import Database
 from sqlalchemy import (
-    Integer, String, Column, Boolean, ForeignKey, UniqueConstraint,
+    Integer,
+    String,
+    Column,
+    Boolean,
+    ForeignKey,
+    UniqueConstraint,
     PrimaryKeyConstraint,
 )
 from asyncpg import ForeignKeyViolationError
@@ -41,7 +46,9 @@ class MappingLevel(Base):
     @staticmethod
     async def create(data: MappingLevelCreateDTO, db: Database):
         async with db.transaction():
-            next_ordering = await db.execute("select max(ordering)+1 from mapping_levels")
+            next_ordering = await db.execute(
+                "select max(ordering)+1 from mapping_levels"
+            )
             query = """
                 INSERT INTO mapping_levels (name, approvals_required, color, ordering, is_beginner)
                 VALUES (:name, :approvals_required, :color, :ordering, :is_beginner)
@@ -60,10 +67,13 @@ class MappingLevel(Base):
 
             for badge in data.required_badges:
                 query = "INSERT INTO mapping_level_badges (level_id, badge_id) VALUES (:level_id, :badge_id)"
-                await db.execute(query, values={
-                    "level_id": level_id,
-                    "badge_id": badge.id,
-                })
+                await db.execute(
+                    query,
+                    values={
+                        "level_id": level_id,
+                        "badge_id": badge.id,
+                    },
+                )
 
             return await MappingLevel.get_by_id(level_id, db)
 
@@ -71,7 +81,9 @@ class MappingLevel(Base):
     async def update(data: MappingLevelUpdateDTO, db: Database):
         level_dict = data.dict(exclude_unset=True)
         updated_values = {
-            key: level_dict[key] for key in level_dict.keys() if key not in ["id", "required_badges"]
+            key: level_dict[key]
+            for key in level_dict.keys()
+            if key not in ["id", "required_badges"]
         }
         set_clause = ", ".join(f"{key} = :{key}" for key in updated_values.keys())
 
@@ -89,10 +101,13 @@ class MappingLevel(Base):
 
             for badge in data.required_badges:
                 query = "INSERT INTO mapping_level_badges (level_id, badge_id) VALUES (:level_id, :badge_id)"
-                await db.execute(query, values={
-                    "level_id": data.id,
-                    "badge_id": badge.id,
-                })
+                await db.execute(
+                    query,
+                    values={
+                        "level_id": data.id,
+                        "badge_id": badge.id,
+                    },
+                )
 
         return await MappingLevel.get_by_id(data.id, db)
 
