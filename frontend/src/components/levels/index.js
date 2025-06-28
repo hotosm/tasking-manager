@@ -90,7 +90,7 @@ export const LevelInformation = ({ badges }) => {
 
 function RequiredBadgesField({input, badges}) {
   const badge_options = (badges || [])
-    .filter((b) => input.value.find((ib) => ib.id == b.id) === undefined)
+    .filter((b) => (input.value || []).find((ib) => ib.id == b.id) === undefined)
     .map((b) => ({ value: b.id, label: b.name}));
 
   const [selectedBadge, setSelectedBadge] = useState(null);
