@@ -113,11 +113,14 @@ class MappingLevel(Base):
 
     @staticmethod
     async def delete(id: int, db: Database):
-        delete_query = "DELETE FROM mapping_levels WHERE id = :id"
-        try:
-            await db.execute(delete_query, values={"id": id})
-        except ForeignKeyViolationError:
-            raise Conflict("MAPPING_LEVEL_HAS_USERS")
+        async with db.transaction():
+            clear_badges_query = "DELETE FROM mapping_level_badges WHERE level_id = :level_id"
+            delete_query = "DELETE FROM mapping_levels WHERE id = :id"
+            try:
+                await db.execute(clear_badges_query, values={"level_id": id})
+                await db.execute(delete_query, values={"id": id})
+            except ForeignKeyViolationError:
+                raise Conflict("MAPPING_LEVEL_HAS_USERS")
 
     @staticmethod
     async def get_by_id(id: int, db: Database):
