@@ -105,7 +105,7 @@ export const CreateLevel = () => {
                   <h3 className="f3 blue-dark mv0 fw6">
                     <FormattedMessage {...messages.levelInfo} />
                   </h3>
-                  <LevelInformation badges={badges} />
+                  <LevelInformation badges={badges ? badges.badges : []} />
                 </div>
                 {isError && <EntityError entity="level" />}
               </div>
