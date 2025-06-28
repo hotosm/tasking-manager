@@ -27,6 +27,7 @@ class MappingBadge(Base):
     def as_associated(self) -> AssociatedBadge:
         return AssociatedBadge(
             id=self.id,
+            name=self.name,
         )
 
     def as_dto(self) -> MappingBadgeDTO:

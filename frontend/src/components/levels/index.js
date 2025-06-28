@@ -96,7 +96,10 @@ function RequiredBadgesField({input, badges}) {
   const [selectedBadge, setSelectedBadge] = useState(null);
 
   function handleAddBadge() {
-    input.onChange([...input.value, {id: selectedBadge.value}]);
+    input.onChange([...input.value, {
+      id: selectedBadge.value,
+      name: selectedBadge.label,
+    }]);
 
     setSelectedBadge(null);
   }
@@ -124,7 +127,7 @@ function RequiredBadgesField({input, badges}) {
       {(input.value || []).map((badge) => <>
         <div className="bg-silver ph3 pv2 flex items-center br1 white" style={{gap: ".5rem"}}>
           <div>
-            { badge.id }
+            { badge.name }
           </div>
           <button
             type="button"
