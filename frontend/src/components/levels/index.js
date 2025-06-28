@@ -3,12 +3,14 @@ import ReactPlaceholder from 'react-placeholder';
 import { Form, Field } from 'react-final-form';
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
+import { useState } from 'react';
 
 import messages from './messages';
 import { Button } from '../button';
 import { Management } from '../teamsAndOrgs/management';
 import { nCardPlaceholders } from '../licenses/licensesPlaceholder';
 import { SwitchToggle } from '../formInputs';
+import { CircleMinusIcon } from '../svgIcons';
 
 export const LevelCard = ({ level, number }) => {
   return (
@@ -55,7 +57,6 @@ export const LevelsManagement = ({levels, isFetched}) => {
 export const LevelInformation = ({ badges }) => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
-  const badge_options = (badges || []).map((b) => ({ value: b.id, label: b.name}));
 
   return (
     <>
@@ -79,27 +80,64 @@ export const LevelInformation = ({ badges }) => {
         <label className={labelClasses}>
           <FormattedMessage {...messages.required_badges} />
         </label>
-        <Field name="type" className={fieldClasses} required>
-          {() => (
-            <>
-              <div className="flex" style={{gap: ".5rem"}}>
-                <Select
-                  classNamePrefix="react-select"
-                  isClearable={false}
-                  options={badge_options}
-                  className="z-5 w-100"
-                />
-                <button type="button" className="bg-red white ba b--red pointer br1">
-                  <FormattedMessage {...messages.add} />
-                </button>
-              </div>
-            </>
-          )}
+        <Field name="requiredBadges" className={fieldClasses} required>
+          {({input}) => RequiredBadgesField({input, badges})}
         </Field>
       </div>
     </>
   );
 };
+
+function RequiredBadgesField({input, badges}) {
+  const badge_options = (badges || [])
+    .filter((b) => input.value.find((ib) => ib.id == b.id) === undefined)
+    .map((b) => ({ value: b.id, label: b.name}));
+
+  const [selectedBadge, setSelectedBadge] = useState(null);
+
+  function handleAddBadge() {
+    input.onChange([...input.value, {id: selectedBadge.value}]);
+
+    setSelectedBadge(null);
+  }
+
+  return <>
+    <div className="flex" style={{gap: ".5rem"}}>
+      <Select
+        classNamePrefix="react-select"
+        isClearable={false}
+        options={badge_options}
+        className="z-5 w-100"
+        value={selectedBadge}
+        onChange={setSelectedBadge}
+      />
+      <Button
+        type="button"
+        className="bg-red white ba b--red pointer br1"
+        disabled={!selectedBadge}
+        onClick={handleAddBadge}
+      >
+        <FormattedMessage {...messages.add} />
+      </Button>
+    </div>
+    <div className="flex mt2" style={{gap: ".5rem"}}>
+      {(input.value || []).map((badge) => <>
+        <div className="bg-silver ph3 pv2 flex items-center br1 white" style={{gap: ".5rem"}}>
+          <div>
+            { badge.id }
+          </div>
+          <button
+            type="button"
+            className="pa0 pointer ba bg-transparent bn"
+            onClick={() => input.onChange(input.value.filter((b) => b.id != badge.id))}
+          >
+            <CircleMinusIcon />
+          </button>
+        </div>
+      </>)}
+    </div>
+  </>;
+}
 
 function ColorField({ input }) {
   const handleInputOnChange = (event) => {
