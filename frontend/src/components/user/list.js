@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import Popup from 'reactjs-popup';
 import Select from 'react-select';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
+import { RefreshIcon } from '../svgIcons';
+import { formatDistance } from 'date-fns';
 
 import messages from './messages';
 import { UserAvatar } from './avatar';
@@ -229,31 +231,43 @@ export const UsersTable = ({ filters, setFilters }) => {
       cell: () => null,
     },
     {
-      id: 'lastUpdated',
+      id: 'statsLastUpdated',
       header: () => (<FormattedMessage {...messages.tableLastUpdated} />),
-      cell: () => null,
+      cell: ({row}) => {
+        if (row.original.statsLastUpdated) {
+          return formatDistance(
+            new Date(row.original.statsLastUpdated),
+            new Date(),
+            { addSuffix: true },
+          );
+        } else {
+          return <FormattedMessage {...messages.never} />;
+        }
+      },
     },
     {
       id: 'actions',
       header: () => (<FormattedMessage {...messages.tableActions} />),
-      cell: ({row}) => (userDetails.username === row.original.username ? null : (
-        <div className="w-10 fl tr">
-          <Popup
-            trigger={
-              <span>
-                <SettingsIcon width="18px" height="18px" className="pointer hover-blue-grey" />
-              </span>
-            }
-            position="right center"
-            closeOnDocumentClick
-            className="user-popup"
-          >
-            {(close) => (
-              <UserEditMenu user={row.original} token={token} close={close} setStatus={setStatus} />
-            )}
-          </Popup>
-        </div>
-      ))
+      cell: ({row}) => (userDetails.username === row.original.username ? null : <>
+        <Popup
+          trigger={
+            <span>
+              <SettingsIcon width="18px" height="18px" className="pointer hover-blue-grey mr3" />
+            </span>
+          }
+          position="right center"
+          closeOnDocumentClick
+          className="user-popup"
+        >
+          {(close) => (
+            <UserEditMenu user={row.original} token={token} close={close} setStatus={setStatus} />
+          )}
+        </Popup>
+
+        <button className="bn pa0 bg-transparent pointer">
+          <RefreshIcon width={18} height={18} />
+        </button>
+      </>)
     },
   ];
 

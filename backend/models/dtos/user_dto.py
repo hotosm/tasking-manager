@@ -189,6 +189,7 @@ class ListedUser(BaseModel):
     role: Optional[str] = None
     mapping_level: Optional[str] = Field(None, alias="mappingLevel")
     picture_url: Optional[str] = Field(None, alias="pictureUrl")
+    stats_last_updated: Optional[datetime] = Field(None, alias="statsLastUpdated")
 
 
 class UserRegisterEmailDTO(BaseModel):

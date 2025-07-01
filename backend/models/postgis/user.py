@@ -174,7 +174,9 @@ class User(Base):
         """Search and filter all users"""
 
         base_query = """
-            SELECT id, username, mapping_level, role, picture_url FROM users
+            SELECT u.id, u.username, u.mapping_level, u.role, u.picture_url, us.date_obtained
+            FROM users AS u
+            LEFT JOIN user_stats AS us ON u.id = us.user_id
         """
         filters = []
         params = {}
@@ -218,6 +220,7 @@ class User(Base):
             ).name
             listed_user.username = result["username"]
             listed_user.picture_url = result["picture_url"]
+            listed_user.stats_last_updated = result["date_obtained"]
             listed_user.role = UserRole(result["role"]).name
             dto.users.append(listed_user)
 

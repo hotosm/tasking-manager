@@ -386,4 +386,5 @@ export default defineMessages({
   tableUpgrade: { id: 'user.table.upgrade', defaultMessage: "Level upgrade" },
   tableLastUpdated: { id: 'user.table.lastUpdated', defaultMessage: "Last updated" },
   tableActions: { id: 'user.table.actions', defaultMessage: "Actions" },
+  never: { id: 'user.table.never', defaultMessage: "Never" },
 });
