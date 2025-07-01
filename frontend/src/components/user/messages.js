@@ -387,4 +387,6 @@ export default defineMessages({
   tableLastUpdated: { id: 'user.table.lastUpdated', defaultMessage: "Last updated" },
   tableActions: { id: 'user.table.actions', defaultMessage: "Actions" },
   never: { id: 'user.table.never', defaultMessage: "Never" },
+  statsUpdated: { id: 'user.table.statsUpdated', defaultMessage: "Stats updated" },
+  failedUdatingStats: { id: 'user.table.failedUdatingStats', defaultMessage: "Failed updating stats" },
 });

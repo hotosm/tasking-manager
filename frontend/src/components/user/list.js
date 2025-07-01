@@ -195,6 +195,23 @@ export const UsersTable = ({ filters, setFilters }) => {
     fetchUsers(urlFilters);
   }, [filters, token, status]);
 
+  const handleStatsUpdate = (user) => {
+    const endpoint = `users/${user.username}/actions/update-stats`;
+
+    fetchLocalJSONAPI(endpoint, token, 'PATCH')
+      .then(() => {
+        setStatus({ success: true });
+        toast.success(
+          <FormattedMessage {...messages.statsUpdated} />,
+        );
+      })
+      .catch(() =>
+        toast.error(
+          <FormattedMessage {...messages.failedUdatingStats} />,
+        ),
+      );
+  };
+
   const COLUMNS = [
     {
       accessorKey: 'username',
@@ -264,7 +281,7 @@ export const UsersTable = ({ filters, setFilters }) => {
           )}
         </Popup>
 
-        <button className="bn pa0 bg-transparent pointer">
+        <button onClick={() => handleStatsUpdate(row.original)} className="bn pa0 bg-transparent pointer">
           <RefreshIcon width={18} height={18} />
         </button>
       </>)
@@ -350,16 +367,12 @@ export const UsersTable = ({ filters, setFilters }) => {
 
 export const UserEditMenu = ({ user, token, close, setStatus }) => {
   const roles = ['MAPPER', 'ADMIN', 'READ_ONLY'];
-  const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
   const iconClass = 'h1 w1 red';
 
-  const updateAttribute = (attribute, attributeValue) => {
-    const endpoint = {
-      role: `users/${user.username}/actions/set-role/${attributeValue}/`,
-      mapperLevel: `users/${user.username}/actions/set-level/${attributeValue}/`,
-    };
+  const updateRole = (attributeValue) => {
+    const endpoint = `users/${user.username}/actions/set-role/${attributeValue}/`;
 
-    fetchLocalJSONAPI(endpoint[attribute], token, 'PATCH')
+    fetchLocalJSONAPI(endpoint, token, 'PATCH')
       .then(() => {
         close();
         setStatus({ success: true });
@@ -367,7 +380,7 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
           <FormattedMessage
             {...messages.userAttributeUpdationSuccess}
             values={{
-              attribute,
+              attribute: "role",
             }}
           />,
         );
@@ -377,7 +390,7 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
           <FormattedMessage
             {...messages.userAttributeUpdationFailure}
             values={{
-              attribute,
+              attribute: "role",
             }}
           />,
         ),
@@ -385,47 +398,25 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
   };
 
   return (
-    <div className="w-100 f6 tl ph1">
-      <div className="w-100 bb b--tan">
-        <p className="b mv3">
-          <FormattedMessage {...messages.setRole} />
-        </p>
-        {roles.map((role) => {
-          return (
-            <div
-              key={role}
-              role="button"
-              onClick={() => updateAttribute('role', role)}
-              className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
-            >
-              <p className="ma0">
-                <FormattedMessage {...messages[`userRole${role}`]} />
-              </p>
-              {role === user.role ? <CheckIcon className={iconClass} /> : null}
-            </div>
-          );
-        })}
-      </div>
-      <div className="w-100">
-        <p className="b mv3">
-          <FormattedMessage {...messages.setLevel} />
-        </p>
-        {mapperLevels.map((level) => {
-          return (
-            <div
-              key={level}
-              role="button"
-              onClick={() => updateAttribute('mapperLevel', level)}
-              className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
-            >
-              <p className="ma0">
-                { level }
-              </p>
-              {level === user.mappingLevel ? <CheckIcon className={iconClass} /> : null}
-            </div>
-          );
-        })}
-      </div>
+    <div className="w-100 bb b--tan">
+      <p className="b mv3">
+        <FormattedMessage {...messages.setRole} />
+      </p>
+      {roles.map((role) => {
+        return (
+          <div
+            key={role}
+            role="button"
+            onClick={() => updateRole(role)}
+            className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
+          >
+            <p className="ma0">
+              <FormattedMessage {...messages[`userRole${role}`]} />
+            </p>
+            {role === user.role ? <CheckIcon className={iconClass} /> : null}
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -224,6 +224,23 @@ async def set_user_role(
         )
 
 
+@router.patch("/{username}/actions/update-stats")
+async def update_stats(
+    request: Request,
+    username: str,
+    user: AuthUserDTO = Depends(pm_only),
+    db: Database = Depends(get_db),
+):
+    try:
+        user = await UserService.get_user_by_username(username, db)
+        await UserService.get_and_save_stats(user.id, db)
+    except UserServiceError as e:
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=400,
+        )
+
+
 @router.patch("/{user_name}/actions/set-expert-mode/{is_expert}/")
 async def set_user_is_expert(
     request: Request,
