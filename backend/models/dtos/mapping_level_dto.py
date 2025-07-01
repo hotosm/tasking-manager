@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 class AssociatedBadge(BaseModel):
     id: int
-    name: str
+    name: Optional[str] = None
 
 
 class MappingLevelDTO(BaseModel):

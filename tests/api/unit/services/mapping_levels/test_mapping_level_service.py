@@ -89,7 +89,7 @@ class TestMappingLevelService:
         # Assert
         assert new_from_db.name == level.name
         assert new_from_db.ordering == 4
-        assert new_from_db.required_badges == [AssociatedBadge(id=badge.id)]
+        assert new_from_db.required_badges == [AssociatedBadge(id=badge.id, name="a badge")]
 
     async def test_update(self):
         # Arrange
@@ -138,7 +138,7 @@ class TestMappingLevelService:
         assert from_db.ordering == 4
         assert from_db.is_beginner == new_data.is_beginner
         assert from_db.is_beginner
-        assert from_db.required_badges == [AssociatedBadge(id=badge2.id)]
+        assert from_db.required_badges == [AssociatedBadge(id=badge2.id, name="two")]
 
     async def test_delete(self):
         # Arrange

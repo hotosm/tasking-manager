@@ -98,12 +98,12 @@ class TestUser:
         assert result["picture_url"] == test_picture_url
 
     async def test_get_all_users(self):
-        query = UserSearchQuery(page=1, mappingLevel="BEGINNER")
+        query = UserSearchQuery(page=1, mappingLevel="1")
         users = await UserService.get_all_users(query, self.db)
 
         assert users.users[0].mapping_level == "BEGINNER"
 
-        query = UserSearchQuery(page=1, mappingLevel="ADVANCED")
+        query = UserSearchQuery(page=1, mappingLevel="3")
         users = await UserService.get_all_users(query, self.db)
 
         assert len(users.users) == 0
