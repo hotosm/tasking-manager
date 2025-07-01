@@ -380,4 +380,10 @@ export default defineMessages({
     id: 'user.nav.clearFilters',
     defaultMessage: 'Clear filters',
   },
+  tableUsername: { id: 'user.table.username', defaultMessage: "Username" },
+  tableLevel: { id: 'user.table.level', defaultMessage: "Mapper level" },
+  tableRole: { id: 'user.table.role', defaultMessage: "Role" },
+  tableUpgrade: { id: 'user.table.upgrade', defaultMessage: "Level upgrade" },
+  tableLastUpdated: { id: 'user.table.lastUpdated', defaultMessage: "Last updated" },
+  tableActions: { id: 'user.table.actions', defaultMessage: "Actions" },
 });

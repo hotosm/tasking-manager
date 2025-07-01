@@ -180,11 +180,7 @@ class User(Base):
         params = {}
 
         if query.mapping_level:
-            mapping_levels = query.mapping_level.split(",")
-            mapping_level_array = [
-                (await MappingLevel.get_by_name(mapping_level, db)).id
-                for mapping_level in mapping_levels
-            ]
+            mapping_level_array = map(int, query.mapping_level.split(","))
             filters.append("mapping_level = ANY(:mapping_levels)")
             params["mapping_levels"] = tuple(mapping_level_array)
 

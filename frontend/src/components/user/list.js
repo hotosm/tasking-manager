@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import toast from 'react-hot-toast';
 import Popup from 'reactjs-popup';
+import Select from 'react-select';
+import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 
 import messages from './messages';
 import { UserAvatar } from './avatar';
@@ -13,7 +15,7 @@ import { SearchIcon, CloseIcon, SettingsIcon, CheckIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { nCardPlaceholders } from './usersPlaceholder';
 
-const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
+const UserFilter = ({ filters, setFilters, updateFilters }) => {
   const inputRef = useRef(null);
 
   return (
@@ -46,13 +48,13 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
                 aria-describedby="name-desc"
               />
 
-              <CloseIcon
-                onClick={() => {
-                  setFilters((p) => {
-                    return { ...p, username: '' };
-                  });
-                }}
-                className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 red ${
+            <CloseIcon
+              onClick={() => {
+                setFilters((p) => {
+                  return { ...p, username: '' };
+                });
+              }}
+              className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 red ${
                   filters.username ? '' : 'dn'
                 }`}
               />
@@ -64,7 +66,7 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
   );
 };
 
-const RoleFilter = ({ filters, setFilters, updateFilters }) => {
+const RoleFilter = ({ filters, updateFilters }) => {
   const roles = ['ALL', 'MAPPER', 'ADMIN', 'READ_ONLY'];
 
   const options = roles.map((role) => {
@@ -86,23 +88,29 @@ const RoleFilter = ({ filters, setFilters, updateFilters }) => {
   );
 };
 
-const MapperLevelFilter = ({ filters, setFilters, updateFilters }) => {
-  const mapperLevels = ['ALL', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
+const MapperLevelFilter = ({ filters, updateFilters }) => {
+  const intl = useIntl();
+  const [levels, setLevels] = useState([]);
 
-  const options = mapperLevels.map((l) => {
-    return { value: l, label: <FormattedMessage {...messages[`mapperLevel${l}`]} /> };
+  useEffect(() => {
+    (async () => {
+      const res = await fetchLocalJSONAPI(`levels`);
+
+      setLevels(res.levels);
+    })();
+  }, []);
+
+  const options = levels.map((l) => {
+    return { value: l.id, label: l.name };
   });
 
   return (
     <div>
-      <Dropdown
-        onChange={(n) => {
-          const value = n && n[0] && n[0].value;
-          updateFilters('level', value);
-        }}
+      <Select
+        placeholder={intl.formatMessage(messages.mapperLevelALL)}
         options={options}
-        value={filters.level}
-        className={'ba b--grey-light bg-white mr1 f6 v-mid pv2 fl mt1 br1 f5 pointer'}
+        onChange={(value) => updateFilters('level', value?.value)}
+        value={options.find((o) => o.value === filters.level) || null}
       />
     </div>
   );
@@ -115,7 +123,7 @@ export const SearchNav = ({ filters, setFilters, initialFilters }) => {
     });
   };
 
-  const clearFilters = (e) => {
+  const clearFilters = () => {
     setFilters(initialFilters);
   };
 
@@ -185,6 +193,78 @@ export const UsersTable = ({ filters, setFilters }) => {
     fetchUsers(urlFilters);
   }, [filters, token, status]);
 
+  const COLUMNS = [
+    {
+      accessorKey: 'username',
+      header: () => (<FormattedMessage {...messages.tableUsername} />),
+      cell: ({row}) => <>
+        <UserAvatar
+          picture={row.original.pictureUrl}
+          username={row.original.username}
+          colorClasses="white bg-blue-grey"
+        />
+        <a
+          className="blue-grey mr2 ml3 link"
+          rel="noopener noreferrer"
+          target="_blank"
+          href={`/users/${row.original.username}`}
+        >
+          {row.original.username}
+        </a>
+      </>,
+    },
+    {
+      id: 'level',
+      accessorKey: 'mappingLevel',
+      header: () => (<FormattedMessage {...messages.tableLevel} />),
+    },
+    {
+      accessorKey: 'role',
+      header: () => (<FormattedMessage {...messages.tableRole} />),
+      cell: ({row}) => <FormattedMessage {...messages[`userRole${row.original.role}`]} />,
+    },
+    {
+      id: 'levelUpgrade',
+      header: () => (<FormattedMessage {...messages.tableUpgrade} />),
+      cell: () => null,
+    },
+    {
+      id: 'lastUpdated',
+      header: () => (<FormattedMessage {...messages.tableLastUpdated} />),
+      cell: () => null,
+    },
+    {
+      id: 'actions',
+      header: () => (<FormattedMessage {...messages.tableActions} />),
+      cell: ({row}) => (userDetails.username === row.original.username ? null : (
+        <div className="w-10 fl tr">
+          <Popup
+            trigger={
+              <span>
+                <SettingsIcon width="18px" height="18px" className="pointer hover-blue-grey" />
+              </span>
+            }
+            position="right center"
+            closeOnDocumentClick
+            className="user-popup"
+          >
+            {(close) => (
+              <UserEditMenu user={row.original} token={token} close={close} setStatus={setStatus} />
+            )}
+          </Popup>
+        </div>
+      ))
+    },
+  ];
+
+  const table = useReactTable({
+    columns: COLUMNS,
+    data: response?.users || [],
+    getCoreRowModel: getCoreRowModel(),
+    columnResizeMode: 'onChange',
+    columnResizeDirection: 'ltr',
+  });
+
   return (
     <div className="w-100">
       {response?.users && (
@@ -202,17 +282,40 @@ export const UsersTable = ({ filters, setFilters }) => {
           delay={10}
           ready={!loading && !error}
         >
-          <ul className="list pa0 ma0">
-            {response?.users.map((user) => (
-              <UserListCard
-                user={user}
-                key={user.id}
-                token={token}
-                username={userDetails.username}
-                setStatus={setStatus}
-              />
-            ))}
-          </ul>
+          <table className="f6 w-100 center" cellSpacing="0">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      className="fw5 f6 bb b bw1 b--moon-gray tl pv3 pr3 pl2 relative"
+                      key={header.id}
+                      colSpan={header.colSpan}
+                    >
+                      {header.isPlaceholder ? null : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      className={"f6 pr3 pv3 mw5 pl2 bb b--moon-gray " + (row.index % 2 === 1 ? "bg-white-60" : "bg-white-90")}
+                      key={cell.id}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </ReactPlaceholder>
         {response === null || response.pagination.total === 0 ? null : (
           <PaginatorLine
@@ -302,7 +405,7 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
               className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
             >
               <p className="ma0">
-                <FormattedMessage {...messages[`mapperLevel${level}`]} />
+                { level }
               </p>
               {level === user.mappingLevel ? <CheckIcon className={iconClass} /> : null}
             </div>
@@ -312,59 +415,3 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
     </div>
   );
 };
-
-export function UserListCard({ user, token, username, setStatus }: Object) {
-  const [isHovered, setHovered] = useState(false);
-
-  return (
-    <li
-      key={user.username}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className={`bg-white cf flex items-center pa3 ba mb1 b--grey-light blue-dark ${
-        isHovered ? 'shadow-4' : ''
-      }`}
-    >
-      <div className="w-50-ns w-100 fl">
-        <UserAvatar
-          picture={user.pictureUrl}
-          username={user.username}
-          colorClasses="white bg-blue-grey"
-        />
-        <a
-          className="blue-grey mr2 ml3 link"
-          rel="noopener noreferrer"
-          target="_blank"
-          href={`/users/${user.username}`}
-        >
-          {user.username}
-        </a>
-      </div>
-      <div className="w-20 fl dib-ns dn tc">
-        <FormattedMessage {...messages[`mapperLevel${user.mappingLevel}`]} />
-      </div>
-      <div className="w-20 fl dib-ns dn tc">
-        <FormattedMessage {...messages[`userRole${user.role}`]} />
-      </div>
-
-      {username === user.username ? null : (
-        <div className="w-10 fl tr">
-          <Popup
-            trigger={
-              <span>
-                <SettingsIcon width="18px" height="18px" className="pointer hover-blue-grey" />
-              </span>
-            }
-            position="right center"
-            closeOnDocumentClick
-            className="user-popup"
-          >
-            {(close) => (
-              <UserEditMenu user={user} token={token} close={close} setStatus={setStatus} />
-            )}
-          </Popup>
-        </div>
-      )}
-    </li>
-  );
-}
