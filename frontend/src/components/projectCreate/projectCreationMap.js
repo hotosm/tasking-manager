@@ -1,35 +1,26 @@
 import { useLayoutEffect, useEffect, useCallback, useState, createRef } from 'react';
 import { useSelector } from 'react-redux';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { featureCollection } from '@turf/helpers';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
-import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
+import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
 import { useDropzone } from 'react-dropzone';
 
-import { mapboxLayerDefn } from '../projects/projectsMap';
+import { maplibreLayerDefn } from '../projects/projectsMap';
 import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
-import {
-  MAPBOX_TOKEN,
-  MAP_STYLE,
-  CHART_COLOURS,
-  MAPBOX_RTL_PLUGIN_URL,
-  TASK_COLOURS,
-} from '../../config';
+import { MAPBOX_TOKEN, MAP_STYLE, CHART_COLOURS, TASK_COLOURS } from '../../config';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
+import isWebglSupported from '../../utils/isWebglSupported';
+import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
 import { BasemapMenu } from '../basemapMenu';
 import { ProjectsAOILayerCheckBox } from './projectsAOILayerCheckBox';
 import WebglUnsupported from '../webglUnsupported';
 
-mapboxgl.accessToken = MAPBOX_TOKEN;
-try {
-  mapboxgl.setRTLTextPlugin(MAPBOX_RTL_PLUGIN_URL);
-} catch {
-  console.log('RTLTextPlugin is loaded');
-}
+maplibregl.accessToken = MAPBOX_TOKEN;
 
 const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step, uploadFile }) => {
   const mapRef = createRef();
@@ -46,6 +37,8 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     noKeyboard: true,
   });
   const minZoomLevelToAOIVisualization = 9;
+
+  useSetRTLTextPlugin();
 
   useEffect(() => {
     fetchLocalJSONAPI('projects/').then((res) => setExistingProjectsList(res.mapResults));
@@ -78,22 +71,22 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   }, [showProjectsAOILayer, debouncedGetProjectsAOI, clearProjectsAOI, step]);
 
   useLayoutEffect(() => {
-    if (!mapboxgl.supported()) return;
-    const map = new mapboxgl.Map({
+    if (!isWebglSupported()) return;
+    const map = new maplibregl.Map({
       container: mapRef.current,
       style: MAP_STYLE,
       center: [0, 0],
       zoom: 1.3,
       attributionControl: false,
     })
-      .addControl(new mapboxgl.AttributionControl({ compact: false }))
+      .addControl(new maplibregl.AttributionControl({ compact: false }))
       .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage }))
-      .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }));
+      .addControl(new maplibregl.ScaleControl({ unit: 'metric' }));
     if (MAPBOX_TOKEN) {
       map.addControl(
-        new MapboxGeocoder({
+        new MaplibreGeocoder({
           accessToken: MAPBOX_TOKEN,
-          mapboxgl: mapboxgl,
+          maplibregl,
           marker: false,
           collapsed: true,
           language: mapboxSupportedLanguage,
@@ -222,9 +215,9 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
 
     /* set up style/sources for the map, either immediately or on base load */
     if (mapReadyProjectsReady) {
-      mapboxLayerDefn(map, existingProjectsList, noop, true);
+      maplibreLayerDefn(map, existingProjectsList, noop, true);
     } else if (projectsReadyMapLoading) {
-      map.on('load', () => mapboxLayerDefn(map, existingProjectsList, noop, true));
+      map.on('load', () => maplibreLayerDefn(map, existingProjectsList, noop, true));
     }
 
     /* refill the source on existingProjectsList changes */
@@ -234,7 +227,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   }, [mapObj, existingProjectsList]);
 
   useLayoutEffect(() => {
-    if (mapObj.map !== null && mapboxgl.supported()) {
+    if (mapObj.map !== null && isWebglSupported()) {
       mapObj.map.on('moveend', (event) => {
         debouncedGetProjectsAOI();
       });
@@ -242,9 +235,9 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   });
 
   useLayoutEffect(() => {
-    if (mapObj.map !== null && mapboxgl.supported()) {
+    if (mapObj.map !== null && isWebglSupported()) {
       mapObj.map.on('load', () => {
-        mapObj.map.addControl(new mapboxgl.NavigationControl());
+        mapObj.map.addControl(new maplibregl.NavigationControl());
         mapObj.map.addControl(mapObj.draw);
         addMapLayers(mapObj.map);
       });
@@ -282,7 +275,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     }
   }, [mapObj, metadata, updateMetadata, step]);
 
-  if (!mapboxgl.supported()) {
+  if (!isWebglSupported()) {
     return <WebglUnsupported className="vh-50 h-100-l w-100" />;
   } else {
     return (
