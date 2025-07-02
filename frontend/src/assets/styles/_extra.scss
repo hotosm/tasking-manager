@@ -516,6 +516,14 @@ a[href="https://www.mapbox.com/map-feedback/"]
   cursor: pointer;
 }
 
+.badge-info__uploader.uploading {
+  border-color: #d1d1d1;
+}
+
+.badge-info__uploader.error {
+  border-color: #C01C28;
+}
+
 .badge-info__uploader p {
   margin: 0;
 }

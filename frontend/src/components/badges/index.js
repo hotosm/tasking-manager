@@ -1,4 +1,5 @@
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
 import ReactPlaceholder from 'react-placeholder';
 import { Form, Field } from 'react-final-form';
 import { Link } from 'react-router-dom';
@@ -13,6 +14,7 @@ import { nCardPlaceholders } from '../licenses/licensesPlaceholder';
 import { CircleMinusIcon } from '../svgIcons';
 import { OHSOME_STATS_TOPICS, IMAGE_UPLOAD_SERVICE } from '../../config';
 import { SwitchToggle } from '../formInputs';
+import { useUploadImage } from '../../hooks/UseUploadImage';
 
 export const BadgeCard = ({ badge }) => {
   return (
@@ -108,27 +110,38 @@ export const BadgeInformation = ({ badge }) => {
 };
 
 function BadgeImageField({ input }) {
-  const onDropAccepted = (event) => {
-    console.log(event);
-  };
-  const onDropRejected = (event) => {
-    console.log(event);
-  };
+  const [uploadError, uploading, uploadImg] = useUploadImage();
+  const [dropError, setDropError] = useState(false);
+  const token = useSelector((state) => state.auth.token);
+  const error = uploadError || dropError;
 
   const {getRootProps, getInputProps} = useDropzone({
     maxFiles: 1,
     maxSize: 1000000,
     multiple: false,
     accept: '.png,.jpg',
-    onDropAccepted, onDropRejected,
+    onDropAccepted: (files) => {
+      uploadImg(files[0], input.onChange, token);
+      setDropError(false);
+    },
+    onDropRejected: () => setDropError(true),
   });
 
   return <>
     <div className="badge-info__img-container">
       { input.value && <img src={input.value} /> }
-      <div className="badge-info__uploader" {...getRootProps()}>
+      <div
+        className={"badge-info__uploader" + (uploading?" uploading":"") + (error?" error":"")}
+        {...getRootProps()}
+      >
         <input {...getInputProps()} />
-        <p><FormattedMessage {...messages.uploadNew} /></p>
+        <p>{
+          uploading
+            ? <FormattedMessage {...messages.uploading} />
+            : (error
+              ? <FormattedMessage {...messages.imageError} />
+              : <FormattedMessage {...messages.uploadNew} />)
+        }</p>
       </div>
     </div>
   </>;
