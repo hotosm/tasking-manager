@@ -11,7 +11,7 @@ import { Button } from '../button';
 import { Management } from '../teamsAndOrgs/management';
 import { nCardPlaceholders } from '../licenses/licensesPlaceholder';
 import { CircleMinusIcon } from '../svgIcons';
-import { OHSOME_STATS_TOPICS } from '../../config';
+import { OHSOME_STATS_TOPICS, IMAGE_UPLOAD_SERVICE } from '../../config';
 import { SwitchToggle } from '../formInputs';
 
 export const BadgeCard = ({ badge }) => {
@@ -93,9 +93,9 @@ export const BadgeInformation = ({ badge }) => {
       <label className={labelClasses}>
         <FormattedMessage {...messages.image} />
       </label>
-      <Field name="imagePath">
+      {IMAGE_UPLOAD_SERVICE ? <Field name="imagePath">
         {({input}) => BadgeImageField({ input })}
-      </Field>
+      </Field> : <Field name="imagePath" component="input" type="text" className={fieldClasses} /> }
 
       <label className={labelClasses}>
         <FormattedMessage {...messages.requirements} />
