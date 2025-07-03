@@ -166,7 +166,7 @@ export default defineMessages({
   },
   allprojects: {
     id: 'project.nav.allprojects',
-    defaultMessage: 'All',
+    defaultMessage: 'All Projects',
   },
   active: {
     id: 'project.nav.active',
@@ -191,6 +191,10 @@ export default defineMessages({
   archived: {
     id: 'project.nav.archived',
     defaultMessage: 'Archived',
+  },
+  published: {
+    id: 'project.nav.published',
+    defaultMessage: 'Published',
   },
   paginationCount: {
     id: 'project.pagination.count',
@@ -314,11 +318,11 @@ export default defineMessages({
   },
   percentMapped: {
     id: 'project.table.percentMapped',
-    defaultMessage: '{n}% mapped',
+    defaultMessage: 'Percent mapped',
   },
   percentValidated: {
     id: 'project.table.percentValidated',
-    defaultMessage: '{n}% validated',
+    defaultMessage: 'Percent validated',
   },
   downloadAsCSV: {
     id: 'project.table.downloadAsCSV',
