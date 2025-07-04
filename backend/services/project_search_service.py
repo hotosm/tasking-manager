@@ -795,8 +795,9 @@ class ProjectSearchService:
         base_query = """
             SELECT p.id FROM projects p
             WHERE (p.tasks_mapped + p.tasks_validated) < (p.total_tasks - p.tasks_bad_imagery)
+            AND p.status = :published_status
         """
-        params = {}
+        params = {"published_status": ProjectStatus.PUBLISHED.value}
 
         if user and user.role != UserRole.ADMIN.value:
             (
@@ -817,8 +818,9 @@ class ProjectSearchService:
         base_query = """
             SELECT p.id FROM projects p
             WHERE p.tasks_validated < (p.total_tasks - p.tasks_bad_imagery)
+            AND p.status = :published_status
         """
-        params = {}
+        params = {"published_status": ProjectStatus.PUBLISHED.value}
 
         if user and user.role != UserRole.ADMIN.value:
             (

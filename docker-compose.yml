@@ -72,6 +72,8 @@ services:
     image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
+      target: ${TARGET_TAG:-debug}
+      dockerfile: ./scripts/docker/Dockerfile
     entrypoint: ["alembic", "-c", "migrations/alembic.ini", "upgrade", "head"]
     depends_on:
       tm-db:
@@ -100,6 +102,8 @@ services:
     image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
+      target: ${TARGET_TAG:-debug}
+      dockerfile: ./scripts/docker/Dockerfile
     command: ["python", "backend/cron_jobs.py"]
     depends_on:
       tm-db:
