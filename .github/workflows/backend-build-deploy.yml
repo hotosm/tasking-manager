@@ -15,8 +15,6 @@ env:
   # vars.TEAM is team name here in case you want to deploy for different team. Default is hotosm
   # vars.INFRA_ENVIRONMENT is environment name here in case you have applied infrastructue with different environment name. Default is github.ref_name
 
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ vars.IMAGE_NAME || 'hotosm/tasking-manager/backend' }}
   AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
   OIDC_ROLE_ARN: ${{ secrets.AWS_OIDC_ROLE_ARN }}
   ECS_CLUSTER: tasking-manager-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}-cluster
@@ -31,6 +29,9 @@ jobs:
       image_name: ghcr.io/${{ github.repository }}/backend
       build_target: prod
       dockerfile: scripts/docker/Dockerfile
+      image_tags: |
+        ghcr.io/${{ vars.IMAGE_NAME || 'hotosm/tasking-manager/backend' }}:${{ github.ref_name }}
+        ghcr.io/${{ vars.IMAGE_NAME || 'hotosm/tasking-manager/backend' }}:${{ github.sha }}
 
   deploy-service:
     name: Deploy ${{ matrix.service }} to ECS
@@ -68,7 +69,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME_PREFIX }}-${{ matrix.service }}
-          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          image: ghcr.io/${{ vars.IMAGE_NAME || 'hotosm/tasking-manager/backend' }}:${{ github.sha }}
 
       - name: Deploy task definition for ${{ matrix.service }}
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
