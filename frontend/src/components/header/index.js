@@ -18,7 +18,7 @@ import { SignUp } from './signUp';
 import { UpdateEmail } from './updateEmail';
 import { CurrentUserAvatar } from '../user/avatar';
 import { logout } from '../../store/actions/auth';
-import { createLoginWindow } from '../../utils/login';
+import { osmLoginRedirect } from '../../utils/login';
 import { NotificationBell } from './notificationBell';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
 import { HorizontalScroll } from '../horizontalScroll';
@@ -214,15 +214,15 @@ export const AuthButtons = ({
   redirectTo,
   alternativeSignUpText = false,
 }) => {
-  const [debouncedCreateLoginWindow] = useDebouncedCallback(
-    (redirectToPass) => createLoginWindow(redirectToPass),
+  const [debouncedOsmLoginRedirect] = useDebouncedCallback(
+    (redirectToPass) => osmLoginRedirect(redirectToPass),
     3000,
     { leading: true },
   );
 
   return (
     <>
-      <Button onClick={() => debouncedCreateLoginWindow(redirectTo)} className={`${logInStyle}`}>
+      <Button onClick={() => debouncedOsmLoginRedirect(redirectTo)} className={`${logInStyle}`}>
         <FormattedMessage {...messages.logIn} />
       </Button>
       <Popup
