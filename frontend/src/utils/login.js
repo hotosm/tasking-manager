@@ -10,4 +10,3 @@ export const osmLoginRedirect = (redirectTo) => {
     window.location.href = location;
   });
 };
-
