@@ -18,8 +18,8 @@ export function Authorized(props) {
       }
         fetchLocalJSONAPI(callback_url).then((res) => {
 
-          const storedState = localStorage.getItem('osm_oauth_state');
-          const redirectTo = localStorage.getItem('osm_oauth_redirect_to');
+          const storedState = getItem('osm_oauth_state');
+          const redirectTo = getItem('osm_oauth_redirect_to');
 
           if (storedState === state) {
           const params = new URLSearchParams({
