@@ -2,8 +2,41 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setAuthDetails } from '../store/actions/auth';
+import { getItem, removeItem } from '../utils/safe_storage';
+import { OSM_REDIRECT_URI } from '../config';
+import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
+import { AnimatedLoadingIcon } from '../components/button';
 
 export function Authorized(props) {
+
+  const authComplete = (authCode, state) => {
+      let callback_url = `/api/v2/system/authentication/callback/?redirect_uri=${OSM_REDIRECT_URI}&code=${authCode}`;
+      const emailAddress = getItem('email_address');
+      if (emailAddress !== null) {
+        callback_url += `&email_address=${emailAddress}`;
+        removeItem('email_address');
+      }
+        fetchLocalJSONAPI(callback_url).then((res) => {
+
+          const storedState = localStorage.getItem('osm_oauth_state');
+          const redirectTo = localStorage.getItem('osm_oauth_redirect_to');
+
+          if (storedState === state) {
+          const params = new URLSearchParams({
+            username: res.username,
+            osm_oauth_token: res.session.access_token,
+            session_token: res.session_token,
+            picture: res.picture,
+            redirect_to: redirectTo
+          }).toString();
+          window.location.href = `/authorized/?${params}`;
+          } else {
+            console.log({storedState: storedState, state: state});
+            throw new Error('States do not match');
+          }
+        });
+  };
+
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -14,8 +47,7 @@ export function Authorized(props) {
     let authCode = params.get('code');
     let state = params.get('state');
     if (authCode !== null) {
-      window.opener.authComplete(authCode, state);
-      window.close();
+      authComplete(authCode, state);
       return;
     }
     const username = params.get('username');
@@ -30,5 +62,5 @@ export function Authorized(props) {
     navigate(redirectUrl);
   }, [dispatch, location.search, navigate]);
 
-  return <>{!isReadyToRedirect ? null : <div>redirecting</div>}</>;
+  return <div class="pa3"><h3><AnimatedLoadingIcon /> Redirecting ...</h3></div>;
 }
