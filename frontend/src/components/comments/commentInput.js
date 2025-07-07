@@ -18,6 +18,8 @@ import { iconConfig } from './editorIconConfig';
 import messages from './messages';
 import { CurrentUserAvatar } from '../user/avatar';
 
+const maxFileSize = 256000;
+
 function CommentInputField({
   comment,
   setComment,
@@ -32,6 +34,7 @@ function CommentInputField({
 }: Object) {
   const token = useSelector((state) => state.auth.token);
   const textareaRef = useRef();
+  const fileInputRef = useRef(null);
   const isBundle = useRef(false);
   const [isShowPreview, setIsShowPreview] = useState(false);
 
@@ -42,6 +45,7 @@ function CommentInputField({
     ...DROPZONE_SETTINGS,
   });
   const [fileuploadError, fileuploading, uploadImg] = useUploadImage();
+  const [fileRejectionFromIconClick, setFileRejectionFromIconClick] = useState([]);
 
   const tribute = new Tribute({
     trigger: '@',
@@ -81,11 +85,39 @@ function CommentInputField({
         setComment(e.target.value);
       });
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textareaRef.current, contributors]);
 
-  const handleImagePick = async (event) =>
+  const handleImagePick = async (event) => {
+    const file = await event.target.files[0];
+    if (file.size > maxFileSize) {
+      setFileRejectionFromIconClick([
+        {
+          file: { path: file.name },
+          errors: [
+            {
+              code: 'file-too-large',
+              message: 'File is larger than 256000 bytes',
+            },
+          ],
+        },
+      ]);
+      return;
+    }
     await uploadImg(event.target.files[0], appendImgToComment, token);
+  };
+
+  // clear the error message while input value on comment value update
+  useEffect(() => {
+    if (!fileRejectionFromIconClick.length) return;
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
+    setFileRejectionFromIconClick([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comment]);
 
   return (
     <div {...getRootProps()}>
@@ -132,6 +164,7 @@ function CommentInputField({
           defaultTabEnable
         />
         <input
+          ref={fileInputRef}
           type="file"
           id="image_picker"
           className="dn"
@@ -182,7 +215,7 @@ function CommentInputField({
         uploading={uploading || fileuploading}
         uploadError={uploadError || fileuploadError}
       />
-      <FileRejections files={fileRejections} />
+      <FileRejections files={[...fileRejections, ...fileRejectionFromIconClick]} />
     </div>
   );
 }
