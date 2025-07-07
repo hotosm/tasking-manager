@@ -40,7 +40,6 @@ export function Authorized(props) {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const [isReadyToRedirect, setIsReadyToRedirect] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -58,7 +57,6 @@ export function Authorized(props) {
       params.get('redirect_to') && params.get('redirect_to') !== '/'
         ? params.get('redirect_to')
         : '/welcome';
-    setIsReadyToRedirect(true);
     navigate(redirectUrl);
   }, [dispatch, location.search, navigate]);
 
