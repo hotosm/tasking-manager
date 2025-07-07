@@ -228,7 +228,7 @@ async def set_user_role(
 async def update_stats(
     request: Request,
     username: str,
-    user: AuthUserDTO = Depends(pm_only),
+    _: AuthUserDTO = Depends(pm_only),
     db: Database = Depends(get_db),
 ):
     try:

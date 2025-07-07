@@ -42,7 +42,7 @@ export const LevelsManagement = ({levels, isFetched}) => {
       >
         {levels?.length ? (
           <div className="levels-container">
-            { levels.map((i, n) => <LevelCard key={n} level={i} number={n+1} />) }
+            { levels.map((l, n) => <LevelCard key={l.id} level={l} number={n+1} />) }
           </div>
         ) : (
           <div className="pv3">
@@ -58,39 +58,35 @@ export const LevelInformation = ({ badges }) => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
 
-  return (
-    <>
-      <div className="cf">
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.name} />
-        </label>
-        <Field name="name" component="input" type="text" className={fieldClasses} required />
+  return <div className="cf">
+    <label className={labelClasses}>
+      <FormattedMessage {...messages.name} />
+    </label>
+    <Field name="name" component="input" type="text" className={fieldClasses} required />
 
-        <Field name="approvalsRequired">
-          {({input}) => ApprovalsRequiredField({ input })}
-        </Field>
+    <Field name="approvalsRequired">
+      {({input}) => ApprovalsRequiredField({ input })}
+    </Field>
 
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.color} />
-        </label>
-        <Field name="color">
-          {({input}) => ColorField({ input })}
-        </Field>
+    <label className={labelClasses}>
+      <FormattedMessage {...messages.color} />
+    </label>
+    <Field name="color">
+      {({input}) => ColorField({ input })}
+    </Field>
 
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.required_badges} />
-        </label>
-        <Field name="requiredBadges" className={fieldClasses} required>
-          {({input}) => RequiredBadgesField({input, badges})}
-        </Field>
-      </div>
-    </>
-  );
+    <label className={labelClasses}>
+      <FormattedMessage {...messages.required_badges} />
+    </label>
+    <Field name="requiredBadges" className={fieldClasses} required>
+      {({input}) => RequiredBadgesField({input, badges})}
+    </Field>
+  </div>;
 };
 
 function RequiredBadgesField({input, badges}) {
   const badge_options = (badges || [])
-    .filter((b) => (input.value || []).find((ib) => ib.id == b.id) === undefined)
+    .filter((b) => (input.value || []).find((ib) => ib.id === b.id) === undefined)
     .map((b) => ({ value: b.id, label: b.name}));
 
   const [selectedBadge, setSelectedBadge] = useState(null);
@@ -124,20 +120,18 @@ function RequiredBadgesField({input, badges}) {
       </Button>
     </div>
     <div className="flex mt2" style={{gap: ".5rem"}}>
-      {(input.value || []).map((badge) => <>
-        <div className="bg-silver ph3 pv2 flex items-center br1 white" style={{gap: ".5rem"}}>
-          <div>
-            { badge.name }
-          </div>
-          <button
-            type="button"
-            className="pa0 pointer ba bg-transparent bn"
-            onClick={() => input.onChange(input.value.filter((b) => b.id != badge.id))}
-          >
-            <CircleMinusIcon />
-          </button>
+      {(input.value || []).map((badge) => <div className="bg-silver ph3 pv2 flex items-center br1 white" style={{gap: ".5rem"}}>
+        <div>
+          { badge.name }
         </div>
-      </>)}
+        <button
+          type="button"
+          className="pa0 pointer ba bg-transparent bn"
+          onClick={() => input.onChange(input.value.filter((b) => b.id !== badge.id))}
+        >
+          <CircleMinusIcon />
+        </button>
+      </div>)}
     </div>
   </>;
 }
@@ -147,12 +141,10 @@ function ColorField({ input }) {
     input.onChange(event.target.value);
   };
 
-  return <>
-    <div className="flex ba b--grey-light pr3 justify-between items-center" style={{gap: ".5rem"}}>
-      <input type="text" value={input.value} onChange={handleInputOnChange} className="bn ph2 pv3" />
-      <input type="color" value={input.value} onChange={handleInputOnChange} className="pointer pa0 bn w1 h1" />
-    </div>
-  </>;
+  return <div className="flex ba b--grey-light pr3 justify-between items-center" style={{gap: ".5rem"}}>
+    <input type="text" value={input.value} onChange={handleInputOnChange} className="bn ph2 pv3" />
+    <input type="color" value={input.value} onChange={handleInputOnChange} className="pointer pa0 bn w1 h1" />
+  </div>;
 }
 
 function ApprovalsRequiredField({ input }) {

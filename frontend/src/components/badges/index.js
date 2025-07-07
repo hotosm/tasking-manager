@@ -50,7 +50,7 @@ export const BadgesManagement = ({badges, isFetched}) => {
       >
         {badges?.length ? (
           <div className="badges-container">
-            { badges.map((i, n) => <BadgeCard key={n} badge={i} />) }
+            { badges.map((b) => <BadgeCard key={b.id} badge={b} />) }
           </div>
         ) : (
           <div className="pv3">
@@ -79,7 +79,7 @@ export const BadgeInformation = ({ badge }) => {
       </label>
       <Field name="description" component="textarea" rows={7} className={fieldClasses} required />
 
-      <div class="mt2">
+      <div className="mt2">
         <Field name="isInternal">
           {({input}) => {
             return <SwitchToggle
@@ -114,6 +114,7 @@ function BadgeImageField({ input }) {
   const [dropError, setDropError] = useState(false);
   const token = useSelector((state) => state.auth.token);
   const error = uploadError || dropError;
+  const intl = useIntl();
 
   const {getRootProps, getInputProps} = useDropzone({
     maxFiles: 1,
@@ -127,24 +128,24 @@ function BadgeImageField({ input }) {
     onDropRejected: () => setDropError(true),
   });
 
-  return <>
-    <div className="badge-info__img-container">
-      { input.value && <img src={input.value} /> }
-      <div
-        className={"badge-info__uploader" + (uploading?" uploading":"") + (error?" error":"")}
-        {...getRootProps()}
-      >
-        <input {...getInputProps()} />
-        <p>{
-          uploading
-            ? <FormattedMessage {...messages.uploading} />
-            : (error
-              ? <FormattedMessage {...messages.imageError} />
-              : <FormattedMessage {...messages.uploadNew} />)
-        }</p>
-      </div>
+  let message = intl.formatMessage(messages.uploadNew);
+
+  if (uploading) {
+    message = intl(messages.uploading);
+  } else if (error) {
+    message = intl(messages.imageError);
+  }
+
+  return <div className="badge-info__img-container">
+    { input.value && <img src={input.value} /> }
+    <div
+      className={"badge-info__uploader" + (uploading?" uploading":"") + (error?" error":"")}
+      {...getRootProps()}
+    >
+      <input {...getInputProps()} />
+      <p>{ message }</p>
     </div>
-  </>;
+  </div>;
 }
 
 function BadgeRequirementsField({ input }) {
@@ -233,7 +234,7 @@ function BadgeRequirementsField({ input }) {
         </thead>
         <tbody>
           {items.map(([metric, value]) => (
-            <tr>
+            <tr key={metric}>
               <td className="h2">{ metric }</td>
               <td className="h2 tr">{ value }</td>
               <td className="h2 tr">

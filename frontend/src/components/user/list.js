@@ -6,14 +6,13 @@ import toast from 'react-hot-toast';
 import Popup from 'reactjs-popup';
 import Select from 'react-select';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
-import { RefreshIcon } from '../svgIcons';
 import { formatDistance } from 'date-fns';
 
 import messages from './messages';
 import { UserAvatar } from './avatar';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { PaginatorLine } from '../paginator';
-import { SearchIcon, CloseIcon, SettingsIcon, CheckIcon } from '../svgIcons';
+import { SearchIcon, CloseIcon, SettingsIcon, CheckIcon, RefreshIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { nCardPlaceholders } from './usersPlaceholder';
 import { OHSOME_STATS_TOPICS } from '../../config';

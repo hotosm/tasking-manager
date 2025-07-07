@@ -19,7 +19,7 @@ class MappingBadgeService:
     @staticmethod
     async def get_all(db: Database) -> MappingBadgeListDTO:
         return MappingBadgeListDTO(
-            badges=list(map(lambda mb: mb.as_dto(), await MappingBadge.get_all(db))),
+            badges=[mb.as_dto() for mb in await MappingBadge.get_all(db)],
         )
 
     @staticmethod
