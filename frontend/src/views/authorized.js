@@ -31,7 +31,6 @@ export function Authorized(props) {
           }).toString();
           window.location.href = `/authorized/?${params}`;
           } else {
-            console.log({storedState: storedState, state: state});
             throw new Error('States do not match');
           }
         });
