@@ -16,6 +16,7 @@ import { PaginatorLine } from '../paginator';
 import { SearchIcon, CloseIcon, SettingsIcon, CheckIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { nCardPlaceholders } from './usersPlaceholder';
+import { OHSOME_STATS_TOPICS } from '../../config';
 
 const UserFilter = ({ filters, setFilters, updateFilters }) => {
   const inputRef = useRef(null);
@@ -212,81 +213,98 @@ export const UsersTable = ({ filters, setFilters }) => {
       );
   };
 
-  const COLUMNS = [
-    {
-      accessorKey: 'username',
-      header: () => (<FormattedMessage {...messages.tableUsername} />),
-      cell: ({row}) => <>
-        <UserAvatar
-          picture={row.original.pictureUrl}
-          username={row.original.username}
-          colorClasses="white bg-blue-grey"
-        />
-        <a
-          className="blue-grey mr2 ml3 link"
-          rel="noopener noreferrer"
-          target="_blank"
-          href={`/users/${row.original.username}`}
-        >
-          {row.original.username}
-        </a>
-      </>,
-    },
-    {
-      id: 'level',
-      accessorKey: 'mappingLevel',
-      header: () => (<FormattedMessage {...messages.tableLevel} />),
-    },
-    {
-      accessorKey: 'role',
-      header: () => (<FormattedMessage {...messages.tableRole} />),
-      cell: ({row}) => <FormattedMessage {...messages[`userRole${row.original.role}`]} />,
-    },
-    {
-      id: 'levelUpgrade',
-      header: () => (<FormattedMessage {...messages.tableUpgrade} />),
-      cell: () => null,
-    },
-    {
-      id: 'statsLastUpdated',
-      header: () => (<FormattedMessage {...messages.tableLastUpdated} />),
-      cell: ({row}) => {
-        if (row.original.statsLastUpdated) {
-          return formatDistance(
-            new Date(row.original.statsLastUpdated),
-            new Date(),
-            { addSuffix: true },
-          );
-        } else {
-          return <FormattedMessage {...messages.never} />;
-        }
+  const COLUMNS = Array.prototype.concat.call(
+    [
+      {
+        accessorKey: 'username',
+        header: () => (<FormattedMessage {...messages.tableUsername} />),
+        cell: ({row}) => <>
+          <UserAvatar
+            picture={row.original.pictureUrl}
+            username={row.original.username}
+            colorClasses="white bg-blue-grey"
+          />
+          <a
+            className="blue-grey mr2 ml3 link"
+            rel="noopener noreferrer"
+            target="_blank"
+            href={`/users/${row.original.username}`}
+          >
+            {row.original.username}
+          </a>
+        </>,
       },
-    },
-    {
-      id: 'actions',
-      header: () => (<FormattedMessage {...messages.tableActions} />),
-      cell: ({row}) => (userDetails.username === row.original.username ? null : <>
-        <Popup
-          trigger={
-            <span>
-              <SettingsIcon width="18px" height="18px" className="pointer hover-blue-grey mr3" />
-            </span>
-          }
-          position="right center"
-          closeOnDocumentClick
-          className="user-popup"
-        >
-          {(close) => (
-            <UserEditMenu user={row.original} token={token} close={close} setStatus={setStatus} />
-          )}
-        </Popup>
+      {
+        id: 'level',
+        accessorKey: 'mappingLevel',
+        header: () => (<FormattedMessage {...messages.tableLevel} />),
+      },
+      {
+        accessorKey: 'role',
+        header: () => (<FormattedMessage {...messages.tableRole} />),
+        cell: ({row}) => <FormattedMessage {...messages[`userRole${row.original.role}`]} />,
+      }
+    ],
 
-        <button onClick={() => handleStatsUpdate(row.original)} className="bn pa0 bg-transparent pointer">
-          <RefreshIcon width={18} height={18} />
-        </button>
-      </>)
-    },
-  ];
+    OHSOME_STATS_TOPICS.split(',').map((topic) => {
+      return {
+        id: `stats_${topic}`,
+        accessorFn: (row) => {
+          const topics = row.stats?.topics;
+
+          return topics ? topics[topic].added : '';
+        },
+        header: () => (<FormattedMessage {...messages[`tableCol_${topic}`]} />),
+      };
+    }),
+
+    [
+      {
+        id: 'levelUpgrade',
+        header: () => (<FormattedMessage {...messages.tableUpgrade} />),
+        cell: () => null,
+      },
+      {
+        id: 'statsLastUpdated',
+        header: () => (<FormattedMessage {...messages.tableLastUpdated} />),
+        cell: ({row}) => {
+          if (row.original.statsLastUpdated) {
+            return formatDistance(
+              new Date(row.original.statsLastUpdated),
+              new Date(),
+              { addSuffix: true },
+            );
+          } else {
+            return <FormattedMessage {...messages.never} />;
+          }
+        },
+      },
+      {
+        id: 'actions',
+        header: () => (<FormattedMessage {...messages.tableActions} />),
+        cell: ({row}) => (userDetails.username === row.original.username ? null : <>
+          <Popup
+            trigger={
+              <span>
+                <SettingsIcon width="18px" height="18px" className="pointer hover-blue-grey mr3" />
+              </span>
+            }
+            position="right center"
+            closeOnDocumentClick
+            className="user-popup"
+          >
+            {(close) => (
+              <UserEditMenu user={row.original} token={token} close={close} setStatus={setStatus} />
+            )}
+          </Popup>
+
+          <button onClick={() => handleStatsUpdate(row.original)} className="bn pa0 bg-transparent pointer">
+            <RefreshIcon width={18} height={18} />
+          </button>
+        </>)
+      },
+    ],
+  );
 
   const table = useReactTable({
     columns: COLUMNS,

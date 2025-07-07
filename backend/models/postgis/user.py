@@ -1,3 +1,4 @@
+import json
 import geojson
 from databases import Database
 from sqlalchemy import (
@@ -174,7 +175,7 @@ class User(Base):
         """Search and filter all users"""
 
         base_query = """
-            SELECT u.id, u.username, u.mapping_level, u.role, u.picture_url, us.date_obtained
+            SELECT u.id, u.username, u.mapping_level, u.role, u.picture_url, us.date_obtained, us.stats
             FROM users AS u
             LEFT JOIN user_stats AS us ON u.id = us.user_id
         """
@@ -221,6 +222,7 @@ class User(Base):
             listed_user.username = result["username"]
             listed_user.picture_url = result["picture_url"]
             listed_user.stats_last_updated = result["date_obtained"]
+            listed_user.stats = json.loads(result["stats"]) if result["stats"] else None
             listed_user.role = UserRole(result["role"]).name
             dto.users.append(listed_user)
 
