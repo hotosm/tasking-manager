@@ -175,7 +175,7 @@ export function Dropdown(props) {
           eventTypes={['click', 'touchend']}
           toggleDropdown={toggleDropdown}
           toTop={props.toTop}
-          toRight={props?.toRight}
+          toRight={props.toRight}
         />
       )}
     </div>
