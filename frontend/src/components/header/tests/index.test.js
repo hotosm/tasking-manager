@@ -134,7 +134,7 @@ describe('Right side action items', () => {
     expect(screen.getByLabelText('Sample avatar')).toBeInTheDocument();
   });
 
-  test("when the user isn't logged in", () => {
+  test("when the user isn't logged in", async () => {
     act(() => {
       store.dispatch({
         type: 'SET_USER_DETAILS',
@@ -142,8 +142,10 @@ describe('Right side action items', () => {
       });
     });
     setup();
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
-    expect(screen.getByText('English')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('combobox')).toBeInTheDocument();
+      expect(screen.getByText('English')).toBeInTheDocument();
+    });
     expect(
       screen.getByRole('button', {
         name: /log in/i,

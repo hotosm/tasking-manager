@@ -1,0 +1,83 @@
+name: 🧪 PR Test Frontend
+
+on:
+  pull_request:
+    branches:
+      - main
+      - staging
+      - develop
+    paths:
+      - "frontend/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Static Files
+    runs-on: ubuntu-latest
+
+    environment:
+      name: develop
+      url: "https://just.build.test"
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22.11.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.11.0
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: tm-fe-${{ runner.os }}-build-${{ hashFiles('frontend/package.json') }}
+          restore-keys: |
+            tm-fe-${{ runner.os }}-build-${{ hashFiles('frontend/package.json') }}
+
+      - name: Install yarn
+        run: npm install -g yarn
+
+      - name: Load Environment from GitHub variables & secrets.
+        uses: hotosm/gh-workflows/.github/actions/vars_n_secret_to_env@env_substitute/1.0.0
+        with:
+          vars_context: ${{ toJson(vars) }}
+          secrets_context: ${{ toJson(secrets) }}
+
+      - name: Create .env file
+        uses: hotosm/gh-workflows/.github/actions/env_substitute@env_substitute/1.0.0
+        with:
+          working_directory: ./frontend
+          template_dotenv: .env.expand
+          output_file: .env
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: yarn install
+
+      - name: Run Yarn test
+        working-directory: ./frontend
+        run: yarn test
+
+      - name: Generate build
+        working-directory: ./frontend
+        run: |
+          yarn build
+
+      - name: Upload Builds Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tm-fe-${{ github.sha }}
+          path: ./frontend/build
+          retention-days: 2
+
+  frontend-dev-image-build:
+    name: Build dev image for testing
+    uses: hotosm/gh-workflows/.github/workflows/image_build.yml@1.5.1
+    with:
+      image_name: ghcr.io/${{ github.repository }}/frontend
+      build_target: debug
+      dockerfile: scripts/docker/Dockerfile.frontend
+      scan_image: false
+      scan_dockerfile: false

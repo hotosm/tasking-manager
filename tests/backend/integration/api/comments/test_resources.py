@@ -1,16 +1,15 @@
 from unittest.mock import patch
 
+from backend.exceptions import NotFound, get_message_from_sub_code
+from backend.models.postgis.statuses import UserRole
+from backend.services.messaging.chat_service import ChatMessageDTO, ChatService
+from backend.services.messaging.message_service import MessageService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_project,
     generate_encoded_token,
     return_canned_user,
 )
-from backend.exceptions import NotFound, get_message_from_sub_code
-from backend.models.postgis.statuses import UserRole
-from backend.services.messaging.chat_service import ChatService, ChatMessageDTO
-from backend.services.messaging.message_service import MessageService
-
 
 TEST_MESSAGE = "Test comment"
 PROJECT_NOT_FOUND_SUB_CODE = "PROJECT_NOT_FOUND"

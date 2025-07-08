@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate, createSearchParams } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -12,16 +12,18 @@ import { ProjectSearchBox } from './projectSearchBox';
 import ClearFilters from './clearFilters';
 import { OrderBySelector } from './orderBy';
 import { ProjectsActionFilter } from './projectsActionFilter';
+import { ProjectsStatusFilter } from './projectsStatusFilter';
 import { SwitchToggle } from '../formInputs';
 import DownloadAsCSV from './downloadAsCSV';
 import { GripIcon, ListIcon, FilledNineCellsGridIcon, TableListIcon } from '../svgIcons';
+import getURLSearchParamsObject from '../../utils/getURLSearchParamsObject';
 
 export const ShowMapToggle = (props) => {
   const dispatch = useDispatch();
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
-  const isExploreProjectsTableView = useSelector(
-    (state) => state.preferences['isExploreProjectsTableView'],
-  );
+  const { search } = useLocation();
+  const searchParams = getURLSearchParamsObject(search);
+  const isExploreProjectsTableView = searchParams?.view === 'list';
 
   useEffect(() => {
     if (isExploreProjectsTableView && isMapShown) {
@@ -43,8 +45,11 @@ export const ShowMapToggle = (props) => {
 };
 
 export const ProjectListViewToggle = (props) => {
-  const dispatch = useDispatch();
-  const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const searchParams = getURLSearchParamsObject(search);
+  const listViewIsActive = searchParams?.view === 'list';
+
   return (
     <div className="fr pv2 dib-ns dn">
       <ListIcon
@@ -52,24 +57,38 @@ export const ProjectListViewToggle = (props) => {
         width="25"
         role="graphics-symbol"
         className={`dib pointer v-mid ph1 ${listViewIsActive ? 'blue-grey' : 'blue-light'}`}
-        onClick={() => dispatch({ type: 'TOGGLE_LIST_VIEW' })}
+        onClick={() => {
+          navigate({
+            search: `?${createSearchParams({
+              ...searchParams,
+              view: 'list',
+            })}`,
+          });
+        }}
       />
       <GripIcon
         height="20"
         width="20"
         role="graphics-symbol"
         className={`dib pointer v-mid ph1 ${!listViewIsActive ? 'blue-grey' : 'blue-light'}`}
-        onClick={() => dispatch({ type: 'TOGGLE_CARD_VIEW' })}
+        onClick={() => {
+          navigate({
+            search: `?${createSearchParams({
+              ...searchParams,
+              view: 'grid',
+            })}`,
+          });
+        }}
       />
     </div>
   );
 };
 
 const ExploreProjectsViewToggle = () => {
-  const dispatch = useDispatch();
-  const isExploreProjectsTableView = useSelector(
-    (state) => state.preferences['isExploreProjectsTableView'],
-  );
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const searchParams = getURLSearchParamsObject(search);
+  const isExploreProjectsTableView = searchParams?.view === 'list';
 
   return (
     <>
@@ -78,14 +97,28 @@ const ExploreProjectsViewToggle = () => {
         width="21"
         role="graphics-symbol"
         className={`pointer ${isExploreProjectsTableView ? 'moon-gray' : 'blue-dark'}`}
-        onClick={() => dispatch({ type: 'SET_EXPLORE_PROJECTS_CARD_VIEW' })}
+        onClick={() => {
+          navigate({
+            search: `?${createSearchParams({
+              ...searchParams,
+              view: 'grid',
+            })}`,
+          });
+        }}
       />
       <TableListIcon
         height="21"
         width="21"
         role="graphics-symbol"
         className={`pointer ${isExploreProjectsTableView ? 'blue-dark' : 'moon-gray'}`}
-        onClick={() => dispatch({ type: 'SET_EXPLORE_PROJECTS_TABLE_VIEW' })}
+        onClick={() => {
+          navigate({
+            search: `?${createSearchParams({
+              ...searchParams,
+              view: 'list',
+            })}`,
+          });
+        }}
       />
     </>
   );
@@ -119,15 +152,15 @@ const DifficultyDropdown = (props) => {
 };
 
 export const ProjectNav = ({ isExploreProjectsPage, children }) => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
   const encodedParams = stringify(fullProjectsQuery)
     ? ['?', stringify(fullProjectsQuery)].join('')
     : '';
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
-  const isExploreProjectsTableView = useSelector(
-    (state) => state.preferences['isExploreProjectsTableView'],
-  );
+  const searchParams = getURLSearchParamsObject(location.search);
+  const isExploreProjectsTableView = searchParams?.view === 'list';
 
   useEffect(() => {
     setQuery(
@@ -163,6 +196,10 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
   if ((isExploreProjectsPage && isExploreProjectsTableView) || !isMapShown) {
     clearFiltersURL = './?omitMapResults=1';
   }
+  // fixes clear filter not persisting grid/list view issue
+  if (searchParams.view) {
+    clearFiltersURL = `${clearFiltersURL}&view=${searchParams.view}`;
+  }
 
   // onSelectedItemChange={(changes) => console.log(changes)}
   return (
@@ -174,7 +211,10 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
             <div className="mv2 dib">
               <DifficultyDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             </div>
+
             <ProjectsActionFilter setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
+
+            <ProjectsStatusFilter setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             <Link
               to={filterRouteToggled}
               id="more-filter-id"
@@ -194,7 +234,20 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
               className="f6"
             />
             {!filterIsEmpty && (
-              <ClearFilters url={clearFiltersURL} className="mv2 mh1 fr dn dib-l" />
+              <ClearFilters
+                url={clearFiltersURL}
+                className="mv2 mh1 fr dn dib-l"
+                onClick={() => {
+                  dispatch({ type: 'SET_ACTION', action: 'any' });
+                  setQuery(
+                    {
+                      ...fullProjectsQuery,
+                      action: 'any',
+                    },
+                    'pushIn',
+                  );
+                }}
+              />
             )}
 
             <ProjectSearchBox

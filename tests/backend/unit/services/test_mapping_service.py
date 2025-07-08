@@ -1,18 +1,19 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+from backend.models.dtos.mapping_dto import LockTaskDTO, MappedTaskDTO
+from backend.models.postgis.project_info import ProjectInfo
+from backend.models.postgis.task import TaskAction, TaskHistory, User
 from backend.services.mapping_service import (
-    MappingService,
-    Task,
-    MappingServiceError,
-    TaskStatus,
-    ProjectService,
-    NotFound,
-    StatsService,
     MappingNotAllowed,
+    MappingService,
+    MappingServiceError,
+    NotFound,
+    ProjectService,
+    StatsService,
+    Task,
+    TaskStatus,
     UserLicenseError,
 )
-from backend.models.postgis.project_info import ProjectInfo
-from backend.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
-from backend.models.postgis.task import TaskHistory, TaskAction, User
 from backend.services.messaging.message_service import MessageService
 from tests.backend.base import BaseTestCase
 

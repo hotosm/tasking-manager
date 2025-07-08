@@ -1,17 +1,17 @@
 from unittest.mock import patch
 
-from tests.backend.base import BaseTestCase
 from backend.models.postgis.message import Message
 from backend.services.users.user_service import (
-    UserService,
     MappingLevel,
-    User,
     OSMService,
+    User,
     UserOSMDTO,
+    UserService,
 )
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    create_canned_user,
     create_canned_project,
+    create_canned_user,
     get_canned_user,
     return_canned_user,
 )

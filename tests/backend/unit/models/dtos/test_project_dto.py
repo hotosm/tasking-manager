@@ -1,4 +1,5 @@
 from schematics.exceptions import DataError
+
 from backend.models.dtos.project_dto import ProjectDTO
 from tests.backend.base import BaseTestCase
 

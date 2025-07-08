@@ -5,8 +5,8 @@ Revises: 2cfa981c70e7
 Create Date: 2020-07-28 21:13:50.314323
 
 """
-from alembic import op
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "9712d29e24c8"

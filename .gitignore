@@ -1,6 +1,6 @@
-
 # Configuration files #
 tasking-manager*.env
+.env
 
 # Generated frontend #
 frontend/node_modules/
@@ -65,6 +65,17 @@ htmlcov/
 
 # Terragrunt
 .terragrunt-cache
+**/.terragrunt-cache/
+**/.terragrunt-cache
+**/infra.env
+temporary-dep-hack.hcl
 
 # Docker & Docker compose
 docker-compose.override.yml
+postgres_data/
+
+# Variables
+scripts/aws/infra/staging/variables.py
+
+# Files
+tests/test_db_dump/tm_sample_db.sql

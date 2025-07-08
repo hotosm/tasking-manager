@@ -1,0 +1,113 @@
+name: Build and Deploy Frontend to Cloudfront
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - develop
+    paths:
+      - "frontend/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Static Files
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ github.ref_name == 'develop' && 'develop' || github.ref_name == 'staging' && 'staging' || github.ref_name == 'main' && 'main' || 'develop' }}
+      url: ${{ github.ref_name == 'develop' && 'https://tasks-dev.hotosm.org' || github.ref_name == 'staging' && 'https://tasks-stage.hotosm.org' || github.ref_name == 'main' && 'https://tasks.hotosm.org' || 'https://just.build.test' }}
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22.11.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.11.0
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: tm-fe-${{ runner.os }}-build-${{ hashFiles('frontend/package.json') }}
+          restore-keys: |
+            tm-fe-${{ runner.os }}-build-${{ hashFiles('frontend/package.json') }}
+
+      - name: Install yarn
+        run: npm install -g yarn
+
+      - name: Load Environment from GitHub variables & secrets.
+        uses: hotosm/gh-workflows/.github/actions/vars_n_secret_to_env@env_substitute/1.0.0
+        with:
+          vars_context: ${{ toJson(vars) }}
+          secrets_context: ${{ toJson(secrets) }}
+
+      - name: Create .env file
+        uses: hotosm/gh-workflows/.github/actions/env_substitute@env_substitute/1.0.0
+        with:
+          working_directory: ./frontend
+          template_dotenv: .env.expand
+          output_file: .env
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: yarn install
+
+      - name: Generate build
+        working-directory: ./frontend
+        run: |
+          yarn build
+
+      - name: Upload Builds Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tm-fe-${{ github.sha }}
+          path: ./frontend/build
+          retention-days: 90
+
+  deploy:
+    name: Deploy static files
+    needs:
+      - build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ github.ref_name == 'develop' && 'develop' || github.ref_name == 'staging' && 'staging' || github.ref_name == 'main' && 'main' || 'develop' }}
+      url: ${{ github.ref_name == 'develop' && 'https://tasks-dev.hotosm.org' || github.ref_name == 'staging' && 'https://tasks-stage.hotosm.org' || github.ref_name == 'main' && 'https://tasks.hotosm.org' || 'https://just.build.test' }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: tm-fe-${{ github.sha }}
+          path: ./build
+
+      - name: Setup AWS Credentials
+        uses: hotosm/gh-workflows/.github/actions/configure_aws_credentials@configure_aws_credentials/1.0.0
+        with:
+          USE_OIDC_FOR_AWS: true
+          AWS_CONFIG_FILE_PATH: ${{ github.workspace }}/.aws/credentials
+          AWS_OIDC_ROLE_ARN: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+
+      - name: Copy static files to S3
+        shell: bash
+        run: |
+          set -ex
+          aws s3 cp --recursive ./build s3://${{ vars.FRONTEND_S3_BUCKET }}
+
+      - name: Create cloudfront redistribution
+        shell: bash
+        run: |
+          set -ex
+          aws cloudfront create-invalidation --distribution-id ${{ vars.FRONTEND_CLOUDFRONT_DISTRIBUTION_ID }}  --paths /

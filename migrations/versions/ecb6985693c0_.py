@@ -1,4 +1,4 @@
-""" Add mapswipe group ID to partners table
+"""Add mapswipe group ID to partners table
 
 Revision ID: ecb6985693c0_
 Revises: 749a9ae35ce5
@@ -6,9 +6,8 @@ Create Date: 2024-12-04 19:53:41.477085
 
 """
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "ecb6985693c0_"

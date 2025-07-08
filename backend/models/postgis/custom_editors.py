@@ -1,49 +1,75 @@
-from backend import db
+from databases import Database
+from sqlalchemy import Column, ForeignKey, Integer, String
+
+from backend.db import Base
 from backend.models.dtos.project_dto import CustomEditorDTO
 
 
-class CustomEditor(db.Model):
+class CustomEditor(Base):
     """Model for user defined editors for a project"""
 
     __tablename__ = "project_custom_editors"
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    description = db.Column(db.String)
-    url = db.Column(db.String, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), primary_key=True)
+    name = Column(String(50), nullable=False)
+    description = Column(String)
+    url = Column(String, nullable=False)
 
-    def create(self):
-        """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
-
-    def save(self):
-        """Save changes to db"""
-        db.session.commit()
+    async def get_by_project_id(project_id: int, db: Database):
+        """Retrieves a CustomEditor by project_id"""
+        query = """
+            SELECT * FROM project_custom_editors
+            WHERE project_id = :project_id
+        """
+        values = {"project_id": project_id}
+        row = await db.fetch_one(query, values=values)
+        if row:
+            return CustomEditor(**row)
+        else:
+            return None
 
     @staticmethod
-    def get_by_project_id(project_id: int):
-        """Get custom editor by it's project id"""
-        return db.session.get(CustomEditor, project_id)
-
-    @classmethod
-    def create_from_dto(cls, project_id: int, dto: CustomEditorDTO):
+    async def create_from_dto(project_id: int, dto: CustomEditorDTO, db: Database):
         """Creates a new CustomEditor from dto, used in project edit"""
-        new_editor = cls()
-        new_editor.project_id = project_id
-        new_editor.update_editor(dto)
-        return new_editor
+        custom_editor_query = """
+            INSERT INTO project_custom_editors (project_id, name, description, url)
+            VALUES (:project_id, :name, :description, :url)
+        """
+        await db.execute(
+            custom_editor_query,
+            {
+                "project_id": project_id,
+                "name": dto.name,
+                "description": dto.description,
+                "url": dto.url,
+            },
+        )
 
-    def update_editor(self, dto: CustomEditorDTO):
-        """Upates existing CustomEditor form DTO"""
-        self.name = dto.name
-        self.description = dto.description
-        self.url = dto.url
-        self.save()
+    async def update_editor(project_id: int, dto: CustomEditorDTO, db: Database):
+        """Updates existing CustomEditor form DTO using raw SQL"""
+        query = """
+        UPDATE project_custom_editors
+        SET name = :name, description = :description, url = :url
+        WHERE project_id = :project_id
+        """
 
-    def delete(self):
-        """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        await db.execute(
+            query,
+            values={
+                "name": dto.name,
+                "description": dto.description,
+                "url": dto.url,
+                "project_id": project_id,
+            },
+        )
+
+    async def delete(project_id: int, db: Database):
+        """Deletes the CustomEditor with the given project_id from the DB using raw SQL"""
+        query = """
+        DELETE FROM project_custom_editors
+        WHERE project_id = :project_id
+        """
+
+        await db.execute(query, values={"project_id": project_id})
 
     def as_dto(self) -> CustomEditorDTO:
         """Returns the CustomEditor as a DTO"""

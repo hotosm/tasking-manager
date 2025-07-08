@@ -1,12 +1,10 @@
+from backend.exceptions import get_message_from_sub_code
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
+    create_canned_license,
     create_canned_user,
     generate_encoded_token,
-    create_canned_license,
 )
-
-from backend.exceptions import get_message_from_sub_code
-
 
 LICENSE_NOT_FOUND_SUB_CODE = "LICENSE_NOT_FOUND"
 LICENSE_NOT_FOUND_MESSAGE = get_message_from_sub_code(LICENSE_NOT_FOUND_SUB_CODE)

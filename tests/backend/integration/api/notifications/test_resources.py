@@ -1,17 +1,16 @@
 from datetime import datetime, timedelta
 
-from tests.backend.base import BaseTestCase
+from backend.exceptions import get_message_from_sub_code
 from backend.models.postgis.message import MessageType
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    create_canned_user,
-    generate_encoded_token,
-    return_canned_user,
     create_canned_message,
     create_canned_notification,
     create_canned_project,
+    create_canned_user,
+    generate_encoded_token,
+    return_canned_user,
 )
-
-from backend.exceptions import get_message_from_sub_code
 
 TEST_SUBJECT = "Test subject"
 TEST_MESSAGE = "This is a test message"

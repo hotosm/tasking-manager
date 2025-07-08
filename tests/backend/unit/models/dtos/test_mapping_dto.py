@@ -1,4 +1,5 @@
 from schematics.exceptions import DataError
+
 from backend.models.dtos.mapping_dto import MappedTaskDTO
 from backend.models.postgis.statuses import TaskStatus
 from tests.backend.base import BaseTestCase

@@ -1,6 +1,6 @@
+from backend.models.postgis.custom_editors import CustomEditor, CustomEditorDTO
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
-from backend.models.postgis.custom_editors import CustomEditor, CustomEditorDTO
 
 
 class TestCustomEditor(BaseTestCase):

@@ -1,0 +1,80 @@
+name: Build and Deploy Backend to ECS
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - develop
+    paths:
+      - "backend/**"
+  workflow_dispatch:
+
+env:
+  # NOTE: You can override these variables in the workflow file with GitHub Variables
+  # vars.TEAM is team name here in case you want to deploy for different team. Default is hotosm
+  # vars.INFRA_ENVIRONMENT is environment name here in case you have applied infrastructue with different environment name. Default is github.ref_name
+
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  OIDC_ROLE_ARN: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+  ECS_CLUSTER: tasking-manager-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}-cluster
+  TASK_DEFINITION_PREFIX: tasking-manager-${{ vars.TEAM || 'hotosm' }}-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}
+  ECS_SERVICE_PREFIX: tasking-manager-${{ vars.TEAM || 'hotosm' }}-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}
+  CONTAINER_NAME_PREFIX: tasking-manager-${{ vars.TEAM || 'hotosm' }}-${{ vars.INFRA_ENVIRONMENT || github.ref_name }}
+
+jobs:
+  image-build-and-push:
+    uses: hotosm/gh-workflows/.github/workflows/image_build.yml@1.5.1
+    with:
+      image_name: ghcr.io/${{ github.repository }}/backend
+      build_target: prod
+      dockerfile: scripts/docker/Dockerfile
+      image_tags: |
+        ghcr.io/${{ vars.IMAGE_NAME || 'hotosm/tasking-manager/backend' }}:${{ github.ref_name }}
+        ghcr.io/${{ vars.IMAGE_NAME || 'hotosm/tasking-manager/backend' }}:${{ github.sha }}
+
+  deploy-service:
+    name: Deploy ${{ matrix.service }} to ECS
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    needs: image-build-and-push
+    permissions:
+      contents: read
+      id-token: write
+
+    strategy:
+      matrix:
+        service: [fastapi, cron]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.OIDC_ROLE_ARN }}
+          role-session-name: gh-ci-ecs-deploy-${{ github.ref_name }}-${{ matrix.service }}
+
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --region ${{ env.AWS_REGION }} \
+            --task-definition ${{ env.TASK_DEFINITION_PREFIX }}-${{ matrix.service }} \
+            --query taskDefinition > task-definition.json
+
+      - name: Task definition rendition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME_PREFIX }}-${{ matrix.service }}
+          image: ghcr.io/${{ vars.IMAGE_NAME || 'hotosm/tasking-manager/backend' }}:${{ github.sha }}
+
+      - name: Deploy task definition for ${{ matrix.service }}
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_PREFIX }}-${{ matrix.service }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

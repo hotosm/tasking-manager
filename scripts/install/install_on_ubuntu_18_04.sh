@@ -31,8 +31,8 @@ git clone https://github.com/hotosm/tasking-manager.git &&
 ## Prepare the tasking manager
 cd tasking-manager/ &&
 pip install --upgrade pip &&
-pip install --upgrade pdm &&
-pdm install &&
+pip install --upgrade uv &&
+uv sync &&
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p &&
 
 # Set up configuration
@@ -66,7 +66,7 @@ do  sudo -u postgres psql -c "alter table \"$tbl\" owner to $POSTGRES_USER" $POS
 cd ../../ &&
 
 # Upgrade database
-pdm run flask db upgrade &&
+uv run flask db upgrade &&
 
 # Assemble the tasking manager interface
 cd frontend/ &&
@@ -77,4 +77,4 @@ cd ../ &&
 ## Please edit the tasking-manager.env as indicated in the README.md ##
 
 # Start the tasking manager
-pdm run flask run -d
+uv run flask run -d

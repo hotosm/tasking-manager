@@ -1,12 +1,13 @@
-import pandas as pd
 from unittest.mock import patch
 
+import pandas as pd
+
 from backend.models.postgis.project import ProjectStatus
-from tests.backend.base import BaseTestCase
 from backend.services.recommendation_service import ProjectRecommendationService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    create_canned_project,
     create_canned_interest,
+    create_canned_project,
     update_project_with_info,
 )
 

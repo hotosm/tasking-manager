@@ -1,51 +1,65 @@
-from schematics import Model
-from schematics.types import StringType, IntType, ListType, ModelType
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
+from pydantic.functional_validators import field_validator
+
 from backend.models.dtos.organisation_dto import OrganisationDTO
-from schematics.exceptions import ValidationError
 
 
 def is_existent(value):
     if value.strip() == "":
-        raise ValidationError("Empty campaign name string")
+        raise ValueError("Empty campaign name string")
     return value
 
 
-class NewCampaignDTO(Model):
+class NewCampaignDTO(BaseModel):
     """Describes JSON model to create a campaign"""
 
-    name = StringType(serialize_when_none=False, validators=[is_existent])
-    logo = StringType(serialize_when_none=False)
-    url = StringType(serialize_when_none=False)
-    description = StringType(serialize_when_none=False)
-    organisations = ListType(IntType, serialize_when_none=False)
+    name: str = Field(serialize_when_none=False)
+    logo: Optional[str] = Field(None, serialize_when_none=False)
+    url: Optional[str] = Field(None, serialize_when_none=False)
+    description: Optional[str] = Field(None, serialize_when_none=False)
+    organisations: Optional[List[int]] = Field(None, serialize_when_none=False)
+
+    @field_validator("name", mode="before")
+    def validate_type(cls, value):
+        if value is None:
+            return value
+        return is_existent(value)
 
 
-class CampaignDTO(Model):
-    """Describes JSON model for an existing campaign"""
+class CampaignDTO(BaseModel):
+    id: Optional[int] = None
+    name: Optional[str] = None
+    logo: Optional[str] = None
+    url: Optional[str] = None
+    description: Optional[str] = None
+    organisations: List[OrganisationDTO] = Field(default=None, alias="organisations")
 
-    id = IntType(serialize_when_none=False)
-    name = StringType(serialize_when_none=False)
-    logo = StringType(serialize_when_none=False)
-    url = StringType(serialize_when_none=False)
-    description = StringType(serialize_when_none=False)
-    organisations = ListType(ModelType(OrganisationDTO), serialize_when_none=False)
+    class Config:
+        populate_by_name = True
 
 
-class CampaignProjectDTO(Model):
+class CampaignProjectDTO(BaseModel):
     """DTO used to define available campaign connected projects"""
 
-    project_id = IntType()
-    campaign_id = IntType()
+    project_id: int
+    campaign_id: int
 
 
-class CampaignOrganisationDTO(Model):
+class CampaignOrganisationDTO(BaseModel):
     """DTO used to define available campaign connected projects"""
 
-    organisation_id = IntType()
-    campaign_id = IntType()
+    organisation_id: int
+    campaign_id: int
 
 
-class CampaignListDTO(Model):
+class ListCampaignDTO(BaseModel):
+    id: Optional[int] = None
+    name: Optional[str] = None
+
+
+class CampaignListDTO(BaseModel):
     """DTO used to define available campaigns"""
 
     def __init__(self):
@@ -53,4 +67,4 @@ class CampaignListDTO(Model):
         super().__init__()
         self.campaigns = []
 
-    campaigns = ListType(ModelType(CampaignDTO))
+    campaigns: Optional[List[ListCampaignDTO]] = None

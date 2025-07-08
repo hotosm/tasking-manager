@@ -1,14 +1,15 @@
+from unittest.mock import MagicMock, patch
+
 import geojson
+
+from backend.models.postgis.statuses import TaskStatus
 from backend.models.postgis.task import (
-    InvalidGeoJson,
     InvalidData,
+    InvalidGeoJson,
     Task,
     TaskAction,
     TaskHistory,
 )
-from backend.models.postgis.statuses import TaskStatus
-from unittest.mock import patch, MagicMock
-
 from tests.backend.base import BaseTestCase
 
 

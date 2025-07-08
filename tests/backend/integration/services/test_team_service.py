@@ -5,11 +5,7 @@ from backend.models.postgis.statuses import (
     TeamMemberFunctions,
     TeamRoles,
 )
-from backend.services.team_service import (
-    TeamService,
-    MessageService,
-    TeamServiceError,
-)
+from backend.services.team_service import MessageService, TeamService, TeamServiceError
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     add_user_to_team,

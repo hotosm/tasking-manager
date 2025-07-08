@@ -1,58 +1,79 @@
-from backend import db
+from databases import Database
+from sqlalchemy import Boolean, Column, Integer, String, delete, insert, select, update
+
+from backend.db import Base
 from backend.models.dtos.mapping_issues_dto import (
-    MappingIssueCategoryDTO,
     MappingIssueCategoriesDTO,
+    MappingIssueCategoryDTO,
 )
 
 
-class MappingIssueCategory(db.Model):
+class MappingIssueCategory(Base):
     """Represents a category of task mapping issues identified during validaton"""
 
     __tablename__ = "mapping_issue_categories"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False, unique=True)
-    description = db.Column(db.String, nullable=True)
-    archived = db.Column(db.Boolean, default=False, nullable=False)
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False, unique=True)
+    description = Column(String, nullable=True)
+    archived = Column(Boolean, default=False, nullable=False)
 
     def __init__(self, name):
         self.name = name
 
     @staticmethod
-    def get_by_id(category_id: int):
+    async def get_by_id(category_id: int, db: Database):
         """Get category by id"""
-        return db.session.get(MappingIssueCategory, category_id)
+        query = select(MappingIssueCategory).where(
+            MappingIssueCategory.id == category_id
+        )
+        return await db.fetch_one(query)
 
     @classmethod
-    def create_from_dto(cls, dto: MappingIssueCategoryDTO) -> int:
+    async def create_from_dto(cls, dto: MappingIssueCategoryDTO, db: Database) -> int:
         """Creates a new MappingIssueCategory class from dto"""
         new_category = cls(dto.name)
         new_category.description = dto.description
 
-        db.session.add(new_category)
-        db.session.commit()
+        query = insert(MappingIssueCategory.__table__).values(
+            name=new_category.name,
+            description=new_category.description,
+            archived=dto.archived,
+        )
+        result = await db.execute(query)
+        return result
 
-        return new_category.id
-
-    def update_category(self, dto: MappingIssueCategoryDTO):
+    async def update_category(self, dto: MappingIssueCategoryDTO, db: Database):
         """Update existing category"""
         self.name = dto.name
         self.description = dto.description
         if dto.archived is not None:
             self.archived = dto.archived
-        db.session.commit()
+        query = (
+            update(MappingIssueCategory.__table__)
+            .where(
+                MappingIssueCategory.id == self.id,
+            )
+            .values(
+                name=self.name, description=self.description, archived=self.archived
+            )
+        )
+        await db.execute(query)
 
-    def delete(self):
+    async def delete(self, db: Database):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        query = delete(MappingIssueCategory.__table__).where(
+            MappingIssueCategory.id == self.id
+        )
+        await db.execute(query)
 
     @staticmethod
-    def get_all_categories(include_archived):
-        category_query = MappingIssueCategory.query.order_by(MappingIssueCategory.name)
+    async def get_all_categories(include_archived, db):
+        query = select(MappingIssueCategory).order_by(MappingIssueCategory.name)
+        # Apply condition if archived records are to be excluded
         if not include_archived:
-            category_query = category_query.filter_by(archived=False)
+            query = query.where(MappingIssueCategory.archived.is_(False))
 
-        results = category_query.all()
+        results = await db.fetch_all(query)
 
         dto = MappingIssueCategoriesDTO()
         for result in results:

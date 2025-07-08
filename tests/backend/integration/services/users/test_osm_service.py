@@ -1,5 +1,5 @@
-from tests.backend.base import BaseTestCase
 from backend.services.users.osm_service import OSMService, OSMServiceError
+from tests.backend.base import BaseTestCase
 
 
 class TestOsmService(BaseTestCase):
