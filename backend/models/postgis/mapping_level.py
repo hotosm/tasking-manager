@@ -114,7 +114,9 @@ class MappingLevel(Base):
     @staticmethod
     async def delete(id: int, db: Database):
         async with db.transaction():
-            clear_badges_query = "DELETE FROM mapping_level_badges WHERE level_id = :level_id"
+            clear_badges_query = (
+                "DELETE FROM mapping_level_badges WHERE level_id = :level_id"
+            )
             delete_query = "DELETE FROM mapping_levels WHERE id = :id"
             try:
                 await db.execute(clear_badges_query, values={"level_id": id})
