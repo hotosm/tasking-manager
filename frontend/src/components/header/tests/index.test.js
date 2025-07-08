@@ -36,7 +36,7 @@ describe('Header', () => {
     if (ORG_LOGO) {
       expect(orgLogo).toHaveAttribute('src', ORG_LOGO);
     } else {
-      expect(orgLogo).toHaveAttribute('src', 'main-logo.svg');
+      expect(orgLogo).toHaveAttribute('src', 'main-logo-ohm.svg');
     }
     expect(screen.getByText(/Tasking Manager/i)).toBeInTheDocument();
     ['Explore projects', 'Learn', 'About'].forEach((menuItem) =>

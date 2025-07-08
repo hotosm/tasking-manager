@@ -10,6 +10,7 @@ import {
 } from '../../../utils/testWithIntl';
 import { userQueryDetails } from '../../../network/tests/mockData/userList';
 import { store } from '../../../store';
+import * as config from "../../../config";
 
 let mockData = {
   id: 10291369,
@@ -46,7 +47,7 @@ describe('Social Media component', () => {
     ).toHaveLength(3);
     expect(screen.queryAllByRole('link', { name: 'johndoe' })[0]).toHaveAttribute(
       'href',
-      'https://www.openhistoricalmap.org/user/johndoe',
+      `${config.OSM_SERVER_URL}/user/johndoe`,
     );
     expect(screen.queryAllByRole('link', { name: 'johndoe' })[1]).toHaveAttribute(
       'href',
