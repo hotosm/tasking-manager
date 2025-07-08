@@ -766,11 +766,11 @@ class ProjectService:
         action_date = (datetime.now(timezone.utc) - timedelta(hours=interval)).replace(
             tzinfo=None
         )
-        # First query to get distinct project_ids
+        # Combined query to get project_ids from task_history and project_chat
         query_project_ids = """
-        SELECT DISTINCT project_id
-        FROM task_history
-        WHERE action_date >= :action_date
+        SELECT project_id FROM task_history WHERE action_date >= :action_date
+        UNION
+        SELECT project_id FROM project_chat WHERE time_stamp >= :action_date
         """
         project_ids_result = await db.fetch_all(
             query_project_ids, {"action_date": action_date}
