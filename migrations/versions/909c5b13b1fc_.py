@@ -17,24 +17,38 @@ depends_on = None
 
 def upgrade():
     conn = op.get_bind()
-    cur = conn.execute(sa.text("""
+    cur = conn.execute(
+        sa.text(
+            """
         INSERT INTO mapping_badges (name, description, requirements, is_enabled, is_internal)
         VALUES
             ('INTERMEDIATE_internal', '', '{\"changeset\": 250}', true, true),
             ('ADVANCED_internal', '', '{\"changeset\": 500}', true, true)
         RETURNING id
-    """))
+    """
+        )
+    )
     ids = [r[0] for r in cur.fetchall()]
 
-    conn.execute(sa.text("""
+    conn.execute(
+        sa.text(
+            """
         INSERT INTO mapping_level_badges (level_id, badge_id)
         VALUES (:level_id, :badge_id)
-    """), {"level_id": 2, "badge_id": ids[0]})
+    """
+        ),
+        {"level_id": 2, "badge_id": ids[0]},
+    )
 
-    conn.execute(sa.text("""
+    conn.execute(
+        sa.text(
+            """
         INSERT INTO mapping_level_badges (level_id, badge_id)
         VALUES (:level_id, :badge_id)
-    """), {"level_id": 3, "badge_id": ids[1]})
+    """
+        ),
+        {"level_id": 3, "badge_id": ids[1]},
+    )
 
 
 def downgrade():
@@ -42,5 +56,7 @@ def downgrade():
 
     conn.execute(sa.text("DELETE FROM mapping_level_badges WHERE level_id in (2, 3)"))
 
-    conn.execute(sa.text("DELETE FROM mapping_badges WHERE name = 'INTERMEDIATE_internal'"))
+    conn.execute(
+        sa.text("DELETE FROM mapping_badges WHERE name = 'INTERMEDIATE_internal'")
+    )
     conn.execute(sa.text("DELETE FROM mapping_badges WHERE name = 'ADVANCED_internal'"))
