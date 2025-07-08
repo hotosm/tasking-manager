@@ -71,6 +71,7 @@ import {
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 import { API_URL, OHSOME_STATS_API_URL, defaultChangesetComment } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
+import { systemLanguages } from './mockData/header';
 import { authLogin, setUser, userRegister } from './mockData/auth';
 import {
   extendTask,
@@ -152,6 +153,10 @@ const handlers = [
   ),
   rest.get(API_URL + 'projects/queries/:projectId/similar-projects/', async (req, res, ctx) => {
     return res(ctx.json(similarProjects));
+  }),
+  // HEADER
+  rest.get(API_URL + 'system/languages/', async (req, res, ctx) => {
+    return res(ctx.json(systemLanguages));
   }),
   // AUTHENTICATION
   rest.get(API_URL + 'system/authentication/login/', async (req, res, ctx) => {

@@ -774,14 +774,29 @@ class MessageService:
             )
             usernames.extend([member["username"] for member in team_members])
 
+            organisation_managers_query = """
+                SELECT DISTINCT u.username
+                FROM projects p
+                JOIN organisation_managers om ON p.organisation_id = om.organisation_id
+                JOIN users u ON u.id = om.user_id
+                WHERE p.id = :project_id
+            """
+
+            organisation_managers = await db.fetch_all(
+                organisation_managers_query, values={"project_id": project_id}
+            )
+            if organisation_managers:
+                usernames.extend(
+                    [manager["username"] for manager in organisation_managers]
+                )
+
         # Add contributors if task_id is provided and contributors are mentioned
         if task_id and "contributors" in parsed:
             contributors = await Message.get_all_tasks_contributors(
                 project_id, task_id, db
             )
             usernames.extend(contributors)
-
-        return usernames
+        return list(set(usernames))
 
     @staticmethod
     async def _parse_message_for_username(

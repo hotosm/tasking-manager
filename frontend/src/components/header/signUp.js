@@ -6,7 +6,7 @@ import { Button } from '../button';
 import { CloseIcon } from '../svgIcons';
 import { registerUser } from '../../store/actions/user';
 import { store } from '../../store';
-import { createLoginWindow } from '../../utils/login';
+import { osmLoginRedirect } from '../../utils/login';
 import { ORG_PRIVACY_POLICY_URL, OSM_REGISTER_URL } from '../../config';
 import { setItem } from '../../utils/safe_storage';
 
@@ -202,7 +202,7 @@ export const SignUp = ({ closeModal }) => {
     }
 
     closeModal();
-    createLoginWindow(redirect);
+    osmLoginRedirect(redirect);
   };
 
   const getStep = (step) => {
