@@ -237,6 +237,7 @@ export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) =>
   if (history?.taskHistory?.length > 0) {
     return (
       <Dropdown
+        toRight
         value={null}
         options={[
           { label: <FormattedMessage {...messages.taskOnOSMCha} />, href: osmchaLink },
