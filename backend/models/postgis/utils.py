@@ -1,37 +1,37 @@
 import datetime
 import json
 import re
-from flask import current_app
 from geoalchemy2 import Geometry
 from geoalchemy2.functions import GenericFunction
+from loguru import logger
 
 
 class NotFound(Exception):
     """Custom exception to indicate model not found in database"""
 
-    pass
+    def __init__(self, message):
+        logger.debug(message)
 
 
 class InvalidGeoJson(Exception):
     """Custom exception to notify caller they have supplied Invalid GeoJson"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class UserLicenseError(Exception):
     """Custom Exception to notify caller that the user attempting to map has not accepted the license"""
 
-    pass
+    def __init__(self, message):
+        logger.debug(message)
 
 
 class InvalidData(Exception):
     """Custom exception to notify caller they have supplied Invalid data to a model"""
 
     def __init__(self, message):
-        if current_app:
-            current_app.logger.debug(message)
+        logger.debug(message)
 
 
 class ST_SetSRID(GenericFunction):

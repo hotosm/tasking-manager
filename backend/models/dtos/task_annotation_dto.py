@@ -1,13 +1,16 @@
-from schematics import Model
-from schematics.types import StringType, IntType
-from schematics.types.compound import DictType
+from typing import Optional
+
+from pydantic import BaseModel, Field
 
 
-class TaskAnnotationDTO(Model):
+class TaskAnnotationDTO(BaseModel):
     """Model for a single task annotation"""
 
-    task_id = IntType(required=True, serialized_name="taskId")
-    annotation_type = StringType(required=True, serialized_name="annotationType")
-    annotation_source = StringType(serialized_name="annotationSource")
-    annotation_markdown = StringType(serialized_name="annotationMarkdown")
-    properties = DictType(StringType, serialized_name="properties")
+    task_id: Optional[int] = Field(None, alias="taskId")
+    annotation_type: Optional[str] = Field(None, alias="annotationType")
+    annotation_source: Optional[str] = Field(None, alias="annotationSource")
+    annotation_markdown: Optional[str] = Field(None, alias="annotationMarkdown")
+    properties: Optional[dict] = Field(None, alias="properties")
+
+    class Config:
+        populate_by_name = True

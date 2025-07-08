@@ -20,12 +20,14 @@ describe('test if getIdUrl', () => {
       imagery:
         'tms[1,22]:https://api.mapbox.com/styles/v1/tm4/code123/tiles/256/{zoom}/{x}/{y}?access_token=pk.123',
     };
-    expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1])).toBe(
+    const idUrl = getIdUrl(testProject, [120.25684, -9.663953], 18, [1]);
+    const decodedURI = decodeURIComponent(idUrl);
+    expect(decodedURI).toBe(
       'https://www.openhistoricalmap.org/edit?editor=id&' +
         '#map=18/-9.663953/120.25684' +
-        '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
-        '&background=custom:https%3A%2F%2Fapi.mapbox.com%2Fstyles%2Fv1%2Ftm4%2Fcode123%2Ftiles%2F256%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D%3Faccess_token%3Dpk.123' +
-        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
+        '&comment=#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm' +
+        '&background=custom:https://api.mapbox.com/styles/v1/tm4/code123/tiles/256/{z}/{x}/{y}?access_token=pk.123' +
+        `&gpx=${API_URL}projects/1234/tasks/queries/gpx/?tasks=1`,
     );
   });
 
@@ -36,12 +38,20 @@ describe('test if getIdUrl', () => {
       imagery:
         'tms[1,22]:https://api.mapbox.com/styles/v1/tm4/code123/tiles/256/{zoom}/{x}/{y}?access_token=pk.123',
     };
-    expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1], 'https://mapwith.ai/rapid')).toBe(
+    const idUrl = getIdUrl(
+      testProject,
+      [120.25684, -9.663953],
+      18,
+      [1],
+      'https://mapwith.ai/rapid',
+    );
+    const decodedURI = decodeURIComponent(idUrl);
+    expect(decodedURI).toBe(
       'https://mapwith.ai/rapid?' +
         '#map=18/-9.663953/120.25684' +
-        '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
-        '&background=custom:https%3A%2F%2Fapi.mapbox.com%2Fstyles%2Fv1%2Ftm4%2Fcode123%2Ftiles%2F256%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D%3Faccess_token%3Dpk.123' +
-        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
+        '&comment=#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm' +
+        '&background=custom:https://api.mapbox.com/styles/v1/tm4/code123/tiles/256/{z}/{x}/{y}?access_token=pk.123' +
+        `&gpx=${API_URL}projects/1234/tasks/queries/gpx/?tasks=1`,
     );
   });
 
@@ -51,12 +61,14 @@ describe('test if getIdUrl', () => {
       projectId: 1234,
       idPresets: ['building', 'highway', 'natural/water'],
     };
-    expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1])).toBe(
+    const idUrl = getIdUrl(testProject, [120.25684, -9.663953], 18, [1]);
+    const decodedURI = decodeURIComponent(idUrl);
+    expect(decodedURI).toBe(
       'https://www.openhistoricalmap.org/edit?editor=id&' +
         '#map=18/-9.663953/120.25684' +
-        '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
-        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1' +
-        '&presets=building%2Chighway%2Cnatural%2Fwater',
+        '&comment=#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm' +
+        `&gpx=${API_URL}projects/1234/tasks/queries/gpx/?tasks=1` +
+        '&presets=building,highway,natural/water',
     );
   });
 
@@ -79,11 +91,13 @@ describe('test if getIdUrl', () => {
       changesetComment: '#hotosm-project-5522',
       projectId: 1234,
     };
-    expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1, 2])).toBe(
+    const idUrl = getIdUrl(testProject, [120.25684, -9.663953], 18, [1, 2]);
+    const decodedURI = decodeURIComponent(idUrl);
+    expect(decodedURI).toBe(
       'https://www.openhistoricalmap.org/edit?editor=id&' +
         '#map=18/-9.663953/120.25684' +
-        '&comment=%23hotosm-project-5522' +
-        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1%2C2',
+        '&comment=#hotosm-project-5522' +
+        `&gpx=${API_URL}projects/1234/tasks/queries/gpx/?tasks=1,2`,
     );
   });
 
@@ -93,12 +107,14 @@ describe('test if getIdUrl', () => {
       projectId: 1234,
       imagery: 'Maxar-Premium',
     };
-    expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1, 2])).toBe(
+    const idUrl = getIdUrl(testProject, [120.25684, -9.663953], 18, [1, 2]);
+    const decodedURI = decodeURIComponent(idUrl);
+    expect(decodedURI).toBe(
       'https://www.openhistoricalmap.org/edit?editor=id&' +
         '#map=18/-9.663953/120.25684' +
-        '&comment=%23hotosm-project-5522' +
+        '&comment=#hotosm-project-5522' +
         '&background=Maxar-Premium' +
-        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1%2C2',
+        `&gpx=${API_URL}projects/1234/tasks/queries/gpx/?tasks=1,2`,
     );
   });
 });

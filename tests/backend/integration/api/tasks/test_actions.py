@@ -1,29 +1,28 @@
 from unittest.mock import patch
+
 from backend.models.postgis.statuses import (
-    TaskStatus,
+    MappingLevel,
     MappingNotAllowed,
     ProjectStatus,
+    TaskStatus,
     ValidatingNotAllowed,
     ValidationPermission,
-    MappingLevel,
 )
-
+from backend.models.postgis.task import Task, TaskAction
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
 from backend.services.users.user_service import UserService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    create_canned_project,
-    return_canned_user,
-    generate_encoded_token,
     create_canned_license,
+    create_canned_project,
+    generate_encoded_token,
+    return_canned_user,
 )
 from tests.backend.integration.api.users.test_resources import (
-    USER_NOT_FOUND_SUB_CODE,
     USER_NOT_FOUND_MESSAGE,
+    USER_NOT_FOUND_SUB_CODE,
 )
-from backend.models.postgis.task import Task, TaskAction
-
 
 PROJECT_NOT_FOUND_SUB_CODE = "PROJECT_NOT_FOUND"
 TASK_NOT_FOUND_SUB_CODE = "TASK_NOT_FOUND"

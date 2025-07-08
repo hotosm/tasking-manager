@@ -33,7 +33,6 @@ export const ORG_LOGO = process.env.REACT_APP_ORG_LOGO || '';
 export const HOMEPAGE_IMG_HIGH = process.env.REACT_APP_HOMEPAGE_IMG_HIGH || '';
 export const HOMEPAGE_IMG_LOW = process.env.REACT_APP_HOMEPAGE_IMG_LOW || '';
 export const OSM_CLIENT_ID = process.env.REACT_APP_OSM_CLIENT_ID || '';
-export const OSM_CLIENT_SECRET = process.env.REACT_APP_OSM_CLIENT_SECRET || '';
 export const OSM_REDIRECT_URI = process.env.REACT_APP_OSM_REDIRECT_URI || '';
 export const ORG_PRIVACY_POLICY_URL = process.env.REACT_APP_ORG_PRIVACY_POLICY_URL || '';
 export const OSM_REGISTER_URL =
@@ -68,6 +67,7 @@ export const RAPID_EDITOR_URL =
   process.env.REACT_APP_RAPID_EDITOR_URL || 'https://mapwith.ai/rapid';
 export const EXPORT_TOOL_S3_URL = process.env.REACT_APP_EXPORT_TOOL_S3_URL || '';
 export const ENABLE_EXPORT_TOOL = process.env.REACT_APP_ENABLE_EXPORT_TOOL || '';
+export const DEFAULT_VALIDATOR_TEAM_ID = process.env.REACT_APP_DEFAULT_VALIDATOR_TEAM_ID || null;
 
 export const TASK_COLOURS = {
   READY: '#fff',
@@ -180,8 +180,6 @@ export const MAP_STYLE = MAPBOX_TOKEN
   : BASEMAP_OPTIONS[1].value;
 export const MAPBOX_RTL_PLUGIN_URL =
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';
-
-export const UNDERPASS_URL = process.env.REACT_APP_UNDERPASS_URL || 'https://underpass.hotosm.org';
 
 export const DROPZONE_SETTINGS = {
   accept: {

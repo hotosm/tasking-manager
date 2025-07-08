@@ -1,9 +1,9 @@
+from backend.services.project_service import ProjectService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_project,
     generate_encoded_token,
 )
-from backend.services.project_service import ProjectService
 
 
 class TestValidateProjectFavouritedAPI(BaseTestCase):

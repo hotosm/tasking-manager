@@ -1,388 +1,445 @@
-from distutils.util import strtobool
-from flask_restful import Resource, current_app, request
-from schematics.exceptions import DataError
+from databases import Database
+from fastapi import APIRouter, Depends, Request, Query, Path
+from fastapi.responses import JSONResponse
+from loguru import logger
 
-from backend.models.dtos.user_dto import UserSearchQuery
-from backend.services.users.authentication_service import token_auth
-from backend.services.users.user_service import UserService
+from backend.db import get_db
+from backend.models.dtos.user_dto import AuthUserDTO, UserSearchQuery
 from backend.services.project_service import ProjectService
+from backend.services.users.authentication_service import login_required
+from backend.services.users.user_service import UserService
+
+router = APIRouter(
+    prefix="/users",
+    tags=["users"],
+    responses={404: {"description": "Not found"}},
+)
 
 
-class UsersRestAPI(Resource):
-    @token_auth.login_required
-    def get(self, user_id):
-        """
-        Get user information by id
-        ---
-        tags:
-          - users
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: user_id
-              in: path
-              description: The id of the user
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: User found
-            401:
-                description: Unauthorized - Invalid credentials
-            404:
-                description: User not found
-            500:
-                description: Internal Server Error
-        """
-        user_dto = UserService.get_user_dto_by_id(user_id, token_auth.current_user())
-        return user_dto.to_primitive(), 200
+@router.get("/{user_id}/")
+async def get_user(
+    request: Request,
+    user_id: int,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
+    """
+    Get user information by id
+    ---
+    tags:
+      - users
+    produces:
+      - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: user_id
+          in: path
+          description: The id of the user
+          required: true
+          type: integer
+          default: 1
+    responses:
+        200:
+            description: User found
+        401:
+            description: Unauthorized - Invalid credentials
+        404:
+            description: User not found
+        500:
+            description: Internal Server Error
+    """
+    user_dto = await UserService.get_user_dto_by_id(user_id, user.id, db)
+    return user_dto
 
 
-class UsersAllAPI(Resource):
-    @token_auth.login_required
-    def get(self):
-        """
-        Get paged list of all usernames
-        ---
-        tags:
-          - users
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded sesesion token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - in: query
-              name: page
-              description: Page of results user requested
-              type: integer
-            - in: query
-              name: pagination
-              description: Whether to return paginated results
-              type: boolean
-              default: true
-            - in: query
-              name: per_page
-              description: Number of results per page
-              type: integer
-              default: 20
-            - in: query
-              name: username
-              description: Full or part username
-              type: string
-            - in: query
-              name: role
-              description: Role of User, eg ADMIN, PROJECT_MANAGER
-              type: string
-            - in: query
-              name: level
-              description: Level of User, eg BEGINNER
-              type: string
-        responses:
-            200:
-                description: Users found
-            401:
-                description: Unauthorized - Invalid credentials
-            500:
-                description: Internal Server Error
-        """
-        try:
-            query = UserSearchQuery()
-            query.pagination = strtobool(request.args.get("pagination", "True"))
-            if query.pagination:
-                query.page = (
-                    int(request.args.get("page")) if request.args.get("page") else 1
-                )
-            query.per_page = request.args.get("perPage", 20)
-            query.username = request.args.get("username")
-            query.mapping_level = request.args.get("level")
-            query.role = request.args.get("role")
-            query.validate()
-        except DataError as e:
-            current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to fetch user list", "SubCode": "InvalidData"}, 400
-
-        users_dto = UserService.get_all_users(query)
-        return users_dto.to_primitive(), 200
-
-
-class UsersQueriesUsernameAPI(Resource):
-    @token_auth.login_required
-    def get(self, username):
-        """
-        Get user information by OpenStreetMap username
-        ---
-        tags:
-          - users
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: username
-              in: path
-              description: Mapper's OpenStreetMap username
-              required: true
-              type: string
-              default: Thinkwhere
-        responses:
-            200:
-                description: User found
-            401:
-                description: Unauthorized - Invalid credentials
-            404:
-                description: User not found
-            500:
-                description: Internal Server Error
-        """
-        user_dto = UserService.get_user_dto_by_username(
-            username, token_auth.current_user()
+@router.get("/")
+async def list_users(
+    page: int = Query(1, description="Page of results user requested"),
+    pagination: bool = Query(True, description="Whether to return paginated results"),
+    per_page: int = Query(
+        20, alias="perPage", description="Number of results per page"
+    ),
+    username: str | None = Query(None, description="Full or part username"),
+    role: str | None = Query(
+        None, description="Role of User, e.g. ADMIN, PROJECT_MANAGER"
+    ),
+    level: str | None = Query(None, description="Level of User, e.g. BEGINNER"),
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
+    """
+    Get paged list of all usernames
+    ---
+    tags:
+      - users
+    produces:
+      - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded sesesion token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - in: query
+          name: page
+          description: Page of results user requested
+          type: integer
+        - in: query
+          name: pagination
+          description: Whether to return paginated results
+          type: boolean
+          default: true
+        - in: query
+          name: per_page
+          description: Number of results per page
+          type: integer
+          default: 20
+        - in: query
+          name: username
+          description: Full or part username
+          type: string
+        - in: query
+          name: role
+          description: Role of User, eg ADMIN, PROJECT_MANAGER
+          type: string
+        - in: query
+          name: level
+          description: Level of User, eg BEGINNER
+          type: string
+    responses:
+        200:
+            description: Users found
+        401:
+            description: Unauthorized - Invalid credentials
+        500:
+            description: Internal Server Error
+    """
+    try:
+        query = UserSearchQuery(
+            pagination=pagination,
+            page=page if pagination else None,
+            per_page=per_page,
+            username=username,
+            mapping_level=level,
+            role=role,
         )
-        return user_dto.to_primitive(), 200
-
-
-class UsersQueriesUsernameFilterAPI(Resource):
-    @token_auth.login_required
-    def get(self, username):
-        """
-        Get paged lists of users matching OpenStreetMap username filter
-        ---
-        tags:
-          - users
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: username
-              in: path
-              description: Mapper's partial or full OpenStreetMap username
-              type: string
-              default: ab
-            - in: query
-              name: page
-              description: Page of results user requested
-              type: integer
-            - in: query
-              name: projectId
-              description: Optional, promote project participants to head of results
-              type: integer
-        responses:
-            200:
-                description: Users found
-            401:
-                description: Unauthorized - Invalid credentials
-            404:
-                description: User not found
-            500:
-                description: Internal Server Error
-        """
-        page = int(request.args.get("page")) if request.args.get("page") else 1
-        project_id = request.args.get("projectId", None, int)
-        users_dto = UserService.filter_users(username, project_id, page)
-        return users_dto.to_primitive(), 200
-
-
-class UsersQueriesOwnLockedAPI(Resource):
-    @token_auth.login_required
-    def get(self):
-        """
-        Gets any locked task on the project for the logged in user
-        ---
-        tags:
-            - mapping
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-        responses:
-            200:
-                description: Task user is working on
-            401:
-                description: Unauthorized - Invalid credentials
-            404:
-                description: User is not working on any tasks
-            500:
-                description: Internal Server Error
-        """
-        locked_tasks = ProjectService.get_task_for_logged_in_user(
-            token_auth.current_user()
+    except Exception as e:
+        logger.error(f"Error validating request: {str(e)}")
+        return JSONResponse(
+            content={"Error": "Unable to fetch user list", "SubCode": "InvalidData"},
+            status_code=400,
         )
-        return locked_tasks.to_primitive(), 200
+    users_dto = await UserService.get_all_users(query, db)
+    return users_dto
 
 
-class UsersQueriesOwnLockedDetailsAPI(Resource):
-    @token_auth.login_required
-    def get(self):
-        """
-        Gets details of any locked task for the logged in user
-        ---
-        tags:
-            - mapping
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - in: header
-              name: Accept-Language
-              description: Language user is requesting
-              type: string
-              required: true
-              default: en
-        responses:
-            200:
-                description: Task user is working on
-            401:
-                description: Unauthorized - Invalid credentials
-            404:
-                description: User is not working on any tasks
-            500:
-                description: Internal Server Error
-        """
-        preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-        locked_tasks = ProjectService.get_task_details_for_logged_in_user(
-            token_auth.current_user(), preferred_locale
-        )
-        return locked_tasks.to_primitive(), 200
+@router.get("/queries/favorites/")
+async def get_user_favorite_projects(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
+    """
+    Get projects favorited by a user
+    ---
+    tags:
+      - favorites
+    produces:
+      - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+    responses:
+        200:
+            description: Projects favorited by user
+        404:
+            description: User not found
+        500:
+            description: Internal Server Error
+    """
+    favs_dto = await UserService.get_projects_favorited(user.id, db)
+    return favs_dto
 
 
-class UsersQueriesFavoritesAPI(Resource):
-    @token_auth.login_required
-    def get(self):
-        """
-        Get projects favorited by a user
-        ---
-        tags:
-          - favorites
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-        responses:
-            200:
-                description: Projects favorited by user
-            404:
-                description: User not found
-            500:
-                description: Internal Server Error
-        """
-        favs_dto = UserService.get_projects_favorited(token_auth.current_user())
-        return favs_dto.to_primitive(), 200
+@router.get("/queries/{username}/")
+async def get_osm_user_info(
+    request: Request,
+    username: str,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
+    """
+    Get user information by OpenStreetMap username
+    ---
+    tags:
+      - users
+    produces:
+      - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: username
+          in: path
+          description: Mapper's OpenStreetMap username
+          required: true
+          type: string
+          default: Thinkwhere
+    responses:
+        200:
+            description: User found
+        401:
+            description: Unauthorized - Invalid credentials
+        404:
+            description: User not found
+        500:
+            description: Internal Server Error
+    """
+    user_dto = await UserService.get_user_dto_by_username(username, user.id, db)
+    return user_dto
 
 
-class UsersQueriesInterestsAPI(Resource):
-    @token_auth.login_required
-    def get(self, username):
-        """
-        Get interests by username
-        ---
-        tags:
-          - interests
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: username
-              in: path
-              description: Mapper's OpenStreetMap username
-              required: true
-              type: string
-        responses:
-            200:
-                description: User interests returned
-            404:
-                description: User not found
-            500:
-                description: Internal Server Error
-        """
-        user = UserService.get_user_by_username(username)
-        interests_dto = UserService.get_interests(user)
-        return interests_dto.to_primitive(), 200
+@router.get("/queries/filter/{username}/")
+async def get_paginated_osm_user_info(
+    username: str = Path(
+        ..., description="Mapper's partial or full OpenStreetMap username"
+    ),
+    page: int = Query(1, description="Page of results user requested"),
+    project_id: int | None = Query(
+        None,
+        alias="projectId",
+        description="Optional, promote project participants to head of results",
+    ),
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
+    """
+    Get paged lists of users matching OpenStreetMap username filter
+    ---
+    tags:
+      - users
+    produces:
+      - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: username
+          in: path
+          description: Mapper's partial or full OpenStreetMap username
+          type: string
+          default: ab
+        - in: query
+          name: page
+          description: Page of results user requested
+          type: integer
+        - in: query
+          name: projectId
+          description: Optional, promote project participants to head of results
+          type: integer
+    responses:
+        200:
+            description: Users found
+        401:
+            description: Unauthorized - Invalid credentials
+        404:
+            description: User not found
+        500:
+            description: Internal Server Error
+    """
+    users_dto = await UserService.filter_users(username, project_id, page, db)
+    return users_dto
 
 
-class UsersRecommendedProjectsAPI(Resource):
-    @token_auth.login_required
-    def get(self, username):
+@router.get("/queries/tasks/locked/")
+async def get_task_locked_by_user(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
+    """
+    Gets any locked task on the project for the logged in user
+    ---
+    tags:
+        - mapping
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+    responses:
+        200:
+            description: Task user is working on
+        401:
+            description: Unauthorized - Invalid credentials
+        404:
+            description: User is not working on any tasks
+        500:
+            description: Internal Server Error
+    """
+    locked_tasks = await ProjectService.get_task_for_logged_in_user(user.id, db)
+    return locked_tasks.model_dump(by_alias=True)
+
+
+@router.get("/queries/tasks/locked/details/")
+async def get_task_details_locked_by_user(
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
+    """
+    Gets details of any locked task for the logged in user
+    ---
+    tags:
+        - mapping
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - in: header
+          name: Accept-Language
+          description: Language user is requesting
+          type: string
+          required: true
+          default: en
+    responses:
+        200:
+            description: Task user is working on
+        401:
+            description: Unauthorized - Invalid credentials
+        404:
+            description: User is not working on any tasks
+        500:
+            description: Internal Server Error
+    """
+    preferred_locale = request.headers.get("accept-language")
+    locked_tasks = await ProjectService.get_task_details_for_logged_in_user(
+        user.id, preferred_locale, db
+    )
+    return locked_tasks.model_dump(by_alias=True)
+
+
+@router.get("/{username}/queries/interests/")
+async def get_user_interests(
+    request: Request,
+    username: str,
+    db: Database = Depends(get_db),
+    request_user: AuthUserDTO = Depends(login_required),
+):
+    """
+    Get interests by username
+    ---
+    tags:
+      - interests
+    produces:
+      - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: username
+          in: path
+          description: Mapper's OpenStreetMap username
+          required: true
+          type: string
+    responses:
+        200:
+            description: User interests returned
+        404:
+            description: User not found
+        500:
+            description: Internal Server Error
+    """
+    query = """
+            SELECT u.id, u.username, array_agg(i.name) AS interests
+            FROM users u
+            LEFT JOIN user_interests ui ON u.id = ui.user_id
+            LEFT JOIN interests i ON ui.interest_id = i.id
+            WHERE u.username = :username
+            GROUP BY u.id, u.username
         """
-        Get recommended projects for a user
-        ---
-        tags:
-          - users
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Accept-Language
-              description: Language user is requesting
-              type: string
-              required: true
-              default: en
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: username
-              in: path
-              description: Mapper's OpenStreetMap username
-              required: true
-              type: string
-              default: Thinkwhere
-        responses:
-            200:
-                description: Recommended projects found
-            401:
-                description: Unauthorized - Invalid credentials
-            403:
-                description: Forbidden
-            404:
-                description: No recommended projects found
-            500:
-                description: Internal Server Error
-        """
-        locale = (
-            request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            if request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            else "en"
-        )
-        user_dto = UserService.get_recommended_projects(username, locale)
-        return user_dto.to_primitive(), 200
+    user = await db.fetch_one(query, {"username": username})
+    interests_dto = await UserService.get_interests(user, db)
+    return interests_dto
+
+
+@router.get("/{username}/recommended-projects/")
+async def get_recommended_projects(
+    request: Request,
+    username,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
+    """
+    Get recommended projects for a user
+    ---
+    tags:
+      - users
+    produces:
+      - application/json
+    parameters:
+        - in: header
+          name: Accept-Language
+          description: Language user is requesting
+          type: string
+          required: true
+          default: en
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: username
+          in: path
+          description: Mapper's OpenStreetMap username
+          required: true
+          type: string
+          default: Thinkwhere
+    responses:
+        200:
+            description: Recommended projects found
+        401:
+            description: Unauthorized - Invalid credentials
+        403:
+            description: Forbidden
+        404:
+            description: No recommended projects found
+        500:
+            description: Internal Server Error
+    """
+    locale = (
+        request.headers.get("accept-language")
+        if request.headers.get("accept-language")
+        else "en"
+    )
+    user_dto = await UserService.get_recommended_projects(username, locale, db)
+    return user_dto.model_dump(by_alias=True)

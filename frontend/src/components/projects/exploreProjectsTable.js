@@ -2,10 +2,8 @@ import { Link } from 'react-router-dom';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import { FormattedMessage } from 'react-intl';
 import { formatDistance } from 'date-fns';
-import { Tooltip } from 'react-tooltip';
 import PropTypes from 'prop-types';
 
-import { ProgressBar } from '../progressBar';
 import { PriorityBox } from '../projectCard/priorityBox';
 import messages from './messages';
 import { CircleExclamationIcon } from '../svgIcons';
@@ -51,55 +49,22 @@ const COLUMNS = [
     ),
   },
   {
-    accessorKey: 'progress',
+    accessorKey: 'percentMapped',
+    minSize: 130,
     header: () => (
       <span>
-        <FormattedMessage {...messages.progressColumn} />
+        <FormattedMessage {...messages.percentMapped} />
       </span>
     ),
-    minSize: 130,
-    cell: ({ row }) => {
-      const tooltipContent = (
-        <div>
-          <p className="lh-copy ma0 white f7 fw4">
-            <FormattedMessage
-              {...messages['percentMapped']}
-              values={{ n: <span className="fw8">{row.original.percentMapped}</span> }}
-            />
-          </p>
-          <p className="lh-copy ma0 white f7 fw4">
-            <FormattedMessage
-              {...messages['percentValidated']}
-              values={{ n: <span className="fw8">{row.original.percentValidated}</span> }}
-            />
-          </p>
-        </div>
-      );
-
-      return (
-        <div>
-          <div data-tooltip-id={`project-${row.original.projectId}-progress`}>
-            <ProgressBar
-              firstBarValue={
-                row.original.percentMapped > 0
-                  ? Math.max(8, row.original.percentMapped)
-                  : row.original.percentMapped
-              }
-              secondBarValue={
-                row.original.percentValidated > 0
-                  ? Math.max(8, row.original.percentValidated)
-                  : row.original.percentValidated
-              }
-              height="half"
-              small={false}
-            />
-          </div>
-          <Tooltip id={`project-${row.original.projectId}-progress`} className="z-3">
-            {tooltipContent}
-          </Tooltip>
-        </div>
-      );
-    },
+  },
+  {
+    accessorKey: 'percentValidated',
+    minSize: 137,
+    header: () => (
+      <span>
+        <FormattedMessage {...messages.percentValidated} />
+      </span>
+    ),
   },
   {
     accessorKey: 'totalContributors',
@@ -162,7 +127,7 @@ const COLUMNS = [
       </span>
     ),
     cell: ({ row }) => {
-      if (!row.original?.country[0]) return null;
+      if (!row.original?.country?.[0]) return null;
       return <span title={row.original.country[0]}>{row.original.country[0]}</span>;
     },
   },

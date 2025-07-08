@@ -1,14 +1,14 @@
-""" Ensure Project's country names are in English
+"""Ensure Project's country names are in English
 
 Revision ID: 7937dae319b5
 Revises: 14842761654b
 Create Date: 2020-09-21 17:17:10.542429
 
 """
-from alembic import op
-import sqlalchemy as sa
-import requests
 
+import requests
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "7937dae319b5"

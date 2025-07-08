@@ -1,19 +1,20 @@
 from unittest.mock import patch
-from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import (
-    return_canned_organisation,
-    generate_encoded_token,
-    create_canned_user,
-    return_canned_user,
-    create_canned_team,
-    add_user_to_team,
-)
+
+from backend.exceptions import get_message_from_sub_code
 from backend.models.postgis.statuses import (
-    UserRole,
     TeamJoinMethod,
     TeamMemberFunctions,
+    UserRole,
 )
-from backend.exceptions import get_message_from_sub_code
+from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import (
+    add_user_to_team,
+    create_canned_team,
+    create_canned_user,
+    generate_encoded_token,
+    return_canned_organisation,
+    return_canned_user,
+)
 
 TEST_ADMIN_USERNAME = "Test Admin"
 TEST_MESSAGE = "This is a test message"

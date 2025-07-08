@@ -5,7 +5,7 @@ import { gpx } from '@tmcw/togeojson';
 import * as iD from '@openhistoricalmap/id';
 import '@openhistoricalmap/id/dist/iD.css';
 
-import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
+import { OSM_CLIENT_ID, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 import messages from './messages';
 
 export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }) {
@@ -99,7 +99,6 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
       var auth = {
         url: OSM_SERVER_URL,
         client_id: OSM_CLIENT_ID,
-        client_secret: OSM_CLIENT_SECRET,
         redirect_uri: OSM_REDIRECT_URI,
         access_token: session.osm_oauth_token,
       };

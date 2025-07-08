@@ -129,10 +129,9 @@ export function TaskSelection({ project }: Object) {
   // use route instead of local state for active tab states
   const setActiveSection = useCallback(
     (section) => {
-      if (!!textSearch) return; // if search param not present, do not set active section
       navigate(`/projects/${projectId}/${section}`);
     },
-    [navigate, projectId, textSearch],
+    [navigate, projectId],
   );
 
   // remove history location state since react-router-dom persists state on reload
@@ -169,8 +168,8 @@ export function TaskSelection({ project }: Object) {
       const lockedByCurrentUser = activities.activity
         .filter((i) => i.taskStatus.startsWith('LOCKED_FOR_'))
         .filter((i) => i.actionBy === user.username);
+      const userLockedTasks = lockedByCurrentUser.map((i) => i.taskId);
       if (lockedByCurrentUser.length) {
-        const userLockedTasks = lockedByCurrentUser.map((i) => i.taskId);
         setSelectedTasks(userLockedTasks);
         setTaskAction(
           lockedByCurrentUser[0].taskStatus === 'LOCKED_FOR_MAPPING'
@@ -195,6 +194,7 @@ export function TaskSelection({ project }: Object) {
           setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
         }
       }
+      dispatch({ type: 'SET_LOCKED_TASKS', tasks: userLockedTasks });
       setMapInit(true);
     }
   }, [

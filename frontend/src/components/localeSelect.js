@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import Select from 'react-select';
 
 import messages from './messages';
-import { supportedLocales } from '../utils/internationalization';
+import { useFetch } from '../hooks/UseFetch';
 import { setLocale } from '../store/actions/userPreferences';
 
 function LocaleSelect({
@@ -13,21 +13,29 @@ function LocaleSelect({
   removeBorder = true,
   fullWidth = false,
 }) {
+  const [errorLanguages, loadingLanguages, languages] = useFetch('system/languages/');
+
+  const supportedLanguages =
+    !errorLanguages && !loadingLanguages ? languages.supportedLanguages : [];
+
   const onLocaleSelect = (arr) => {
-    setLocale(arr[0].value);
+    setLocale(arr[0].code);
   };
 
   const getActiveLanguageNames = () => {
     const locales = [userPreferences.locale, navigator.language, navigator.language.substr(0, 2)];
     let supportedLocaleNames = [];
     locales.forEach((locale) =>
-      supportedLocales
-        .filter((i) => i.value === locale)
+      supportedLanguages
+        .filter((i) => i.code === locale)
         .forEach((i) => supportedLocaleNames.push(i)),
     );
 
-    return supportedLocaleNames.length ? supportedLocaleNames[0].value : 'en';
+    return supportedLocaleNames.length ? supportedLocaleNames[0].code : 'en';
   };
+
+  // wait till supportedLanguages are fetched
+  if (!supportedLanguages.length) return <></>;
 
   return (
     <div className={`settings-width ml-auto ${className || ''}`}>
@@ -37,7 +45,10 @@ function LocaleSelect({
           control: (baseStyles, state) => ({
             ...baseStyles,
             border: removeBorder ? 'none' : 'auto',
-            width: fullWidth ? '100%' : `${8 * state.getValue()[0].label.length + 60}px`,
+            width:
+              fullWidth || !supportedLanguages.length
+                ? '100%'
+                : `${8 * state.getValue()[0].language.length + 60}px`,
             marginLeft: 'auto',
           }),
           menu: (baseStyles) => ({
@@ -45,11 +56,11 @@ function LocaleSelect({
             zIndex: 6,
           }),
         }}
-        getOptionLabel={({ label }) => label}
+        getOptionLabel={({ language }) => language}
         onChange={(e) => onLocaleSelect([e])}
-        options={supportedLocales}
+        options={supportedLanguages}
         placeholder={<FormattedMessage {...messages.language} />}
-        value={supportedLocales.find((editor) => editor.value === getActiveLanguageNames())}
+        value={supportedLanguages.find((editor) => editor.code === getActiveLanguageNames())}
       />
     </div>
   );

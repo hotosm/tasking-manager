@@ -1,32 +1,39 @@
-import geojson
 import json
-from backend import db
+
+import geojson
+from databases import Database
 from geoalchemy2 import Geometry
-from backend.models.postgis.utils import InvalidGeoJson, ST_SetSRID, ST_GeomFromGeoJSON
+from sqlalchemy import Column, ForeignKey, Integer, Table
+
+from backend.db import Base
+from backend.models.postgis.utils import InvalidGeoJson
 
 # Priority areas aren't shared, however, this arch was taken from TM2 to ease data migration
-project_priority_areas = db.Table(
+project_priority_areas = Table(
     "project_priority_areas",
-    db.metadata,
-    db.Column("project_id", db.Integer, db.ForeignKey("projects.id")),
-    db.Column("priority_area_id", db.Integer, db.ForeignKey("priority_areas.id")),
+    Base.metadata,
+    Column("project_id", Integer, ForeignKey("projects.id")),
+    Column("priority_area_id", Integer, ForeignKey("priority_areas.id")),
 )
 
 
-class PriorityArea(db.Model):
+class PriorityArea(Base):
     """Describes an individual priority area"""
 
     __tablename__ = "priority_areas"
 
-    id = db.Column(db.Integer, primary_key=True)
-    geometry = db.Column(Geometry("POLYGON", srid=4326))
+    id = Column(Integer, primary_key=True)
+    geometry = Column(Geometry("POLYGON", srid=4326))
 
     @classmethod
-    def from_dict(cls, area_poly: dict):
-        """Create a new Priority Area from dictionary"""
+    async def from_dict(cls, area_poly: dict, db: Database):
+        """Create a new Priority Area from dictionary and insert into the database."""
+
+        # Load GeoJSON from the dictionary
         pa_geojson = geojson.loads(json.dumps(area_poly))
 
-        if type(pa_geojson) is not geojson.Polygon:
+        # Ensure it's a valid Polygon
+        if not isinstance(pa_geojson, geojson.Polygon):
             raise InvalidGeoJson("Priority Areas must be supplied as Polygons")
 
         if not pa_geojson.is_valid:
@@ -34,13 +41,36 @@ class PriorityArea(db.Model):
                 "Priority Area: Invalid Polygon - " + ", ".join(pa_geojson.errors())
             )
 
-        pa = cls()
+        # Convert the GeoJSON into WKT format using a raw SQL query
         valid_geojson = geojson.dumps(pa_geojson)
-        pa.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
-        return pa
+        geo_query = """
+        SELECT ST_AsText(
+            ST_SetSRID(
+                ST_GeomFromGeoJSON(:geojson), 4326
+            )
+        ) AS geometry_wkt;
+        """
+        result = await db.fetch_one(query=geo_query, values={"geojson": valid_geojson})
+        geometry_wkt = result["geometry_wkt"] if result else None
 
-    def get_as_geojson(self):
-        """Helper to translate geometry back to a GEOJson Poly"""
-        with db.engine.connect() as conn:
-            pa_geojson = conn.execute(self.geometry.ST_AsGeoJSON()).scalar()
-        return geojson.loads(pa_geojson)
+        if not geometry_wkt:
+            raise InvalidGeoJson("Failed to create geometry from the given GeoJSON")
+
+        # Insert the new Priority Area into the database and return the inserted ID
+        insert_query = """
+        INSERT INTO priority_areas (geometry)
+        VALUES (ST_GeomFromText(:geometry, 4326))
+        RETURNING id;
+        """
+        insert_result = await db.fetch_one(
+            query=insert_query, values={"geometry": geometry_wkt}
+        )
+
+        if insert_result:
+            # Assign the ID and geometry to the PriorityArea object
+            pa = cls()
+            pa.id = insert_result["id"]
+            pa.geometry = geometry_wkt
+            return pa
+        else:
+            raise Exception("Failed to insert Priority Area")

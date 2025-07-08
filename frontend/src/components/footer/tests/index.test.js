@@ -119,7 +119,7 @@ describe('Footer', () => {
       screen.getByRole('link', {
         name: messages.learn.defaultMessage,
       }),
-    ).toHaveAttribute('href', 'https://osm.org/about');
+    ).toHaveAttribute('href', 'https://www.openhistoricalmap.org/about');
   });
 
   it('should not display foooter for specified URLs', () => {

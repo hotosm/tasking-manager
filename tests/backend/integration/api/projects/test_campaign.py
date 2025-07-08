@@ -1,12 +1,12 @@
-from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import (
-    return_canned_campaign,
-    create_canned_project,
-    return_canned_user,
-    generate_encoded_token,
-)
 from backend.models.dtos.campaign_dto import CampaignProjectDTO
 from backend.services.campaign_service import CampaignService
+from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import (
+    create_canned_project,
+    generate_encoded_token,
+    return_canned_campaign,
+    return_canned_user,
+)
 
 
 class TestGetProjectsCampaignsAPI(BaseTestCase):

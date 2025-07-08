@@ -5,10 +5,11 @@ Revises: c40e1fdf6b70
 Create Date: 2020-01-29 11:19:20.113089
 
 """
-from alembic import op
-import sqlalchemy as sa
+
 import sys
 
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "7bbc01082457"

@@ -77,7 +77,7 @@ export const ProjectHeader = ({ project, showEditLink }: Object) => {
 export function TagLine({ campaigns = [], countries = [], interests = [] }: Object) {
   const locale = useSelector((state) => state.preferences.locale);
   const formattedCampaigns = campaigns.map((campaign) => campaign.name).join(', ');
-  const formattedCountries = locale.includes('en') ? countries.join(', ') : countries;
+  const formattedCountries = locale.includes('en') ? countries?.join(', ') : countries;
   const formattedInterests = interests.map((interest) => interest.name).join(', ');
   // Remove empty formatted strings
   const tags = [formattedCampaigns, formattedCountries, formattedInterests].filter((n) => n);

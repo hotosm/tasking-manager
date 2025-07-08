@@ -1,0 +1,105 @@
+name: Terragrunt Plan and Apply
+
+on:
+  workflow_dispatch:
+    inputs:
+      module_path:
+        description: "Select Terragrunt Module to run"
+        required: true
+        type: choice
+        default: purgeable/ecs/
+        options:
+          - purgeable/ecs/
+          - purgeable/ecs-cron/
+          - non-purgeable/vpc/
+          - non-purgeable/extras/
+
+jobs:
+  get_deployment_meta:
+    name: Get Deployment Meta
+    runs-on: ubuntu-latest
+    outputs:
+      INFRA_ENV_NAME: ${{ steps.export_meta.outputs.INFRA_ENV_NAME }}
+      INFRA_BRANCH_NAME: ${{ steps.export_meta.outputs.INFRA_BRANCH_NAME }}
+      INFRA_BRANCH_URL: ${{ steps.export_meta.outputs.INFRA_BRANCH_URL }}
+      PLAN_ID: ${{ steps.export_meta.outputs.PLAN_ID }}
+    steps:
+      - name: Export Deployment Meta
+        id: export_meta
+        shell: bash
+        run: |
+          case "${{ github.ref }}" in
+          refs/heads/develop)
+            export INFRA_ENV_NAME=develop
+            export INFRA_BRANCH_NAME=develop
+            export INFRA_BRANCH_URL=https://tasks-dev.hotosm.org
+            ;;
+          refs/heads/staging)
+            export INFRA_ENV_NAME=staging
+            export INFRA_BRANCH_NAME=staging
+            export INFRA_BRANCH_URL=https://tasks-stage.hotosm.org
+            ;;
+          refs/heads/main)
+            export INFRA_ENV_NAME=main
+            export INFRA_BRANCH_NAME=production
+            export INFRA_BRANCH_URL=https://tasks.hotosm.org
+            ;;
+          esac
+          echo "INFRA_ENV_NAME=${INFRA_ENV_NAME}" >> $GITHUB_OUTPUT
+          echo "INFRA_BRANCH_NAME=${INFRA_BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "INFRA_BRANCH_URL=${INFRA_BRANCH_URL}" >> $GITHUB_OUTPUT
+
+  plan:
+    name: Terragrunt Plan
+    uses: hotosm/gh-workflows/.github/workflows/terragrunt-plan.yml@3.1.2
+    permissions:
+      id-token: write
+      contents: read
+    needs:
+      - get_deployment_meta
+    with:
+      working_dir: ./scripts/aws/infra/${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}/${{ github.event.inputs.module_path }}
+      terraform_version: "1.9.5"
+      terragrunt_version: "0.67.15"
+      aws_region: us-east-1
+      load_env: true
+      environment_name: ${{ needs.get_deployment_meta.outputs.INFRA_ENV_NAME }}
+      environment_url: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_URL }}
+      encrypt_plan_file: true
+    secrets: inherit
+
+  manual_apply_approval:
+    name: Manual Approval for Apply
+    runs-on: ubuntu-latest
+    needs:
+      - plan
+      - get_deployment_meta
+    if: ${{ success() }}
+    environment:
+      name: ${{ needs.get_deployment_meta.outputs.INFRA_ENV_NAME }}-approval
+      url: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_URL }}
+    steps:
+      - name: Manual approval step
+        run: echo "Plan approved manually, proceeding to apply"
+
+  manual_apply:
+    name: Terragrunt Apply After Manual Approval
+    uses: hotosm/gh-workflows/.github/workflows/terragrunt-apply.yml@3.1.2
+    permissions:
+      id-token: write
+      contents: read
+    needs:
+      - get_deployment_meta
+      - manual_apply_approval
+    with:
+      working_dir: ./scripts/aws/infra/${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_NAME }}/${{ github.event.inputs.module_path }}
+      terraform_version: "1.9.5"
+      terragrunt_version: "0.67.15"
+      aws_region: us-east-1
+      load_env: true
+      plan_file_name: ${{ github.event.repository.name }}-${{ github.run_id }}-${{github.run_attempt}}
+      use_gh_artifacts: true
+      environment_name: ${{ needs.get_deployment_meta.outputs.INFRA_ENV_NAME }}
+      environment_url: ${{ needs.get_deployment_meta.outputs.INFRA_BRANCH_URL }}
+      decrypt_plan_file: true
+    secrets: inherit

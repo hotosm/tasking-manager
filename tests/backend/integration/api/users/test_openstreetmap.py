@@ -1,11 +1,11 @@
 from unittest.mock import patch
 
+from backend.services.users.osm_service import OSMService, OSMServiceError, UserOSMDTO
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
-    return_canned_user,
     generate_encoded_token,
+    return_canned_user,
 )
-from backend.services.users.osm_service import OSMServiceError, OSMService, UserOSMDTO
 
 TEST_USERNAME = "testuser"
 TEST_USER_ID = 111111

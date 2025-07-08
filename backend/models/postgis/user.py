@@ -1,112 +1,133 @@
 import geojson
-from backend import db
-from sqlalchemy import desc, func
-from geoalchemy2 import functions
+from databases import Database
+from sqlalchemy import (
+    ARRAY,
+    BigInteger,
+    Boolean,
+    Column,
+    DateTime,
+    Integer,
+    String,
+    delete,
+    insert,
+    update,
+)
+from sqlalchemy.orm import relationship
 
+from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.user_dto import (
-    UserDTO,
-    UserMappedProjectsDTO,
-    MappedProject,
-    UserFilterDTO,
-    Pagination,
-    UserSearchQuery,
-    UserSearchDTO,
-    ProjectParticipantUser,
     ListedUser,
+    MappedProject,
+    Pagination,
+    ProjectParticipantUser,
+    UserDTO,
+    UserFilterDTO,
+    UserMappedProjectsDTO,
+    UserSearchDTO,
+    UserSearchQuery,
 )
+from backend.models.postgis.interests import Interest, user_interests
 from backend.models.postgis.licenses import License, user_licenses_table
 from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.statuses import (
     MappingLevel,
     ProjectStatus,
-    UserRole,
     UserGender,
+    UserRole,
 )
 from backend.models.postgis.utils import timestamp
-from backend.models.postgis.interests import Interest, user_interests
 
 
-class User(db.Model):
+class User(Base):
     """Describes the history associated with a task"""
 
     __tablename__ = "users"
 
-    id = db.Column(db.BigInteger, primary_key=True, index=True)
-    username = db.Column(db.String, unique=True)
-    role = db.Column(db.Integer, default=0, nullable=False)
-    mapping_level = db.Column(db.Integer, default=1, nullable=False)
-    tasks_mapped = db.Column(db.Integer, default=0, nullable=False)
-    tasks_validated = db.Column(db.Integer, default=0, nullable=False)
-    tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
-    projects_mapped = db.Column(db.ARRAY(db.Integer))
-    email_address = db.Column(db.String)
-    is_email_verified = db.Column(db.Boolean, default=False)
-    is_expert = db.Column(db.Boolean, default=False)
-    twitter_id = db.Column(db.String)
-    facebook_id = db.Column(db.String)
-    linkedin_id = db.Column(db.String)
-    slack_id = db.Column(db.String)
-    skype_id = db.Column(db.String)
-    irc_id = db.Column(db.String)
-    name = db.Column(db.String)
-    city = db.Column(db.String)
-    country = db.Column(db.String)
-    picture_url = db.Column(db.String)
-    gender = db.Column(db.Integer)
-    self_description_gender = db.Column(db.String)
-    default_editor = db.Column(db.String, default="ID", nullable=False)
-    mentions_notifications = db.Column(db.Boolean, default=True, nullable=False)
-    projects_comments_notifications = db.Column(
-        db.Boolean, default=False, nullable=False
-    )
-    projects_notifications = db.Column(db.Boolean, default=True, nullable=False)
-    tasks_notifications = db.Column(db.Boolean, default=True, nullable=False)
-    tasks_comments_notifications = db.Column(db.Boolean, default=False, nullable=False)
-    teams_announcement_notifications = db.Column(
-        db.Boolean, default=True, nullable=False
-    )
-    date_registered = db.Column(db.DateTime, default=timestamp)
+    id = Column(BigInteger, primary_key=True, index=True)
+    username = Column(String, unique=True)
+    role = Column(Integer, default=0, nullable=False)
+    mapping_level = Column(Integer, default=1, nullable=False)
+    tasks_mapped = Column(Integer, default=0, nullable=False)
+    tasks_validated = Column(Integer, default=0, nullable=False)
+    tasks_invalidated = Column(Integer, default=0, nullable=False)
+    projects_mapped = Column(ARRAY(Integer))
+    email_address = Column(String)
+    is_email_verified = Column(Boolean, default=False)
+    is_expert = Column(Boolean, default=False)
+    twitter_id = Column(String)
+    facebook_id = Column(String)
+    linkedin_id = Column(String)
+    slack_id = Column(String)
+    skype_id = Column(String)
+    irc_id = Column(String)
+    name = Column(String)
+    city = Column(String)
+    country = Column(String)
+    picture_url = Column(String)
+    gender = Column(Integer)
+    self_description_gender = Column(String)
+    default_editor = Column(String, default="ID", nullable=False)
+    mentions_notifications = Column(Boolean, default=True, nullable=False)
+    projects_comments_notifications = Column(Boolean, default=False, nullable=False)
+    projects_notifications = Column(Boolean, default=True, nullable=False)
+    tasks_notifications = Column(Boolean, default=True, nullable=False)
+    tasks_comments_notifications = Column(Boolean, default=False, nullable=False)
+    teams_announcement_notifications = Column(Boolean, default=True, nullable=False)
+    date_registered = Column(DateTime, default=timestamp)
     # Represents the date the user last had one of their tasks validated
-    last_validation_date = db.Column(db.DateTime, default=timestamp)
+    last_validation_date = Column(DateTime, default=timestamp)
 
     # Relationships
-    accepted_licenses = db.relationship(
+    accepted_licenses = relationship(
         "License", secondary=user_licenses_table, overlaps="users"
     )
-    interests = db.relationship(Interest, secondary=user_interests, backref="users")
-
-    def create(self):
-        """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
-
-    def save(self):
-        db.session.commit()
+    interests = relationship(Interest, secondary=user_interests, backref="users")
 
     @staticmethod
-    def get_by_id(user_id: int):
-        """Return the user for the specified id, or None if not found"""
-        return db.session.get(User, user_id)
+    async def get_by_id(user_id: int, db: Database):
+        """
+        Return the user for the specified id, or None if not found.
+        :param user_id: ID of the user to retrieve
+        :param db: Database connection
+        :return: User object or None
+        """
+        query = "SELECT * FROM users WHERE id = :user_id"
+        result = await db.fetch_one(query, values={"user_id": user_id})
+        if result is None:
+            return None
+        return User(**result)
 
     @staticmethod
-    def get_by_username(username: str):
+    async def get_by_username(username: str, db: Database):
         """Return the user for the specified username, or None if not found"""
-        return User.query.filter_by(username=username).one_or_none()
+        query = """
+        SELECT * FROM users
+        WHERE username = :username
+        """
+        # Execute the query and fetch the result
+        result = await db.fetch_one(query, values={"username": username})
+        return result if result else None
 
-    def update_username(self, username: str):
+    async def update_username(self, username: str, db: Database):
         """Update the username"""
         self.username = username
-        db.session.commit()
+        await db.execute(
+            "UPDATE users SET username = :username WHERE id = :user_id",
+            values={"user_id": self.id, "username": username},
+        )
 
-    def update_picture_url(self, picture_url: str):
+    async def update_picture_url(self, picture_url: str, db: Database):
         """Update the profile picture"""
         self.picture_url = picture_url
-        db.session.commit()
+        await db.execute(
+            "UPDATE users SET picture_url = :picture_url WHERE id = :user_id",
+            values={"user_id": self.id, "picture_url": picture_url},
+        )
 
-    def update(self, user_dto: UserDTO):
+    async def update(self, user_dto: UserDTO, db: Database):
         """Update the user details"""
-        for attr, value in user_dto.items():
+        for attr, value in user_dto.dict().items():
             if attr == "gender" and value is not None:
                 value = UserGender[value].value
 
@@ -121,225 +142,280 @@ class User(db.Model):
 
         if user_dto.gender != UserGender.SELF_DESCRIBE.name:
             self.self_description_gender = None
-        db.session.commit()
 
-    def set_email_verified_status(self, is_verified: bool):
+        # Create a dictionary for updating fields in the database
+        update_fields = {
+            attr: getattr(self, attr)
+            for attr in self.__dict__
+            if attr in self.__table__.columns
+        }
+
+        await db.execute(update(User).where(User.id == self.id).values(**update_fields))
+
+    async def set_email_verified_status(self, is_verified: bool, db: Database):
         """Updates email verfied flag on successfully verified emails"""
         self.is_email_verified = is_verified
-        db.session.commit()
-
-    def set_is_expert(self, is_expert: bool):
-        """Enables or disables expert mode on the user"""
-        self.is_expert = is_expert
-        db.session.commit()
-
-    @staticmethod
-    def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
-        """Search and filter all users"""
-
-        # Base query that applies to all searches
-        base = db.session.query(
-            User.id, User.username, User.mapping_level, User.role, User.picture_url
+        query = "UPDATE users SET is_email_verified = :is_email_verified WHERE id = :user_id"
+        await db.execute(
+            query, values={"is_email_verified": is_verified, "user_id": self.id}
         )
 
-        # Add filter to query as required
+    async def set_is_expert(self, is_expert: bool, db: Database):
+        """Enables or disables expert mode on the user"""
+        self.is_expert = is_expert
+        query = "UPDATE users SET is_expert = :is_expert WHERE id = :user_id"
+        await db.execute(query, values={"is_expert": is_expert, "user_id": self.id})
+
+    @staticmethod
+    async def get_all_users(query: UserSearchQuery, db) -> UserSearchDTO:
+        """Search and filter all users"""
+
+        base_query = """
+            SELECT id, username, mapping_level, role, picture_url FROM users
+        """
+        filters = []
+        params = {}
+
         if query.mapping_level:
             mapping_levels = query.mapping_level.split(",")
             mapping_level_array = [
                 MappingLevel[mapping_level].value for mapping_level in mapping_levels
             ]
-            base = base.filter(User.mapping_level.in_(mapping_level_array))
+            filters.append("mapping_level = ANY(:mapping_levels)")
+            params["mapping_levels"] = tuple(mapping_level_array)
+
         if query.username:
-            base = base.filter(
-                User.username.ilike(("%" + query.username + "%"))
-            ).order_by(
-                func.strpos(func.lower(User.username), func.lower(query.username))
-            )
+            filters.append("username ILIKE :username")
+            params["username"] = f"%{query.username}%"
 
         if query.role:
             roles = query.role.split(",")
             role_array = [UserRole[role].value for role in roles]
-            base = base.filter(User.role.in_(role_array))
-        if query.pagination:
-            results = base.order_by(User.username).paginate(
-                page=query.page, per_page=query.per_page, error_out=True
-            )
-        else:
-            per_page = base.count()
-            results = base.order_by(User.username).paginate(per_page=per_page)
-        dto = UserSearchDTO()
-        for result in results.items:
-            listed_user = ListedUser()
-            listed_user.id = result.id
-            listed_user.mapping_level = MappingLevel(result.mapping_level).name
-            listed_user.username = result.username
-            listed_user.picture_url = result.picture_url
-            listed_user.role = UserRole(result.role).name
+            filters.append("role = ANY(:roles)")
+            params["roles"] = tuple(role_array)
 
-            dto.users.append(listed_user)
+        if filters:
+            base_query += " WHERE " + " AND ".join(filters)
+
+        base_query += " ORDER BY username"
+
         if query.pagination:
-            dto.pagination = Pagination(results)
+            base_query += " LIMIT :limit OFFSET :offset"
+            base_params = params.copy()
+            base_params["limit"] = query.per_page
+            base_params["offset"] = (query.page - 1) * query.per_page
+
+            results = await db.fetch_all(base_query, base_params)
+
+        else:
+            results = await db.fetch_all(base_query, params)
+
+        dto = UserSearchDTO()
+        for result in results:
+            listed_user = ListedUser()
+            listed_user.id = result["id"]
+            listed_user.mapping_level = MappingLevel(result["mapping_level"]).name
+            listed_user.username = result["username"]
+            listed_user.picture_url = result["picture_url"]
+            listed_user.role = UserRole(result["role"]).name
+            dto.users.append(listed_user)
+
+        if query.pagination:
+            count_query = "SELECT COUNT(*) FROM users"
+            count_query += " WHERE " + " AND ".join(filters) if filters else ""
+            total_count = await db.fetch_val(count_query, params)
+            dto.pagination = Pagination.from_total_count(
+                query.page, query.per_page, total_count
+            )
+
         return dto
 
     @staticmethod
-    def get_all_users_not_paginated():
-        """Get all users in DB"""
-        return db.session.query(User.id).all()
+    async def get_all_users_not_paginated(db: Database):
+        """Get all users in the database."""
+        query = """
+            SELECT id FROM users
+        """
+        return await db.fetch_all(query)
 
     @staticmethod
-    def filter_users(user_filter: str, project_id: int, page: int) -> UserFilterDTO:
-        """Finds users that matches first characters, for auto-complete.
+    async def filter_users(
+        username: str, project_id: int, page: int, db: Database
+    ) -> UserFilterDTO:
+        """Finds users that match the first characters, for auto-complete.
 
         Users who have participated (mapped or validated) in the project, if given, will be
         returned ahead of those who have not.
         """
-        # Note that the projects_mapped column includes both mapped and validated projects.
-        query = (
-            db.session.query(
-                User.username, User.projects_mapped.any(project_id).label("participant")
-            )
-            .filter(User.username.ilike(user_filter.lower() + "%"))
-            .order_by(desc("participant").nullslast(), User.username)
-        )
+        query = """
+            SELECT u.username, :project_id = ANY(u.projects_mapped) AS participant
+            FROM users u
+            WHERE u.username ILIKE :username || '%'
+            ORDER BY participant DESC NULLS LAST, u.username
+            LIMIT 20 OFFSET :offset
+        """
 
-        results = query.paginate(page=page, per_page=20, error_out=True)
+        offset = (page - 1) * 20
+        values = {
+            "username": username.lower(),
+            "project_id": project_id,
+            "offset": offset,
+        }
 
-        if results.total == 0:
-            raise NotFound(sub_code="USER_NOT_FOUND", username=user_filter)
+        results = await db.fetch_all(query, values=values)
+
+        if not results:
+            raise NotFound(sub_code="USER_NOT_FOUND", username=username)
 
         dto = UserFilterDTO()
-        for result in results.items:
-            dto.usernames.append(result.username)
+        for result in results:
+            dto.usernames.append(result["username"])
             if project_id is not None:
-                participant = ProjectParticipantUser()
-                participant.username = result.username
-                participant.project_id = project_id
-                participant.is_participant = bool(result.participant)
+                participant = ProjectParticipantUser(
+                    username=result["username"],
+                    project_id=project_id,
+                    is_participant=bool(result["participant"]),
+                )
                 dto.users.append(participant)
 
-        dto.pagination = Pagination(results)
+        total_query = """
+            SELECT COUNT(*) FROM users u WHERE u.username ILIKE :username || '%'
+        """
+        total = await db.fetch_val(total_query, values={"username": username.lower()})
+        dto.pagination = Pagination.from_total_count(
+            page=page, per_page=20, total=total
+        )
+
         return dto
 
     @staticmethod
-    def upsert_mapped_projects(user_id: int, project_id: int, local_session=None):
-        """Adds projects to mapped_projects if it doesn't exist"""
-        if local_session:
-            query = local_session.query(User).filter_by(id=user_id)
-        else:
-            query = User.query.filter_by(id=user_id)
-        result = query.filter(
-            User.projects_mapped.op("@>")("{}".format("{" + str(project_id) + "}"))
-        ).count()
-        if result > 0:
-            return  # User has previously mapped this project so return
+    async def upsert_mapped_projects(user_id: int, project_id: int, db: Database):
+        """Add project to mapped projects if it doesn't exist"""
+        query = """
+            SELECT COUNT(*)
+            FROM users
+            WHERE id = :user_id
+              AND projects_mapped @> ARRAY[:project_id]::integer[]
+        """
+        result = await db.fetch_val(
+            query, values={"user_id": user_id, "project_id": project_id}
+        )
 
-        user = query.one_or_none()
-        # Fix for new mappers.
-        if user.projects_mapped is None:
-            user.projects_mapped = []
-        user.projects_mapped.append(project_id)
-        if local_session:
-            local_session.commit()
-        else:
-            db.session.commit()
+        if result > 0:
+            return  # Project already exists in mapped projects
+
+        # Insert the project_id into the user's mapped projects array
+        query = """
+            UPDATE users
+            SET projects_mapped = array_append(projects_mapped, :project_id)
+            WHERE id = :user_id
+        """
+        await db.execute(query, values={"user_id": user_id, "project_id": project_id})
 
     @staticmethod
-    def get_mapped_projects(
-        user_id: int, preferred_locale: str
+    async def get_mapped_projects(
+        user_id: int, preferred_locale: str, db: Database
     ) -> UserMappedProjectsDTO:
         """Get all projects a user has mapped on"""
 
-        from backend.models.postgis.task import Task
-        from backend.models.postgis.project import Project
+        # Subquery for validated tasks
+        query_validated = """
+            SELECT project_id, COUNT(validated_by) AS validated
+            FROM tasks
+            WHERE project_id IN (
+                SELECT unnest(projects_mapped) FROM users WHERE id = :user_id
+            ) AND validated_by = :user_id
+            GROUP BY project_id, validated_by
+        """
 
-        query = db.session.query(func.unnest(User.projects_mapped)).filter_by(
-            id=user_id
-        )
-        query_validated = (
-            db.session.query(
-                Task.project_id.label("project_id"),
-                func.count(Task.validated_by).label("validated"),
-            )
-            .filter(Task.project_id.in_(query))
-            .filter_by(validated_by=user_id)
-            .group_by(Task.project_id, Task.validated_by)
-            .subquery()
-        )
+        # Subquery for mapped tasks
+        query_mapped = """
+            SELECT project_id, COUNT(mapped_by) AS mapped
+            FROM tasks
+            WHERE project_id IN (
+                SELECT unnest(projects_mapped) FROM users WHERE id = :user_id
+            ) AND mapped_by = :user_id
+            GROUP BY project_id, mapped_by
+        """
 
-        query_mapped = (
-            db.session.query(
-                Task.project_id.label("project_id"),
-                func.count(Task.mapped_by).label("mapped"),
-            )
-            .filter(Task.project_id.in_(query))
-            .filter_by(mapped_by=user_id)
-            .group_by(Task.project_id, Task.mapped_by)
-            .subquery()
-        )
+        # Union of validated and mapped tasks
+        query_union = f"""
+            SELECT COALESCE(v.project_id, m.project_id) AS project_id,
+                COALESCE(v.validated, 0) AS validated,
+                COALESCE(m.mapped, 0) AS mapped
+            FROM ({query_validated}) v
+            FULL OUTER JOIN ({query_mapped}) m
+            ON v.project_id = m.project_id
+        """
 
-        query_union = (
-            db.session.query(
-                func.coalesce(
-                    query_validated.c.project_id, query_mapped.c.project_id
-                ).label("project_id"),
-                func.coalesce(query_validated.c.validated, 0).label("validated"),
-                func.coalesce(query_mapped.c.mapped, 0).label("mapped"),
-            )
-            .join(
-                query_mapped,
-                query_validated.c.project_id == query_mapped.c.project_id,
-                full=True,
-            )
-            .subquery()
-        )
+        # Main query to get project details
+        query_projects = f"""
+            SELECT p.id, p.status, p.default_locale, u.mapped, u.validated, ST_AsGeoJSON(p.centroid) AS centroid
+            FROM projects p
+            JOIN ({query_union}) u ON p.id = u.project_id
+            ORDER BY p.id DESC
+        """
 
-        results = (
-            db.session.query(
-                Project.id,
-                Project.status,
-                Project.default_locale,
-                query_union.c.mapped,
-                query_union.c.validated,
-                functions.ST_AsGeoJSON(Project.centroid),
-            )
-            .filter(Project.id == query_union.c.project_id)
-            .order_by(desc(Project.id))
-            .all()
-        )
+        results = await db.fetch_all(query_projects, {"user_id": user_id})
 
         mapped_projects_dto = UserMappedProjectsDTO()
         for row in results:
             mapped_project = MappedProject()
-            mapped_project.project_id = row[0]
-            mapped_project.status = ProjectStatus(row[1]).name
-            mapped_project.tasks_mapped = row[3]
-            mapped_project.tasks_validated = row[4]
-            mapped_project.centroid = geojson.loads(row[5])
-
-            project_info = ProjectInfo.get_dto_for_locale(
-                row[0], preferred_locale, row[2]
+            mapped_project.project_id = row["id"]
+            mapped_project.status = ProjectStatus(row["status"]).name
+            mapped_project.tasks_mapped = row["mapped"]
+            mapped_project.tasks_validated = row["validated"]
+            mapped_project.centroid = geojson.loads(row["centroid"])
+            project_info = await ProjectInfo.get_dto_for_locale(
+                db, row["id"], preferred_locale, row["default_locale"]
             )
             mapped_project.name = project_info.name
-
             mapped_projects_dto.mapped_projects.append(mapped_project)
-
         return mapped_projects_dto
 
-    def set_user_role(self, role: UserRole):
+    async def set_user_role(self, role: UserRole, db: Database):
         """Sets the supplied role on the user"""
         self.role = role.value
-        db.session.commit()
 
-    def set_mapping_level(self, level: MappingLevel):
+        query = """
+            UPDATE users
+            SET role = :role
+            WHERE id = :user_id
+        """
+        await db.execute(query, values={"user_id": self.id, "role": role.value})
+
+    async def set_mapping_level(self, level: MappingLevel, db: Database):
         """Sets the supplied level on the user"""
         self.mapping_level = level.value
-        db.session.commit()
 
-    def accept_license_terms(self, license_id: int):
+        query = """
+            UPDATE users
+            SET mapping_level = :mapping_level
+            WHERE id = :user_id
+        """
+        await db.execute(
+            query, values={"user_id": self.id, "mapping_level": level.value}
+        )
+
+    async def accept_license_terms(self, user_id, license_id: int, db: Database):
         """Associate the user in scope with the supplied license"""
-        image_license = License.get_by_id(license_id)
-        self.accepted_licenses.append(image_license)
-        db.session.commit()
+        _ = await License.get_by_id(license_id, db)
+
+        query_check = """
+            SELECT 1 FROM user_licenses WHERE "user" = :user_id AND "license" = :license_id
+        """
+        record = await db.fetch_one(
+            query_check, values={"user_id": user_id, "license_id": license_id}
+        )
+
+        if not record:
+            query = """
+                INSERT INTO user_licenses ("user", "license")
+                VALUES (:user_id, :license_id)
+            """
+            await db.execute(
+                query, values={"user_id": user_id, "license_id": license_id}
+            )
 
     def has_user_accepted_licence(self, license_id: int):
         """Test to see if the user has accepted the terms of the specified license"""
@@ -349,11 +425,6 @@ class User(db.Model):
             return True
 
         return False
-
-    def delete(self):
-        """Delete the user in scope from DB"""
-        db.session.delete(self)
-        db.session.commit()
 
     def as_dto(self, logged_in_username: str) -> UserDTO:
         """Create DTO object from user in scope"""
@@ -366,7 +437,7 @@ class User(db.Model):
             len(self.projects_mapped) if self.projects_mapped else None
         )
         user_dto.is_expert = self.is_expert or False
-        user_dto.date_registered = self.date_registered
+        # user_dto.date_registered = self.date_registered
         user_dto.twitter_id = self.twitter_id
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id
@@ -398,31 +469,21 @@ class User(db.Model):
                 user_dto.self_description_gender = self.self_description_gender
         return user_dto
 
-    def create_or_update_interests(self, interests_ids):
-        self.interests = []
-        objs = [Interest.get_by_id(i) for i in interests_ids]
-        self.interests.extend(objs)
-        db.session.commit()
 
-
-class UserEmail(db.Model):
+class UserEmail(Base):
     __tablename__ = "users_with_email"
 
-    id = db.Column(db.BigInteger, primary_key=True, index=True)
-    email = db.Column(db.String, nullable=False, unique=True)
+    id = Column(BigInteger, primary_key=True, index=True)
+    email = Column(String, nullable=False, unique=True)
 
-    def create(self):
+    async def create(self, db: Database):
         """Creates and saves the current model to the DB"""
-        db.session.add(self)
-        db.session.commit()
+        user = await db.execute(insert(UserEmail.__table__).values(email=self.email))
+        return user
 
-    def save(self):
-        db.session.commit()
-
-    def delete(self):
+    async def delete(self, db: Database):
         """Deletes the current model from the DB"""
-        db.session.delete(self)
-        db.session.commit()
+        await db.execute(delete(UserEmail.__table__).where(UserEmail.id == self.id))
 
     @staticmethod
     def get_by_email(email_address: str):

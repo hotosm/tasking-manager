@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
     - id: trailing-whitespace
       name: trim trailing whitespace
@@ -8,7 +8,7 @@ repos:
       entry: trailing-whitespace-fixer
       language: python
       types: [text]
-      stages: [commit, push, manual]
+      stages: [pre-commit, pre-push, manual]
 
     - id: end-of-file-fixer
       name: fix end of files
@@ -16,7 +16,7 @@ repos:
       entry: end-of-file-fixer
       language: python
       types: [text]
-      stages: [commit, push, manual]
+      stages: [pre-commit, pre-push, manual]
 
     - id: detect-aws-credentials
       name: detect aws credentials
@@ -60,28 +60,28 @@ repos:
       description: prevents giant files from being committed.
       entry: check-added-large-files
       language: python
-      stages: [commit, push, manual]
+      stages: [pre-commit, pre-push, manual]
       args: ['--maxkb=10240']
 
   # Versioning: Commit messages & changelog
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.29.0
+    rev: v4.6.1
     hooks:
       - id: commitizen
         stages: [commit-msg]
 
-  # Lint / autoformat: Python code
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    # Ruff version.
-    rev: "v0.6.4"
-    hooks:
-      # Run the linter
-      - id: ruff
-        files: ^backend/(?:.*/)*.*$
-        args: [--fix, --exit-non-zero-on-fix]
-      # Run the formatter
-      - id: ruff-format
-        files: ^backend/(?:.*/)*.*$
+  # # Lint / autoformat: Python code
+  # - repo: https://github.com/astral-sh/ruff-pre-commit
+  #   # Ruff version.
+  #   rev: "v0.6.4"
+  #   hooks:
+  #     # Run the linter
+  #     - id: ruff
+  #       files: ^backend/(?:.*/)*.*$
+  #       args: [--fix, --exit-non-zero-on-fix]
+  #     # Run the formatter
+  #     - id: ruff-format
+  #       files: ^backend/(?:.*/)*.*$
 
   # INFO: Searches for code that is used or lingering around. (Disabled since there were a lot of work from dev end to remove stuff)
   # - repo: https://github.com/asottile/dead
@@ -103,4 +103,41 @@ repos:
   #           "!CONTRIBUTING.md",
   #           "!frontend/pnpm-lock.yaml",
   #           "!backend/tests/test_data/**",
+  #         ]
+
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        language_version: python3.10
+
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: "7.2.0"
+    hooks:
+      - id: flake8
+        name: flake8
+        additional_dependencies: [mccabe>=0.7.0]
+        args:
+          [
+            "--max-line-length=119",
+            "--max-complexity=150",
+            "--ignore=E203,W503",
+            "--extend-exclude=migrations/*",
+          ]
+        files: '^(backend|tests|manage\.py)'
+
+  # - repo: https://github.com/psf/black
+  #   rev: "23.12.1" # Please keep this version updated, should be same as your black version
+  #   hooks:
+  #     - id: black
+  #       name: black tests
+  #       entry: black
+  #       args:
+  #         [
+  #           "--line-length=88",
+  #           "manage.py",
+  #           "backend",
+  #           "tests",
+  #           "migrations",
   #         ]

@@ -5,10 +5,11 @@ Revises: 068674f06b0f
 Create Date: 2019-06-17 18:34:11.058440
 
 """
-from alembic import op
-import sqlalchemy as sa
-from backend.models.postgis.statuses import TeamVisibility
 
+import sqlalchemy as sa
+from alembic import op
+
+from backend.models.postgis.statuses import TeamVisibility
 
 # revision identifiers, used by Alembic.
 revision = "e3282e2db2d7"
@@ -25,7 +26,7 @@ def upgrade():
         sa.Column("name", sa.String(length=512), nullable=False),
         sa.Column("logo", sa.String(), nullable=True),
         sa.Column("url", sa.String(), nullable=True),
-        sa.PrimaryKeyConstraint("id")
+        sa.PrimaryKeyConstraint("id"),
         # ,
         # sa.UniqueConstraint("name"),
     )

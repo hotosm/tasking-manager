@@ -1,15 +1,14 @@
 import pandas as pd
+from aiocache import Cache, cached
+from cachetools import TTLCache
+from databases import Database
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MultiLabelBinarizer
-from sqlalchemy.orm import joinedload
-from sqlalchemy.sql.expression import func
-from cachetools import TTLCache, cached
 
-from backend import db
 from backend.exceptions import NotFound
-from backend.models.postgis.project import Project, Interest, project_interests
-from backend.models.postgis.statuses import ProjectStatus
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
+from backend.models.postgis.project import Project
+from backend.models.postgis.statuses import ProjectStatus
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
 
@@ -26,52 +25,6 @@ project_columns = [
 
 
 class ProjectRecommendationService:
-    @staticmethod
-    def to_dataframe(records, columns: list):
-        """Convert records fetched from sql execution into dataframe
-        :param records: records fetched from sql execution
-        :param columns: columns of the dataframe
-        :return: dataframe
-        """
-        batch_rows = list()
-        for _, row in enumerate(records, start=0):
-            batch_rows.append(row)
-        table = pd.DataFrame(batch_rows, columns=columns)
-        return table
-
-    @staticmethod
-    def get_all_published_projects():
-        """Gets all published projects
-        :return: list of published projects
-        """
-        #  Create a subquery to fetch the interests of the projects
-        subquery = (
-            db.session.query(
-                project_interests.c.project_id, Interest.id.label("interest_id")
-            )
-            .join(Interest)
-            .subquery()
-        )
-
-        # Only fetch the columns required for recommendation
-        # Should be in order of the columns defined in the project_columns line 13
-        query = Project.query.options(joinedload(Project.interests)).with_entities(
-            Project.id,
-            Project.default_locale,
-            Project.difficulty,
-            Project.mapping_types,
-            Project.country,
-            func.array_agg(subquery.c.interest_id).label("interests"),
-        )
-        # Outerjoin so that projects without interests are also returned
-        query = (
-            query.outerjoin(subquery, Project.id == subquery.c.project_id)
-            .filter(Project.status == ProjectStatus.PUBLISHED.value)
-            .group_by(Project.id)
-        )
-        result = query.all()
-        return result
-
     @staticmethod
     def mlb_transform(table, column, prefix):
         """Transforms multi label column into multiple columns and retruns the data frame with new columns
@@ -165,89 +118,119 @@ class ProjectRecommendationService:
 
         return similar_projects
 
+    def matrix_cache_key_builder(func, *args, **kwargs):
+        # Remove the last two arguments
+        args_without_db = args[:-1]
+        return f"{func.__name__}:{args_without_db}:{kwargs}"
+
     # This function is cached so that the matrix is not calculated every time
     # as it is expensive and not changing often
     @staticmethod
-    @cached(cache=similar_projects_cache)
-    def create_project_matrix(target_project=None):
-        """Creates project matrix that is required to calculate the similarity
-        :param target_project: target project id (not used).
-        This is required to reset the cache when a new project is published
-        :return: project matrix data frame with encoded columns
+    @cached(cache=Cache.MEMORY, key_builder=matrix_cache_key_builder, ttl=3600)
+    async def create_project_matrix(db: Database, target_project=None) -> pd.DataFrame:
+        """Creates project matrix required to calculate similarity."""
+        # Query to fetch all published projects with their related data
+        query = """
+            SELECT p.id, p.default_locale, p.difficulty, p.mapping_types, p.country,
+                COALESCE(ARRAY_AGG(pi.interest_id), ARRAY[]::INTEGER[]) AS categories
+            FROM projects p
+            LEFT JOIN (
+                SELECT pi.project_id, i.id as interest_id
+                FROM project_interests pi
+                JOIN interests i ON pi.interest_id = i.id
+            ) pi ON p.id = pi.project_id
+            WHERE p.status = :status
+            GROUP BY p.id
         """
-        all_projects = ProjectRecommendationService.get_all_published_projects()
-        all_projects_df = ProjectRecommendationService.to_dataframe(
-            all_projects, project_columns
-        )
-        all_projects_df = ProjectRecommendationService.build_encoded_data_frame(
-            all_projects_df
-        )
-        return all_projects_df
+        try:
+            # Execute the query and fetch results
+            result = await db.fetch_all(
+                query=query, values={"status": ProjectStatus.PUBLISHED.value}
+            )
+            # Convert the result into a DataFrame
+            df = pd.DataFrame([dict(row) for row in result])
+            # Optionally encode categorical data
+            df = ProjectRecommendationService.build_encoded_data_frame(df)
+            return df
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return pd.DataFrame()
 
     @staticmethod
-    def get_similar_projects(
-        project_id, user_id=None, preferred_locale="en", limit=4
+    async def get_similar_projects(
+        db: Database,
+        project_id: int,
+        user_id: str = None,
+        preferred_locale: str = "en",
+        limit: int = 4,
     ) -> ProjectSearchResultsDTO:
-        """Get similar projects based on the given project ID.
-        ----------------------------------------
-        :param project_id: project id
-        :param preferred_locale: preferred locale
-        :return: list of similar projects in the order of similarity
-        """
-        target_project = Project.query.get(project_id)
-        # Check if the project exists and is published
-        project_is_published = (
-            target_project and target_project.status == ProjectStatus.PUBLISHED.value
+        """Get similar projects based on the given project ID."""
+
+        # Fetch the target project details
+        target_project_query = "SELECT * FROM projects WHERE id = :project_id"
+        target_project = await db.fetch_one(
+            query=target_project_query, values={"project_id": project_id}
         )
-        if not project_is_published:
+
+        if (
+            not target_project
+            or target_project["status"] != ProjectStatus.PUBLISHED.value
+        ):
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
-        projects_df = ProjectRecommendationService.create_project_matrix()
+        # Create the project similarity matrix
+        projects_df = await ProjectRecommendationService.create_project_matrix(db)
         target_project_df = projects_df[projects_df["id"] == project_id]
+
         if target_project_df.empty:
-            # If the target project is not in the projects_df then it means it is published
-            # but not yet in the cache of create_project_matrix. So we need to update the cache.
-            projects_df = ProjectRecommendationService.create_project_matrix(
-                target_project=project_id
+            projects_df = await ProjectRecommendationService.create_project_matrix(
+                db, target_project=project_id
             )
             target_project_df = projects_df[projects_df["id"] == project_id]
 
         dto = ProjectSearchResultsDTO()
-        # If there is only one project then return empty list as there is no other project to compare
+        dto.pagination = None
         if projects_df.shape[0] < 2:
             return dto
 
+        # Get IDs of similar projects
         similar_projects = ProjectRecommendationService.get_similar_project_ids(
             projects_df, target_project_df
         )
+        user = await UserService.get_user_by_id(user_id, db) if user_id else None
 
-        user = UserService.get_user_by_id(user_id) if user_id else None
+        # Create the search query with filters applied based on user role
+        search_query, params = await ProjectSearchService.create_search_query(db, user)
 
-        query = ProjectSearchService.create_search_query(user)
-        # Only return projects which are not completed
-        query = query.filter(
-            Project.total_tasks != Project.tasks_validated + Project.tasks_bad_imagery
-        )
+        # Filter out fully completed projects
+        search_query += """
+        AND (p.total_tasks != p.tasks_validated + p.tasks_bad_imagery)
+        AND p.id = :project_id
+        """
 
-        # Set the limit to the number of similar projects if it is less than the limit
+        # Limit the number of similar projects to fetch
         limit = min(limit, len(similar_projects)) if similar_projects else 0
-
         count = 0
         while len(dto.results) < limit:
-            # In case the user is not authorized to view the project and similar projects are less than the limit
-            # then we need to break the loop and return the results
             try:
-                project_id = similar_projects[count]
+                similar_project_id = similar_projects[count]
             except IndexError:
                 break
-            project = query.filter(Project.id == project_id).all()
+            project = await db.fetch_one(
+                query=search_query, values={**params, "project_id": similar_project_id}
+            )
             if project:
                 dto.results.append(
-                    ProjectSearchService.create_result_dto(
-                        project[0],
+                    await ProjectSearchService.create_result_dto(
+                        project,
                         preferred_locale,
-                        Project.get_project_total_contributions(project[0][0]),
+                        await Project.get_project_total_contributions(
+                            project["id"], db
+                        ),
+                        db,
                     )
                 )
             count += 1
+
         return dto

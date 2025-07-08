@@ -3,8 +3,8 @@ from tests.backend.helpers.test_helpers import (
     create_canned_organisation,
     create_canned_project,
     generate_encoded_token,
-    return_canned_user,
     return_canned_campaign,
+    return_canned_user,
 )
 from tests.backend.integration.api.campaigns.test_resources import (
     CAMPAIGN_NOT_FOUND_MESSAGE,

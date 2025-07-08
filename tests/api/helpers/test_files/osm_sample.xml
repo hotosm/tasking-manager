@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version='0.6' upload='no' generator='JOSM'>
+  <node id='-16' action='modify' visible='true' lat='41.02964338107674' lon='28.959960932312526' />
+  <node id='-17' action='modify' visible='true' lat='41.04621680842956' lon='28.959960932312526'/>
+  <node id='-18' action='modify' visible='true' lat='41.04621680842956' lon='28.981933588558594'/>
+  <node id='-19' action='modify' visible='true' lat='41.02964338107674' lon='28.981933588558594'/>
+  <node id='-33' action='modify' visible='true' lat='41.01306578091811' lon='28.981933588558594'/>
+  <node id='-34' action='modify' visible='true' lat='41.02964338107674' lon='28.981933588558594' />
+  <node id='-35' action='modify' visible='true' lat='41.02964338107674' lon='29.003906244804625' />
+  <node id='-36' action='modify' visible='true' lat='41.01306578091811' lon='29.003906244804625'/>
+  <way id='-20' action='modify' visible='true'>
+    <nd ref='-16' />
+    <nd ref='-17' />
+    <nd ref='-18' />
+    <nd ref='-19' />
+    <nd ref='-16' />
+  </way>
+  <way id='-32' visible='true'>
+    <nd ref='-33' />
+    <nd ref='-34' />
+    <nd ref='-35' />
+    <nd ref='-36' />
+    <nd ref='-33' />
+  </way>
+</osm>

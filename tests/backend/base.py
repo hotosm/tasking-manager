@@ -1,12 +1,13 @@
-import unittest
 import os
-
+import unittest
 from typing import Optional
-from shapely.geometry import shape
-from backend import create_app, db
+
 import geojson
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from shapely.geometry import shape
+
+from backend import create_app, db
 
 
 def clean_db(db):

@@ -1,7 +1,8 @@
 import pandas as pd
-from tests.backend.base import BaseTestCase
+
 from backend.models.postgis.project import ProjectStatus
 from backend.services.recommendation_service import ProjectRecommendationService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
 
 

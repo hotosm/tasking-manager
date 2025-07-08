@@ -7,9 +7,9 @@
 }
 
 .tasks-map-height {
-  height: calc(100vh - 11.312rem); // Subtracting height of header, nav and fixed footer
+  min-height: calc(100vh - 11.312rem); // Subtracting height of header, nav and fixed footer
   @media screen and (max-width: 60em) {
-    height: 100%;
+    min-height: 100%;
   }
 }
 

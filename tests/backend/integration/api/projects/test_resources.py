@@ -1,55 +1,56 @@
-import geojson
 from datetime import datetime, timedelta
 
+import geojson
+
+from backend.exceptions import NotFound
+from backend.models.dtos.campaign_dto import CampaignProjectDTO
+from backend.models.dtos.project_dto import (
+    DraftProjectDTO,
+    is_known_editor,
+    is_known_mapping_permission,
+    is_known_mapping_type,
+    is_known_project_difficulty,
+    is_known_project_priority,
+    is_known_project_status,
+    is_known_task_creation_mode,
+    is_known_validation_permission,
+)
+from backend.models.postgis.project import Project, ProjectDTO
+from backend.models.postgis.statuses import (
+    MappingPermission,
+    MappingTypes,
+    ProjectDifficulty,
+    ProjectPriority,
+    ProjectStatus,
+    TaskStatus,
+    TeamMemberFunctions,
+    TeamRoles,
+    UserRole,
+    ValidationPermission,
+)
+from backend.models.postgis.task import Task
+from backend.services.campaign_service import CampaignService
+from backend.services.interests_service import InterestService
+from backend.services.mapping_service import MappingService
+from backend.services.project_service import ProjectAdminService, ProjectService
+from backend.services.validator_service import ValidatorService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     add_manager_to_organisation,
-    create_canned_team,
-    return_canned_team,
     add_user_to_team,
     assign_team_to_project,
+    create_canned_interest,
     create_canned_organisation,
-    return_canned_organisation,
     create_canned_project,
+    create_canned_team,
     generate_encoded_token,
-    return_canned_user,
-    return_canned_draft_project_json,
     get_canned_json,
     return_canned_campaign,
-    create_canned_interest,
+    return_canned_draft_project_json,
+    return_canned_organisation,
+    return_canned_team,
+    return_canned_user,
     update_project_with_info,
-)
-from backend.exceptions import NotFound
-from backend.models.postgis.project import Project, ProjectDTO
-from backend.models.postgis.task import Task
-from backend.services.campaign_service import CampaignService
-from backend.models.dtos.campaign_dto import CampaignProjectDTO
-from backend.models.postgis.statuses import (
-    UserRole,
-    ProjectStatus,
-    TeamMemberFunctions,
-    TeamRoles,
-    ValidationPermission,
-    MappingPermission,
-    ProjectDifficulty,
-    ProjectPriority,
-    MappingTypes,
-    TaskStatus,
-)
-from backend.services.project_service import ProjectService, ProjectAdminService
-from backend.services.validator_service import ValidatorService
-from backend.services.mapping_service import MappingService
-from backend.services.interests_service import InterestService
-from backend.models.dtos.project_dto import (
-    DraftProjectDTO,
-    is_known_project_status,
-    is_known_project_priority,
-    is_known_project_difficulty,
-    is_known_editor,
-    is_known_mapping_type,
-    is_known_task_creation_mode,
-    is_known_validation_permission,
-    is_known_mapping_permission,
 )
 
 TEST_USER_USERNAME = "Test User"

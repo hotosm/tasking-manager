@@ -1,33 +1,13 @@
-from schematics import Model
-from schematics.exceptions import ValidationError
-from schematics.types import (
-    StringType,
-    IntType,
-    EmailType,
-    LongType,
-    BooleanType,
-)
-from schematics.types.compound import ListType, ModelType, BaseType
-from backend.models.dtos.stats_dto import Pagination
-from backend.models.dtos.mapping_dto import TaskDTO
+from datetime import datetime
+from typing import Dict, List, Optional
+
+from pydantic import BaseModel, Field
+from pydantic.functional_validators import field_validator
+
 from backend.models.dtos.interests_dto import InterestDTO
+from backend.models.dtos.mapping_dto import TaskDTO
+from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.statuses import MappingLevel, UserRole
-
-
-def is_known_mapping_level(value):
-    """Validates that supplied mapping level is known value"""
-    if value.upper() == "ALL":
-        return True
-
-    try:
-        value = value.split(",")
-        for level in value:
-            MappingLevel[level.upper()]
-    except KeyError:
-        raise ValidationError(
-            f"Unknown mappingLevel: {value} Valid values are {MappingLevel.BEGINNER.name}, "
-            f"{MappingLevel.INTERMEDIATE.name}, {MappingLevel.ADVANCED.name}, ALL"
-        )
 
 
 def is_known_role(value):
@@ -37,60 +17,70 @@ def is_known_role(value):
         for role in value:
             UserRole[role.upper()]
     except KeyError:
-        raise ValidationError(
+        raise ValueError(
             f"Unknown mappingRole: {value} Valid values are {UserRole.ADMIN.name}, "
             f"{UserRole.READ_ONLY.name}, {UserRole.MAPPER.name}"
         )
 
 
-class UserDTO(Model):
+class UserDTO(BaseModel):
     """DTO for User"""
 
-    id = LongType()
-    username = StringType()
-    role = StringType()
-    mapping_level = StringType(
-        serialized_name="mappingLevel", validators=[is_known_mapping_level]
+    id: Optional[int] = None
+    username: Optional[str] = None
+    role: Optional[str] = None
+    mapping_level: Optional[str] = Field(None, alias="mappingLevel")
+    projects_mapped: Optional[int] = Field(None, alias="projectsMapped")
+    email_address: Optional[str] = Field(None, alias="emailAddress")
+    is_email_verified: Optional[bool] = Field(
+        None, alias="isEmailVerified", serialize_when_none=False
     )
-    projects_mapped = IntType(serialized_name="projectsMapped")
-    email_address = EmailType(serialized_name="emailAddress")
-
-    is_email_verified = EmailType(
-        serialized_name="isEmailVerified", serialize_when_none=False
+    is_expert: bool = Field(None, alias="isExpert", serialize_when_none=False)
+    twitter_id: Optional[str] = Field(None, alias="twitterId")
+    facebook_id: Optional[str] = Field(None, alias="facebookId")
+    linkedin_id: Optional[str] = Field(None, alias="linkedinId")
+    slack_id: Optional[str] = Field(None, alias="slackId")
+    irc_id: Optional[str] = Field(None, alias="ircId")
+    skype_id: Optional[str] = Field(None, alias="skypeId")
+    city: Optional[str] = Field(None, alias="city")
+    country: Optional[str] = Field(None, alias="country")
+    name: Optional[str] = Field(None, alias="name")
+    picture_url: Optional[str] = Field(None, alias="pictureUrl")
+    default_editor: Optional[str] = Field(None, alias="defaultEditor")
+    mentions_notifications: bool = Field(None, alias="mentionsNotifications")
+    projects_comments_notifications: bool = Field(
+        None, alias="questionsAndCommentsNotifications"
     )
-    is_expert = BooleanType(serialized_name="isExpert", serialize_when_none=False)
-    twitter_id = StringType(serialized_name="twitterId")
-    facebook_id = StringType(serialized_name="facebookId")
-    linkedin_id = StringType(serialized_name="linkedinId")
-    slack_id = StringType(serialized_name="slackId")
-    irc_id = StringType(serialized_name="ircId")
-    skype_id = StringType(serialized_name="skypeId")
-    city = StringType(serialized_name="city")
-    country = StringType(serialized_name="country")
-    name = StringType(serialized_name="name")
-    picture_url = StringType(serialized_name="pictureUrl")
-    default_editor = StringType(serialized_name="defaultEditor")
-    mentions_notifications = BooleanType(serialized_name="mentionsNotifications")
-    projects_comments_notifications = BooleanType(
-        serialized_name="questionsAndCommentsNotifications"
-    )
-    projects_notifications = BooleanType(serialized_name="projectsNotifications")
-    tasks_notifications = BooleanType(serialized_name="tasksNotifications")
-    tasks_comments_notifications = BooleanType(
-        serialized_name="taskCommentsNotifications"
-    )
-    teams_announcement_notifications = BooleanType(
-        serialized_name="teamsAnnouncementNotifications"
+    projects_notifications: bool = Field(None, alias="projectsNotifications")
+    tasks_notifications: bool = Field(None, alias="tasksNotifications")
+    tasks_comments_notifications: bool = Field(None, alias="taskCommentsNotifications")
+    teams_announcement_notifications: bool = Field(
+        None, alias="teamsAnnouncementNotifications"
     )
 
     # these are read only
-    gender = StringType(
-        serialized_name="gender",
+    gender: Optional[str] = Field(
+        None,
+        alias="gender",
         choices=("MALE", "FEMALE", "SELF_DESCRIBE", "PREFER_NOT"),
     )
-    self_description_gender = StringType(
-        serialized_name="selfDescriptionGender", default=None
-    )
+    self_description_gender: Optional[str] = Field(None, alias="selfDescriptionGender")
+
+    @field_validator("mapping_level", mode="before")
+    def is_known_mapping_level(value):
+        """Validates that supplied mapping level is known value"""
+        if value.upper() == "ALL":
+            return True
+
+        try:
+            value = value.split(",")
+            for level in value:
+                MappingLevel[level.upper()]
+        except KeyError:
+            raise ValueError(
+                f"Unknown mappingLevel: {value} Valid values are {MappingLevel.BEGINNER.name}, "
+                f"{MappingLevel.INTERMEDIATE.name}, {MappingLevel.ADVANCED.name}, ALL"
+            )
 
     def validate_self_description(self, data, value):
         if (
@@ -101,142 +91,157 @@ class UserDTO(Model):
         return value
 
 
-class UserCountryContributed(Model):
+class UserCountryContributed(BaseModel):
     """DTO for country a user has contributed"""
 
-    name = StringType(required=True)
-    mapped = IntType(required=True)
-    validated = IntType(required=True)
-    total = IntType(required=True)
+    name: str = Field(None)
+    mapped: int = Field(None, alias="mapped")
+    validated: int = Field(None, alias="validated")
+    total: int = Field(None)
 
 
-class UserCountriesContributed(Model):
+class UserCountriesContributed(BaseModel):
     """DTO for countries a user has contributed"""
 
-    def __init__(self):
-        super().__init__()
-        self.countries_contributed = []
+    countries_contributed: List[UserCountryContributed] = Field([], alias="countries")
+    total: int = Field(None)
 
-    countries_contributed = ListType(
-        ModelType(UserCountryContributed), serialized_name="countries"
-    )
-    total = IntType()
+    class Config:
+        populate_by_name = True
 
 
-class UserContributionDTO(Model):
-    date = StringType()
-    count = IntType()
+class UserContributionDTO(BaseModel):
+    date: datetime
+    count: int
 
 
-class UserStatsDTO(Model):
+class UserStatsDTO(BaseModel):
     """DTO containing statistics about the user"""
 
-    total_time_spent = IntType(serialized_name="totalTimeSpent")
-    time_spent_mapping = IntType(serialized_name="timeSpentMapping")
-    time_spent_validating = IntType(serialized_name="timeSpentValidating")
-    projects_mapped = IntType(serialized_name="projectsMapped")
-    countries_contributed = ModelType(
-        UserCountriesContributed, serialized_name="countriesContributed"
+    total_time_spent: int = Field(None, alias="totalTimeSpent")
+    time_spent_mapping: int = Field(None, alias="timeSpentMapping")
+    time_spent_validating: int = Field(None, alias="timeSpentValidating")
+    projects_mapped: int = Field(None, alias="projectsMapped")
+    countries_contributed: UserCountriesContributed = Field(
+        None, alias="countriesContributed"
     )
-    contributions_by_day = ListType(
-        ModelType(UserContributionDTO), serialized_name="contributionsByDay"
+    contributions_by_day: List[UserContributionDTO] = Field(
+        [], alias="contributionsByDay"
     )
-    tasks_mapped = IntType(serialized_name="tasksMapped")
-    tasks_validated = IntType(serialized_name="tasksValidated")
-    tasks_invalidated = IntType(serialized_name="tasksInvalidated")
-    tasks_invalidated_by_others = IntType(serialized_name="tasksInvalidatedByOthers")
-    tasks_validated_by_others = IntType(serialized_name="tasksValidatedByOthers")
-    contributions_interest = ListType(
-        ModelType(InterestDTO), serialized_name="ContributionsByInterest"
+    tasks_mapped: int = Field(None, alias="tasksMapped")
+    tasks_validated: int = Field(None, alias="tasksValidated")
+    tasks_invalidated: int = Field(None, alias="tasksInvalidated")
+    tasks_invalidated_by_others: int = Field(None, alias="tasksInvalidatedByOthers")
+    tasks_validated_by_others: int = Field(None, alias="tasksValidatedByOthers")
+    contributions_interest: List[InterestDTO] = Field(
+        [], alias="ContributionsByInterest"
     )
 
 
-class UserOSMDTO(Model):
+class UserOSMDTO(BaseModel):
     """DTO containing OSM details for the user"""
 
-    account_created = StringType(required=True, serialized_name="accountCreated")
-    changeset_count = IntType(required=True, serialized_name="changesetCount")
+    account_created: Optional[str] = Field(None, alias="accountCreated")
+    changeset_count: Optional[int] = Field(None, alias="changesetCount")
 
 
-class MappedProject(Model):
+class MappedProject(BaseModel):
     """Describes a single project a user has mapped"""
 
-    project_id = IntType(serialized_name="projectId")
-    name = StringType()
-    tasks_mapped = IntType(serialized_name="tasksMapped")
-    tasks_validated = IntType(serialized_name="tasksValidated")
-    status = StringType()
-    centroid = BaseType()
+    project_id: Optional[int] = Field(None, alias="projectId")
+    name: Optional[str] = None
+    tasks_mapped: Optional[int] = Field(None, alias="tasksMapped")
+    tasks_validated: Optional[int] = Field(None, alias="tasksValidated")
+    status: Optional[str] = None
+    centroid: Optional[Dict] = None
+
+    class Config:
+        populate_by_name = True
 
 
-class UserMappedProjectsDTO(Model):
+class UserMappedProjectsDTO(BaseModel):
     """DTO for projects a user has mapped"""
 
-    def __init__(self):
-        super().__init__()
-        self.mapped_projects = []
-
-    mapped_projects = ListType(
-        ModelType(MappedProject), serialized_name="mappedProjects"
+    mapped_projects: Optional[List[MappedProject]] = Field(
+        default_factory=list, alias="mappedProjects"
     )
 
+    class Config:
+        populate_by_name = True
 
-class UserSearchQuery(Model):
+
+class UserSearchQuery(BaseModel):
     """Describes a user search query, that a user may submit to filter the list of users"""
 
-    username = StringType()
-    role = StringType(validators=[is_known_role])
-    mapping_level = StringType(
-        serialized_name="mappingLevel", validators=[is_known_mapping_level]
-    )
-    page = IntType()
-    pagination = BooleanType(default=True)
-    per_page = IntType(default=20, serialized_name="perPage")
+    username: Optional[str] = None
+    role: Optional[str] = Field(None)
+    mapping_level: Optional[str] = Field(None, alias="mappingLevel")
+    page: Optional[int] = None
+    pagination: bool = True
+    per_page: Optional[int] = Field(default=20, alias="perPage")
+
+    class Config:
+        populate_by_name = True
+
+    @field_validator("username", mode="before")
+    def validate_username(cls, v):
+        if v is None:
+            return None
+        return v.strip()
+
+    @field_validator("role", mode="before")
+    def validate_role(cls, v):
+        if v is None:
+            return None
+        return v.strip()
 
     def __hash__(self):
         """Make object hashable so we can cache user searches"""
         return hash((self.username, self.role, self.mapping_level, self.page))
 
 
-class ListedUser(Model):
+class ListedUser(BaseModel):
     """Describes a user within the User List"""
 
-    id = LongType()
-    username = StringType()
-    role = StringType()
-    mapping_level = StringType(serialized_name="mappingLevel")
-    picture_url = StringType(serialized_name="pictureUrl")
+    id: Optional[float] = None
+    username: Optional[str] = None
+    role: Optional[str] = None
+    mapping_level: Optional[str] = Field(None, alias="mappingLevel")
+    picture_url: Optional[str] = Field(None, alias="pictureUrl")
 
 
-class UserRegisterEmailDTO(Model):
+class UserRegisterEmailDTO(BaseModel):
     """DTO containing data for user registration with email model"""
 
-    id = IntType(serialize_when_none=False)
-    email = StringType(required=True)
-    success = BooleanType(default=False)
-    details = StringType()
+    id: int = Field(None, serialize_when_none=False)
+    email: str
+    success: bool = False
+    details: str = None
 
 
-class ProjectParticipantUser(Model):
+class ProjectParticipantUser(BaseModel):
     """Describes a user who has participated in a project"""
 
-    username = StringType()
-    project_id = LongType(serialized_name="projectId")
-    is_participant = BooleanType(serialized_name="isParticipant")
+    username: str
+    project_id: float = Field(alias="projectId")
+    is_participant: bool = Field(alias="isParticipant")
+
+    class Config:
+        populate_by_name = True
 
 
-class UserSearchDTO(Model):
+class UserSearchDTO(BaseModel):
     """Paginated list of TM users"""
 
     def __init__(self):
         super().__init__()
         self.users = []
 
-    pagination = ModelType(Pagination)
-    users = ListType(ModelType(ListedUser))
+    pagination: Optional[Pagination] = None
+    users: Optional[List[ListedUser]] = None
 
 
-class UserFilterDTO(Model):
+class UserFilterDTO(BaseModel):
     """DTO to hold all Tasking Manager users"""
 
     def __init__(self):
@@ -244,12 +249,12 @@ class UserFilterDTO(Model):
         self.usernames = []
         self.users = []
 
-    pagination = ModelType(Pagination)
-    usernames = ListType(StringType)
-    users = ListType(ModelType(ProjectParticipantUser))
+    pagination: Optional[Pagination] = None
+    usernames: Optional[List[str]] = None
+    users: Optional[List[ProjectParticipantUser]] = None
 
 
-class UserTaskDTOs(Model):
+class UserTaskDTOs(BaseModel):
     """Describes an array of Task DTOs"""
 
     def __init__(self):
@@ -257,5 +262,11 @@ class UserTaskDTOs(Model):
         super().__init__()
         self.user_tasks = []
 
-    user_tasks = ListType(ModelType(TaskDTO), serialized_name="tasks")
-    pagination = ModelType(Pagination)
+    user_tasks: List[TaskDTO] = Field([], alias="tasks")
+    pagination: Pagination = Field(None, alias="pagination")
+
+
+class AuthUserDTO(BaseModel):
+    """A minimal user model with only id."""
+
+    id: int

@@ -5,14 +5,15 @@ Revises: fcd9cebaa79c
 Create Date: 2019-05-24 23:05:45.512395
 
 """
-from alembic import op
-from sqlalchemy.dialects.postgresql import ARRAY
-import sqlalchemy as sa
+
 import json
-from shapely.geometry import shape
-import shapely.wkt
 import sys
 
+import shapely.wkt
+import sqlalchemy as sa
+from alembic import op
+from shapely.geometry import shape
+from sqlalchemy.dialects.postgresql import ARRAY
 
 # revision identifiers, used by Alembic.
 revision = "0eee8c1abd3a"

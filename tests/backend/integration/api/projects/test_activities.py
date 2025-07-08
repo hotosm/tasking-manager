@@ -1,6 +1,6 @@
+from backend.models.postgis.task import Task, TaskAction, TaskStatus
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
-from backend.models.postgis.task import Task, TaskStatus, TaskAction
 
 
 class TestProjectsLastActivitiesAPI(BaseTestCase):

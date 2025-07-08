@@ -46,9 +46,6 @@ it('exports ORG_GITHUB', () => {
 it('exports OSM_CLIENT_ID', () => {
   expect(typeof config.OSM_CLIENT_ID).toBe('string');
 });
-it('exports OSM_CLIENT_SECRET', () => {
-  expect(typeof config.OSM_CLIENT_SECRET).toBe('string');
-});
 it('exports OSM_REDIRECT_URI', () => {
   expect(typeof config.OSM_REDIRECT_URI).toBe('string');
 });

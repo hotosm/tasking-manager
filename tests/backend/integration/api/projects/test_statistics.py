@@ -1,12 +1,12 @@
 import time
 
+from backend.models.postgis.task import Task, TaskStatus
+from backend.services.project_admin_service import ProjectAdminService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     create_canned_project,
     generate_encoded_token,
 )
-from backend.services.project_admin_service import ProjectAdminService
-from backend.models.postgis.task import Task, TaskStatus
 
 
 class TestProjectStatisticsAPI(BaseTestCase):
