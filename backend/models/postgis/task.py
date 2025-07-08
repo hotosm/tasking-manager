@@ -1405,7 +1405,7 @@ class Task(Base):
         # Add task_id filter
         if task_ids_str:
             task_ids = [int(task_id) for task_id in task_ids_str.split(",")]
-            query += " AND t.id IN :task_ids"
+            query += " AND t.id = ANY(:task_ids)"
             filters["task_ids"] = tuple(task_ids)
 
         # Add status filter

@@ -164,6 +164,9 @@ class UserSearchQuery(BaseModel):
     pagination: bool = True
     per_page: Optional[int] = Field(default=20, alias="perPage")
 
+    class Config:
+        populate_by_name = True
+
     @field_validator("username", mode="before")
     def validate_username(cls, v):
         if v is None:

@@ -3,9 +3,9 @@ import json
 
 import requests
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import JSONResponse
-
+from typing import Optional
 from backend.api.utils import validate_date_input
 from backend.config import settings
 from backend.db import get_db
@@ -103,7 +103,12 @@ async def get_user_interests_statistics(
 
 @router.get("/statistics/")
 async def get_period_user_stats(
-    request: Request,
+    start_date_str: str = Query(
+        ..., alias="startDate", description="Initial date (e.g., YYYY-MM-DD)"
+    ),
+    end_date_str: Optional[str] = Query(
+        None, alias="endDate", description="Final date (e.g., YYYY-MM-DD)"
+    ),
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
 ):
@@ -141,20 +146,12 @@ async def get_period_user_stats(
             description: Internal Server Error
     """
     try:
-        if request.query_params.get("startDate"):
-            start_date = validate_date_input(request.query_params.get("startDate"))
-        else:
-            return JSONResponse(
-                content={
-                    "Error": "Start date is required",
-                    "SubCode": "MissingDate",
-                },
-                status_code=400,
-            )
-        if request.query_params.get("endDate"):
-            end_date = validate_date_input(request.query_params.get("endDate"))
+        start_date = validate_date_input(start_date_str)
+        if end_date_str:
+            end_date = validate_date_input(end_date_str)
         else:
             end_date: str = date.today()
+
         if end_date < start_date:
             raise ValueError(
                 "InvalidDateRange- Start date must be earlier than end date"
@@ -166,6 +163,7 @@ async def get_period_user_stats(
 
         stats = await StatsService.get_all_users_statistics(start_date, end_date, db)
         return stats.model_dump(by_alias=True)
+
     except (KeyError, ValueError) as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
@@ -175,9 +173,9 @@ async def get_period_user_stats(
 
 @router.get("/statistics/ohsome/")
 async def get_ohsome_stats(
-    request: Request,
-    user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
+    url: str = Query(None, description="Get user stats for OSM contributions"),
+    user: AuthUserDTO = Depends(login_required),
 ):
     """
     Get HomePage Stats
@@ -203,7 +201,6 @@ async def get_ohsome_stats(
         500:
             description: Internal Server Error
     """
-    url = request.query_params.get("url")
 
     if not url:
         return JSONResponse(
@@ -213,6 +210,7 @@ async def get_ohsome_stats(
 
     try:
         headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
+        # Make the GET request with headers
         response = requests.get(url, headers=headers)
         json_data = response.json()
 

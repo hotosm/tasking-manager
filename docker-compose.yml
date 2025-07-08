@@ -30,6 +30,7 @@ services:
     build:
       context: .
       target: ${TARGET_TAG:-debug}
+      dockerfile: ./scripts/docker/Dockerfile
     depends_on:
       tm-db:
         condition: service_healthy
@@ -71,6 +72,8 @@ services:
     image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
+      target: ${TARGET_TAG:-debug}
+      dockerfile: ./scripts/docker/Dockerfile
     entrypoint: ["alembic", "-c", "migrations/alembic.ini", "upgrade", "head"]
     depends_on:
       tm-db:
@@ -99,6 +102,8 @@ services:
     image: ghcr.io/hotosm/tasking-manager/backend:main
     build:
       context: .
+      target: ${TARGET_TAG:-debug}
+      dockerfile: ./scripts/docker/Dockerfile
     command: ["python", "backend/cron_jobs.py"]
     depends_on:
       tm-db:
@@ -119,6 +124,25 @@ services:
     networks:
       - tm-net
 
+  tm-frontend:
+    # NOTE: For Frontend development with docker-compose
+    # - Uncomment volume section below to enable live reload of frontend code
+    # - Add `TARGET_TAG=debug` to your `tasking-manager.env` or new `.env` file
+    image: ghcr.io/hotosm/tasking-manager/frontend:main
+    build:
+      context: .
+      dockerfile: "./scripts/docker/Dockerfile.frontend"
+      target: ${TARGET_TAG:-prod}
+    env_file:
+      - tasking-manager.env
+    labels:
+      - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
+      - traefik.http.services.frontend.loadbalancer.server.port=3000
+    # volumes:
+    #   - ./frontend:/usr/src/app
+    networks:
+      - tm-net
+
   traefik:
     image: traefik:v2.10
     restart: always
@@ -129,18 +153,5 @@ services:
     command:
       - --entrypoints.web.address=:80
       - --providers.docker=true
-    networks:
-      - tm-net
-
-  tm-frontend:
-    image: ghcr.io/hotosm/tasking-manager/frontend:main
-    build:
-      context: .
-      dockerfile: "./scripts/docker/Dockerfile.frontend_development"
-    env_file:
-      - tasking-manager.env
-    labels:
-      - traefik.http.routers.frontend.rule=Host(`127.0.0.1`) || Host(`localhost`)
-      - traefik.http.services.frontend.loadbalancer.server.port=3000
     networks:
       - tm-net

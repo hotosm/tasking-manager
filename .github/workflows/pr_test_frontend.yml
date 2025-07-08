@@ -1,20 +1,14 @@
-name: Build & publish TM frontend static files
+name: 🧪 PR Test Frontend
 
 on:
-  push:
-    branches:
-      - deployment/hot-tasking-manager
-      - deployment/demo-tasking-manager
-      - deployment/container-tasking-manager
-
   pull_request:
     branches:
       - main
       - staging
       - develop
-      - deployment/hot-tasking-manager
-      - deployment/demo-tasking-manager
-      - deployment/container-tasking-manager
+    paths:
+      - "frontend/**"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -62,6 +56,10 @@ jobs:
         working-directory: ./frontend
         run: yarn install
 
+      - name: Run Yarn test
+        working-directory: ./frontend
+        run: yarn test
+
       - name: Generate build
         working-directory: ./frontend
         run: |
@@ -73,3 +71,13 @@ jobs:
           name: tm-fe-${{ github.sha }}
           path: ./frontend/build
           retention-days: 2
+
+  frontend-dev-image-build:
+    name: Build dev image for testing
+    uses: hotosm/gh-workflows/.github/workflows/image_build.yml@1.5.1
+    with:
+      image_name: ghcr.io/${{ github.repository }}/frontend
+      build_target: debug
+      dockerfile: scripts/docker/Dockerfile.frontend
+      scan_image: false
+      scan_dockerfile: false
