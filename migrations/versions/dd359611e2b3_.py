@@ -20,7 +20,12 @@ def upgrade():
         "user_next_level",
         sa.Column("user_id", sa.BigInteger(), nullable=False, primary_key=True),
         sa.Column("level_id", sa.Integer(), nullable=False, primary_key=True),
-        sa.Column("nomination_date", sa.DateTime(), nullable=False, server_default=sa.text("current_timestamp")),
+        sa.Column(
+            "nomination_date",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("current_timestamp"),
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
         sa.ForeignKeyConstraint(["level_id"], ["mapping_levels.id"]),
     )
@@ -29,7 +34,12 @@ def upgrade():
         sa.Column("user_id", sa.BigInteger(), nullable=False, primary_key=True),
         sa.Column("level_id", sa.Integer(), nullable=False, primary_key=True),
         sa.Column("voter_id", sa.BigInteger(), nullable=False, primary_key=True),
-        sa.Column("vote_date", sa.DateTime(), nullable=False, server_default=sa.text("current_timestamp")),
+        sa.Column(
+            "vote_date",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("current_timestamp"),
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
         sa.ForeignKeyConstraint(["level_id"], ["mapping_levels.id"]),
         sa.ForeignKeyConstraint(["voter_id"], ["users.id"]),

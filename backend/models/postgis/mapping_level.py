@@ -189,9 +189,13 @@ class MappingLevel(Base):
                 SELECT badge_id FROM user_mapping_badge WHERE user_id = :user_id
             )
         """
-        result = await db.fetch_one(query, values={
-            "level_id": level_id, "user_id": user_id,
-        })
+        result = await db.fetch_one(
+            query,
+            values={
+                "level_id": level_id,
+                "user_id": user_id,
+            },
+        )
 
         return result[0] == 0
 

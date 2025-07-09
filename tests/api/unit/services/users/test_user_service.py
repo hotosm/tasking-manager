@@ -9,7 +9,7 @@ from backend.services.users.user_service import (
     UserServiceError,
 )
 from tests.api.helpers.test_helpers import create_canned_user
-from backend.models.postgis.user import User
+from backend.models.postgis.user import User, UserNextLevel
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.mapping_badge import MappingBadge
 
@@ -167,9 +167,36 @@ class TestUserService:
         assert new_level.id == 1
         assert new_level.name == "BEGINNER"
 
-    @pytest.mark.skip(reason="database not implemented")
-    async def test_check_and_update_mapper_level_pool_of_approval(self):
-        assert False
+    @patch.object(requests, "get")
+    async def test_check_and_update_mapper_level_pool_of_approval(self, mock_get):
+        # Arrange
+        mock_response = MagicMock()
+        mock_response.json = MagicMock(
+            return_value={
+                "result": {
+                    "topics": {"changeset": {"value": 251.0}},
+                },
+            }
+        )
+        mock_get.return_value = mock_response
+        await self.db.execute(
+            "UPDATE mapping_levels SET approvals_required = 1 WHERE id = 2"
+        )
+
+        # Act
+        await UserService.check_and_update_mapper_level(self.test_user.id, self.db)
+
+        # Assert
+        # a badge is assigned
+        badges = await MappingBadge.get_related_to_user(self.test_user.id, self.db)
+        assert len(badges) == 1
+        # no level is upgraded
+        user = await User.get_by_id(self.test_user.id, self.db)
+        new_level = await MappingLevel.get_by_id(user.mapping_level, self.db)
+        assert new_level.id == 1
+        assert new_level.name == "BEGINNER"
+        # user is added to the waiting queue
+        assert await UserNextLevel.is_nominated(user.id, 2, self.db)
 
     @patch.object(requests, "get")
     async def test_check_and_update_mapper_level_max_level(self, mock_get):
@@ -183,7 +210,9 @@ class TestUserService:
             }
         )
         mock_get.return_value = mock_response
-        await self.test_user.set_mapping_level(await MappingLevel.get_by_id(3, self.db), self.db)
+        await self.test_user.set_mapping_level(
+            await MappingLevel.get_by_id(3, self.db), self.db
+        )
 
         # Act
         await UserService.check_and_update_mapper_level(self.test_user.id, self.db)

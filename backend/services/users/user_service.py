@@ -31,7 +31,13 @@ from backend.models.postgis.message import MessageType
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.models.postgis.task import Task, TaskHistory
-from backend.models.postgis.user import User, UserEmail, UserRole, UserStats
+from backend.models.postgis.user import (
+    User,
+    UserEmail,
+    UserRole,
+    UserStats,
+    UserNextLevel,
+)
 from backend.models.postgis.utils import timestamp
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
@@ -916,9 +922,7 @@ class UserService:
                 if next_level.approvals_required == 0:
                     await user.set_mapping_level(next_level, db)
                 else:
-                    pass
-                    # TODO add to pool of pending approvals only if not already
-                    # there
+                    await UserNextLevel.nominate(user.id, next_level.id, db)
 
     @staticmethod
     async def notify_level_upgrade(

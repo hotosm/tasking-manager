@@ -547,6 +547,30 @@ class UserNextLevel(Base):
     level_id = Column(Integer, nullable=False, primary_key=True)
     nomination_date = Column(DateTime, nullable=False, default=timestamp)
 
+    @staticmethod
+    async def nominate(user_id: int, level_id: int, db: Database):
+        await db.execute(
+            """
+            INSERT INTO user_next_level (user_id, level_id, nomination_date)
+            VALUES (:user_id, :level_id, :nomination_date)
+            ON CONFLICT (user_id, level_id) DO NOTHING
+            """,
+            values={
+                "user_id": user_id,
+                "level_id": level_id,
+                "nomination_date": timestamp(),
+            },
+        )
+
+    @staticmethod
+    async def is_nominated(user_id: int, level_id: int, db: Database):
+        result = await db.fetch_one(
+            "SELECT * FROM user_next_level WHERE user_id = :user_id AND level_id = :level_id",
+            values={"user_id": user_id, "level_id": level_id},
+        )
+
+        return True if result else False
+
 
 class UserLevelVote(Base):
     __tablename__ = "user_level_vote"
