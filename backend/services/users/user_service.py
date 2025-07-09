@@ -191,22 +191,7 @@ class UserService:
         :param username: OSM Username
         :param changeset_count: OSM changeset count
         """
-        """
-        Creates user in DB
-        :param osm_id: Unique OSM user id
-        :param username: OSM Username
-        :param changeset_count: OSM changeset count
-        """
-        # Determine mapping level based on changeset count
-        intermediate_level = settings.MAPPER_LEVEL_INTERMEDIATE
-        advanced_level = settings.MAPPER_LEVEL_ADVANCED
-
-        if changeset_count > advanced_level:
-            mapping_level = (await MappingLevel.get_by_name("ADVANCED", db)).id
-        elif intermediate_level < changeset_count <= advanced_level:
-            mapping_level = (await MappingLevel.get_by_name("INTERMEDIATE", db)).id
-        else:
-            mapping_level = (await MappingLevel.get_beginner_level(db)).id
+        mapping_level = (await MappingLevel.get_beginner_level(db)).id
 
         values = {
             "id": osm_id,
