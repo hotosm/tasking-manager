@@ -730,14 +730,26 @@ class ProjectSearchService:
         else:
             sql_query = base_query
         sql_query += order_by_clause
-        all_results = await db.fetch_all(sql_query, values=params)
-        if as_csv:
-            return all_results
+
         page = search_dto.page
         per_page = 14
         offset = (page - 1) * per_page
-        total_count = len(all_results)
-        paginated_results = all_results[offset : offset + per_page]
+        all_results = []
+
+        if as_csv or not search_dto.omit_map_results:
+            all_results = await db.fetch_all(sql_query, values=params)
+
+            if as_csv:
+                return all_results
+
+            total_count = len(all_results)
+            paginated_results = all_results[offset : offset + per_page]
+        else:
+            count_query = f"SELECT COUNT(*) FROM ({sql_query}) as counted"
+            total_count = await db.fetch_val(count_query, values=params)
+            paginated_query = f"{sql_query} LIMIT {per_page} OFFSET {offset}"
+            paginated_results = await db.fetch_all(paginated_query, values=params)
+
         pagination_dto = Pagination.from_total_count(page, per_page, total_count)
         return all_results, paginated_results, pagination_dto
 
