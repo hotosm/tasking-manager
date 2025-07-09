@@ -131,9 +131,9 @@ function BadgeImageField({ input }) {
   let message = intl.formatMessage(messages.uploadNew);
 
   if (uploading) {
-    message = intl(messages.uploading);
+    message = intl.formatMessage(messages.uploading);
   } else if (error) {
-    message = intl(messages.imageError);
+    message = intl.formatMessage(messages.imageError);
   }
 
   return <div className="badge-info__img-container">
