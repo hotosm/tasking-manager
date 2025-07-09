@@ -171,7 +171,7 @@ class UserService:
         response = requests.get(url, headers=headers)
 
         if response.status_code != 200:
-            raise UserServiceError('Error querying ohsome API')
+            raise UserServiceError('External-Error in Ohsome API')
 
         json_data = response.json()
         new_stats = {}
