@@ -23,4 +23,5 @@ export default defineMessages({
   uploading: { id: 'management.badges.uploading', defaultMessage: 'Uploading...' },
   value: { id: 'management.badges.value', defaultMessage: 'Value' },
   waterway: { id: 'management.badges.waterway', defaultMessage: 'km of waterways added' },
+  changeset: { id: 'management.badges.changeset', defaultMessage: 'Number of changesets' },
 });

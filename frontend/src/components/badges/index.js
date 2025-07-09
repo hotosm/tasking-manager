@@ -160,16 +160,12 @@ function BadgeRequirementsField({ input }) {
 
   const newRequirementFieldsComplete = newRequirementMetric && newRequirementValue;
 
-  const metrics = [
-    {value: "changesets", label: intl.formatMessage(messages.changesets)},
-  ];
-
-  for (let topic of OHSOME_STATS_TOPICS.split(',')) {
-    metrics.push({
-      value: `topics.${topic}.added`,
+  const metrics = OHSOME_STATS_TOPICS.split(',').map((topic) => {
+    return {
+      value: topic,
       label: intl.formatMessage(messages[topic]),
-    });
-  }
+    };
+  });
 
   const handleRemoveRequirement = (metric) => {
     data[metric] = undefined;
