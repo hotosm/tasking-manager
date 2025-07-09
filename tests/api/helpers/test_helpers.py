@@ -129,42 +129,77 @@ async def get_or_create_levels(db):
     stmt = """
         INSERT INTO mapping_levels (
             id, name, approvals_required, ordering, is_beginner
-        )
-        VALUES (:id, :name, :approvals_required, :ordering, :is_beginner)
+        ) VALUES (:id, :name, :approvals_required, :ordering, :is_beginner)
         ON CONFLICT (id) DO NOTHING
     """
-    await db.execute(
+    await db.execute_many(
         stmt,
-        {
-            "id": 1,
-            "name": "BEGINNER",
-            "approvals_required": 0,
-            "ordering": 1,
-            "is_beginner": True,
-        },
+        [
+            {
+                "id": 1,
+                "name": "BEGINNER",
+                "approvals_required": 0,
+                "ordering": 1,
+                "is_beginner": True,
+            },
+            {
+                "id": 2,
+                "name": "INTERMEDIATE",
+                "approvals_required": 0,
+                "ordering": 2,
+                "is_beginner": False,
+            },
+            {
+                "id": 3,
+                "name": "ADVANCED",
+                "approvals_required": 0,
+                "ordering": 3,
+                "is_beginner": False,
+            },
+        ],
     )
-    await db.execute(
-        stmt,
-        {
-            "id": 2,
-            "name": "INTERMEDIATE",
-            "approvals_required": 0,
-            "ordering": 2,
-            "is_beginner": False,
-        },
-    )
-    await db.execute(
-        stmt,
-        {
-            "id": 3,
-            "name": "ADVANCED",
-            "approvals_required": 0,
-            "ordering": 3,
-            "is_beginner": False,
-        },
-    )
-
     await db.execute("SELECT setval('mapping_levels_id_seq', 3)")
+    stmt = """
+        INSERT INTO mapping_badges (
+            id, name, description, requirements, image_path, is_enabled, is_internal
+        ) VALUES (:id, :name, :description, :requirements, :image_path, :is_enabled, :is_internal)
+        ON CONFLICT (id) DO NOTHING
+    """
+    await db.execute_many(
+        stmt,
+        [
+            {
+                "id": 1,
+                "name": "INTERMEDIATE_internal",
+                "description": "",
+                "requirements": '{"changeset": 250}',
+                "image_path": "",
+                "is_enabled": True,
+                "is_internal": True,
+            },
+            {
+                "id": 2,
+                "name": "ADVANCED_internal",
+                "description": "",
+                "requirements": '{"changeset": 500}',
+                "image_path": "",
+                "is_enabled": True,
+                "is_internal": True,
+            },
+        ],
+    )
+    await db.execute("SELECT setval('mapping_badges_id_seq', 2)")
+    stmt = """
+        INSERT INTO mapping_level_badges (level_id, badge_id) values (:level_id, :badge_id)
+        ON CONFLICT (level_id, badge_id) DO NOTHING
+    """
+    await db.execute_many(
+        stmt,
+        [
+            {"level_id": 2, "badge_id": 1},
+            {"level_id": 3, "badge_id": 2},
+        ],
+    )
 
 
 async def return_canned_user(db, username=TEST_USERNAME, id=TEST_USER_ID) -> User:

@@ -1,3 +1,5 @@
+import json
+
 from databases import Database
 from sqlalchemy import Integer, String, Column, ForeignKey, Boolean, JSON
 
@@ -29,6 +31,13 @@ class MappingBadge(Base):
             id=self.id,
             name=self.name,
         )
+
+    def all_requirements_satisfied(self, stats: dict) -> bool:
+        for key, value in json.loads(self.requirements).items():
+            if stats.get(key, 0) < value:
+                return False
+
+        return True
 
     def as_dto(self) -> MappingBadgeDTO:
         return MappingBadgeDTO(
@@ -123,5 +132,42 @@ class MappingBadge(Base):
                 level_id = :level_id
         """
         result = await db.fetch_all(query, values={"level_id": level_id})
+
+        return [MappingBadge(**row) for row in result]
+
+    @staticmethod
+    async def get_related_to_user(user_id: int, db: Database):
+        query = """
+            SELECT
+                b.id,
+                b.name,
+                b.description,
+                b.image_path,
+                b.requirements,
+                b.is_enabled,
+                b.is_internal
+            FROM
+                user_mapping_badge AS ub
+            LEFT JOIN
+                mapping_badges AS b ON b.id = ub.badge_id
+            WHERE
+                user_id = :user_id
+        """
+        result = await db.fetch_all(query, values={"user_id": user_id})
+
+        return [MappingBadge(**row) for row in result]
+
+    @staticmethod
+    async def available_badges_for_user(user_id: int, db: Database):
+        query = """
+            SELECT *
+            FROM mapping_badges
+            WHERE id NOT IN (
+                SELECT badge_id
+                FROM user_mapping_badge
+                WHERE user_id = :user_id
+            )
+        """
+        result = await db.fetch_all(query, values={"user_id": user_id})
 
         return [MappingBadge(**row) for row in result]

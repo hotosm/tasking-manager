@@ -26,6 +26,7 @@ from backend.models.dtos.user_dto import (
 )
 from backend.models.postgis.interests import Interest, project_interests
 from backend.models.postgis.mapping_level import MappingLevel
+from backend.models.postgis.mapping_badge import MappingBadge
 from backend.models.postgis.message import MessageType
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
@@ -165,12 +166,16 @@ class UserService:
             response = requests.get(url, headers=headers)
 
             json_data = response.json()
+            new_stats = {}
 
-            await UserStats.update(user_id, json.dumps(json_data["result"]), db)
+            for key, value in json_data["result"]["topics"].items():
+                new_stats[key] = value["value"]
 
-            return json_data
+            await UserStats.update(user_id, json.dumps(new_stats), db)
+
+            return new_stats
         except Exception as e:
-            logger.warning(f"Stats failed to update at login: {e}")
+            logger.error(f"Stats failed to update at login: {e}")
 
     @staticmethod
     async def register_user(osm_id, username, changeset_count, picture_url, email, db):
@@ -888,52 +893,32 @@ class UserService:
         if user_level.id == (await MappingLevel.get_max_level(db)).id:
             return  # User has achieved the highest level, no need to proceed
 
-        intermediate_level = settings.MAPPER_LEVEL_INTERMEDIATE
-        advanced_level = settings.MAPPER_LEVEL_ADVANCED
+        async with db.transaction():
+            # Update user stats
+            stats = await UserService.get_and_save_stats(user_id, db)
 
-        intermediate = await MappingLevel.get_by_name("INTERMEDIATE", db)
-        advanced = await MappingLevel.get_by_name("ADVANCED", db)
+            # Assign badges based on stats
+            # * get all badges that the user doesn't have
+            badges = await MappingBadge.available_badges_for_user(user_id, db)
+            # * compare each with stats, get list of assignable ids
+            assignable_ids = []
 
-        try:
-            osm_details = OSMService.get_osm_details_for_user(user_id)
+            for badge in badges:
+                if badge.all_requirements_satisfied(stats):
+                    assignable_ids.append(badge.id)
+            # * assign all badges
+            await user.assign_badges(assignable_ids, db)
 
-            if (
-                osm_details.changeset_count > advanced_level
-                and user.mapping_level != advanced.id
-            ):
-                update_query = """
-                    UPDATE users
-                    SET mapping_level = :new_level
-                    WHERE id = :user_id
-                """
-                await db.execute(
-                    update_query,
-                    {"new_level": advanced.id, "user_id": user_id},
-                )
-                await UserService.notify_level_upgrade(
-                    user_id, user.username, "ADVANCED", db
-                )
+            # Assign levels based on badges
+            next_level = await MappingLevel.get_next(user_level.ordering, db)
 
-            elif (
-                intermediate_level < osm_details.changeset_count < advanced_level
-                and user.mapping_level != intermediate
-            ):
-                update_query = """
-                    UPDATE users
-                    SET mapping_level = :new_level
-                    WHERE id = :user_id
-                """
-                await db.execute(
-                    update_query,
-                    {"new_level": intermediate.id, "user_id": user_id},
-                )
-                await UserService.notify_level_upgrade(
-                    user_id, user.username, "INTERMEDIATE", db
-                )
-
-        except OSMServiceError:
-            # Log the error and move on; don't block the process
-            logger.error("Error attempting to update mapper level for user %s", user_id)
+            if await MappingLevel.all_badges_satisfied(next_level.id, user.id, db):
+                if next_level.approvals_required == 0:
+                    await user.set_mapping_level(next_level, db)
+                else:
+                    pass
+                    # TODO add to pool of pending approvals only if not already
+                    # there
 
     @staticmethod
     async def notify_level_upgrade(

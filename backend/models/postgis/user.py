@@ -401,6 +401,17 @@ class User(Base):
         """
         await db.execute(query, values={"user_id": self.id, "mapping_level": level.id})
 
+    async def assign_badges(self, badge_ids: [int], db: Database):
+        await db.execute_many(
+            """
+            INSERT INTO user_mapping_badge (user_id, badge_id, date_assigned)
+            VALUES (:user_id, :badge_id, current_timestamp)
+        """,
+            values=[
+                {"user_id": self.id, "badge_id": badge_id} for badge_id in badge_ids
+            ],
+        )
+
     async def accept_license_terms(self, user_id, license_id: int, db: Database):
         """Associate the user in scope with the supplied license"""
         _ = await License.get_by_id(license_id, db)
@@ -501,7 +512,7 @@ class UserStats(Base):
     __tablename__ = "user_stats"
 
     id = Column(BigInteger, primary_key=True)
-    user_id = Column(BigInteger, nullable=False)
+    user_id = Column(BigInteger, nullable=False, unique=True)
     stats = Column(JSON, nullable=False)
     date_obtained = Column(DateTime, nullable=False, default=timestamp)
 
@@ -519,3 +530,11 @@ class UserStats(Base):
                 "stats": stats,
             },
         )
+
+
+class UserMappingBadge(Base):
+    __tablename__ = "user_mapping_badge"
+
+    user_id = Column(Integer, nullable=False, primary_key=True)
+    badge_id = Column(Integer, nullable=False, primary_key=True)
+    date_assigned = Column(DateTime, nullable=False, default=timestamp)

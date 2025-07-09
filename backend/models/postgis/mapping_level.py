@@ -164,6 +164,37 @@ class MappingLevel(Base):
 
         return MappingLevel(**result) if result is not None else None
 
+    @staticmethod
+    async def get_next(ordering: int, db: Database):
+        """Gets the next level given a level's ordering"""
+        query = """
+            SELECT *
+            FROM mapping_levels
+            WHERE ordering = (
+                SELECT min(ordering)
+                FROM mapping_levels
+                WHERE ordering > :ordering
+            )
+        """
+        result = await db.fetch_one(query, values={"ordering": ordering})
+
+        return MappingLevel(**result) if result else None
+
+    @staticmethod
+    async def all_badges_satisfied(level_id: int, user_id: int, db: Database):
+        query = """
+            SELECT count(*)
+            FROM mapping_level_badges
+            WHERE level_id = :level_id AND badge_id NOT IN (
+                SELECT badge_id FROM user_mapping_badge WHERE user_id = :user_id
+            )
+        """
+        result = await db.fetch_one(query, values={
+            "level_id": level_id, "user_id": user_id,
+        })
+
+        return result[0] == 0
+
 
 class MappingLevelBadges(Base):
     __tablename__ = "mapping_level_badges"
