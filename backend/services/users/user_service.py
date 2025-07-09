@@ -166,22 +166,22 @@ class UserService:
 
     @staticmethod
     async def get_and_save_stats(user_id: int, db: Database) -> dict:
-        try:
-            url = f"{settings.OHSOME_STATS_API_URL}/stats/user?userId={user_id}&topics={settings.OHSOME_STATS_TOPICS}"
-            headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
-            response = requests.get(url, headers=headers)
+        url = f"{settings.OHSOME_STATS_API_URL}/stats/user?userId={user_id}&topics={settings.OHSOME_STATS_TOPICS}"
+        headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
+        response = requests.get(url, headers=headers)
 
-            json_data = response.json()
-            new_stats = {}
+        if response.status_code != 200:
+            raise UserServiceError('Error querying ohsome API')
 
-            for key, value in json_data["result"]["topics"].items():
-                new_stats[key] = value["value"]
+        json_data = response.json()
+        new_stats = {}
 
-            await UserStats.update(user_id, json.dumps(new_stats), db)
+        for key, value in json_data["result"]["topics"].items():
+            new_stats[key] = value["value"]
 
-            return new_stats
-        except Exception as e:
-            logger.error(f"Stats failed to update at login: {e}")
+        await UserStats.update(user_id, json.dumps(new_stats), db)
+
+        return new_stats
 
     @staticmethod
     async def register_user(osm_id, username, changeset_count, picture_url, email, db):
@@ -876,7 +876,7 @@ class UserService:
         return osm_dto
 
     @staticmethod
-    async def check_and_update_mapper_level(user_id: int, db: Database):
+    async def check_and_update_mapper_level(user_id: int, db: Database, stats: dict=None):
         """Check user's mapping level and update if they have crossed threshold"""
         user = await UserService.get_user_by_id(user_id, db)
         user_level = await MappingLevel.get_by_id(user.mapping_level, db)
@@ -886,7 +886,8 @@ class UserService:
 
         async with db.transaction():
             # Update user stats
-            stats = await UserService.get_and_save_stats(user_id, db)
+            if not stats:
+                stats = await UserService.get_and_save_stats(user_id, db)
 
             # Assign badges based on stats
             # * get all badges that the user doesn't have

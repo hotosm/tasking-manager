@@ -233,7 +233,8 @@ async def update_stats(
 ):
     try:
         user = await UserService.get_user_by_username(username, db)
-        await UserService.get_and_save_stats(user.id, db)
+        stats = await UserService.get_and_save_stats(user.id, db)
+        await UserService.check_and_update_mapper_level(user.id, db, stats)
     except UserServiceError as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},

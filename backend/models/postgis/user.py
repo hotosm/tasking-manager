@@ -531,6 +531,16 @@ class UserStats(Base):
             },
         )
 
+    @staticmethod
+    async def get_for_user(user_id: int, db: Database):
+        result = await db.fetch_one(
+            "SELECT * FROM user_stats WHERE user_id = :user_id",
+            values={
+                "user_id": user_id,
+            },
+        )
+        return UserStats(**result) if result else None
+
 
 class UserMappingBadge(Base):
     __tablename__ = "user_mapping_badge"

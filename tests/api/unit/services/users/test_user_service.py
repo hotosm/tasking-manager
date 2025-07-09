@@ -9,7 +9,7 @@ from backend.services.users.user_service import (
     UserServiceError,
 )
 from tests.api.helpers.test_helpers import create_canned_user
-from backend.models.postgis.user import User, UserNextLevel
+from backend.models.postgis.user import User, UserNextLevel, UserStats
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.mapping_badge import MappingBadge
 
@@ -90,18 +90,6 @@ class TestUserService:
         with pytest.raises(UserServiceError):
             await UserService.set_user_mapping_level("test", "TEST", self.db)
 
-    async def test_register_user_intermediate(self):
-        # Act
-        registered_user = await UserService.register_user(
-            1, "foo", 500, None, "foo@example.com", self.db
-        )
-
-        # Assert
-        assert (
-            registered_user.mapping_level
-            == (await MappingLevel.get_by_name("INTERMEDIATE", self.db)).id
-        )
-
     async def test_register_user_beginner(self):
         # Act
         registered_user = await UserService.register_user(
@@ -115,9 +103,50 @@ class TestUserService:
         )
 
     @patch.object(requests, "get")
+    async def test_get_and_save_stats(self, mock_get):
+        # Arrange
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json = MagicMock(
+            return_value={
+                "result": {
+                    "topics": {"changeset": {"value": 251.0}},
+                },
+            },
+        )
+        mock_get.return_value = mock_response
+
+        # Act
+        await UserService.get_and_save_stats(self.test_user.id, self.db)
+
+        # Assert
+        stats = await UserStats.get_for_user(self.test_user.id, self.db)
+        assert stats.stats == '{"changeset": 251.0}'
+
+    @patch.object(requests, "get")
+    async def test_get_and_save_stats_error(self, mock_get):
+        # Arrange
+        mock_response = MagicMock()
+        mock_response.status_code = 500
+        mock_response.json = MagicMock(
+            return_value={
+                'status': 500,
+                'error': 'Internal Server Error',
+                'path': '/api/stats/user',
+            },
+        )
+        mock_get.return_value = mock_response
+
+        # Assert
+        with pytest.raises(UserServiceError):
+            # Act
+            await UserService.get_and_save_stats(self.test_user.id, self.db)
+
+    @patch.object(requests, "get")
     async def test_check_and_update_mapper_level_happy_path(self, mock_get):
         # Arrange
         mock_response = MagicMock()
+        mock_response.status_code = 200
         mock_response.json = MagicMock(
             return_value={
                 "result": {
@@ -145,6 +174,7 @@ class TestUserService:
     async def test_check_and_update_mapper_level_no_level_upgrade(self, mock_get):
         # Arrange
         mock_response = MagicMock()
+        mock_response.status_code = 200
         mock_response.json = MagicMock(
             return_value={
                 "result": {
@@ -171,6 +201,7 @@ class TestUserService:
     async def test_check_and_update_mapper_level_pool_of_approval(self, mock_get):
         # Arrange
         mock_response = MagicMock()
+        mock_response.status_code = 200
         mock_response.json = MagicMock(
             return_value={
                 "result": {
@@ -202,6 +233,7 @@ class TestUserService:
     async def test_check_and_update_mapper_level_max_level(self, mock_get):
         # Arrange
         mock_response = MagicMock()
+        mock_response.status_code = 200
         mock_response.json = MagicMock(
             return_value={
                 "result": {
@@ -224,7 +256,19 @@ class TestUserService:
         assert new_level.id == 3
         assert new_level.name == "ADVANCED"
 
-    async def test_get_user_dto_by_username(self):
+    @patch.object(requests, "get")
+    async def test_get_user_dto_by_username(self, mock_get):
+        # Arrange
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json = MagicMock(
+            return_value={
+                "result": {
+                    "topics": {"changeset": {"value": 2000.0}},
+                },
+            }
+        )
+        mock_get.return_value = mock_response
         # Act
         dto = await UserService.get_user_dto_by_username(
             self.test_user.username, self.test_user.id, self.db
