@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { ORG_CODE } from '../../config';
-import { createPopup } from '../../utils/login';
+import { createPopup } from '../../utils/createPopup';
 import { getTwitterLink, getLinkedInLink, getFacebookLink } from '../../utils/shareFunctions';
 import { TwitterIcon, FacebookIcon, LinkedinIcon, ShareIcon } from '../svgIcons';
 

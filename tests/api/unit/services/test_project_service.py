@@ -216,6 +216,7 @@ class TestProjectService:
         assert not allowed
         assert reason == ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE
 
+    @patch("backend.services.project_service.db_connection.database.connection")
     @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
     @patch.object(Project, "calculate_tasks_percent")
     @patch.object(ProjectInfo, "get_dto_for_locale")
@@ -228,6 +229,7 @@ class TestProjectService:
         mock_project_info,
         mock_project_completion,
         mock_send_email,
+        mock_db_connection,
     ):
         # Arrange
         project = Project()
@@ -248,12 +250,15 @@ class TestProjectService:
             "Settings", (), {"SEND_PROJECT_EMAIL_UPDATES": True}
         )()  # Mock settings object
 
+        # Mock the database connection context manager
+        mock_db_connection.return_value.__aenter__.return_value = self.db
         # Act
         await ProjectService.send_email_on_project_progress(1)
 
         # Assert
         mock_send_email.assert_called_once()
 
+    @patch("backend.services.project_service.db_connection.database.connection")
     @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
     @patch.object(Project, "calculate_tasks_percent")
     @patch.object(ProjectInfo, "get_dto_for_locale")
@@ -266,6 +271,7 @@ class TestProjectService:
         mock_project_info,
         mock_project_completion,
         mock_send_email,
+        mock_db_connection,
     ):
         # Arrange
         project = Project()
@@ -284,12 +290,15 @@ class TestProjectService:
             "Settings", (), {"SEND_PROJECT_EMAIL_UPDATES": True}
         )()
 
+        # Mock the database connection context manager
+        mock_db_connection.return_value.__aenter__.return_value = self.db
         # Act
         await ProjectService.send_email_on_project_progress(1)
 
         # Assert
         mock_send_email.assert_called_once()
 
+    @patch("backend.services.project_service.db_connection.database.connection")
     @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
     @patch.object(Project, "calculate_tasks_percent")
     @patch.object(ProjectInfo, "get_dto_for_locale")
@@ -302,6 +311,7 @@ class TestProjectService:
         mock_project_info,
         mock_project_completion,
         mock_send_email,
+        mock_db_connection,
     ):
         # Arrange
         project = Project()
@@ -320,18 +330,27 @@ class TestProjectService:
             "Settings", (), {"SEND_PROJECT_EMAIL_UPDATES": True}
         )()
 
+        # Mock the database connection context manager
+        mock_db_connection.return_value.__aenter__.return_value = self.db
+
         # Act
         await ProjectService.send_email_on_project_progress(1)
 
         # Assert
         assert not mock_send_email.called
 
+    @patch("backend.services.project_service.db_connection.database.connection")
     @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
     @patch.object(Project, "calculate_tasks_percent")
     @patch.object(ProjectService, "get_project_by_id")
     @patch("backend.services.project_service.get_settings")
     async def test_send_email_on_project_progress_doesnt_send_email_if_email_already_sent(
-        self, mock_settings, mock_project, mock_project_completion, mock_send_email
+        self,
+        mock_settings,
+        mock_project,
+        mock_project_completion,
+        mock_send_email,
+        mock_db_connection,
     ):
         # Arrange
         project = Project()
@@ -347,17 +366,21 @@ class TestProjectService:
             "Settings", (), {"SEND_PROJECT_EMAIL_UPDATES": True}
         )()
 
+        # Mock the database connection context manager
+        mock_db_connection.return_value.__aenter__.return_value = self.db
+
         # Act
         await ProjectService.send_email_on_project_progress(1)
 
         # Assert
         assert not mock_send_email.called
 
+    @patch("backend.services.project_service.db_connection.database.connection")
     @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
     @patch.object(ProjectService, "get_project_by_id")
     @patch("backend.services.project_service.get_settings")
     async def test_send_email_on_project_progress_doesnt_send_email_if_send_project_update_email_is_disabled(
-        self, mock_settings, mock_project, mock_send_email
+        self, mock_settings, mock_project, mock_send_email, mock_db_connection
     ):
         # Arrange
         project = Project()
@@ -373,6 +396,8 @@ class TestProjectService:
             "Settings", (), {"SEND_PROJECT_EMAIL_UPDATES": False}
         )()
 
+        # Mock the database connection context manager
+        mock_db_connection.return_value.__aenter__.return_value = self.db
         # Act
         await ProjectService.send_email_on_project_progress(1)
 
