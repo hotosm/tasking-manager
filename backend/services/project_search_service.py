@@ -721,6 +721,10 @@ class ProjectSearchService:
                     order_by += " DESC"
                 order_by_clause = f" ORDER BY {order_by}"
 
+            # For deterministic ordering and pagination consistency.
+            if order_by not in ("id", "p.id"):
+                order_by_clause += ", p.id DESC"
+
         if filters:
             sql_query = base_query + " AND " + " AND ".join(filters)
         else:
@@ -732,11 +736,8 @@ class ProjectSearchService:
         page = search_dto.page
         per_page = 14
         offset = (page - 1) * per_page
-        sql_query_paginated = sql_query + f" LIMIT {per_page} OFFSET {offset}"
-        # Get total count
-        count_query = f"SELECT COUNT(*) FROM ({sql_query}) AS count_subquery"
-        total_count = await db.fetch_val(count_query, values=params)
-        paginated_results = await db.fetch_all(sql_query_paginated, values=params)
+        total_count = len(all_results)
+        paginated_results = all_results[offset : offset + per_page]
         pagination_dto = Pagination.from_total_count(page, per_page, total_count)
         return all_results, paginated_results, pagination_dto
 
