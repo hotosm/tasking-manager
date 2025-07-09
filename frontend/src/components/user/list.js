@@ -249,9 +249,9 @@ export const UsersTable = ({ filters, setFilters }) => {
       return {
         id: `stats_${topic}`,
         accessorFn: (row) => {
-          const topics = row.stats?.topics;
+          const topics = row.stats || {};
 
-          return topics ? topics[topic].added : '';
+          return topics[topic];
         },
         header: () => (<FormattedMessage {...messages[`tableCol_${topic}`]} />),
       };
@@ -269,7 +269,7 @@ export const UsersTable = ({ filters, setFilters }) => {
         cell: ({row}) => {
           if (row.original.statsLastUpdated) {
             return formatDistance(
-              new Date(row.original.statsLastUpdated),
+              new Date(Date.parse(row.original.statsLastUpdated+'Z')),
               new Date(),
               { addSuffix: true },
             );

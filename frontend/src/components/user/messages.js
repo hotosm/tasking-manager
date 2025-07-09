@@ -392,4 +392,5 @@ export default defineMessages({
   tableCol_highway: { id: 'user.table.highway', defaultMessage: "Highways" },
   tableCol_waterway: { id: 'user.table.waterway', defaultMessage: "Waterways" },
   tableCol_building: { id: 'user.table.building', defaultMessage: "Buldings" },
+  tableCol_changeset: { id: 'user.table.changeset', defaultMessage: "Changesets" },
 });
