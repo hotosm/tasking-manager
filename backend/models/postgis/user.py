@@ -535,6 +535,23 @@ class UserStats(Base):
 class UserMappingBadge(Base):
     __tablename__ = "user_mapping_badge"
 
-    user_id = Column(Integer, nullable=False, primary_key=True)
+    user_id = Column(BigInteger, nullable=False, primary_key=True)
     badge_id = Column(Integer, nullable=False, primary_key=True)
     date_assigned = Column(DateTime, nullable=False, default=timestamp)
+
+
+class UserNextLevel(Base):
+    __tablename__ = "user_next_level"
+
+    user_id = Column(BigInteger, nullable=False, primary_key=True)
+    level_id = Column(Integer, nullable=False, primary_key=True)
+    nomination_date = Column(DateTime, nullable=False, default=timestamp)
+
+
+class UserLevelVote(Base):
+    __tablename__ = "user_level_vote"
+
+    user_id = Column(BigInteger, nullable=False, primary_key=True)
+    level_id = Column(Integer, nullable=False, primary_key=True)
+    voter_id = Column(BigInteger, nullable=False, primary_key=True)
+    vote_date = Column(DateTime, nullable=False, default=timestamp)
