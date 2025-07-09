@@ -37,11 +37,17 @@ export const useProjectStatisticsQuery = (projectId) => {
   });
 };
 
-export const useOsmStatsQuery = () => {
+export const useOsmStatsQuery = ({ topics = [] }) => {
+  // Converts the 'topics' array into a query string like '&topics=building&topics=road'
+  const topicQueryParams = topics?.reduce((acc, curr) => `${acc}&topics=${curr}`, '');
+
   const fetchOsmStats = ({ signal }) => {
-    return api().get(`${OHSOME_STATS_API_URL}/stats/${defaultChangesetComment}-%2A`, {
-      signal,
-    });
+    return api().get(
+      `${OHSOME_STATS_API_URL}/stats?hashtag=${defaultChangesetComment}-%2A${topicQueryParams}`,
+      {
+        signal,
+      },
+    );
   };
 
   return useQuery({
