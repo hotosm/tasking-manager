@@ -16,6 +16,7 @@ import { SearchIcon, CloseIcon, SettingsIcon, CheckIcon, RefreshIcon } from '../
 import { Dropdown } from '../dropdown';
 import { nCardPlaceholders } from './usersPlaceholder';
 import { OHSOME_STATS_TOPICS } from '../../config';
+import { Button } from '../button';
 
 const UserFilter = ({ filters, setFilters, updateFilters }) => {
   const inputRef = useRef(null);
@@ -212,6 +213,23 @@ export const UsersTable = ({ filters, setFilters }) => {
       );
   };
 
+  const handleApprove = (user) => {
+    const endpoint = `users/${user.username}/actions/approve-level`;
+
+    fetchLocalJSONAPI(endpoint, token, 'PATCH')
+      .then(() => {
+        setStatus({ success: true });
+        toast.success(
+          <FormattedMessage {...messages.levelApproved} />,
+        );
+      })
+      .catch(() =>
+        toast.error(
+          <FormattedMessage {...messages.failedApprovingLevel} />,
+        ),
+      );
+  };
+
   const COLUMNS = Array.prototype.concat.call(
     [
       {
@@ -239,7 +257,7 @@ export const UsersTable = ({ filters, setFilters }) => {
         header: () => (<FormattedMessage {...messages.tableLevel} />),
       },
       {
-        accessorKey: 'role',
+        id: 'role',
         header: () => (<FormattedMessage {...messages.tableRole} />),
         cell: ({row}) => <FormattedMessage {...messages[`userRole${row.original.role}`]} />,
       }
@@ -261,7 +279,10 @@ export const UsersTable = ({ filters, setFilters }) => {
       {
         id: 'levelUpgrade',
         header: () => (<FormattedMessage {...messages.tableUpgrade} />),
-        cell: () => null,
+        cell: ({row}) => (row.original.requires_approval && <Button
+          className="bg-black-90 white"
+          onClick={() => handleApprove(row.original)}
+        ><FormattedMessage {...messages.tableApprove} /></Button>),
       },
       {
         id: 'statsLastUpdated',

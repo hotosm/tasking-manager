@@ -1,5 +1,6 @@
 import json
 import geojson
+import sqlalchemy as sa
 from databases import Database
 from sqlalchemy import (
     ARRAY,
@@ -175,9 +176,10 @@ class User(Base):
         """Search and filter all users"""
 
         base_query = """
-            SELECT u.id, u.username, u.mapping_level, u.role, u.picture_url, us.date_obtained, us.stats
+            SELECT u.id, u.username, u.mapping_level, u.role, u.picture_url, us.date_obtained, us.stats, un.level_id::bool as requires_approval
             FROM users AS u
             LEFT JOIN user_stats AS us ON u.id = us.user_id
+            LEFT JOIN user_next_level AS un ON u.id = un.user_id
         """
         filters = []
         params = {}
@@ -223,6 +225,7 @@ class User(Base):
             listed_user.picture_url = result["picture_url"]
             listed_user.stats_last_updated = result["date_obtained"]
             listed_user.stats = json.loads(result["stats"]) if result["stats"] else None
+            listed_user.requires_approval = result["requires_approval"]
             listed_user.role = UserRole(result["role"]).name
             dto.users.append(listed_user)
 
@@ -558,6 +561,17 @@ class UserNextLevel(Base):
     nomination_date = Column(DateTime, nullable=False, default=timestamp)
 
     @staticmethod
+    async def get_for_user(user_id: int, db: Database):
+        result = await db.fetch_one(
+            "SELECT * FROM user_next_level WHERE user_id = :user_id",
+            values={
+                "user_id": user_id,
+            },
+        )
+
+        return UserNextLevel(**result) if result else None
+
+    @staticmethod
     async def nominate(user_id: int, level_id: int, db: Database):
         await db.execute(
             """
@@ -581,6 +595,16 @@ class UserNextLevel(Base):
 
         return True if result else False
 
+    @staticmethod
+    async def clear(user_id: int, level_id: int, db: Database):
+        await db.execute(
+            "DELETE FROM user_next_level WHERE user_id = :user_id AND level_id = :level_id",
+            values={
+                "user_id": user_id,
+                "level_id": level_id,
+            }
+        )
+
 
 class UserLevelVote(Base):
     __tablename__ = "user_level_vote"
@@ -588,4 +612,28 @@ class UserLevelVote(Base):
     user_id = Column(BigInteger, nullable=False, primary_key=True)
     level_id = Column(Integer, nullable=False, primary_key=True)
     voter_id = Column(BigInteger, nullable=False, primary_key=True)
-    vote_date = Column(DateTime, nullable=False, default=timestamp)
+    vote_date = Column(DateTime, nullable=False, default=timestamp, server_default=sa.text("current_timestamp"))
+
+    @staticmethod
+    async def vote(user_id: int, level_id: int, voter_id: int, db: Database):
+        await db.execute("""
+            INSERT INTO user_level_vote (user_id, level_id, voter_id)
+            VALUES (:user_id, :level_id, :voter_id)
+        """, values={
+            "user_id": user_id,
+            "level_id": level_id,
+            "voter_id": voter_id,
+        })
+
+    @staticmethod
+    async def count(user_id: int, level_id: int, db: Database):
+        result = await db.fetch_one("""
+            SELECT count(*)
+            FROM user_level_vote
+            WHERE user_id = :user_id AND level_id = :level_id
+        """, values={
+            "user_id": user_id,
+            "level_id": level_id,
+        })
+
+        return result[0]

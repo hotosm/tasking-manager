@@ -37,6 +37,7 @@ from backend.models.postgis.user import (
     UserRole,
     UserStats,
     UserNextLevel,
+    UserLevelVote,
 )
 from backend.models.postgis.utils import timestamp
 from backend.services.messaging.smtp_service import SMTPService
@@ -171,7 +172,7 @@ class UserService:
         response = requests.get(url, headers=headers)
 
         if response.status_code != 200:
-            raise UserServiceError('External-Error in Ohsome API')
+            raise UserServiceError("External-Error in Ohsome API")
 
         json_data = response.json()
         new_stats = {}
@@ -876,7 +877,9 @@ class UserService:
         return osm_dto
 
     @staticmethod
-    async def check_and_update_mapper_level(user_id: int, db: Database, stats: dict=None):
+    async def check_and_update_mapper_level(
+        user_id: int, db: Database, stats: dict = None
+    ):
         """Check user's mapping level and update if they have crossed threshold"""
         user = await UserService.get_user_by_id(user_id, db)
         user_level = await MappingLevel.get_by_id(user.mapping_level, db)
@@ -909,6 +912,27 @@ class UserService:
                     await user.set_mapping_level(next_level, db)
                 else:
                     await UserNextLevel.nominate(user.id, next_level.id, db)
+
+    @staticmethod
+    async def approve_level(user_id: int, voter_id: int, db: Database):
+        if user_id == voter_id:
+            raise UserServiceError("PermisisonError-User cannot vote for themselves")
+
+        async with db.transaction():
+            level_request = await UserNextLevel.get_for_user(user_id, db)
+
+            if not level_request:
+                return
+
+            requested_level = await MappingLevel.get_by_id(level_request.level_id, db)
+            await UserLevelVote.vote(user_id, requested_level.id, voter_id, db)
+
+            votes = await UserLevelVote.count(user_id, requested_level.id, db)
+
+            if votes >= requested_level.approvals_required:
+                user = await User.get_by_id(user_id, db)
+                await user.set_mapping_level(requested_level, db)
+                await UserNextLevel.clear(user_id, requested_level.id, db)
 
     @staticmethod
     async def notify_level_upgrade(

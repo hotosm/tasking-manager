@@ -393,4 +393,7 @@ export default defineMessages({
   tableCol_waterway: { id: 'user.table.waterway', defaultMessage: "Waterways" },
   tableCol_building: { id: 'user.table.building', defaultMessage: "Buldings" },
   tableCol_changeset: { id: 'user.table.changeset', defaultMessage: "Changesets" },
+  tableApprove: { id: 'user.table.approve', defaultMessage: "Approve" },
+  levelApproved: { id: 'user.levelApproved', defaultMessage: "User approved" },
+  failedApprovingLevel: { id: 'user.failedApprovingLevel', defaultMessage: "Failed approving level" },
 });

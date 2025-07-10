@@ -194,6 +194,7 @@ class ListedUser(BaseModel):
     picture_url: Optional[str] = Field(None, alias="pictureUrl")
     stats_last_updated: Optional[datetime] = Field(None, alias="statsLastUpdated")
     stats: Optional[dict] = None
+    requires_approval: Optional[bool] = None
 
 
 class UserRegisterEmailDTO(BaseModel):

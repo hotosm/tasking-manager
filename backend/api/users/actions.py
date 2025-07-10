@@ -231,10 +231,45 @@ async def update_stats(
     _: AuthUserDTO = Depends(pm_only),
     db: Database = Depends(get_db),
 ):
+    """
+    Updates user stats
+    ---
+    tags:
+        - users
+        - stats
+    produces:
+        - application/json
+    """
     try:
         user = await UserService.get_user_by_username(username, db)
         stats = await UserService.get_and_save_stats(user.id, db)
         await UserService.check_and_update_mapper_level(user.id, db, stats)
+    except UserServiceError as e:
+        return JSONResponse(
+            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            status_code=500,
+        )
+
+
+@router.patch("/{username}/actions/approve-level")
+async def approve_level(
+    request: Request,
+    username: str,
+    voter: AuthUserDTO = Depends(pm_only),
+    db: Database = Depends(get_db),
+):
+    """
+    Casts a vote for the promotion of a user to their next level
+    ---
+    tags:
+        - users
+        - levels
+    produces:
+        - application/json
+    """
+    try:
+        user = await UserService.get_user_by_username(username, db)
+        await UserService.approve_level(user.id, voter.id, db)
     except UserServiceError as e:
         return JSONResponse(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},

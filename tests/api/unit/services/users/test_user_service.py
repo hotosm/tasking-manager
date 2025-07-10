@@ -12,6 +12,7 @@ from tests.api.helpers.test_helpers import create_canned_user
 from backend.models.postgis.user import User, UserNextLevel, UserStats
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.mapping_badge import MappingBadge
+from backend.models.dtos.mapping_level_dto import MappingLevelCreateDTO
 
 
 @pytest.mark.anyio
@@ -130,9 +131,9 @@ class TestUserService:
         mock_response.status_code = 500
         mock_response.json = MagicMock(
             return_value={
-                'status': 500,
-                'error': 'Internal Server Error',
-                'path': '/api/stats/user',
+                "status": 500,
+                "error": "Internal Server Error",
+                "path": "/api/stats/user",
             },
         )
         mock_get.return_value = mock_response
@@ -276,3 +277,41 @@ class TestUserService:
 
         # Assert
         assert dto.mapping_level == "BEGINNER"
+
+    async def test_approve_level_needs_one_more(self):
+        # Arrange
+        level = await MappingLevel.create(MappingLevelCreateDTO(
+            name="Super Mapper",
+            approvalsRequired=2,
+            color="#acabad",
+            isBeginner=False,
+            requiredBadges=[],
+        ), self.db)
+        await UserNextLevel.nominate(self.test_user.id, level.id, self.db)
+
+        # Act
+        await UserService.approve_level(self.test_user.id, 234, self.db)
+
+        # Assert
+        user = await UserService.get_user_by_id(self.test_user.id, self.db)
+        assert user.mapping_level != level.id
+        assert await UserNextLevel.is_nominated(self.test_user.id, level.id, self.db)
+
+    async def test_approve_level(self):
+        # Arrange
+        level = await MappingLevel.create(MappingLevelCreateDTO(
+            name="Super Mapper",
+            approvalsRequired=1,
+            color="#acabad",
+            isBeginner=False,
+            requiredBadges=[],
+        ), self.db)
+        await UserNextLevel.nominate(self.test_user.id, level.id, self.db)
+
+        # Act
+        await UserService.approve_level(self.test_user.id, 234, self.db)
+
+        # Assert
+        user = await UserService.get_user_by_id(self.test_user.id, self.db)
+        assert user.mapping_level == level.id
+        assert not await UserNextLevel.is_nominated(self.test_user.id, level.id, self.db)
