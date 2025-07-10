@@ -279,7 +279,7 @@ export const UsersTable = ({ filters, setFilters }) => {
       {
         id: 'levelUpgrade',
         header: () => (<FormattedMessage {...messages.tableUpgrade} />),
-        cell: ({row}) => (row.original.requires_approval && <Button
+        cell: ({row}) => (row.original.requires_approval && userDetails.username !== row.original.username && <Button
           className="bg-black-90 white"
           onClick={() => handleApprove(row.original)}
         ><FormattedMessage {...messages.tableApprove} /></Button>),
@@ -302,8 +302,8 @@ export const UsersTable = ({ filters, setFilters }) => {
       {
         id: 'actions',
         header: () => (<FormattedMessage {...messages.tableActions} />),
-        cell: ({row}) => (userDetails.username === row.original.username ? null : <>
-          <Popup
+        cell: ({row}) => (<>
+          {userDetails.username !== row.original.username && <Popup
             trigger={
               <span>
                 <SettingsIcon width="18px" height="18px" className="pointer hover-blue-grey mr3" />
@@ -316,7 +316,7 @@ export const UsersTable = ({ filters, setFilters }) => {
             {(close) => (
               <UserEditMenu user={row.original} token={token} close={close} setStatus={setStatus} />
             )}
-          </Popup>
+          </Popup>}
 
           <button onClick={() => handleStatsUpdate(row.original)} className="bn pa0 bg-transparent pointer">
             <RefreshIcon width={18} height={18} />

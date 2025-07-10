@@ -625,6 +625,7 @@ class UserLevelVote(Base):
             """
             INSERT INTO user_level_vote (user_id, level_id, voter_id)
             VALUES (:user_id, :level_id, :voter_id)
+            ON CONFLICT (user_id, level_id, voter_id) DO NOTHING
         """,
             values={
                 "user_id": user_id,

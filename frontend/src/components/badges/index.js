@@ -174,7 +174,7 @@ function BadgeRequirementsField({ input }) {
   };
 
   const handleAddRequirement = () => {
-    data[newRequirementMetric.value] = newRequirementValue;
+    data[newRequirementMetric.value] = Number(newRequirementValue);
 
     input.onChange(JSON.stringify(data));
 
