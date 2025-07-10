@@ -128,6 +128,7 @@ async def list_users(
             username=username,
             mapping_level=level,
             role=role,
+            voter_id=user.id,
         )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")

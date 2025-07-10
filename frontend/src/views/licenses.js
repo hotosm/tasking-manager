@@ -110,6 +110,7 @@ export const CreateLicense = () => {
               </div>
               <div className="w-40-l w-100 fl pl5-l pl0 "></div>
             </div>
+
             <div className="fixed left-0 bottom-0 cf bg-white h3 w-100">
               <div className="w-80-ns w-60-m w-50 h-100 fl tr">
                 <Link to={'../'}>

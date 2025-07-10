@@ -72,7 +72,7 @@ class TestOrganisationService:
         self,
     ):
         # Arrange
-        admin_user = return_canned_user()
+        admin_user = await return_canned_user(self.db)
         admin_user.role = UserRole.ADMIN.value
         await self.db.execute(
             """

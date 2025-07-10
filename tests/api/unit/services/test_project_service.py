@@ -4,9 +4,9 @@ from unittest.mock import AsyncMock, patch
 from fastapi import HTTPException
 from backend.models.dtos.project_dto import LockedTasksForUser
 from backend.models.postgis.task import Task
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.project_service import (
-    MappingLevel,
     MappingNotAllowed,
     Project,
     ProjectAdminService,
@@ -38,24 +38,24 @@ class TestProjectService:
     @patch.object(UserService, "get_mapping_level")
     async def test_user_not_allowed_to_map_if_level_enforced(self, mock_level):
         # Arrange
-        mock_level.return_value = MappingLevel.BEGINNER
+        mock_level.return_value = MappingLevel(is_beginner=True)
 
         # Act
-        allowed = await ProjectService._is_user_intermediate_or_advanced(1, self.db)
+        allowed = await ProjectService._is_user_beginner(1, self.db)
 
         # Assert
-        assert not allowed
+        assert allowed
 
     @patch.object(UserService, "get_mapping_level")
     async def test_user_is_allowed_to_map_if_level_enforced(self, mock_level):
         # Arrange
-        mock_level.return_value = MappingLevel.ADVANCED
+        mock_level.return_value = MappingLevel(is_beginner=False)
 
         # Act
-        allowed = await ProjectService._is_user_intermediate_or_advanced(1, self.db)
+        allowed = await ProjectService._is_user_beginner(1, self.db)
 
         # Assert
-        assert allowed
+        assert not allowed
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     @patch.object(UserService, "is_user_blocked")
