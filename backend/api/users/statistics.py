@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-import requests
+import httpx
 from databases import Database
 from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import JSONResponse
@@ -13,6 +13,7 @@ from backend.services.interests_service import InterestService
 from backend.services.stats_service import StatsService
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
+
 
 router = APIRouter(
     prefix="/users",
@@ -175,39 +176,38 @@ async def get_ohsome_stats(
     user: AuthUserDTO = Depends(login_required),
 ):
     """
-    Get HomePage Stats
-    ---
-    tags:
-        - system
-    produces:
-        - application/json
-    parameters:
-    - in: header
-        name: Authorization
-        description: Base64 encoded session token
-        required: true
-        type: string
-        default: Token sessionTokenHere==
-    - in: query
-        name: url
-        type: string
-        description: get user stats for osm contributions
-    responses:
-        200:
-            description: User stats
-        500:
-            description: Internal Server Error
+    Get HomePage Stats for OSM contributions
     """
     if not url:
         return JSONResponse(
             content={"Error": "URL is None", "SubCode": "URL not provided"},
             status_code=400,
         )
+
+    headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
+
     try:
-        headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
-        # Make the GET request with headers
-        response = requests.get(url, headers=headers)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=headers, timeout=10.0)
+            response.raise_for_status()
+
         return response.json()
+
+    except httpx.HTTPStatusError as e:
+        return JSONResponse(
+            content={
+                "Error": f"Upstream error: {e.response.status_code}",
+                "Details": e.response.text,
+            },
+            status_code=e.response.status_code,
+        )
+
+    except httpx.RequestError as e:
+        return JSONResponse(
+            content={"Error": "Error fetching data", "Details": str(e)},
+            status_code=502,
+        )
+
     except Exception as e:
         return JSONResponse(
             content={"Error": str(e), "SubCode": "Error fetching data"}, status_code=400
